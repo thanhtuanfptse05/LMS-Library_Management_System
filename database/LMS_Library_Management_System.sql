@@ -251,13 +251,10 @@ CREATE TABLE Payment (
 
 CREATE TABLE Notification (
     notificationId INT IDENTITY(1,1) PRIMARY KEY,
-    userId INT NOT NULL,
     title NVARCHAR(500) NOT NULL,
     content NVARCHAR(MAX) NULL,
-	created_by INT NOT NULL,
+    created_by INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT GETDATE(),
-
-    FOREIGN KEY (userId) REFERENCES [User](userId),
-	FOREIGN KEY (created_by) REFERENCES [User](userId)
+    FOREIGN KEY (created_by) REFERENCES [User](userId)
 
 );
