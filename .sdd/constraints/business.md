@@ -14,8 +14,12 @@
 
 #### CORE DOMAIN GLOSSARY & BEHAVIORS
 - **Reservation (Hàng chờ):** Tất cả yêu cầu mượn sách ĐỀU phải vào bảng `Reservation` trước (Dù có sách hay hết sách). Từ đây mới phân nhánh `pending` hoặc `readypickup`.
-- **BorrowRecord (Mượn sách):** Chỉ được tạo ra khi thủ thư xác nhận giao sách vật lý (từ trạng thái `readypickup` của Reservation chuyển thành `fulfilled`).
-- **Fine (Phạt):** Chặn không cho tạo `Reservation` nếu bảng `Fine` của user đó đang có trạng thái `unpaid` (BR-LMS-035).
-
+- **User Status Validation (Luồng Mượn/Đặt sách):** Để tối ưu hiệu năng, mọi thao tác tạo mới Reservation CHỈ CẦN kiểm tra `User.status != 'locked'`. TUYỆT ĐỐI KHÔNG join bảng `Fine` để kiểm tra nợ phạt ở luồng này.Chỉ được tạo ra khi thủ thư xác nhận giao sách vật lý (từ trạng thái `readypickup` của Reservation chuyển thành `fulfilled`).
+- **Fine Sync Logic (Cơ chế đồng bộ trạng thái - BR-LMS-035):** 
+    - **Khi nợ phạt (Lock):** Ngay khi một bản ghi trong bảng `Fine` được tạo mới với trạng thái `unpaid`, hệ thống PHẢI tự động `UPDATE User SET status = 'locked'`. 
+    - **Khi thanh toán xong (Unlock Validation):** Khi tất cả `Fine` của user chuyển thành `paid`, hệ thống **KHÔNG ĐƯỢC** mù quáng mở khóa. Service layer PHẢI kiểm tra lock_reason điều kiện sau trước khi set `status = 'active'`:
+        1. User có đang bị khóa do nhập sai mật khẩu 5 lần không? (`failed_login_attempts >= 5` hoặc `locked_until > GETDATE()`) (BR-LMS-016, BR-LMS-031).
+        2. User có đang bị khóa thủ công (banned) bởi Admin không? 
+        -> Chỉ khi thỏa mãn không vi phạm các lỗi bảo mật/admin khác(tức lock_reason = 'null'), hệ thống mới được phép mở khóa tài khoản.
 #### PII (Personal Identifiable Information)
 - Không được log `password` hoặc `email` đầy đủ ra console hoặc bảng AuditLogs.
