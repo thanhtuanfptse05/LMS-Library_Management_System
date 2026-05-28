@@ -156,6 +156,271 @@
 [Notification]                      (created_by FK)
 ```
 
+### Script tạo bảng trong SQL Server (DDL)
+
+```sql
+CREATE DATABASE LMS_Library_Management_System;
+GO
+USE LMS_Library_Management_System;
+GO
+
+-- ============================================================
+-- 1. Bảng User
+-- ============================================================
+CREATE TABLE [User] (
+    userId INT IDENTITY(1,1) PRIMARY KEY,
+    email NVARCHAR(255) NOT NULL UNIQUE,
+    password_hash NVARCHAR(255) NOT NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'active', -- active, locked
+    [role] NVARCHAR(50) NOT NULL,
+    lock_reason NVARCHAR(50) NULL, -- unpaid, adminban, securitybreach
+    failed_login_attempts INT NOT NULL DEFAULT 0,
+    locked_until DATETIME NULL
+);
+
+-- ============================================================
+-- 2. Bảng MemberProfile
+-- ============================================================
+CREATE TABLE MemberProfile (
+    userId INT PRIMARY KEY,
+    full_name NVARCHAR(255) NOT NULL,
+    phone_number NVARCHAR(20) NULL,
+    gender NVARCHAR(10) NULL,
+    date_of_birth DATE NULL,
+    [start_date] DATE NULL,
+    end_date DATE NULL,
+    FOREIGN KEY (userId) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 3. Bảng Student
+-- ============================================================
+CREATE TABLE Student (
+    userId INT PRIMARY KEY,
+    student_code NVARCHAR(50) NOT NULL UNIQUE,
+    major NVARCHAR(255) NULL,
+    enrollment_year INT NULL,
+    FOREIGN KEY (userId) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 4. Bảng Lecturer
+-- ============================================================
+CREATE TABLE Lecturer (
+    userId INT PRIMARY KEY,
+    lecturer_code NVARCHAR(50) NOT NULL UNIQUE,
+    department NVARCHAR(255) NULL,
+    FOREIGN KEY (userId) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 5. Bảng Librarian
+-- ============================================================
+CREATE TABLE Librarian (
+    userId INT PRIMARY KEY,
+    staff_code NVARCHAR(50) NOT NULL UNIQUE,
+    FOREIGN KEY (userId) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 6. Bảng LibraryManager
+-- ============================================================
+CREATE TABLE LibraryManager (
+    userId INT PRIMARY KEY,
+    staff_code NVARCHAR(50) NOT NULL UNIQUE,
+    FOREIGN KEY (userId) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 7. Bảng Admin
+-- ============================================================
+CREATE TABLE Admin (
+    userId INT PRIMARY KEY,
+    staff_code NVARCHAR(50) NOT NULL UNIQUE,
+    FOREIGN KEY (userId) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 8. Bảng SystemConfigurations
+-- ============================================================
+CREATE TABLE SystemConfigurations (
+    config_key NVARCHAR(255) PRIMARY KEY,
+    config_value NVARCHAR(MAX) NULL,
+    [description] NVARCHAR(MAX) NULL,
+    updated_by INT NULL,
+    updated_at DATETIME NULL DEFAULT GETDATE(),
+    FOREIGN KEY (updated_by) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 9. Bảng AuditLogs
+-- ============================================================
+CREATE TABLE AuditLogs (
+    auditLogId INT IDENTITY(1,1) PRIMARY KEY,
+    userId INT NULL,
+    action_type NVARCHAR(100) NOT NULL,
+    [entity_name] NVARCHAR(255) NULL,
+    [entity_id] INT NULL,
+    old_values NVARCHAR(MAX) NULL,
+    new_values NVARCHAR(MAX) NULL,
+    [timestamp] DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (userId) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 10. Bảng Category
+-- ============================================================
+CREATE TABLE Category (
+    categoryId INT IDENTITY(1,1) PRIMARY KEY,
+    name NVARCHAR(255) NOT NULL,
+    description NVARCHAR(MAX) NULL
+);
+
+-- ============================================================
+-- 11. Bảng Tag
+-- ============================================================
+CREATE TABLE Tag (
+    tagId INT IDENTITY(1,1) PRIMARY KEY,
+    name NVARCHAR(100) NOT NULL UNIQUE
+);
+
+-- ============================================================
+-- 12. Bảng Books
+-- ============================================================
+CREATE TABLE Books (
+    bookId INT IDENTITY(1,1) PRIMARY KEY,
+    isbn NVARCHAR(20) NOT NULL UNIQUE,
+    title NVARCHAR(500) NOT NULL,
+    author NVARCHAR(500) NULL,
+    publisher NVARCHAR(255) NULL,
+    publication_year INT NULL,
+    price DECIMAL(18,2) NULL,
+    total_quantity INT NOT NULL DEFAULT 0,
+    available_quantity INT NOT NULL DEFAULT 0,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'available',  -- unavailable, available
+    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    updated_at DATETIME NULL 
+);
+
+-- ============================================================
+-- 13. Bảng BookCategory (Liên kết Book - Category)
+-- ============================================================
+CREATE TABLE BookCategory (
+    bookId INT NOT NULL,
+    categoryId INT NOT NULL,
+    PRIMARY KEY (bookId, categoryId),
+    FOREIGN KEY (bookId) REFERENCES Books(bookId),
+    FOREIGN KEY (categoryId) REFERENCES Category(categoryId)
+);
+
+-- ============================================================
+-- 14. Bảng BookTag (Liên kết Book - Tag)
+-- ============================================================
+CREATE TABLE BookTag (
+    bookId INT NOT NULL,
+    tagId INT NOT NULL,
+    PRIMARY KEY (bookId, tagId),
+    FOREIGN KEY (bookId) REFERENCES Books(bookId),
+    FOREIGN KEY (tagId) REFERENCES Tag(tagId)
+);
+
+-- ============================================================
+-- 15. Bảng BookCopy
+-- ============================================================
+CREATE TABLE BookCopy (
+    bookCopyId INT IDENTITY(1,1) PRIMARY KEY,
+    bookId INT NOT NULL,
+    [location] NVARCHAR(255) NULL,
+    condition NVARCHAR(100) NOT NULL DEFAULT 'good',  -- good, damaged, lost
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'available', -- available, unavailable, borrowed, reserved 
+    barcode NVARCHAR(50) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    updated_at DATETIME NULL,
+    FOREIGN KEY (bookId) REFERENCES Books(bookId)
+);
+
+-- ============================================================
+-- 16. Bảng Reservation (Đặt trước sách)
+-- ============================================================
+CREATE TABLE Reservation (
+    reservationId INT IDENTITY(1,1) PRIMARY KEY,
+    userId INT NOT NULL,
+    bookId INT NOT NULL,
+    bookCopyId INT NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, readypickup, fulfilled, cancelled 
+    queue_position INT NULL,
+    [start_date] DATE NULL DEFAULT GETDATE(),
+    end_date DATE NULL,
+    FOREIGN KEY (userId) REFERENCES [User](userId),
+    FOREIGN KEY (bookId) REFERENCES Books(bookId),
+    FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId)
+);
+
+-- ============================================================
+-- 17. Bảng BorrowRecord (Nhật ký mượn)
+-- ============================================================
+CREATE TABLE BorrowRecord (
+    borrowRecordId INT IDENTITY(1,1) PRIMARY KEY,
+    userId INT NOT NULL,
+    bookCopyId INT NOT NULL,
+    bookId INT NOT NULL,
+    [start_date] DATE NOT NULL DEFAULT GETDATE(),
+    end_date DATE NOT NULL,
+    returned_at DATETIME NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'borrowed', -- borrowed, returned, overdue, lost
+    extension_count INT NOT NULL DEFAULT 0,
+    created_by INT NULL,
+    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (userId) REFERENCES [User](userId),
+    FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId),
+    FOREIGN KEY (bookId) REFERENCES Books(bookId),
+    FOREIGN KEY (created_by) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 18. Bảng Fine (Phạt vi phạm)
+-- ============================================================
+CREATE TABLE Fine (
+    fineId INT IDENTITY(1,1) PRIMARY KEY,
+    borrowRecordId INT NOT NULL,
+    userId INT NOT NULL,
+    amount DECIMAL(18,2) NOT NULL DEFAULT 0,
+    reason NVARCHAR(500) NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'unpaid', -- unpaid, paid  
+    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (borrowRecordId) REFERENCES BorrowRecord(borrowRecordId),
+    FOREIGN KEY (userId) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 19. Bảng Payment (Thanh toán phạt)
+-- ============================================================
+CREATE TABLE Payment (
+    paymentId INT IDENTITY(1,1) PRIMARY KEY,
+    fineId INT NOT NULL,
+    paid_amount DECIMAL(18,2) NOT NULL,
+    payment_method NVARCHAR(100) NULL,
+    transaction_reference NVARCHAR(255) NULL UNIQUE,
+    process_by INT NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'pending', -- completed, pending, canceled
+    paid_at DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (fineId) REFERENCES Fine(fineId),
+    FOREIGN KEY (process_by) REFERENCES [User](userId)
+);
+
+-- ============================================================
+-- 20. Bảng Notification (Thông báo hệ thống)
+-- ============================================================
+CREATE TABLE Notification (
+    notificationId INT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(500) NOT NULL,
+    content NVARCHAR(MAX) NULL,
+    created_by INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (created_by) REFERENCES [User](userId)
+);
+```
+
 ### Configurable parameters (stored in SystemConfigurations)
 
 | config_key | Ý nghĩa | Default |
@@ -270,4 +535,4 @@
 4. **Payment partial:** `Payment.paid_amount` — liệu có trường hợp thanh toán một phần fine không? Hiện tại schema cho phép nhưng FR10 chưa mô tả.
 5. **Email service:** FR20 cần SMTP config trong `SystemConfigurations` — ai setup? SysAdmin qua FR-technical config. Template email chuẩn hóa ở đâu?
 6. **AI recommendation:** FR05 chưa định nghĩa: cold-start user (chưa có lịch sử mượn) nhận gợi ý gì? Gợi ý phổ biến nhất? Theo major của Student?
-7. **Notification table:** `Notification` table hiện chỉ có title/content/created_by — thiếu `recipient` và `read_status`. Liệu đây là system-wide broadcast hay per-user notification?
+7. **Notification table:** `Notification` table hiện chỉ có title/content/created_by — thiếu `recipient` và `read_status`. Liệu đây là system-wide broadcast hay per-user notification?`
