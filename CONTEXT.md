@@ -1,5 +1,5 @@
-Dưới đây là file ngữ cảnh chuẩn, không phụ thuộc vào bất kỳ AI tool nào. Bạn tạo file này ở thư mục gốc (root) của dự án:
 # CONTEXT.md — Library Management System (LMS) Project Memory
+# Version: 1.0.0 | Updated: 28/5/2026 | Sprint: Milestone 2
 # Đọc kèm file AGENTS.md để hiểu quy tắc hành vi của dự án.
 
 ## TL;DR (Đọc trước — 60 giây)
@@ -31,12 +31,12 @@ Client (JSP) → `AuthorizationFilter` (Check Role Session) → `BorrowServlet` 
 - Nguyên tắc: Mọi logic truy vấn phải viết bằng `PreparedStatement`. Quản lý Transaction (`commit`/`rollback`) thủ công.
 
 ### ADR-002: Mô hình Table-per-Type (TPT) cho User
-- Lý do: Tách `User` (Bảng cha) và các bảng con (`Student`, `Lecturer`...).
+- Lý do: Tách `User` (Bảng cha) và các bảng con (`Student`, `Lecturer`, `Librarian`, `LibraryManager`, `Admin`).
 - Nguyên tắc: AI phải dùng lệnh `JOIN` khi query thông tin chi tiết của người dùng.
 
 ### ADR-003: Soft-Delete và Audit Log cho giao dịch lõi
 - Lý do: Tuân thủ quy tắc nghiệp vụ không xóa lịch sử giao dịch.
-- Nguyên tắc: KHÔNG dùng lệnh `DELETE` trên bảng `Borrowing_Record`, `Fine`, `Payment`. Cập nhật `status = Inactive` và luôn `INSERT` vào `Audit_Log`.
+- Nguyên tắc: KHÔNG dùng lệnh `DELETE` trên bảng `BorrowRecord`, `Fine`, `Payment`. Cập nhật `status` và luôn `INSERT` vào `AuditLogs`.
 
 ## PATTERNS ĐƯỢC SỬ DỤNG
 - **Controller - Service - DAO Pattern:** 
@@ -45,23 +45,41 @@ Client (JSP) → `AuthorizationFilter` (Check Role Session) → `BorrowServlet` 
   - `DAO`: Chỉ chứa logic truy xuất Database (Cấm chứa logic nghiệp vụ).
 - **Asynchronous Email:** Mọi thao tác gửi email (OTP, Nhắc hạn) phải chạy qua `ExecutorService` (Async) để không làm block UI.
 
+## DB SCHEMA OVERVIEW (20 bảng — theo SQL file hiện tại)
+Tham chiếu chi tiết: `database/LMS_Library_Management_System.sql`
+
+| Nhóm | Bảng | Ghi chú |
+|------|------|---------|
+| **User (TPT)** | `User`, `MemberProfile`, `Student`, `Lecturer`, `Librarian`, `LibraryManager`, `Admin` | User là bảng cha, các bảng con FK → userId |
+| **Catalog** | `Books`, `BookCopy`, `Category`, `Tag`, `BookCategory` (junction), `BookTag` (junction) | BookCopy quản lý từng bản vật lý |
+| **Transaction** | `BorrowRecord`, `Reservation`, `Fine`, `Payment` | KHÔNG Hard-delete — chỉ Soft-delete qua status |
+| **System** | `SystemConfigurations`, `AuditLogs`, `Notification` | Config lưu API keys, AuditLogs bất biến |
+
+> ⚠️ **Lưu ý:** Con số bảng cần verify nếu team bổ sung thêm bảng. Cập nhật lại section này khi schema thay đổi.
+
 ## LESSONS LEARNED (Những lỗi đã xảy ra và cần tránh)
-- **Lỗi SQL Injection:** Đã từng bị lỗi khi dùng phép cộng chuỗi (`+`) trong SQL. Bắt buộc dùng `PreparedStatement` thay thế.
-- **Connection Leak:** Đã từng sập DB do quên đóng kết nối. Mọi DAO BẮT BUỘC dùng `try-with-resources` hoặc đóng `ResultSet`, `Connection` trong block `finally`.
-- **Lỗi UX do gửi Email đồng bộ:** Ứng dụng bị đơ 5s khi gửi OTP. Đã migrate sang Thread riêng.
+- **[Lỗi Bảo mật] SQL Injection:** Đã từng bị lỗi khi dùng phép cộng chuỗi (`+`) trong SQL. Bắt buộc dùng `PreparedStatement` thay thế.
+- **[Lỗi Hệ thống] Connection Leak:** Đã từng sập DB do quên đóng kết nối. Mọi DAO BẮT BUỘC dùng `try-with-resources` hoặc đóng `ResultSet`, `Connection` trong block `finally`.
+- **[Lỗi UX] Gửi Email đồng bộ:** Ứng dụng bị đơ 5s khi gửi OTP. Đã migrate sang Thread/ExecutorService riêng.
 
 ## FILE STRUCTURE QUAN TRỌNG
-/src/main/java
-  /controller    # Servlet classes (Entry points)
-  /service       # Business logic
-  /dao           # Data access (PreparedStatement)
-  /model         # Java Beans map 1-1 với 22 bảng ERD
-  /filter        # @WebFilter bảo vệ endpoints
-  /util          # AuditUtil, EmailSender, BCrypt
-/src/main/webapp
-  /views         # JSP files (phân chia theo /admin, /librarian, /student)
-  /assets        # CSS/JS tĩnh
+```
+/src/java                  ← Source code Java (NetBeans structure)
+  /controller              # Servlet classes (Entry points)
+  /service                 # Business logic
+  /dao                     # Data access (PreparedStatement)
+  /model                   # Java Beans map 1-1 với DB
+  /filter                  # @WebFilter bảo vệ endpoints
+  /util                    # AuditUtil, EmailSender, BCrypt
+/web                       ← Web resources (NetBeans structure)
+  /WEB-INF
+    /views                 # JSP files (phân chia theo /admin, /librarian, /student)
+    web.xml
+  /assets                  # CSS/JS tĩnh (nếu có)
+/database                  ← SQL schema files
+```
 
 ## MEMORY LOG (Cho các Agents ghi chú chéo nhau)
 # [Các Agent có thể append log/note vào đây khi hoàn thành task lớn để báo cho agent khác]
-- [2026-05-26]: DB Schema đã chốt 22 bảng. Không tự ý tạo thêm bảng mà không có RFC.
+- [2026-05-26]: DB Schema đã chốt (xem `database/LMS_Library_Management_System.sql`). Không tự ý tạo thêm bảng mà không có RFC.
+- [2026-05-28]: Tái cấu trúc AGENTS.md + CONTEXT.md theo Playbook 4.1/4.2. File paths sửa khớp cấu trúc NetBeans.

@@ -1,8 +1,8 @@
 # .sdd/shared_context.md
 # File này là NGUỒN SỰ THẬT CHUNG cho mọi agents trong dự án LMS
 # Read bởi: Tất cả agents trước khi bắt đầu code JSP hoặc Servlet
-# Version: 2026-05-27 10:00 UTC
-# Updated by: Lead Agent (Task: T015 - Tích hợp mượn sách và xử lý lỗi)
+# Version: 1.0.1 | Updated: 28/5/2026
+# Updated by: Audit — sửa data mapping khớp DB schema thực tế
 
 ## 1. SERVLET & JSP CONTRACTS (Source of Truth)
 # Quy định chính xác tên biến từ Form gửi lên và thuộc tính trả về View
@@ -27,15 +27,40 @@ GET /book-list (BookServlet)
   Note: Field name cho list sách đổi từ "bookList" thành "books" — 2026-05-27 09:30
 
 ## 2. DATA TYPES (Java Model ↔ SQL Database)
-# Ánh xạ chính xác giữa Java CamelCase và DB Snake_case
+# Ánh xạ chính xác giữa Java CamelCase và DB columns
+# Tham chiếu: database/LMS_Library_Management_System.sql
 
-BorrowingRecord:
-  id: int (DB: transaction_id)
-  memberId: String (DB: member_id)
-  bookId: String (DB: book_id)
-  borrowDate: java.sql.Date (DB: borrow_date)
-  status: enum ["active", "returned", "overdue"]
-  isDeleted: boolean (DB: is_deleted - dùng cho Soft Delete)
+BorrowRecord:
+  borrowRecordId: int (DB: borrowRecordId INT IDENTITY PK)
+  userId: int (DB: userId INT FK → User)
+  bookCopyId: int (DB: bookCopyId INT FK → BookCopy)
+  bookId: int (DB: bookId INT FK → Books)
+  startDate: java.sql.Date (DB: start_date DATE)
+  endDate: java.sql.Date (DB: end_date DATE)
+  returnedAt: java.sql.Timestamp (DB: returned_at DATETIME, nullable)
+  status: String (DB: status NVARCHAR(50) — values: 'borrowed', 'returned', 'overdue', 'lost')
+  extensionCount: int (DB: extension_count INT DEFAULT 0)
+  createdBy: int (DB: created_by INT FK → User, nullable)
+  createdAt: java.sql.Timestamp (DB: created_at DATETIME DEFAULT GETDATE())
+
+Fine:
+  fineId: int (DB: fineId INT IDENTITY PK)
+  borrowRecordId: int (DB: borrowRecordId INT FK → BorrowRecord)
+  userId: int (DB: userId INT FK → User)
+  amount: BigDecimal (DB: amount DECIMAL(18,2))
+  reason: String (DB: reason NVARCHAR(500), nullable)
+  status: String (DB: status NVARCHAR(50) — values: 'unpaid', 'paid')
+  createdAt: java.sql.Timestamp (DB: created_at DATETIME DEFAULT GETDATE())
+
+Payment:
+  paymentId: int (DB: paymentId INT IDENTITY PK)
+  fineId: int (DB: fineId INT FK → Fine)
+  paidAmount: BigDecimal (DB: paid_amount DECIMAL(18,2))
+  paymentMethod: String (DB: payment_method NVARCHAR(100), nullable)
+  transactionReference: String (DB: transaction_reference NVARCHAR(255) UNIQUE, nullable)
+  processBy: int (DB: process_by INT FK → User, nullable)
+  status: String (DB: status NVARCHAR(50) — values: 'completed', 'pending', 'canceled')
+  paidAt: java.sql.Timestamp (DB: paid_at DATETIME DEFAULT GETDATE())
 
 ## 3. KNOWN BREAKING CHANGES
 # Log mọi thay đổi ảnh hưởng đến logic giữa JSP và Servlet
@@ -49,5 +74,5 @@ Date Format: Dùng 'dd/MM/yyyy' trên toàn bộ JSP (Sử dụng JSTL <fmt:form
 Currency Format: Dùng 'VND' cho Tiền phạt (Fine) (Ví dụ: 10,000 VND).
 
 ## 5. ENVIRONMENT
-Dev DB: jdbc:sqlserver://localhost:1433;databaseName=LMS_DB
+Dev DB: Sử dụng biến môi trường `$DB_URL` từ `.env`. Cấu trúc mong đợi: `jdbc:sqlserver://{host}:{port};databaseName={dbName}`
 JSP Folder: /WEB-INF/views/ (Tất cả JSP phải giấu trong WEB-INF để bảo mật)
