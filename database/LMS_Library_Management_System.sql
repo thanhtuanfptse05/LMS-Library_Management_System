@@ -1,4 +1,4 @@
- create database LMS_Library_Management_System;
+﻿ create database LMS_Library_Management_System;
  go
  use LMS_Library_Management_System;
  go
