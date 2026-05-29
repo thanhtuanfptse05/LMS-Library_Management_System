@@ -6,9 +6,10 @@
   - [ ] Viết `BookCopyDAO.java` để tương tác với các bản sao của sách.
 
 - [ ] **Book Management & Validations (Librarian)**
-  - [ ] Xây dựng Servlet và giao diện thêm/sửa sách (`BookManageServlet.java`).
+  - [ ] Xây dựng Servlet và giao diện thêm/sửa sách (`BookManagementServlet.java`).
   - [ ] Triển khai validation ISBN trùng lặp và cộng dồn số lượng mượn khi trùng.
-  - [ ] Xây dựng tính năng cập nhật tình trạng bản sao và xử lý tự động khi copy bị mất (`lost`).
+  - [ ] Xây dựng tính năng cập nhật bản sao (`BookCopyServlet.java`) và cập nhật tình trạng vật lý (`BookConditionServlet.java`).
+  - [ ] Xây dựng tính năng xử lý tự động khi copy bị mất (`lost`) và áp dụng giá sách mặc định khi giá bị NULL.
 
 - [ ] **Search Engine & Filter UI**
   - [ ] Thiết kế trang `search-results.jsp` responsive hiển thị số lượng sách khả dụng.
@@ -17,5 +18,5 @@
 
 - [ ] **AI Recommendation Integration**
   - [ ] Code `AIService.java` kết nối API OpenAI hoặc Gemini.
-  - [ ] Triển khai cơ chế Async Task lấy kết quả gợi ý không gây nghẽn UI.
+  - [ ] Triển khai cơ chế Async Task lấy kết quả gợi ý qua `AIRecommendServlet.java` không gây nghẽn UI.
   - [ ] Viết cơ chế dự phòng (fallback) sang sách hot nếu API lỗi/timeout.

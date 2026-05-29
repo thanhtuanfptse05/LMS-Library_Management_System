@@ -8,10 +8,10 @@
 
 ## 0. SDD INITIALIZATION LOG (Khởi tạo Bộ não Dự án)
 
-### Session: 2026-05-29 — Khởi tạo .sdd/ + .agents/ từ 32 FR, 23 UC, 29 BR
+### Session: 2026-05-29 — Đồng bộ hóa .sdd/ + .agents/ từ 32 FR, 23 UC, 31 BR
 
 - [x] Step 1: `.sdd/constitution.md` — OVERWRITE (v2.0.0, 3 Layers + AI Self-Check)
-- [x] Step 2: `.sdd/business_rules.md` — OVERWRITE (v2.0.0, 29 BR đầy đủ BR01→BR29)
+- [x] Step 2: `.sdd/business_rules.md` — OVERWRITE (v2.0.0, 31 BR đầy đủ BR01→BR31)
 - [x] Step 3: `.sdd/constraints/global.md` — OVERWRITE (v2.0.0, reformatted theo template)
 - [x] Step 4: `.sdd/shared_context.md` — OVERWRITE (v2.0.0, 23 UC mapping + Servlet contracts)
 - [x] Step 5: `.agents/AGENTS.md` — NEW (copy root + Section 13 reference)
@@ -21,9 +21,10 @@
 - [x] Step 9: `AGENTS.md` root — UPDATE (added Section 13)
 - [x] Step 10: `.github/workflows/constitution-check.yml` — NEW (placeholder)
 - [x] Step 11: `plan.md` — OVERWRITE (cập nhật tiến độ)
+- [x] Step 12: Cập nhật và đồng bộ 31 BR nghiệp vụ (BR30, BR31) trên toàn bộ hệ thống tài liệu đặc tả, chuẩn hóa tên các Servlet.
 
 ### Files giữ nguyên (không thay đổi):
-- `.sdd/constraints/business.md` — Đã chính xác
+- `.sdd/constraints/business.md` — Đã cập nhật
 - `.sdd/constraints/safety.md` — Đã đủ nội dung
 - `.sdd/constraints/verify.md` — Đã đủ nội dung
 - `.sdd/specs/_template.md` — Full spec đã hoàn chỉnh
@@ -56,29 +57,62 @@ Hệ thống tuân thủ kiến trúc **Monolith MVC (Model-View-Controller)** n
 
 ## 2. COMPONENTS
 
-Dưới đây là danh sách các component cốt lõi được chia theo 5 nhóm tính năng:
+Dưới đây là danh sách các component cốt lõi được chia theo các nhóm tính năng:
 
 | Component | Loại | Trách nhiệm | Đường dẫn File dự kiến |
 |---|---|---|---|
-| `AuthorizationFilter` | WebFilter | Kiểm tra Session và phân quyền RBAC cho các URL bảo mật | `src/java/filter/AuthorizationFilter.java` |
-| `LoginServlet` | Servlet | Tiếp nhận POST đăng nhập, kiểm tra tài khoản, khởi tạo Session | `src/java/controller/auth/LoginServlet.java` |
+| `AuthorizationFilter` | WebFilter | Kiểm tra Session, phân quyền RBAC và bắt buộc đổi mật khẩu lần đầu (`BR30`) | `src/java/filter/AuthorizationFilter.java` |
+| `LoginServlet` | Servlet | Tiếp nhận POST đăng nhập, kiểm tra tài khoản, kiểm tra đổi mật khẩu lần đầu (`BR30`), khởi tạo Session | `src/java/controller/auth/LoginServlet.java` |
+| `LogoutServlet` | Servlet | Đăng xuất tài khoản, hủy session | `src/java/controller/auth/LogoutServlet.java` |
 | `ForgotPasswordServlet`| Servlet | Nhận yêu cầu reset, tạo OTP ngẫu nhiên và kích hoạt gửi mail | `src/java/controller/auth/ForgotPasswordServlet.java` |
+| `VerifyOTPServlet` | Servlet | Xác thực mã OTP và tiến hành thiết lập mật khẩu mới | `src/java/controller/auth/VerifyOTPServlet.java` |
 | `ProfileServlet` | Servlet | Hiển thị và cập nhật thông tin cá nhân của Student/Lecturer | `src/java/controller/auth/ProfileServlet.java` |
+| `BorrowHistoryServlet` | Servlet | Hiển thị lịch sử mượn trả của sinh viên/giảng viên hiện tại | `src/java/controller/auth/BorrowHistoryServlet.java` |
 | `UserDAO` | DAO | Đăng nhập, đếm số lần sai, khóa tài khoản, lưu OTP | `src/java/dao/UserDAO.java` |
 | `BookSearchServlet` | Servlet | Xử lý tìm kiếm sách từ người dùng, lọc phân trang | `src/java/controller/search/BookSearchServlet.java` |
+| `BookDetailServlet` | Servlet | Hiển thị chi tiết thông tin sách và số bản sao khả dụng | `src/java/controller/search/BookDetailServlet.java` |
+| `AIRecommendServlet` | Servlet | Gọi API lấy danh mục gợi ý sách cá nhân hóa | `src/java/controller/search/AIRecommendServlet.java` |
 | `BookDAO` | DAO | Tìm kiếm sách (phân trang, LIKE), CRUD thông tin sách | `src/java/dao/BookDAO.java` |
 | `BookCopyDAO` | DAO | CRUD bản sao vật lý, thay đổi condition (damaged/lost) | `src/java/dao/BookCopyDAO.java` |
 | `AIService` | Service | Gọi API OpenAI/Gemini bất đồng bộ để lấy danh mục gợi ý | `src/java/service/AIService.java` |
 | `BorrowBookServlet` | Servlet | Cho phép thủ thư điền mã thành viên và quét barcode mượn | `src/java/controller/transaction/BorrowBookServlet.java` |
-| `ReturnBookServlet` | Servlet | Cho phép thủ thư quét barcode trả sách | `src/java/controller/transaction/ReturnBookServlet.java` |
+| `ReturnBookServlet` | Servlet | Cho phép thủ thư quét barcode trả sách, ghi nhận tình trạng | `src/java/controller/transaction/ReturnBookServlet.java` |
 | `BorrowRecordDAO` | DAO | CRUD lượt mượn trả, kiểm tra số sách đang mượn | `src/java/dao/BorrowRecordDAO.java` |
 | `BorrowService` | Service | Quản lý Transaction mượn/trả sách (gồm kiểm tra điều kiện mượn) | `src/java/service/BorrowService.java` |
 | `ReservationDAO` | DAO | Quản lý hàng chờ đặt trước (FIFO queue) | `src/java/dao/ReservationDAO.java` |
-| `ReservationService` | Service | Thêm hàng chờ, xử lý gán copy khả dụng khi có sách trả | `src/java/service/ReservationService.java` |
+| `ReservationService` | Service | Thêm hàng chờ (check borrow limit `BR05`), xử lý gán copy khả dụng khi trả sách | `src/java/service/ReservationService.java` |
+| `ReservationServlet` | Servlet | Tiếp nhận yêu cầu đặt trước sách trực tuyến | `src/java/controller/transaction/ReservationServlet.java` |
+| `CancelReservationServlet`| Servlet | Tiếp nhận yêu cầu hủy đặt trước chủ động | `src/java/controller/transaction/CancelReservationServlet.java` |
+| `ManageReservationServlet` | Servlet | Thủ thư quản lý hàng chờ đặt trước, bàn giao sách trạng thái 'readypickup' | `src/java/controller/transaction/ManageReservationServlet.java` |
 | `ExtendBookServlet` | Servlet | Tiếp nhận yêu cầu gia hạn trực tuyến từ độc giả | `src/java/controller/transaction/ExtendBookServlet.java` |
-| `PaymentCallbackServlet`| Servlet | Nhận thông báo IPN từ VNPAY, đối soát chữ ký bảo mật | `src/java/controller/finance/PaymentCallbackServlet.java` |
-| `DailyJobScheduler` | Listener | Khởi chạy ScheduledExecutorService cho Daily Fine Batch Job | `src/java/listener/DailyJobScheduler.java` |
-| `AuditLogDAO` | DAO | Ghi log bất biến các thao tác hệ thống quan trọng | `src/java/dao/AuditLogDAO.java` |
+| `FineListServlet` | Servlet | Tra cứu danh sách nợ phạt của thành viên | `src/java/controller/finance/FineListServlet.java` |
+| `PaymentServlet` | Servlet | Khởi tạo đơn hàng thanh toán phạt, chuyển hướng VNPAY | `src/java/controller/finance/PaymentServlet.java` |
+| `PaymentCallbackServlet`| Servlet | Nhận thông báo từ VNPAY, đối soát chữ ký, mở khóa an toàn (`BR31`) | `src/java/controller/finance/PaymentCallbackServlet.java` |
+| `DailyJobScheduler` | Listener | Khởi chạy ScheduledExecutorService cho Daily Fine Batch Job & Timeout Job | `src/java/listener/DailyJobScheduler.java` |
+| `UserListServlet` | Servlet | Xem và lọc danh sách người dùng cho Admin | `src/java/controller/admin/UserListServlet.java` |
+| `UserLockServlet` | Servlet | Thực hiện khóa/mở khóa tài khoản an toàn thủ công (`BR31`) | `src/java/controller/admin/UserLockServlet.java` |
+| `AuditLogServlet` | Servlet | Xem và truy vấn nhật ký kiểm toán hệ thống | `src/java/controller/admin/AuditLogServlet.java` |
+| `SystemConfigServlet` | Servlet | Điều chỉnh tham số cấu hình vận hành thư viện | `src/java/controller/admin/SystemConfigServlet.java` |
+| `NotificationServlet` | Servlet | Đăng tải thông báo chung hệ thống | `src/java/controller/admin/NotificationServlet.java` |
+| `BookManagementServlet` | Servlet | Thêm, sửa, xóa đầu sách vật lý | `src/java/controller/book/BookManagementServlet.java` |
+| `CategoryTagServlet` | Servlet | Quản lý danh mục thể loại và thẻ sách | `src/java/controller/book/CategoryTagServlet.java` |
+| `BookCopyServlet` | Servlet | Khai báo bản sao vật lý mới, tự động sinh barcode | `src/java/controller/book/BookCopyServlet.java` |
+| `BookConditionServlet` | Servlet | Cập nhật tình trạng hao mòn tài sản | `src/java/controller/book/BookConditionServlet.java` |
+| `AuditLogDAO` | DAO | Ghi log bất biến các thao tác hệ thống quan trọng (áp dụng masking PII) | `src/java/dao/AuditLogDAO.java` |
+| `ChangePasswordServlet` | Servlet | Tiếp nhận POST đổi mật khẩu khi đăng nhập lần đầu (BR30) | `src/java/controller/auth/ChangePasswordServlet.java` |
+| `EmailService` | Service | Gửi mã OTP khôi phục mật khẩu bất đồng bộ qua ExecutorService | `src/java/service/EmailService.java` |
+| `PaymentService` | Service | Sinh URL thanh toán VNPAY, kiểm tra chữ ký callback và mở khóa tài khoản | `src/java/service/PaymentService.java` |
+| `FineService` | Service | Tính toán tiền phạt quá hạn hàng ngày (Daily Fine Job) | `src/java/service/FineService.java` |
+| `ExtensionService` | Service | Kiểm tra điều kiện và thực hiện gia hạn mượn sách | `src/java/service/ExtensionService.java` |
+| `AuditLogService` | Service | Truy vấn và xử lý lọc dữ liệu nhật ký kiểm toán cho Admin | `src/java/service/AuditLogService.java` |
+| `NotificationService` | Service | Đăng và quản lý các thông báo hệ thống | `src/java/service/NotificationService.java` |
+| `NotificationDAO` | DAO | Thêm, sửa, xóa và truy vấn các bản ghi thông báo trong DB | `src/java/dao/NotificationDAO.java` |
+| `StudentDAO` | DAO | Lấy và cập nhật thông tin chi tiết sinh viên (Table-per-Type JOIN) | `src/java/dao/StudentDAO.java` |
+| `LecturerDAO` | DAO | Lấy và cập nhật thông tin chi tiết giảng viên (Table-per-Type JOIN) | `src/java/dao/LecturerDAO.java` |
+| `ProfileDAO` | DAO | Truy vấn và cập nhật hồ sơ thành viên (MemberProfile) | `src/java/dao/ProfileDAO.java` |
+| `FineDAO` | DAO | Thêm mới, cập nhật số tiền và trạng thái hóa đơn phạt | `src/java/dao/FineDAO.java` |
+| `PaymentDAO` | DAO | Tạo mới giao dịch thanh toán và đối soát mã tham chiếu | `src/java/dao/PaymentDAO.java` |
+| `SystemConfigurationsDAO` | DAO | Đọc và ghi các cấu hình hệ thống | `src/java/dao/SystemConfigurationsDAO.java` |
 
 ---
 
@@ -113,6 +147,12 @@ Dưới đây là danh sách các component cốt lõi được chia theo 5 nhó
       ▼
 [Response to UI] (Hiển thị mượn sách thành công/thất bại)
 ```
+
+**Lưu ý nghiệp vụ tại quầy của `BorrowBookServlet`:**
+Khi thủ thư thực hiện lệnh mượn qua `BorrowBookServlet`, hệ thống sẽ kiểm tra xem có bản ghi `Reservation` nào của người dùng này đối với tựa sách này đang ở trạng thái `'readypickup'` hay không.
+- **Nếu có:** Chuyển đổi trạng thái bản ghi `Reservation` đó từ `'readypickup'` sang `'fulfilled'` và gán `bookCopyId` tương ứng (trên cùng Database Transaction).
+- **Nếu không:** Tạo mới một bản ghi `Reservation` với trạng thái `'readypickup'`, rồi lập tức chuyển sang `'fulfilled'`.
+Điều này giúp gộp hai luồng mượn trực tiếp tại quầy và nhận sách đã đặt trước online về chung một Service API xử lý đồng nhất ở backend.
 
 ### Luồng nghiệp vụ Tính Phạt Hằng Ngày (Daily Fine Engine Flow)
 ```

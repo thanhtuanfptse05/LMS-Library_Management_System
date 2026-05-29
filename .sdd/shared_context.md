@@ -1,8 +1,8 @@
 # .sdd/shared_context.md
 # File này là NGUỒN SỰ THẬT CHUNG cho mọi agents trong dự án LMS
 # Read bởi: Tất cả agents trước khi bắt đầu code JSP hoặc Servlet
-# Version: 2.0.0 | Updated: 29/5/2026
-# Updated by: Lead Architect Agent — khởi tạo đầy đủ từ 32 FR + 23 UC
+# Version: 2.1.0 | Updated: 29/5/2026
+# Updated by: Lead Architect Agent — khởi tạo đầy đủ từ 32 FR + 23 UC + 31 BR
 
 ---
 
@@ -12,13 +12,18 @@
 | UC | Tên | Servlet dự kiến |
 |---|---|---|
 | UC01 | Đăng nhập hệ thống | `LoginServlet` |
+| UC01a | Quên mật khẩu & Nhận OTP | `ForgotPasswordServlet` |
+| UC01b | Xác thực OTP & Đổi mật khẩu | `VerifyOTPServlet` |
+| UC05 | Tìm kiếm Đầu sách | `BookSearchServlet` |
+| UC06 | Xem trạng thái Kho sách | `BookDetailServlet` |
 
 ### Student, Lecturer (Shared)
 | UC | Tên | Servlet dự kiến |
 |---|---|---|
 | UC01 | Đăng nhập hệ thống | `LoginServlet` |
+| UC01c | Đổi mật khẩu lần đầu (bắt buộc) | `ChangePasswordServlet` |
 | UC02 | Đăng xuất tài khoản | `LogoutServlet` |
-| UC03 | Xem hồ sơ cá nhân | `ProfileServlet` (GET) |
+| UC03 | Xem hồ sơ cá nhân & lịch sử | `ProfileServlet` (GET) / `BorrowHistoryServlet` |
 | UC04 | Cập nhật hồ sơ | `ProfileServlet` (POST) |
 | UC05 | Tìm kiếm Đầu sách | `BookSearchServlet` |
 | UC06 | Xem trạng thái Kho sách | `BookDetailServlet` |
@@ -33,6 +38,7 @@
 | UC | Tên | Servlet dự kiến |
 |---|---|---|
 | UC13 | Quét mã Mượn sách | `BorrowBookServlet` |
+| UC13a | Quản lý hàng chờ đặt trước | `ManageReservationServlet` |
 | UC14 | Quét mã Trả sách | `ReturnBookServlet` |
 | UC15 | Quản lý thông tin Đầu sách | `BookManagementServlet` |
 | UC16 | Quản lý Phân loại sách | `CategoryTagServlet` |
@@ -58,24 +64,68 @@
 
 ### Authentication Module
 
-**POST /login** (`LoginServlet`)
+**POST /auth/login** (`LoginServlet`)
   Form Parameters:
     - email: String
     - password: String
   View Attributes (trả về login.jsp hoặc redirect dashboard):
     - errorMessage: String (nếu sai thông tin)
     - user: User (set vào HttpSession nếu thành công)
-  Business Rules: BR-LMS-001 (lockout), BR-LMS-022 (password policy)
+  Business Rules: BR-LMS-001 (lockout), BR-LMS-022 (password policy), BR-LMS-030 (first login password change)
   Status: 📋 PLANNED
 
-**GET /logout** (`LogoutServlet`)
+**GET /auth/logout** (`LogoutServlet`)
   Action: Invalidate HttpSession → redirect login.jsp
   FR tham chiếu: FR03
   Status: 📋 PLANNED
 
+**GET /auth/forgot-password** (`ForgotPasswordServlet`)
+  Action: Hiển thị form nhập email để nhận mã OTP khôi phục mật khẩu.
+  View: forgot-password.jsp
+  Status: 📋 PLANNED
+
+**POST /auth/forgot-password** (`ForgotPasswordServlet`)
+  Form Parameters:
+    - email: String
+  Action: Kiểm tra email, nếu tồn tại tạo mã OTP ngẫu nhiên 6 chữ số và gửi qua email bất đồng bộ, chuyển hướng đến trang nhập OTP.
+  View Attributes (nếu lỗi):
+    - errorMessage: String (email không tồn tại)
+  Status: 📋 PLANNED
+
+**GET /auth/verify-otp** (`VerifyOTPServlet`)
+  Action: Hiển thị form nhập mã OTP và mật khẩu mới.
+  View: verify-otp.jsp
+  Status: 📋 PLANNED
+
+**POST /auth/verify-otp** (`VerifyOTPServlet`)
+  Form Parameters:
+    - otp: String (6 chữ số)
+    - newPassword: String
+    - confirmPassword: String
+  Action: Xác thực mã OTP, kiểm tra độ phức tạp của mật khẩu mới, băm mật khẩu bằng BCrypt và cập nhật cho User.
+  View Attributes:
+    - errorMessage: String (nếu OTP sai/hết hạn, hoặc mật khẩu không khớp/yếu)
+    - successMessage: String (nếu đổi mật khẩu thành công)
+  Business Rules: BR-LMS-001 (lockout sau 5 lần sai), BR-LMS-022 (độ dài 8+, độ phức tạp)
+  Status: 📋 PLANNED
+
+**GET /auth/change-password** (`ChangePasswordServlet`)
+  Action: Hiển thị form bắt buộc đổi mật khẩu lần đầu (khi mật khẩu mặc định trùng với tên đăng nhập).
+  View: change-password.jsp
+  Status: 📋 PLANNED
+
+**POST /auth/change-password** (`ChangePasswordServlet`)
+  Form Parameters:
+    - currentPassword: String
+    - newPassword: String
+    - confirmPassword: String
+  Action: Xác thực mật khẩu mặc định hiện tại, băm mật khẩu mới bằng BCrypt và cập nhật User status thành 'active'. Chặn mọi thao tác khác cho đến khi thực hiện thành công.
+  Business Rules: BR-LMS-030 (first login password change), BR-LMS-022 (password policy)
+  Status: 📋 PLANNED
+
 ### Profile Module
 
-**GET /profile** (`ProfileServlet`)
+**GET /student/profile** (`ProfileServlet`)
   View Attributes (trả về profile.jsp):
     - userProfile: MemberProfile
     - studentInfo: Student (nếu role = student)
@@ -83,7 +133,7 @@
   FR tham chiếu: FR04
   Status: 📋 PLANNED
 
-**POST /profile** (`ProfileServlet`)
+**POST /student/profile** (`ProfileServlet`)
   Form Parameters:
     - fullName: String
     - phoneNumber: String (10 digits)
@@ -93,6 +143,13 @@
     - successMessage: String
     - errorMessage: String (nếu vi phạm BR-LMS-023 duplicate)
   FR tham chiếu: FR05
+  Status: 📋 PLANNED
+
+**GET /student/borrow-history** (`BorrowHistoryServlet`)
+  Action: Hiển thị lịch sử mượn trả của sinh viên/giảng viên hiện tại.
+  View Attributes (trả về borrow-history.jsp):
+    - borrowRecords: List<BorrowRecord>
+  FR tham chiếu: FR09, FR22
   Status: 📋 PLANNED
 
 ### Search & AI Module
@@ -121,7 +178,7 @@
   FR tham chiếu: FR07
   Status: 📋 PLANNED
 
-**GET /ai-recommend** (`AIRecommendServlet`)
+**GET /student/ai-recommend** (`AIRecommendServlet`)
   View Attributes (trả về recommendation.jsp hoặc JSON fragment):
     - recommendations: List<Book>
   Notes: Gọi AI bất đồng bộ qua ExecutorService (ARCH-04)
@@ -130,7 +187,7 @@
 
 ### Transaction Module (Librarian)
 
-**POST /borrow-book** (`BorrowBookServlet`)
+**POST /librarian/borrow** (`BorrowBookServlet`)
   Form Parameters:
     - barcode: String (mã vạch BookCopy)
     - memberId: String (mã sinh viên/giảng viên)
@@ -142,7 +199,7 @@
   FR tham chiếu: FR09, FR10
   Status: 📋 PLANNED
 
-**POST /return-book** (`ReturnBookServlet`)
+**POST /librarian/return** (`ReturnBookServlet`)
   Form Parameters:
     - barcode: String (mã vạch BookCopy)
     - condition: String (good/damaged/lost) — BẮT BUỘC (BR-LMS-013)
@@ -156,7 +213,7 @@
 
 ### Extension & Reservation Module
 
-**POST /extend-book** (`ExtendBookServlet`)
+**POST /student/extend-book** (`ExtendBookServlet`)
   Form Parameters:
     - borrowRecordId: int
   View Attributes:
@@ -166,7 +223,7 @@
   FR tham chiếu: FR11, FR12
   Status: 📋 PLANNED
 
-**POST /reservation** (`ReservationServlet`)
+**POST /student/reservation** (`ReservationServlet`)
   Form Parameters:
     - bookId: int
   View Attributes:
@@ -175,7 +232,7 @@
   FR tham chiếu: FR13
   Status: 📋 PLANNED
 
-**POST /cancel-reservation** (`CancelReservationServlet`)
+**POST /student/cancel-reservation** (`CancelReservationServlet`)
   Form Parameters:
     - reservationId: int
   View Attributes:
@@ -184,9 +241,28 @@
   FR tham chiếu: FR14
   Status: 📋 PLANNED
 
+**GET /librarian/reservations** (`ManageReservationServlet`)
+  Action: Hiển thị danh sách tất cả các hàng chờ đặt trước của các tựa sách.
+  View Attributes (trả về manage-reservations.jsp):
+    - reservations: List<Reservation>
+  FR tham chiếu: FR13
+  Status: 📋 PLANNED
+
+**POST /librarian/reservations** (`ManageReservationServlet`)
+  Form Parameters:
+    - reservationId: int
+    - action: String (fulfill/cancel)
+  Action: Xử lý trao sách đặt trước cho độc giả (chuyển sang 'fulfilled', tạo BorrowRecord) hoặc hủy đặt trước thủ công.
+  View Attributes:
+    - successMessage: String
+    - errorMessage: String
+  Business Rules: BR-LMS-004 (fine-first check before fulfillment), BR-LMS-021 (pickup locked if user has fine)
+  FR tham chiếu: FR13
+  Status: 📋 PLANNED
+
 ### Finance Module
 
-**GET /fine-list** (`FineListServlet`)
+**GET /student/fine-list** (`FineListServlet`)
   View Attributes (trả về fine-list.jsp):
     - fines: List<Fine>
     - totalUnpaid: BigDecimal
@@ -194,14 +270,14 @@
   FR tham chiếu: FR15
   Status: 📋 PLANNED
 
-**POST /payment** (`PaymentServlet`)
+**POST /student/payment** (`PaymentServlet`)
   Form Parameters:
     - fineId: int
   Action: Đóng gói thông tin → redirect VNPAY gateway
   FR tham chiếu: FR16
   Status: 📋 PLANNED
 
-**GET /payment-callback** (`PaymentCallbackServlet`)
+**GET /student/payment-callback** (`PaymentCallbackServlet`)
   Request Parameters: (từ VNPAY IPN)
     - vnp_ResponseCode: String
     - vnp_TransactionNo: String
@@ -213,7 +289,7 @@
 
 ### Admin & Config Module
 
-**GET /user-list** (`UserListServlet`)
+**GET /admin/user-list** (`UserListServlet`)
   Request Parameters:
     - keyword: String (optional)
     - role: String (optional)
@@ -224,16 +300,17 @@
   FR tham chiếu: FR26
   Status: 📋 PLANNED
 
-**POST /user-lock** (`UserLockServlet`)
+**POST /admin/user-lock** (`UserLockServlet`)
   Form Parameters:
     - userId: int
     - action: String (lock/unlock)
     - reason: String (optional)
   Trigger: AuditLogDAO.insert() — bắt buộc (ARCH-02)
+  Business Rules: BR-LMS-031 (Fine Lock/Unlock Safeguards)
   FR tham chiếu: FR27
   Status: 📋 PLANNED
 
-**GET /audit-log** (`AuditLogServlet`)
+**GET /admin/audit-log** (`AuditLogServlet`)
   Request Parameters:
     - entityName: String (optional)
     - actionType: String (optional)
@@ -246,7 +323,7 @@
   FR tham chiếu: FR28
   Status: 📋 PLANNED
 
-**POST /system-config** (`SystemConfigServlet`)
+**POST /manager/system-config** (`SystemConfigServlet`)
   Form Parameters:
     - configKey: String
     - configValue: String
@@ -254,7 +331,7 @@
   FR tham chiếu: FR25
   Status: 📋 PLANNED
 
-**POST /notification** (`NotificationServlet`)
+**POST /manager/notification** (`NotificationServlet`)
   Form Parameters:
     - title: String
     - content: String
@@ -265,7 +342,7 @@
 
 ### Book & Inventory Management (Librarian)
 
-**POST /book-management** (`BookManagementServlet`)
+**POST /librarian/book-management** (`BookManagementServlet`)
   Form Parameters:
     - action: String (add/edit/delete)
     - isbn: String, title: String, author: String, publisher: String
@@ -274,14 +351,14 @@
   FR tham chiếu: FR18
   Status: 📋 PLANNED
 
-**POST /category-tag** (`CategoryTagServlet`)
+**POST /librarian/category-tag** (`CategoryTagServlet`)
   Form Parameters:
     - action: String (addCategory/editCategory/deleteCategory/addTag/editTag/deleteTag)
     - name: String, description: String (optional)
   FR tham chiếu: FR19
   Status: 📋 PLANNED
 
-**POST /book-copy** (`BookCopyServlet`)
+**POST /librarian/book-copy** (`BookCopyServlet`)
   Form Parameters:
     - bookId: int
     - location: String
@@ -289,7 +366,7 @@
   FR tham chiếu: FR20
   Status: 📋 PLANNED
 
-**POST /book-condition** (`BookConditionServlet`)
+**POST /librarian/book-condition** (`BookConditionServlet`)
   Form Parameters:
     - bookCopyId: int
     - condition: String (good/damaged/lost)
@@ -343,6 +420,18 @@
   userId: int (DB: userId INT PK FK → User)
   lecturerCode: String (DB: lecturer_code NVARCHAR(50) UNIQUE NOT NULL)
   department: String (DB: department NVARCHAR(255), nullable)
+
+### Librarian
+  userId: int (DB: userId INT PK FK → User)
+  staffCode: String (DB: staff_code NVARCHAR(50) UNIQUE NOT NULL)
+
+### LibraryManager
+  userId: int (DB: userId INT PK FK → User)
+  staffCode: String (DB: staff_code NVARCHAR(50) UNIQUE NOT NULL)
+
+### Admin
+  userId: int (DB: userId INT PK FK → User)
+  staffCode: String (DB: staff_code NVARCHAR(50) UNIQUE NOT NULL)
 
 ### BorrowRecord
   borrowRecordId: int (DB: borrowRecordId INT IDENTITY PK)

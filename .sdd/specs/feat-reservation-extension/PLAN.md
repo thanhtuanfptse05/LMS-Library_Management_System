@@ -11,7 +11,7 @@
   - `getExpiredReservations()`: Tìm các reservation có status = 'readypickup' và endDate bé hơn ngày hiện tại.
   - `getReservationsByUserId(int userId)`
 - **`ReservationService.java`**:
-  - `reserveBook(int userId, int bookId)`: Mọi yêu cầu mượn/đặt trước đều tạo bản ghi `Reservation`. Nếu `available_quantity == 0`, tạo với trạng thái `'pending'` và gán `queuePosition` bằng cách đếm số người đang chờ + 1. Ngược lại nếu `available_quantity > 0`, tạo với trạng thái `'readypickup'`. Cả hai trường hợp chỉ yêu cầu kiểm tra tài khoản không bị khóa (`User.status != 'locked'`). Chạy trong transaction.
+  - `reserveBook(int userId, int bookId)`: Mọi yêu cầu mượn/đặt trước đều tạo bản ghi `Reservation`. Hệ thống bắt buộc phải kiểm tra điều kiện `BR-LMS-005` (Tổng số sách đang mượn + đang đặt trước < `max_borrow_limit`). Nếu vượt quá, báo lỗi. Nếu hợp lệ: Nếu `available_quantity == 0`, tạo với trạng thái `'pending'` và gán `queuePosition` bằng cách đếm số người đang chờ + 1. Ngược lại nếu `available_quantity > 0`, tạo với trạng thái `'readypickup'`. Cả hai trường hợp chỉ yêu cầu kiểm tra tài khoản không bị khóa (`User.status != 'locked'`). Chạy trong transaction.
   - `processReturnQueue(int bookId, int bookCopyId)`: Được gọi khi trả sách để gán sách cho người tiếp theo.
   - `checkExpiredReservations()`: Tự động chạy hàng ngày hoặc gọi qua Scheduler/Batch để dọn dẹp các đặt trước quá hạn.
 - **`ExtensionService.java`**:
@@ -19,8 +19,9 @@
 
 ## 3. Servlets (Controllers)
 Đặt tại package `controller.transaction`:
-- `ReserveBookServlet.java` (POST /student/reserve): Xử lý yêu cầu đặt trước sách.
-- `ExtendBookServlet.java` (POST /student/extend): Tiếp nhận yêu cầu gia hạn thời gian mượn từ sinh viên/giảng viên.
+- `ReservationServlet.java` (POST `/student/reservation`): Xử lý yêu cầu đặt trước sách từ sinh viên/giảng viên.
+- `CancelReservationServlet.java` (POST `/student/cancel-reservation`): Xử lý yêu cầu hủy đặt trước chủ động từ sinh viên/giảng viên.
+- `ExtendBookServlet.java` (POST `/student/extend-book`): Tiếp nhận yêu cầu gia hạn thời gian mượn.
 - `ManageReservationServlet.java` (GET/POST /librarian/reservations): Cho phép thủ thư xem các hàng chờ đặt trước và xử lý trao sách khi người dùng đến lấy sách trạng thái 'readypickup'.
 
 ## 4. Views (JSPs)

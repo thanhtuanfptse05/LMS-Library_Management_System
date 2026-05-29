@@ -9,14 +9,17 @@
 
 ## SEC-01: Password & Data Security
 - THE system SHALL hash passwords bằng BCrypt (`BCryptUtil.hash`). TUYỆT ĐỐI KHÔNG lưu plaintext password, MD5, SHA1, SHA256 cho passwords.
+- THE system SHALL bắt buộc người dùng thay đổi mật khẩu khi đăng nhập lần đầu tiên nếu mật khẩu mặc định trùng với tên đăng nhập, chặn mọi thao tác khác cho đến khi việc đổi mật khẩu thành công.
 - API keys (VNPAY Secret, SendGrid Key, OpenAI/Gemini Key, DB Password) PHẢI lưu trong `.env` hoặc `SystemConfigurations`. TUYỆT ĐỐI KHÔNG hardcode trong source code, `.java`, `.jsp`, hoặc logs.
-- Tham chiếu: BR22 (Password Policy), BR28 (Data Encryption)
+- Tham chiếu: BR22 (Password Policy), BR28 (Data Encryption), BR30 (First Login Password Change)
 
 ## SEC-02: Authentication & Authorization (RBAC)
 - Mọi endpoint bị giới hạn (dành cho Admin, Librarian, Manager, Student, Lecturer) PHẢI được bảo vệ bằng `@WebFilter` kiểm tra `HttpSession` hợp lệ.
 - TUYỆT ĐỐI KHÔNG bypass `AuthorizationFilter` cho các URL: `/admin/*`, `/librarian/*`, `/student/*`, `/manager/*`.
+- Tiến trình khóa tài khoản do nợ phạt không được phép ghi đè lên các lý do khóa nghiêm trọng hơn đang có hiệu lực (như adminban hoặc securitybreach).
+- Khi người dùng đóng hết tiền phạt, tài khoản chỉ được tự động mở khóa nếu lý do khóa hiện tại là unpaid và không còn bất kỳ điều kiện khóa nào khác.
 - Unauthorized access attempts PHẢI bị chặn VÀ ghi log vào `AuditLogs` (BR03, BR19).
-- Tham chiếu: BR03 (Authorization), FR02 (Login lockout)
+- Tham chiếu: BR03 (Authorization), FR02 (Login lockout), BR31 (Fine Lock/Unlock Safeguards)
 
 ## SEC-03: SQL Injection Prevention (No ORM)
 - THE system SHALL sử dụng JDBC thuần với `PreparedStatement` cho MỌI câu query.
@@ -26,7 +29,8 @@
 ## SEC-04: Data Encryption & Privacy
 - THE system SHALL mã hóa data in-transit (TLS 1.2+) và at-rest theo chính sách bảo mật trường đại học (BR28).
 - KHÔNG được log PII đầy đủ: phone mask "0912***456", email mask "use***@domain.com". KHÔNG BAO GIỜ log password, payment card, national ID.
-- Tham chiếu: BR28 (Security)
+- Mọi dữ liệu ghi vào `oldValues` và `newValues` trong bảng `AuditLogs` (ví dụ: khi cập nhật hồ sơ) PHẢI được áp dụng thuật toán ẩn danh/masking tương ứng đối với Email và Số điện thoại trước khi lưu trữ dưới dạng JSON.
+- Tham chiếu: BR28 (Security), BR19 (Immutable Audit Log)
 
 ## DATA-01: Soft-Delete Only cho Core Entities
 - THE system SHALL sử dụng soft-delete (cập nhật `status` = inactive/locked/cancelled/void) cho các bảng lõi: `User`, `Books`, `BorrowRecord`, `Fine`, `Payment`, `Reservation`.

@@ -19,17 +19,19 @@
 ## 3. Functional Requirements
 
 ### UC-04 — Ghi nhận Mượn Sách
-- **FR09 (Ghi nhận Mượn Sách):** Hệ thống ghi nhận việc mượn một cuốn sách vật lý thông qua mã vạch, đánh dấu cuốn sách đó đang được mượn. Quy trình được xử lý như sau:
-  - Khi thủ thư nhập mã thành viên (`student_code` hoặc `lecturer_code`) và quét barcode bản sao (`BookCopy`), hệ thống tạo một bản ghi `Reservation` với trạng thái `status = 'readypickup'`. Việc tạo `Reservation` chỉ yêu cầu kiểm tra trạng thái tài khoản không bị khóa (`User.status != 'locked'`).
-  - Khi thủ thư xác nhận giao sách vật lý, hệ thống chuyển đổi trạng thái của `Reservation` từ `'readypickup'` sang `'fulfilled'`. Tại bước chuyển đổi này (bước tạo `BorrowRecord`), hệ thống thực hiện kiểm tra đầy đủ các điều kiện tiên quyết:
+- **FR09 (Ghi nhận Mượn Sách):** Hệ thống ghi nhận việc mượn một cuốn sách vật lý thông qua mã vạch, đánh dấu cuốn sách đó đang được mượn. Quy trình bám sát luồng **Reservation-first**:
+  - Khi thủ thư nhập mã thành viên (`student_code` hoặc `lecturer_code`) và quét barcode bản sao (`BookCopy`), hệ thống kiểm tra xem có bản ghi `Reservation` nào của người dùng này đối với tựa sách này đang ở trạng thái `'readypickup'` hay không.
+    - **Nếu có:** Chuyển đổi trạng thái bản ghi `Reservation` đó từ `'readypickup'` sang `'fulfilled'`.
+    - **Nếu không:** Tạo mới một bản ghi `Reservation` với trạng thái `'readypickup'` và lập tức chuyển đổi sang `'fulfilled'`.
+  - Việc tạo mới `Reservation` ban đầu chỉ yêu cầu kiểm tra trạng thái tài khoản không bị khóa (`User.status != 'locked'`). Tuy nhiên, khi hệ thống thực hiện chuyển đổi sang `'fulfilled'` (bước tạo `BorrowRecord`), hệ thống bắt buộc kiểm tra đầy đủ các điều kiện tiên quyết:
     1. Số lượng sách còn khả dụng của tựa sách phải lớn hơn 0 (`available_quantity > 0`).
     2. Người dùng không có bất kỳ khoản nợ phạt nào chưa thanh toán (Tuân thủ BR04).
-    3. Người dùng không vượt quá số lượng bản sao sách tối đa tại cùng một thời điểm (lấy hạn mức theo cấu hình vai trò Sinh viên/Giảng viên - Tuân thủ BR05).
+    3. Người dùng không vượt quá giới hạn số sách được mượn đồng thời (`BR-LMS-005`).
     4. Tài khoản thành viên phải ở trạng thái hoạt động (`status = 'active'`).
-- **FR10 (Tính hạn trả sách - Hệ thống tự động):** Khi giao dịch mượn thành công (hệ thống duyệt chuyển `Reservation.status = 'fulfilled'`), hệ thống tự động tính toán và lưu ngày phải trả (`end_date = start_date + thời hạn tối đa`) dựa trên vai trò của người mượn theo cấu hình hệ thống (Tuân thủ BR06). Đồng thời:
+- **FR10 (Tính hạn trả sách - Hệ thống tự động):** Khi giao dịch mượn thành công (hệ thống chuyển `Reservation.status = 'fulfilled'`), hệ thống tự động tính toán và lưu ngày phải trả (`end_date = start_date + thời hạn tối đa`) dựa trên vai trò của người mượn theo cấu hình hệ thống (Tuân thủ BR06). Đồng thời:
   1. Tạo bản ghi `BorrowRecord` với trạng thái `'borrowed'`.
   2. Chuyển trạng thái bản sao `BookCopy.status = 'borrowed'`.
-  3. Trừ số lượng sách khả dụng của tựa sách đó đi 1 (`Books.available_quantity = Books.available_quantity - 1`).
+  3. Trừ số lượng sách khả dụng của tựa sách đó đi 1 (`Books.available_quantity = Books.available_quantity - 1`) nếu bản ghi `Reservation` là được tạo mới trực tiếp tại quầy (nếu là gán từ hàng chờ sẵn có, số lượng đã được trừ trước đó).
   4. Ghi nhận nhật ký hoạt động bất biến vào bảng `AuditLogs` (Tuân thủ BR19).
 
 ### UC-10 — Xử lý Trả Sách
@@ -38,7 +40,7 @@
   2. Chuyển trạng thái bản sao `BookCopy.status = 'available'`.
   3. Cộng số lượng sách khả dụng của tựa sách đó thêm 1 (`Books.available_quantity = Books.available_quantity + 1`).
   4. Ghi nhận nhật ký vào bảng `AuditLogs` (Tuân thủ BR19).
-- **FR23 (Phân bổ Hàng chờ - Hệ thống tự động):** Ngay khi sách được trả, hệ thống kiểm tra và tự động giữ cuốn sách đó cho người đứng đầu tiên trong hàng chờ (nếu có). Trạng thái của `Reservation` có `queue_position` nhỏ nhất và trạng thái `'pending'` của tựa sách đó sẽ được cập nhật thành `'readypickup'`. Gán `bookCopyId` cho `Reservation` đó, và đặt hạn nhận sách (Tuân thủ BR10, BR11).
+- **FR23 (Phân bổ Hàng chờ - Hệ thống tự động):** Ngay khi sách được trả (và số lượng khả dụng tăng 1), hệ thống kiểm tra và tự động giữ cuốn sách đó cho người đứng đầu tiên trong hàng chờ (nếu có). Trạng thái của `Reservation` có `queue_position` nhỏ nhất và trạng thái `'pending'` của tựa sách đó sẽ được cập nhật thành `'readypickup'`. Gán `bookCopyId` cho `Reservation` đó, chuyển trạng thái `BookCopy.status = 'reserved'`, và đặt hạn nhận sách (Tuân thủ BR10, BR11). **Đồng thời, hệ thống tự động trừ số lượng sách khả dụng đi 1 (`Books.available_quantity = Books.available_quantity - 1`) để khóa bản sao này cho người đặt trước.**
 
 ---
 

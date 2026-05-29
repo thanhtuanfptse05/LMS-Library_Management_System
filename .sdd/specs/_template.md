@@ -34,60 +34,62 @@
 ### UC-01 — Xác thực (Authentication)
 
 - **FR01:** WHEN a user submits valid email + password, THE system SHALL authenticate and return a session token with role-based permissions.
-- **FR01a:** WHEN a user enters an incorrect password, THE system SHALL increment `failed_login_attempts`. WHEN `failed_login_attempts` reaches 5, THE system SHALL set `status = 'locked'` and populate `locked_until` per security policy (BR-LMS-016, BR-LMS-031).
+- **FR01a:** WHEN a user enters an incorrect password, THE system SHALL increment `failed_login_attempts`. WHEN `failed_login_attempts` reaches 5, THE system SHALL set `status = 'locked'` and populate `locked_until` per security policy (BR-LMS-001).
 - **FR02:** WHEN a user requests logout, THE system SHALL invalidate the current session token on all devices.
-- **FR-OTP:** WHEN a user requests a password reset, THE system SHALL send a 6-digit OTP valid for 15 minutes. WHEN the user enters the OTP incorrectly 5 times, THE system SHALL lock the account for 30 minutes (BR-LMS-003).
+- **FR-OTP:** WHEN a user requests a password reset, THE system SHALL send a 6-digit OTP valid for 15 minutes. WHEN the user enters the OTP incorrectly 5 times, THE system SHALL lock the account for 30 minutes (BR-LMS-001).
 
 ### UC-02 — Quản lý Hồ sơ (Profile Management)
 
 - **FR03:** WHEN a Student or Lecturer accesses their profile, THE system SHALL display role-specific fields: `student_code + major + enrollment_year` cho Student; `lecturer_code + department` cho Lecturer.
-- **FR03a:** WHEN a user submits a profile update, THE system SHALL validate: full_name (chữ cái, không rỗng), phone_number (10 chữ số), email (đúng định dạng), gender (Male/Female/Other), date_of_birth (≥18 tuổi, không sau ngày hiện tại), student/lecturer code (10–15 ký tự chữ & số) (BR-LMS-004).
-- **FR03b:** WHEN the system detects a profile update with duplicate phone_number or student/lecturer code, THE system SHALL block creation and prompt the user to update the existing profile or cancel (BR-LMS-019, BR-LMS-025).
+- **FR03a:** WHEN a user submits a profile update, THE system SHALL validate: full_name (chữ cái, không rỗng), phone_number (10 chữ số), email (đúng định dạng), gender (Male/Female/Other), date_of_birth (≥18 tuổi, không sau ngày hiện tại), student/lecturer code (10–15 ký tự chữ & số) (BR-LMS-023).
+- **FR03b:** WHEN the system detects a profile update with duplicate phone_number or student/lecturer code, THE system SHALL block creation and prompt the user to update the existing profile or cancel (BR-LMS-023).
 
 ### UC-03 — Tìm kiếm & Gợi ý Sách
 
 - **FR04:** WHEN a user searches by keyword, author, category, or tag, THE system SHALL return matching books with `available_quantity` visible for each result.
-- **FR05:** WHEN a logged-in user views their profile or search results, THE system SHALL invoke the AI recommendation engine to display a personalized suggestion list based on borrow history and preferences (BR-LMS-013 — AI gợi ý chỉ mang tính tham khảo).
+- **FR05:** WHEN a logged-in user views their profile or search results, THE system SHALL invoke the AI recommendation engine to display a personalized suggestion list based on borrow history and preferences (BR-LMS-018 — AI gợi ý chỉ mang tính tham khảo).
 
 ### UC-04 — Ghi nhận Mượn Sách
 
-- **FR06:** WHEN a Librarian scans a book copy barcode and selects a valid member, THE system SHALL:
+- **FR06:** WHEN a Librarian scans a book copy barcode and selects a valid member, THE system SHALL execute the borrowing transaction by checking for a `'readypickup'` reservation for this user and book. If found, the system fulfills it; if not, it creates a new reservation with status `'readypickup'` and immediately fulfills it. Fulfilling the reservation SHALL:
   1. Verify `available_quantity > 0` cho tựa sách.
   2. Verify thành viên không vượt giới hạn số sách mượn (configurable: `max_borrow_limit`).
-  3. Verify thành viên không có khoản phạt chưa thanh toán (BR-LMS-035).
-  4. Verify thành viên đã điền đầy đủ thông tin bắt buộc (BR-LMS-018).
+  3. Verify thành viên không có khoản phạt chưa thanh toán (BR-LMS-004).
+  4. Verify thành viên đã điền đầy đủ thông tin bắt buộc (BR-LMS-029).
   5. Create `BorrowRecord` với `start_date = GETDATE()`, `end_date = start_date + max_loan_days` (configurable).
-  6. Set `BookCopy.status = 'borrowed'`, decrement `Books.available_quantity`.
-  7. Log vào `AuditLogs`.
+  6. Set `BookCopy.status = 'borrowed'`. If the reservation was newly created, decrement `Books.available_quantity` by 1 (if it was an existing `'readypickup'` reservation, quantity is already decremented).
+  7. Update `Reservation.status = 'fulfilled'`.
+  8. Log vào `AuditLogs`.
 
 ### UC-05 — Gia hạn Sách
 
 - **FR07:** WHEN a Student/Lecturer requests an extension online, THE system SHALL:
   1. Check `extension_count < max_extensions` (configurable).
   2. Check không có `Reservation` ở trạng thái `pending` hoặc `readypickup` cho cùng `bookId`.
-  3. Check thành viên không có phạt chưa thanh toán (BR-LMS-035).
-  4. WHEN điều kiện đạt, THE system SHALL extend `end_date` thêm `extension_duration_days` (configurable) và increment `extension_count` (BR-LMS-027).
+  3. Check thành viên không có phạt chưa thanh toán (BR-LMS-004).
+  4. WHEN điều kiện đạt, THE system SHALL extend `end_date` thêm `extension_duration_days` (configurable) và increment `extension_count` (BR-LMS-008).
 
 ### UC-06 — Đặt trước Sách (Reservation)
 
-- **FR08:** WHEN a user attempts to reserve a book where `available_quantity = 0`, THE system SHALL create a `Reservation` record với `status = 'pending'` và gán `queue_position`.
-- **FR08a:** WHEN `available_quantity > 0`, THE system SHALL block the reservation and prompt the user to borrow directly.
-- **FR14:** WHEN a `BorrowRecord` is marked as `returned`, THE system SHALL automatically:
-  1. Query `Reservation` for earliest `queue_position` với `status = 'pending'`.
-  2. IF found: set `Reservation.status = 'readypickup'`, assign `bookCopyId`, set `end_date = GETDATE() + reservation_validity_days` (configurable).
-  3. Send email notification to reserved user (FR20, BR-LMS-034).
-  4. IF `readypickup` không được collect trong `reservation_validity_days`, THE system SHALL auto-cancel và advance queue.
+- **FR08:** EVERY borrow or reservation request SHALL start by creating a `Reservation` record. The system checks if `available_quantity > 0`. If so, it creates the `Reservation` with `status = 'readypickup'`. If `available_quantity = 0`, it creates the `Reservation` with `status = 'pending'` and assigns `queue_position` (FIFO queue). Creating a reservation only requires that `User.status != 'locked'` and total borrowed + reserved < `max_borrow_limit` (BR-LMS-005).
+- **FR08a:** [Deprecated / Merged into FR08] All transactions route through Reservation first. Direct borrowing at the counter automatically creates a `'readypickup'` reservation and immediately fulfills it.
+- **FR14:** WHEN a `BorrowRecord` is marked as `returned` (with `condition = 'good'`), THE system SHALL automatically:
+  1. Query `Reservation` for earliest `queue_position` với `status = 'pending'` for this book.
+  2. IF found: set `Reservation.status = 'readypickup'`, assign `bookCopyId` (Copy status set to `'reserved'`), set `end_date = GETDATE() + reservation_validity_days` (configurable).
+  3. Decrement `Books.available_quantity` by 1 to lock the copy for the reserved user.
+  4. Send email notification to reserved user (FR20, BR-LMS-027).
+  5. IF `readypickup` không được collect trong `reservation_validity_days` (default 3 days), THE system SHALL auto-cancel (set `Reservation.status = 'cancelled'`), set `BookCopy.status = 'available'`, increment `Books.available_quantity` by 1, and advance queue (which will trigger assignment to the next pending user if any).
 
 ### UC-07 — Thanh toán Phạt
 
 - **FR09:** WHEN a logged-in user accesses their dashboard, THE system SHALL display visual alerts for books due within 3 days or already overdue.
 - **FR10:** WHEN a user initiates fine payment, THE system SHALL redirect to VNPAY gateway. WHEN VNPAY returns a successful `transaction_reference`, THE system SHALL set `Fine.status = 'paid'`, create `Payment` record, and restore borrowing rights.
-- **FR19 (Background Job):** WHILE the system runs daily batch, THE system SHALL scan all `BorrowRecord` where `status = 'borrowed'` AND `end_date < GETDATE()`. FOR EACH overdue record, THE system SHALL create a `Fine` record: `amount = fine_per_day × days_overdue`, capped at `min(fine_per_day × days, book_price × 1.5)` (BR-LMS-028).
+- **FR19 (Background Job):** WHILE the system runs daily batch, THE system SHALL scan all `BorrowRecord` where `status = 'borrowed'` AND `end_date < GETDATE()`. FOR EACH overdue record, THE system SHALL update the existing unpaid `Fine` record for that borrowing transaction, or create a new `Fine` record if none exists: `amount = fine_per_day × days_overdue`, capped at `min(fine_per_day × days, book_price × max_fine_multiplier)` (BR-LMS-015, using `default_book_price` and `max_fine_multiplier` configurations if book price is NULL).
 
 ### UC-08 — Quản lý Danh mục Sách
 
-- **FR11:** WHEN a Librarian adds/edits a book, THE system SHALL validate: ISBN (unique), title, author, publisher, publication_year, category (required), quantity > 0, price ≥ 0 (BR-LMS-007, BR-LMS-022).
-- **FR11a:** WHEN a duplicate ISBN is detected during import, THE system SHALL prompt the Librarian to overwrite, skip, or merge (BR-LMS-021).
+- **FR11:** WHEN a Librarian adds/edits a book, THE system SHALL validate: ISBN (unique), title, author, publisher, publication_year, category (required), quantity > 0, price ≥ 0 (BR-LMS-024).
+- **FR11a:** WHEN a duplicate ISBN is detected during import, THE system SHALL prompt the Librarian to overwrite, skip, or merge (BR-LMS-024).
 
 ### UC-09 — Quản lý Kho Vật lý
 
@@ -104,12 +106,12 @@
 
 ### UC-12 — Quản trị Tài khoản
 
-- **FR17:** WHEN a SysAdmin locks/unlocks a user account, THE system SHALL update `User.status` và log action vào `AuditLogs` với `userId` của admin và timestamp (BR-LMS-006, BR-LMS-017). Accounts cannot be deleted — only locked.
+- **FR17:** WHEN a SysAdmin locks/unlocks a user account, THE system SHALL update `User.status` và log action vào `AuditLogs` với `userId` của admin và timestamp (BR-LMS-002, BR-LMS-019). Accounts cannot be deleted — only locked.
 
 ### UC-13 — Giám sát Hệ thống
 
-- **FR18:** WHEN a SysAdmin queries audit logs, THE system SHALL return immutable records filtered by `entity_name`, `action_type`, `userId`, và time range (BR-LMS-015).
-- **FR20 (Background):** THE system SHALL automatically send emails for: sắp đến hạn trả (3 ngày trước), phạt quá hạn mới, sách đặt trước sẵn sàng (BR-LMS-029).
+- **FR18:** WHEN a SysAdmin queries audit logs, THE system SHALL return immutable records filtered by `entity_name`, `action_type`, `userId`, và time range (BR-LMS-019).
+- **FR20 (Background):** THE system SHALL automatically send emails for: sắp đến hạn trả (3 ngày trước), phạt quá hạn mới, sách đặt trước sẵn sàng (BR-LMS-027).
 
 ---
 
@@ -119,13 +121,13 @@
 |---|---|
 | **Performance** | Tìm kiếm sách trả kết quả trong ≤2 giây với dataset ≤500,000 bản ghi |
 | **Performance** | Quét mã vạch mượn/trả hoàn thành giao dịch trong ≤3 giây |
-| **Availability** | Uptime ≥99.5% cho các module cốt lõi (search, borrow, reserve, payment). Bảo trì thông báo trước ≥48 giờ qua email + system banner (BR-LMS-033) |
-| **Security** | Mã hóa toàn bộ data in-transit (TLS 1.2+) và at-rest (BR-LMS-014) |
-| **Security** | RBAC: mỗi role chỉ truy cập đúng module được cấp quyền. Unauthorized access phải được log (BR-LMS-024) |
-| **Security** | Password: ≥8 ký tự, có chữ hoa/thường/số/ký tự đặc biệt (BR-LMS-003) |
-| **Auditability** | Mọi thao tác critical (mượn, trả, phạt, payment, config change) đều ghi vào `AuditLogs` với userId + timestamp + old/new values. Audit log bất biến (BR-LMS-015) |
+| **Availability** | Uptime ≥99.5% cho các module cốt lõi (search, borrow, reserve, payment). Bảo trì thông báo trước ≥48 giờ qua email + system banner |
+| **Security** | Mã hóa toàn bộ data in-transit (TLS 1.2+) và at-rest (BR-LMS-028) |
+| **Security** | RBAC: mỗi role chỉ truy cập đúng module được cấp quyền. Unauthorized access phải được log (BR-LMS-003) |
+| **Security** | Password: ≥8 ký tự, có chữ hoa/thường/số/ký tự đặc biệt (BR-LMS-022) |
+| **Auditability** | Mọi thao tác critical (mượn, trả, phạt, payment, config change) đều ghi vào `AuditLogs` với userId + timestamp + old/new values. Audit log bất biến (BR-LMS-019) |
 | **Scalability** | Hệ thống hỗ trợ tối thiểu 500 concurrent users |
-| **Data Integrity** | Bản ghi sách bị thiếu/hỏng phải được đánh dấu `unavailable` — không hiển thị dữ liệu không đầy đủ (BR-LMS-010) |
+| **Data Integrity** | Bản ghi sách bị thiếu/hỏng phải được đánh dấu `unavailable` — không hiển thị dữ liệu không đầy đủ (BR-LMS-024) |
 | **Integration** | VNPAY payment gateway; AI recommendation engine; SMTP email service |
 
 ---
@@ -432,6 +434,10 @@ CREATE TABLE Notification (
 | `fine_per_day` | Tiền phạt cơ sở / ngày quá hạn (VND) | 2,000 |
 | `reservation_validity_days` | Số ngày giữ sách cho người đặt trước | 3 |
 | `account_lock_duration_minutes` | Thời gian khóa tài khoản sau 5 lần sai | 30 |
+| `default_book_price` | Giá trị mặc định của sách khi cột price bị NULL (VND) | 100,000 |
+| `max_fine_multiplier` | Hệ số trần tiền phạt trễ hạn hoặc đền bù | 1.5 |
+| `max_no_show_limit` | Giới hạn số lần đặt sách quá hạn không đến lấy | 3 |
+| `no_show_lock_duration_days` | Thời gian khóa tài khoản khi quá giới hạn không lấy sách | 7 |
 
 ### Key constraints
 
@@ -512,7 +518,7 @@ CREATE TABLE Notification (
 
 ## 8. Out of Scope
 
-- **Xóa tài khoản người dùng** — Admin chỉ có thể lock/unlock, không delete (BR-LMS-006).
+- **Xóa tài khoản người dùng** — Admin chỉ có thể lock/unlock, không delete (BR-LMS-002).
 - **Mobile native app** — Sprint này chỉ build web application.
 - **Digital/eBook borrowing** — Chỉ sách vật lý.
 - **Inter-library loan** — Chỉ sách thuộc kho thư viện nội bộ.
@@ -530,7 +536,7 @@ CREATE TABLE Notification (
 > *(Dành cho AI review ở Bước 2 — không xóa mục này)*
 
 1. **Concurrent borrow:** Nếu 2 Librarian quét cùng 1 barcode trong cùng lúc (`available_quantity = 1`) → race condition xử lý thế nào? Cần pessimistic lock hay optimistic lock?
-2. **Lost book fine:** BR-LMS-028 nói fine tối đa = book_price × 1.5, nhưng BR-LMS-035 nói sách lost không thể reserve. Liệu `BorrowRecord.status = 'lost'` có tự động generate fine không? Hay Librarian tạo thủ công?
+2. **Lost book fine:** BR-LMS-015 nói fine tối đa = book_price × 1.5, nhưng BR-LMS-013 / BR-LMS-009 nói sách lost không thể mượn/đặt. Liệu `BorrowRecord.status = 'lost'` có tự động generate fine không? Hay Librarian tạo thủ công?
 3. **Reservation và available_quantity:** Nếu có 3 `Reservation` pending và 1 cuốn được trả, hệ thống gán ngay cho người #1 nhưng `available_quantity` vẫn = 0 (vì đang giữ cho reservation). Cần confirm logic update `available_quantity` trong trường hợp này.
 4. **Payment partial:** `Payment.paid_amount` — liệu có trường hợp thanh toán một phần fine không? Hiện tại schema cho phép nhưng FR10 chưa mô tả.
 5. **Email service:** FR20 cần SMTP config trong `SystemConfigurations` — ai setup? SysAdmin qua FR-technical config. Template email chuẩn hóa ở đâu?

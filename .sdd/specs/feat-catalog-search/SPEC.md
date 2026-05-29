@@ -61,6 +61,7 @@ Tham chiếu các bảng từ database:
 | ISBN bị trùng khi thêm thủ công | Hiển thị thông báo lỗi trùng lặp và hỏi ý kiến thủ thư muốn ghi đè hoặc cộng dồn số lượng. |
 | Bản ghi sách bị thiếu trường bắt buộc | Gán trạng thái tựa sách là `unavailable` để tránh hiển thị lỗi trên UI tìm kiếm của người dùng. |
 | Gọi API AI thất bại / Timeout (BR18) | Tự động chuyển sang danh sách gợi ý mặc định (sách mượn nhiều nhất) và không làm sập trang profile. |
+| Giá sách bị NULL khi tính phạt (đền bù/trễ hạn) | Hệ thống tự động sử dụng giá trị giá sách mặc định (`default_book_price`) cấu hình trong `SystemConfigurations` để làm cơ sở tính toán nhằm tránh lỗi `NullPointerException` (Tuân thủ BR20). |
 
 ---
 
@@ -70,6 +71,7 @@ Tham chiếu các bảng từ database:
 - [ ] Thủ thư cập nhật trạng thái bản sao là 'lost' -> tự động loại khỏi danh sách mượn/hàng chờ, khả dụng giảm 1 (BR13, FR21).
 - [ ] Giao diện gợi ý AI hiển thị đúng danh sách gợi ý cá nhân hóa cho học sinh đã đăng nhập (FR08). Quyết định cuối cùng do con người (BR18).
 - [ ] Validation ISBN kiểm tra tính độc nhất trước khi cho phép lưu sách mới vào DB.
+- [ ] Khi trường giá sách bị NULL, hệ thống tự động fallback sử dụng `default_book_price` khi tính toán phạt đền bù/quá hạn.
 
 ---
 

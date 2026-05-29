@@ -43,9 +43,9 @@
 ## KEY BUSINESS LOGIC NOTES
 # Reservation-first flow: Mọi yêu cầu mượn ĐỀU qua Reservation trước → pending / readypickup → fulfilled
 # Fine-first policy (BR-LMS-004): User PHẢI trả hết phạt trước khi mượn/gia hạn/đặt trước
-# Fine Sync (BR-LMS-035): Fine unpaid → auto lock User. Fine all paid → check lock_reason trước khi unlock
+# Fine Sync (BR-LMS-004 & BR-LMS-021): Fine unpaid → auto lock User. Fine all paid → check lock_reason trước khi unlock
 # Return triggers queue: Trả sách → kiểm tra Reservation pending → gán cho người đầu hàng
 
 ## AUTO MEMORY (Claude Code appends here)
 # [Claude Code sẽ tự động thêm entries khi bạn làm việc]
-# [2026-05-29]: Khởi tạo bộ não dự án .sdd/ + .agents/ với đầy đủ 32 FR, 23 UC, 29 BR.
+# [2026-05-29]: Khởi tạo bộ não dự án .sdd/ + .agents/ với đầy đủ 32 FR, 23 UC, 31 BR (gồm BR30, BR31 mới).

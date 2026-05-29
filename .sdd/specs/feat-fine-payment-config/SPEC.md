@@ -24,20 +24,20 @@
 - **FR16 (Khởi tạo Thanh toán):** Hệ thống đóng gói thông tin khoản phạt ( fineId, amount) và tạo link điều hướng người dùng sang cổng thanh toán sandbox VNPAY. Giao dịch VNPAY có timeout thanh toán mặc định là 15 phút (Tuân thủ BR17).
 - **FR17 (Xử lý Kết quả VNPAY - Hệ thống tự động):** Hệ thống nhận phản hồi từ VNPAY (IPN / Callback) để ghi nhận trạng thái giao dịch:
   1. Kiểm tra chữ ký bảo mật. Nếu thành công: chuyển `Fine.status = 'paid'`, tạo bản ghi trong bảng `Payment` với trạng thái `'completed'`.
-  2. Mở khóa quyền mượn sách của tài khoản nếu đã sạch nợ phạt và không bị các khóa bảo mật khác (Tuân thủ logic giải quyết nợ phạt).
-  3. Nếu quá 15 phút không nhận được thanh toán thành công, hệ thống tự động hủy giao dịch thanh toán (Tuân thủ BR17).
+  2. Mở khóa quyền mượn sách của tài khoản: **Bảo đảm chỉ tự động mở khóa (status = 'active', lock_reason = NULL) nếu như lý do khóa hiện tại đang lưu là 'unpaid'. Nếu tài khoản đang chứa lý do khóa nghiêm trọng hơn (như adminban, securitybreach), hệ thống TUYỆT ĐỐI không mở khóa tài khoản (Tuân thủ BR31).**
+  3. Nếu quá 15 phút không nhận được thanh toán thành công, hệ thống tự động hủy giao dịch thanh toán (Tuân thủ BR17). Nhận biết thời điểm tạo của đơn hàng `Payment` pending thông qua cột `paid_at` mặc định.
 
 ### UC-11 — Cấu hình & Thông báo
 - **FR24 (Quản lý Thông báo):** Quản lý thư viện đăng tải các thông báo chung (Lễ, Tết) lưu vào bảng `Notification`, hiển thị trên bảng tin/banner của toàn bộ người dùng khi đăng nhập.
-- **FR25 (Cấu hình Chính sách):** Quản lý thư viện thay đổi các quy tắc hệ thống (như `max_borrow_limit`, `fine_per_day`, `max_extensions`, v.v.) được lưu tập trung trong bảng `SystemConfigurations` (Tuân thủ BR20). Mọi cấu hình thay đổi được hệ thống ghi nhận vào `AuditLogs` và áp dụng ngay lập tức cho các giao dịch mới.
+- **FR25 (Cấu hình Chính sách):** Quản lý thư viện thay đổi các quy tắc hệ thống (như `max_borrow_limit`, `fine_per_day`, `max_extensions`, `default_book_price`, `max_fine_multiplier`, `max_no_show_limit`, `no_show_lock_duration_days`, v.v.) được lưu tập trung trong bảng `SystemConfigurations` (Tuân thủ BR20). Mọi cấu hình thay đổi được hệ thống ghi nhận vào `AuditLogs` và áp dụng ngay lập tức cho các giao dịch mới.
 
 ### UC-12 — Quản trị & Audit Logs
 - **FR26 (Quản lý Danh sách User):** Quản trị viên xem danh sách và thông tin chi tiết của người dùng (bao gồm lịch sử hoạt động, trạng thái tài khoản).
-- **FR27 (Xử lý Vi phạm thủ công):** Quản trị viên thực hiện khóa hoặc mở khóa tài khoản người dùng bằng tay khi có sự cố. Cập nhật `User.status = 'locked'`, tuyệt đối không dùng lệnh DELETE SQL cứng để bảo toàn dữ liệu (Tuân thủ BR02).
+- **FR27 (Xử lý Vi phạm thủ công):** Quản trị viên thực hiện khóa hoặc mở khóa tài khoản người dùng bằng tay khi có sự cố. Cập nhật `User.status = 'locked'`, `lock_reason = 'adminban'` (hoặc `'securitybreach'`), tuyệt đối không dùng lệnh DELETE SQL cứng để bảo toàn dữ liệu (Tuân thủ BR02, BR31).
 - **FR28 (Xem Nhật ký Audit):** Quản trị viên xem lịch sử vết của các thao tác thay đổi dữ liệu trong hệ thống (tra cứu, tìm kiếm lọc nhật ký `AuditLogs` bất biến theo user, loại hành động, tên bảng hoặc khoảng thời gian).
 
 ### System Jobs (Hệ thống chạy ngầm bất đồng bộ)
-- **FR29 (Tính Phạt Trễ hạn):** Mỗi đêm (Daily Batch), hệ thống rà soát các `BorrowRecord` đang mượn (`status = 'borrowed'`) có `end_date < GETDATE()`. Tự động tính phạt trễ hạn: `amount = số ngày trễ * fine_per_day` (Tuân thủ BR14), giới hạn mức phạt trần không vượt quá 150% giá trị sách (Tuân thủ BR15). Tạo bản ghi tương ứng vào bảng `Fine` và tự động cập nhật `User.status = 'locked'`.
+- **FR29 (Tính Phạt Trễ hạn):** Mỗi đêm (Daily Batch), hệ thống rà soát các `BorrowRecord` đang mượn (`status = 'borrowed'`) có `end_date < GETDATE()`. Tự động tính phạt trễ hạn: `amount = số ngày trễ * fine_per_day` (Tuân thủ BR14), giới hạn mức phạt trần không vượt quá `max_fine_multiplier` giá trị sách (hoặc sử dụng giá mặc định từ configurations `default_book_price` nếu giá sách bị NULL - Tuân thủ BR15, BR20, BR24). Cập nhật (`UPDATE`) số tiền vào bản ghi `Fine` unpaid cũ của giao dịch này (hoặc tạo mới `INSERT` nếu chưa có bản ghi nào) và tự động cập nhật `User.status = 'locked'`, **cập nhật `lock_reason = 'unpaid'` chỉ khi `lock_reason` hiện tại là NULL (để tránh ghi đè các mã khóa quan trọng khác - Tuân thủ BR31).**
 - **FR30 (Dọn dẹp Hàng chờ):** Hủy bỏ các phiếu đặt trước đã có sách sẵn sàng (`Reservation.status = 'readypickup'`) nhưng người dùng quá hạn (mặc định là 3 ngày) không đến lấy (chuyển sang `'cancelled'` và luân chuyển sách cho người tiếp theo - Tuân thủ BR11).
 - **FR31 (Gửi Email):** Gửi Email thông báo bất đồng bộ (sắp đến hạn trả sách trước 3 ngày, có sách chờ sẵn sàng nhận, hoặc có hóa đơn phạt mới phát sinh).
 

@@ -22,10 +22,11 @@
 
 ## 3. Servlets (Controllers)
 Đặt tại package `controller.book` và `controller.search`:
-- `BookSearchServlet.java` (GET /search-books): Tiếp nhận từ khóa, categoryId, thực hiện tìm kiếm, phân trang và forward về `search-results.jsp`.
-- `BookManageServlet.java` (GET/POST /librarian/manage-books): Cho phép Librarian thêm, cập nhật sách.
-- `BookCopyManageServlet.java` (GET/POST /librarian/manage-copies): Cập nhật vị trí và tình trạng bản sao vật lý.
-- `AIRecommendationServlet.java` (GET /student/ai-recommend): Gọi API lấy danh sách gợi ý dạng JSON.
+- `BookSearchServlet.java` (GET `/book-search`): Tiếp nhận từ khóa, categoryId, thực hiện tìm kiếm, phân trang và forward về `search-results.jsp`.
+- `BookManagementServlet.java` (POST `/librarian/book-management`): Cho phép Librarian thêm, cập nhật sách (hỗ trợ các tham số từ form: isbn, title, author, publisher, publicationYear, price, categoryIds).
+- `BookCopyServlet.java` (POST `/librarian/book-copy`): Cho phép tạo bản sao mới và sinh barcode tự động.
+- `BookConditionServlet.java` (POST `/librarian/book-condition`): Cập nhật tình trạng hao mòn thực tế của bản sao vật lý.
+- `AIRecommendServlet.java` (GET /student/ai-recommend): Gọi API lấy danh sách gợi ý dạng JSON.
 
 ## 4. Views (JSPs)
 - `/web/WEB-INF/views/search/search-results.jsp`: Giao diện tìm kiếm, có bộ lọc theo Category/Tag và phân trang.

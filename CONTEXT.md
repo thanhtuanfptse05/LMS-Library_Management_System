@@ -1,5 +1,5 @@
 # CONTEXT.md — Library Management System (LMS) Project Memory
-# Version: 1.1.0 | Updated: 29/5/2026 | Sprint: Milestone 2
+# Version: 1.2.0 | Updated: 29/5/2026 | Sprint: Milestone 2
 # Vai trò: "TẠI SAO" — Kiến trúc, ADR, Patterns, Lessons Learned, DB Schema.
 # Xem "CÁI GÌ / AI / KHI NÀO" (Components, Data Flow, Timeline) tại: plan.md
 
@@ -78,3 +78,4 @@ Tham chiếu chi tiết: `database/LMS_Library_Management_System.sql`
 # [Các Agent có thể append log/note vào đây khi hoàn thành task lớn để báo cho agent khác]
 - [2026-05-26]: DB Schema đã chốt (xem `database/LMS_Library_Management_System.sql`). Không tự ý tạo thêm bảng mà không có RFC.
 - [2026-05-28]: Tái cấu trúc AGENTS.md + CONTEXT.md theo Playbook 4.1/4.2. File paths sửa khớp cấu trúc NetBeans.
+- [2026-05-29]: Cập nhật và đồng bộ 31 BR nghiệp vụ (thêm BR30 và BR31), đồng bộ nhất quán các tên Servlet và sửa đổi các ràng buộc hệ thống.

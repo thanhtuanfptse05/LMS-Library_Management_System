@@ -53,7 +53,7 @@ Controllers: PascalCase + `Servlet` suffix (e.g., `LoginServlet.java`, `BorrowBo
 Models/Entities: PascalCase (e.g., `User.java`, `BorrowingRecord.java`)
 Data Access: PascalCase + `DAO` suffix (e.g., `BookDAO.java`)
 Views (JSP): kebab-case (e.g., `book-list.jsp`, `dashboard-admin.jsp`)
-DB tables: snake_case (e.g., `borrowing_record`, `system_configuration`)
+DB tables: PascalCase (e.g., `BorrowRecord`, `SystemConfigurations`)
 
 ## 7. FORBIDDEN PATTERNS
 > **⚖️ SOURCE OF TRUTH:** Các Hard Rules chính thức được định nghĩa tại [constitution.md](/.sdd/constitution.md) (Layer 1).
@@ -101,4 +101,4 @@ Focus: Xây dựng tính năng Xác thực bảo mật (Login/OTP/Filter) và Lu
 ## 13. REQUIREMENTS REFERENCE
 - **Functional Requirements (32 FR):** FR01→FR32, chi tiết tại `/.sdd/shared_context.md` Section 2 (Servlet Contracts) và `/.sdd/specs/_template.md` Section 3.
 - **Use Cases (23 UC):** UC01→UC23, chi tiết tại `/.sdd/shared_context.md` Section 1 (Actor↔UC Mapping).
-- **Business Rules (29 BR):** BR01→BR29, chi tiết tại `/.sdd/business_rules.md` (Registry đầy đủ).
+- **Business Rules (31 BR):** BR01→BR31, chi tiết tại `/.sdd/business_rules.md` (Registry đầy đủ).

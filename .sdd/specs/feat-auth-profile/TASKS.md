@@ -20,4 +20,5 @@
 - [ ] **JSP Views & Servlets Integration**
   - [ ] Tạo `login.jsp`, `forgot-password.jsp`, và `profile.jsp`.
   - [ ] Triển khai `LoginServlet`, `LogoutServlet`, và `ProfileServlet`.
+  - [ ] Tích hợp logic bắt buộc đổi mật khẩu lần đầu (redirect sang trang đổi mật khẩu và khóa chức năng khác cho đến khi hoàn thành) (BR30).
   - [ ] Kiểm tra validation dữ liệu ở cả giao diện bằng JS và phía Backend.

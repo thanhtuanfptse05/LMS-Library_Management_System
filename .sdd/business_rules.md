@@ -1,7 +1,7 @@
 # Business Rules Registry — Library Management System (LMS)
-# Version: 2.0.0 | Updated: 29/5/2026
+# Version: 2.1.0 | Updated: 29/5/2026
 # Source of Truth cho tất cả Business Rules được tham chiếu trong project.
-# Trích xuất từ: Tài liệu FR/UC/BR chính thức (32 FR, 23 UC, 29 BR)
+# Trích xuất từ: Tài liệu FR/UC/BR chính thức (32 FR, 23 UC, 31 BR)
 
 ---
 
@@ -45,6 +45,8 @@ Mã viết tắt (BR01, BR02...) là alias từ tài liệu nghiệp vụ gốc 
 | BR27 | BR-LMS-027 | Notification | Auto-notification triggers for key actions |
 | BR28 | BR-LMS-028 | Security | Encrypt sensitive data in-transit and at-rest |
 | BR29 | BR-LMS-029 | Transaction Integrity | All transactions linked to valid member/book/transaction IDs |
+| BR30 | BR-LMS-030 | Authentication & Security | Force password change on first login |
+| BR31 | BR-LMS-031 | Authentication & Security | Safeguards for fine-based lock/unlock logic |
 
 ---
 
@@ -57,6 +59,8 @@ Mã viết tắt (BR01, BR02...) là alias từ tài liệu nghiệp vụ gốc 
 | BR-LMS-001 | Login Lockout | Hệ thống tự động khóa tài khoản tạm thời nếu người dùng nhập sai thông tin đăng nhập vượt quá số lần quy định (`failed_login_attempts >= N` → `User.status = 'locked'`, set `locked_until`). | FR01, FR02, UC01 |
 | BR-LMS-022 | Password Policy & OTP | Password ≥8 ký tự gồm chữ hoa, thường, số, ký tự đặc biệt. Không trùng mật khẩu gần nhất. Yêu cầu xác thực mật khẩu hiện tại khi đổi. OTP 6 số, hết hạn 15 phút. | FR01, UC01 |
 | BR-LMS-028 | Data Encryption | Tất cả dữ liệu nhạy cảm phải được mã hóa in-transit (TLS 1.2+) và at-rest theo chính sách bảo mật trường đại học. | Constitution SEC-04 |
+| BR-LMS-030 | First Login Password Change | Mỗi người dùng được cấp tài khoản đã phân quyền trước với mật khẩu mặc định trùng với tên đăng nhập. Ngay sau khi đăng nhập thành công lần đầu tiên, hệ thống BẮT BUỘC điều hướng người dùng đến trang đổi mật khẩu và chặn mọi thao tác khác cho đến khi mật khẩu mới được thiết lập. | FR01, UC01 |
+| BR-LMS-031 | Fine Lock/Unlock Safeguards | Tiến trình tự động khóa tài khoản do nợ phạt không được phép ghi đè lên các lý do khóa nghiêm trọng hơn đang có hiệu lực (như adminban hoặc securitybreach). Khi người dùng đóng hết tiền phạt, tài khoản chỉ được tự động mở khóa nếu lý do khóa hiện tại là unpaid và không còn bất kỳ điều kiện khóa nào khác. | FR27, FR29, UC12, UC22 |
 
 ### Authorization
 
@@ -101,8 +105,8 @@ Mã viết tắt (BR01, BR02...) là alias từ tài liệu nghiệp vụ gốc 
 
 | Mã | Tên | Mô tả | FR/UC tham chiếu |
 |---|---|---|---|
-| BR-LMS-014 | Overdue Fine Formula | Tiền phạt trễ hạn = `fine_per_day × days_overdue` (cộng dồn hằng ngày). Đơn giá `fine_per_day` do Admin cấu hình trong `SystemConfigurations`. | FR29, UC11 |
-| BR-LMS-015 | Fine Cap | Tổng phạt trễ hạn cho 1 giao dịch KHÔNG vượt quá mức trần: `min(fine_calculated, book_price × max_fine_multiplier)` (VD: 150% giá trị sách). | FR29, UC11 |
+| BR-LMS-014 | Overdue Fine Formula | Tiền phạt trễ hạn = `fine_per_day × days_overdue` (cộng dồn hằng ngày qua cách cập nhật UPDATE số tiền trên bản ghi Fine unpaid cũ thay vì chèn INSERT dòng mới mỗi ngày). Đơn giá `fine_per_day` do Admin cấu hình. | FR29, UC11 |
+| BR-LMS-015 | Fine Cap | Tổng phạt trễ hạn cho 1 giao dịch KHÔNG vượt quá mức trần: `min(fine_calculated, book_price × max_fine_multiplier)` (Sử dụng `default_book_price` và `max_fine_multiplier` từ cấu hình nếu giá sách bị NULL). | FR29, UC11 |
 | BR-LMS-016 | Compensation Fine | Nếu sách Mất hoặc Hư hỏng nặng → áp dụng mức phạt đền bù ĐỘC LẬP với phạt trễ hạn. | FR22, UC14, UC18 |
 | BR-LMS-017 | VNPAY Timeout Cancel | Giao dịch thanh toán VNPAY không có xác nhận thành công trong 15 phút → hệ thống tự động hủy (`Payment.status = 'canceled'`). | FR17, FR32, UC12 |
 
@@ -122,7 +126,7 @@ Mã viết tắt (BR01, BR02...) là alias từ tài liệu nghiệp vụ gốc 
 
 | Mã | Tên | Mô tả | FR/UC tham chiếu |
 |---|---|---|---|
-| BR-LMS-020 | Centralized Config | Toàn bộ tham số vận hành (`max_borrow_limit`, `fine_per_day`, `account_lock_duration_minutes`, `reservation_validity_days`, `max_extensions`, `extension_duration_days`, `max_loan_days`) lưu tập trung trong `SystemConfigurations`. Mọi thay đổi áp dụng ngay cho giao dịch mới. | FR25, UC20 |
+| BR-LMS-020 | Centralized Config | Toàn bộ tham số vận hành (`max_borrow_limit`, `fine_per_day`, `account_lock_duration_minutes`, `reservation_validity_days`, `max_extensions`, `extension_duration_days`, `max_loan_days`, `default_book_price`, `max_fine_multiplier`, `max_no_show_limit`, `no_show_lock_duration_days`) lưu tập trung trong `SystemConfigurations`. Mọi thay đổi áp dụng ngay cho giao dịch mới. | FR25, UC20 |
 
 ### Data Validation
 

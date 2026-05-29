@@ -21,7 +21,7 @@ Tất cả các tác nhân (Actors) trong hệ thống đều chịu ảnh hư�
 ## 3. Functional Requirements
 
 ### UC-01 — Xác thực (Authentication)
-- **FR01 (Đăng nhập hệ thống):** Hệ thống cho phép người dùng xác thực bằng Email và Mật khẩu. Khi thành công sẽ lưu thông tin user vào `HttpSession` và chuyển hướng về Dashboard tương ứng (Tuân thủ BR03).
+- **FR01 (Đăng nhập hệ thống):** Hệ thống cho phép người dùng xác thực bằng Email và Mật khẩu. Khi thành công sẽ lưu thông tin user vào `HttpSession` và chuyển hướng về Dashboard tương ứng (Tuân thủ BR03). **Đặc biệt, nếu mật khẩu mặc định trùng với tên đăng nhập (lần đăng nhập đầu tiên), hệ thống BẮT BUỘC chuyển hướng người dùng đến trang đổi mật khẩu và chặn mọi hoạt động khác cho đến khi mật khẩu mới được thiết lập (Tuân thủ BR30).**
 - **FR02 (Xử lý đăng nhập sai - Hệ thống tự động):** Nếu phát hiện đăng nhập sai (Mật khẩu hoặc OTP) quá số lần quy định (5 lần liên tiếp), hệ thống tự động khóa tài khoản tạm thời (`User.status = 'locked'`, `lock_reason = 'securitybreach'`, khóa trong 30 phút theo BR01).
 - **FR03 (Đăng xuất):** Hệ thống xóa phiên làm việc hiện tại, đưa người dùng về trạng thái chưa xác thực (invalidate session).
 - **Lưu ý (Khôi phục mật khẩu qua OTP):** Yêu cầu reset mật khẩu sẽ tạo mã OTP 6 chữ số gửi bất đồng bộ qua Email (FR31). OTP hết hạn sau 15 phút.
@@ -35,12 +35,13 @@ Tất cả các tác nhân (Actors) trong hệ thống đều chịu ảnh hư�
   - `phone_number`: Đúng 10 chữ số.
   - `date_of_birth`: Phải từ 18 tuổi trở lên.
   - Kiểm tra trùng lặp số điện thoại (`phone_number`), mã số sinh viên/giảng viên (nếu trùng sẽ báo lỗi).
+- **Audit Logging PII mask (SEC-04):** Khi cập nhật profile, mọi dữ liệu lưu vào `oldValues` và `newValues` trong `AuditLogs` phải được ẩn danh/masking đối với Số điện thoại và Email.
 
 ---
 
 ## 4. Non-functional Requirements
 
-- **Security (BR03):** Mọi endpoint bắt đầu với `/student/*`, `/librarian/*`, `/manager/*`, `/admin/*` phải được bảo vệ bởi `@WebFilter` để kiểm tra phân quyền.
+- **Security (BR03, BR30):** Mọi endpoint bắt đầu với `/student/*`, `/librarian/*`, `/manager/*`, `/admin/*` phải được bảo vệ bởi `@WebFilter` để kiểm tra phân quyền và bắt buộc đổi mật khẩu lần đầu.
 - **Password Safety:** Tuyệt đối không lưu plaintext password, bắt buộc băm bằng BCrypt.
 - **Performance:** Thời gian xử lý đăng nhập và cập nhật profile ≤1.5 giây. Việc gửi email OTP chạy trong Threadpool phụ (FR31), không gây treo UI.
 
@@ -49,7 +50,7 @@ Tất cả các tác nhân (Actors) trong hệ thống đều chịu ảnh hư�
 ## 5. Data (Các bảng liên quan)
 
 Tham chiếu các bảng từ database:
-- `[User]` (Tuân thủ BR02 cho thuộc tính status)
+- `[User]` (Tuân thủ BR02 cho thuộc tính status, BR30 cho mật khẩu mặc định, BR31 cho lock safeguards)
 - `MemberProfile`
 - `Student`
 - `Lecturer`
@@ -72,10 +73,12 @@ Tham chiếu các bảng từ database:
 ## 7. Acceptance Criteria
 
 - [ ] Đăng nhập thành công với tài khoản active -> Lưu session, redirect đúng dashboard theo vai trò.
+- [ ] Tài khoản đăng nhập lần đầu với default password -> Bắt buộc đổi mật khẩu thành công mới được tiếp tục (BR30).
 - [ ] Nhập sai mật khẩu/OTP liên tiếp 5 lần -> Tài khoản bị khóa trong 30 phút (BR01), ghi nhận log.
 - [ ] Gửi yêu cầu OTP thành công -> Nhận email trong vòng 60 giây (FR31), mã OTP có hiệu lực 15 phút.
 - [ ] Đăng xuất -> Hủy session và không thể quay lại trang dashboard bằng nút Back của browser (FR03).
 - [ ] Cập nhật hồ sơ với dữ liệu không hợp lệ -> Bị chặn ở cả phía Client (JS) và Backend (Java Servlet validation).
+- [ ] Cập nhật hồ sơ thành công -> Audit log lưu trữ thông tin email và số điện thoại đã được mask (SEC-04).
 
 ---
 
