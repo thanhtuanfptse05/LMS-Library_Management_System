@@ -19,24 +19,24 @@
 
 ## 3. Functional Requirements
 
-### UC-08 — Quản lý Danh mục Sách
-- **FR-CAT-01:** Thủ thư thêm mới hoặc chỉnh sửa thông tin sách: `ISBN`, `title`, `author`, `publisher`, `publication_year`, `price`, `total_quantity`.
-  - Validate: `ISBN` là duy nhất, `title` không rỗng, `publication_year` không được lớn hơn năm hiện tại, `price` ≥ 0, `total_quantity` ≥ 0.
-- **FR-CAT-02:** Phát hiện trùng lặp ISBN khi thêm sách: Hệ thống đưa ra lựa chọn ghi đè (overwrite), bỏ qua (skip) hoặc gộp số lượng (merge).
-
-### UC-09 — Quản lý Kho Vật lý (BookCopy)
-- **FR-INV-01:** Mỗi tựa sách (Books) liên kết với nhiều bản sao vật lý (`BookCopy`). Mỗi bản sao có mã `barcode` độc nhất để quét và `location` cụ thể trong thư viện.
-- **FR-INV-02:** Cập nhật tình trạng bản sao (`condition` ∈ {good, damaged, lost}). Khi `condition = 'lost'`, trạng thái copy chuyển thành `'unavailable'`, đồng thời `available_quantity` của tựa sách đó bị trừ đi 1.
-
 ### UC-03 — Tìm kiếm & Gợi ý Sách
-- **FR-SRCH-01:** Người dùng tìm kiếm sách theo từ khóa (khớp tiêu đề, tác giả), danh mục hoặc tag. Kết quả tìm kiếm hiển thị trạng thái và `available_quantity` thời gian thực.
-- **FR-SRCH-02 (AI Recommendation):** Khi người dùng đã đăng nhập xem profile hoặc chi tiết sách, hệ thống gọi API OpenAI/Gemini bất đồng bộ để đưa ra gợi ý sách dựa trên lịch sử mượn và chuyên ngành (major) của người dùng đó.
+- **FR06 (Tìm kiếm Đầu sách):** Hệ thống trả về danh sách các tựa sách dựa trên từ khóa tìm kiếm (tiêu đề, tác giả, danh mục, thẻ).
+- **FR07 (Xem trạng thái Kho):** Hệ thống hiển thị số lượng bản sao sách vật lý hiện đang có sẵn để mượn đối với một tựa sách cụ thể (`available_quantity` thời gian thực).
+- **FR08 (Gợi ý Sách (AI)):** Hệ thống sử dụng AI phân tích lịch sử để đưa ra danh sách các tựa sách đề xuất cá nhân hóa. Kết quả gợi ý chỉ mang tính tham khảo (Tuân thủ BR18).
+
+### UC-08 — Quản lý Danh mục Sách
+- **FR18 (Quản lý Đầu sách):** Thủ thư thực hiện thêm, sửa, xóa (soft-delete status) thông tin trừu tượng của các tựa sách (ISBN, Tên, Tác giả, Nhà XB, năm XB, giá tiền, số lượng). Validate: `ISBN` độc nhất, giá và số lượng $\ge$ 0. Nếu trùng ISBN đưa ra lựa chọn ghi đè, bỏ qua hoặc gộp số lượng.
+- **FR19 (Quản lý Phân loại):** Thủ thư thực hiện thêm, sửa, xóa các Danh mục (Category) và Thẻ (Tag).
+
+### UC-09 — Quản lý Kho Vật lý
+- **FR20 (Quản lý Mã vạch):** Thủ thư thêm mới và sinh mã vạch (`barcode` độc nhất) cho từng cuốn sách vật lý nhập kho và gán vị trí (`location`).
+- **FR21 (Cập nhật Hao mòn):** Thủ thư ghi nhận lại tình trạng vật lý thực tế của sách (`condition` ∈ {good, damaged, lost}). Bản sao sách vật lý nếu bị Thủ thư ghi nhận là "Hư hỏng nặng" (damaged) hoặc "Đã mất" (lost) sẽ tự động bị loại khỏi danh sách có thể mượn hoặc phân bổ cho hàng chờ (`status = 'unavailable'`, trừ `available_quantity` đi 1, tuân thủ BR13).
 
 ---
 
 ## 4. Non-functional Requirements
 
-- **Performance:** Tìm kiếm sách phải trả kết quả trong ≤ 2 giây đối với kho dữ liệu lên tới 500,000 bản ghi.
+- **Performance:** Tìm kiếm sách phải trả kết quả trong ≤ 2 giây đối với kho dữ liệu lên tới 500,000 bản ghi (FR06).
 - **Integrations:** Tích hợp API OpenAI hoặc Gemini thông qua biến môi trường cấu hình trong hệ thống để tránh hardcode API key.
 - **Data Integrity:** Các trường bắt buộc như ISBN, barcode không được phép null hoặc rỗng.
 
@@ -50,7 +50,7 @@ Tham chiếu các bảng từ database:
 - `Books`
 - `BookCategory`
 - `BookTag`
-- `BookCopy`
+- `BookCopy` (Tuân thủ BR13 cho thuộc tính condition/status)
 
 ---
 
@@ -60,15 +60,15 @@ Tham chiếu các bảng từ database:
 |---|---|
 | ISBN bị trùng khi thêm thủ công | Hiển thị thông báo lỗi trùng lặp và hỏi ý kiến thủ thư muốn ghi đè hoặc cộng dồn số lượng. |
 | Bản ghi sách bị thiếu trường bắt buộc | Gán trạng thái tựa sách là `unavailable` để tránh hiển thị lỗi trên UI tìm kiếm của người dùng. |
-| Gọi API AI thất bại / Timeout | Tự động chuyển sang danh sách gợi ý mặc định (sách mượn nhiều nhất) và không làm sập trang profile. |
+| Gọi API AI thất bại / Timeout (BR18) | Tự động chuyển sang danh sách gợi ý mặc định (sách mượn nhiều nhất) và không làm sập trang profile. |
 
 ---
 
 ## 7. Acceptance Criteria
 
-- [ ] Tìm kiếm sách theo từ khóa hiển thị kết quả chính xác kèm số lượng sách khả dụng thời gian thực.
-- [ ] Thủ thư cập nhật trạng thái bản sao là 'lost' -> khả dụng giảm 1 và không thể quét để mượn bản sao đó nữa.
-- [ ] Giao diện gợi ý AI hiển thị đúng danh sách gợi ý cá nhân hóa cho học sinh đã đăng nhập.
+- [ ] Tìm kiếm sách theo từ khóa hiển thị kết quả chính xác kèm số lượng sách khả dụng thời gian thực (FR06, FR07).
+- [ ] Thủ thư cập nhật trạng thái bản sao là 'lost' -> tự động loại khỏi danh sách mượn/hàng chờ, khả dụng giảm 1 (BR13, FR21).
+- [ ] Giao diện gợi ý AI hiển thị đúng danh sách gợi ý cá nhân hóa cho học sinh đã đăng nhập (FR08). Quyết định cuối cùng do con người (BR18).
 - [ ] Validation ISBN kiểm tra tính độc nhất trước khi cho phép lưu sách mới vào DB.
 
 ---

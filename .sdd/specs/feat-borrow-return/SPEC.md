@@ -19,33 +19,33 @@
 ## 3. Functional Requirements
 
 ### UC-04 — Ghi nhận Mượn Sách
-- **FR-BRW-01:** Thủ thư quét barcode bản sao (`BookCopy`) và nhập mã thành viên (`student_code` hoặc `lecturer_code`).
-- **FR-BRW-02:** Hệ thống thực hiện kiểm tra các điều kiện tiên quyết trước khi cho mượn:
-  1. Số lượng sách còn khả dụng của tựa sách phải lớn hơn 0 (`available_quantity > 0`).
-  2. Thành viên không vượt quá số lượng sách mượn tối đa đồng thời (lấy từ cấu hình `max_borrow_limit`).
-  3. Thành viên không có bất kỳ khoản phạt nào chưa thanh toán (`status = 'unpaid'` trong bảng `Fine`).
-  4. Tài khoản thành viên phải ở trạng thái hoạt động (`status = 'active'`).
-- **FR-BRW-03:** Khi các điều kiện được đáp ứng, hệ thống tiến hành:
-  1. Tạo bản ghi `BorrowRecord` với `start_date = GETDATE()`, `end_date = start_date + max_loan_days` (lấy từ cấu hình).
+- **FR09 (Ghi nhận Mượn Sách):** Hệ thống ghi nhận việc mượn một cuốn sách vật lý thông qua mã vạch, đánh dấu cuốn sách đó đang được mượn. Quy trình được xử lý như sau:
+  - Khi thủ thư nhập mã thành viên (`student_code` hoặc `lecturer_code`) và quét barcode bản sao (`BookCopy`), hệ thống tạo một bản ghi `Reservation` với trạng thái `status = 'readypickup'`. Việc tạo `Reservation` chỉ yêu cầu kiểm tra trạng thái tài khoản không bị khóa (`User.status != 'locked'`).
+  - Khi thủ thư xác nhận giao sách vật lý, hệ thống chuyển đổi trạng thái của `Reservation` từ `'readypickup'` sang `'fulfilled'`. Tại bước chuyển đổi này (bước tạo `BorrowRecord`), hệ thống thực hiện kiểm tra đầy đủ các điều kiện tiên quyết:
+    1. Số lượng sách còn khả dụng của tựa sách phải lớn hơn 0 (`available_quantity > 0`).
+    2. Người dùng không có bất kỳ khoản nợ phạt nào chưa thanh toán (Tuân thủ BR04).
+    3. Người dùng không vượt quá số lượng bản sao sách tối đa tại cùng một thời điểm (lấy hạn mức theo cấu hình vai trò Sinh viên/Giảng viên - Tuân thủ BR05).
+    4. Tài khoản thành viên phải ở trạng thái hoạt động (`status = 'active'`).
+- **FR10 (Tính hạn trả sách - Hệ thống tự động):** Khi giao dịch mượn thành công (hệ thống duyệt chuyển `Reservation.status = 'fulfilled'`), hệ thống tự động tính toán và lưu ngày phải trả (`end_date = start_date + thời hạn tối đa`) dựa trên vai trò của người mượn theo cấu hình hệ thống (Tuân thủ BR06). Đồng thời:
+  1. Tạo bản ghi `BorrowRecord` với trạng thái `'borrowed'`.
   2. Chuyển trạng thái bản sao `BookCopy.status = 'borrowed'`.
   3. Trừ số lượng sách khả dụng của tựa sách đó đi 1 (`Books.available_quantity = Books.available_quantity - 1`).
-  4. Ghi nhận nhật ký vào bảng `AuditLogs`.
+  4. Ghi nhận nhật ký hoạt động bất biến vào bảng `AuditLogs` (Tuân thủ BR19).
 
 ### UC-10 — Xử lý Trả Sách
-- **FR-RET-01:** Thủ thư quét barcode bản sao sách được trả.
-- **FR-RET-02:** Hệ thống thực hiện:
+- **FR22 (Quét mã Trả sách):** Thủ thư quét barcode bản sao sách được trả. Hệ thống ghi nhận cuốn sách vật lý đã được trả và chuyển nó về lại trạng thái sẵn sàng trong kho. Cụ thể:
   1. Cập nhật `BorrowRecord.returned_at = GETDATE()` và chuyển trạng thái `status = 'returned'`.
   2. Chuyển trạng thái bản sao `BookCopy.status = 'available'`.
   3. Cộng số lượng sách khả dụng của tựa sách đó thêm 1 (`Books.available_quantity = Books.available_quantity + 1`).
-  4. Ghi nhận nhật ký vào bảng `AuditLogs`.
-  5. Kích hoạt luồng kiểm tra quá hạn và luồng kiểm tra hàng chờ đặt trước sách (Reservation).
+  4. Ghi nhận nhật ký vào bảng `AuditLogs` (Tuân thủ BR19).
+- **FR23 (Phân bổ Hàng chờ - Hệ thống tự động):** Ngay khi sách được trả, hệ thống kiểm tra và tự động giữ cuốn sách đó cho người đứng đầu tiên trong hàng chờ (nếu có). Trạng thái của `Reservation` có `queue_position` nhỏ nhất và trạng thái `'pending'` của tựa sách đó sẽ được cập nhật thành `'readypickup'`. Gán `bookCopyId` cho `Reservation` đó, và đặt hạn nhận sách (Tuân thủ BR10, BR11).
 
 ---
 
 ## 4. Non-functional Requirements
 
-- **Transaction Integrity:** Giao dịch mượn và trả sách phải được bảo bọc trong SQL Transactions (`commit`/`rollback` thủ công trong DAO) để tránh tình trạng trừ/cộng số lượng sách nhưng không tạo được bản ghi giao dịch hoặc ngược lại.
-- **Auditability:** Bắt buộc lưu toàn bộ chi tiết thao tác mượn/trả vào bảng `AuditLogs`. Không được phép Hard-delete bất kỳ bản ghi `BorrowRecord` nào.
+- **Transaction Integrity:** Giao dịch mượn và trả sách phải được bảo bọc trong SQL Transactions (`commit`/`rollback` thủ công trong DAO) để tránh tình trạng bất nhất dữ liệu.
+- **Auditability (BR19):** Bắt buộc lưu toàn bộ chi tiết thao tác mượn/trả vào bảng `AuditLogs`. Dữ liệu nhật ký này không thể bị sửa chữa hay xóa bỏ bởi bất kỳ ai. Không được phép Hard-delete bất kỳ bản ghi `BorrowRecord` nào.
 - **Speed:** Thời gian xử lý giao dịch mượn/trả tại quầy ≤3 giây.
 
 ---
@@ -56,7 +56,7 @@ Tham chiếu các bảng từ database:
 - `BorrowRecord`
 - `BookCopy`
 - `Books`
-- `AuditLogs`
+- `AuditLogs` (Tuân thủ BR19)
 - `[User]`
 
 ---
@@ -65,17 +65,17 @@ Tham chiếu các bảng từ database:
 
 | Điều kiện lỗi | Hành vi hệ thống |
 |---|---|
-| Có hóa đơn phạt quá hạn chưa thanh toán | Báo lỗi và chặn giao dịch mượn. Yêu cầu thành viên thanh toán trước. |
-| Vượt quá hạn mức mượn | Báo lỗi và chặn giao dịch mượn. Yêu cầu trả bớt sách trước khi mượn tiếp. |
-| Trả sách trễ hạn | Cập nhật ngày trả thực tế và tự động gọi module phạt để tạo hóa đơn phạt mới (`Fine`). |
+| Có hóa đơn phạt quá hạn chưa thanh toán (BR04) | Báo lỗi và chặn giao dịch mượn/fulfilled. Yêu cầu thành viên thanh toán trước. |
+| Vượt quá hạn mức mượn (BR05) | Báo lỗi và chặn giao dịch mượn/fulfilled. Yêu cầu trả bớt sách trước khi mượn tiếp. |
+| Trả sách trễ hạn | Cập nhật ngày trả thực tế và tự động gọi module phạt (FR29) để tạo hóa đơn phạt mới (`Fine`). |
 
 ---
 
 ## 7. Acceptance Criteria
 
-- [ ] Thực hiện mượn sách thành công: copy đổi trạng thái sang 'borrowed', số lượng sách khả dụng giảm 1, ghi log AuditLogs.
-- [ ] Thành viên có trạng thái 'locked' hoặc có phạt chưa trả -> Giao dịch mượn bị từ chối rõ ràng trên giao diện.
-- [ ] Trả sách thành công: copy đổi trạng thái sang 'available', số lượng sách khả dụng tăng 1, ghi log AuditLogs.
+- [ ] Thực hiện mượn sách thành công: Tạo `Reservation` ở trạng thái 'readypickup', chuyển sang 'fulfilled', tạo `BorrowRecord`, copy đổi trạng thái sang 'borrowed', số lượng sách khả dụng giảm 1, ghi log AuditLogs (FR09, BR19).
+- [ ] Thành viên có trạng thái 'locked' (BR01) hoặc có phạt chưa trả (BR04) -> Giao dịch mượn bị từ chối rõ ràng trên giao diện.
+- [ ] Trả sách thành công: copy đổi trạng thái sang 'available', số lượng sách khả dụng tăng 1, ghi log AuditLogs (FR22, BR19).
 - [ ] Mọi giao dịch mượn/trả đều chạy trong Database Transaction (Nếu một bước lỗi, tất cả được rollback).
 
 ---

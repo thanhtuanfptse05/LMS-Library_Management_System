@@ -14,7 +14,7 @@
 - **`AuditLogDAO.java`**:
   - `insertAuditLog(AuditLog log, Connection conn)`: Ghi log thao tác hệ thống.
 - **`BorrowService.java`**:
-  - `borrowBook(int userId, String barcode, int librarianId)`: Quản lý transaction thủ công. Gọi `UserDAO`, `BookCopyDAO`, `BookDAO`, `BorrowRecordDAO` và `AuditLogDAO`. Thực hiện rollback nếu xảy ra bất kỳ lỗi runtime nào.
+  - `borrowBook(int userId, String barcode, int librarianId)`: Quản lý transaction thủ công. Gọi `ReservationDAO` để tạo bản ghi `Reservation` ở trạng thái `'readypickup'`. Tiến hành kiểm tra điều kiện mượn đầy đủ tại service trước khi thực hiện bước chuyển đổi sang `'fulfilled'`, tạo `BorrowRecord` qua `BorrowRecordDAO`, cập nhật trạng thái copy qua `BookCopyDAO`, kho khả dụng qua `BookDAO`, và ghi log qua `AuditLogDAO`. Thực hiện rollback nếu xảy ra bất kỳ lỗi runtime nào.
   - `returnBook(String barcode, int librarianId)`: Xử lý quy trình trả sách, giải phóng copy, cập nhật kho, tính phạt nếu trễ hạn.
 
 ## 3. Servlets (Controllers)

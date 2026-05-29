@@ -11,7 +11,7 @@
   - `getExpiredReservations()`: Tìm các reservation có status = 'readypickup' và endDate bé hơn ngày hiện tại.
   - `getReservationsByUserId(int userId)`
 - **`ReservationService.java`**:
-  - `reserveBook(int userId, int bookId)`: Thực hiện logic kiểm tra available_quantity == 0, tính toán `queuePosition` bằng cách đếm số người đang chờ + 1. Chạy trong transaction.
+  - `reserveBook(int userId, int bookId)`: Mọi yêu cầu mượn/đặt trước đều tạo bản ghi `Reservation`. Nếu `available_quantity == 0`, tạo với trạng thái `'pending'` và gán `queuePosition` bằng cách đếm số người đang chờ + 1. Ngược lại nếu `available_quantity > 0`, tạo với trạng thái `'readypickup'`. Cả hai trường hợp chỉ yêu cầu kiểm tra tài khoản không bị khóa (`User.status != 'locked'`). Chạy trong transaction.
   - `processReturnQueue(int bookId, int bookCopyId)`: Được gọi khi trả sách để gán sách cho người tiếp theo.
   - `checkExpiredReservations()`: Tự động chạy hàng ngày hoặc gọi qua Scheduler/Batch để dọn dẹp các đặt trước quá hạn.
 - **`ExtensionService.java`**:

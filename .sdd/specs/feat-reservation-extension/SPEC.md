@@ -19,23 +19,24 @@
 ## 3. Functional Requirements
 
 ### UC-06 — Đặt trước Sách (Reservation)
-- **FR-RES-01:** Khi người dùng muốn mượn sách nhưng `available_quantity = 0`, hệ thống cho phép tạo một bản ghi `Reservation` với trạng thái `status = 'pending'` và gán số thứ tự trong hàng chờ `queue_position`.
-- **FR-RES-02:** Nếu sách vẫn còn bản sao khả dụng, chặn không cho đặt trước và yêu cầu người dùng mượn trực tiếp.
-- **FR-RES-03:** Khi một cuốn sách được trả (`status` của `BorrowRecord` chuyển thành `'returned'`), hệ thống tự động:
-  1. Tìm kiếm bản ghi `Reservation` có `queue_position` nhỏ nhất và trạng thái `'pending'`.
-  2. Cập nhật `Reservation.status = 'readypickup'`.
-  3. Gán `bookCopyId` của bản sao vừa trả cho Reservation đó.
-  4. Đặt `end_date = GETDATE() + reservation_validity_days` (số ngày giữ sách, mặc định là 3 ngày).
-  5. Gửi email thông báo tự động (Asynchronous Email) cho người dùng đó biết sách đã sẵn sàng để đến lấy.
-- **FR-RES-04 (Release reservation):** Nếu người dùng không đến nhận sách trong vòng `reservation_validity_days`, hệ thống tự động hủy lượt đặt trước (`Reservation.status = 'cancelled'`), giải phóng `bookCopyId` và gán cho người tiếp theo trong hàng chờ.
+- **FR13 (Ghi danh Đặt trước):** Hệ thống ghi nhận người dùng vào hàng chờ của một tựa sách đã hết và cấp số thứ tự chờ (`queue_position`). Quy tắc chi tiết:
+  - Mọi yêu cầu mượn hoặc đặt trước sách đều bắt đầu bằng việc tạo một bản ghi `Reservation`.
+  - Nếu tựa sách không còn bản sao khả dụng (`available_quantity = 0`), hệ thống tạo `Reservation` với trạng thái `status = 'pending'` và gán số thứ tự trong hàng chờ `queue_position`.
+  - Nếu tựa sách còn bản sao khả dụng (`available_quantity > 0`), hệ thống tạo `Reservation` với trạng thái `status = 'readypickup'`. 
+  - Để tối ưu hiệu năng, mọi thao tác tạo mới `Reservation` chỉ cần kiểm tra trạng thái tài khoản `User.status != 'locked'` (không kiểm tra nợ phạt ở bước này).
+  - Chặn không cho người mới đặt trước nếu tựa sách đó đang ở trạng thái "quá hạn" (tất cả các bản sao đều chưa được trả dù đã lố ngày - Tuân thủ BR09).
+- **FR14 (Hủy Đặt trước chủ động):** Hệ thống cho phép người dùng tự xóa tên mình khỏi hàng chờ nếu không còn nhu cầu (chuyển `Reservation.status = 'cancelled'`).
+- **Xử lý luân chuyển hàng chờ (Hệ thống tự động):**
+  - Khi một cuốn sách được trả, hệ thống tự động tìm bản ghi `Reservation` có `queue_position` nhỏ nhất và trạng thái `'pending'` để cập nhật thành `'readypickup'`. Gán `bookCopyId` và đặt `end_date = GETDATE() + thời gian giữ sách` (Tuân thủ BR10). Gửi email thông báo tự động (FR31).
+  - Nếu quá hạn giữ sách (mặc định là 3 ngày) mà người dùng không đến nhận sách (được dọn dẹp bởi tiến trình chạy ngầm FR30), hệ thống tự động hủy lượt đặt trước (`Reservation.status = 'cancelled'`), giải phóng `bookCopyId` và luân chuyển sách cho thành viên hợp lệ tiếp theo trong hàng chờ (Tuân thủ BR11).
+  - Nếu người dùng có số lần "đặt sách nhưng không đến lấy" vượt quá mức cho phép, tài khoản sẽ bị phạt/khóa theo cấu hình của Admin (Tuân thủ BR12).
 
 ### UC-05 — Gia hạn Sách (Extension)
-- **FR-EXT-01:** Người dùng có thể nhấn nút "Gia hạn" trên giao diện lịch sử mượn sách.
-- **FR-EXT-02:** Điều kiện để gia hạn thành công:
-  1. Số lần gia hạn hiện tại nhỏ hơn giới hạn (`extension_count < max_extensions`, mặc định tối đa 2 lần).
-  2. Tựa sách đó không có bất kỳ hàng chờ `Reservation` nào ở trạng thái `'pending'` hoặc `'readypickup'`.
-  3. Thành viên không có hóa đơn phạt nào chưa thanh toán.
-- **FR-EXT-03:** Khi được duyệt gia hạn, `endDate` của `BorrowRecord` tăng thêm `extension_duration_days` (mặc định là 7 ngày), và `extension_count` tăng thêm 1.
+- **FR11 (Yêu cầu Gia hạn):** Hệ thống tiếp nhận yêu cầu kéo dài thời gian mượn sách từ người dùng và tính toán ngày trả mới (`endDate` tăng thêm `extension_duration_days` và `extension_count` tăng thêm 1).
+- **FR12 (Chặn Gia hạn - Hệ thống tự động):** Hệ thống từ chối gia hạn nếu vi phạm một trong các điều kiện sau:
+  - Số lần gia hạn hiện tại đạt giới hạn (`extension_count >= max_extensions` - Tuân thủ BR08).
+  - Tựa sách đó HIỆN KHÔNG CÓ bất kỳ ai khác đang xếp hàng chờ đặt trước ở trạng thái `'pending'` hoặc `'readypickup'` (Tuân thủ BR07).
+  - Thành viên đang có hóa đơn phạt chưa thanh toán (Tuân thủ BR04).
 
 ---
 
@@ -61,18 +62,20 @@ Tham chiếu các bảng từ database:
 
 | Điều kiện lỗi | Hành vi hệ thống |
 |---|---|
-| Người dùng yêu cầu gia hạn sách có người đang đặt trước | Báo lỗi: "Không thể gia hạn do sách này đang có hàng chờ đặt trước." |
-| Đặt trước sách vẫn còn bản sao tại thư viện | Chặn tạo hàng chờ và thông báo người dùng tới quầy để mượn trực tiếp. |
-| Người dùng có hóa đơn phạt chưa đóng muốn gia hạn | Chặn gia hạn và chuyển hướng tới trang thanh toán phạt. |
+| Người dùng yêu cầu gia hạn sách có người đang đặt trước (BR07) | Báo lỗi: "Không thể gia hạn do sách này đang có hàng chờ đặt trước." |
+| Gia hạn vượt quá số lần cho phép (BR08) | Báo lỗi và chặn gia hạn. |
+| Người dùng có hóa đơn phạt chưa đóng muốn gia hạn (BR04) | Chặn gia hạn và chuyển hướng tới trang thanh toán phạt. |
+| Đặt trước tựa sách đang bị quá hạn (BR09) | Chặn đặt trước tựa sách và thông báo lý do. |
 
 ---
 
 ## 7. Acceptance Criteria
 
-- [ ] Sách hết bản copy -> Người dùng bấm "Đặt trước" -> Tạo hàng chờ thành công, gán vị trí đúng thứ tự tăng dần.
-- [ ] Trả sách -> Người đầu hàng chờ chuyển trạng thái thành 'readypickup', nhận email thông báo.
-- [ ] Quá hạn nhận sách đặt trước -> Bản ghi tự động chuyển thành 'cancelled', chuyển sách cho người tiếp theo.
-- [ ] Gia hạn sách hợp lệ -> Hạn trả tăng thêm 7 ngày, số lần gia hạn tăng 1.
+- [ ] Sách hết bản copy -> Người dùng bấm "Đặt trước" -> Tạo hàng chờ thành công, gán vị trí đúng thứ tự tăng dần (FR13, BR09).
+- [ ] Trả sách -> Người đầu hàng chờ chuyển trạng thái thành 'readypickup', nhận email thông báo (FR23, BR10, FR31).
+- [ ] Quá hạn nhận sách đặt trước -> Bản ghi tự động chuyển thành 'cancelled', luân chuyển sách cho người tiếp theo (FR30, BR11).
+- [ ] Gia hạn sách hợp lệ -> Hạn trả tăng thêm theo cấu hình, số lần gia hạn tăng 1 (FR11, BR08).
+- [ ] Tài khoản bị khóa nợ phạt hoặc lạm dụng đặt trước không thể thực hiện giao dịch mới (BR04, BR12).
 
 ---
 
