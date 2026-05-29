@@ -1,6 +1,7 @@
 # CONTEXT.md — Library Management System (LMS) Project Memory
-# Version: 1.0.0 | Updated: 28/5/2026 | Sprint: Milestone 2
-# Đọc kèm file AGENTS.md để hiểu quy tắc hành vi của dự án.
+# Version: 1.1.0 | Updated: 29/5/2026 | Sprint: Milestone 2
+# Vai trò: "TẠI SAO" — Kiến trúc, ADR, Patterns, Lessons Learned, DB Schema.
+# Xem "CÁI GÌ / AI / KHI NÀO" (Components, Data Flow, Timeline) tại: plan.md
 
 ## TL;DR (Đọc trước — 60 giây)
 > Đây là Hệ thống Quản lý Thư viện (LMS) phục vụ trường đại học.
@@ -10,15 +11,9 @@
 > Điểm nhấn: Quản lý hàng chờ (Reservation), Phân quyền động (RBAC), Thanh toán VNPAY.
 
 ## KIẾN TRÚC HỆ THỐNG
-Dự án áp dụng kiến trúc Monolith, chia ranh giới theo Module logic:
+Dự án áp dụng kiến trúc Monolith, chia ranh giới theo Module logic (Auth, Inventory, Transaction, Finance).
 
-### Các Module chính:
-| Module | Base URL | Controller Package | Trách nhiệm |
-|---------|------|--------|------|
-| Auth & User | `/auth/*` | `controller.auth` | Đăng nhập, OTP, RBAC, Profile |
-| Inventory & AI | `/librarian/book/*` | `controller.book` | Quản lý kho sách, Tag, Gợi ý AI |
-| Transaction | `/student/borrow/*` | `controller.transaction`| Mượn/Trả, Gia hạn, Hàng chờ |
-| Finance | `/student/fine/*` | `controller.finance` | Tính tiền phạt, Thanh toán VNPAY |
+> **Chi tiết Module, Components & Data Flow:** Xem [plan.md](/plan.md) Section 2 & 3.
 
 ### Flow xử lý giao dịch lõi (Ví dụ: Mượn sách):
 Client (JSP) → `AuthorizationFilter` (Check Role Session) → `BorrowServlet` (Nhận HTTP Request)

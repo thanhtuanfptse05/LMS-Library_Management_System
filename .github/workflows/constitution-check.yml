@@ -1,0 +1,54 @@
+# Constitution Compliance Check — Library Management System (LMS)
+# Status: PLACEHOLDER — Chưa có logic thực thi, cần cấu hình sau
+# Mục đích: Tự động kiểm tra code mới tuân thủ constitution.md trước khi merge
+#
+# Khi hoàn thiện, workflow này sẽ kiểm tra:
+# - SEC-03: Không có String concatenation SQL (grep cho Statement thay vì PreparedStatement)
+# - SEC-01: Không có hardcoded secrets (grep cho password=, key=, token=, secret=)
+# - DATA-01: Không có lệnh DELETE FROM trên bảng cốt lõi
+# - ENG-03: Không có System.out.println() trong code commit
+# - ARCH-01: Không có DAO import trực tiếp trong Servlet (phải qua Service)
+#
+# Tham chiếu: /.sdd/constitution.md, /.sdd/constraints/verify.md
+
+name: Constitution Compliance Check
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/java/**'
+      - 'web/**'
+
+jobs:
+  constitution-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # TODO: Thêm các bước kiểm tra cụ thể khi team sẵn sàng
+      # Ví dụ:
+      # - name: Check for Statement usage (SEC-03)
+      #   run: |
+      #     if grep -rn "createStatement\|Statement stmt" src/java/ --include="*.java"; then
+      #       echo "❌ CONSTITUTION VIOLATION: SEC-03 — Found Statement usage. Use PreparedStatement."
+      #       exit 1
+      #     fi
+      #
+      # - name: Check for hardcoded secrets (SEC-01)
+      #   run: |
+      #     if grep -rn "password\s*=\s*\"" src/java/ --include="*.java"; then
+      #       echo "❌ CONSTITUTION VIOLATION: SEC-01 — Found hardcoded password."
+      #       exit 1
+      #     fi
+      #
+      # - name: Check for System.out.println (ENG-03)
+      #   run: |
+      #     if grep -rn "System.out.println" src/java/ --include="*.java"; then
+      #       echo "❌ CONSTITUTION VIOLATION: ENG-03 — Found System.out.println."
+      #       exit 1
+      #     fi
+
+      - name: Placeholder — Constitution check not yet configured
+        run: echo "⚠️ Constitution check is a PLACEHOLDER. Configure checks when team is ready."

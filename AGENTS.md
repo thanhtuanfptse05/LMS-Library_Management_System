@@ -1,5 +1,5 @@
 # AGENTS.md — Project Context for AI Agents
-# Version: 1.0.0 | Updated: 28/5/2026 | Project: LMS-Library Management System
+# Version: 1.1.0 | Updated: 29/5/2026 | Project: LMS-Library Management System
 
 ## 1. PROJECT OVERVIEW
 Name: Library Management System
@@ -56,12 +56,15 @@ Views (JSP): kebab-case (e.g., `book-list.jsp`, `dashboard-admin.jsp`)
 DB tables: snake_case (e.g., `borrowing_record`, `system_configuration`)
 
 ## 7. FORBIDDEN PATTERNS
-- NEVER lưu mật khẩu dưới dạng plaintext trong Database (Phải dùng Bcrypt).
-- NEVER sử dụng String Concatenation (`+`) trong SQL queries (BẮT BUỘC dùng `PreparedStatement` để chống SQL Injection).
-- NEVER hardcode API keys (VNPAY, OpenAI, SMTP) trong source code. Phải đọc từ biến môi trường (`.env`) hoặc bảng `System_Configuration`.
-- NEVER bỏ qua bộ lọc `@WebFilter` đối với các URL yêu cầu phân quyền (`/admin/*`, `/librarian/*`, `/student/*`).
-- NEVER thực hiện Hard-delete (xóa cứng) các giao dịch cốt lõi (Borrowing_Record, Fine, Payment). Chỉ dùng Soft-delete (cập nhật status) hoặc giữ nguyên để phục vụ Audit Log.
-- NEVER bỏ qua việc ghi log (AuditLog) cho các thao tác Create/Update/Delete quan trọng.
+> **⚖️ SOURCE OF TRUTH:** Các Hard Rules chính thức được định nghĩa tại [constitution.md](/.sdd/constitution.md) (Layer 1).
+> File này chỉ tóm tắt nhắc nhở nhanh — khi có xung đột, `constitution.md` là luật cuối cùng.
+
+**Tóm tắt nhắc nhở (chi tiết xem constitution.md):**
+- SEC-01: KHÔNG plaintext password → BCrypt.
+- SEC-02: KHÔNG bypass `@WebFilter` cho `/admin/*`, `/librarian/*`, `/student/*`.
+- SEC-03: KHÔNG String Concatenation SQL → `PreparedStatement`.
+- DATA-01: KHÔNG Hard-delete giao dịch lõi → Soft-delete qua status.
+- ARCH-02: KHÔNG bỏ qua AuditLog cho C/U/D quan trọng.
 
 ## 8. XỬ LÝ TÌNH HUỐNG
 - Nếu không chắc chắn về nghiệp vụ → HỎI Human thay vì đoán.
@@ -87,6 +90,15 @@ Example: `feat(borrow): implement transaction logic for borrowing books`
 Sprint: Milestone 2 (Core Transaction Flow)
 Focus: Xây dựng tính năng Xác thực bảo mật (Login/OTP/Filter) và Luồng giao dịch lõi (Tìm sách, Mượn sách, Trả sách, Tính phạt).
 
-## 12. NGỮ CẢNH DỰ ÁN
-- Đọc `.agents/CONTEXT.md` để biết kiến trúc chi tiết, Core Transaction Flow, và Lessons Learned.
-- Active specs: xem `/.sdd/specs/` để biết danh sách spec đang code.
+## 12. NGỮ CẢNH DỰ ÁN (Document Hierarchy)
+- **Luật chính thức (Law):** xem `/.sdd/constitution.md` — Hard Rules không bao giờ vi phạm.
+- **Kiến trúc, ADR & Lessons Learned (Why):** xem `/CONTEXT.md`
+- **Components, Data Flow & Timeline (What/Who/When):** xem `/plan.md`
+- **Business Rules Registry:** xem `/.sdd/business_rules.md`
+- **Servlet ↔ JSP Contracts:** xem `/.sdd/shared_context.md`
+- **Active specs:** xem `/.sdd/specs/`
+
+## 13. REQUIREMENTS REFERENCE
+- **Functional Requirements (32 FR):** FR01→FR32, chi tiết tại `/.sdd/shared_context.md` Section 2 (Servlet Contracts) và `/.sdd/specs/_template.md` Section 3.
+- **Use Cases (23 UC):** UC01→UC23, chi tiết tại `/.sdd/shared_context.md` Section 1 (Actor↔UC Mapping).
+- **Business Rules (29 BR):** BR01→BR29, chi tiết tại `/.sdd/business_rules.md` (Registry đầy đủ).
