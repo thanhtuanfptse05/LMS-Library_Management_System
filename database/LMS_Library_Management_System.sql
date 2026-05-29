@@ -1,7 +1,7 @@
-﻿ create database LMS_Library_Management_System;
- go
- use LMS_Library_Management_System;
- go
+create database LMS_Library_Management_System;
+go
+use LMS_Library_Management_System;
+go
 -- ============================================================
 -- LIBRARY MANAGEMENT SYSTEM
 -- ============================================================
@@ -9,24 +9,24 @@
 CREATE TABLE [User] (
     userId INT IDENTITY(1,1) PRIMARY KEY,
     email NVARCHAR(255) NOT NULL UNIQUE,
-    password_hash NVARCHAR(255) NOT NULL,
-    [status] NVARCHAR(50) NOT NULL DEFAULT 'active', --active,locked
+    passwordHash NVARCHAR(255) NOT NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'active', -- active, locked
     [role] NVARCHAR(50) NOT NULL,
-	lock_reason NVARCHAR(50) NULL, --unpaid, adminban, securitybreach
-    failed_login_attempts INT NOT NULL DEFAULT 0,
-    locked_until DATETIME NULL
+    lockReason NVARCHAR(50) NULL, -- unpaid, adminban, securitybreach
+    failedLoginAttempts INT NOT NULL DEFAULT 0,
+    lockedUntil DATETIME NULL
 );
 
 -- ============================================================
 
 CREATE TABLE MemberProfile (
     userId INT PRIMARY KEY,
-    full_name NVARCHAR(255) NOT NULL,
-    phone_number NVARCHAR(20) NULL,
+    fullName NVARCHAR(255) NOT NULL,
+    phoneNumber NVARCHAR(20) NULL,
     gender NVARCHAR(10) NULL,
-    date_of_birth DATE NULL,
-    [start_date] DATE NULL,
-    end_date DATE NULL,
+    dateOfBirth DATE NULL,
+    [startDate] DATE NULL,
+    endDate DATE NULL,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
 );
@@ -35,9 +35,9 @@ CREATE TABLE MemberProfile (
 
 CREATE TABLE Student (
     userId INT PRIMARY KEY,
-    student_code NVARCHAR(50) NOT NULL UNIQUE,
+    studentCode NVARCHAR(50) NOT NULL UNIQUE,
     major NVARCHAR(255) NULL,
-    enrollment_year INT NULL,
+    enrollmentYear INT NULL,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
 );
@@ -46,7 +46,7 @@ CREATE TABLE Student (
 
 CREATE TABLE Lecturer (
     userId INT PRIMARY KEY,
-    lecturer_code NVARCHAR(50) NOT NULL UNIQUE,
+    lecturerCode NVARCHAR(50) NOT NULL UNIQUE,
     department NVARCHAR(255) NULL,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
@@ -56,7 +56,7 @@ CREATE TABLE Lecturer (
 
 CREATE TABLE Librarian (
     userId INT PRIMARY KEY,
-    staff_code NVARCHAR(50) NOT NULL UNIQUE,
+    staffCode NVARCHAR(50) NOT NULL UNIQUE,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
 );
@@ -65,7 +65,7 @@ CREATE TABLE Librarian (
 
 CREATE TABLE LibraryManager (
     userId INT PRIMARY KEY,
-    staff_code NVARCHAR(50) NOT NULL UNIQUE,
+    staffCode NVARCHAR(50) NOT NULL UNIQUE,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
 );
@@ -74,7 +74,7 @@ CREATE TABLE LibraryManager (
 
 CREATE TABLE Admin (
     userId INT PRIMARY KEY,
-    staff_code NVARCHAR(50) NOT NULL UNIQUE,
+    staffCode NVARCHAR(50) NOT NULL UNIQUE,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
 );
@@ -82,25 +82,25 @@ CREATE TABLE Admin (
 -- ============================================================
 
 CREATE TABLE SystemConfigurations (
-    config_key NVARCHAR(255) PRIMARY KEY,
-    config_value NVARCHAR(MAX) NULL,
+    configKey NVARCHAR(255) PRIMARY KEY,
+    configValue NVARCHAR(MAX) NULL,
     [description] NVARCHAR(MAX) NULL,
-    updated_by INT NULL,
-    updated_at DATETIME NULL DEFAULT GETDATE(),
+    configGroup NVARCHAR(50) NOT NULL DEFAULT 'library', -- system, library
+    updatedBy INT NULL,
+    updatedAt DATETIME NULL DEFAULT GETDATE(),
 
-    FOREIGN KEY (updated_by) REFERENCES [User](userId)
+    FOREIGN KEY (updatedBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
-
 CREATE TABLE AuditLogs (
     auditLogId INT IDENTITY(1,1) PRIMARY KEY,
     userId INT NULL,
-    action_type NVARCHAR(100) NOT NULL,
-    [entity_name] NVARCHAR(255) NULL,
-    [entity_id] INT NULL,
-    old_values NVARCHAR(MAX) NULL,
-    new_values NVARCHAR(MAX) NULL,
+    actionType NVARCHAR(100) NOT NULL,
+    [entityName] NVARCHAR(255) NULL,
+    [entityId] INT NULL,
+    oldValues NVARCHAR(MAX) NULL,
+    newValues NVARCHAR(MAX) NULL,
     [timestamp] DATETIME NOT NULL DEFAULT GETDATE(),
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
@@ -129,13 +129,13 @@ CREATE TABLE Books (
     title NVARCHAR(500) NOT NULL,
     author NVARCHAR(500) NULL,
     publisher NVARCHAR(255) NULL,
-    publication_year INT NULL,
+    publicationYear INT NULL,
     price DECIMAL(18,2) NULL,
-    total_quantity INT NOT NULL DEFAULT 0,
-    available_quantity INT NOT NULL DEFAULT 0,
-    [status] NVARCHAR(50) NOT NULL DEFAULT 'available',  --unvailable, available
-    created_at DATETIME NOT NULL DEFAULT GETDATE(),
-    updated_at DATETIME  NULL 
+    totalQuantity INT NOT NULL DEFAULT 0,
+    availableQuantity INT NOT NULL DEFAULT 0,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'available',  -- unavailable, available
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+    updatedAt DATETIME NULL 
 );
 
 -- ============================================================
@@ -169,10 +169,10 @@ CREATE TABLE BookCopy (
     bookId INT NOT NULL,
     [location] NVARCHAR(255) NULL,
     condition NVARCHAR(100) NOT NULL DEFAULT 'good',  -- good, damaged, lost
-    [status] NVARCHAR(50) NOT NULL DEFAULT 'available', -- available, unavailable, borrowed , reserved 
-	barcode NVARCHAR(50) NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT GETDATE(),
-    updated_at DATETIME NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'available', -- available, unavailable, borrowed, reserved 
+    barcode NVARCHAR(50) NOT NULL UNIQUE,
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+    updatedAt DATETIME NULL,
 
     FOREIGN KEY (bookId) REFERENCES Books(bookId)
 );
@@ -185,11 +185,10 @@ CREATE TABLE Reservation (
     bookId INT NOT NULL,
     bookCopyId INT NULL,
     [status] NVARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, readypickup, fulfilled, cancelled 
-    queue_position INT NULL,
-    [start_date] DATE NULL DEFAULT GETDATE(),
-    end_date DATE NULL,
+    queuePosition INT NULL,
+    [startDate] DATE NULL DEFAULT GETDATE(),
+    endDate DATE NULL,
   
-
     FOREIGN KEY (userId) REFERENCES [User](userId),
     FOREIGN KEY (bookId) REFERENCES Books(bookId),
     FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId)
@@ -202,18 +201,18 @@ CREATE TABLE BorrowRecord (
     userId INT NOT NULL,
     bookCopyId INT NOT NULL,
     bookId INT NOT NULL,
-    [start_date] DATE NOT NULL DEFAULT GETDATE(),
-    end_date DATE NOT NULL,
-    returned_at DATETIME NULL,
-    [status] NVARCHAR(50) NOT NULL DEFAULT 'borrowed', --borrowed, returned, overdue, lost
-    extension_count INT NOT NULL DEFAULT 0,
-    created_by INT NULL,
-    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    [startDate] DATE NOT NULL DEFAULT GETDATE(),
+    endDate DATE NOT NULL,
+    returnedAt DATETIME NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'borrowed', -- borrowed, returned, overdue, lost
+    extensionCount INT NOT NULL DEFAULT 0,
+    createdBy INT NULL,
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
 
     FOREIGN KEY (userId) REFERENCES [User](userId),
     FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId),
     FOREIGN KEY (bookId) REFERENCES Books(bookId),
-    FOREIGN KEY (created_by) REFERENCES [User](userId)
+    FOREIGN KEY (createdBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
@@ -224,8 +223,8 @@ CREATE TABLE Fine (
     userId INT NOT NULL,
     amount DECIMAL(18,2) NOT NULL DEFAULT 0,
     reason NVARCHAR(500) NULL,
-    [status] NVARCHAR(50) NOT NULL DEFAULT 'unpaid', --unpaid, paid  
-    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'unpaid', -- unpaid, paid  
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
 
     FOREIGN KEY (borrowRecordId) REFERENCES BorrowRecord(borrowRecordId),
     FOREIGN KEY (userId) REFERENCES [User](userId)
@@ -236,15 +235,15 @@ CREATE TABLE Fine (
 CREATE TABLE Payment (
     paymentId INT IDENTITY(1,1) PRIMARY KEY,
     fineId INT NOT NULL,
-    paid_amount DECIMAL(18,2) NOT NULL,
-    payment_method NVARCHAR(100) NULL,
-    transaction_reference NVARCHAR(255) NULL UNIQUE,
-    process_by INT NULL,
-    [status] NVARCHAR(50) NOT NULL DEFAULT 'pending', --completed, pending, canceled
-    paid_at DATETIME NOT NULL DEFAULT GETDATE(),
+    paidAmount DECIMAL(18,2) NOT NULL,
+    paymentMethod NVARCHAR(100) NULL,
+    transactionReference NVARCHAR(255) NULL UNIQUE,
+    processBy INT NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'pending', -- completed, pending, canceled
+    paidAt DATETIME NOT NULL DEFAULT GETDATE(),
 
     FOREIGN KEY (fineId) REFERENCES Fine(fineId),
-    FOREIGN KEY (process_by) REFERENCES [User](userId)
+    FOREIGN KEY (processBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
@@ -253,8 +252,8 @@ CREATE TABLE Notification (
     notificationId INT IDENTITY(1,1) PRIMARY KEY,
     title NVARCHAR(500) NOT NULL,
     content NVARCHAR(MAX) NULL,
-    created_by INT NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT GETDATE(),
-    FOREIGN KEY (created_by) REFERENCES [User](userId)
-
+    createdBy INT NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+    
+    FOREIGN KEY (createdBy) REFERENCES [User](userId)
 );

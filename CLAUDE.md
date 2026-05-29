@@ -48,4 +48,5 @@
 
 ## AUTO MEMORY (Claude Code appends here)
 # [Claude Code sẽ tự động thêm entries khi bạn làm việc]
-# [2026-05-29]: Khởi tạo bộ não dự án .sdd/ + .agents/ với đầy đủ 32 FR, 23 UC, 31 BR (gồm BR30, BR31 mới).
+# [2026-05-29]: Khởi tạo bộ não dự án .sdd/ + .agents/ với đầy đủ 31 BR (gồm BR30, BR31 mới).
+# [2026-05-29]: Thêm FR33 (Chatbot AI), đồng bộ DB column naming (camelCase), thêm configGroup. Tổng: 33 FR, 24 UC, 31 BR.
