@@ -16,7 +16,7 @@
         <div class="footer-brand">
             <div class="footer-brand__logo">
                 <span class="material-symbols-outlined footer-brand__icon">local_library</span>
-                <span class="footer-brand__name">Smart LMS</span>
+                <span class="footer-brand__name">LMS University Library</span>
             </div>
             <p class="footer-brand__desc">
                 A digital sanctuary for deep focus and seamless resource discovery. Empowering the modern university community.

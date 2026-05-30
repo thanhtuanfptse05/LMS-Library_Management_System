@@ -18,7 +18,7 @@
         <%-- Brand / Logo --%>
         <a href="<c:url value='/'/>" class="nav-brand">
             <span class="material-symbols-outlined nav-brand__icon">local_library</span>
-            <span class="nav-brand__text">Smart LMS</span>
+            <span class="nav-brand__text">LMS University Library</span>
         </a>
 
         <%-- Desktop Navigation Links --%>

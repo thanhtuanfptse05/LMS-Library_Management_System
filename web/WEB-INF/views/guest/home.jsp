@@ -1,5 +1,5 @@
 <%-- 
-    home.jsp — Smart LMS Home Page (Landing Page)
+    home.jsp — LMS University Library Home Page (Landing Page)
     MVC View: Receives data from HomeServlet and renders all home sections.
     
     Sections: Hero, Quick Search, Mission/Stats, News, Policies, User Guide, Contact
@@ -8,7 +8,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <%-- Page-level variables for included components --%>
-<c:set var="pageTitle" value="Smart LMS - Intellectual Sanctuary" scope="request"/>
+<c:set var="pageTitle" value="LMS University Library - Intellectual Sanctuary" scope="request"/>
 <c:set var="pageCss" value="/assets/css/home.css" scope="request"/>
 <c:set var="currentPage" value="home" scope="request"/>
 

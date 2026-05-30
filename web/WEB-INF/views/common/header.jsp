@@ -13,9 +13,9 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="description" content="Smart LMS - A modern Library Management System providing seamless access to knowledge resources for the university community."/>
+    <meta name="description" content="LMS University Library - A modern Library Management System providing seamless access to knowledge resources for the university community."/>
 
-    <title><c:out value="${pageTitle}" default="Smart LMS - Intellectual Sanctuary"/></title>
+    <title><c:out value="${pageTitle}" default="LMS University Library - Intellectual Sanctuary"/></title>
 
     <%-- Google Fonts: Inter (body) + Geist (headlines) --%>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>

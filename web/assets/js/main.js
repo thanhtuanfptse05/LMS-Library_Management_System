@@ -1,5 +1,5 @@
 /**
- * main.js — Smart LMS JavaScript
+ * main.js — LMS University Library JavaScript
  * Accordion toggle, scroll shadow, mobile menu
  */
 

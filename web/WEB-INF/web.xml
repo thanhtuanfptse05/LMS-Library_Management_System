@@ -5,7 +5,7 @@
                              https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
          version="5.0">
 
-    <display-name>Smart LMS - Library Management System</display-name>
+    <display-name>LMS University Library - Library Management System</display-name>
 
     <!-- Welcome File Configuration -->
     <welcome-file-list>
