@@ -1,7 +1,6 @@
 <%-- 
     index.jsp — Welcome File
-    Forwards all requests to HomeServlet for proper MVC flow.
-    This file exists only as the web.xml welcome-file entry point.
+    Forwards to guest home page directly for UI design phase.
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:forward page="/home"/>
+<jsp:forward page="/WEB-INF/views/guest/home.jsp"/>
