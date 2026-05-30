@@ -1,54 +1,72 @@
-# Constitution Compliance Check — Library Management System (LMS)
-# Status: PLACEHOLDER — Chưa có logic thực thi, cần cấu hình sau
-# Mục đích: Tự động kiểm tra code mới tuân thủ constitution.md trước khi merge
-#
-# Khi hoàn thiện, workflow này sẽ kiểm tra:
-# - SEC-03: Không có String concatenation SQL (grep cho Statement thay vì PreparedStatement)
-# - SEC-01: Không có hardcoded secrets (grep cho password=, key=, token=, secret=)
-# - DATA-01: Không có lệnh DELETE FROM trên bảng cốt lõi
-# - ENG-03: Không có System.out.println() trong code commit
-# - ARCH-01: Không có DAO import trực tiếp trong Servlet (phải qua Service)
-#
-# Tham chiếu: /.sdd/constitution.md, /.sdd/constraints/verify.md
-
-name: Constitution Compliance Check
+name: LMS Constitution Check CI
 
 on:
+  push:
+    branches: [ main, develop ]
   pull_request:
-    branches: [main, develop]
-    paths:
-      - 'src/java/**'
-      - 'web/**'
+    branches: [ main, develop ]
 
 jobs:
   constitution-check:
+    name: Constitution & Anti-Framework Checks
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      # TODO: Thêm các bước kiểm tra cụ thể khi team sẵn sàng
-      # Ví dụ:
-      # - name: Check for Statement usage (SEC-03)
-      #   run: |
-      #     if grep -rn "createStatement\|Statement stmt" src/java/ --include="*.java"; then
-      #       echo "❌ CONSTITUTION VIOLATION: SEC-03 — Found Statement usage. Use PreparedStatement."
-      #       exit 1
-      #     fi
-      #
-      # - name: Check for hardcoded secrets (SEC-01)
-      #   run: |
-      #     if grep -rn "password\s*=\s*\"" src/java/ --include="*.java"; then
-      #       echo "❌ CONSTITUTION VIOLATION: SEC-01 — Found hardcoded password."
-      #       exit 1
-      #     fi
-      #
-      # - name: Check for System.out.println (ENG-03)
-      #   run: |
-      #     if grep -rn "System.out.println" src/java/ --include="*.java"; then
-      #       echo "❌ CONSTITUTION VIOLATION: ENG-03 — Found System.out.println."
-      #       exit 1
-      #     fi
+    - name: Run Anti-Framework & Security Verification
+      run: |
+        echo "=========================================================="
+        echo "          STARTING LMS CONSTITUTION CHECKS                "
+        echo "=========================================================="
+        VIOLATIONS=0
 
-      - name: Placeholder — Constitution check not yet configured
-        run: echo "⚠️ Constitution check is a PLACEHOLDER. Configure checks when team is ready."
+        # Rule 1: Cấm Spring Framework
+        echo "Checking for Spring Framework usage..."
+        if grep -rni "org.springframework" src/java/ ; then
+          echo "❌ ERROR: Found Spring Framework imports! (Violation of ARCH-01)"
+          VIOLATIONS=$((VIOLATIONS+1))
+        fi
+
+        # Rule 2: Cấm Hibernate
+        echo "Checking for Hibernate usage..."
+        if grep -rni "org.hibernate" src/java/ ; then
+          echo "❌ ERROR: Found Hibernate imports! (Violation of ARCH-01)"
+          VIOLATIONS=$((VIOLATIONS+1))
+        fi
+
+        # Rule 3: Cấm JPA / Persistence API
+        echo "Checking for JPA / javax.persistence usage..."
+        if grep -rni "javax.persistence" src/java/ || grep -rni "jakarta.persistence" src/java/ ; then
+          echo "❌ ERROR: Found JPA/Persistence imports! (Violation of ARCH-01)"
+          VIOLATIONS=$((VIOLATIONS+1))
+        fi
+
+        # Rule 4: Chống SQL Injection - Cấm String Concatenation trong SQL Query
+        echo "Checking for potential SQL Injection (String Concatenation in Statement)..."
+        # Tìm các dòng lệnh sql hoặc query được cộng chuỗi với biến Java (ví dụ: + userId hoặc + select)
+        if grep -rnE "stmt\.execute.*(\+|concat)" src/java/ || grep -rnE "Connection.*\.createStatement" src/java/ ; then
+          echo "❌ WARNING: Found Statement or potential String concatenation in queries! (Violation of SEC-03)"
+          echo "Always use PreparedStatement instead."
+          VIOLATIONS=$((VIOLATIONS+1))
+        fi
+
+        # Rule 5: Bảo mật thông tin - Quét các chuỗi Plaintext Secrets
+        echo "Checking for hardcoded plaintext password/keys..."
+        if grep -rni "vnp_HashSecret = \"" src/java/ || grep -rni "SendGrid_API_Key = \"" src/java/ ; then
+          echo "❌ ERROR: Hardcoded sensitive API secrets detected! (Violation of SEC-01)"
+          VIOLATIONS=$((VIOLATIONS+1))
+        fi
+
+        # Kết luận
+        if [ $VIOLATIONS -ne 0 ]; then
+          echo "=========================================================="
+          echo "❌ CONSTITUTION CHECK FAILED! Violations count: $VIOLATIONS"
+          echo "=========================================================="
+          exit 1
+        else
+          echo "=========================================================="
+          echo "✅ CONSTITUTION CHECK PASSED! No framework violations found."
+          echo "=========================================================="
+        fi

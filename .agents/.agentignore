@@ -1,48 +1,57 @@
-# .agentignore — Files trong list này agent KHÔNG được read trừ khi hỏi rõ
-# Project: Library Management System (LMS) — Java Servlet / NetBeans
+# .agentignore — Files agent không đọc để tối ưu token và bảo mật
+# Các tệp trong danh sách này AI Agent KHÔNG được đọc trừ khi được yêu cầu trực tiếp từ Human
 
-# Build artifacts (không relevant cho logic)
+# Build artifacts (Java/NetBeans)
+target/
 build/
 dist/
 *.class
 *.war
-*.jar
 *.ear
+*.jar
+*.exe
+*.dll
+*.so
 
-# NetBeans project internals (không phải project context)
-nbproject/private/
-nb-configuration.xml
+# Dependencies
+node_modules/
+vendor/
+lib/
+web/WEB-INF/lib/  # Thư viện ngoài jar không cần đọc code internals
 
-# IDE config (không phải project context)
+# IDE config & Project Settings
 .vscode/
 .idea/
+.settings/
+.classpath
+.project
+.nbproject/      # Cấu hình dự án NetBeans
+nbproject/
 *.swp
 *.swo
-*.nb-*
 
-# Version control (agent không cần git internals)
+# Version control
 .git/
 .gitignore
 
-# Logs và debug (noise, không phải context)
+# Logs và debug
 *.log
 logs/
 tmp/
+temp/
 coverage/
 
-# Large generated files
-docs/swagger.json
-target/
-
-# Binary files (agent cannot read anyway)
+# Binary & Media files
 *.png
 *.jpg
+*.jpeg
 *.gif
 *.ico
 *.pdf
-*.docx
+*.zip
+*.tar.gz
 
-# Sensitive (agent should NOT read)
+# Secrets & Credentials (Bảo mật tuyệt đối theo hiến pháp)
 .env
 .env.*
 *.pem
@@ -50,6 +59,3 @@ target/
 *.secret
 credentials/
 secrets/
-
-# Template files (reference only — không phải active code)
-template/

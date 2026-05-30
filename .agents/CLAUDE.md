@@ -1,52 +1,38 @@
 # CLAUDE.md — Claude Code Project Memory
-# Đọc file AGENTS.md trước để hiểu full project context
-# Project: Library Management System (LMS) | Sprint: Milestone 2
+# Đọc file AGENTS.md ở root và .agents/AGENTS.md trước để hiểu full project context
 
-## MANUAL MEMORY (human-maintained)
+## 1. MANUAL MEMORY (human-maintained)
 
 ### Architecture Decisions (ADR)
-# ADR-001: Bắt buộc dùng Raw JDBC + DAO Pattern — ràng buộc của môn SWP391. KHÔNG import Hibernate/JPA.
-# ADR-002: Mô hình Table-per-Type (TPT) cho User — Bảng cha User + bảng con Student, Lecturer, Librarian, LibraryManager, Admin. Phải JOIN khi query chi tiết.
-# ADR-003: Soft-Delete + Audit Log — KHÔNG dùng DELETE trên BorrowRecord, Fine, Payment, Reservation. Cập nhật status + INSERT AuditLogs.
-# ADR-004: Session-based Auth thay vì JWT — Vì hệ thống dùng JSP (server-rendered), không cần stateless API.
+* **ADR-001: Java Web Monolith thuần**
+  * Lý do: Yêu cầu bắt buộc của môn học (SWP391 Milestone 2) cấm sử dụng Spring Boot, Hibernate, JPA. Sử dụng Java Servlet/JSP + JDBC thuần để đạt điểm tối đa.
+* **ADR-002: Authentication & RBAC thông qua Session và WebFilter**
+  * Lý do: Sử dụng `HttpSession` để lưu thông tin đăng nhập và viết `@WebFilter` bảo vệ các thư mục `/student/*`, `/librarian/*`, `/manager/*`, `/admin/*`. Chặn bypass filter tuyệt đối.
+* **ADR-003: Chống SQL Injection triệt để bằng PreparedStatement**
+  * Lý do: Triệt tiêu hoàn toàn lỗi SQL Injection. Cấm sử dụng String Concatenation khi tạo câu truy vấn SQL.
+* **ADR-004: Bất đồng bộ hóa (Async) cho I/O chậm**
+  * Lý do: Gửi OTP, email qua SMTP/SendGrid tốn từ 2-5 giây. Bắt buộc chạy bất đồng bộ qua `ExecutorService` của Java để tránh làm treo luồng HTTP Request của người dùng.
+* **ADR-005: Đồng bộ hóa Naming Database**
+  * Lý do: Bảng đặt theo dạng `PascalCase` (ví dụ `BorrowRecord`, `SystemConfigurations`), còn cột đặt theo dạng `camelCase` (ví dụ `userId`, `passwordHash`) để đồng bộ hoàn hảo với các thực thể Java (Java Beans).
 
-### Lessons Learned (từ incidents và code review)
-# LESSON-001: Luôn dùng try-with-resources trong DAO — học từ Connection Leak bug.
-# LESSON-002: KHÔNG dùng string concatenation cho SQL — đã bị SQL Injection từ lỗi cũ.
-# LESSON-003: Gửi email phải qua ExecutorService — app bị đơ 5s khi gửi OTP đồng bộ.
-# LESSON-004: Fine Sync Logic phải check lock_reason trước khi unlock — KHÔNG mù quáng set status='active' khi fine paid.
+### Lessons Learned (từ các pha review và sửa lỗi)
+* **LESSON-001: Phạt trễ hạn và lệch kiểu dữ liệu ngày tháng**
+  * Luôn sử dụng kiểu dữ liệu `DATETIME` cho ngày mượn (`startDate`), ngày hẹn trả (`endDate`) và ngày trả thực tế (`returnedAt`) để tránh lỗi làm tròn ngày gây phạt oan sinh viên khi so sánh trực tiếp.
+* **LESSON-002: Thiết kế Cấu hình tập trung (Centralized Config)**
+  * Thay vì tách bảng `LibraryConfigurations` vật lý gây dư thừa DAO/Model, sử dụng duy nhất một bảng `SystemConfigurations` và phân loại bằng cột `configGroup` ('system' hoặc 'library') rồi phân quyền ở tầng Servlet.
+* **LESSON-003: Ràng buộc duy nhất cho mã vạch (Barcode)**
+  * Bắt buộc khai báo `UNIQUE` cho trường `barcode` trong `BookCopy` để tránh lỗi trùng mã sách khi thủ thư quét mã vạch làm thủ tục mượn/trả.
 
 ### Current Sprint Notes
-# Sprint: Milestone 2 focus: Core Transaction Flow
-# Xác thực bảo mật (Login/OTP/Filter) + Luồng giao dịch lõi (Mượn/Trả/Phạt)
-# DB Schema đã chốt 20 bảng — KHÔNG tự ý tạo thêm bảng
+* **Sprint:** Milestone 2 (Core Transaction Flow).
+* **Focus:** Hoàn thiện luồng Xác thực bảo mật (Login/OTP/Filter) và luồng giao dịch cốt lõi (Tìm sách, đặt trước, mượn sách, trả sách và tính tiền phạt).
+* **Next:** Implement `SystemConfigServlet` hỗ trợ phân quyền nhóm cấu hình cho Admin và Library Manager.
 
-## PATTERNS TO FOLLOW
-# Controller pattern: src/java/controller/[module]/[Name]Servlet.java
-# Service pattern:    src/java/service/[Name]Service.java
-# DAO pattern:        src/java/dao/[Name]DAO.java
-# Model pattern:      src/java/model/[Name].java
-# Filter pattern:     src/java/filter/[Name]Filter.java
-# Util pattern:       src/java/util/[Name]Util.java
-# Listener pattern:   src/java/listener/[Name]Listener.java
-# View pattern:       web/WEB-INF/views/[module]/[name].jsp (kebab-case)
-# Always: gọi AuditLogDAO.insert() sau mỗi C/U/D quan trọng
-# Always: tạo Service test file cùng lúc với Service file
+## 2. PATTERNS TO FOLLOW
+* **DAO Pattern:** Viết trong `/src/java/dao/[Name]DAO.java`. Tự quản lý connection, commit/rollback thủ công bằng JDBC PreparedStatement.
+* **Entity/Model Pattern:** Viết trong `/src/java/model/[Name].java` (đặt tên PascalCase, các thuộc tính map chuẩn camelCase với Database).
+* **Controller/Servlet Pattern:** Viết trong `/src/java/controller/[Name]Servlet.java` (kèm annotation `@WebServlet`).
+* **View JSP Pattern:** Đặt trong `/web/WEB-INF/views/[sub-folder]/[name-kebab-case].jsp`. Dùng JSTL để hiển thị dữ liệu động, tránh viết mã Java scriptlet (`<% %>`) trực tiếp trong JSP.
 
-## DB SCHEMA REFERENCE
-# 20 bảng đã chốt — xem database/LMS_Library_Management_System.sql
-# User (TPT): User, MemberProfile, Student, Lecturer, Librarian, LibraryManager, Admin
-# Catalog: Books, BookCopy, Category, Tag, BookCategory (junction), BookTag (junction)
-# Transaction: BorrowRecord, Reservation, Fine, Payment
-# System: SystemConfigurations, AuditLogs, Notification
-
-## KEY BUSINESS LOGIC NOTES
-# Reservation-first flow: Mọi yêu cầu mượn ĐỀU qua Reservation trước → pending / readypickup → fulfilled
-# Fine-first policy (BR-LMS-004): User PHẢI trả hết phạt trước khi mượn/gia hạn/đặt trước
-# Fine Sync (BR-LMS-004 & BR-LMS-021): Fine unpaid → auto lock User. Fine all paid → check lock_reason trước khi unlock
-# Return triggers queue: Trả sách → kiểm tra Reservation pending → gán cho người đầu hàng
-
-## AUTO MEMORY (Claude Code appends here)
-# [Claude Code sẽ tự động thêm entries khi bạn làm việc]
-# [2026-05-29]: Khởi tạo bộ não dự án .sdd/ + .agents/ với đầy đủ 31 BR (gồm BR30, BR31 mới).
-# [2026-05-29]: Thêm FR33 (Chatbot AI), đồng bộ DB column naming (camelCase), thêm configGroup. Tổng: 33 FR, 24 UC, 31 BR.
+## 3. AUTO MEMORY (Claude Code appends here)
+# [Claude Code tự động thêm các entry tại đây khi làm việc]

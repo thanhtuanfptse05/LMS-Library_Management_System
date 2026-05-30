@@ -25,7 +25,7 @@ CREATE TABLE MemberProfile (
     phoneNumber NVARCHAR(20) NULL,
     gender NVARCHAR(10) NULL,
     dateOfBirth DATE NULL,
-    [startDate] DATE NULL,
+    startDate DATE NULL,
     endDate DATE NULL,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
@@ -93,6 +93,7 @@ CREATE TABLE SystemConfigurations (
 );
 
 -- ============================================================
+
 CREATE TABLE AuditLogs (
     auditLogId INT IDENTITY(1,1) PRIMARY KEY,
     userId INT NULL,
@@ -123,7 +124,7 @@ CREATE TABLE Tag (
 
 -- ============================================================
 
-CREATE TABLE Books (
+CREATE TABLE Book (
     bookId INT IDENTITY(1,1) PRIMARY KEY,
     isbn NVARCHAR(20) NOT NULL UNIQUE,
     title NVARCHAR(500) NOT NULL,
@@ -186,8 +187,8 @@ CREATE TABLE Reservation (
     bookCopyId INT NULL,
     [status] NVARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, readypickup, fulfilled, cancelled 
     queuePosition INT NULL,
-    [startDate] DATE NULL DEFAULT GETDATE(),
-    endDate DATE NULL,
+    startDate DATETIME NULL DEFAULT GETDATE(),
+    endDate DATETIME NULL,
   
     FOREIGN KEY (userId) REFERENCES [User](userId),
     FOREIGN KEY (bookId) REFERENCES Books(bookId),
@@ -201,8 +202,8 @@ CREATE TABLE BorrowRecord (
     userId INT NOT NULL,
     bookCopyId INT NOT NULL,
     bookId INT NOT NULL,
-    [startDate] DATE NOT NULL DEFAULT GETDATE(),
-    endDate DATE NOT NULL,
+    startDate DATETIME NOT NULL DEFAULT GETDATE(),
+    endDate DATETIME NOT NULL,
     returnedAt DATETIME NULL,
     [status] NVARCHAR(50) NOT NULL DEFAULT 'borrowed', -- borrowed, returned, overdue, lost
     extensionCount INT NOT NULL DEFAULT 0,
@@ -238,7 +239,7 @@ CREATE TABLE Payment (
     paidAmount DECIMAL(18,2) NOT NULL,
     paymentMethod NVARCHAR(100) NULL,
     transactionReference NVARCHAR(255) NULL UNIQUE,
-    processBy INT NULL,
+    processedBy INT NULL,
     [status] NVARCHAR(50) NOT NULL DEFAULT 'pending', -- completed, pending, canceled
     paidAt DATETIME NOT NULL DEFAULT GETDATE(),
 
@@ -254,6 +255,17 @@ CREATE TABLE Notification (
     content NVARCHAR(MAX) NULL,
     createdBy INT NOT NULL,
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
-    
+
     FOREIGN KEY (createdBy) REFERENCES [User](userId)
 );
+CREATE TABLE DocumentTemp (
+    tempId INT IDENTITY(1,1) PRIMARY KEY,
+    tempName NVARCHAR(100) NOT NULL UNIQUE, -- Ví dụ: 'PICKUP_REMINDER', 'OVERDUE_FINE_NOTICE'
+    [subject] NVARCHAR(255) NOT NULL,      -- Tiêu đề email mẫu
+    bodyContent NVARCHAR(MAX) NOT NULL,    -- Nội dung có chứa tham số {{...}}
+    managerId INT NOT NULL,                -- FK kết nối với LibraryManager
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+    updatedAt DATETIME NULL,
+    FOREIGN KEY (managerId) REFERENCES LibraryManager(userId)
+);
+
