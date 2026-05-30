@@ -1,0 +1,166 @@
+/* ============================================================
+   base.css — CSS Reset + Typography + Base Element Styles
+   ============================================================ */
+
+/* ---- Modern CSS Reset ---- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: var(--text-body-md);
+    line-height: var(--text-body-md-lh);
+    font-weight: var(--text-body-md-fw);
+    color: var(--color-on-surface);
+    background-color: #FFF7ED;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+}
+
+/* ---- Material Symbols Configuration ---- */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ---- Typography Classes ---- */
+
+/* Display — Hero banners */
+.text-display {
+    font-family: var(--font-headline);
+    font-size: var(--text-display);
+    line-height: var(--text-display-lh);
+    letter-spacing: var(--text-display-ls);
+    font-weight: var(--text-display-fw);
+}
+
+/* Headline Large */
+.text-headline-lg {
+    font-family: var(--font-headline);
+    font-size: var(--text-headline-lg);
+    line-height: var(--text-headline-lg-lh);
+    letter-spacing: var(--text-headline-lg-ls);
+    font-weight: var(--text-headline-lg-fw);
+}
+
+/* Headline Medium */
+.text-headline-md {
+    font-family: var(--font-headline);
+    font-size: var(--text-headline-md);
+    line-height: var(--text-headline-md-lh);
+    font-weight: var(--text-headline-md-fw);
+}
+
+/* Body Large */
+.text-body-lg {
+    font-family: var(--font-body);
+    font-size: var(--text-body-lg);
+    line-height: var(--text-body-lg-lh);
+    font-weight: var(--text-body-lg-fw);
+}
+
+/* Body Medium */
+.text-body-md {
+    font-family: var(--font-body);
+    font-size: var(--text-body-md);
+    line-height: var(--text-body-md-lh);
+    font-weight: var(--text-body-md-fw);
+}
+
+/* Body Small */
+.text-body-sm {
+    font-family: var(--font-body);
+    font-size: var(--text-body-sm);
+    line-height: var(--text-body-sm-lh);
+    font-weight: var(--text-body-sm-fw);
+}
+
+/* Label Medium */
+.text-label-md {
+    font-family: var(--font-body);
+    font-size: var(--text-label-md);
+    line-height: var(--text-label-md-lh);
+    letter-spacing: var(--text-label-md-ls);
+    font-weight: var(--text-label-md-fw);
+}
+
+/* Label Small */
+.text-label-sm {
+    font-family: var(--font-body);
+    font-size: var(--text-label-sm);
+    line-height: var(--text-label-sm-lh);
+    font-weight: var(--text-label-sm-fw);
+}
+
+/* ---- Color Utility Classes ---- */
+.color-primary           { color: var(--color-primary); }
+.color-on-primary        { color: var(--color-on-primary); }
+.color-on-surface        { color: var(--color-on-surface); }
+.color-on-surface-variant { color: var(--color-on-surface-variant); }
+.color-primary-fixed-dim { color: var(--color-primary-fixed-dim); }
+
+/* ---- Utility ---- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
