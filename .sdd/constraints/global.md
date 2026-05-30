@@ -28,10 +28,16 @@
 * **Java Classes (Tên Class Java):**
   * Controllers: **PascalCase** + hậu tố `Servlet` (ví dụ: `LoginServlet.java`, `BorrowBookServlet.java`).
   * Data Access: **PascalCase** + hậu tố `DAO` (ví dụ: `BookDAO.java`, `UserDAO.java`).
-  * Models/Entities: **PascalCase** tương ứng tên bảng (ví dụ: `User.java`, `BorrowRecord.java`).
+  * Models/Entities: **PascalCase** tương ứng tên bảng (ví dụ: `User.java`, `BorrowRecord.java`, `Book.java`, `DocumentTemp.java`).
 * **View Files (Tên file JSP):** **kebab-case** đặt trong `WEB-INF/views/[sub-folder]/` (ví dụ: `book-list.jsp`, `manage-configs.jsp`).
 * **Java Variables & Methods:** **camelCase** (ví dụ: `failedLoginAttempts`, `getUserById()`).
 * **Java Constants:** **SCREAMING_SNAKE_CASE** (ví dụ: `MAX_BORROW_LIMIT`).
+
+> [!IMPORTANT]
+> **Lưu ý đặc biệt về lỗi/bất cập trong SQL Schema (CẤM SỬA FILE SQL):**
+> * **Bảng sách `Book`:** File SQL tạo bảng là `Book` (số ít), nhưng các ràng buộc khóa ngoại (Foreign Keys) ở các bảng khác lại tham chiếu nhầm tới `Books(bookId)`. Java code bắt buộc dùng tên bảng thực tế là `Book`, class thực thể là `Book.java` và DAO là `BookDAO.java` (không đặt tên là `Books`).
+> * **Cột trong bảng `Payment`:** Cột thực tế là `processedBy`, nhưng khóa ngoại viết sai thành `processBy`. Java code bắt buộc map với trường `processedBy`.
+> * **Bảng mẫu email `DocumentTemp`:** Được thêm vào CSDL để quản lý các mẫu email thông báo gửi cho người dùng, tổng cộng là 21 bảng.
 
 ---
 

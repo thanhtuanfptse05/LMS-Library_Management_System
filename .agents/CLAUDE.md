@@ -22,6 +22,10 @@
   * Thay vì tách bảng `LibraryConfigurations` vật lý gây dư thừa DAO/Model, sử dụng duy nhất một bảng `SystemConfigurations` và phân loại bằng cột `configGroup` ('system' hoặc 'library') rồi phân quyền ở tầng Servlet.
 * **LESSON-003: Ràng buộc duy nhất cho mã vạch (Barcode)**
   * Bắt buộc khai báo `UNIQUE` cho trường `barcode` trong `BookCopy` để tránh lỗi trùng mã sách khi thủ thư quét mã vạch làm thủ tục mượn/trả.
+* **LESSON-004: Bất cập Schema SQL cố định (SQL Schema Quirks)**
+  * Bảng sách thực tế là `Book` (số ít), nhưng các bảng khác tham chiếu ngoại tới `Books(bookId)`. Bắt buộc dùng tên bảng thực tế `Book`, class entity là `Book.java` và DAO là `BookDAO.java`.
+  * Cột trong bảng `Payment` thực tế là `processedBy`, nhưng khóa ngoại viết nhầm là `processBy`. Bắt buộc dùng `processedBy` trong Java.
+  * Bảng `DocumentTemp` (21 bảng) dùng để quản lý các mẫu email thông báo, được quản lý bởi `LibraryManager`.
 
 ### Current Sprint Notes
 * **Sprint:** Milestone 2 (Core Transaction Flow).

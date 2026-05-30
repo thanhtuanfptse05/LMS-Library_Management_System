@@ -58,3 +58,8 @@
 * **Sprint:** Milestone 2 (Core Transaction Flow)
 * **Focus:** Thiết lập hệ thống Xác thực bảo mật (Login/OTP/Filter) và luồng giao dịch cốt lõi (Tìm sách, Mượn sách, Trả sách, Tính tiền phạt).
 * **Active specs:** `/.sdd/specs/`
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->

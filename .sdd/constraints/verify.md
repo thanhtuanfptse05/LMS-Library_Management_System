@@ -11,7 +11,7 @@ Review toàn bộ code bạn vừa viết và xác nhận tuân thủ tuyệt đ
 ## Business Constraints check (LMS Logic):
 - [ ] Mật khẩu có được băm bằng `BCrypt` (tuyệt đối không dùng plaintext, MD5, SHA) không?
 - [ ] Luồng mượn/đặt sách có đi qua bảng `Reservation` trước khi tạo `BorrowRecord` không?
-- [ ] Cơ chế Soft-delete (cập nhật `status` thay vì xóa) có được áp dụng cho các bảng cốt lõi (`User`, `Books`, `BorrowRecord`, `Fine`, `Payment`) không?
+- [ ] Cơ chế Soft-delete (cập nhật `status` thay vì xóa) có được áp dụng cho các bảng cốt lõi (`[User]`, `Book`, `BorrowRecord`, `Fine`, `Payment`) không?
 - [ ] Các hành động thay đổi dữ liệu quan trọng (Create/Update/Delete) có được `INSERT` thêm một dòng vào bảng `AuditLogs` không?
 - [ ] PII data (mật khẩu) có bị in ra Console hoặc log file không?
 

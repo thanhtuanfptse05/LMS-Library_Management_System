@@ -29,7 +29,7 @@ User (Browser) ──[HTTP Request]──> WebFilter (Auth Check) ──> Servle
 
 ---
 
-## 3. CƠ SỞ DỮ LIỆU (CSDL) - TÓM TẮT SCHEMA 20 BẢNG CỐT LÕI
+## 3. CƠ SỞ DỮ LIỆU (CSDL) - TÓM TẮT SCHEMA 21 BẢNG CỐT LÕI
 Tất cả các cột khóa chính (`PK`) và khóa ngoại (`FK`) được đồng bộ chuẩn đặt tên dạng **camelCase** thống nhất:
 
 * **Tài khoản & Hồ sơ:**
@@ -43,7 +43,7 @@ Tất cả các cột khóa chính (`PK`) và khóa ngoại (`FK`) được đ�
 * **Quản lý Sách & Danh mục:**
   * `Category` (`categoryId` PK, `name`, `description`)
   * `Tag` (`tagId` PK, `name` UNIQUE)
-  * `Books` (`bookId` PK, `isbn` UNIQUE, `title`, `author`, `publisher`, `publicationYear`, `price`, `totalQuantity`, `availableQuantity`, `status`, `createdAt`, `updatedAt`)
+  * `Book` (`bookId` PK, `isbn` UNIQUE, `title`, `author`, `publisher`, `publicationYear`, `price`, `totalQuantity`, `availableQuantity`, `status`, `createdAt`, `updatedAt`)
   * `BookCategory` (`bookId` PK/FK, `categoryId` PK/FK)
   * `BookTag` (`bookId` PK/FK, `tagId` PK/FK)
   * `BookCopy` (`bookCopyId` PK, `bookId` FK, `location`, `condition`, `status`, `barcode` UNIQUE, `createdAt`, `updatedAt`)
@@ -52,11 +52,17 @@ Tất cả các cột khóa chính (`PK`) và khóa ngoại (`FK`) được đ�
   * `BorrowRecord` (`borrowRecordId` PK, `userId` FK, `bookCopyId` FK, `bookId` FK, `startDate`, `endDate`, `returnedAt`, `status`, `extensionCount`, `createdBy` FK, `createdAt`)
 * **Phạt & Thanh toán:**
   * `Fine` (`fineId` PK, `borrowRecordId` FK, `userId` FK, `amount`, `reason`, `status`, `createdAt`)
-  * `Payment` (`paymentId` PK, `fineId` FK, `paidAmount`, `paymentMethod`, `transactionReference` UNIQUE, `processBy` FK, `status`, `paidAt`)
+  * `Payment` (`paymentId` PK, `fineId` FK, `paidAmount`, `paymentMethod`, `transactionReference` UNIQUE, `processedBy` FK, `status`, `paidAt`)
 * **Cấu hình & Nhật ký:**
   * `SystemConfigurations` (`configKey` PK, `configValue`, `description`, `configGroup`, `updatedBy` FK, `updatedAt`)
   * `AuditLogs` (`auditLogId` PK, `userId` FK, `actionType`, `entityName`, `entityId`, `oldValues`, `newValues`, `timestamp`)
   * `Notification` (`notificationId` PK, `title`, `content`, `createdBy` FK, `createdAt`)
+  * `DocumentTemp` (`tempId` PK, `tempName` UNIQUE, `subject`, `bodyContent`, `managerId` FK, `createdAt`, `updatedAt`)
+
+> [!WARNING]
+> **BẤT CẬP CỐ ĐỊNH TRONG SCHEMA SQL (DATABASE LÀ BẤT BIẾN - CẤM SỬA FILE SQL):**
+> 1. **Bất cập tên bảng Sách:** Trong file SQL, bảng được tạo là `Book` (số ít), nhưng các ràng buộc khóa ngoại (Foreign Keys) ở các bảng khác lại viết nhầm là `REFERENCES Books(bookId)`. **Giải pháp:** Trong mã nguồn Java (Entities, DAOs), bắt buộc sử dụng tên bảng thực tế là `Book`, class thực thể là `Book.java` và DAO là `BookDAO.java`.
+> 2. **Bất cập cột trong Payment:** Cột được khai báo thực tế là `processedBy INT NULL`, nhưng định nghĩa khóa ngoại lại viết nhầm thành `processBy`. **Giải pháp:** Trong Java code, bắt buộc map với trường dữ liệu thực tế là `processedBy`.
 
 ---
 

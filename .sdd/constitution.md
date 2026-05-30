@@ -21,7 +21,7 @@
 * TUYỆT ĐỐI NGHIÊM CẤM sử dụng phép cộng chuỗi (String Concatenation) để chèn user input trực tiếp vào câu lệnh SQL. 
 
 ## DATA-01: Soft-Delete cho các giao dịch cốt lõi
-* THE system SHALL sử dụng cơ chế Soft-delete (cập nhật trạng thái `status` thành `'inactive'`, `'cancelled'`, `'lost'`,...) thay vì dùng câu lệnh `DELETE FROM` SQL cho các bảng dữ liệu giao dịch cốt lõi (`[User]`, `Books`, `BookCopy`, `BorrowRecord`, `Fine`, `Payment`, `Reservation`).
+* THE system SHALL sử dụng cơ chế Soft-delete (cập nhật trạng thái `status` thành `'inactive'`, `'cancelled'`, `'lost'`,...) thay vì dùng câu lệnh `DELETE FROM` SQL cho các bảng dữ liệu giao dịch cốt lõi (`[User]`, `Book`, `BookCopy`, `BorrowRecord`, `Fine`, `Payment`, `Reservation`).
 * Hard-delete chỉ được phép áp dụng cho các file tạm (temporary files) hoặc dữ liệu log hệ thống vượt quá 90 ngày.
 
 ═══════════════════════════════════════════════
