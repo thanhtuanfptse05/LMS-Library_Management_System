@@ -6,228 +6,130 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Forgot Password - LMS University Library</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Standard CSS files instead of TailwindCSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/variables.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/base.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/components.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/auth.css" />
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #FFF7ED; /* Level 0 Background from Style Guidance */
-        }
     </style>
-    <script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "on-primary-container": "#582200",
-                      "on-secondary-fixed": "#2a1800",
-                      "on-primary-fixed": "#341100",
-                      "on-error": "#ffffff",
-                      "primary-fixed": "#ffdbca",
-                      "surface-container-lowest": "#ffffff",
-                      "on-secondary": "#ffffff",
-                      "primary": "#9d4300",
-                      "secondary-fixed-dim": "#e6c095",
-                      "surface-dim": "#edd5cb",
-                      "on-error-container": "#93000a",
-                      "tertiary-fixed-dim": "#93ccff",
-                      "surface-container": "#ffeae0",
-                      "outline": "#8c7164",
-                      "background": "#fff8f6",
-                      "on-primary-fixed-variant": "#783200",
-                      "secondary-fixed": "#ffddb7",
-                      "surface-tint": "#9d4300",
-                      "on-tertiary-fixed": "#001d32",
-                      "surface-variant": "#f6ded3",
-                      "inverse-surface": "#3c2d26",
-                      "tertiary-container": "#00a2f4",
-                      "outline-variant": "#e0c0b1",
-                      "surface": "#fff8f6",
-                      "surface-container-high": "#fce3d9",
-                      "on-tertiary-container": "#003554",
-                      "on-secondary-fixed-variant": "#5b4220",
-                      "on-surface-variant": "#584237",
-                      "on-surface": "#251913",
-                      "secondary-container": "#fdd6a9",
-                      "on-tertiary-fixed-variant": "#004b74",
-                      "surface-container-low": "#fff1eb",
-                      "on-background": "#251913",
-                      "primary-container": "#f97316",
-                      "inverse-primary": "#ffb690",
-                      "on-primary": "#ffffff",
-                      "surface-bright": "#fff8f6",
-                      "inverse-on-surface": "#ffede6",
-                      "on-tertiary": "#ffffff",
-                      "secondary": "#755935",
-                      "primary-fixed-dim": "#ffb690",
-                      "on-secondary-container": "#785c38",
-                      "surface-container-highest": "#f6ded3",
-                      "error-container": "#ffdad6",
-                      "tertiary": "#006398",
-                      "error": "#ba1a1a",
-                      "tertiary-fixed": "#cde5ff"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "0.75rem",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "unit": "8px",
-                      "section-gap": "48px",
-                      "container-padding-mobile": "16px",
-                      "component-gap": "16px",
-                      "gutter": "24px",
-                      "container-padding-desktop": "40px"
-              },
-              "fontFamily": {
-                      "headline-lg-mobile": ["Inter"],
-                      "body-lg": ["Inter"],
-                      "label-sm": ["Inter"],
-                      "headline-md": ["Inter"],
-                      "body-md": ["Inter"],
-                      "label-md": ["Inter"],
-                      "headline-lg": ["Inter"],
-                      "title-lg": ["Inter"],
-                      "display-lg": ["Inter"]
-              },
-              "fontSize": {
-                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                      "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                      "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
-              }
-            }
-          }
-        }
-    </script>
 </head>
-<body class="bg-background text-on-surface min-h-screen flex flex-col">
-    <header class="w-full bg-surface shadow-sm h-16 flex items-center px-container-padding-mobile md:px-container-padding-desktop justify-center">
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary text-3xl">auto_stories</span>
-            <span class="font-headline-md text-headline-md font-bold text-primary">LMS University Library</span>
-        </div>
+<body class="auth-body">
+    <!-- TopAppBar -->
+    <header class="main-header">
+        <nav class="main-nav">
+            <a href="${pageContext.request.contextPath}/index.jsp" class="nav-brand">
+                <span class="material-symbols-outlined nav-brand__icon" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+                <span class="nav-brand__text">LMS University Library</span>
+            </a>
+            <div class="nav-actions">
+                <a href="${pageContext.request.contextPath}/login.jsp" class="btn btn-primary">Login</a>
+            </div>
+        </nav>
     </header>
     
-    <main class="flex-grow flex items-center justify-center p-container-padding-mobile md:p-container-padding-desktop relative overflow-hidden">
-        <!-- Atmospheric Background Elements -->
-        <div class="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary-fixed opacity-20 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-secondary-fixed opacity-30 rounded-full blur-3xl"></div>
-        
-        <!-- Main Card Container -->
-        <div class="relative z-10 w-full max-w-[440px] bg-surface-container-lowest rounded-[24px] shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] p-8 md:p-10 transition-all duration-500" id="auth-card">
-            
-            <!-- Forgot Password State -->
-            <div class="space-y-6" id="forgot-password-form">
-                <div class="text-center space-y-2">
-                    <h1 class="font-headline-lg text-headline-lg text-on-surface">Forgot Password</h1>
-                    <p class="font-body-md text-body-md text-on-surface-variant">No worries, it happens. Please enter the email address associated with your account.</p>
+    <!-- Main Content Area -->
+    <main class="auth-full-page">
+        <div class="auth-card" style="margin-top: 64px;">
+            <div style="text-align: center; margin-bottom: var(--space-xl);">
+                <div style="width: 64px; height: 64px; background-color: var(--color-surface-container); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-md) auto;">
+                    <span class="material-symbols-outlined" style="color: var(--color-primary); font-size: 32px;">lock_reset</span>
                 </div>
+                <h1 class="auth-title">Password Recovery</h1>
+                <p class="auth-subtitle" style="margin-bottom: 0;">Enter your institutional email and we will send you a temporary password to regain access.</p>
+            </div>
+            
+            <div id="statusAlert" style="display: none;"></div>
 
-                <form class="space-y-6" id="reset-request-form" onsubmit="handleReset(event)">
-                    <div class="space-y-2">
-                        <label class="font-label-md text-label-md text-on-surface-variant block ml-1" for="email">University Email Address</label>
-                        <div class="relative group">
-                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">mail</span>
-                            <input class="w-full pl-12 pr-4 py-3 bg-white border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-all text-on-surface font-body-md" id="email" name="email" placeholder="e.g. name@university.edu" required type="email" />
-                        </div>
+            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+                <div class="auth-form-group">
+                    <label class="auth-form-label" for="email">Institutional Email</label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon-left material-symbols-outlined">mail</span>
+                        <input class="auth-input auth-input--with-icon-left" 
+                               id="email" name="email" placeholder="m.student@university.edu" required type="email" />
                     </div>
-                    <button class="w-full bg-primary-container text-white py-4 rounded-xl font-label-md text-label-md hover:bg-primary transition-all active:scale-95 shadow-md flex items-center justify-center gap-2" type="submit" id="submit-btn">
-                        Send Reset Link
-                        <span class="material-symbols-outlined text-[20px]">send</span>
-                    </button>
-                </form>
+                </div>
                 
-                <div class="pt-4 text-center">
-                    <a class="inline-flex items-center gap-2 font-label-md text-label-md text-primary hover:text-on-primary-fixed-variant transition-colors group" href="login.jsp">
-                        <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                        Back to Login
-                    </a>
-                </div>
-            </div>
+                <button class="auth-submit-btn" id="submitBtn" type="submit">
+                    <span class="material-symbols-outlined" id="submitIcon">send</span>
+                    <span id="submitText">Send Recovery Email</span>
+                </button>
+            </form>
 
-            <!-- Success State (Hidden by default) -->
-            <div class="hidden space-y-6 text-center animate-in fade-in zoom-in duration-500" id="success-message">
-                <div class="mx-auto w-20 h-20 bg-green-50 rounded-full flex items-center justify-center border-2 border-green-100 mb-6">
-                    <span class="material-symbols-outlined text-green-600 text-[48px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                </div>
-                <div class="space-y-3">
-                    <h2 class="font-headline-md text-headline-md text-on-surface">Check your email</h2>
-                    <div class="p-4 bg-green-50 border-l-4 border-green-500 rounded-lg text-left">
-                        <p class="font-body-md text-body-md text-green-800">
-                            Password reset instructions have been sent to your email. Please follow the link in the message to reset your password.
-                        </p>
-                    </div>
-                </div>
-                <p class="font-body-md text-body-md text-on-surface-variant">
-                    Didn't receive the email? Check your spam folder or 
-                    <button class="text-primary font-semibold hover:underline decoration-2 underline-offset-4" onclick="location.reload()">try again</button>.
-                </p>
-                <div class="pt-6 border-t border-outline-variant">
-                    <a class="w-full inline-flex items-center justify-center gap-2 font-label-md text-label-md text-primary py-3 rounded-lg border border-primary hover:bg-primary-fixed transition-all" href="login.jsp">
-                        <span class="material-symbols-outlined text-[18px]">login</span>
-                        Return to Login
-                    </a>
-                </div>
+            <div style="text-align: center; margin-top: var(--space-xl);">
+                <a href="${pageContext.request.contextPath}/login.jsp" class="auth-header-link" style="justify-content: center;">
+                    <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
+                    Back to Login
+                </a>
             </div>
             
+            <!-- Success State (Hidden by default) -->
+            <div id="successState" style="display: none; text-align: center;">
+                <div style="width: 80px; height: 80px; background-color: #d4edda; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-xl) auto; box-shadow: 0 4px 6px rgba(40,167,69,0.2);">
+                    <span class="material-symbols-outlined" style="color: #28a745; font-size: 40px; font-variation-settings: 'FILL' 1;">mark_email_read</span>
+                </div>
+                <h2 class="auth-title">Check your inbox</h2>
+                <p class="auth-subtitle">We have sent a temporary password to <strong style="color: var(--color-on-surface);" id="displayEmail"></strong>.</p>
+                <div style="background-color: var(--color-surface-container-low); padding: var(--space-md); border-radius: var(--radius-lg); margin-bottom: var(--space-xl); display: flex; align-items: flex-start; gap: 8px;">
+                    <span class="material-symbols-outlined" style="color: var(--color-on-surface-variant); font-size: 20px; margin-top: 2px;">info</span>
+                    <p style="font-size: var(--text-label-sm); color: var(--color-on-surface-variant); text-align: left; margin: 0;">Please check your spam folder if you do not see the email within 5 minutes.</p>
+                </div>
+                <a class="auth-submit-btn" href="${pageContext.request.contextPath}/login.jsp" style="text-decoration: none;">
+                    <span class="material-symbols-outlined">login</span>
+                    <span>Return to Login</span>
+                </a>
+            </div>
         </div>
     </main>
-
-    <footer class="bg-surface-container-lowest border-t border-outline-variant py-8 px-container-padding-mobile md:px-container-padding-desktop w-full">
-        <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex flex-col items-center md:items-start gap-1">
-                <span class="font-title-lg text-title-lg font-bold text-on-surface">LMS University Library</span>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 University Library Management System. All rights reserved.</p>
-            </div>
-            <div class="flex flex-wrap justify-center gap-6">
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80 underline" href="#">Privacy Policy</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80 underline" href="#">Terms of Service</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80 underline" href="#">Contact Support</a>
-            </div>
-        </div>
-    </footer>
-
+    
     <script>
-        function handleReset(event) {
+        function handleForgotPassword(event) {
             event.preventDefault();
-            const formContainer = document.getElementById('forgot-password-form');
-            const successContainer = document.getElementById('success-message');
-            const btn = document.getElementById('submit-btn');
-
-            // Simulate loading
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = `<span class="material-symbols-outlined animate-spin">progress_activity</span> Sending...`;
+            const form = document.getElementById('forgotPasswordForm');
+            const email = document.getElementById('email').value;
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('submitText');
+            const btnIcon = document.getElementById('submitIcon');
+            const alertBox = document.getElementById('statusAlert');
+            const successState = document.getElementById('successState');
+            
+            // Basic UI validation
+            if (!email || !email.includes('@')) {
+                alertBox.className = 'auth-alert auth-alert--error';
+                alertBox.innerHTML = '<span class="material-symbols-outlined">error</span><span>Please enter a valid institutional email address.</span>';
+                alertBox.style.display = 'flex';
+                return;
+            }
+            
+            // Loading state
+            alertBox.style.display = 'none';
             btn.disabled = true;
-
+            btnText.innerText = 'Sending...';
+            btnIcon.innerText = 'hourglass_empty';
+            
+            // Simulate API Call delay
             setTimeout(() => {
-                // Smooth transition to success state
-                formContainer.classList.add('opacity-0', 'scale-95');
+                // Success logic
+                form.style.display = 'none';
+                document.querySelector('.auth-header-link').style.display = 'none'; // Hide the back to login link from form state
+                document.querySelector('.auth-title').style.display = 'none'; // Hide old title
+                document.querySelector('.auth-subtitle').style.display = 'none'; // Hide old subtitle
+                document.querySelector('.material-symbols-outlined.lock_reset')?.parentElement.remove(); // Hide old icon
                 
-                setTimeout(() => {
-                    formContainer.classList.add('hidden');
-                    successContainer.classList.remove('hidden');
-                    successContainer.classList.add('flex', 'flex-col');
-                }, 300);
-            }, 1200);
+                document.getElementById('displayEmail').innerText = email;
+                successState.style.display = 'block';
+                successState.style.animation = 'fadeIn 0.5s ease-out';
+            }, 1500);
         }
-
-        window.addEventListener('load', () => {
-            const card = document.getElementById('auth-card');
-            card.classList.add('animate-in', 'fade-in', 'slide-in-from-bottom-8', 'duration-700');
-        });
     </script>
 </body>
 </html>

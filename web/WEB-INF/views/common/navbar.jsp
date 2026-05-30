@@ -53,7 +53,7 @@
             </button>
 
             <%-- Login Button --%>
-            <a href="<c:url value='/login'/>" class="btn btn-primary">Login</a>
+            <a href="<c:url value='/login.jsp'/>" class="btn btn-primary">Login</a>
         </div>
     </nav>
 
