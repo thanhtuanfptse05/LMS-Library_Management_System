@@ -1,0 +1,24 @@
+Sơ đồ swimlane Use Case viewListUser trong Feature 3 userAccountManagement
+Quy ước hệ tọa độ [Loại action + T.H.T] (Tính năng . Hàng . Thứ tự) 
+Quy ước các Actor trong swimlane này:
+- Admin
+- LMS System
+Chi tiết Luồng Xuyên Suốt:
+
+[Action 3.1.1] 
+Actor: Admin 
+Loại: [Manual Action] 
+Tên/Nội dung: Truy cập vào trang quản lý danh sách người dùng. (FR?-BR?)
+Nối tới: Mũi tên đi tới [Action 3.2.2].
+
+[Action 3.2.2] 
+Actor: LMS System 
+Loại: [System action box]
+Tên/Nội dung: Lấy danh sách tài khoản từ các bảng liên quan (FR?-BR?)
+Nối tới: Mũi tên đi tới [Action 3.3.3].
+
+[Action 3.3.3] 
+Actor: LMS System 
+Loại: [System action box / UI State] 
+Tên/Nội dung: Render danh sách người dùng lên bảng (Table/Grid) kèm các nút thao tác. (FR?-BR?)
+Nối tới: -> [Kết thúc luồng]

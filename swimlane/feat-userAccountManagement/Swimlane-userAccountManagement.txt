@@ -14,7 +14,7 @@ Nối tới: Mũi tên đi tới [Action 3.2.2].
 [Action 3.2.2] 
 Actor: LMS System 
 Loại: [UC Box] 
-Tên/Nội dung: viewListUser (UC?, FR?)
+Tên/Nội dung: viewUserList (UC?, FR?)
 Nối tới: Mũi tên đi tới [Decision 3.3.3].
 
 [Decision 3.3.3] 
@@ -23,7 +23,7 @@ Loại: [Decision branch]
 Tên/Nội dung: Chọn thao tác quản trị (Thêm mới/Import, Sửa, Khóa, Xem). 
 Nối tới: 
 -Nhánh Thêm: Mũi tên đi tới [Action 3.4.4]. 
--Nhánh Xem chi tiết: Mũi tên đi tới [Action 3.4.5].
+-Nhánh Xem: Mũi tên đi tới [Action 3.4.5].
 
 [Decision 3.4.4] 
 Actor: Admin 
@@ -36,7 +36,7 @@ Nối tới:
 [Action 3.4.5] 
 Actor: LMS System 
 Loại: [UC Box] 
-Tên/Nội dung: viewUserProfile (UC?,FR?).
+Tên/Nội dung: viewUserDetail (UC?,FR?).
 Nối tới: Mũi tên đi tới [Decision 3.5.6]
 
 [Decision 3.5.6] 
