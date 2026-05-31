@@ -58,7 +58,7 @@ Nối tới: Mũi tên đi tới [Action 1.8.9]
 [Action 1.8.8] 
 Actor: LMS System 
 Loại: [System action box] 
-Tên/Nội dung: Tạo JWT Token và Lưu Session vào DB. 
+Tên/Nội dung: Tạo và Lưu HTTPSession. 
 Nối tới: -> [Kết thúc luồng].
 
 [Action 1.8.9] 
