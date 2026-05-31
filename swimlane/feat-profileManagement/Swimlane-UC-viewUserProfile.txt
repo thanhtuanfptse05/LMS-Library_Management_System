@@ -1,0 +1,30 @@
+Sơ đồ swimlane Use Case viewUserProfile trong Feature 2 profileManagement
+Quy ước hệ tọa độ [Loại action + T.H.T] (Tính năng . Hàng . Thứ tự) 
+Quy ước các Actor trong swimlane này:
+- User
+- LMS System
+Chi tiết Luồng Xuyên Suốt:
+
+[Action 2.1.1] 
+Actor: User 
+Loại: [Manual Action] 
+Tên/Nội dung: Yêu cầu xem hồ sơ cá nhân. 
+Nối tới: Mũi tên đi tới [Action 2.2.2].
+
+[Action 2.2.2] 
+Actor: LMS System 
+Loại: [System action box] 
+Tên/Nội dung: Truy vấn thông tin cơ bản từ bảng User và MemberProfile. 
+Nối tới: Mũi tên đi tới [Action 2.3.3].
+
+[Action 2.3.3] 
+Actor: LMS System 
+Loại: [System action box] 
+Tên/Nội dung: Truy vấn bổ sung dữ liệu từ bảng phụ tương ứng với role. 
+Nối tới: Mũi tên đi tới [Action 2.4.4].
+
+[Action 2.4.4] 
+Actor: LMS System 
+Loại: [System action box / UI State] 
+Tên/Nội dung: Gộp dữ liệu và render giao diện hồ sơ tương ứng. 
+Nối tới: -> [Kết thúc luồng].
