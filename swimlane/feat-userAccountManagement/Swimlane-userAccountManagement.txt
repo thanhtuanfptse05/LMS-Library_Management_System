@@ -1,0 +1,72 @@
+Sơ đồ swimlane Use Case manageUserAccounts trong Feature 3 userAccountManagement
+Quy ước hệ tọa độ [Loại action + T.H.T] (Tính năng . Hàng . Thứ tự) 
+Quy ước các Actor trong swimlane này:
+- Admin
+- LMS System
+Chi tiết Luồng Xuyên Suốt:
+
+[Action 3.1.1] 
+Actor: Admin 
+Loại: [Manual Action] 
+Tên/Nội dung: Chọn chức năng quản lý tài khoản. 
+Nối tới: Mũi tên đi tới [Action 3.2.2].
+
+[Action 3.2.2] 
+Actor: LMS System 
+Loại: [UC Box] 
+Tên/Nội dung: viewListUser (UC?, FR?)
+Nối tới: Mũi tên đi tới [Decision 3.3.3].
+
+[Decision 3.3.3] 
+Actor: Admin 
+Loại: [Decision branch] 
+Tên/Nội dung: Chọn thao tác quản trị (Thêm mới/Import, Sửa, Khóa, Xem). 
+Nối tới: 
+-Nhánh Thêm: Mũi tên đi tới [Action 3.4.4]. 
+-Nhánh Xem chi tiết: Mũi tên đi tới [Action 3.4.5].
+
+[Decision 3.4.4] 
+Actor: Admin 
+Loại: [Decision branch] 
+Tên/Nội dung: Lựa chọn thao tác
+Nối tới:
+-Nhánh thêm đơn: Mũi tên đi tới [Action 3.5.8]
+-Nhánh thêm hàng loạt: Mũi tên đi tới [Action 3.5.9]
+
+[Action 3.4.5] 
+Actor: LMS System 
+Loại: [UC Box] 
+Tên/Nội dung: viewUserProfile (UC?,FR?).
+Nối tới: Mũi tên đi tới [Decision 3.5.6]
+
+[Decision 3.5.6] 
+Actor: Admin 
+Loại: [Decision branch] 
+Tên/Nội dung: Người dùng có muốn cập nhật dữ liệu không?
+Nối tới: 
+-Nhánh NO (Chỉ xem): -> [Kết thúc luồng].
+-Nhánh YES (Bấm cập nhật): Mũi tên đi tới [UC Box 3.5.7]
+
+[UC Box 3.5.7] 
+Actor: LMS System 
+Loại: [UC Box] 
+Tên/Nội dung: updateUserAccount (UC?,FR?).
+Nối tới: Mũi tên đi tới [Action 3.6.10].
+
+[Action 3.5.8]
+Actor: LMS System
+Loại: [UC Box]
+Tên/Nội dung: createUserAccount (UC?,FR?).
+Nối tới: Mũi tên đi tới [Action 3.6.10].
+
+[Action 3.5.9]
+Actor: LMS System
+Loại: [UC Box]
+Tên/Nội dung: importUserAccount (UC?,FR?).
+Nối tới: Mũi tên đi tới [Action 3.6.10].
+
+[Action 3.6.10] 
+Actor: LMS System 
+Loại: [System action box / UI State] 
+Tên/Nội dung: Hiển thị thông báo thao tác thành công.
+Nối tới: -> [Kết thúc luồng].

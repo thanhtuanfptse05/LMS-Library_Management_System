@@ -1,0 +1,6 @@
+Sơ đồ swimlane Use Case viewListUser trong Feature 3 userAccountManagement
+Quy ước hệ tọa độ [Loại action + T.H.T] (Tính năng . Hàng . Thứ tự) 
+Quy ước các Actor trong swimlane này:
+- Admin
+- LMS System
+Chi tiết Luồng Xuyên Suốt:
