@@ -258,6 +258,9 @@ CREATE TABLE Notification (
 
     FOREIGN KEY (createdBy) REFERENCES [User](userId)
 );
+
+-- ============================================================
+
 CREATE TABLE DocumentTemp (
     tempId INT IDENTITY(1,1) PRIMARY KEY,
     tempName NVARCHAR(100) NOT NULL UNIQUE, -- Ví dụ: 'PICKUP_REMINDER', 'OVERDUE_FINE_NOTICE'

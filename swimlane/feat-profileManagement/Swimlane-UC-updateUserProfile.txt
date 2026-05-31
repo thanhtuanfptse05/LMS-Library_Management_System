@@ -8,13 +8,13 @@ Chi tiết Luồng Xuyên Suốt:
 [Action 2.1.1] 
 Actor: User 
 Loại: [Manual Action] 
-Tên/Nội dung: Nhập thông tin thay đổi trên form.
+Tên/Nội dung: Nhập thông tin thay đổi trên form. (FR?, BR?)
 Nối tới: Mũi tên đi tới [Action 2.2.2].
 
 [Action 2.2.2] 
 Actor: LMS System 
 Loại: [System action box] 
-Tên/Nội dung: Cập nhật dữ liệu mới đè vào Database. 
+Tên/Nội dung: Cập nhật dữ liệu mới đè vào Database. (FR?, BR?)
 Nối tới: Mũi tên đi tới [Action 2.3.3].
 
 [Action 2.3.3] 

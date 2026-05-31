@@ -8,13 +8,13 @@ Chi tiết Luồng Xuyên Suốt:
 [Action 2.1.1]
 Actor: User
 Loại: [Manual Action]
-Tên/Nội dung: Bấm vào profile.
+Tên/Nội dung: Bấm vào profile. (FR?, BR?)
 Nối tới: Mũi tên đi tới [UC Box 2.2.2].
 
 [UC Box 2.2.2]
 Actor: LMS System
 Loại: [UC Box]
-Tên/Nội dung: View User Profile (UC? và FR?).
+Tên/Nội dung: View User Detail (UC? và FR?).
 Nối tới: Mũi tên đi tới [Decision 2.3.3]
 
 [Decision 2.3.3]

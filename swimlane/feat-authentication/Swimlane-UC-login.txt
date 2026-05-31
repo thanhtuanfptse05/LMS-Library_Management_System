@@ -52,7 +52,7 @@ Nối tới:
 [Action 1.7.7] 
 Actor: LMS System 
 Loại: [System action box] 
-Tên/Nội dung: Khóa tài khoản 30p sau đó reset số lần đăng nhập
+Tên/Nội dung: Khóa tài khoản 30p sau đó reset số lần đăng nhập (FR?, BR?)
 Nối tới: Mũi tên đi tới [Action 1.8.9]
 
 [Action 1.8.8] 

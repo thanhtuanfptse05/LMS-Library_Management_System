@@ -1,4 +1,4 @@
-Sơ đồ swimlane Use Case viewUserProfile trong Feature 2 profileManagement
+Sơ đồ swimlane Use Case viewUserDetail trong Feature 2 profileManagement
 Quy ước hệ tọa độ [Loại action + T.H.T] (Tính năng . Hàng . Thứ tự) 
 Quy ước các Actor trong swimlane này:
 - User
@@ -8,7 +8,7 @@ Chi tiết Luồng Xuyên Suốt:
 [Action 2.1.1] 
 Actor: User 
 Loại: [Manual Action] 
-Tên/Nội dung: Yêu cầu xem hồ sơ cá nhân. 
+Tên/Nội dung: Bấm vào profile. (FR?, BR?)
 Nối tới: Mũi tên đi tới [Action 2.2.2].
 
 [Action 2.2.2] 
@@ -26,5 +26,5 @@ Nối tới: Mũi tên đi tới [Action 2.4.4].
 [Action 2.4.4] 
 Actor: LMS System 
 Loại: [System action box / UI State] 
-Tên/Nội dung: Gộp dữ liệu và render giao diện hồ sơ tương ứng. 
+Tên/Nội dung: Gộp dữ liệu và render giao diện hồ sơ tương ứng.
 Nối tới: -> [Kết thúc luồng].
