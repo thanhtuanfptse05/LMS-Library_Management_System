@@ -116,19 +116,50 @@
             btnText.innerText = 'Sending...';
             btnIcon.innerText = 'hourglass_empty';
             
-            // Simulate API Call delay
-            setTimeout(() => {
-                // Success logic
-                form.style.display = 'none';
-                document.querySelector('.auth-header-link').style.display = 'none'; // Hide the back to login link from form state
-                document.querySelector('.auth-title').style.display = 'none'; // Hide old title
-                document.querySelector('.auth-subtitle').style.display = 'none'; // Hide old subtitle
-                document.querySelector('.material-symbols-outlined.lock_reset')?.parentElement.remove(); // Hide old icon
-                
-                document.getElementById('displayEmail').innerText = email;
-                successState.style.display = 'block';
-                successState.style.animation = 'fadeIn 0.5s ease-out';
-            }, 1500);
+            // Make real fetch request
+            fetch('${pageContext.request.contextPath}/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'email=' + encodeURIComponent(email)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('System error');
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    // Success logic
+                    form.style.display = 'none';
+                    document.querySelector('.auth-header-link').style.display = 'none'; // Hide the back to login link
+                    document.querySelector('.auth-title').style.display = 'none'; // Hide old title
+                    document.querySelector('.auth-subtitle').style.display = 'none'; // Hide old subtitle
+                    document.querySelector('.material-symbols-outlined.lock_reset')?.parentElement.remove(); // Hide old icon
+                    
+                    document.getElementById('displayEmail').innerText = email;
+                    successState.style.display = 'block';
+                    successState.style.animation = 'fadeIn 0.5s ease-out';
+                } else {
+                    alertBox.className = 'auth-alert auth-alert--error';
+                    alertBox.innerHTML = '<span class="material-symbols-outlined">error</span><span>' + data.message + '</span>';
+                    alertBox.style.display = 'flex';
+                    btn.disabled = false;
+                    btnText.innerText = 'Send Recovery Email';
+                    btnIcon.innerText = 'send';
+                }
+            })
+            .catch(error => {
+                alertBox.className = 'auth-alert auth-alert--error';
+                alertBox.innerHTML = '<span class="material-symbols-outlined">error</span><span>Đã xảy ra lỗi kết nối. Vui lòng thử lại sau.</span>';
+                alertBox.style.display = 'flex';
+                btn.disabled = false;
+                btnText.innerText = 'Send Recovery Email';
+                btnIcon.innerText = 'send';
+            });
         }
     </script>
 </body>
