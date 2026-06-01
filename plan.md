@@ -20,11 +20,16 @@
 - [x] Step 13: Tạo `.github/workflows/constitution-check.yml` (CI check)
 
 ## Current Status
-Completed: 13/13 Steps. Cấu trúc thư mục "bộ não dự án" đã được khởi tạo hoàn hảo và đồng bộ với triết lý kiến trúc Monolith Java Web.
-Next: Sẵn sàng nhận nhiệm vụ mới hoặc hướng dẫn từ Human.
+- **T001: Project Brain Setup**: Completed (13/13 steps).
+- **T-AUTH-04: AuthFilter**: Completed. Mapped to `/*`, implements role-based access control with secure redirects.
+- **T-AUTH-05: LoginServlet**: Completed. Handles secure GET/POST with BCrypt verification, timing attack protection, auto-unlock, and failed attempt locks.
+- **T-AUTH-06: ForgotPasswordServlet**: Completed. Handles POST with fake success, BCrypt password generation, and non-blocking asynchronous email delivery.
+- **T-AUTH-07: LogoutServlet**: Completed. Invalidates sessions and redirects securely to `/login`.
+
+Next: Implement View Layer (T-AUTH-08: login.jsp, forgot-password.jsp changes).
 
 ## Issues Encountered
 None.
 
 ## Rollback Point
-Before this task: database schema synchronized to camelCase.
+Before Web Layer Servlets: commit `5a5dc64`.
