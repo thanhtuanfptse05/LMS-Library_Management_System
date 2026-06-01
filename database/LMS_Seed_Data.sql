@@ -613,9 +613,9 @@ INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (185, 'H
 -- 7. ADDITIONAL USERS FOR GOOGLE SSO TEST
 -- ------------------------------------------------------------
 SET IDENTITY_INSERT [User] ON;
-INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (186, 'caotuan01122005@gmail.com', '/jl2S/N69KiAxLCInLuOz/8x41wu3vwAzVBHCfxtBhCIwTihNO', 'active', 'admin', NULL, 0, NULL);
-INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (187, 'caothanhtuan576@gmail.com', '.ox8ytWBfRtETotH8BVViBoobZYlvJe6', 'active', 'student', NULL, 0, NULL);
-INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (188, 'vuvanquyet0305@gmail.com', '', 'active', 'lecturer', NULL, 0, NULL);
+INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (186, 'caotuan01122005@gmail.com', '$2a$10$C1T/jl2S/N69KiAxLCInLuOz/8x41wu3vwAzVBHCfxtBhCIwTihNO', 'active', 'admin', NULL, 0, NULL);
+INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (187, 'caothanhtuan576@gmail.com', '$2a$10$iBRzHURbhQJvBL3PZVmHj.ox8ytWBfRtETotH8BVViBoobZYlvJe6', 'active', 'student', NULL, 0, NULL);
+INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (188, 'vuvanquyet0305@gmail.com', '$2a$10$293gfAe0o6HG1jyFTsKOMuuMJtYiWloQm19PIBL55BCOJyLSKiis2', 'active', 'lecturer', NULL, 0, NULL);
 SET IDENTITY_INSERT [User] OFF;
 
 INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (186, N'Cao Tuan Admin', '0123456789', 'Male', '2005-12-01', GETDATE(), NULL);
