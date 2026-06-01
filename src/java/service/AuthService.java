@@ -89,4 +89,22 @@ public class AuthService {
         }
         return sb.toString();
     }
+
+    /**
+     * Khôi phục mật khẩu tài khoản.
+     * Sinh mật khẩu mới -> Mã hóa BCrypt -> Cập nhật CSDL -> Trả về mật khẩu thô để gửi qua Email.
+     *
+     * @param email Địa chỉ email của tài khoản cần reset
+     * @return Mật khẩu mới dạng chưa mã hóa (plaintext) hoặc {@code null} nếu email không tồn tại
+     */
+    public String resetPassword(String email) {
+        User user = userDAO.findByEmail(email);
+        if (user == null) {
+            return null;
+        }
+        String rawPassword = generateRandomPassword();
+        String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt(10));
+        userDAO.updatePasswordHash(user.getUserId(), hashedPassword);
+        return rawPassword;
+    }
 }
