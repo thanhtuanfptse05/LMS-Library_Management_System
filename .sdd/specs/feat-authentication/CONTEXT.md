@@ -1,17 +1,18 @@
 # CONTEXT.md — Authentication Feature
+# Cập nhật theo ActivityDiagramF1.txt
 
 ## 1. PROBLEM STATEMENT
-Hệ thống LMS cần bảo vệ các route (trang JSP) khỏi truy cập trái phép. Cần xác thực người dùng qua Email/Password và quản lý phiên đăng nhập, đồng thời bảo vệ hệ thống khỏi các cuộc tấn công Brute-force.
+Hệ thống LMS cần bảo vệ các tài nguyên khỏi truy cập trái phép. Luồng xác thực cần xử lý đăng nhập, đăng xuất và khôi phục mật khẩu. Yêu cầu chống tấn công Brute-force thông qua cơ chế khóa tài khoản tạm thời theo quy định `ActivityDiagramF1.txt` và `FR02`.
 
 ## 2. STAKEHOLDERS
-- Guest: Người dùng chưa đăng nhập.
-- User (Student, Lecturer, Librarian, Admin, LibraryManager): Người dùng hợp lệ.
+- Guest: Khách vãng lai chưa xác thực.
+- User (Student, Lecturer, Librarian, LibraryManager, Admin): Người dùng hợp lệ cần phân quyền.
 
-## 3. CONSTRAINTS (Ràng buộc kỹ thuật cứng)
-- Architecture: Java Web thuần (Servlet, JSP, JSTL, JDBC). KHÔNG dùng Spring/Hibernate.
-- Routing: Áp dụng Filter để bảo vệ các thư mục `/WEB-INF/views/admin/`, `/member/`, v.v.
-- Session: Sử dụng `HttpSession` mặc định của Java EE.
+## 3. CONSTRAINTS (Ràng buộc hệ thống)
+- [C-01] Architecture: Java Web thuần (Servlet, JSP, JDBC, Filter). KHÔNG dùng Framework (Spring/Hibernate).
+- [C-02] Session: Sử dụng `HttpSession` mặc định. KHÔNG sử dụng JWT.
+- [C-03] Security: BẮT BUỘC sử dụng thuật toán BCrypt (`jbcrypt-0.4.jar`) để mã hóa mật khẩu.
+- [C-04] Database: Ghi nhận trực tiếp vào bảng `[User]`.
 
-## 4. ASSUMPTIONS (Đã chốt)
-- Mật khẩu tạo mới/reset sẽ được gửi thẳng qua Email.
-- Bỏ qua cơ chế "Ép đổi mật khẩu lần đầu đăng nhập" (đã chốt ở Feature Quản lý tài khoản).
+## 4. ASSUMPTIONS
+- Quên mật khẩu sẽ sinh mật khẩu ngẫu nhiên 8 ký tự và gửi qua Email, không áp dụng quy trình xác thực OTP trung gian.

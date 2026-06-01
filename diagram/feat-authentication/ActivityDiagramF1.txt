@@ -1,0 +1,233 @@
+KHUNG ĐẶC TẢ CHI TIẾT NÚT HOẠT ĐỘNG (NODE SPECIFICATION TEMPLATE)
+Hệ thống SHALL áp dụng cấu trúc dưới đây cho mọi tài liệu đặc tả Activity Diagram:
+[Loại Action + Vị trí (hàng . thứ tự)]
+Actor: [Tên vai trò thực hiện hành động]
+Loại: [Manual Action | System Action Box | Decision Node | Initial/Final Node]
+Tên Action: [Verb + Noun, Tiếng Anh - ví dụ: Submit Form, Update Database]
+Nội dung Action: [Mô tả chi tiết hành vi bằng Tiếng Việt]
+Nối tới:
+[Dành cho Action thông thường]: Mũi tên đi tới [Loại Action + Vị trí].
+[Dành cho Decision Node]:
+Nhánh [Điều kiện A]: rẽ tới [Loại Action + Vị trí].
+Nhánh [Điều kiện B]: rẽ tới [Loại Action + Vị trí].
+[Dành cho Fork/Merge Node]:
+Nhánh [N]: rẽ tới [Loại Action + Vị trí].
+
+[Initial Node 1.1]
+Actor: System
+Loại: Initial Node
+Tên Action: Start Authentication Flow
+Nội dung Action: Điểm bắt đầu của tiến trình xác thực trong hệ thống LMS.
+Nối tới: Mũi tên đi tới [Manual Action 2.2].
+
+[Manual Action 2.2]
+Actor: Guest
+Loại: Manual Action
+Tên Action: Access Authentication System
+Nội dung Action: Người dùng truy cập hệ thống và chọn tính năng xác thực mong muốn.
+Nối tới: Mũi tên đi tới [Decision Node 3.3].
+
+[Decision Node 3.3]
+Actor: Guest
+Loại: Decision Node
+Tên Action: Select Auth Feature
+Nội dung Action: Người dùng lựa chọn giữa Đăng nhập hoặc Quên mật khẩu.
+Nối tới:
+Nhánh [Login]: rẽ tới [Manual Action 4.4].
+Nhánh [Forgot Password]: rẽ tới [Manual Action 4.5].
+
+[Manual Action 4.4]
+Actor: Guest
+Loại: Manual Action
+Tên Action: Submit Login Form
+Nội dung Action: Nhập thông tin Email và Password vào biểu mẫu đăng nhập.
+Nối tới: Mũi tên đi tới [System Action Box 5.6].
+
+[Manual Action 4.5]
+Actor: Guest
+Loại: Manual Action
+Tên Action: Submit Forgot Password Form
+Nội dung Action: Nhập địa chỉ Email cần khôi phục mật khẩu.
+Nối tới: Mũi tên đi tới [System Action Box 5.7].
+
+[System Action Box 5.6]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query User Data
+Nội dung Action: Truy vấn cơ sở dữ liệu để tìm tài khoản dựa trên Email đăng nhập.
+Nối tới: Mũi tên đi tới [Decision Node 6.8].
+
+[System Action Box 5.7]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query User Data For Reset
+Nội dung Action: Truy vấn cơ sở dữ liệu để tìm tài khoản để phục hồi mật khẩu.
+Nối tới: Mũi tên đi tới [Decision Node 6.9].
+
+[Decision Node 6.8]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Email Existence
+Nội dung Action: Kiểm tra Email có tồn tại trong hệ thống hay không (Login).
+Nối tới:
+Nhánh [Email not exists]: rẽ tới [System Action Box 16.26].
+Nhánh [Email exists]: rẽ tới [Decision Node 7.10].
+
+[Decision Node 6.9]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Verify Email Existence
+Nội dung Action: Kiểm tra Email có tồn tại để thực hiện cấp lại mật khẩu (Forgot Password).
+Nối tới:
+Nhánh [Email not exists]: rẽ tới [System Action Box 7.11].
+Nhánh [Email exists]: rẽ tới [System Action Box 7.12].
+
+[Decision Node 7.10]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Account Status
+Nội dung Action: Kiểm tra trạng thái hoạt động của tài khoản (status).
+Nối tới:
+Nhánh [Account is active]: rẽ tới [System Action Box 11.18].
+Nhánh [Account is locked]: rẽ tới [Decision Node 8.13].
+
+[System Action Box 7.11]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Fake Success
+Nội dung Action: Trả về thông báo thành công giả "Nếu email hợp lệ, hệ thống đã gửi mật khẩu mới".
+Nối tới: Mũi tên đi tới [Final Node 18.29].
+
+[System Action Box 7.12]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Generate New Password
+Nội dung Action: Hệ thống sinh mật khẩu ngẫu nhiên 8 ký tự, mã hóa BCrypt và ghi vào DB.
+Nối tới: Mũi tên đi tới [System Action Box 8.14].
+
+[Decision Node 8.13]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Evaluate Lock Reason
+Nội dung Action: Kiểm tra lý do khóa tài khoản (lockReason).
+Nối tới:
+Nhánh [lockReason IN ('unpaid', 'adminban')]: rẽ tới [System Action Box 11.18].
+Nhánh [lockReason == 'securitybreach']: rẽ tới [Decision Node 9.15].
+
+[System Action Box 8.14]
+Actor: Email System
+Loại: System Action Box
+Tên Action: Send Password Email
+Nội dung Action: Gửi email chứa mật khẩu ngẫu nhiên vừa tạo cho người dùng (Chạy background task).
+Nối tới: Mũi tên đi tới [Final Node 18.29].
+
+[Decision Node 9.15]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Evaluate Lock Time
+Nội dung Action: Kiểm tra thời gian khóa tạm thời (lockedUntil) đã kết thúc chưa.
+Nối tới:
+Nhánh [lockedUntil > NOW (still in lock time)]: rẽ tới [System Action Box 10.16].
+Nhánh [lockedUntil <= NOW (run out lock time)]: rẽ tới [System Action Box 10.17].
+
+[System Action Box 10.16]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Lock Time Error
+Nội dung Action: Hiển thị lỗi "Tài khoản đang bị khóa do sai mật khẩu quá nhiều. Tự động mở khóa lúc [lockedUntil]".
+Nối tới: Mũi tên đi tới [Final Node 18.29].
+
+[System Action Box 10.17]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Reset Temp Lock Status
+Nội dung Action: Cập nhật Database: status='active', lockReason=null, lockedUntil=null, failedLoginAttempts=0.
+Nối tới: Mũi tên đi tới [System Action Box 11.18].
+
+[System Action Box 11.18]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Verify BCrypt Password
+Nội dung Action: Mã hóa BCrypt mật khẩu nhập vào và đối chiếu với hash trong database.
+Nối tới: Mũi tên đi tới [Decision Node 12.19].
+
+[Decision Node 12.19]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Password Match
+Nội dung Action: Đánh giá kết quả hàm đối chiếu mật khẩu.
+Nối tới:
+Nhánh [Password incorrect]: rẽ tới [System Action Box 13.20].
+Nhánh [Password correct]: rẽ tới [System Action Box 13.21].
+
+[System Action Box 13.20]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Increase Failed Attempts
+Nội dung Action: Tăng số lần đăng nhập sai failedLoginAttempts thêm 1 trong Database.
+Nối tới: Mũi tên đi tới [Decision Node 14.22].
+
+[System Action Box 13.21]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Create Http Session
+Nội dung Action: Khởi tạo HttpSession lưu userId, role và đặt lại failedLoginAttempts = 0.
+Nối tới: Mũi tên đi tới [System Action Box 14.23].
+
+[Decision Node 14.22]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Lock Threshold
+Nội dung Action: Đánh giá số lần đăng nhập sai có lớn hơn hoặc bằng 5 không.
+Nối tới:
+Nhánh [failedLoginAttempts>=5 (Fail>=5)]: rẽ tới [System Action Box 15.24].
+Nhánh [failedLoginAttempts<5 (Fail<5)]: rẽ tới [System Action Box 16.26].
+
+[System Action Box 14.23]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Redirect To Dashboard
+Nội dung Action: Điều hướng người dùng tới giao diện quản trị hoặc trang chủ tương ứng theo quyền (Role).
+Nối tới: Mũi tên đi tới [Manual Action 15.25].
+
+[System Action Box 15.24]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Temp Lock
+Nội dung Action: Cập nhật Database: status='locked', lockedUntil = NOW + 30 phút, failedLoginAttempts = 0, lockReason='securitybreach'.
+Nối tới: Mũi tên đi tới [System Action Box 16.26].
+
+[Manual Action 15.25]
+Actor: User
+Loại: Manual Action
+Tên Action: Request Logout
+Nội dung Action: Người dùng bấm nút "Đăng xuất" sau quá trình sử dụng hệ thống.
+Nối tới: Mũi tên đi tới [System Action Box 16.27].
+
+[System Action Box 16.26]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Auth Error
+Nội dung Action: Trả về lỗi chung "Tài khoản hoặc mật khẩu không chính xác" hoặc "Tài khoản bị khóa".
+Nối tới: Mũi tên đi tới [Final Node 18.29].
+
+[System Action Box 16.27]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Invalidate Session
+Nội dung Action: Xóa toàn bộ dữ liệu phiên làm việc session.invalidate().
+Nối tới: Mũi tên đi tới [System Action Box 17.28].
+
+[System Action Box 17.28]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Redirect To Login
+Nội dung Action: Điều hướng trình duyệt về lại màn hình đăng nhập.
+Nối tới: Mũi tên đi tới [Final Node 18.29].
+
+[Final Node 18.29]
+Actor: System
+Loại: Final Node
+Tên Action: Complete Auth Flow
+Nội dung Action: Kết thúc tiến trình Activity của tính năng Xác thực.
+Nối tới: Không có.

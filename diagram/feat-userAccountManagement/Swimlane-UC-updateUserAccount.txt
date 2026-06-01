@@ -28,7 +28,7 @@ Nối tới: -> [Kết thúc luồng (Thất bại)].
 [Action 3.4.4] 
 Actor: LMS System 
 Loại: [System action box] 
-Tên/Nội dung: Cập nhật dữ liệu mới và trạng thái (status) vào Database và Ghi nhận thao tác vào bảng AuditLogs (FR?, BR?). 
+Tên/Nội dung: Cập nhật dữ liệu mới vào Database (FR?, BR?). 
 Nối tới: Mũi tên đi tới [Action 3.5.5].
 
 [Action 3.5.5] 
