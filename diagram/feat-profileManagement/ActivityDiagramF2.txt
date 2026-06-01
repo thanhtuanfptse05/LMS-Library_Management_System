@@ -1,0 +1,124 @@
+[Initial Node 1.1]
+Actor: System
+Loại: Initial Node
+Tên Action: Start Profile Management Flow
+Nội dung Action: Điểm bắt đầu của tiến trình xem và quản lý hồ sơ người dùng trong hệ thống LMS.
+Nối tới: Mũi tên đi tới [Manual Action 2.2].
+
+[Manual Action 2.2]
+Actor: User
+Loại: Manual Action
+Tên Action: Access Profile Page
+Nội dung Action: Người dùng truy cập vào giao diện hồ sơ cá nhân của mình.
+Nối tới: Mũi tên đi tới [System Action Box 3.3].
+
+[System Action Box 3.3]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query Profile Data
+Nội dung Action: Truy vấn cơ sở dữ liệu để lấy thông tin từ bảng [User] và MemberProfile dựa trên userId từ Session hiện tại.
+Nối tới: Mũi tên đi tới [System Action Box 4.4].
+
+[System Action Box 4.4]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Render Profile View
+Nội dung Action: Hiển thị giao diện hồ sơ chứa Form cập nhật thông tin cá nhân (fullName, phoneNumber, gender, dateOfBirth) và Form Đổi mật khẩu.
+Nối tới: Mũi tên đi tới [Decision Node 5.5].
+
+[Decision Node 5.5]
+Actor: User
+Loại: Decision Node
+Tên Action: Select Action
+Nội dung Action: Người dùng lựa chọn thao tác mong muốn trên giao diện.
+Nối tới:
+Nhánh [Update Profile Info]: rẽ tới [Manual Action 6.6].
+Nhánh [Change Password]: rẽ tới [Manual Action 6.7].
+
+[Manual Action 6.6]
+Actor: User
+Loại: Manual Action
+Tên Action: Submit Profile Info
+Nội dung Action: Chỉnh sửa các trường fullName, phoneNumber, gender, dateOfBirth và gửi yêu cầu cập nhật.
+Nối tới: Mũi tên đi tới [System Action Box 7.8].
+
+[Manual Action 6.7]
+Actor: User
+Loại: Manual Action
+Tên Action: Submit Password Change
+Nội dung Action: Nhập "Mật khẩu hiện tại", "Mật khẩu mới", "Xác nhận mật khẩu mới" và gửi yêu cầu đổi mật khẩu.
+Nối tới: Mũi tên đi tới [System Action Box 7.9].
+
+[System Action Box 7.8]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Update MemberProfile Database
+Nội dung Action: Thực thi lệnh UPDATE dữ liệu mới trực tiếp vào bảng MemberProfile.
+Nối tới: Mũi tên đi tới [System Action Box 8.10].
+
+[System Action Box 7.9]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Verify Current Password
+Nội dung Action: Mã hóa BCrypt mật khẩu hiện tại được nhập vào và đối chiếu với chuỗi passwordHash trong bảng [User].
+Nối tới: Mũi tên đi tới [Decision Node 8.11].
+
+[System Action Box 8.10]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Success Profile Message
+Nội dung Action: Trả về thông báo "Cập nhật thông tin cá nhân thành công".
+Nối tới: Mũi tên đi tới [Final Node 12.17].
+
+[Decision Node 8.11]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Current Password Match
+Nội dung Action: Đánh giá kết quả đối chiếu mật khẩu hiện tại.
+Nối tới:
+Nhánh [Password Incorrect]: rẽ tới [System Action Box 9.12].
+Nhánh [Password Correct]: rẽ tới [Decision Node 9.13].
+
+[System Action Box 9.12]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Auth Error Message
+Nội dung Action: Trả về thông báo lỗi "Mật khẩu hiện tại không chính xác".
+Nối tới: Mũi tên đi tới [Final Node 12.17].
+
+[Decision Node 9.13]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate New Password Policy
+Nội dung Action: Kiểm tra mật khẩu mới có đáp ứng chính sách bảo mật không.
+Nối tới:
+Nhánh [Invalid Format]: rẽ tới [System Action Box 10.14].
+Nhánh [Valid Format]: rẽ tới [System Action Box 10.15].
+
+[System Action Box 10.14]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Format Error Message
+Nội dung Action: Trả về thông báo lỗi "Mật khẩu mới không đáp ứng tiêu chuẩn bảo mật".
+Nối tới: Mũi tên đi tới [Final Node 12.17].
+
+[System Action Box 10.15]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Hash And Update Password
+Nội dung Action: Mã hóa BCrypt mật khẩu mới và thực thi lệnh UPDATE đè lên cột passwordHash tại bảng [User].
+Nối tới: Mũi tên đi tới [System Action Box 11.16].
+
+[System Action Box 11.16]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Success Password Message
+Nội dung Action: Trả về thông báo "Đổi mật khẩu thành công".
+Nối tới: Mũi tên đi tới [Final Node 12.17].
+
+[Final Node 12.17]
+Actor: System
+Loại: Final Node
+Tên Action: Complete Profile Flow
+Nội dung Action: Kết thúc tiến trình Activity của tính năng Quản lý hồ sơ.
+Nối tới: Không có.
