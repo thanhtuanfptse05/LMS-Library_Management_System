@@ -16,7 +16,16 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 public class AuthService {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO;
+
+    public AuthService() {
+        this.userDAO = new UserDAO();
+    }
+
+    // Constructor phục vụ mục đích Testing (Dependency Injection)
+    AuthService(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     /**
      * Xác thực mật khẩu nhập vào có trùng khớp với BCrypt hash trong DB hay không.
