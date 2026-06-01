@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Academic Nexus - Librarian Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#fff8f6",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#783200",
+                    "surface-tint": "#9d4300",
+                    "inverse-on-surface": "#ffede6",
+                    "surface-container": "#ffeae0",
+                    "outline": "#8c7164",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#fff1eb",
+                    "primary-container": "#f97316",
+                    "on-surface-variant": "#584237",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#fdd6a9",
+                    "secondary-fixed-dim": "#e6c095",
+                    "on-secondary-container": "#785c38",
+                    "secondary": "#755935",
+                    "outline-variant": "#e0c0b1",
+                    "on-surface": "#251913",
+                    "on-primary-fixed": "#341100",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#ffddb7",
+                    "on-secondary-fixed": "#2a1800",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#93ccff",
+                    "tertiary-fixed": "#cde5ff",
+                    "tertiary-container": "#00a2f4",
+                    "surface": "#fff8f6",
+                    "on-tertiary-container": "#003554",
+                    "on-primary-container": "#582200",
+                    "surface-dim": "#edd5cb",
+                    "surface-container-lowest": "#ffffff",
+                    "on-background": "#251913",
+                    "on-tertiary-fixed-variant": "#004b74",
+                    "tertiary": "#006398",
+                    "on-tertiary-fixed": "#001d32",
+                    "surface-container-high": "#fce3d9",
+                    "primary-fixed": "#ffdbca",
+                    "primary": "#9d4300",
+                    "inverse-primary": "#ffb690",
+                    "surface-container-highest": "#f6ded3",
+                    "inverse-surface": "#3c2d26",
+                    "surface-bright": "#fff8f6",
+                    "primary-fixed-dim": "#ffb690",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#5b4220",
+                    "surface-variant": "#f6ded3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "section-gap": "48px",
+                    "component-gap": "16px",
+                    "container-padding-desktop": "40px",
+                    "unit": "8px",
+                    "container-padding-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "title-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #FFF7ED;
+            font-family: 'Inter', sans-serif;
+            color: #251913;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen">
+<!-- Side Navigation Bar -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col p-gutter bg-surface shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-1px_rgba(0,0,0,0.03)] z-50">
+<div class="mb-10">
+<h1 class="text-title-lg font-title-lg font-bold text-primary">UniLibrary</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">LMS Portal</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span class="font-label-md text-label-md">My Loans</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-label-md text-label-md">Catalog</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Account</span>
+</a>
+</nav>
+<div class="mt-auto">
+<button class="w-full bg-primary text-white py-3 rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 hover:brightness-90 transition-all">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+                Search Books
+            </button>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center h-16 ml-64 px-container-desktop w-[calc(100%-16rem)] sticky top-0 bg-surface/80 backdrop-blur-md z-40 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-title-lg text-title-lg font-bold text-primary">Library Management System</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1 bg-primary text-white rounded-full">
+<span class="material-symbols-outlined text-[18px]" data-icon="shield_person">shield_person</span>
+<span class="text-label-sm font-label-sm">Librarian</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<img alt="User Profile" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional close-up portrait of a librarian with a friendly smile, set against a blurred background of a modern academic library. The lighting is soft and natural, emphasizing a professional yet approachable demeanor. The overall aesthetic is clean and high-contrast, matching a sophisticated university environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5VRrad2RbKAU58gvnSjPgYAZD5KmF00CcsYiD74d-QLCGjPPF3V6jIYriy7t23xGVsP3FzRMWZ9L-5lHiJciEG925mlByE1YKxnkliQH-Fpvoj3EI9ybuNoG5d6XhHFQVXIsC9sVyYGFWztGtw-bTHkdeXok7qW3EDaUA0J7rL7isR2Kt9q1g7LCzm3m2vOBBZgeT4qxhRd0-Hj4oYMa7IM79Uh84NulmZ8WwJY1z3B2XjXd6-9OfklAYfAA0utiELofinOAtAy64"/>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 p-container-desktop max-w-[1440px] mx-auto">
+<!-- Quick Action Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-section-gap">
+<button class="flex items-center justify-center flex-col gap-3 p-8 bg-primary text-white rounded-2xl shadow-lg hover:brightness-90 transition-all scale-[1.01] hover:scale-[1.02]">
+<span class="material-symbols-outlined text-[40px]" data-icon="barcode_scanner">barcode_scanner</span>
+<span class="font-headline-md text-headline-md">Scan Barcode to Checkout</span>
+</button>
+<button class="flex items-center justify-center flex-col gap-3 p-8 bg-primary text-white rounded-2xl shadow-lg hover:brightness-90 transition-all scale-[1.01] hover:scale-[1.02]">
+<span class="material-symbols-outlined text-[40px]" data-icon="keyboard_return">keyboard_return</span>
+<span class="font-headline-md text-headline-md">Scan Barcode to Return</span>
+</button>
+<button class="flex items-center justify-center flex-col gap-3 p-8 bg-primary text-white rounded-2xl shadow-lg hover:brightness-90 transition-all scale-[1.01] hover:scale-[1.02]">
+<span class="material-symbols-outlined text-[40px]" data-icon="person_add">person_add</span>
+<span class="font-headline-md text-headline-md">Register New Member</span>
+</button>
+</section>
+<!-- Metrics Row -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mb-section-gap">
+<div class="bg-white p-6 rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] border-l-4 border-primary">
+<p class="text-on-surface-variant font-label-md text-label-md mb-2">Books Checked Out Today</p>
+<h3 class="text-display-lg font-display-lg text-primary">142</h3>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] border-l-4 border-secondary">
+<p class="text-on-surface-variant font-label-md text-label-md mb-2">Books Returned Today</p>
+<h3 class="text-display-lg font-display-lg text-secondary">98</h3>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] border-l-4 border-tertiary">
+<p class="text-on-surface-variant font-label-md text-label-md mb-2">Pending Reservations</p>
+<h3 class="text-display-lg font-display-lg text-tertiary">15</h3>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] border-l-4 border-error">
+<p class="text-on-surface-variant font-label-md text-label-md mb-2">Members Overdue</p>
+<h3 class="text-display-lg font-display-lg text-error">24</h3>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Transactions Table (Left Wide) -->
+<section class="lg:col-span-8 bg-white rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<h2 class="text-title-lg font-title-lg text-on-surface">Today's Transactions</h2>
+<button class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline">
+                        View All <span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm uppercase tracking-wider">
+<tr>
+<th class="px-6 py-4">User ID</th>
+<th class="px-6 py-4">Book Barcode</th>
+<th class="px-6 py-4">Action</th>
+<th class="px-6 py-4">Time</th>
+<th class="px-6 py-4">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-body-md font-body-md">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">U-2023-4412</td>
+<td class="px-6 py-4">978-3-16-148410-0</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-primary-container text-on-primary-container rounded-full text-label-sm font-label-sm">Borrow</span>
+</td>
+<td class="px-6 py-4">09:45 AM</td>
+<td class="px-6 py-4 text-green-600 font-semibold">Success</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">U-2023-8821</td>
+<td class="px-6 py-4">978-0-26-203384-8</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-label-sm font-label-sm">Return</span>
+</td>
+<td class="px-6 py-4">10:12 AM</td>
+<td class="px-6 py-4 text-green-600 font-semibold">Success</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">U-2024-1029</td>
+<td class="px-6 py-4">978-1-11-853164-8</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-primary-container text-on-primary-container rounded-full text-label-sm font-label-sm">Borrow</span>
+</td>
+<td class="px-6 py-4">10:30 AM</td>
+<td class="px-6 py-4 text-secondary font-semibold italic">Pending</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">U-2023-3390</td>
+<td class="px-6 py-4">978-0-13-235088-4</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-label-sm font-label-sm">Return</span>
+</td>
+<td class="px-6 py-4">10:48 AM</td>
+<td class="px-6 py-4 text-green-600 font-semibold">Success</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">U-2022-7715</td>
+<td class="px-6 py-4">978-0-59-600712-6</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-primary-container text-on-primary-container rounded-full text-label-sm font-label-sm">Borrow</span>
+</td>
+<td class="px-6 py-4">11:05 AM</td>
+<td class="px-6 py-4 text-green-600 font-semibold">Success</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Overdue Alerts (Right Narrow) -->
+<section class="lg:col-span-4 bg-white rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="p-6 border-b border-outline-variant">
+<h2 class="text-title-lg font-title-lg text-on-surface">Overdue Alerts</h2>
+</div>
+<div class="p-4 space-y-4">
+<!-- Alert Item 1 -->
+<div class="p-4 border border-error-container bg-error-container/10 rounded-xl">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-title-lg text-label-md font-bold text-on-surface">Alex Johnston</h4>
+<p class="text-label-sm text-on-surface-variant">3 days overdue</p>
+</div>
+<span class="text-error font-bold text-label-sm">-$15.00</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-white border border-outline text-on-surface-variant rounded-lg text-label-sm font-label-sm flex items-center justify-center gap-1 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span> Email
+                            </button>
+<button class="flex-1 py-2 bg-white border border-outline text-on-surface-variant rounded-lg text-label-sm font-label-sm flex items-center justify-center gap-1 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="phone">phone</span> Phone
+                            </button>
+</div>
+</div>
+<!-- Alert Item 2 -->
+<div class="p-4 border border-error-container bg-error-container/10 rounded-xl">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-title-lg text-label-md font-bold text-on-surface">Sarah Miller</h4>
+<p class="text-label-sm text-on-surface-variant">7 days overdue</p>
+</div>
+<span class="text-error font-bold text-label-sm">-$35.00</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-white border border-outline text-on-surface-variant rounded-lg text-label-sm font-label-sm flex items-center justify-center gap-1 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span> Email
+                            </button>
+<button class="flex-1 py-2 bg-white border border-outline text-on-surface-variant rounded-lg text-label-sm font-label-sm flex items-center justify-center gap-1 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="phone">phone</span> Phone
+                            </button>
+</div>
+</div>
+<!-- Alert Item 3 -->
+<div class="p-4 border border-error-container bg-error-container/10 rounded-xl">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-title-lg text-label-md font-bold text-on-surface">Michael Chen</h4>
+<p class="text-label-sm text-on-surface-variant">1 day overdue</p>
+</div>
+<span class="text-error font-bold text-label-sm">-$5.00</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-white border border-outline text-on-surface-variant rounded-lg text-label-sm font-label-sm flex items-center justify-center gap-1 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span> Email
+                            </button>
+<button class="flex-1 py-2 bg-white border border-outline text-on-surface-variant rounded-lg text-label-sm font-label-sm flex items-center justify-center gap-1 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="phone">phone</span> Phone
+                            </button>
+</div>
+</div>
+<button class="w-full py-3 text-primary font-bold text-label-md hover:bg-primary/5 rounded-xl transition-colors">
+                        View All Alerts (24)
+                    </button>
+</div>
+</section>
+</div>
+</main>
+<!-- Success Toast Notification (Hidden by Default) -->
+<div class="fixed bottom-8 right-8 bg-white shadow-2xl rounded-2xl p-6 border-l-4 border-green-500 transform translate-y-20 opacity-0 transition-all duration-500 z-[100] flex items-center gap-4" id="toast">
+<div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Scan Successful</h4>
+<p class="text-sm text-on-surface-variant">Book has been checked out to U-2023-4412.</p>
+</div>
+</div>
+<script>
+        // Simple Micro-interaction: Show Toast after 2 seconds to simulate a background event
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 4000);
+            }, 2000);
+        });
+
+        // Hover lift effect for action cards
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = '';
+            });
+        });
+    </script>
+</body></html>
