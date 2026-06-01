@@ -31,4 +31,22 @@ public class AuthService {
         }
         return BCrypt.checkpw(plainPassword, storedHash);
     }
+
+    /**
+     * Kiểm tra xem tài khoản có đang bị khóa tạm thời hay không.
+     *
+     * @param user Đối tượng người dùng cần kiểm tra
+     * @return {@code true} nếu tài khoản đang bị khóa, ngược lại {@code false}
+     */
+    public boolean isAccountLocked(User user) {
+        if (user == null || !"locked".equals(user.getStatus())) {
+            return false;
+        }
+        java.sql.Timestamp lockedUntil = user.getLockedUntil();
+        if (lockedUntil == null) {
+            return false;
+        }
+        java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        return lockedUntil.after(now);
+    }
 }
