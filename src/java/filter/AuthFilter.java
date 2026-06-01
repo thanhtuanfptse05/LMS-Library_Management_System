@@ -40,7 +40,7 @@ public class AuthFilter implements Filter {
         String role = isLoggedIn ? (String) session.getAttribute("role") : null;
 
         // 2. Nếu đã đăng nhập mà cố ý truy cập lại trang /login hoặc /auth/login.jsp
-        if (isLoggedIn && (path.equals("/login") || path.equals("/auth/login.jsp"))) {
+        if (isLoggedIn && (path.equals("/login") || path.equals("/login/") || path.equals("/auth/login.jsp"))) {
             String redirectUrl = getRedirectByRole(contextPath, role);
             httpResponse.sendRedirect(redirectUrl);
             return;
@@ -54,7 +54,7 @@ public class AuthFilter implements Filter {
 
         if (isAdminRoute) {
             if (!isLoggedIn) {
-                httpResponse.sendRedirect(contextPath + "/auth/login.jsp");
+                httpResponse.sendRedirect(contextPath + "/login");
                 return;
             }
             if (!"ADMIN".equalsIgnoreCase(role)) {
@@ -63,7 +63,7 @@ public class AuthFilter implements Filter {
             }
         } else if (isLibrarianRoute) {
             if (!isLoggedIn) {
-                httpResponse.sendRedirect(contextPath + "/auth/login.jsp");
+                httpResponse.sendRedirect(contextPath + "/login");
                 return;
             }
             if (!"LIBRARIAN".equalsIgnoreCase(role)) {
@@ -72,7 +72,7 @@ public class AuthFilter implements Filter {
             }
         } else if (isManagerRoute) {
             if (!isLoggedIn) {
-                httpResponse.sendRedirect(contextPath + "/auth/login.jsp");
+                httpResponse.sendRedirect(contextPath + "/login");
                 return;
             }
             if (!"MANAGER".equalsIgnoreCase(role)) {
@@ -81,7 +81,7 @@ public class AuthFilter implements Filter {
             }
         } else if (isStudentRoute) {
             if (!isLoggedIn) {
-                httpResponse.sendRedirect(contextPath + "/auth/login.jsp");
+                httpResponse.sendRedirect(contextPath + "/login");
                 return;
             }
             if (!"STUDENT".equalsIgnoreCase(role)) {
