@@ -49,4 +49,29 @@ public class AuthService {
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
         return lockedUntil.after(now);
     }
+
+    /**
+     * Xử lý khi đăng nhập thất bại.
+     * Tăng số lần đăng nhập sai của người dùng. Nếu số lần đăng nhập sai đạt mốc 5,
+     * thực hiện khóa tài khoản tạm thời 30 phút.
+     *
+     * @param user Đối tượng người dùng thực hiện đăng nhập
+     * @return Số lần đăng nhập sai mới của người dùng
+     */
+    public int handleFailedLogin(User user) {
+        if (user == null) {
+            return 0;
+        }
+        int newAttempts = user.getFailedLoginAttempts() + 1;
+        if (newAttempts >= 5) {
+            userDAO.lockAccount(user.getUserId());
+            user.setStatus("locked");
+            user.setFailedLoginAttempts(0);
+            return 5;
+        } else {
+            userDAO.updateFailedAttempts(user.getUserId(), newAttempts);
+            user.setFailedLoginAttempts(newAttempts);
+            return newAttempts;
+        }
+    }
 }
