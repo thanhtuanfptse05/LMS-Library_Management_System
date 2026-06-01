@@ -131,14 +131,10 @@
                     <div class="auth-divider-line"></div>
                 </div>
                 
-                <div class="auth-sso-grid">
-                    <a href="${pageContext.request.contextPath}/login/google" class="auth-sso-btn">
-                        <img alt="Google" style="width: 20px; height: 20px;" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqMW_TR8Vis0hOIi6Ok5gXYDNu5H3Wv-YGTeNbrq1C_fvULC3vW_s5kZkT5qZ0X_HKDqXR0C0t0X7YEltJymEscxrUE-gZeMTl589pYzT998zimpiCO-ImaRVnUXgb1mvsodhG2Fx14ZIKnKL6cm8ksavEO1YHo8cRIWooeLCQGnIHVId-PuigGcBQ1yIF-qABxCOMILWo3d7ca7GnSJIUGfQBvX-gAUESXI9TpF6S_0CgyQyV5D80RQOV4SgRKc-zOvhGzrEzqpTI"/>
-                        <span>Google SSO</span>
-                    </a>
-                    <a href="${pageContext.request.contextPath}/login/microsoft" class="auth-sso-btn">
-                        <span class="material-symbols-outlined" style="color: #0078D4; font-variation-settings: 'FILL' 1;">grid_view</span>
-                        <span>Microsoft</span>
+                <div style="margin-top: var(--space-md);">
+                    <a href="${pageContext.request.contextPath}/login-google" style="display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; height: 44px; background-color: #D34836; color: #ffffff; text-decoration: none; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: background-color 0.2s ease-in-out, transform 0.1s ease;" onmouseover="this.style.backgroundColor='#b83a2a';" onmouseout="this.style.backgroundColor='#D34836';" onmousedown="this.style.transform='scale(0.98)';" onmouseup="this.style.transform='scale(1)';" id="google-login-btn">
+                        <span style="font-weight: 800; font-size: 18px; letter-spacing: -1px;">G+</span>
+                        <span>Login With Google</span>
                     </a>
                 </div>
                 
