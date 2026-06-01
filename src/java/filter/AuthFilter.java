@@ -99,7 +99,7 @@ public class AuthFilter implements Filter {
      */
     private String getRedirectByRole(String contextPath, String role) {
         if (role == null) {
-            return contextPath + "/auth/login.jsp";
+            return contextPath + "/login";
         }
         switch (role.toUpperCase()) {
             case "ADMIN":
@@ -111,7 +111,7 @@ public class AuthFilter implements Filter {
             case "STUDENT":
                 return contextPath + "/student/dashboard";
             default:
-                return contextPath + "/auth/login.jsp";
+                return contextPath + "/login";
         }
     }
 
