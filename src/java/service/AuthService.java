@@ -74,4 +74,19 @@ public class AuthService {
             return newAttempts;
         }
     }
+
+    /**
+     * Sinh mật khẩu mới ngẫu nhiên gồm đúng 8 ký tự (chữ cái và số).
+     *
+     * @return Chuỗi mật khẩu ngẫu nhiên
+     */
+    public String generateRandomPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            int index = (int) (Math.random() * chars.length());
+            sb.append(chars.charAt(index));
+        }
+        return sb.toString();
+    }
 }
