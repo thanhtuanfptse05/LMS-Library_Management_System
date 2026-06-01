@@ -25,8 +25,9 @@
 - **T-AUTH-05: LoginServlet**: Completed. Handles secure GET/POST with BCrypt verification, timing attack protection, auto-unlock, and failed attempt locks.
 - **T-AUTH-06: ForgotPasswordServlet**: Completed. Handles POST with fake success, BCrypt password generation, and non-blocking asynchronous email delivery.
 - **T-AUTH-07: LogoutServlet**: Completed. Invalidates sessions and redirects securely to `/login`.
+- **T-AUTH-08: Views (login.jsp & forgot-password.jsp)**: Completed. Linked login and forgot-password paths to the secure servlet endpoints, eliminated all direct JSP routes to ensure MVC alignment, fully compliant with JSTL/EL usage rules without scriptlets.
 
-Next: Implement View Layer (T-AUTH-08: login.jsp, forgot-password.jsp changes).
+Next: Review and verify overall authentication features.
 
 ## Issues Encountered
 None.
