@@ -147,7 +147,7 @@ CREATE TABLE BookCategory (
 
     PRIMARY KEY (bookId, categoryId),
 
-    FOREIGN KEY (bookId) REFERENCES Books(bookId),
+    FOREIGN KEY (bookId) REFERENCES Book(bookId),
     FOREIGN KEY (categoryId) REFERENCES Category(categoryId)
 );
 
@@ -159,7 +159,7 @@ CREATE TABLE BookTag (
 
     PRIMARY KEY (bookId, tagId),
 
-    FOREIGN KEY (bookId) REFERENCES Books(bookId),
+    FOREIGN KEY (bookId) REFERENCES Book(bookId),
     FOREIGN KEY (tagId) REFERENCES Tag(tagId)
 );
 
@@ -175,7 +175,7 @@ CREATE TABLE BookCopy (
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
     updatedAt DATETIME NULL,
 
-    FOREIGN KEY (bookId) REFERENCES Books(bookId)
+    FOREIGN KEY (bookId) REFERENCES Book(bookId)
 );
 
 -- ============================================================
@@ -191,7 +191,7 @@ CREATE TABLE Reservation (
     endDate DATETIME NULL,
   
     FOREIGN KEY (userId) REFERENCES [User](userId),
-    FOREIGN KEY (bookId) REFERENCES Books(bookId),
+    FOREIGN KEY (bookId) REFERENCES Book(bookId),
     FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId)
 );
 
@@ -212,7 +212,7 @@ CREATE TABLE BorrowRecord (
 
     FOREIGN KEY (userId) REFERENCES [User](userId),
     FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId),
-    FOREIGN KEY (bookId) REFERENCES Books(bookId),
+    FOREIGN KEY (bookId) REFERENCES Book(bookId),
     FOREIGN KEY (createdBy) REFERENCES [User](userId)
 );
 
@@ -244,7 +244,7 @@ CREATE TABLE Payment (
     paidAt DATETIME NOT NULL DEFAULT GETDATE(),
 
     FOREIGN KEY (fineId) REFERENCES Fine(fineId),
-    FOREIGN KEY (processBy) REFERENCES [User](userId)
+    FOREIGN KEY (processedBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
