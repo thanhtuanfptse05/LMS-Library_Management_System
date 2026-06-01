@@ -1,0 +1,193 @@
+[Initial Node 1.1]
+Actor: System
+Loại: Initial Node
+Tên Action: Start User Management Flow
+Nội dung Action: Điểm bắt đầu tiến trình quản lý tài khoản người dùng.
+Nối tới: Mũi tên đi tới [Manual Action 2.2].
+
+[Manual Action 2.2]
+Actor: Admin
+Loại: Manual Action
+Tên Action: Access User Management
+Nội dung Action: Quản trị viên truy cập vào phân hệ Quản trị tài khoản.
+Nối tới: Mũi tên đi tới [Decision Node 3.3].
+
+[Decision Node 3.3]
+Actor: Admin
+Loại: Decision Node
+Tên Action: Choose Main Operation
+Nội dung Action: Lựa chọn luồng thao tác chính.
+Nối tới:
+Nhánh [View Data]: rẽ tới [System Action Box 4.4].
+Nhánh [Create Data]: rẽ tới [Decision Node 4.5].
+
+[System Action Box 4.4]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query And Render User List
+Nội dung Action: Truy vấn danh sách tài khoản và hiển thị lên giao diện.
+Nối tới: Mũi tên đi tới [Manual Action 5.6].
+
+[Decision Node 4.5]
+Actor: Admin
+Loại: Decision Node
+Tên Action: Choose Creation Method
+Nội dung Action: Lựa chọn phương thức tạo tài khoản.
+Nối tới:
+Nhánh [Create Single]: rẽ tới [Manual Action 5.7].
+Nhánh [Import Bulk]: rẽ tới [Manual Action 5.8].
+
+[Manual Action 5.6]
+Actor: Admin
+Loại: Manual Action
+Tên Action: Select User And View Detail
+Nội dung Action: Chọn một tài khoản cụ thể để xem chi tiết.
+Nối tới: Mũi tên đi tới [System Action Box 6.9].
+
+[Manual Action 5.7]
+Actor: Admin
+Loại: Manual Action
+Tên Action: Submit Single Create Form
+Nội dung Action: Điền form tạo mới tài khoản đơn lẻ và gửi yêu cầu.
+Nối tới: Mũi tên đi tới [System Action Box 6.10].
+
+[Manual Action 5.8]
+Actor: Admin
+Loại: Manual Action
+Tên Action: Select Import Role
+Nội dung Action: Chọn Role chung cho đợt Import hàng loạt.
+Nối tới: Mũi tên đi tới [System Action Box 6.11].
+
+[System Action Box 6.9]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Render User Detail
+Nội dung Action: Hiển thị giao diện thông tin chi tiết của người dùng.
+Nối tới: Mũi tên đi tới [Decision Node 7.12].
+
+[System Action Box 6.10]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Validate Create Input
+Nội dung Action: Kiểm tra tính hợp lệ dữ liệu form tạo mới.
+Nối tới: Mũi tên đi tới [Decision Node 7.13].
+
+[System Action Box 6.11]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Render Upload UI
+Nội dung Action: Hiển thị giao diện đính kèm Excel theo Role đã chọn.
+Nối tới: Mũi tên đi tới [Manual Action 7.14].
+
+[Decision Node 7.12]
+Actor: Admin
+Loại: Decision Node
+Tên Action: Choose Update Action
+Nội dung Action: Quyết định có thực hiện chỉnh sửa dữ liệu/trạng thái hay không.
+Nối tới:
+Nhánh [Not Update]: rẽ tới [Final Node 13.26].
+Nhánh [Update User]: rẽ tới [Manual Action 8.15].
+
+[Decision Node 7.13]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Create Data Uniqueness
+Nội dung Action: Quét trùng lặp dữ liệu (Email/MSSV) cho tài khoản mới.
+Nối tới:
+Nhánh [Invalid/Duplicate]: rẽ tới [System Action Box 12.24].
+Nhánh [Valid]: rẽ tới [System Action Box 8.16].
+
+[Manual Action 7.14]
+Actor: Admin
+Loại: Manual Action
+Tên Action: Upload Excel File
+Nội dung Action: Đính kèm file và gửi yêu cầu Import.
+Nối tới: Mũi tên đi tới [System Action Box 8.17].
+
+[Manual Action 8.15]
+Actor: Admin
+Loại: Manual Action
+Tên Action: Submit Update Form
+Nội dung Action: Sửa dữ liệu hoặc thay đổi trạng thái (Khóa/Mở khóa) và gửi.
+Nối tới: Mũi tên đi tới [System Action Box 9.18].
+
+[System Action Box 8.16]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute DB Insert Mutation
+Nội dung Action: Thực thi lệnh INSERT tạo tài khoản mới vào DB kèm băm mật khẩu.
+Nối tới: Mũi tên đi tới [System Action Box 12.25].
+
+[System Action Box 8.17]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Parse And Validate File
+Nội dung Action: Đọc file Excel, phân tích định dạng và quét trùng lặp dữ liệu.
+Nối tới: Mũi tên đi tới [Decision Node 9.19].
+
+[System Action Box 9.18]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Validate Update Input
+Nội dung Action: Kiểm tra tính hợp lệ dữ liệu form cập nhật.
+Nối tới: Mũi tên đi tới [Decision Node 10.20].
+
+[Decision Node 9.19]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check File Validity
+Nội dung Action: Đánh giá file Excel có hợp lệ và sạch dữ liệu không.
+Nối tới:
+Nhánh [Has Error]: rẽ tới [System Action Box 12.24].
+Nhánh [All Valid]: rẽ tới [System Action Box 10.21].
+
+[Decision Node 10.20]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Update Data Uniqueness
+Nội dung Action: Quét trùng lặp dữ liệu sau khi cập nhật.
+Nối tới:
+Nhánh [Invalid/Duplicate]: rẽ tới [System Action Box 12.24].
+Nhánh [Valid]: rẽ tới [System Action Box 11.22].
+
+[System Action Box 10.21]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Batch Insert
+Nội dung Action: Mở DB Transaction, thực thi Batch Insert danh sách tài khoản.
+Nối tới: Mũi tên đi tới [System Action Box 11.23].
+
+[System Action Box 11.22]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute DB Update Mutation
+Nội dung Action: Thực thi lệnh UPDATE thông tin hoặc trạng thái vào DB.
+Nối tới: Mũi tên đi tới [System Action Box 12.25].
+
+[System Action Box 11.23]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Generate Default Passwords
+Nội dung Action: Băm mật khẩu mặc định cho loạt tài khoản Import và đánh cờ đổi pass.
+Nối tới: Mũi tên đi tới [System Action Box 12.25].
+
+[System Action Box 12.24]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Error Message
+Nội dung Action: Hiển thị lỗi do sai định dạng, trùng lặp hoặc file Excel lỗi.
+Nối tới: Mũi tên đi tới [Final Node 13.26].
+
+[System Action Box 12.25]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Success Message
+Nội dung Action: Hiển thị thông báo thao tác hoàn tất thành công.
+Nối tới: Mũi tên đi tới [Final Node 13.26].
+
+[Final Node 13.26]
+Actor: System
+Loại: Final Node
+Tên Action: Complete User Management Flow
+Nội dung Action: Kết thúc tiến trình quản trị tài khoản.
+Nối tới: Không có.
