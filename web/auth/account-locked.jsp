@@ -41,7 +41,7 @@
                 <span class="nav-brand__text">LMS University Library</span>
             </a>
             <div class="nav-actions">
-                <a href="${pageContext.request.contextPath}/login.jsp" class="btn btn-primary">Login</a>
+                <a href="${pageContext.request.contextPath}/auth/login.jsp" class="btn btn-primary">Login</a>
             </div>
         </nav>
     </header>

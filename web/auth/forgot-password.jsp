@@ -31,7 +31,7 @@
                 <span class="nav-brand__text">LMS University Library</span>
             </a>
             <div class="nav-actions">
-                <a href="${pageContext.request.contextPath}/login.jsp" class="btn btn-primary">Login</a>
+                <a href="${pageContext.request.contextPath}/auth/login.jsp" class="btn btn-primary">Login</a>
             </div>
         </nav>
     </header>
@@ -66,7 +66,7 @@
             </form>
 
             <div style="text-align: center; margin-top: var(--space-xl);">
-                <a href="${pageContext.request.contextPath}/login.jsp" class="auth-header-link" style="justify-content: center;">
+                <a href="${pageContext.request.contextPath}/auth/login.jsp" class="auth-header-link" style="justify-content: center;">
                     <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
                     Back to Login
                 </a>
@@ -83,7 +83,7 @@
                     <span class="material-symbols-outlined" style="color: var(--color-on-surface-variant); font-size: 20px; margin-top: 2px;">info</span>
                     <p style="font-size: var(--text-label-sm); color: var(--color-on-surface-variant); text-align: left; margin: 0;">Please check your spam folder if you do not see the email within 5 minutes.</p>
                 </div>
-                <a class="auth-submit-btn" href="${pageContext.request.contextPath}/login.jsp" style="text-decoration: none;">
+                <a class="auth-submit-btn" href="${pageContext.request.contextPath}/auth/login.jsp" style="text-decoration: none;">
                     <span class="material-symbols-outlined">login</span>
                     <span>Return to Login</span>
                 </a>
