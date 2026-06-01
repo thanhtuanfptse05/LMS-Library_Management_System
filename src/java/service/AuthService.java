@@ -107,4 +107,12 @@ public class AuthService {
         userDAO.updatePasswordHash(user.getUserId(), hashedPassword);
         return rawPassword;
     }
+
+    /**
+     * Thực hiện kiểm thử BCrypt giả lập nhằm chống tấn công Timing Attack.
+     * Hàm này luôn mất khoảng thời gian tương đương như verify mật khẩu thật.
+     */
+    public void runDummyVerify() {
+        BCrypt.checkpw("dummy_password", "$2a$10$dummyhashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    }
 }
