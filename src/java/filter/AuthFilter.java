@@ -36,7 +36,8 @@ public class AuthFilter implements Filter {
         String path = requestURI.substring(contextPath.length());
 
         // 1. Kiểm tra trạng thái đăng nhập
-        boolean isLoggedIn = (session != null && session.getAttribute("userId") != null && session.getAttribute("role") != null);
+        boolean isLoggedIn = (session != null && session.getAttribute("userId") != null
+                && session.getAttribute("role") != null);
         String role = isLoggedIn ? (String) session.getAttribute("role") : null;
 
         // 2. Nếu đã đăng nhập mà cố ý truy cập lại trang /login hoặc /auth/login.jsp
@@ -58,7 +59,8 @@ public class AuthFilter implements Filter {
                 return;
             }
             if (!"ADMIN".equalsIgnoreCase(role)) {
-                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập vào chức năng này.");
+                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                        "Bạn không có quyền truy cập vào chức năng này.");
                 return;
             }
         } else if (isLibrarianRoute) {
@@ -67,7 +69,8 @@ public class AuthFilter implements Filter {
                 return;
             }
             if (!"LIBRARIAN".equalsIgnoreCase(role)) {
-                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập vào chức năng này.");
+                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                        "Bạn không có quyền truy cập vào chức năng này.");
                 return;
             }
         } else if (isManagerRoute) {
@@ -76,7 +79,8 @@ public class AuthFilter implements Filter {
                 return;
             }
             if (!"MANAGER".equalsIgnoreCase(role)) {
-                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập vào chức năng này.");
+                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                        "Bạn không có quyền truy cập vào chức năng này.");
                 return;
             }
         } else if (isStudentRoute) {
@@ -85,7 +89,8 @@ public class AuthFilter implements Filter {
                 return;
             }
             if (!"STUDENT".equalsIgnoreCase(role)) {
-                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập vào chức năng này.");
+                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                        "Bạn không có quyền truy cập vào chức năng này.");
                 return;
             }
         }
@@ -99,7 +104,7 @@ public class AuthFilter implements Filter {
      */
     private String getRedirectByRole(String contextPath, String role) {
         if (role == null) {
-            return contextPath + "/login";
+            return contextPath + "/auth/login.jsp";
         }
         switch (role.toUpperCase()) {
             case "ADMIN":
@@ -111,7 +116,7 @@ public class AuthFilter implements Filter {
             case "STUDENT":
                 return contextPath + "/student/dashboard";
             default:
-                return contextPath + "/login";
+                return contextPath + "/auth/login.jsp";
         }
     }
 
