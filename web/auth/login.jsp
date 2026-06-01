@@ -102,7 +102,7 @@
                     <div class="auth-form-group">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
                             <label class="auth-form-label" style="margin-bottom: 0;" for="password">Password</label>
-                            <a class="auth-link" style="font-size: var(--text-label-md); font-weight: var(--text-label-md-fw);" href="${pageContext.request.contextPath}/auth/forgot-password.jsp">Forgot Password?</a>
+                            <a class="auth-link" style="font-size: var(--text-label-md); font-weight: var(--text-label-md-fw);" href="${pageContext.request.contextPath}/forgot-password">Forgot Password?</a>
                         </div>
                         <div class="auth-input-wrapper">
                             <span class="auth-input-icon-left material-symbols-outlined">lock</span>
