@@ -608,3 +608,19 @@ INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (182, 'H
 INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (183, 'HE180098', N'Graphic Design', 2020);
 INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (184, 'HE180099', N'International Business', 2021);
 INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (185, 'HE180100', N'Computer Science', 2020);
+
+-- ------------------------------------------------------------
+-- 7. ADDITIONAL USERS FOR GOOGLE SSO TEST
+-- ------------------------------------------------------------
+SET IDENTITY_INSERT [User] ON;
+INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (186, 'caotuan01122005@gmail.com', '/jl2S/N69KiAxLCInLuOz/8x41wu3vwAzVBHCfxtBhCIwTihNO', 'active', 'admin', NULL, 0, NULL);
+INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (187, 'caothanhtuan576@gmail.com', '.ox8ytWBfRtETotH8BVViBoobZYlvJe6', 'active', 'student', NULL, 0, NULL);
+INSERT INTO [User] (userId, email, passwordHash, [status], [role], lockReason, failedLoginAttempts, lockedUntil) VALUES (188, 'vuvanquyet0305@gmail.com', '', 'active', 'lecturer', NULL, 0, NULL);
+SET IDENTITY_INSERT [User] OFF;
+
+INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (186, N'Cao Tuan Admin', '0123456789', 'Male', '2005-12-01', GETDATE(), NULL);
+INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (187, N'Cao Thanh Tuan Student', '0123456788', 'Male', '2000-01-01', GETDATE(), NULL);
+INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (188, N'Vu Van Quyet Lecturer', '0123456787', 'Male', '1990-05-03', GETDATE(), NULL);
+
+INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (187, 'HE999999', N'Software Engineering', 2023);
+INSERT INTO Lecturer (userId, lecturerCode, department) VALUES (188, 'LEC999', N'Information Technology');
