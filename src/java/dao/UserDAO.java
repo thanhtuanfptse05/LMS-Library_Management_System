@@ -189,6 +189,44 @@ public class UserDAO {
     }
 
     /**
+     * Ghi Audit Log vào bảng AuditLogs.
+     *
+     * @param userId     ID tài khoản thực hiện hành động (có thể null)
+     * @param actionType Loại hành động (ví dụ: 'CHANGE_PASSWORD', 'RESET_PASSWORD')
+     * @param entityName Tên bảng hoặc thực thể chịu tác động
+     * @param entityId   ID của thực thể chịu tác động (có thể null)
+     * @param oldValues  Giá trị cũ dưới dạng JSON/Text (có thể null)
+     * @param newValues  Giá trị mới dưới dạng JSON/Text (có thể null)
+     */
+    public void insertAuditLog(Integer userId, String actionType, String entityName, Integer entityId, String oldValues, String newValues) {
+        String sql = "INSERT INTO AuditLogs (userId, actionType, [entityName], [entityId], oldValues, newValues, [timestamp]) "
+                + "VALUES (?, ?, ?, ?, ?, ?, GETDATE())";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            if (userId != null) {
+                ps.setInt(1, userId);
+            } else {
+                ps.setNull(1, java.sql.Types.INTEGER);
+            }
+            ps.setString(2, actionType);
+            ps.setString(3, entityName);
+            if (entityId != null) {
+                ps.setInt(4, entityId);
+            } else {
+                ps.setNull(4, java.sql.Types.INTEGER);
+            }
+            ps.setString(5, oldValues);
+            ps.setString(6, newValues);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error inserting audit log for action=" + actionType, e);
+        }
+    }
+
+    /**
      * Hàm tiện ích nội bộ — ánh xạ một dòng ResultSet thành đối tượng User.
      *
      * @param rs ResultSet đang trỏ tới dòng dữ liệu hợp lệ

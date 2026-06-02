@@ -199,7 +199,7 @@
             </nav>
 
             <div class="d-flex align-items-center gap-2">
-                <a href="${pageContext.request.contextPath}/student/book-search" class="btn d-none d-lg-flex align-items-center text-muted rounded-pill px-3 py-1 text-decoration-none">
+                <a href="${pageContext.request.contextPath}/book-search.jsp" class="btn d-none d-lg-flex align-items-center text-muted rounded-pill px-3 py-1 text-decoration-none">
                     <span class="material-symbols-outlined me-1">search</span>
                     <span class="small">Search Catalog</span>
                 </a>
@@ -222,8 +222,8 @@
                     <p class="text-white-50 fs-5 mb-4">Access millions of academic resources, journals, and digital
                         archives at the UniLib University Library. Explore our collections as our guest today.</p>
 
-                    <!-- Form Tìm kiếm công cộng kết nối tới student/book-search -->
-                    <form action="${pageContext.request.contextPath}/student/book-search" method="GET" class="position-relative style-search-box">
+                    <!-- Form Tìm kiếm công cộng kết nối tới book-search.jsp -->
+                    <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET" class="position-relative style-search-box">
                         <span class="position-absolute top-50 start-0 translate-middle-y ms-3 material-symbols-outlined text-muted">search</span>
                         <input class="form-control form-control-lg border-0 shadow-lg ps-5 pe-5 py-3 rounded-3"
                             name="query" placeholder="Search Info, Catalog, or Archives..." type="text" />
