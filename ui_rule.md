@@ -1,477 +1,524 @@
-# Global UI/UX Design Constitution
+# Global UI/UX Design Constitution — Library Management System (LMS)
 
-## 1. Purpose
-
-This document serves as the absolute, single source of truth for all User Interface (UI) and User Experience (UX) decisions. It establishes a technology-agnostic, project-independent framework of universal design standards. Every future specification, design system, wireframe, user flow, individual page, component interface, and frontend implementation must strictly adhere to the principles, guidelines, and metrics defined herein to ensure functional excellence, absolute visual consistency, and a premium, unified user experience.
+This document serves as the absolute, single source of truth for all User Interface (UI) and User Experience (UX) standards in the LMS (Library Management System) project. Every future specification, page layout, custom component, style sheet, and JSP implementation must strictly comply with these rules.
 
 ---
 
-## 2. Core Design Principles
+## 1. Design Philosophy
 
-### 2.1 Simplicity
-* **Rule:** Eliminate unnecessary cognitive load by minimizing interface complexity. Keep the user focused on their primary objective.
-* **Practice:** Every visual element on a screen must serve a clear operational or informational purpose. If an element does not assist the user in completing a task or understanding content, it must be removed.
-* **Complexity Control:** Group advanced settings or secondary actions and hide them behind progressive disclosure mechanisms (e.g., collapsible panels, tabs, or advanced search menus).
+The LMS design system balances the academic nature of a university library with the robust operational efficiency of an enterprise administration tool.
 
-### 2.2 Consistency
-* **Rule:** Maintain absolute uniformity across all visual elements, behavioral responses, terminology, and interaction flows.
-* **Practice:** Utilize strict, predefined design tokens for colors, typography, spacing, and sizing. Similar actions must always produce identical outcomes, regardless of context or user location in the application.
-* **Patterns:** Standardize common operations (e.g., table pagination, filter resets, modal confirmations, and destructive actions) to build strong, repeatable user mental models.
-
-### 2.3 Clarity
-* **Rule:** Ensure the interface is immediately understandable. A user must instantly comprehend where they are, what information is presented, and how to execute their next action.
-* **Practice:** Use clear, concise text alongside distinct visual cues. Interactive elements must present clear affordances that signal their interactive nature (e.g., buttons must look clickable; text inputs must look writable).
-* **Hierarchy:** Place critical information in the primary optical path and secondary details in supportive positions.
-
-### 2.4 Accessibility
-* **Rule:** Ensure interfaces are fully usable by all individuals, including those with physical, sensory, cognitive, or situational impairments.
-* **Practice:** Treat accessibility as a primary architectural requirement rather than a secondary checklist. All applications must strictly comply with Web Content Accessibility Guidelines (WCAG) 2.1/2.2 AA standards.
-* **Implementation:** Design with semantic elements, reliable keyboard focus indicators, screen reader compatibility, and robust color contrast ratios.
-
-### 2.5 Scalability
-* **Rule:** Design systems and layouts to seamlessly adapt to fluctuating quantities of data, varying screen dimensions, and future feature expansions without breaking.
-* **Practice:** Avoid hardcoded layouts. Always utilize flexible structures (e.g., CSS Grid, Flexbox, or auto-layout equivalents) that adapt dynamically to varying content volumes, localized text lengths, and differing viewport dimensions.
-
-### 2.6 Maintainability
-* **Rule:** Construct layouts and components to facilitate straightforward visual and behavioral updates over time.
-* **Practice:** Implement modular, highly reusable component architectures. Define a centralized, token-based variables system for color palettes, spacing units, and typography styles, ensuring global updates can be made at a single point of origin.
-
-### 2.7 Predictability
-* **Rule:** Align interface behaviors with established universal standards to minimize the user learning curve.
-* **Practice:** Keep interactive components functioning in line with common industry standards (e.g., clicking a logo returns the user to the home screen; clicking outside a modal dismisses it; the "Escape" key closes active overlays). Avoid non-standard interactions unless they provide a significant, proven efficiency gain.
-
-### 2.8 User-Centered Design
-* **Rule:** Every design decision must prioritize the actual goals, workflows, and physical environment of the end user.
-* **Practice:** Design workflows to minimize physical movement and cognitive effort. Prioritize layout configurations based on actual user frequency of use, placing high-frequency tasks in the most easily accessible locations.
+*   **Modern & Aesthetic:** Embraces rich aesthetic standards including curated warm color palettes, smooth hover states, progressive shadow depths, visual hierarchy, and polished micro-interactions (e.g., scale transforms, transitions).
+*   **Clean & Structured:** Eliminates cognitive load. Group information into logical containers. Use negative space deliberately as a structural layout element.
+*   **Academic & Professional:** Implements readable, high-quality typography and clear, non-distracting layouts to facilitate long reading hours, catalog search, and data tracking.
+*   **Enterprise Security & Control:** Standardizes elements for high-density administrative views (such as data tables, audit logs, and status dashboards) to give librarians and system administrators total visual control.
 
 ---
 
-## 3. Design System Standards
+## 2. Color System
 
-### 3.1 Color System
+To achieve maximum visual cohesion, the LMS utilizes a curated warm color palette inspired by Material Design 3. The color application follows the **60-30-10 Rule**:
+*   **60% Dominant (Neutrals):** Page backgrounds (`--color-background`), main canvas areas, and surface backdrops.
+*   **30% Secondary (Structure & Containers):** Card containers, borders, navigation elements, table headers, and sidebar containers.
+*   **10% Accent (Primary & Interactions):** Call-to-action buttons, active states, search highlights, key success markers, and vital alerts.
 
-```mermaid
-graph TD
-    classDef default fill:#1e1e24,stroke:#3a3a43,color:#e4e4eb;
-    classDef prim fill:#2563eb,stroke:#3b82f6,color:#ffffff;
-    classDef sec fill:#4b5563,stroke:#6b7280,color:#ffffff;
-    classDef sem fill:#dc2626,stroke:#ef4444,color:#ffffff;
-    classDef neut fill:#f3f4f6,stroke:#d1d5db,color:#1f2937;
+### CSS Custom Properties (`web/assets/css/variables.css`)
 
-    Colors[System Color Hierarchy] --> Primary[Primary Palette]:::prim
-    Colors --> Secondary[Secondary Palette]:::sec
-    Colors --> Semantic[Semantic Palette]:::sem
-    Colors --> Neutral[Neutral Palette]:::neut
+```css
+:root {
+    /* ---- Core Accent / Primary ---- */
+    --color-primary:                 #9d4300; /* Terracotta Orange */
+    --color-on-primary:              #ffffff;
+    --color-primary-container:       #f97316; /* Bright Orange Accent */
+    --color-on-primary-container:    #582200;
+    --color-primary-fixed:           #ffdbca;
+    --color-primary-fixed-dim:       #ffb690;
+    --color-surface-tint:            #9d4300;
 
-    Primary --> P1[Establishes visual brand identity & focal points]
-    Secondary --> S1[Supports primary visual cues & groups elements]
-    Semantic --> Sem1[Conveys state: Success, Info, Warning, Error]
-    Neutral --> N1[Controls surfaces, borders, text contrast, & depth]
+    /* ---- Supporting / Secondary ---- */
+    --color-secondary:               #755935; /* Ochre Brown */
+    --color-on-secondary:            #ffffff;
+    --color-secondary-container:     #fdd6a9;
+    --color-on-secondary-container:  #785c38;
+    --color-secondary-fixed:         #ffddb7;
+    --color-secondary-fixed-dim:     #e6c095;
+    --color-on-secondary-fixed:      #2a1800;
+    --color-on-secondary-fixed-variant: #5b4220;
+
+    /* ---- Neutral / Tertiary (Slate Blue for System Info) ---- */
+    --color-tertiary:                #006398; /* Slate Blue */
+    --color-on-tertiary:             #ffffff;
+    --color-tertiary-container:      rgba(0, 99, 152, 0.15);
+    --color-tertiary-fixed:          #e9e1d8;
+    --color-tertiary-fixed-dim:      #ccc5bc;
+    --color-on-tertiary-fixed:       #1e1b15;
+    --color-on-tertiary-fixed-variant: #4a463f;
+
+    /* ---- Semantic Tones ---- */
+    --color-success:                 #16a34a; /* Emerald Green */
+    --color-on-success:              #ffffff;
+    
+    --color-error:                   #ba1a1a; /* Crimson Red */
+    --color-on-error:                #ffffff;
+    --color-error-container:         #ffdad6;
+    --color-on-error-container:      #93000a;
+
+    --color-warning:                 #eab308; /* Muted Yellow */
+    --color-on-warning:              #1e1b4b;
+    --color-warning-container:       #fef9c3;
+    
+    --color-info:                    #0284c7; /* Ocean Blue */
+    --color-on-info:                 #ffffff;
+    --color-info-container:          #e0f2fe;
+
+    /* ---- Surface & Backgrounds ---- */
+    --color-background:              #fff8f6; /* Very soft warm tint */
+    --color-on-background:           #251913;
+    --color-surface:                 #ffffff;
+    --color-on-surface:              #251913;
+    
+    --color-surface-container-lowest:  #ffffff;
+    --color-surface-container-low:     #fff1eb;
+    --color-surface-container:         #ffeae0;
+    --color-surface-container-high:    #dee9fc;
+    --color-surface-container-highest: #d9e3f6;
+    
+    --color-surface-variant:         #d9e3f6;
+    --color-on-surface-variant:      #584237;
+    --color-surface-dim:             #d0dbed;
+    --color-surface-bright:          #f8f9ff;
+
+    /* ---- Borders & Outlines ---- */
+    --color-outline:                 #8c7164;
+    --color-outline-variant:         #e0c0b1;
+
+    /* ---- Inverse Layout Tones ---- */
+    --color-inverse-surface:         #27313f;
+    --color-inverse-on-surface:      #eaf1ff;
+    --color-inverse-primary:         #ffb690;
+}
 ```
 
-#### 3.1.1 Color Hierarchy & Application
-To maintain clear visual priority, color distribution must strictly follow the **60-30-10 Rule**:
-* **60% Dominant (Neutrals):** Backgrounds, structural containers, and body text.
-* **30% Secondary (Structural & Supporting):** Card backgrounds, borders, active navigation states, and inactive inputs.
-* **10% Accent (Primary / Interactive):** Call-to-action buttons, key progress highlights, interactive links, and critical status changes.
+---
 
-#### 3.1.2 Primary Color Palette
-* **Purpose:** Drives focus to the primary actions, interactive elements, and essential highlights on a page.
-* **Standard:** Limit the primary range to a cohesive family of shades. The core brand accent must offer excellent visibility on both light and dark backgrounds. It must be reserved strictly for actionable visual elements.
+## 3. Typography Rules
 
-#### 3.1.3 Secondary Color Palette
-* **Purpose:** Complements the primary color, group related sections, and handles secondary actions.
-* **Standard:** Select secondary tones that provide clear visual contrast against the primary palette. They must never compete with primary call-to-actions for visual attention.
+LMS uses Google Fonts as its typographic engine. It limits font families to two for absolute consistency:
+1.  **Body & UI Controls Font:** `'Inter'`, sans-serif (legible, high readability).
+2.  **Headlines & Display Font:** `'Geist'` or `'Inter'`, sans-serif (premium, structured).
 
-#### 3.1.4 Semantic Color Palette
-Semantic colors communicate functional status and systemic feedback. They must be applied uniformly across the entire ecosystem:
-* **Error:** Communicates failures, validation blocks, or high-risk actions. Must use standard shades of red.
-* **Warning:** Signals system warnings, impending limits, or actions requiring caution. Must use standard shades of yellow/orange.
-* **Success:** Indicates successful task completion, system readiness, or safe states. Must use standard shades of green.
-* **Information:** Indicates helpful hints, updates, or neutral status notifications. Must use standard shades of blue/teal.
+### Typography Scale
 
-#### 3.1.5 Neutral Palette
-* **Purpose:** Handles body copy, borders, backgrounds, container surfaces, and subtle visual dividers.
-* **Standard:** Incorporate a comprehensive neutral scale (typically 10 steps from absolute light to absolute dark). Warm or cool gray undertones must be kept consistent to maintain overall visual harmony.
+| Element | CSS Property / Variable | Font Size | Line Height | Weight | Usage |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Display** | `--text-display` | `48px` | `56px` | Bold (`700`) | Hero / landing titles |
+| **h1** | `--text-headline-lg` | `32px` | `40px` | Bold (`600`) | Page titles (Only 1 per page) |
+| **h2** | `--text-headline-md` | `24px` | `32px` | Semi-Bold (`600`) | Main section panels, modal headers |
+| **h3** | `--text-body-lg` | `18px` | `28px` | Semi-Bold (`600`) | Sub-sections, dashboard widget titles |
+| **h4** | `--text-label-md` | `14px` | `20px` | Semi-Bold (`600`) | Field labels, small subtitles |
+| **body** | `--text-body-md` | `16px` | `24px` | Regular (`400`) | Standard body text, description fields |
+| **small** | `--text-body-sm` | `14px` | `20px` | Regular (`400`) | Helper texts, metadata, table content |
+| **micro** | `--text-label-sm` | `12px` | `16px` | Medium (`500`) | Badges, status tags, timestamps |
 
-#### 3.1.6 Color Contrast Requirements
-* **Text Contrast:** Body copy and headings must maintain a minimum contrast ratio of `4.5:1` against their background (WCAG AA). For large text (18pt / 24px and larger, or bold text at 14pt / 18.67px and larger), the minimum contrast ratio is `3:1`.
-* **Non-Text Elements:** Icons, form input borders, button states, and active selection highlights must maintain a minimum contrast ratio of `3:1` against adjacent colors.
-* **Color Dependency Rule:** Do not rely on color alone to convey meaning or state changes. Integrate text labels, distinct iconography, or clear pattern variations alongside color cues to ensure clarity for colorblind or visually impaired users.
+*   **Line length limit:** Body text paragraph width must not exceed `700px` (roughly 45–75 characters per line) to prevent reading fatigue.
+*   **Case adjustments:** Uppercase is reserved strictly for badge tags, column headers, and section headers with small font sizes. In those cases, letter spacing must be adjusted by `+0.05em`.
 
 ---
 
-### 3.2 Typography
+## 4. Layout Rules
 
-#### 3.2.1 Typography Scale
-To establish an immediate, natural reading hierarchy, typography scales must follow a strict mathematical progression (such as the Major Third scale, multiplier `1.25` or Minor Third scale, multiplier `1.2`):
-
-| Level | Size (px) | Line Height | Font Weight | Primary Usage |
-| :--- | :--- | :--- | :--- | :--- |
-| **Display** | 40px – 48px | 1.15 – 1.2 | Bold / Extra Bold | Hero banners, high-impact landing layouts |
-| **Heading 1 (H1)** | 32px – 36px | 1.2 – 1.25 | Bold | Primary page header (exactly one per view) |
-| **Heading 2 (H2)** | 24px – 28px | 1.25 – 1.3 | Semi-Bold / Bold | Core layout sections, major content blocks |
-| **Heading 3 (H3)** | 20px – 22px | 1.3 – 1.35 | Semi-Bold | Inner section titles, modal headers, card titles |
-| **Body (Default)** | 14px – 16px | 1.5 – 1.6 | Regular | Body text, list elements, form inputs |
-| **Body (Small)** | 12px – 13px | 1.4 – 1.5 | Regular / Medium | Helper text, input labels, table captions |
-| **Caption** | 10px – 11px | 1.3 – 1.4 | Medium / Semi-Bold | Badges, status pills, micro-metadata |
-
-#### 3.2.2 Readability & Composition
-* **Line Length Limit:** To prevent eye strain, body copy containers must maintain a line length between **45 and 75 characters per line** (including spaces). This is typically equivalent to a container width limit of `600px` to `700px`.
-* **Font Family Limits:** Restrict applications to a maximum of two font families: one highly legible Sans-Serif font for user interface controls and body copy, and a secondary font (optional) for display titles or editorial headings.
-* **Letter Spacing:** Apply micro-adjustments to letter spacing to maximize readability: slightly expand spacing for uppercase text and captions (e.g., `+0.05em`), and slightly condense it for massive display headings (e.g., `-0.02em`).
-
----
-
-### 3.3 Spacing System
-
-To ensure mathematical visual alignment, all layout, sizing, and spacing metrics must adhere to an **8-pixel Grid System** (with optional 4-pixel steps for fine-grained components):
-
-$$\text{Spacing Increment} = n \times 8\text{px} \quad (n \in \{0.5, 1, 2, 3, 4, 6, 8, 12\})$$
-
-#### 3.3.1 Spacing Token Registry
-
-| Token Name | Value | Logical Application |
-| :--- | :--- | :--- |
-| `space-xxs` | 4px | Icon offsets, input inner borders, badge padding |
-| `space-xs` | 8px | Label-to-input gap, inline element spacing, small list items |
-| `space-sm` | 16px | Standard button padding, internal card padding, grid item gaps |
-| `space-md` | 24px | Standard card padding, modal inner gutters, list item blocks |
-| `space-lg` | 32px | Section-to-section gaps, page-level outer margins |
-| `space-xl` | 48px | Outer layout margins for large views, header blocks |
-| `space-xxl` | 64px | Editorial layout spacing, high-impact hero structures |
-
-#### 3.3.2 Layout & Component Spacing Standards
-* **Grid Alignment:** Align all structural containers, cards, tables, and sidebars to the global 8px grid. Use consistent margins and padding to build reliable visual corridors.
-* **White-Space Usage:** Negative space is a vital structural tool, not empty screen real estate. Use generous spacing between complex information blocks to reduce cognitive load and allow layouts to breathe. Do not cram components together to save vertical space.
-
----
-
-## 4. Layout Standards
+The application utilizes a persistent master-detail admin panel layout, structured using semantic HTML5 tags: `<aside>` for navigation, `<header>` for global info, and `<main>` for core views.
 
 ```
-+-----------------------------------------------------------------------+
-|  LOGO  |  Search...         |  Nav 1  Nav 2  Nav 3  |  User Profile   | <-- Primary Header
-+-----------------------------------------------------------------------+
-|  Sidebar Navigation  |  H1: Primary Page Title                        |
-|  - Dashboard         |  ------------------------------                |
-|  - Management        |  +-----------+  +-----------+  +------------+  |
-|  - Settings          |  |  Card 1   |  |  Card 2   |  |   Card 3   |  | <-- 3-Column Grid
-|  - Activity          |  +-----------+  +-----------+  +------------+  |
-|                      |                                                |
-|                      |  +------------------------------------------+  |
-|                      |  |              Data Table                  |  | <-- High Density Data
-|                      |  +------------------------------------------+  |
-+-----------------------------------------------------------------------+
++-----------------------------------------------------------------------------------+
+|  LOGO      |  Global Search Bar            |  Role Tag   Notify   Avatar   Logout |  <-- Topbar
++-----------------------------------------------------------------------------------+
+|  Sidebar   |  Home / Page / Breadcrumbs                                           |
+|  - Dash    |  -----------------------------------------------------------------   |
+|  - Users   |  Page Title (H1)                                                     |
+|  - Books   |  +--------------------+  +--------------------+  +----------------+  |
+|  - Records |  | Metric Card 1      |  | Metric Card 2      |  | Metric Card 3  |  |  <-- 3/4-Col Grid
+|  - Fines   |  +--------------------+  +--------------------+  +----------------+  |
+|  - Config  |                                                                      |
+|            |  +--------------------------------------------+  +----------------+  |
+|            |  | Main Data Table (8 cols)                   |  | Side Stack (4) |  <-- Asymmetric Grid
+|            |  +--------------------------------------------+  +----------------+  |
++------------+----------------------------------------------------------------------+
 ```
 
-### 4.1 Page Structure
-* **Layout Layout Hierarchy:** Build pages using semantic HTML5 elements: `<header>`, `<nav>`, `<main>`, `<section>`, `<aside>`, and `<footer>`.
-* **Structural Safety Margins:** Define standard outer gutters for pages. Viewports must retain a minimum margin of `16px` on mobile, `24px` on tablet, and `32px` on desktop layouts.
-* **Scroll Behavior:** Ensure the main viewport scrolls vertically. Never allow secondary, nested scrolling areas to conflict with main page navigation. Avoid horizontal scrolling layouts unless displaying linear tabular data.
+### 4.1 Sidebar (`.sidebar`)
+*   **Width:** `16rem` (`256px`)
+*   **Collapsed Width (Mobile):** Hidden by default (`0px`), toggled via menu button as an overlay.
+*   **Position:** Fixed to the left (`position: fixed; left: 0; top: 0; height: 100vh`).
+*   **Visuals:** White surface (`--color-surface`) with light border-right (`1px solid var(--color-outline-variant)`), box-shadow (`var(--shadow-sm)`). Contains a top brand area (`.sidebar-brand`), a scrollable navigation container (`.sidebar-nav`), and a footer with a search trigger button (`.sidebar-footer`).
 
-### 4.2 Navigation Hierarchy
-* **Primary Navigation:** Locate primary navigation links in highly visible, predictable areas: a persistent top navigation bar or a sticky left-hand sidebar.
-* **Contextual Navigation (Breadcrumbs):** Integrate breadcrumbs for hierarchical structures deeper than three levels, giving users a simple click path back to parent pages.
-* **Active State Indication:** Highlight active navigation links using high-contrast indicators, such as color shifts, weight changes, or subtle accent borders.
+### 4.2 Topbar / Header (`.main-header`)
+*   **Height:** `4rem` (`64px`).
+*   **Behavior:** Sticky top (`position: sticky; top: 0; z-index: 40`).
+*   **Visuals:** Glassmorphism overlay backdrop (`background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px)`), thin outline bottom (`1px solid var(--color-outline-variant)`).
+*   **Layout:** Flex container containing system title (left) and user profile pill, notifications icon, help button, role badge, and logout action (right).
 
-### 4.3 Content Hierarchy & Reading Paths
-* **Reading Flow Alignment:** Arrange content to match natural reading habits: use a Z-pattern for visual landing structures and an F-pattern for text-heavy, database-driven administrative displays.
-* **The "Above-the-Fold" Rule:** Ensure the primary page header, structural status signals, and critical primary action buttons are visible within the default viewport height without requiring scrolling.
+### 4.3 Content Area (`.main-content` / `.container-max`)
+*   **Offset:** Left margin must be exactly `16rem` (`256px`) on desktop viewports to clear the fixed sidebar.
+*   **Max Width:** `1440px` (centered using `margin: 0 auto;`).
+*   **Padding:** Outer gutters must be `40px` (desktop), `24px` (tablet), and `16px` (mobile).
 
-### 4.4 Information Density Standards
-* **Optimal Visual Balance:** Balance white space and information density to match the audience and task context:
-  * **Low-Density Views (Public/Landing Pages):** Maximize line spacing, use generous padding, and keep visuals sparse to optimize comprehension.
-  * **High-Density Views (Data Entry/Management Dashboards):** Use compact layouts with tighter row heights (`36px` to `40px` for table rows) to allow comparison of dense data sets with minimal scrolling.
+### 4.4 Grid System (`web/assets/css/layout.css`)
+*   **Standard Spacing Gap:** `var(--space-gutter)` / `24px` grid gaps.
+*   **2-Column Grid:** For dashboards or profile settings (`grid-template-columns: repeat(2, 1fr)`).
+*   **3-Column Grid:** For secondary metric configurations or catalog cards (`grid-template-columns: repeat(3, 1fr)`).
+*   **4-Column Grid:** Standard for statistics and summary metrics overview (`grid-template-columns: repeat(4, 1fr)`).
+*   **Asymmetric Bento Grid:** Large workspace on left (grid column span 8), narrow utility list on right (grid column span 4).
 
 ---
 
-## 5. Component Standards
+## 5. Component Rules
 
-Every UI component must follow these functional rules to ensure consistent behavior across all parts of the application.
+All UI components must be modular and fully styled inside `web/assets/css/components.css`.
 
 ### 5.1 Buttons
-* **Purpose:** Triggers immediate system actions, form submissions, or critical workflow changes.
-* **Consistency Rules:** Establish clear visual hierarchies for button states:
+Buttons must feature a scale-down transition on active click and a scale-up or brightness filter on hover.
 
 ```
-+--------------------+      +--------------------+      +--------------------+
-|      PRIMARY       |      |     SECONDARY      |      |      TERTIARY      |
-|  Solid Primary BG  |      |   Outlined/Light   |      |    Text Borderless |
-|  White Text        |      |   Contrast Text    |      |    Accent Text     |
-+--------------------+      +--------------------+      +--------------------+
-  High Visual Weight          Medium Visual Weight         Low Visual Weight
+  +------------------+     +------------------+     +------------------+     +------------------+
+  |     PRIMARY      |     |    SECONDARY     |     |     SUCCESS      |     |      DANGER      |
+  |  Solid primary   |     |  Outlined brown  |     |  Green background|     |  Red background  |
+  |  White text      |     |  Primary text    |     |  White text      |     |  White text      |
+  +------------------+     +------------------+     +------------------+     +------------------+
 ```
 
-* **Interaction Rules:** Make sure interactive elements have clear visual transitions for `:hover`, `:focus`, `:active`, and `:disabled` states. The button dimensions must change predictably to match these states without shifting surrounding elements.
-* **Accessibility Requirements:** Provide a minimum tap target size of **44 x 44 pixels** for all buttons. Use clear ARIA roles (e.g., `role="button"`) when using custom markup, and allow activation via the `Space` and `Enter` keys.
+*   **Primary Button (`.btn-primary`):** Solid background (`--color-primary`), text color (`--color-on-primary`). Hover scale: `1.02`.
+*   **Secondary Button (`.btn-outline`):** Transparent background, outline border (`1px solid var(--color-outline)`), text color (`--color-on-surface-variant`).
+*   **Success Button (`.btn-success`):** Solid green background (`--color-success`), text color (`white`).
+*   **Danger / Destructive Button (`.btn-danger`):** Solid red background (`--color-error`), text color (`--color-on-error`).
+*   **Interaction States:**
+    *   `hover`: `:hover { transform: scale(1.02); filter: brightness(110%); }`
+    *   `focus`: `:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }`
+    *   `active`: `:active { transform: scale(0.98); }`
+    *   `disabled`: `[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; filter: none; }`
 
-### 5.2 Inputs
-* **Purpose:** Allows users to input and edit alphanumeric data.
-* **Consistency Rules:** Keep input sizes consistent across the application. Borders must clearly define the input boundaries and change color to reflect state changes (e.g., active focus, validation errors).
-* **Interaction Rules:** Transition placeholder text to an inactive state once input begins. Implement a visual cursor focus ring (min `2px` width) that provides high contrast against the input background.
-* **Accessibility Requirements:** Keep form input fields explicitly bound to screen-readable `<label>` tags using the `for` attribute. Ensure any descriptive helper or validation error text is programmatically linked to the input via `aria-describedby`.
+### 5.2 Forms
+Labels must always sit stacked vertically directly above their corresponding inputs.
 
-### 5.3 Forms
-* **Purpose:** Groups related inputs to collect structured datasets.
-* **Consistency Rules:** Align labels above inputs for optimal visual scanning. Arrange input groups logically in single-column paths, using multi-column configurations only for highly related values (e.g., City, State, ZIP).
-* **Interaction Rules:** Validate fields on blur or input changes, avoiding validation triggers before the user has interacted with a field.
-* **Accessibility Requirements:** Support native tab navigation. Keyboard focus must move logically from top-to-bottom and left-to-right through input fields.
+*   **Inputs & Textareas (`.form-input`, `.form-textarea`):** White background, border radius `8px` (`--radius-lg`), border (`1px solid var(--color-outline-variant)`). Focus outline creates a clean glow effect using `--color-primary` and a light shadow:
+    ```css
+    .form-input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+    }
+    ```
+*   **Select Menus (`.form-select`):** Follows input styling, utilizing default native browser indicators for system compatibility, avoiding custom JS selectors for performance reasons.
+*   **Checkboxes & Radios (`.form-checkbox`, `.form-radio`):** Custom border checks with matching terracotta color styles. Tap target width must be a minimum of `20px x 20px`.
+*   **Validation States:**
+    *   *Invalid:* Input border becomes `--color-error` (red). An error message is rendered immediately below in red text prefixed with a warning icon.
+    *   *Valid:* Optional subtle check icon inside the wrapper when fields pass local constraints on blur.
+
+### 5.3 Tables
+Tabular components are optimized for maximum visibility of library books, transactions, and users.
+
+```
+  +---------------------------------------------------------------------------------+
+  | TIMESTAMP     USER           ACTION TYPE          ENTITY NAME                   | <-- Table Head (Gray)
+  +---------------------------------------------------------------------------------+
+  | 14:23:05      Admin_Sarah    [badge-info:CREATE]  New Library Branch - North    | <-- Rows with border-bottom
+  | 14:15:22      Librarian_John [badge-warn:UPDATE]  Book Meta ID #9982            | <-- Hover effect
+  +---------------------------------------------------------------------------------+
+```
+
+*   **Header Style (`thead th`):** Font size `12px` (`--text-label-sm`), bold, dark text (`--color-on-surface-variant`), background surface container low (`--color-surface-container-low`). Top and bottom borders must be absolute `1px solid var(--color-outline-variant)`.
+*   **Row Style (`tbody tr`):** Generous height (`48px` to `56px`), border-bottom (`1px solid var(--color-surface-container)`). Right-align currency and fines, left-align text data, center status badges.
+*   **Hover State:** Row background changes smoothly to `--color-surface-container-low` on hover (`transition: background-color var(--transition-fast)`).
+*   **Pagination (`.table-pagination`):** Positioned at the bottom-right of the table. Standard navigation arrows (`chevron_left` and `chevron_right`) with active state highlight bubbles and text count (e.g., "Showing 1-10 of 120 results").
 
 ### 5.4 Cards
-* **Purpose:** Groups related information, attributes, and actions into a single visual container.
-* **Consistency Rules:** Apply identical shadow elevations, border-radii, and padding structures to all cards across the system.
-* **Interaction Rules:** When an entire card is interactive, apply subtle rise elevations and shadow changes on `:hover` to signal interactivity. Avoid using nested interactive targets within a fully clickable card.
-* **Accessibility Requirements:** When a card is clickable, ensure the main header inside the card serves as the keyboard focus point, with its descriptive content read as assistive text.
+*   **Dashboard Widget Cards (`.dash-card`):** White background, border (`1px solid var(--color-surface-container-highest)`), border radius `16px` (`--radius-2xl`), padding `24px` (`--space-lg`).
+*   **Statistics Metrics Cards (`.metric-card`):** Thick left accent color border (`4px solid`) mapping to status severity:
+    *   Primary: `--color-primary` (Terracotta)
+    *   Secondary: `--color-secondary` (Ochre)
+    *   Info / Slate: `--color-tertiary` (Blue)
+    *   Error / Locked: `--color-error` (Red)
+    *   Success: `--color-success` (Green)
+*   **Information Cards (`.info-card`):** Uses card structure but contains a soft background overlay.
 
-### 5.5 Tables
-* **Purpose:** Presents tabular, multi-column datasets for simple comparison and review.
-* **Consistency Rules:** Use persistent table headers that remain visible during vertical scrolling. Right-align numeric columns, left-align text columns, and center status indicators.
-* **Interaction Rules:** Highlight table rows clearly on hover. Limit inline actions within rows to clear, compact icon buttons or a single, standardized action menu.
-* **Accessibility Requirements:** Structure tables using semantic markup (`<table>`, `<thead>`, `<tbody>`, `<th>`, `<tr>`, `<td>`). Headers (`<th>`) must include `scope="col"` or `scope="row"` tags to guide screen readers through complex data rows.
+### 5.5 Badges
+Badges use micro font size (`11px` or `12px`), bold, all-caps spacing. They feature a soft background transparent container and high contrast text:
 
-### 5.6 Modals
-* **Purpose:** Displays high-priority tasks, critical alerts, or details without navigating away from the current page context.
-* **Consistency Rules:** Use consistent maximum widths (`small: 400px`, `medium: 600px`, `large: 800px`) and center modals within the viewport overlay.
-* **Interaction Rules:** Trap keyboard focus inside the modal. Clicking the background overlay or pressing the "Escape" key must dismiss the modal, unless the modal contains unsaved changes.
-* **Accessibility Requirements:** Set `role="dialog"` and `aria-modal="true"`. Programmatically link the title of the modal using `aria-labelledby` to ensure immediate context when read by screen readers.
+*   **Primary / Neutral:** Background `rgba(157, 67, 0, 0.1)`, Text color `--color-primary`.
+*   **Success (`.badge-success`):** Background `rgba(34, 197, 94, 0.1)`, Text color `#16a34a`.
+*   **Warning (`.badge-warning`):** Background `--color-secondary-container`, Text color `--color-on-secondary-container`.
+*   **Danger / Error (`.badge-error`):** Background `--color-error-container`, Text color `--color-error`.
+*   **Info / Slate (`.badge-info`):** Background `rgba(0, 162, 244, 0.1)`, Text color `#006398`.
 
-### 5.7 Menus (Drop-downs)
-* **Purpose:** Exposes a list of contextual options, navigation paths, or filters.
-* **Consistency Rules:** Position drop-down containers directly below their trigger elements. Match drop-down borders and border-radii to the input standards.
-* **Interaction Rules:** Close active menu systems instantly when a user clicks outside the menu container, hits the "Escape" key, or makes a selection.
-* **Accessibility Requirements:** Implement full keyboard navigation support (`Up` / `Down` arrows to navigate options, `Enter` / `Space` to select, and `Escape` to close). Set `aria-haspopup="true"` and `aria-expanded` attributes to track activation.
+### 5.6 Alerts
+Banners or inline indicators to announce operations status.
 
-### 5.8 Alerts & Feedback Components
-* **Purpose:** Delivers real-time information regarding system states, errors, successes, or warnings.
-* **Consistency Rules:** Color-code alerts using the semantic palette (e.g., success = green, error = red). Place alerts in predictable layouts (e.g., persistent banners at the top of a page, or temporary toast notifications in a screen corner).
-* **Interaction Rules:** Ensure alert messages are clear and contain actionable next steps where applicable. Toasts must remain visible long enough to be read (typically 4-6 seconds) and include a manual close button.
-* **Accessibility Requirements:** Set `role="alert"` (for high-priority errors) or `role="status"` (for minor status changes) to trigger screen readers to announce updates immediately.
+*   **Structure:** Flex row containing icon (left), header + desc body text (center), close button (right).
+*   **Semantic Themes:**
+    *   *Success:* Green border-left, light green background, emerald icon.
+    *   *Warning:* Ochre border-left, light yellow/brown background, warning icon.
+    *   *Danger:* Red border-left, light red background (`--color-error-container`), error icon.
+    *   *Info:* Blue border-left, light slate background, info icon.
+
+### 5.7 Modal
+*   **Structure:** Fixed backdrop (`.modal-backdrop`) covering screen (`background-color: rgba(37, 25, 19, 0.5); backdrop-filter: blur(4px)`). Floating content dialog (`.modal-dialog`) centered vertically and horizontally.
+*   **Sizing:** Max widths:
+    *   Small (Confirmations, Alerts): `400px`
+    *   Medium (Forms, Creation): `600px`
+    *   Large (Detail review): `800px`
+*   **Spacing:** Modal padding must be `24px` (`--space-lg`), with header and footer separated by a subtle border line.
 
 ---
 
-## 6. Form Design Standards
+## 6. Dashboard Standards
+
+LMS role dashboards (Admin, Librarian, Member) must adhere to a strict visual sequence to ensure layout predictability.
+
+### 6.1 Page Layout Sequence
+1.  **Sidebar (`<aside>`):** Left-aligned, persistent menu showing the role options.
+2.  **Topbar Header (`<header>`):** Top alignment, system title, and active user credentials.
+3.  **Page Header Area:** Houses the Breadcrumb navigation, primary page title (`H1`), page subtitle, and page action buttons (e.g., "Add User", "Issue Book").
+4.  **Statistics Section (`.stats-grid`):** 4-column metric grid displaying primary data indicators.
+5.  **Main Content Section (`.bento-grid`):** Asymmetric layout with:
+    *   *Left Area (Wide, Span 8):* Main data tables, charts, or recent transactions.
+    *   *Right Area (Narrow, Span 4):* Quick action controls, audit alerts stack, system status metrics.
+
+### 6.2 Grid & Chart Area Ratios
+*   Primary data panels must occupy **66% (2/3)** of the horizontal content layout space.
+*   Supporting feeds and quick-action stacks must occupy **33% (1/3)** of the horizontal workspace.
+*   Table rows must show a maximum of **5 to 10 rows** on the dashboard home screen before requiring navigation to the full sub-module.
+
+---
+
+## 7. Responsive Rules
+
+Media queries must utilize absolute break-points corresponding to standard desktop, laptop, tablet, and mobile dimensions.
 
 ```
-  Email Address *
-  [ user@example.com           ]  <-- Focused Input Field
-  (i) Helper: Enter your primary account email.
-  
-  Password *
-  [ **********                 ]  <-- Errored Input Field (Red Border)
-  [x] Error: Password must contain at least 8 characters.
+       MOBILE (<768px)                TABLET (768px - 991px)            DESKTOP (>=1200px)
+     +-----------------+             +------------------------+      +------------------------+
+     | [=]  LOGO   [U] |             |  LOGO  Search      [U] |      | LOGO  Nav1  Nav2   [U] |
+     +-----------------+             +------------------------+      +------------------------+
+     | Title           |             | Title                  |      | Title                  |
+     | +-------------+ |             | +--------+  +--------+ |      | +----+ +----+ +----+   |
+     | | Card 1      | |             | | Card 1 |  | Card 2 | |      | |Card| |Card| |Card|   |
+     | | (Full)      | |             | +--------+  +--------+ |      | +----+ +----+ +----+   |
+     | +-------------+ |             |                        |      |                        |
+     +-----------------+             +------------------------+      +------------------------+
 ```
 
-### 6.1 Validation Behavior
-* **Triggering Rules:** Validate input fields on `blur` or when the user changes focus. Do not validate fields while the user is actively typing, as this creates a frustrating and visually noisy experience.
-* **Optimistic Validation:** Instantly confirm valid inputs with subtle visual indicators once a field satisfies all validation rules.
+### Breakpoint Registry
 
-### 6.2 Error Handling
-* **Error Text Rules:** Place validation messages directly below the corresponding input field. Write error text in clear, plain language that explains both what went wrong and how to fix it (e.g., write *"Password must be at least 8 characters"* instead of *"Invalid Input"*).
-* **Visual Integrity:** Use red borders to highlight error fields, and include a clear warning icon alongside the error message. Do not rely on red text alone to signal errors.
+*   **Desktop:** `>= 1200px`
+*   **Laptop:** `992px` to `1199px`
+*   **Tablet:** `768px` to `991px`
+*   **Mobile:** `< 768px`
 
-### 6.3 Required Field Indication
-* **Standard Visual Indicator:** Mark required fields with a clear visual indicator, such as a colored asterisk (`*`) immediately following the field label. Include a legend explaining the indicator at the top of the form layout.
-* **Legend Rule:** Avoid using the visual indicator if *all* fields in a form are required. Instead, place a single, clear note at the top of the form (e.g., *"All fields in this form are required"*).
+### Layout Adaptations
 
-### 6.4 User Guidance
-* **Helper Text Placement:** Position persistent helper text directly below the form input field. Use helper text to clarify formatting expectations, structural rules, or privacy terms.
-* **Input Masks:** Utilize dynamic input masks for structured inputs (e.g., dates, phone numbers, or currencies) to guide formatting in real-time, preventing input validation issues before they occur.
-
-### 6.5 Submission Patterns
-* **State Control Rules:** Disable form submission buttons immediately upon click to prevent accidental double-submissions. Show a clear loading spinner or status indicator within the button label during submission.
-* **Non-Destructive Processing:** Ensure form validation errors do not clear existing, valid user input. Let users correct errors without re-entering the entire form dataset.
-
----
-
-## 7. Data Presentation Standards
-
-### 7.1 Tables
-* **Interactive Elements:** Integrate sortable headers with distinct indicators (e.g., up/down arrows) that clearly show active sorting states. Keep column widths dynamic, preventing text wrapping from making rows unreadable.
-* **Row Formatting:** Avoid using alternating zebra stripes unless tables exceed 5 columns or contain highly dense, complex numeric rows. Instead, use thin, light border lines to separate rows.
-
-### 7.2 Lists
-* **Content Structure:** Keep visual styles consistent across list items. Ensure items of the same type feature identical icon sizes, text margins, and action placements.
-* **Action Bars:** Reveal hover actions consistently on list items to keep layouts clean, while ensuring fallback actions remain visible on touch-screen viewports.
-
-### 7.3 Dashboards
-* **Visual Grouping:** Organize dashboard widgets into clear, logical sections. Separate blocks using cards or container borders, maintaining consistent gaps between widgets.
-* **Key Metric Highlights:** Display critical key performance indicators (KPIs) in large, high-contrast layouts at the top of dashboards, providing an instant summary of system health.
-
-### 7.4 Statistics
-* **Numeric Displays:** Render key statistics in high-impact styles (typically 32px to 48px sizes). Include a small, high-contrast label above or below the metric to explain its meaning.
-* **Trend Indicators:** Display positive or negative trend metrics using standard semantic colors (e.g., green for positive growth, red for negative trends), and include a clear icon indicator (e.g., up/down arrow).
-
-### 7.5 Empty States
-* **Zero-State Guidelines:** An empty state must never be left blank. Every empty state container must feature:
-  * A simple, low-contrast illustration or descriptive icon.
-  * A clear title stating that no data is currently available.
-  * A brief text explanation explaining *why* the container is empty.
-  * A primary call-to-action button to guide the user's next step (e.g., *"Create New Item"*).
-
-### 7.6 Loading States
-* **Skeleton Screen Rules:** Use skeleton screens that mimic the actual page layout instead of full-screen loading spinners. This reduces the perceived loading time and provides visual structure.
-* **Local Spinners:** When loading small components or processing background actions, restrict spinners to the affected area to avoid disrupting the rest of the user interface.
+*   **Sidebar behavior:**
+    *   *>= 992px (Desktop/Laptop):* Persistent, fixed layout, pushes main content margin-left to `16rem`.
+    *   *< 992px (Tablet/Mobile):* Completely hidden. Activates as a slide-out drawer overlapping the page canvas from the left when clicking the hamburger icon. Main content margin-left collapses to `0px`.
+*   **Grid layout reflow:**
+    *   *Desktop:* 4-column metric grids, 12-column bento grids.
+    *   *Tablet:* 2-column grids.
+    *   *Mobile:* 1-column layouts (`grid-template-columns: 1fr`).
+*   **Table responsive wraps:**
+    *   On tablet and mobile viewports, tables must wrap inside a container with `overflow-x: auto` to allow horizontal scrolling of columns without breaking the grid canvas layout.
+*   **Forms adaptation:**
+    *   Form control fields reflow from multiple inline items (e.g. City, ZIP) into single vertical blocks on mobile.
 
 ---
 
-## 8. Accessibility Standards
+## 8. CSS Architecture
 
-Absolute compliance with **WCAG 2.1/2.2 Level AA** is a mandatory technical requirement for all interfaces.
-
-### 8.1 Keyboard Navigation
-* **Global Accessibility Flow:** Users must be able to navigate every page, active workflow, and custom component using only a keyboard.
-* **Tab Order Logical Paths:** Ensure focus shifts logically through interactive components, matching the visual reading path (top-to-bottom, left-to-right).
-* **Modal Escapes:** Ensure overlays, menus, and modals can be closed instantly by pressing the `Escape` key, returning the user focus to the original triggering element.
-
-### 8.2 Focus Management
-* **Focus Indicators:** Ensure focused elements display a highly visible focus outline (minimum width `2px`, offset `2px`). Never hide default browser focus outlines without replacing them with custom, high-contrast focus rings.
-* **No Keyboard Traps:** Keyboard focus must never get trapped within an interface element. Users must always be able to navigate forward and backward using standard keyboard shortcuts (e.g., `Tab` and `Shift + Tab`).
-
-### 8.3 Screen Reader Support
-* **ARIA Standard Compliance:** Use semantic HTML tags (`<button>`, `<main>`, `<nav>`, `<input>`) before resorting to custom ARIA attributes. Apply clear `aria-label` or `aria-labelledby` properties when text headings are absent.
-* **Image Descriptions:** Ensure all non-decorative images feature descriptive `alt` tags. Mark decorative images with empty `alt=""` attributes so screen readers ignore them.
-
-### 8.4 Color Contrast Standards
-* **Calculated Contrast Metrics:** Maintain a strict contrast ratio of `4.5:1` for regular text, and `3:1` for large text and key graphic elements against their background colors.
-* **Dual-Coding Systems:** Never communicate system state changes or highlight critical inputs using color alone. Combine color shifts with descriptive text labels, icons, or patterns.
-
-### 8.5 Error Communication
-* **Error Text Accessibility:** Programmatically link error messages to their corresponding inputs using `aria-describedby`, ensuring screen readers announce validation failures as they occur.
-* **Target Shifts:** On form submission failures, automatically shift focus to the first invalid field on the page, allowing screen reader users to quickly correct errors.
-
----
-
-## 9. Responsive Design Standards
+To maintain a clean MVC application layout and prevent styles from leaking across views, stylesheet organization is divided into specialized modules:
 
 ```
-         MOBILE (<600px)                 TABLET (600px - 1024px)              DESKTOP (>1024px)
-      +-------------------+             +-----------------------+          +---------------------------+
-      |  [=]   LOGO   [U] |             |  LOGO  | Search... [U] |          |  LOGO  Nav 1  Nav 2   [U] |
-      +-------------------+             +-----------------------+          +---------------------------+
-      | H1: Page Title    |             | H1: Page Title        |          | H1: Page Title            |
-      | +---------------+ |             | +---------+ +-------+ |          | +-----+ +-----+ +-----+   |
-      | | Card 1 (Full) | |             | | Card 1  | |Card 2 | |          | |Card1| |Card2| |Card3|   |
-      | +---------------+ |             | +---------+ +-------+ |          | +-----+ +-----+ +-----+   |
-      | +---------------+ |             |                       |          |                           |
-      | | Card 2 (Full) | |             |                       |          |                           |
-      | +---------------+ |             |                       |          |                           |
-      +-------------------+             +-----------------------+          +---------------------------+
-         Single Column                     Multi-Column Reflow                  Full Grid Layout
+web/assets/css/
+├── variables.css      # Design tokens, color hexes, typography scales, shadows
+├── base.css           # CSS reset, browser normalization, typography helpers, margins
+├── layout.css         # Grid definitions, sidebar placement, topbar positions, flex containers
+├── components.css     # Buttons, Cards, Inputs, Tables, Modals, Badges, Alerts styles
+├── auth.css           # Custom split layouts, verification boxes, login styles
+└── home.css           # Landing page assets, search panels, information grid
 ```
 
-### 9.1 Mobile Viewports (<600px)
-* **Visual Optimizations:** Arrange layout grids into a single vertical column. Stack forms, fields, and buttons vertically to fit smaller displays.
-* **Tap Targets:** Provide a minimum tap target size of **48 x 48 pixels** for all buttons and interactive elements, with at least `8px` of spacing between targets to prevent accidental taps.
-* **Interface Controls:** Hide complex desktop navigation menus behind a standardized, simple mobile navigation menu (e.g., a hamburger menu).
+### File-Level Constraints
 
-### 9.2 Tablet Viewports (600px - 1024px)
-* **Reflow Strategies:** Shift layouts to two-column grid configurations, wrapping content naturally to prevent horizontal scrolling.
-* **Navigation Adaptations:** Collapse persistent sidebar menus into compact icon bars, or place navigation items into a responsive top navigation bar.
-
-### 9.3 Desktop Viewports (1024px - 1440px)
-* **Layout Structures:** Enable full multi-column dashboard layouts, displaying persistent sidebars alongside dense data displays.
-* **Readability Constraints:** Restrict body content areas to a maximum width of `1200px` to maintain comfortable text line lengths.
-
-### 9.4 Large Screen Viewports (>1440px)
-* **Layout Safety Constraints:** Cap the maximum layout width at `1440px` and center the page container within the viewport, using background margins to absorb remaining screen real estate.
-* **Grid Alignments:** Maintain consistent column grid alignments, avoiding arbitrary element stretching that creates excessive white space.
+1.  **`variables.css`:** Must contain *only* CSS Custom Properties (`:root { --var: val; }`). No visual selectors, no HTML layout styles.
+2.  **`base.css`:** Contains global resets, default body styles (such as background `#FFF7ED` and font `'Inter'`), basic font tag overrides (`h1`, `h2`, `h3`, `h4`, `p`, `a`), and accessibility utility classes (such as `.sr-only`).
+3.  **`layout.css`:** Contains structural positioning classes only. Handles the `.sidebar`, `.main-header`, grid ratios, flex helper rules, and responsiveness breakpoints.
+4.  **`components.css`:** Houses all reusable component styles. No layout styling or page-specific overrides are allowed here.
+5.  **`auth.css`:** Restricted to authentication structures (e.g., split screens, reset forms, credential error displays).
+6.  **`home.css`:** Houses unique layouts for the guest search engine and landing page dashboard.
 
 ---
 
-## 10. Dark Mode Standards
+## 9. Naming Convention
 
-### 10.1 Background Architecture
-* **Pure Dark Prevention:** Avoid using pure black (`#000000`) for primary dark mode backgrounds, as it causes high visual contrast and eye strain. Instead, use dark charcoal, deep slate, or navy hues.
-* **Layering & Elevation:** Create depth using lighter surface shades to represent higher visual layers (e.g., page background = `#121212`, card background = `#1e1e1e`, modal background = `#2a2a2a`).
+LMS uses the **BEM (Block, Element, Modifier)** CSS naming convention. Generic selectors (e.g. `.title`, `.card`, `.input`) are forbidden to prevent styling collision.
 
-### 10.2 Color System Adaptations
-* **Visual Adjustments:** Desaturate primary, secondary, and semantic color palettes to maintain a comfortable reading contrast against dark backgrounds without causing visual vibration.
-* **Visual Contrast Levels:** Ensure all text and interactive borders meet WCAG AA contrast standards (`4.5:1` for body copy) on dark backgrounds.
+### Naming Grammar
 
-### 10.3 Graphical Elements
-* **Vector Controls:** Reduce the opacity of bright illustrations in dark mode (typically to `80%`) to prevent visual harshness.
-* **Borders & Shadows:** Replace dark shadows with subtle, light borders (e.g., `1px` border using a semi-transparent white) to separate overlapping components.
+*   **Block:** Represents the standalone component entity.
+    *   *Example:* `.dashboard-card`, `.form-group`, `.table-container`
+*   **Element:** Parts of the block that perform a specific inner utility. Separated by a double underscore (`__`).
+    *   *Example:* `.dashboard-card__title`, `.dashboard-card__value`, `.form-group__label`
+*   **Modifier:** Represents state variations or layout shapes. Separated by double hyphens (`--`).
+    *   *Example:* `.btn-primary--lg`, `.form-input--invalid`, `.dashboard-card--highlighted`
 
----
+### BEM Mapping Example
 
-## 11. UX Interaction Standards
-
-### 11.1 Feedback Mechanisms
-* **Action Verifications:** Provide instant, visible feedback for every user action. Button clicks must display distinct pressed states, and long-running actions must show inline progress.
-* **Micro-interactions:** Use subtle transitions (e.g., 150ms-250ms ease-in-out transitions) on hover and focus states to make the interface feel responsive and alive. Avoid distracting, over-the-top animations.
-
-### 11.2 Loading Behaviors
-* **Perceived Speed Optimization:** Use progress indicators for actions taking longer than 1.0 second. For actions taking under 1.0 second, display immediate optimistic state changes.
-* **Loading Placement:** Keep loading indicators localized to the active component to avoid blocking the user from interacting with the rest of the application.
-
-### 11.3 Error States
-* **Graceful Recoveries:** Design error experiences to be helpful rather than frustrating. Clearly explain the issue and provide direct links or steps to help the user resolve the problem.
-* **Session Protections:** Prevent data loss during errors. Keep form data intact if a submission fails, allowing the user to make corrections without starting over.
-
-### 11.4 Success States
-* **Action Confirmations:** Confirm successful actions with clear, simple status indicators. Provide clear next steps or navigation options so the user knows what to do next.
-
-### 11.5 Confirmation Flows
-* **Contextual Modals:** Require explicit user confirmation for actions that are difficult to undo (e.g., closing a form with unsaved changes). Use inline popovers or modals depending on the severity of the action.
-
-### 11.6 Destructive Actions
-* **Two-Step Confirmations:** Require a clear, two-step confirmation flow for permanent, high-risk actions (e.g., deleting data). Color-code destructive actions in red, and require users to click a second confirmation button to execute.
-
-```
-  +--------------------------------------------+
-  |              Confirm Deletion              |
-  +--------------------------------------------+
-  |  This action is permanent and cannot be    |
-  |  undone. Please confirm to proceed.        |
-  |                                            |
-  |  [ Cancel (Focus) ]     [ Delete Account ] | <-- Red Destructive Button
-  +--------------------------------------------+
+```html
+<!-- Proper BEM structure -->
+<div class="dashboard-card dashboard-card--highlighted">
+    <div class="dashboard-card__header">
+        <h3 class="dashboard-card__title">Total Books</h3>
+        <span class="material-symbols-outlined dashboard-card__icon">book</span>
+    </div>
+    <div class="dashboard-card__body">
+        <span class="dashboard-card__value">12,050</span>
+        <span class="dashboard-card__trend dashboard-card__trend--up">12% this month</span>
+    </div>
+</div>
 ```
 
 ---
 
-## 12. Design Quality Gates
+## 10. JSP Standards
 
-Before any UI implementation, component, or view is marked complete and merged into production, it must satisfy all parameters in this quality checklist:
+To comply with MVC patterns and enforce high-performance page loads, JSP templates must follow strict JSTL/EL constraints.
 
-### 12.1 Consistency Gate
-* [ ] The design strictly uses predefined global tokens for colors, typography, borders, and spacing.
-* [ ] All custom component behaviors (e.g., dropdowns, modals) align with standard patterns.
-* [ ] UI icons and terminology match existing global system patterns.
+### 10.1 Forbidden Code Patterns (Cấm tuyệt đối)
+*   **No Java Scriptlets:** Java code blocks (`<% ... %>`) are strictly banned in all views.
+*   **No Expressions output:** Scriptlet outputs (`<%= ... %>`) are prohibited.
+*   **No declarations:** Component declarations (`%! ... %>`) are prohibited.
+*   *Alternative:* All operations, list mapping, logical loops, and dynamic outputs must use **JSTL** tags and **EL** expressions.
 
-### 12.2 Accessibility Gate
-* [ ] The entire view can be navigated and operated using only a keyboard.
-* [ ] Text and key non-text elements satisfy WCAG AA contrast standards.
-* [ ] All form inputs are bound to descriptive labels, and icons feature alternative text.
+### 10.2 Recommended Include Structure
+Pages must be composed of reusable template parts (segments) included via directive includes. These files are stored in the `/WEB-INF/views/common/` folder:
 
-### 12.3 Responsiveness Gate
-* [ ] The view functions correctly and maintains visual integrity across all standard viewports.
-* [ ] Tap targets on mobile screens are at least 48 x 48 pixels with proper spacing.
-* [ ] Content wraps naturally without causing horizontal scrolling on small screens.
+*   **`header.jspf`:** Houses document HTML top declaration, meta headers, styling links.
+*   **`sidebar.jspf`:** Persistent menu drawer containing navigation links matching user session roles.
+*   **`navbar.jspf`:** Global topbar containing profile details.
+*   **`footer.jspf`:** Script includes, copyright layouts, and closing document elements.
 
-### 12.4 Maintainability Gate
-* [ ] The implementation uses modular, reusable components without duplicate styles.
-* [ ] Stylings avoid arbitrary visual overrides and inherit from the global design system.
-* [ ] HTML markup uses semantic elements rather than generic nested layout containers.
+### 10.3 Role Layout Inclusions
 
-### 12.5 Reusability Gate
-* [ ] Component designs prioritize flexibility, using props/parameters rather than hardcoded content.
-* [ ] Elements use layout containers that scale dynamically to fit different amounts of text.
+All JSP pages must import components using standard servlet scopes. Role views (admin, librarian, student) must consume the same CSS token framework:
 
-### 12.6 User Clarity Gate
-* [ ] The page layout features a single, clear primary goal and a distinct visual hierarchy.
-* [ ] Interactive components provide immediate visual feedback for hover, focus, and click states.
-* [ ] Error and success states are clearly communicated using both color and descriptive text/icons.
+```jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LMS - Title</title>
+    <!-- CSS imports matching CSS Architecture -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/variables.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/base.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/components.css" />
+</head>
+<body class="dash-body">
+
+    <!-- Persistent Sidebar Included dynamically -->
+    <c:import url="/WEB-INF/views/common/sidebar.jsp" />
+
+    <div class="dash-main-wrapper">
+        <!-- Sticky Top Navigation -->
+        <c:import url="/WEB-INF/views/common/navbar.jsp" />
+
+        <main class="dash-main">
+            <div class="dash-container">
+                <!-- Page Title -->
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Page Title</h1>
+                        <p class="page-subtitle">Subtext description.</p>
+                    </div>
+                </div>
+
+                <!-- Core Work Canvas -->
+                <!-- Dynamic Content goes here -->
+
+            </div>
+        </main>
+    </div>
+
+    <c:import url="/WEB-INF/views/common/footer.jsp" />
+</body>
+</html>
+```
+
+---
+
+## 11. Accessibility Rules
+
+LMS must pass **WCAG 2.1 Level AA** specifications to ensure all university students, including those with visual or motor impairments, can access library services.
+
+### 11.1 Keyboard Navigation
+*   All interactive components (buttons, links, search fields) must be fully reachable and clickable using keyboard controls (`Tab`, `Shift+Tab`, `Space`, `Enter`).
+*   Keyboard focus must *never* get trapped within overlays or dialog controls.
+*   Pressing the `Escape` key must close active modals and dropdowns instantly, returning keyboard focus to the button that triggered them.
+
+### 11.2 Focus Indicators
+*   Focused elements must display a high-contrast focus outline.
+*   **Outline standard:** `:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }`.
+
+### 11.3 Color Contrast Ratio
+*   Body text and heading controls must maintain a minimum contrast ratio of `4.5:1` against adjacent background colors.
+*   Active icons, borders, and input rings must maintain a minimum contrast ratio of `3:1` against surface backgrounds.
+*   **Dual-Coding Rule:** Never rely on color alone to communicate state changes (e.g. green for success, red for error). Text descriptions, alerts, or status icons must always accompany color cues.
+
+### 11.4 ARIA Attributes
+*   Non-semantic layout tags that function as buttons or inputs must use `role="button"` or `role="search"`.
+*   Interactive dropdown inputs must declare `aria-expanded="false"` (state updates to `true` when clicked) and `aria-haspopup="listbox"`.
+*   Decorative graphics must contain empty alternative tags (`alt=""`) so screen readers skip them. Meaningful icons must feature descriptive alternative labels.
+
+---
+
+## 12. Final Folder Structure
+
+To maintain separation of concerns under Java MVC patterns, files must reside inside the following structure:
+
+```
+project-root/
+├── web/
+│   ├── assets/
+│   │   ├── css/
+│   │   │   ├── variables.css      # Core Design tokens (CSS variables only)
+│   │   │   ├── base.css           # Global CSS resets & default tags
+│   │   │   ├── layout.css         # Grid system and alignment structures
+│   │   │   ├── components.css     # Buttons, cards, forms, tables, badges, modals
+│   │   │   ├── auth.css           # Authentication layout styling
+│   │   │   └── home.css           # Public landing and guest search pages styling
+│   │   └── js/
+│   │       ├── main.js            # Global micro-interactions & toast trigger handlers
+│   │       └── auth.js            # Login validations and strength indicator logic
+│   ├── auth/                      # Native servlet entry handles
+│   └── WEB-INF/
+│       ├── views/
+│       │   ├── admin/             # System config, audit logs, user management JSP
+│       │   ├── librarian/         # Book records, borrow lists, check-out forms JSP
+│       │   ├── member/            # My loans, digital reservation, profiles JSP
+│       │   ├── auth/              # Login, forgot password, reset password JSP
+│       │   ├── common/            # Header, sidebar, navbar, footer inclusions JSP
+│       │   ├── error/             # 403, 404, and 500 error display views JSP
+│       │   └── guest/             # Landing search list, public catalogs JSP
+│       └── web.xml                # Context settings and filter mappings
+└── src/
+    └── java/                      # Standard Controller, Service, DAO pattern backend
+```
 
 ---
 
 ## 13. Enforcement Rules
 
-### 13.1 Global Applicability
-* Every future software specification, user flow design, user interface wireframe, and frontend implementation must strictly comply with this document.
-* Automated checks (e.g., code linters, accessibility test suites) must run during continuous integration to ensure codebase compliance with these rules.
+### 13.1 Design Review Gate
+Every pull request introducing new visual modules or page alterations must be verified against this document before being approved by the Frontend/UI Lead.
 
-### 13.2 Exceptions & Conflict Resolution
-* Any conflict between a specific project requirement and this constitution must be explicitly documented and approved by the UX Lead.
-* Exceptions are only granted if they are backed by documented user research or unique platform-specific constraints.
+### 13.2 Exceptions & Discrepancies
+No inline styles (`style="..."`) are allowed inside JSP pages. If a unique widget demands custom metrics not represented inside `variables.css`, a dedicated class name must be declared and documented.

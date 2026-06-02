@@ -52,6 +52,7 @@ public class AuthFilter implements Filter {
         boolean isLibrarianRoute = path.startsWith("/librarian/") || path.equals("/librarian");
         boolean isManagerRoute = path.startsWith("/manager/") || path.equals("/manager");
         boolean isStudentRoute = path.startsWith("/student/") || path.equals("/student");
+        boolean isLecturerRoute = path.startsWith("/lecturer/") || path.equals("/lecturer");
 
         if (isAdminRoute) {
             if (!isLoggedIn) {
@@ -93,6 +94,16 @@ public class AuthFilter implements Filter {
                         "Bạn không có quyền truy cập vào chức năng này.");
                 return;
             }
+        } else if (isLecturerRoute) {
+            if (!isLoggedIn) {
+                httpResponse.sendRedirect(contextPath + "/login");
+                return;
+            }
+            if (!"LECTURER".equalsIgnoreCase(role)) {
+                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                        "Bạn không có quyền truy cập vào chức năng này.");
+                return;
+            }
         }
 
         // Đi tiếp nếu hợp lệ hoặc là public route
@@ -115,6 +126,8 @@ public class AuthFilter implements Filter {
                 return contextPath + "/manager/dashboard";
             case "STUDENT":
                 return contextPath + "/student/dashboard";
+            case "LECTURER":
+                return contextPath + "/lecturer/dashboard";
             default:
                 return contextPath + "/auth/login.jsp";
         }
