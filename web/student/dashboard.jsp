@@ -16,11 +16,11 @@
 <body class="dash-body">
     <!-- SideNavBar Shell -->
     <aside class="dash-sidebar">
-        <div class="mb-10">
+        <div class="sidebar-header">
             <h1 class="text-title-lg font-bold text-primary">UniLibrary</h1>
             <p class="text-label-md text-on-surface-variant opacity-70">LMS Portal</p>
         </div>
-        <nav class="d-flex flex-col flex-1 gap-2">
+        <nav class="sidebar-nav">
             <a class="nav-link active" href="#">
                 <span class="material-symbols-outlined icon-md" data-icon="dashboard">dashboard</span>
                 <span class="text-label-md">Dashboard</span>
@@ -48,27 +48,27 @@
 
     <!-- TopNavBar Shell -->
     <header class="dash-header">
-        <div class="d-flex items-center gap-4 flex-1">
-            <div class="relative w-full" style="max-width: 28rem;">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 text-on-surface-variant" style="transform: translateY(-50%);">search</span>
-                <input class="dash-input dash-input-icon-left" placeholder="Search by title, author, or ISBN..." type="text"/>
+        <div class="header-search">
+            <div class="search-box">
+                <span class="material-symbols-outlined search-icon">search</span>
+                <input class="dash-input with-icon" placeholder="Search by title, author, or ISBN..." type="text"/>
             </div>
         </div>
-        <div class="d-flex items-center gap-6">
-            <button class="material-symbols-outlined hover-primary relative" style="background: none; border: none; cursor: pointer;">
+        <div class="header-actions">
+            <button class="material-symbols-outlined hover-primary relative" class="icon-btn">
                 notifications
                 <span class="absolute top-0 right-0 w-8 h-8 bg-primary rounded-full" style="width: 8px; height: 8px; right: -2px; top: -2px;"></span>
             </button>
-            <button class="material-symbols-outlined hover-primary" style="background: none; border: none; cursor: pointer;">
+            <button class="material-symbols-outlined hover-primary" class="icon-btn">
                 help
             </button>
-            <div class="h-8 bg-outline-variant mx-2" style="width: 1px;"></div>
+            <div class="header-divider"></div>
             <div class="d-flex items-center gap-3">
                 <div class="text-right">
                     <p class="text-label-md font-bold text-on-surface">Alex Riverton</p>
                     <span class="badge badge-primary" style="font-size: 10px;">MEMBER</span>
                 </div>
-                <img alt="User Profile" class="w-10 h-10 rounded-full object-cover" style="border: 2px solid var(--color-primary-container);" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyr71dURI8CCCSnRq2ZLLf1FLjnLqvExIy4AkGE5pzNUR7k14DptKiy1SeTLCCzwP5yOXJLeDBHWGIhG4fNt_j5hHX3jAop5E5TP6Q8IMdfdZ_y4qEu6i5AoAklyS4LGi97-IDeaTNUCCcw3sLcCq8DP3oq2mj87RGhBYbWI8sJOnoWYHrDi4puv2U--jokdm4uzbMds51McjrpC90RDItfFXMEUaGEmxZ2o0ujyuF8gE5YCDUlVxBxXJ6rNZzcUpMCoPSQYAUFVTy"/>
+                <img alt="User Profile" class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyr71dURI8CCCSnRq2ZLLf1FLjnLqvExIy4AkGE5pzNUR7k14DptKiy1SeTLCCzwP5yOXJLeDBHWGIhG4fNt_j5hHX3jAop5E5TP6Q8IMdfdZ_y4qEu6i5AoAklyS4LGi97-IDeaTNUCCcw3sLcCq8DP3oq2mj87RGhBYbWI8sJOnoWYHrDi4puv2U--jokdm4uzbMds51McjrpC90RDItfFXMEUaGEmxZ2o0ujyuF8gE5YCDUlVxBxXJ6rNZzcUpMCoPSQYAUFVTy"/>
             </div>
             <!-- Logout Button -->
             <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline" style="padding: 4px 8px;">
@@ -83,7 +83,7 @@
             <!-- Welcome Section -->
             <section class="mb-section-gap">
                 <div class="d-flex flex-col gap-2">
-                    <h2 class="text-headline-lg text-on-surface">Welcome back, Alex!</h2>
+                    <h2 class="page-title">Welcome back, Alex!</h2>
                     <p class="text-body-lg text-on-surface-variant" style="max-width: 42rem;">
                         You have <span class="text-error font-bold">1 book overdue</span> and 2 reservations waiting for pick up. Remember to return your loans on time to avoid further fines.
                     </p>
@@ -91,21 +91,21 @@
             </section>
 
             <!-- Metrics Row -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-section-gap">
+            <div class="stats-grid">
                 <!-- Active Loans -->
                 <div class="metric-card" style="border-left: 1px solid var(--color-surface-container); transition: box-shadow 0.3s; cursor: pointer;" onmouseover="this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
-                    <div class="d-flex items-center justify-between mb-4">
+                    <div class="metric-header">
                         <div class="p-3 bg-primary-container rounded-xl">
                             <span class="material-symbols-outlined text-white" data-icon="menu_book">menu_book</span>
                         </div>
-                        <span class="text-label-sm text-on-surface-variant">Active Loans</span>
+                        <span class="item-subtitle">Active Loans</span>
                     </div>
                     <p class="text-display-lg text-on-surface">4</p>
                     <p class="text-label-md text-on-surface-variant mt-1">2 due this week</p>
                 </div>
                 <!-- Overdue -->
                 <div class="metric-card" style="border: 1px solid var(--color-error-container); transition: box-shadow 0.3s; cursor: pointer;" onmouseover="this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
-                    <div class="d-flex items-center justify-between mb-4">
+                    <div class="metric-header">
                         <div class="p-3 bg-error text-white rounded-xl">
                             <span class="material-symbols-outlined" data-icon="warning">warning</span>
                         </div>
@@ -116,22 +116,22 @@
                 </div>
                 <!-- Unpaid Fines -->
                 <div class="metric-card" style="border-left: 1px solid var(--color-surface-container); transition: box-shadow 0.3s; cursor: pointer;" onmouseover="this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
-                    <div class="d-flex items-center justify-between mb-4">
+                    <div class="metric-header">
                         <div class="p-3 bg-secondary-container rounded-xl text-on-secondary-container">
                             <span class="material-symbols-outlined" data-icon="payments">payments</span>
                         </div>
-                        <span class="text-label-sm text-on-surface-variant">Unpaid Fines</span>
+                        <span class="item-subtitle">Unpaid Fines</span>
                     </div>
                     <p class="text-display-lg text-on-surface">$5.00</p>
                     <p class="text-label-md text-on-surface-variant mt-1">Pay at reception</p>
                 </div>
                 <!-- Reservations -->
                 <div class="metric-card" style="border-left: 1px solid var(--color-surface-container); transition: box-shadow 0.3s; cursor: pointer;" onmouseover="this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
-                    <div class="d-flex items-center justify-between mb-4">
+                    <div class="metric-header">
                         <div class="p-3 bg-tertiary-container rounded-xl text-white">
                             <span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
                         </div>
-                        <span class="text-label-sm text-on-surface-variant">Reservations</span>
+                        <span class="item-subtitle">Reservations</span>
                     </div>
                     <p class="text-display-lg text-on-surface">2</p>
                     <p class="text-label-md text-on-surface-variant mt-1">Ready for pickup</p>
@@ -139,27 +139,29 @@
             </div>
 
             <!-- Main Content Area (Two Columns) -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+            <div class="bento-grid">
                 <!-- Left Column: Current Borrowings -->
-                <div class="lg:col-span-8 dash-card" style="padding: 0; overflow: hidden;">
-                    <div class="px-6 py-6 border-b border-surface-container-highest d-flex items-center justify-between">
-                        <h3 class="text-title-lg text-on-surface">My Current Borrowings</h3>
+                <div class="dash-card bento-main" style="padding: 0; overflow: hidden;">
+                    <div class="card-header">
+                        <h3 class="card-title">My Current Borrowings</h3>
                         <button class="btn btn-ghost hover:underline" style="padding: 0; background: none;">View History</button>
                     </div>
                     <div class="dash-table-container">
-                        <table class="dash-table" style="margin-bottom: 0;">
+                        <table class="dash-table">
                             <thead class="bg-surface-container-low text-on-surface-variant">
                                 <tr>
-                                    <th class="px-6 py-4 text-label-md" style="text-transform: none;">Book Title</th>
-                                    <th class="px-6 py-4 text-label-md" style="text-transform: none;">Barcode</th>
-                                    <th class="px-6 py-4 text-label-md" style="text-transform: none;">Borrow Date</th>
-                                    <th class="px-6 py-4 text-label-md" style="text-transform: none;">Due Date</th>
-                                    <th class="px-6 py-4 text-label-md" style="text-transform: none;">Status</th>
-                                    <th class="px-6 py-4 text-label-md" style="text-transform: none;">Action</th>
+                                    <th class="px-6 py-4 text-label-md" >Book Title</th>
+                                    <th class="px-6 py-4 text-label-md" >Barcode</th>
+                                    <th class="px-6 py-4 text-label-md" >Borrow Date</th>
+                                    <th class="px-6 py-4 text-label-md" >Due Date</th>
+                                    <th class="px-6 py-4 text-label-md" >Status</th>
+                                    <th class="px-6 py-4 text-label-md" >Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <!-- TODO: Replace mockList with actual items -->
+                                    <c:forEach items="${mockList}" var="item">
+                                    <tr>
                                     <td class="px-6 py-5">
                                         <div class="d-flex items-center gap-3">
                                             <div class="w-10 h-14 bg-surface-container rounded shadow-sm overflow-hidden flex-shrink-0" style="height: 56px;">
@@ -172,7 +174,7 @@
                                     <td class="px-6 py-5 text-body-md text-on-surface-variant">Oct 10</td>
                                     <td class="px-6 py-5 text-body-md text-on-surface-variant">Oct 24</td>
                                     <td class="px-6 py-5">
-                                        <span class="badge badge-success rounded-full px-2.5 py-0.5 text-xs font-medium" style="text-transform: none;">
+                                        <span class="badge badge-success rounded-full px-2.5 py-0.5 text-xs font-medium" >
                                             Borrowed
                                         </span>
                                     </td>
@@ -193,7 +195,7 @@
                                     <td class="px-6 py-5 text-body-md text-on-surface-variant">Sept 20</td>
                                     <td class="px-6 py-5 text-error font-medium">Oct 04</td>
                                     <td class="px-6 py-5">
-                                        <span class="badge badge-error rounded-full px-2.5 py-0.5 text-xs font-medium" style="text-transform: none;">
+                                        <span class="badge badge-error rounded-full px-2.5 py-0.5 text-xs font-medium" >
                                             Overdue
                                         </span>
                                     </td>
@@ -201,16 +203,18 @@
                                         <button class="btn btn-primary" style="padding: 8px 16px;">Return</button>
                                     </td>
                                 </tr>
+                                    </c:forEach>
+</tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <!-- Right Column: Widgets -->
-                <div class="lg:col-span-4 d-flex flex-col gap-gutter">
+                <div class="bento-side">
                     <!-- Quick Search Widget -->
                     <div class="dash-card">
-                        <h3 class="text-title-lg text-on-surface mb-4">Quick Search</h3>
+                        <h3 class="card-title">Quick Search</h3>
                         <div class="d-flex flex-col gap-4">
                             <div class="relative">
                                 <input class="w-full bg-white border border-outline-variant shadow-sm" style="padding: 12px 16px; border-radius: 12px; outline: none;" placeholder="Title / Author / ISBN" type="text"/>
@@ -229,10 +233,10 @@
                     <!-- Recent Notifications Feed -->
                     <div class="dash-card d-flex flex-col h-full" style="min-height: 300px;">
                         <div class="d-flex items-center justify-between mb-6">
-                            <h3 class="text-title-lg text-on-surface">Recent Notifications</h3>
+                            <h3 class="card-title">Recent Notifications</h3>
                             <span class="material-symbols-outlined text-on-surface-variant hover-primary icon-md" style="cursor: pointer;">settings</span>
                         </div>
-                        <div class="d-flex flex-col gap-6">
+                        <div class="item-list">
                             <div class="d-flex gap-4">
                                 <div class="w-10 h-10 rounded-full bg-error-container text-error d-flex items-center justify-center flex-shrink-0">
                                     <span class="material-symbols-outlined icon-sm" data-icon="alarm">alarm</span>
