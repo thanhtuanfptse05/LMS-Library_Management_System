@@ -27,4 +27,18 @@
         <mime-type>application/javascript</mime-type>
     </mime-mapping>
 
+    <!-- Error Pages Configuration -->
+    <error-page>
+        <error-code>403</error-code>
+        <location>/errors/403.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/errors/404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/errors/500.jsp</location>
+    </error-page>
+
 </web-app>
