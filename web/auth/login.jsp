@@ -296,6 +296,15 @@
                         </div>
                     </c:if>
 
+                    <!-- Hộp thông báo thành công khi reset mật khẩu -->
+                    <c:if test="${param.resetSuccess == 'true'}">
+                        <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert" 
+                             style="border-radius: 12px; font-size: 14.5px; background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">check_circle</span>
+                            <div>If the email is valid, a new password has been sent. Please check your inbox.</div>
+                        </div>
+                    </c:if>
+
                     <!-- Form kết nối POST với LoginServlet -->
                     <form id="loginForm" action="${pageContext.request.contextPath}/login" method="POST" class="mb-4">
                         <div class="mb-3">

@@ -187,7 +187,7 @@
                 <div class="w-100" style="max-width: 448px;">
                     <div class="mb-4">
                         <h2 class="fw-semibold mb-2" style="font-size: 32px; color: var(--on-surface);">Forgot Password</h2>
-                        <p class="mb-0" style="font-size: 15px; color: var(--secondary);">Enter your email address and we'll send a password recovery request to the Library Admin.</p>
+                        <p class="mb-0" style="font-size: 15px; color: var(--secondary);">Enter your email address and we'll send a new password directly to your inbox.</p>
                     </div>
 
                     <!-- Hộp cảnh báo lỗi động từ Backend -->
@@ -214,11 +214,11 @@
                                 <input class="form-control custom-input" id="email" name="email"
                                     placeholder="Enter your email" required type="email" />
                             </div>
-                            <p class="d-none text-error" id="email-error">Vui lòng nhập định dạng email hợp lệ</p>
+                            <p class="d-none text-error" id="email-error">Please enter a valid email address.</p>
                         </div>
 
                         <button class="w-100 btn-update mt-2" onclick="submitForgotForm()" type="button">
-                            Send Request to Admin
+                            Send New Password
                         </button>
                     </form>
 
@@ -308,9 +308,9 @@
                         
                         btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined text-success">check_circle</span>Sent Successfully</div>`;
                         
-                        // Chuyển hướng tới trang đặt lại mật khẩu của Admin cùng email
+                        // Chuyển hướng tới trang đăng nhập cùng tham số resetSuccess
                         setTimeout(() => {
-                            window.location.href = '${pageContext.request.contextPath}/forgot-password?step=reset&email=' + encodeURIComponent(email);
+                            window.location.href = '${pageContext.request.contextPath}/login?resetSuccess=true';
                         }, 2500);
                     } else {
                         btn.disabled = false;
@@ -322,7 +322,7 @@
                 .catch(error => {
                     btn.disabled = false;
                     btn.innerHTML = originalText;
-                    document.getElementById('backend-error-text').textContent = 'Đã xảy ra lỗi kết nối mạng. Vui lòng thử lại.';
+                    document.getElementById('backend-error-text').textContent = 'A network error occurred. Please try again.';
                     backendAlert.classList.remove('d-none');
                     console.error('Error:', error);
                 });

@@ -63,7 +63,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
         if (email == null || email.trim().isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"success\":false,\"message\":\"Email không được bỏ trống.\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"Email cannot be empty.\"}");
             return;
         }
 
@@ -78,27 +78,27 @@ public class ForgotPasswordServlet extends HttpServlet {
 
             // Chống User Enumeration: Trả về Fake Success
             LOGGER.log(Level.INFO, "Forgot password requested for non-existent email: {0}. Returning fake success.", email);
-            response.getWriter().write("{\"success\":true,\"message\":\"Yêu cầu cấp lại mật khẩu đã được gửi tới Admin. Đang chuyển hướng bạn tới trang Đặt lại mật khẩu...\"}");
+            response.getWriter().write("{\"success\":true,\"message\":\"If the email is valid, a new password has been sent.\"}");
             return;
         }
 
         try {
-            // 2. Thực hiện sinh mật khẩu tạm thời -> cập nhật DB
+            // 2. Thực hiện sinh mật khẩu tạm thời (cũng là mật khẩu mới) -> cập nhật DB
             String rawPassword = authService.resetPassword(email);
 
             if (rawPassword != null) {
-                // 3. Gửi email bất đồng bộ tới ADMIN
-                String adminEmail = "admin1@lms.com"; // Theo database seed admin
-                EmailService.sendAsyncPasswordReset(adminEmail, "Yêu cầu đặt lại mật khẩu từ " + email + ". Mật khẩu tạm thời là: " + rawPassword);
-                LOGGER.log(Level.INFO, "Password reset request logged. Temp password generated and email sent asynchronously to Admin for user: {0}", email);
+                // 3. Gửi email bất đồng bộ trực tiếp tới USER
+                EmailService.sendAsyncPasswordReset(email, rawPassword);
+                LOGGER.log(Level.INFO, "Password reset successfully. Temp/new password generated and email sent asynchronously to user: {0}", email);
             }
 
-            response.getWriter().write("{\"success\":true,\"message\":\"Yêu cầu cấp lại mật khẩu đã được gửi tới Admin. Đang chuyển hướng bạn tới trang Đặt lại mật khẩu...\"}");
+            // Chống User Enumeration: Trả về Fake Success trùng khớp hoàn toàn
+            response.getWriter().write("{\"success\":true,\"message\":\"If the email is valid, a new password has been sent.\"}");
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Lỗi xảy ra trong quá trình reset mật khẩu cho email: " + email, e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"success\":false,\"message\":\"Đã xảy ra lỗi hệ thống khi reset mật khẩu.\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"A system error occurred while resetting the password.\"}");
         }
     }
 
@@ -114,7 +114,7 @@ public class ForgotPasswordServlet extends HttpServlet {
                 || newPassword == null || newPassword.isEmpty()
                 || confirmPassword == null || confirmPassword.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"success\":false,\"message\":\"Mọi thông tin bắt buộc đều phải điền đầy đủ.\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"All required fields must be filled.\"}");
             return;
         }
 
@@ -122,7 +122,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
         // 1. Kiểm tra mật khẩu mới khớp nhau
         if (!newPassword.equals(confirmPassword)) {
-            response.getWriter().write("{\"success\":false,\"message\":\"Xác nhận mật khẩu không khớp.\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"Password confirmation does not match.\"}");
             return;
         }
 
@@ -131,21 +131,21 @@ public class ForgotPasswordServlet extends HttpServlet {
                 && newPassword.matches(".*[a-zA-Z].*") 
                 && newPassword.matches(".*[0-9].*");
         if (!isValidPolicy) {
-            response.getWriter().write("{\"success\":false,\"message\":\"Mật khẩu mới không đáp ứng tiêu chuẩn bảo mật.\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"New password does not meet security standards.\"}");
             return;
         }
 
         // 3. Tìm kiếm người dùng
         User user = userDAO.findByEmail(email);
         if (user == null) {
-            response.getWriter().write("{\"success\":false,\"message\":\"Email không tồn tại trong hệ thống.\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"Email does not exist in the system.\"}");
             return;
         }
 
         // 4. Đối chiếu mật khẩu tạm thời
         boolean isTempCorrect = authService.verifyPassword(tempPassword, user.getPasswordHash());
         if (!isTempCorrect) {
-            response.getWriter().write("{\"success\":false,\"message\":\"Mã xác nhận (Mật khẩu tạm thời) từ Admin không chính xác.\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"Verification code (temporary password) is incorrect.\"}");
             return;
         }
 
@@ -158,12 +158,12 @@ public class ForgotPasswordServlet extends HttpServlet {
             userDAO.insertAuditLog(user.getUserId(), "CHANGE_PASSWORD", "User", user.getUserId(), null, "Password updated successfully via reset flow.");
 
             LOGGER.log(Level.INFO, "User {0} successfully reset their password via verification code flow.", email);
-            response.getWriter().write("{\"success\":true,\"message\":\"Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới.\"}");
+            response.getWriter().write("{\"success\":true,\"message\":\"Password reset successfully! Please sign in with your new password.\"}");
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Lỗi xảy ra trong quá trình đặt lại mật khẩu cho email: " + email, e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"success\":false,\"message\":\"Đã xảy ra lỗi hệ thống khi đặt lại mật khẩu.\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"A system error occurred while resetting your password.\"}");
         }
     }
 }
