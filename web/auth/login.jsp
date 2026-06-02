@@ -150,6 +150,31 @@
             transform: scale(0.98);
         }
 
+        .btn-outline-custom {
+            border: 1px solid var(--outline-variant);
+            border-radius: 12px;
+            padding: 8px 16px;
+            background-color: transparent;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-outline-custom:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background-color: rgba(157, 67, 0, 0.05);
+            transform: scale(1.02);
+        }
+
+        .btn-outline-custom:active {
+            transform: scale(0.98);
+        }
+
         .btn-google {
             border: 1px solid var(--outline-variant);
             border-radius: 12px;
@@ -280,6 +305,13 @@
                                 style="font-size: 32px; font-variation-settings: 'FILL' 1;">auto_stories</span>
                         </div>
                         <h1 class="h3 text-primary fw-bold">Lumina Library</h1>
+                    </div>
+
+                    <div class="mb-4">
+                        <a href="${pageContext.request.contextPath}/" class="btn-outline-custom gap-2 text-decoration-none">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">home</span>
+                            <span>Quay lại trang chủ</span>
+                        </a>
                     </div>
 
                     <div class="text-start mb-4">
