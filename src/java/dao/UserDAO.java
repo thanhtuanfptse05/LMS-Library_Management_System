@@ -60,6 +60,34 @@ public class UserDAO {
     }
 
     /**
+     * Tìm kiếm tài khoản người dùng theo ID tài khoản.
+     *
+     * @param userId ID tài khoản cần tìm
+     * @return Đối tượng User nếu tìm thấy, null nếu không tồn tại
+     */
+    public User findByUserId(int userId) {
+        String sql = "SELECT userId, email, passwordHash, [status], [role], "
+                + "lockReason, failedLoginAttempts, lockedUntil "
+                + "FROM [User] WHERE userId = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error querying user by userId=" + userId, e);
+        }
+        return null;
+    }
+
+
+    /**
      * Cập nhật số lần đăng nhập sai liên tiếp.
      *
      * <p>Được gọi khi người dùng nhập sai mật khẩu [Node 13.20].</p>
