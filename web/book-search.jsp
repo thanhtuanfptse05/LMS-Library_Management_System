@@ -256,7 +256,7 @@
                     <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/policies.jsp"
                         onmouseover="this.style.color='var(--primary-color)'"
                         onmouseout="this.style.color='var(--secondary)'">Policies</a>
-                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#news"
+                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/news.jsp"
                         onmouseover="this.style.color='var(--primary-color)'"
                         onmouseout="this.style.color='var(--secondary)'">News</a>
                     <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#contact"

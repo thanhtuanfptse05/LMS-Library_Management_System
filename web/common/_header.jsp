@@ -70,7 +70,7 @@
             <a class="nav-link-custom active" href="${pageContext.request.contextPath}/">Home</a>
             <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Services</a>
             <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
-            <a class="nav-link-custom" href="${pageContext.request.contextPath}/#news">News</a>
+            <a class="nav-link-custom" href="${pageContext.request.contextPath}/news.jsp">News</a>
             <a class="nav-link-custom" href="#contact">Contact</a>
         </nav>
     </div>

@@ -49,15 +49,15 @@
             <!-- Hàng liên kết nhanh ngay dưới thanh search -->
             <div class="d-flex flex-wrap gap-3 mt-3 justify-content-center justify-content-md-start">
                 <a href="${pageContext.request.contextPath}/book-search.jsp?advanced=true" class="text-white text-decoration-none small d-flex align-items-center gap-1 hover-underline">
-                    <span class="material-symbols-outlined fs-6">manage_search</span> Advanced Search
+                    <span class="material-symbols-outlined fs-6">saved_search</span> Advanced Search
                 </a>
                 <span class="text-white-50">|</span>
                 <a href="${pageContext.request.contextPath}/book-search.jsp?digital=true" class="text-white text-decoration-none small d-flex align-items-center gap-1 hover-underline">
-                    <span class="material-symbols-outlined fs-6">digital_collab</span> Courseware by Major
+                    <span class="material-symbols-outlined fs-6">menu_book</span> Courseware by Major
                 </a>
                 <span class="text-white-50">|</span>
                 <a href="#" onclick="openLibrarianChat(event)" class="text-white text-decoration-none small d-flex align-items-center gap-1 hover-underline">
-                    <span class="material-symbols-outlined fs-6">support_agent</span> Chat with Librarian
+                    <span class="material-symbols-outlined fs-6">forum</span> Chat with Librarian
                 </a>
             </div>
         </div>

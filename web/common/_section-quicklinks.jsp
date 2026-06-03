@@ -10,7 +10,7 @@
         
         <div class="row g-4">
             <!-- Shortcut 1: Catalog Search -->
-            <div class="col-6 col-md-4 col-lg-2">
+            <div class="col-6 col-md-4 col-lg-4">
                 <a href="${pageContext.request.contextPath}/book-search.jsp" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
                     <span class="material-symbols-outlined text-primary-custom display-6 mb-2">search</span>
                     <span class="fw-bold text-dark small">Search Catalog</span>
@@ -18,7 +18,7 @@
             </div>
             
             <!-- Shortcut 2: Circulation Services -->
-            <div class="col-6 col-md-4 col-lg-2">
+            <div class="col-6 col-md-4 col-lg-4">
                 <a href="${pageContext.request.contextPath}/services.jsp?tab=circulation" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
                     <span class="material-symbols-outlined text-primary-custom display-6 mb-2">sync_alt</span>
                     <span class="fw-bold text-dark small">Borrow & Return</span>
@@ -26,7 +26,7 @@
             </div>
             
             <!-- Shortcut 3: Document Renewal -->
-            <div class="col-6 col-md-4 col-lg-2">
+            <div class="col-6 col-md-4 col-lg-4">
                 <a href="${pageContext.request.contextPath}/services.jsp?tab=renewal" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
                     <span class="material-symbols-outlined text-primary-custom display-6 mb-2">autorenew</span>
                     <span class="fw-bold text-dark small">Renew Items</span>
@@ -34,7 +34,7 @@
             </div>
             
             <!-- Shortcut 4: Library Policies -->
-            <div class="col-6 col-md-4 col-lg-2">
+            <div class="col-6 col-md-4 col-lg-4">
                 <a href="${pageContext.request.contextPath}/policies.jsp" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
                     <span class="material-symbols-outlined text-primary-custom display-6 mb-2">gavel</span>
                     <span class="fw-bold text-dark small">Library Policies</span>
@@ -42,7 +42,7 @@
             </div>
             
             <!-- Shortcut 5: Student Dashboard -->
-            <div class="col-6 col-md-4 col-lg-2">
+            <div class="col-6 col-md-4 col-lg-4">
                 <c:choose>
                     <c:when test="${not empty sessionScope.userId}">
                         <c:choose>
@@ -77,7 +77,7 @@
             </div>
             
             <!-- Shortcut 6: Chat with Librarian -->
-            <div class="col-6 col-md-4 col-lg-2">
+            <div class="col-6 col-md-4 col-lg-4">
                 <a href="#contact" onclick="openLibrarianChat(event)" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
                     <span class="material-symbols-outlined text-primary-custom display-6 mb-2">forum</span>
                     <span class="fw-bold text-dark small">Librarian Chat</span>
