@@ -37,7 +37,7 @@
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-search.jsp">
             <span class="material-symbols-outlined">search</span><span>Search Catalog</span>
         </a>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/lecturer/profile">
             <span class="material-symbols-outlined">manage_accounts</span><span>My Profile</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/#contact">

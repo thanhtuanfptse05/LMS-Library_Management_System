@@ -19,7 +19,7 @@
                 <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
                 <span class="notif-dot"></span>
             </button>
-            <div class="d-flex align-items-center gap-2 ps-3" style="border-left: 1px solid var(--outline-variant);">
+            <a href="${pageContext.request.contextPath}/librarian/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset" style="border-left: 1px solid var(--outline-variant);" title="View Profile">
                 <div class="avatar" style="background-color: var(--primary-fixed); color: var(--on-primary-container);">LB</div>
                 <div class="d-none d-sm-block">
                     <p class="mb-0 fw-bold lh-sm" style="font-size: 13px;">
@@ -29,12 +29,12 @@
                         <c:out value="${sessionScope.role}" default="LIBRARIAN"/>
                     </p>
                 </div>
-                <a href="${pageContext.request.contextPath}/logout"
-                   class="btn p-2 rounded-circle border-0 ms-1"
-                   style="background: transparent; color: var(--on-surface-variant);" title="Sign out">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
-                </a>
-            </div>
+            </a>
+            <a href="${pageContext.request.contextPath}/logout"
+               class="btn p-2 rounded-circle border-0 ms-1"
+               style="background: transparent; color: var(--on-surface-variant);" title="Sign out">
+                <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
+            </a>
         </div>
     </div>
 </header>

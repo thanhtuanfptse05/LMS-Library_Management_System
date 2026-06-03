@@ -37,7 +37,7 @@
             <span class="material-symbols-outlined">inventory</span><span>Inventory</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Account</p>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/profile">
             <span class="material-symbols-outlined">manage_accounts</span><span>My Profile</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/#contact">

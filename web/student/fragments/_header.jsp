@@ -49,8 +49,8 @@
                 <span class="material-symbols-outlined text-on-surface-variant">help</span>
             </button>
             <!-- User avatar + info from session -->
-            <div class="d-flex align-items-center gap-2 ps-3"
-                 style="border-left: 1px solid var(--outline-variant);">
+            <a href="${pageContext.request.contextPath}/student/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset"
+                 style="border-left: 1px solid var(--outline-variant);" title="View Profile">
                 <span class="material-symbols-outlined text-primary-custom"
                       style="font-size: 36px; font-variation-settings: 'FILL' 1;">account_circle</span>
                 <div class="d-none d-sm-block">
@@ -61,6 +61,7 @@
                         <c:out value="${sessionScope.role}" default="STUDENT"/>
                     </p>
                 </div>
+            </a>
                 <!-- Logout -->
                 <a href="${pageContext.request.contextPath}/logout"
                    class="btn p-2 rounded-circle border-0 ms-1"
