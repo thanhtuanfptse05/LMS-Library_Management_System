@@ -94,4 +94,43 @@ public class MemberProfileDAO {
         }
         return false;
     }
+
+    /**
+     * Get the count of active loans (borrowed or overdue).
+     */
+    public int getActiveLoansCount(int userId) {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status IN ('borrowed', 'overdue')";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error counting active loans for userId=" + userId, e);
+        }
+        return 0;
+    }
+
+    /**
+     * Get the count of active reservations (pending or readypickup).
+     */
+    public int getActiveReservationsCount(int userId) {
+        String sql = "SELECT COUNT(*) FROM Reservation WHERE userId = ? AND status IN ('pending', 'readypickup')";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error counting active reservations for userId=" + userId, e);
+        }
+        return 0;
+    }
 }
+
