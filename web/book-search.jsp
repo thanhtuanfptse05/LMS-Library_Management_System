@@ -1,10 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setLocale value="${not empty sessionScope.lang ? sessionScope.lang : 'vi'}" />
-<fmt:setBundle basename="resources.messages" />
 <!DOCTYPE html>
-<html lang="${not empty sessionScope.lang ? sessionScope.lang : 'vi'}">
+<html lang="vi">
 
 <head>
     <meta charset="utf-8" />
@@ -251,65 +248,33 @@
             <div class="d-flex align-items-center">
                 <a class="fs-5 fw-bold text-primary-custom text-decoration-none me-4" href="${pageContext.request.contextPath}/">UniLib LMS</a>
                 <nav class="d-none d-md-flex gap-4 ms-4">
-                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/"><fmt:message key="nav.home" /></a>
-                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#about"><fmt:message key="nav.about" /></a>
-                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#policies"><fmt:message key="nav.policies" /></a>
-                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#news"><fmt:message key="nav.news" /></a>
-                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#contact"><fmt:message key="nav.contact" /></a>
+                    <a class="text-primary-custom fw-semibold border-bottom border-2 border-primary-custom pb-1 text-decoration-none"
+                        href="${pageContext.request.contextPath}/">Home</a>
+                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#about"
+                        onmouseover="this.style.color='var(--primary-color)'"
+                        onmouseout="this.style.color='var(--secondary)'">About</a>
+                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#policies"
+                        onmouseover="this.style.color='var(--primary-color)'"
+                        onmouseout="this.style.color='var(--secondary)'">Policies</a>
+                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#news"
+                        onmouseover="this.style.color='var(--primary-color)'"
+                        onmouseout="this.style.color='var(--secondary)'">News</a>
+                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#contact"
+                        onmouseover="this.style.color='var(--primary-color)'"
+                        onmouseout="this.style.color='var(--secondary)'">Contact</a>
                 </nav>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <!-- Language Switcher -->
-                <div class="d-flex align-items-center gap-1 border rounded-pill px-2 py-1 bg-light me-1" style="height: 34px;">
-                    <a href="${pageContext.request.contextPath}/change-language?lang=vi" 
-                       class="text-decoration-none small fw-semibold px-2 rounded-pill ${sessionScope.lang eq 'vi' ? 'bg-primary-custom text-white' : 'text-muted'}">VI</a>
-                    <span class="text-secondary opacity-50" style="font-size: 10px;">|</span>
-                    <a href="${pageContext.request.contextPath}/change-language?lang=en" 
-                       class="text-decoration-none small fw-semibold px-2 rounded-pill ${sessionScope.lang eq 'en' ? 'bg-primary-custom text-white' : 'text-muted'}">EN</a>
-                </div>
-
+            <div class="d-flex align-items-center gap-4">
                 <!-- Form tìm kiếm nhanh tại header công cộng -->
-                <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET" class="d-none d-md-flex align-items-center search-container me-1">
+                <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET" class="d-none d-md-flex align-items-center search-container">
                     <span class="material-symbols-outlined text-secondary-custom me-2">search</span>
-                    <input name="query" placeholder="<fmt:message key="hero.search_placeholder" />" type="text" value="<c:out value="${param.query}"/>" />
+                    <input name="query" placeholder="Search resources..." type="text" value="<c:out value="${param.query}"/>" />
                 </form>
                 
                 <!-- Chuyển hướng Sign In động -->
-                <c:choose>
-                    <c:when test="${not empty sessionScope.userId}">
-                        <c:choose>
-                            <c:when test="${sessionScope.role eq 'ADMIN'}">
-                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/admin/dashboard" />
-                            </c:when>
-                            <c:when test="${sessionScope.role eq 'LIBRARIAN'}">
-                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/librarian/dashboard" />
-                            </c:when>
-                            <c:when test="${sessionScope.role eq 'MANAGER'}">
-                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/manager/dashboard" />
-                            </c:when>
-                            <c:when test="${sessionScope.role eq 'STUDENT'}">
-                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/student/dashboard" />
-                            </c:when>
-                            <c:when test="${sessionScope.role eq 'LECTURER'}">
-                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/lecturer/dashboard" />
-                            </c:when>
-                            <c:otherwise>
-                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/student/dashboard" />
-                            </c:otherwise>
-                        </c:choose>
-                        <a href="${dashboardUrl}" class="btn btn-primary-custom text-decoration-none d-inline-flex align-items-center justify-content-center me-1">
-                            <fmt:message key="nav.dashboard" />
-                        </a>
-                        <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-secondary rounded-pill px-3 fw-semibold text-decoration-none d-inline-flex align-items-center justify-content-center" style="height: 38px;">
-                            <fmt:message key="nav.signout" />
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/login" class="btn btn-primary-custom text-decoration-none d-inline-flex align-items-center justify-content-center">
-                            <fmt:message key="nav.signin" />
-                        </a>
-                    </c:otherwise>
-                </c:choose>
+                <a href="${pageContext.request.contextPath}/login" class="btn btn-primary-custom text-decoration-none d-inline-flex align-items-center justify-content-center">
+                    Sign In
+                </a>
             </div>
         </div>
     </header>

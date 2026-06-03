@@ -1,10 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setLocale value="${not empty sessionScope.lang ? sessionScope.lang : 'vi'}" />
-<fmt:setBundle basename="resources.messages" />
 <!DOCTYPE html>
-<html lang="${not empty sessionScope.lang ? sessionScope.lang : 'vi'}">
+<html lang="vi">
 
 <head>
     <meta charset="utf-8">
@@ -310,32 +307,24 @@
                         <h1 class="h3 text-primary fw-bold">Lumina Library</h1>
                     </div>
 
-                    <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <div class="mb-4">
                         <a href="${pageContext.request.contextPath}/" class="btn-outline-custom gap-2 text-decoration-none">
                             <span class="material-symbols-outlined" style="font-size: 20px;">home</span>
-                            <span><fmt:message key="login.back_home" /></span>
+                            <span>Quay lại trang chủ</span>
                         </a>
-                        <!-- Language Switcher -->
-                        <div class="d-flex align-items-center gap-1 border rounded-pill px-2 py-1 bg-light" style="height: 34px;">
-                            <a href="${pageContext.request.contextPath}/change-language?lang=vi" 
-                               class="text-decoration-none small fw-semibold px-2 rounded-pill ${sessionScope.lang eq 'vi' ? 'bg-primary-custom text-white' : 'text-muted'}">VI</a>
-                            <span class="text-secondary opacity-50" style="font-size: 10px;">|</span>
-                            <a href="${pageContext.request.contextPath}/change-language?lang=en" 
-                               class="text-decoration-none small fw-semibold px-2 rounded-pill ${sessionScope.lang eq 'en' ? 'bg-primary-custom text-white' : 'text-muted'}">EN</a>
-                        </div>
                     </div>
 
                     <div class="text-start mb-4">
-                        <h2 class="fw-bold text-dark mb-1" style="font-size: 32px;"><fmt:message key="login.welcome" /></h2>
-                        <p class="text-muted"><fmt:message key="login.sub" /></p>
+                        <h2 class="fw-bold text-dark mb-1" style="font-size: 32px;">Welcome back!</h2>
+                        <p class="text-muted">Please enter your library credentials to access your dashboard.</p>
                     </div>
 
                     <!-- Hộp thông báo lỗi động bằng JSTL -->
                     <c:if test="${not empty errorMessage}">
                         <div class="alert alert-danger d-flex align-items-center gap-2 mb-4" role="alert" 
                              style="border-radius: 12px; font-size: 14.5px; background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
-                             <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
-                             <div><c:out value="${errorMessage}"/></div>
+                            <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
+                            <div><c:out value="${errorMessage}"/></div>
                         </div>
                     </c:if>
 
@@ -351,7 +340,8 @@
                     <!-- Form kết nối POST với LoginServlet -->
                     <form id="loginForm" action="${pageContext.request.contextPath}/login" method="POST" class="mb-4">
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted ms-1" for="email"><fmt:message key="login.username_or_email" /></label>
+                            <label class="form-label small fw-bold text-muted ms-1" for="email">Username or
+                                Email</label>
                             <div class="input-group-custom">
                                 <span class="material-symbols-outlined icon-left">person</span>
                                 <input class="form-control" id="email" name="email" placeholder="librarian@lumina.edu"
@@ -361,9 +351,9 @@
 
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center px-1 mb-1">
-                                <label class="form-label small fw-bold text-muted mb-0" for="password"><fmt:message key="login.password" /></label>
+                                <label class="form-label small fw-bold text-muted mb-0" for="password">Password</label>
                                 <a class="small fw-bold text-decoration-none" href="${pageContext.request.contextPath}/forgot-password"
-                                    style="color: var(--primary-color);"><fmt:message key="login.forgot_password" /></a>
+                                    style="color: var(--primary-color);">Forgot Password?</a>
                             </div>
                             <div class="input-group-custom">
                                 <span class="material-symbols-outlined icon-left">lock</span>
@@ -378,14 +368,14 @@
                         <button
                             class="w-full btn-primary-custom w-100 d-flex align-items-center justify-content-center gap-2"
                             type="submit">
-                            <fmt:message key="login.signin" />
+                            Sign In
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
                     </form>
 
                     <div class="divider-container">
                         <div class="divider-line"></div>
-                        <span class="divider-text"><fmt:message key="login.or_access" /></span>
+                        <span class="divider-text">Or access via</span>
                     </div>
 
                     <!-- Liên kết thẻ A tích hợp Google SSO thay cho button để chuyển hướng chính xác -->
@@ -404,7 +394,7 @@
                                 d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                                 fill="#EA4335"></path>
                         </svg>
-                        <span><fmt:message key="login.sign_with_google" /></span>
+                        <span>Sign in with Google</span>
                     </a>
 
                     <footer
@@ -412,11 +402,11 @@
                         <div class="d-flex gap-4">
                             <a class="footer-link d-flex align-items-center gap-1" href="#">
                                 <span class="material-symbols-outlined" style="font-size: 18px;">help</span>
-                                <fmt:message key="login.need_help" />
+                                Need help?
                             </a>
                             <a class="footer-link d-flex align-items-center gap-1" href="#">
                                 <span class="material-symbols-outlined" style="font-size: 18px;">support_agent</span>
-                                <fmt:message key="login.contact_librarian" />
+                                Contact Librarian
                             </a>
                         </div>
                         <p class="small text-muted mb-0 opacity-75">© 2024 LMS University Library System</p>

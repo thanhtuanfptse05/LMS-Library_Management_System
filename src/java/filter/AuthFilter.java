@@ -29,37 +29,11 @@ public class AuthFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpSession session = httpRequest.getSession(false);
 
         String requestURI = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
         String path = requestURI.substring(contextPath.length());
-
-        // 0. Khởi tạo ngôn ngữ mặc định cho các request không phải tài nguyên tĩnh
-        boolean isStaticResource = path.startsWith("/assets/") 
-                || path.endsWith(".css") 
-                || path.endsWith(".js") 
-                || path.endsWith(".png") 
-                || path.endsWith(".jpg") 
-                || path.endsWith(".jpeg") 
-                || path.endsWith(".gif") 
-                || path.endsWith(".svg") 
-                || path.endsWith(".ico") 
-                || path.endsWith(".woff") 
-                || path.endsWith(".woff2");
-
-        if (!isStaticResource) {
-            HttpSession session = httpRequest.getSession(true);
-            if (session.getAttribute("lang") == null) {
-                session.setAttribute("lang", "vi");
-                jakarta.servlet.jsp.jstl.core.Config.set(
-                    session, 
-                    jakarta.servlet.jsp.jstl.core.Config.FMT_LOCALE, 
-                    new java.util.Locale("vi")
-                );
-            }
-        }
-
-        HttpSession session = httpRequest.getSession(false);
 
         // 1. Kiểm tra trạng thái đăng nhập
         boolean isLoggedIn = (session != null && session.getAttribute("userId") != null
