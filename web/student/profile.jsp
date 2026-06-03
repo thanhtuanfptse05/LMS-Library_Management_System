@@ -314,7 +314,7 @@
                                                             <fmt:formatDate value="${profile.startDate}" pattern="MMMM dd, yyyy" />
                                                         </c:when>
                                                         <c:otherwise>
-                                                            September 01, 2023
+                                                            Not set
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </p>
@@ -335,7 +335,7 @@
                                                             <fmt:formatDate value="${profile.endDate}" pattern="MMMM dd, yyyy" />
                                                         </c:when>
                                                         <c:otherwise>
-                                                            August 31, 2024
+                                                            Unlimited
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </p>
