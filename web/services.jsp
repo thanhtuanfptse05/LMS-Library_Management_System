@@ -5,7 +5,7 @@
 
     <jsp:include page="common/_header.jsp" />
 
-    <main class="flex-grow-1" style="padding-top: 20px;">
+    <main class="flex-grow-1" style="padding-top: 115px;">
         <jsp:include page="common/_section-services.jsp" />
     </main>
 

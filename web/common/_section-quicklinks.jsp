@@ -1,48 +1,80 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!-- Quick Links / Dashboard Shortcut Grid -->
-<section class="py-5 bg-white border-top border-bottom border-outline-variant" id="quicklinks">
-    <div class="container-xl py-3">
-        <div class="mb-4 text-center text-md-start">
-            <span class="text-primary-custom fw-bold text-uppercase small" style="font-size: 12px; letter-spacing: 0.1em;">Quick Access</span>
-            <h2 class="fw-bold text-dark mt-1 mb-0" style="font-size: 28px;">Library Shortcuts</h2>
+<!-- Quick Access / Shortcut Grid -->
+<section class="py-5" style="background-color: var(--bs-body-bg);" id="quicklinks">
+    <div class="container-xl px-4">
+
+        <!-- Section Header -->
+        <div class="mb-4">
+            <span class="fw-bold text-uppercase"
+                style="font-size: 12px; letter-spacing: 0.1em; color: var(--primary-color);">Quick Access</span>
+            <h2 class="fw-bold mt-1 mb-0" style="font-size: 28px; color: var(--bs-body-color);">Library Shortcuts</h2>
         </div>
-        
-        <div class="row g-4">
-            <!-- Shortcut 1: Catalog Search -->
-            <div class="col-6 col-md-4 col-lg-4">
-                <a href="${pageContext.request.contextPath}/book-search.jsp" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
-                    <span class="material-symbols-outlined text-primary-custom display-6 mb-2">search</span>
-                    <span class="fw-bold text-dark small">Search Catalog</span>
+
+        <div class="row g-4 row-cols-1 row-cols-md-3">
+
+            <!-- Card 1: Catalog Search -->
+            <div class="col">
+                <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none d-block h-100">
+                    <div class="shortcut-card h-100">
+                        <div class="icon-circle mb-4">
+                            <i class="bi bi-book-half fs-4"></i>
+                        </div>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Catalog</h3>
+                        <p class="mb-0 small" style="color: var(--text-muted-custom);">
+                            Browse our physical and digital library collection across all disciplines.
+                        </p>
+                    </div>
                 </a>
             </div>
-            
-            <!-- Shortcut 2: Circulation Services -->
-            <div class="col-6 col-md-4 col-lg-4">
-                <a href="${pageContext.request.contextPath}/services.jsp?tab=circulation" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
-                    <span class="material-symbols-outlined text-primary-custom display-6 mb-2">sync_alt</span>
-                    <span class="fw-bold text-dark small">Borrow & Return</span>
+
+            <!-- Card 2: Borrow & Return -->
+            <div class="col">
+                <a href="${pageContext.request.contextPath}/services.jsp?tab=circulation" class="text-decoration-none d-block h-100">
+                    <div class="shortcut-card h-100">
+                        <div class="icon-circle mb-4">
+                            <i class="bi bi-cart3 fs-4"></i>
+                        </div>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Borrow</h3>
+                        <p class="mb-0 small" style="color: var(--text-muted-custom);">
+                            Request materials for pickup or inter-library loan with ease.
+                        </p>
+                    </div>
                 </a>
             </div>
-            
-            <!-- Shortcut 3: Document Renewal -->
-            <div class="col-6 col-md-4 col-lg-4">
-                <a href="${pageContext.request.contextPath}/services.jsp?tab=renewal" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
-                    <span class="material-symbols-outlined text-primary-custom display-6 mb-2">autorenew</span>
-                    <span class="fw-bold text-dark small">Renew Items</span>
+
+            <!-- Card 3: Renew Items -->
+            <div class="col">
+                <a href="${pageContext.request.contextPath}/services.jsp?tab=renewal" class="text-decoration-none d-block h-100">
+                    <div class="shortcut-card h-100">
+                        <div class="icon-circle mb-4">
+                            <i class="bi bi-arrow-clockwise fs-4"></i>
+                        </div>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Renew</h3>
+                        <p class="mb-0 small" style="color: var(--text-muted-custom);">
+                            Extend your current loans and manage your account online.
+                        </p>
+                    </div>
                 </a>
             </div>
-            
-            <!-- Shortcut 4: Library Policies -->
-            <div class="col-6 col-md-4 col-lg-4">
-                <a href="${pageContext.request.contextPath}/policies.jsp" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
-                    <span class="material-symbols-outlined text-primary-custom display-6 mb-2">gavel</span>
-                    <span class="fw-bold text-dark small">Library Policies</span>
+
+            <!-- Card 4: Policies -->
+            <div class="col">
+                <a href="${pageContext.request.contextPath}/policies.jsp" class="text-decoration-none d-block h-100">
+                    <div class="shortcut-card h-100">
+                        <div class="icon-circle mb-4">
+                            <i class="bi bi-gavel fs-4"></i>
+                        </div>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Policies</h3>
+                        <p class="mb-0 small" style="color: var(--text-muted-custom);">
+                            Understand access rights, loan periods, and library guidelines.
+                        </p>
+                    </div>
                 </a>
             </div>
-            
-            <!-- Shortcut 5: Student Dashboard -->
-            <div class="col-6 col-md-4 col-lg-4">
+
+            <!-- Card 5: My Dashboard (role-aware) -->
+            <div class="col">
                 <c:choose>
                     <c:when test="${not empty sessionScope.userId}">
                         <c:choose>
@@ -70,19 +102,34 @@
                         <c:set var="dashUrl" value="${pageContext.request.contextPath}/login" />
                     </c:otherwise>
                 </c:choose>
-                <a href="${dashUrl}" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
-                    <span class="material-symbols-outlined text-primary-custom display-6 mb-2">dashboard</span>
-                    <span class="fw-bold text-dark small">My Dashboard</span>
+                <a href="${dashUrl}" class="text-decoration-none d-block h-100">
+                    <div class="shortcut-card h-100">
+                        <div class="icon-circle mb-4">
+                            <i class="bi bi-speedometer2 fs-4"></i>
+                        </div>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Dashboard</h3>
+                        <p class="mb-0 small" style="color: var(--text-muted-custom);">
+                            Personalized overview of your research and borrowed items.
+                        </p>
+                    </div>
                 </a>
             </div>
-            
-            <!-- Shortcut 6: Chat with Librarian -->
-            <div class="col-6 col-md-4 col-lg-4">
-                <a href="#contact" onclick="openLibrarianChat(event)" class="card h-100 border border-outline-variant text-center p-3 text-decoration-none card-hover rounded-3 bg-container-low d-flex flex-column align-items-center justify-content-center py-4">
-                    <span class="material-symbols-outlined text-primary-custom display-6 mb-2">forum</span>
-                    <span class="fw-bold text-dark small">Librarian Chat</span>
+
+            <!-- Card 6: Librarian Chat -->
+            <div class="col">
+                <a href="#contact" onclick="openLibrarianChat(event)" class="text-decoration-none d-block h-100">
+                    <div class="shortcut-card h-100">
+                        <div class="icon-circle mb-4">
+                            <i class="bi bi-chat-dots fs-4"></i>
+                        </div>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Librarian Chat</h3>
+                        <p class="mb-0 small" style="color: var(--text-muted-custom);">
+                            Get expert research assistance from our professional librarians.
+                        </p>
+                    </div>
                 </a>
             </div>
+
         </div>
     </div>
 </section>

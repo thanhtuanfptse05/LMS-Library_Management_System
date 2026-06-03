@@ -1,99 +1,93 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- Hero Section -->
-<section class="hero-section d-flex align-items-center">
-    <img alt="Modern University Library" class="hero-img"
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXhwL3B82lHt70iVpVkR7bfy8MimqE7q3dKe0kFsVo7tjsnlheJNcmx_U9y-O4PHnsyTUkDrJLU3pD4Wk5K1nlm9fOvSB4cEgkpN0ZRjTWevp9BzeOcbYuj-51iud0mu-7OMrTm9doBITkCvxIiltV57-pe6G-2ODmimeIWygFXQdaIu9i6EZHOgD4ytVn5fjJuJGwf59A_NLHoXgj--56kW-NMGo5HhChnAc5WZuSE_qrUgosgYpqBjOVYLSTX430SBBQj7ZaNg8l" />
+<section class="position-relative w-100 overflow-hidden hero-section">
+    <img alt="Modern University Library Interior" class="hero-img"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8iUEjUng4gNMu7_eJCVZTEhZAwhz64AhW9zJxcJsw1cgm9HBKKlECRjp9EQc4DdNzGtR3gthndmunJAnJbMjMcabGKYdZMpKilxzV0NXZse_7QpRSv_mkWKJdYaG1YS63Eoko3NvP2Q2PLl9zllXbqHHyzA023iir_aYUZ5uwCCKQqIAlNh_8TIiP97ZLQDShPaYa3ugmv72JHW9U6WZFDsfx9gsvOfajtzpFR7R04p9ssNJ3eWBoTLYa0Cm7jGOGoaX6anou__2V" />
     <div class="hero-overlay"></div>
-    <div class="container-xl hero-content w-100">
-        <div class="max-width-custom" style="max-width: 750px;">
-            <h1 class="text-white fw-bold display-4 mb-3">Welcome to the Heart of Knowledge</h1>
-            <p class="text-white-50 fs-5 mb-4">Access millions of academic resources, journals, and digital archives at the UniLib University Library.</p>
 
-            <!-- Form Tìm kiếm công cộng kết nối tới book-search.jsp -->
-            <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET" class="bg-white p-2 rounded-3 shadow-lg d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-center">
-                <!-- Dropdown Bộ lọc nhanh -->
-                <div class="dropdown flex-shrink-0">
-                    <button class="btn btn-light dropdown-toggle text-secondary-custom fw-semibold d-flex align-items-center gap-1 h-100 border-0" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 12px 16px;">
-                        <span class="material-symbols-outlined fs-5">tune</span>
-                        <span id="selected-filter-label">All</span>
-                    </button>
-                    <ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="filterDropdown">
-                        <li><a class="dropdown-item active" href="#" onclick="selectFilter('all')">All Fields</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="selectFilter('title')">Title</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="selectFilter('author')">Author</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="selectFilter('keyword')">Keyword</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="selectFilter('ddc')">Subject / DDC</a></li>
-                    </ul>
-                    <input type="hidden" name="filter" id="search-filter-input" value="all" />
-                </div>
-                
-                <!-- Thanh tìm kiếm thông minh -->
-                <div class="position-relative flex-grow-1">
-                    <span class="position-absolute top-50 start-0 translate-middle-y ms-2 material-symbols-outlined text-muted">search</span>
-                    <input class="form-control border-0 bg-transparent ps-5 py-3 h-100"
-                        name="query" id="search-query-input" placeholder="Search title, author, keyword, DDC..." type="text" autocomplete="off" oninput="showSuggestions(this.value)" />
-                    
-                    <!-- Hộp gợi ý tự động (Auto-suggest dropdown) -->
-                    <div id="autosuggest-box" class="position-absolute w-100 bg-white rounded-3 shadow-lg border border-outline-variant mt-1 d-none" style="z-index: 1000; max-height: 250px; overflow-y: auto;">
-                        <!-- JS will populate suggestions here -->
+    <!-- Glassmorphism search panel — centered -->
+    <div class="position-relative w-100 h-100 hero-content d-flex align-items-center justify-content-center px-3 px-md-4">
+        <div class="w-100 glass-search p-4 p-md-5 rounded-4 shadow-lg" style="max-width: 900px;">
+            <div class="text-center mb-4">
+                <h1 class="fw-bold mb-2" style="font-size: 32px; color: var(--bs-body-color);">
+                    Explore the Collection
+                </h1>
+                <p class="mb-0" style="color: var(--text-muted-custom); font-size: 16px;">
+                    Search millions of books, journals, and digital resources.
+                </p>
+            </div>
+
+            <!-- Search Form -->
+            <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET">
+                <div class="row g-3">
+                    <!-- Filter Dropdown -->
+                    <div class="col-md-3">
+                        <select class="form-select border-0 px-3 py-3 rounded-3 h-100"
+                            name="filter"
+                            style="background-color: var(--surface-container-low); color: var(--text-muted-custom); font-size: 14px;">
+                            <option value="all">Everything</option>
+                            <option value="title">Title</option>
+                            <option value="author">Author</option>
+                            <option value="keyword">Keyword</option>
+                            <option value="ddc">Subject / DDC</option>
+                        </select>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="col-md-6 position-relative">
+                        <input class="form-control border-0 px-3 py-3 rounded-3 h-100"
+                            style="background-color: var(--surface-container-low); color: var(--bs-body-color); padding-right: 2.5rem !important;"
+                            placeholder="Search by title, author, or keyword..."
+                            type="text" name="query" id="hero-search-query"
+                            autocomplete="off" oninput="showHeroSuggestions(this.value)" />
+                        <span class="position-absolute end-0 top-50 translate-middle-y me-3 z-3 text-secondary" style="pointer-events: none;">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <!-- Auto-suggest box -->
+                        <div id="hero-autosuggest-box"
+                            class="position-absolute w-100 bg-white rounded-3 shadow-lg mt-1 d-none"
+                            style="z-index: 1000; max-height: 250px; overflow-y: auto; border: 1px solid rgba(219,194,176,0.5);">
+                        </div>
+                    </div>
+
+                    <!-- Search Button -->
+                    <div class="col-md-3">
+                        <button type="submit"
+                            class="btn btn-primary-custom w-100 h-100 py-3 rounded-3 fw-semibold"
+                            style="font-size: 16px;">
+                            Search
+                        </button>
                     </div>
                 </div>
-                
-                <!-- Nút tìm kiếm -->
-                <button type="submit" class="btn bg-primary-container text-white px-4 py-3 rounded-3 fw-bold border-0 shadow-sm">
-                    Search Catalog
-                </button>
             </form>
 
-            <!-- Hàng liên kết nhanh ngay dưới thanh search -->
-            <div class="d-flex flex-wrap gap-3 mt-3 justify-content-center justify-content-md-start">
-                <a href="${pageContext.request.contextPath}/book-search.jsp?advanced=true" class="text-white text-decoration-none small d-flex align-items-center gap-1 hover-underline">
-                    <span class="material-symbols-outlined fs-6">saved_search</span> Advanced Search
+            <!-- Quick links below search bar -->
+            <div class="d-flex flex-wrap gap-3 mt-3 justify-content-center">
+                <a href="${pageContext.request.contextPath}/book-search.jsp?advanced=true"
+                    class="text-decoration-none small d-flex align-items-center gap-1"
+                    style="color: var(--text-muted-custom);">
+                    <i class="bi bi-sliders"></i> Advanced Search
                 </a>
-                <span class="text-white-50">|</span>
-                <a href="${pageContext.request.contextPath}/book-search.jsp?digital=true" class="text-white text-decoration-none small d-flex align-items-center gap-1 hover-underline">
-                    <span class="material-symbols-outlined fs-6">menu_book</span> Courseware by Major
+                <span style="color: var(--outline-variant);">|</span>
+                <a href="${pageContext.request.contextPath}/book-search.jsp?digital=true"
+                    class="text-decoration-none small d-flex align-items-center gap-1"
+                    style="color: var(--text-muted-custom);">
+                    <i class="bi bi-journal-bookmark"></i> Courseware by Major
                 </a>
-                <span class="text-white-50">|</span>
-                <a href="#" onclick="openLibrarianChat(event)" class="text-white text-decoration-none small d-flex align-items-center gap-1 hover-underline">
-                    <span class="material-symbols-outlined fs-6">forum</span> Chat with Librarian
+                <span style="color: var(--outline-variant);">|</span>
+                <a href="#contact" onclick="openLibrarianChat(event)"
+                    class="text-decoration-none small d-flex align-items-center gap-1"
+                    style="color: var(--text-muted-custom);">
+                    <i class="bi bi-chat-dots"></i> Chat with Librarian
                 </a>
             </div>
         </div>
     </div>
 </section>
 
-<style>
-    .hover-bg-light:hover {
-        background-color: var(--surface-container-low) !important;
-        color: var(--primary-color) !important;
-    }
-</style>
-
 <script>
-    function selectFilter(filterType) {
-        document.getElementById('search-filter-input').value = filterType;
-        
-        let label = 'All';
-        if (filterType === 'title') label = 'Title';
-        else if (filterType === 'author') label = 'Author';
-        else if (filterType === 'keyword') label = 'Keyword';
-        else if (filterType === 'ddc') label = 'Subject / DDC';
-        
-        document.getElementById('selected-filter-label').innerText = label;
-        
-        // Update active class in dropdown items
-        const items = document.querySelectorAll('#filterDropdown + .dropdown-menu .dropdown-item');
-        items.forEach(item => {
-            item.classList.remove('active');
-            if (item.getAttribute('onclick').includes(filterType)) {
-                item.classList.add('active');
-            }
-        });
-    }
-
-    const mockSuggestions = [
+    const heroMockSuggestions = [
         "Introduction to Java Programming",
         "Data Structures and Algorithms in Java",
         "Database Management Systems",
@@ -104,27 +98,23 @@
         "Operating System Concepts"
     ];
 
-    function showSuggestions(val) {
-        const box = document.getElementById('autosuggest-box');
-        if (!val || val.trim().length === 0) {
-            box.classList.add('d-none');
-            return;
-        }
-        
-        const filtered = mockSuggestions.filter(item => item.toLowerCase().includes(val.toLowerCase()));
-        if (filtered.length === 0) {
-            box.classList.add('d-none');
-            return;
-        }
-        
+    function showHeroSuggestions(val) {
+        const box = document.getElementById('hero-autosuggest-box');
+        if (!val || val.trim().length === 0) { box.classList.add('d-none'); return; }
+
+        const filtered = heroMockSuggestions.filter(item => item.toLowerCase().includes(val.toLowerCase()));
+        if (filtered.length === 0) { box.classList.add('d-none'); return; }
+
         box.innerHTML = '';
         filtered.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'px-3 py-2 border-bottom hover-bg-light cursor-pointer small text-dark';
+            div.className = 'px-3 py-2 border-bottom small text-dark';
             div.style.cursor = 'pointer';
             div.innerText = item;
-            div.onclick = function() {
-                document.getElementById('search-query-input').value = item;
+            div.onmouseenter = () => div.style.backgroundColor = 'var(--surface-container-low)';
+            div.onmouseleave = () => div.style.backgroundColor = '';
+            div.onclick = () => {
+                document.getElementById('hero-search-query').value = item;
                 box.classList.add('d-none');
             };
             box.appendChild(div);
@@ -132,16 +122,15 @@
         box.classList.remove('d-none');
     }
 
-    // Close suggestion box on click outside
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('#search-query-input') && !e.target.closest('#autosuggest-box')) {
-            const box = document.getElementById('autosuggest-box');
+        if (!e.target.closest('#hero-search-query') && !e.target.closest('#hero-autosuggest-box')) {
+            const box = document.getElementById('hero-autosuggest-box');
             if (box) box.classList.add('d-none');
         }
     });
 
     function openLibrarianChat(e) {
         e.preventDefault();
-        alert("Connecting to the UniLib AI Chatbot/Live Librarian support...");
+        alert("Connecting to the UniLib AI Chatbot / Live Librarian support...");
     }
 </script>

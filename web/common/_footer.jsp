@@ -1,49 +1,177 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!-- Footer -->
-<footer class="bg-container-highest mt-5" id="contact">
-    <div class="container-xl py-5">
-        <div class="row g-4 align-items-center justify-content-between">
-            <div class="col-12 col-md-6 text-center text-md-start">
-                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
-                    <span class="text-primary-custom material-symbols-outlined fs-3">library_books</span>
-                    <span class="fs-4 fw-bold text-primary-custom">UniLib LMS</span>
+<!-- Footer — 3-column layout + copyright bar -->
+<footer id="contact" style="background-color: var(--surface-lowest); border-top: 1px solid rgba(219, 194, 176, 0.5);">
+
+    <!-- ── Main 3-column body ──────────────────────────────────────────── -->
+    <div class="container-xl px-4 py-5">
+        <div class="row g-5 align-items-start">
+
+            <!-- Column 1 — Logo + Library Name -->
+            <div class="col-12 col-md-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-book-half" style="font-size: 32px; color: var(--primary-color);"></i>
+                    <div class="lh-sm">
+                        <span class="fw-bold d-block"
+                            style="font-size: 16px; color: var(--primary-color); letter-spacing: -0.01em; line-height: 1.2;">
+                            University Library<br>Management System
+                        </span>
+                        <span class="fw-semibold text-uppercase d-block"
+                            style="font-size: 10px; letter-spacing: 0.08em; color: var(--text-muted-custom);">
+                            UniLib LMS
+                        </span>
+                    </div>
                 </div>
-                <p class="text-secondary-custom small mb-3 style-desc-footer" style="max-width: 400px;">
-                    Providing world-class information access to the global academic community since 1954.
+                <p class="mb-3" style="color: var(--text-muted-custom); font-size: 14px; line-height: 1.7; max-width: 280px;">
+                    Providing world-class information access to the academic community. Your gateway to knowledge since 1954.
                 </p>
-                <p class="small text-muted mb-0">© 2024 University Library Management System. All rights reserved.</p>
+                <!-- Quick policy links -->
+                <div class="d-flex flex-wrap gap-3" style="font-size: 13px;">
+                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">Privacy Policy</a>
+                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">Terms of Use</a>
+                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">FAQ</a>
+                </div>
             </div>
 
-            <div class="col-12 col-md-6 text-center text-md-end d-flex flex-column align-items-center align-items-md-end gap-3">
-                <nav class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3">
-                    <a class="text-secondary-custom small text-decoration-underline" href="#">Instructions</a>
-                    <a class="text-secondary-custom small text-decoration-underline" href="#">Privacy Policy</a>
-                    <a class="text-secondary-custom small text-decoration-underline" href="#">Terms of Service</a>
-                    <a class="text-secondary-custom small text-decoration-underline" href="#">FAQ</a>
-                    <a class="text-primary-custom small fw-bold text-decoration-none" href="${pageContext.request.contextPath}/login">Staff Login</a>
-                </nav>
-                <div class="d-flex gap-3">
-                    <a class="text-secondary-custom text-decoration-none" href="#"><span
-                            class="material-symbols-outlined">public</span></a>
-                    <a class="text-secondary-custom text-decoration-none" href="#"><span
-                            class="material-symbols-outlined">mail</span></a>
-                    <a class="text-secondary-custom text-decoration-none" href="#"><span
-                            class="material-symbols-outlined">share</span></a>
+            <!-- Column 2 — Contact Information -->
+            <div class="col-12 col-md-4">
+                <h5 class="fw-bold mb-3" style="font-size: 15px; color: var(--bs-body-color);">Contact Us</h5>
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-3" style="font-size: 14px; color: var(--text-muted-custom);">
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-geo-alt-fill mt-1 flex-shrink-0" style="color: var(--primary-color);"></i>
+                        <span>123 Academic Row, Knowledge City, EDU 4567</span>
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-telephone-fill flex-shrink-0" style="color: var(--primary-color);"></i>
+                        <a href="tel:+84123456789" class="text-decoration-none" style="color: var(--text-muted-custom);">
+                            +84 (0) 123 456 789
+                        </a>
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-envelope-fill flex-shrink-0" style="color: var(--primary-color);"></i>
+                        <a href="mailto:library@unilib.edu.vn" class="text-decoration-none" style="color: var(--text-muted-custom);">
+                            library@unilib.edu.vn
+                        </a>
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-fill flex-shrink-0" style="color: var(--primary-color);"></i>
+                        <span>Mon – Sat: 08:00 AM – 08:00 PM</span>
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-person-badge-fill flex-shrink-0" style="color: var(--primary-color);"></i>
+                        <a href="${pageContext.request.contextPath}/login"
+                            class="fw-semibold text-decoration-none"
+                            style="color: var(--primary-color);">Staff Login</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 3 — Connect & Links -->
+            <div class="col-12 col-md-4">
+                <h5 class="fw-bold mb-3" style="font-size: 15px; color: var(--bs-body-color);">Connect</h5>
+                <!-- Social icons -->
+                <div class="d-flex gap-3 mb-4">
+                    <a href="#" class="footer-social-icon" title="Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="footer-social-icon" title="YouTube">
+                        <i class="bi bi-youtube"></i>
+                    </a>
+                    <a href="#" class="footer-social-icon" title="Email">
+                        <i class="bi bi-envelope"></i>
+                    </a>
+                    <a href="#" class="footer-social-icon" title="Website">
+                        <i class="bi bi-globe2"></i>
+                    </a>
                 </div>
-                <div class="small text-secondary-custom d-flex align-items-center gap-1">
-                    <span class="material-symbols-outlined fs-6">location_on</span>
-                    123 Academic Row, Knowledge City, EDU 4567
-                </div>
+                <!-- Quick navigation -->
+                <h6 class="fw-bold mb-2" style="font-size: 13px; color: var(--bs-body-color); text-transform: uppercase; letter-spacing: 0.06em;">Quick Links</h6>
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-2" style="font-size: 14px;">
+                    <li>
+                        <a href="${pageContext.request.contextPath}/"
+                            class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/book-search.jsp"
+                            class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Search Catalog
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/services.jsp"
+                            class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Services
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/policies.jsp"
+                            class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Policies
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/news.jsp"
+                            class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> News &amp; Events
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Copyright Bar ────────────────────────────────────────────────── -->
+    <div style="background-color: var(--primary-color); padding: 14px 0;">
+        <div class="container-xl px-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <p class="mb-0 fw-medium" style="font-size: 13px; color: rgba(255,255,255,0.85);">
+                &copy; 2026 University Library Management System. All rights reserved.
+            </p>
+            <div class="d-flex align-items-center gap-1" style="font-size: 13px; color: rgba(255,255,255,0.7);">
+                <i class="bi bi-heart-fill" style="font-size: 11px; color: rgba(255,220,195,0.9);"></i>
+                Built for academic excellence
             </div>
         </div>
     </div>
 </footer>
 
-<!-- Bootstrap 5 JavaScript Bundle with Popper -->
+<style>
+    .footer-social-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: var(--surface-container-low);
+        color: var(--primary-color);
+        font-size: 16px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .footer-social-icon:hover {
+        background-color: var(--primary-color);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    .footer-nav-link {
+        color: var(--text-muted-custom);
+        transition: color 0.2s;
+    }
+
+    .footer-nav-link:hover {
+        color: var(--primary-color);
+    }
+</style>
+
+<!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Sticky Header Shadow effect
+    // ── Sticky Header shadow ──────────────────────────────────────────────────
     window.addEventListener('scroll', () => {
         const header = document.getElementById('main-header');
         if (header) {
@@ -57,139 +185,51 @@
         }
     });
 
-    // Smooth Scrolling for anchor links with header offset
-    const navLinks = document.querySelectorAll('.nav-link-custom');
-    navLinks.forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
-            if (!href) return;
-            
-            const hashIndex = href.indexOf('#');
-            if (hashIndex !== -1) {
-                const targetHash = href.substring(hashIndex);
-                const pagePath = href.substring(0, hashIndex);
-                const currentPath = window.location.pathname;
-                
-                // If it is just a hash, or refers to the current page/root
-                if (pagePath === '' || currentPath.endsWith(pagePath) || (pagePath.endsWith('/') && currentPath === pagePath)) {
-                    e.preventDefault();
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-
-                    if (targetHash === '#') {
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
-                    } else {
-                        const target = document.querySelector(targetHash);
-                        if (target) {
-                            const headerOffset = 110; // Sticky header height plus margin
-                            const elementPosition = target.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                            window.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
-                        }
-                    }
+    // ── Scroll-fade entrance animation ────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
                 }
-            }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.shortcut-card, .card.card-hover, h2').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(32px)';
+            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(el);
         });
     });
 
-    // ScrollSpy: Dynamic navigation active state highlighting
-    const sections = document.querySelectorAll('section[id], footer[id]');
-    window.addEventListener('scroll', () => {
-        let current = '';
-        const scrollY = window.pageYOffset;
-        const headerHeight = 90; // Trigger offset
-
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - headerHeight;
-            const sectionHeight = section.offsetHeight;
-            if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-                current = section.getAttribute('id');
-            }
-        });
-
-        // Default to Home if near top
-        if (scrollY < 100) {
-            current = '';
-        }
-
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            const href = link.getAttribute('href');
-            if ((current === '' && href === '#') || href === '#' + current) {
-                link.classList.add('active');
-            }
-        });
-    });
-
-    // Scoped tab switching logic for Policies
+    // ── Policy / Service tab switching ────────────────────────────────────────
     function switchPolicyTab(event, paneId) {
         const container = event.currentTarget.closest('.policy-container');
         if (!container) return;
-
-        container.querySelectorAll('.policy-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        container.querySelectorAll('.policy-pane').forEach(pane => {
-            pane.classList.remove('active');
-        });
-        
+        container.querySelectorAll('.policy-btn').forEach(btn => btn.classList.remove('active'));
+        container.querySelectorAll('.policy-pane').forEach(pane => pane.classList.remove('active'));
         event.currentTarget.classList.add('active');
         const targetPane = container.querySelector('#' + paneId);
         if (targetPane) {
             targetPane.classList.add('active');
             const contentArea = container.querySelector('.policy-content');
-            if (contentArea) {
-                contentArea.scrollTop = 0;
-            }
+            if (contentArea) contentArea.scrollTop = 0;
         }
     }
 
-    // Scoped tab switching logic for Services
     function switchServiceTab(event, paneId) {
-        const container = event.currentTarget.closest('.policy-container');
-        if (!container) return;
-
-        container.querySelectorAll('.policy-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        container.querySelectorAll('.policy-pane').forEach(pane => {
-            pane.classList.remove('active');
-        });
-        
-        event.currentTarget.classList.add('active');
-        const targetPane = container.querySelector('#' + paneId);
-        if (targetPane) {
-            targetPane.classList.add('active');
-            const contentArea = container.querySelector('.policy-content');
-            if (contentArea) {
-                contentArea.scrollTop = 0;
-            }
-        }
+        switchPolicyTab(event, paneId);
     }
 
-    // Scoped tab switching logic for News Categories
     function switchNewsCategory(event, paneId) {
         const container = event.currentTarget.closest('#news');
         if (!container) return;
-
-        container.querySelectorAll('.news-category-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        container.querySelectorAll('.news-pane').forEach(pane => {
-            pane.classList.remove('active');
-        });
-        
+        container.querySelectorAll('.news-category-btn').forEach(btn => btn.classList.remove('active'));
+        container.querySelectorAll('.news-pane').forEach(pane => pane.classList.remove('active'));
         event.currentTarget.classList.add('active');
         const targetPane = container.querySelector('#' + paneId);
-        if (targetPane) {
-            targetPane.classList.add('active');
-        }
+        if (targetPane) targetPane.classList.add('active');
     }
 </script>

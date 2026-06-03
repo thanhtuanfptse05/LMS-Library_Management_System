@@ -1,19 +1,51 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!-- TopNavBar -->
-<header class="bg-white shadow-sm sticky-top transition-all" id="main-header">
-    <!-- Top Row: Branding, Hours, Auth -->
-    <div class="border-bottom border-outline-variant py-2 bg-light">
-        <div class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-            <!-- Hours & Operational Status -->
-            <div class="d-flex align-items-center gap-2 text-secondary-custom small">
-                <span class="material-symbols-outlined text-primary-custom fs-6">schedule</span>
-                <span>Today's Hours: <strong class="text-dark">08:00 AM - 08:00 PM</strong></span>
-                <span class="badge bg-success text-white px-2 py-0.5 rounded-pill" style="font-size: 10px;">Open Now</span>
+<!-- TopAppBar — 2-row layout -->
+<header class="w-100 shadow-sm fixed-top" style="background-color: var(--surface-container-high);" id="main-header">
+    <div class="container-xl px-4">
+
+        <!-- Row 1: Logo / Branding & Hours -->
+        <div class="d-flex justify-content-between align-items-center py-2"
+            style="border-bottom: 1px solid rgba(219, 194, 176, 0.35);">
+
+            <!-- Logo + Full Name -->
+            <a href="${pageContext.request.contextPath}/"
+                class="text-decoration-none d-flex align-items-center gap-2">
+                <i class="bi bi-book-half" style="font-size: 26px; color: var(--primary-color);"></i>
+                <div class="lh-sm">
+                    <span class="fw-bold d-block"
+                        style="font-size: 17px; color: var(--primary-color); letter-spacing: -0.01em;">
+                        University Library Management System
+                    </span>
+                    <span class="d-block fw-semibold text-uppercase"
+                        style="font-size: 10px; letter-spacing: 0.08em; color: var(--text-muted-custom);">
+                        UniLib LMS
+                    </span>
+                </div>
+            </a>
+
+            <!-- Operational Status -->
+            <div class="d-none d-sm-flex align-items-center gap-2 fw-medium"
+                style="font-size: 13px; color: var(--text-muted-custom);">
+                <span class="custom-badge-pulse"></span>
+                Today's Hours:&nbsp;<strong style="color: var(--bs-body-color);">08:00 AM – 08:00 PM</strong>
             </div>
-            
-            <!-- Auth / Personalization Area -->
-            <div class="d-flex align-items-center gap-2">
+        </div>
+
+        <!-- Row 2: Navigation & Auth CTA -->
+        <nav class="d-flex justify-content-between align-items-center py-2">
+
+            <!-- Main Nav Links -->
+            <div class="d-none d-md-flex gap-4">
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/">Home</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Services</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/news.jsp">News</a>
+                <a class="nav-link-custom" href="#contact">Contact</a>
+            </div>
+
+            <!-- Auth CTA -->
+            <div class="d-flex align-items-center gap-2 ms-auto">
                 <c:choose>
                     <c:when test="${not empty sessionScope.userId}">
                         <c:choose>
@@ -36,42 +68,29 @@
                                 <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/student/dashboard" />
                             </c:otherwise>
                         </c:choose>
-                        <span class="small text-muted me-2 d-none d-sm-inline">Welcome, <strong><c:out value="${sessionScope.email}"/></strong></span>
-                        <a href="${dashboardUrl}" class="btn bg-primary-container text-white rounded-pill px-3 py-1 fw-semibold shadow-sm text-decoration-none small d-inline-flex align-items-center justify-content-center gap-1" style="font-size: 13px;">
-                            <span class="material-symbols-outlined fs-6">dashboard</span> Go to Dashboard
+                        <span class="small fw-medium d-none d-lg-inline" style="color: var(--text-muted-custom);">
+                            Welcome, <strong><c:out value="${sessionScope.email}"/></strong>
+                        </span>
+                        <a href="${dashboardUrl}"
+                            class="btn btn-primary-custom px-3 py-2 rounded-3 fw-semibold d-inline-flex align-items-center gap-1"
+                            style="font-size: 13px;">
+                            <i class="bi bi-grid-fill"></i> Dashboard
                         </a>
-                        <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-secondary rounded-pill px-3 py-1 fw-semibold text-decoration-none small d-inline-flex align-items-center justify-content-center" style="font-size: 13px;">
+                        <a href="${pageContext.request.contextPath}/logout"
+                            class="btn btn-outline-secondary px-3 py-2 rounded-3 fw-semibold"
+                            style="font-size: 13px;">
                             Sign Out
                         </a>
                     </c:when>
                     <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/login" class="btn bg-primary-container text-white rounded-pill px-4 py-1 fw-semibold shadow-sm text-decoration-none small d-inline-flex align-items-center justify-content-center" style="font-size: 13px;">
+                        <a href="${pageContext.request.contextPath}/login"
+                            class="btn btn-primary-custom px-4 py-2 rounded-3 fw-semibold"
+                            style="font-size: 14px;">
                             Sign In
                         </a>
                     </c:otherwise>
                 </c:choose>
             </div>
-        </div>
-    </div>
-    
-    <!-- Bottom Row: Logo & Navigation Bar -->
-    <div class="container-xl d-flex justify-content-between align-items-center py-3">
-        <!-- Logo school + Tên thư viện (ví dụ: Thư viện Đại học [Tên Trường]) -->
-        <a href="${pageContext.request.contextPath}/" class="d-flex align-items-center gap-2 text-decoration-none">
-            <span class="text-primary-custom material-symbols-outlined fs-2">library_books</span>
-            <div class="lh-sm">
-                <span class="fs-5 fw-bold text-primary-custom d-block">UniLib LMS</span>
-                <span class="text-secondary-custom d-block" style="font-size: 11px; letter-spacing: 0.05em; font-weight: 600; text-transform: uppercase;">University Library</span>
-            </div>
-        </a>
-
-        <!-- Main Navigation Bar -->
-        <nav class="d-none d-md-flex align-items-center gap-4">
-            <a class="nav-link-custom active" href="${pageContext.request.contextPath}/">Home</a>
-            <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Services</a>
-            <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
-            <a class="nav-link-custom" href="${pageContext.request.contextPath}/news.jsp">News</a>
-            <a class="nav-link-custom" href="#contact">Contact</a>
         </nav>
     </div>
 </header>
