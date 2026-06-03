@@ -1,7 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="${not empty sessionScope.lang ? sessionScope.lang : 'vi'}" />
+<fmt:setBundle basename="resources.messages" />
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="${not empty sessionScope.lang ? sessionScope.lang : 'vi'}">
 
 <head>
     <meta charset="utf-8" />
@@ -191,21 +194,62 @@
             </div>
 
             <nav class="d-none d-md-flex align-items-center gap-4">
-                <a class="nav-link-custom active" href="#">Home</a>
-                <a class="nav-link-custom" href="#about">About</a>
-                <a class="nav-link-custom" href="#policies">Policies</a>
-                <a class="nav-link-custom" href="#news">News</a>
-                <a class="nav-link-custom" href="#contact">Contact</a>
+                <a class="nav-link-custom active" href="#"><fmt:message key="nav.home" /></a>
+                <a class="nav-link-custom" href="#about"><fmt:message key="nav.about" /></a>
+                <a class="nav-link-custom" href="#policies"><fmt:message key="nav.policies" /></a>
+                <a class="nav-link-custom" href="#news"><fmt:message key="nav.news" /></a>
+                <a class="nav-link-custom" href="#contact"><fmt:message key="nav.contact" /></a>
             </nav>
 
             <div class="d-flex align-items-center gap-2">
+                <!-- Language Switcher -->
+                <div class="d-flex align-items-center gap-1 border rounded-pill px-2 py-1 bg-light me-1" style="height: 34px;">
+                    <a href="${pageContext.request.contextPath}/change-language?lang=vi" 
+                       class="text-decoration-none small fw-semibold px-2 rounded-pill ${sessionScope.lang eq 'vi' ? 'bg-primary-custom text-white' : 'text-muted'}">VI</a>
+                    <span class="text-secondary opacity-50" style="font-size: 10px;">|</span>
+                    <a href="${pageContext.request.contextPath}/change-language?lang=en" 
+                       class="text-decoration-none small fw-semibold px-2 rounded-pill ${sessionScope.lang eq 'en' ? 'bg-primary-custom text-white' : 'text-muted'}">EN</a>
+                </div>
+
                 <a href="${pageContext.request.contextPath}/book-search.jsp" class="btn d-none d-lg-flex align-items-center text-muted rounded-pill px-3 py-1 text-decoration-none">
                     <span class="material-symbols-outlined me-1">search</span>
-                    <span class="small">Search Catalog</span>
+                    <span class="small"><fmt:message key="nav.catalog" /></span>
                 </a>
-                <a href="${pageContext.request.contextPath}/login" class="btn bg-primary-container text-white rounded-pill px-4 fw-semibold shadow-sm text-decoration-none d-inline-flex align-items-center justify-content-center">
-                    Sign In
-                </a>
+                <c:choose>
+                    <c:when test="${not empty sessionScope.userId}">
+                        <c:choose>
+                            <c:when test="${sessionScope.role eq 'ADMIN'}">
+                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/admin/dashboard" />
+                            </c:when>
+                            <c:when test="${sessionScope.role eq 'LIBRARIAN'}">
+                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/librarian/dashboard" />
+                            </c:when>
+                            <c:when test="${sessionScope.role eq 'MANAGER'}">
+                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/manager/dashboard" />
+                            </c:when>
+                            <c:when test="${sessionScope.role eq 'STUDENT'}">
+                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/student/dashboard" />
+                            </c:when>
+                            <c:when test="${sessionScope.role eq 'LECTURER'}">
+                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/lecturer/dashboard" />
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/student/dashboard" />
+                            </c:otherwise>
+                        </c:choose>
+                        <a href="${dashboardUrl}" class="btn bg-primary-container text-white rounded-pill px-4 fw-semibold shadow-sm text-decoration-none d-inline-flex align-items-center justify-content-center">
+                            <fmt:message key="nav.dashboard" />
+                        </a>
+                        <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-secondary rounded-pill px-3 fw-semibold text-decoration-none d-inline-flex align-items-center justify-content-center">
+                            <fmt:message key="nav.signout" />
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="${pageContext.request.contextPath}/login" class="btn bg-primary-container text-white rounded-pill px-4 fw-semibold shadow-sm text-decoration-none d-inline-flex align-items-center justify-content-center">
+                            <fmt:message key="nav.signin" />
+                        </a>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </header>
@@ -218,51 +262,47 @@
             <div class="hero-overlay"></div>
             <div class="container-xl hero-content w-100">
                 <div class="max-width-custom" style="max-width: 650px;">
-                    <h1 class="text-white fw-bold display-4 mb-3">Welcome to the Heart of Knowledge</h1>
-                    <p class="text-white-50 fs-5 mb-4">Access millions of academic resources, journals, and digital
-                        archives at the UniLib University Library. Explore our collections as our guest today.</p>
-
-                    <!-- Form Tìm kiếm công cộng kết nối tới book-search.jsp -->
-                    <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET" class="position-relative style-search-box">
-                        <span class="position-absolute top-50 start-0 translate-middle-y ms-3 material-symbols-outlined text-muted">search</span>
-                        <input class="form-control form-control-lg border-0 shadow-lg ps-5 pe-5 py-3 rounded-3"
-                            name="query" placeholder="Search Info, Catalog, or Archives..." type="text" />
-                        <button type="submit"
-                            class="btn bg-primary-container text-white position-absolute top-50 end-0 translate-middle-y me-2 px-4 py-2 rounded-3 fw-semibold">
-                            Search
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Us Snippet -->
-        <section class="py-5 my-3 container-xl" id="about">
-            <div class="row align-items-center g-5">
-                <div class="col-12 col-md-6">
-                    <span class="text-primary-custom fw-bold text-uppercase tracking-wider small">Our Mission</span>
-                    <h2 class="fw-bold display-6 mt-2 mb-3">Empowering Discovery &amp; Academic Excellence</h2>
-                    <p class="text-secondary-custom lh-lg mb-4">
-                        The University Library Management System (UniLib) stands as a beacon of information for
-                        students, faculty, and guests. We provide a bridge between traditional literacy and digital
-                        innovation, ensuring that every researcher has the tools they need to succeed in an
-                        ever-evolving academic landscape.
-                    </p>
-                    <div class="row g-4 mt-2">
+                    <h1 class="text-white fw-bold display-4 mb-3"><fmt:message key="hero.title" /></h1>
+                    <p class="text-white-50 fs-5 mb-4"><fmt:message key="hero.subtitle" /></p>
+ 
+                     <!-- Form Tìm kiếm công cộng kết nối tới book-search.jsp -->
+                     <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET" class="position-relative style-search-box">
+                         <span class="position-absolute top-50 start-0 translate-middle-y ms-3 material-symbols-outlined text-muted">search</span>
+                         <input class="form-control form-control-lg border-0 shadow-lg ps-5 pe-5 py-3 rounded-3"
+                             name="query" placeholder="<fmt:message key="hero.search_placeholder" />" type="text" />
+                         <button type="submit"
+                             class="btn bg-primary-container text-white position-absolute top-50 end-0 translate-middle-y me-2 px-4 py-2 rounded-3 fw-semibold">
+                             <fmt:message key="hero.search_button" />
+                         </button>
+                     </form>
+                 </div>
+             </div>
+         </section>
+ 
+         <!-- About Us Snippet -->
+         <section class="py-5 my-3 container-xl" id="about">
+             <div class="row align-items-center g-5">
+                 <div class="col-12 col-md-6">
+                     <span class="text-primary-custom fw-bold text-uppercase tracking-wider small"><fmt:message key="about.title" /></span>
+                     <h2 class="fw-bold display-6 mt-2 mb-3"><fmt:message key="about.heading" /></h2>
+                     <p class="text-secondary-custom lh-lg mb-4">
+                         <fmt:message key="about.description" />
+                     </p>
+                     <div class="row g-4 mt-2">
                         <div class="col-6 d-flex align-items-start gap-3">
                             <span
                                 class="material-symbols-outlined text-primary-custom p-2 bg-container-highest rounded-3">history_edu</span>
                             <div>
-                                <h4 class="fw-bold fs-6 mb-0 text-dark">500k+ Books</h4>
-                                <p class="small text-muted mb-0">Physical collection</p>
+                                <h4 class="fw-bold fs-6 mb-0 text-dark"><fmt:message key="about.books" /></h4>
+                                <p class="small text-muted mb-0"><fmt:message key="about.books_sub" /></p>
                             </div>
                         </div>
                         <div class="col-6 d-flex align-items-start gap-3">
                             <span
                                 class="material-symbols-outlined text-primary-custom p-2 bg-container-highest rounded-3">language</span>
                             <div>
-                                <h4 class="fw-bold fs-6 mb-0 text-dark">Digital Access</h4>
-                                <p class="small text-muted mb-0">24/7 Virtual Library</p>
+                                <h4 class="fw-bold fs-6 mb-0 text-dark"><fmt:message key="about.digital" /></h4>
+                                <p class="small text-muted mb-0"><fmt:message key="about.digital_sub" /></p>
                             </div>
                         </div>
                     </div>
@@ -281,12 +321,12 @@
             <div class="container-xl py-3">
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
-                        <span class="text-primary-custom fw-bold text-uppercase small">Updates</span>
-                        <h2 class="fw-bold text-dark mt-1 mb-0">Latest Library News</h2>
+                        <span class="text-primary-custom fw-bold text-uppercase small"><fmt:message key="news.title" /></span>
+                        <h2 class="fw-bold text-dark mt-1 mb-0"><fmt:message key="news.heading" /></h2>
                     </div>
                     <a class="text-primary-custom fw-semibold d-flex align-items-center gap-1 text-decoration-none"
                         href="#">
-                        View all updates <span class="material-symbols-outlined fs-5">arrow_forward</span>
+                        <fmt:message key="news.view_all" /> <span class="material-symbols-outlined fs-5">arrow_forward</span>
                     </a>
                 </div>
 
@@ -299,10 +339,9 @@
                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3vHmjLEG7w7MqA7Wodbtf-9s-QG8HcK_Onbi3b4CHjAfqqM_a3O_NsGTSX2s-ib09A8vMguplY1JRVqeT_72ah5rBqIh_m4knJyEkUkVGNdKwMSngfLRgXyEn_2jnrAMR4WrJFIhh_zSl6bN7HA1uOQfMWy2rUViATQwdD2I5bUdjZvCs-4liS2vUCBHKb2GLZTdFVHqd4ENNnnXSLJok0K1sb9RcchbD7bsRn29vIIlJ4b5PWCveTCo1JJJZmQoKhKidNSZMvqvk" />
                         </div>
                         <div class="p-4 d-flex flex-column flex-grow-1">
-                            <span class="text-primary-custom fw-semibold small mb-1">Research • Oct 24</span>
-                            <h3 class="fw-bold fs-4 mb-2 text-dark">New Digital Journal Subscription for 2024</h3>
-                            <p class="text-muted mb-0 flex-grow-1">We are proud to announce full access to over 500 new
-                                premium academic journals across medical and engineering fields for all users.</p>
+                            <span class="text-primary-custom fw-semibold small mb-1"><fmt:message key="news.featured_tag" /></span>
+                            <h3 class="fw-bold fs-4 mb-2 text-dark"><fmt:message key="news.featured_title" /></h3>
+                            <p class="text-muted mb-0 flex-grow-1"><fmt:message key="news.featured_desc" /></p>
                         </div>
                     </div>
 
@@ -315,28 +354,26 @@
                         </div>
                         <div>
                             <span class="text-primary-custom fw-semibold small">Events • Oct 20</span>
-                            <h3 class="fw-bold fs-5 text-dark mb-0 mt-1">Annual Book Fair &amp; Author Talk</h3>
+                            <h3 class="fw-bold fs-5 text-dark mb-0 mt-1"><fmt:message key="news.annual_fair" /></h3>
                         </div>
                     </div>
 
                     <!-- Grid Item 3 -->
                     <div class="bg-white rounded-3 shadow-sm p-4 d-flex flex-column" style="cursor: pointer;">
                         <span class="material-symbols-outlined text-primary-custom mb-3 display-6">architecture</span>
-                        <h3 class="fw-bold fs-5 text-dark mb-2">New Quiet Study Pods</h3>
-                        <p class="small text-muted mb-0">Phase 1 of our renovation is complete with 20 new individual
-                            pods.</p>
+                        <h3 class="fw-bold fs-5 text-dark mb-2"><fmt:message key="news.study_pods" /></h3>
+                        <p class="small text-muted mb-0"><fmt:message key="news.study_pods_desc" /></p>
                     </div>
 
                     <!-- Grid Item 4 -->
                     <div class="bg-primary-container text-white rounded-3 shadow-sm p-4 d-flex flex-column justify-content-between"
                         style="cursor: pointer;">
                         <div>
-                            <h3 class="fw-bold fs-5 mb-2">Join Our Newsletter</h3>
-                            <p class="text-white-50 small mb-0">Stay updated with library news and upcoming workshop
-                                dates.</p>
+                            <h3 class="fw-bold fs-5 mb-2"><fmt:message key="news.newsletter_title" /></h3>
+                            <p class="text-white-50 small mb-0"><fmt:message key="news.newsletter_desc" /></p>
                         </div>
                         <form action="#" class="d-flex gap-2 mt-4">
-                            <input class="form-control form-control-sm border-0 bg-white text-dark" placeholder="Email"
+                            <input class="form-control form-control-sm border-0 bg-white text-dark" placeholder="<fmt:message key="news.email_placeholder" />"
                                 type="email" required />
                             <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center px-2">
                                 <span class="material-symbols-outlined fs-6">send</span>
@@ -352,30 +389,27 @@
             <div class="row g-5">
                 <!-- Instructions -->
                 <div class="col-12 col-md-6">
-                    <h2 class="fw-bold text-dark mb-4">Quick Instructions for Guests</h2>
+                    <h2 class="fw-bold text-dark mb-4"><fmt:message key="policies.guest_heading" /></h2>
                     <div class="d-flex flex-column gap-4">
                         <div class="d-flex gap-4 guest-step">
                             <div class="guest-step-num">1</div>
                             <div>
-                                <h4 class="fw-bold fs-5 text-dark mb-1">Register for a Guest Pass</h4>
-                                <p class="text-muted mb-0">Visit the main reception desk with a valid ID to obtain a
-                                    temporary day pass for physical access.</p>
+                                <h4 class="fw-bold fs-5 text-dark mb-1"><fmt:message key="policies.step1_title" /></h4>
+                                <p class="text-muted mb-0"><fmt:message key="policies.step1_desc" /></p>
                             </div>
                         </div>
                         <div class="d-flex gap-4 guest-step">
                             <div class="guest-step-num">2</div>
                             <div>
-                                <h4 class="fw-bold fs-5 text-dark mb-1">Connect to Guest Wi-Fi</h4>
-                                <p class="text-muted mb-0">Use the network 'UniLib-Guest' and follow the portal
-                                    instructions to gain high-speed access.</p>
+                                <h4 class="fw-bold fs-5 text-dark mb-1"><fmt:message key="policies.step2_title" /></h4>
+                                <p class="text-muted mb-0"><fmt:message key="policies.step2_desc" /></p>
                             </div>
                         </div>
                         <div class="d-flex gap-4 guest-step">
                             <div class="guest-step-num">3</div>
                             <div>
-                                <h4 class="fw-bold fs-5 text-dark mb-1">Reference Only Access</h4>
-                                <p class="text-muted mb-0">Guests can use all books within the premises but are not
-                                    permitted to check out items for off-site use.</p>
+                                <h4 class="fw-bold fs-5 text-dark mb-1"><fmt:message key="policies.step3_title" /></h4>
+                                <p class="text-muted mb-0"><fmt:message key="policies.step3_desc" /></p>
                             </div>
                         </div>
                     </div>
@@ -385,53 +419,61 @@
                 <div class="col-12 col-md-6">
                     <div class="bg-container-low p-4 rounded-4 h-100 d-flex flex-column justify-content-between">
                         <div>
-                            <h2 class="fw-bold text-dark mb-4">Library Policies</h2>
-                            <div class="d-flex flex-column gap-3">
-                                <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
-                                    <span class="material-symbols-outlined text-success">check_circle</span>
-                                    <span class="fw-medium text-dark small">Quiet zones must be respected at all
-                                        times.</span>
-                                </div>
-                                <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
-                                    <span class="material-symbols-outlined text-success">check_circle</span>
-                                    <span class="fw-medium text-dark small">Laptops and devices must be on silent
-                                        mode.</span>
-                                </div>
-                                <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
-                                    <span class="material-symbols-outlined text-success">check_circle</span>
-                                    <span class="fw-medium text-dark small">Bottled water only; no food in the stack
-                                        areas.</span>
-                                </div>
-                                <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
-                                    <span class="material-symbols-outlined text-primary-custom">info</span>
-                                    <span class="fw-medium text-dark small">Maximum guest occupancy is 50 persons
-                                        daily.</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-custom-outline w-100 py-3 rounded-3 mt-4">
-                            Download Full Policy (PDF)
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="py-5 bg-dark text-white text-center">
-            <div class="container-xl py-4">
-                <h2 class="fw-bold display-5 mb-3">Ready to start your research?</h2>
-                <p class="text-white-50 fs-5 max-width-custom mx-auto mb-4" style="max-width: 700px;">Our staff is ready
-                    to assist you in navigating our extensive databases and physical archives.</p>
-                <div class="d-flex flex-wrap justify-content-center gap-3">
-                    <a href="${pageContext.request.contextPath}/login"
-                        class="btn bg-primary-container text-white px-5 py-3 rounded-pill fw-bold shadow-lg border-0 text-decoration-none d-inline-flex align-items-center">
-                        Plan Your Visit
-                    </a>
-                    <a href="${pageContext.request.contextPath}/login" class="btn btn-outline-light px-5 py-3 rounded-pill fw-bold text-decoration-none d-inline-flex align-items-center">
-                        Chat with a Librarian
-                    </a>
-                </div>
+                             <h2 class="fw-bold text-dark mb-4"><fmt:message key="policies.heading" /></h2>
+                             <div class="d-flex flex-column gap-3">
+                                 <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
+                                     <span class="material-symbols-outlined text-success">check_circle</span>
+                                     <span class="fw-medium text-dark small"><fmt:message key="policies.p1" /></span>
+                                 </div>
+                                 <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
+                                     <span class="material-symbols-outlined text-success">check_circle</span>
+                                     <span class="fw-medium text-dark small"><fmt:message key="policies.p2" /></span>
+                                 </div>
+                                 <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
+                                     <span class="material-symbols-outlined text-success">check_circle</span>
+                                     <span class="fw-medium text-dark small"><fmt:message key="policies.p3" /></span>
+                                 </div>
+                                 <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
+                                     <span class="material-symbols-outlined text-primary-custom">info</span>
+                                     <span class="fw-medium text-dark small"><fmt:message key="policies.p4" /></span>
+                                 </div>
+                             </div>
+                         </div>
+                         <button class="btn btn-custom-outline w-100 py-3 rounded-3 mt-4">
+                             <fmt:message key="policies.download" />
+                         </button>
+                     </div>
+                 </div>
+             </div>
+         </section>
+ 
+         <!-- CTA Section -->
+         <section class="py-5 bg-dark text-white text-center">
+             <div class="container-xl py-4">
+                 <h2 class="fw-bold display-5 mb-3"><fmt:message key="cta.heading" /></h2>
+                 <p class="text-white-50 fs-5 max-width-custom mx-auto mb-4" style="max-width: 700px;"><fmt:message key="cta.sub" /></p>
+                 <div class="d-flex flex-wrap justify-content-center gap-3">
+                     <c:choose>
+                         <c:when test="${not empty sessionScope.userId}">
+                             <a href="${dashboardUrl}"
+                                 class="btn bg-primary-container text-white px-5 py-3 rounded-pill fw-bold shadow-lg border-0 text-decoration-none d-inline-flex align-items-center">
+                                 <fmt:message key="nav.dashboard" />
+                             </a>
+                             <a href="#contact" class="btn btn-outline-light px-5 py-3 rounded-pill fw-bold text-decoration-none d-inline-flex align-items-center">
+                                 <fmt:message key="nav.support" />
+                             </a>
+                         </c:when>
+                         <c:otherwise>
+                             <a href="${pageContext.request.contextPath}/login"
+                                 class="btn bg-primary-container text-white px-5 py-3 rounded-pill fw-bold shadow-lg border-0 text-decoration-none d-inline-flex align-items-center">
+                                 <fmt:message key="cta.plan" />
+                             </a>
+                             <a href="${pageContext.request.contextPath}/login" class="btn btn-outline-light px-5 py-3 rounded-pill fw-bold text-decoration-none d-inline-flex align-items-center">
+                                 <fmt:message key="cta.chat" />
+                             </a>
+                         </c:otherwise>
+                     </c:choose>
+                 </div>
             </div>
         </section>
     </main>
@@ -494,15 +536,64 @@
             }
         });
 
-        // Smooth Scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        // Smooth Scrolling for anchor links with header offset
+        const navLinks = document.querySelectorAll('.nav-link-custom');
+        navLinks.forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (href === '#') {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    } else {
+                        const target = document.querySelector(href);
+                        if (target) {
+                            const headerOffset = 80; // Sticky header height plus margin
+                            const elementPosition = target.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                }
+            });
+        });
+
+        // ScrollSpy: Dynamic navigation active state highlighting
+        const sections = document.querySelectorAll('section[id], footer[id]');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const scrollY = window.pageYOffset;
+            const headerHeight = 90; // Trigger offset
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - headerHeight;
+                const sectionHeight = section.offsetHeight;
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            // Default to Home if near top
+            if (scrollY < 100) {
+                current = '';
+            }
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if ((current === '' && href === '#') || href === '#' + current) {
+                    link.classList.add('active');
                 }
             });
         });

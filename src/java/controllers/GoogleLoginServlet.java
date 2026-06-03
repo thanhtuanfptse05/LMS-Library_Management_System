@@ -98,7 +98,7 @@ public class GoogleLoginServlet extends HttpServlet {
             case "MANAGER":
                 return contextPath + "/manager/dashboard";
             case "STUDENT":
-                return contextPath + "/student/dashboard";
+                return contextPath + "/";
             default:
                 return contextPath + "/login";
         }
