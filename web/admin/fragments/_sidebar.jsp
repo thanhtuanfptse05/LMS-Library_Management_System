@@ -6,10 +6,10 @@
               border-right: 1px solid var(--outline-variant); overflow-y: auto; z-index: 60;">
 
     <!-- Brand -->
-    <div>
+    <a href="${pageContext.request.contextPath}/" class="text-decoration-none d-block">
         <p class="fw-bold mb-0 text-primary-custom" style="font-size: 18px; line-height: 1.2;">Library Portal</p>
         <p class="text-on-surface-variant mb-0" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;">System Administration</p>
-    </div>
+    </a>
 
     <!-- Navigation -->
     <div class="flex-grow-1 d-flex flex-column gap-1">

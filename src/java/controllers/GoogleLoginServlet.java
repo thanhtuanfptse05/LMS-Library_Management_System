@@ -90,17 +90,6 @@ public class GoogleLoginServlet extends HttpServlet {
         if (role == null) {
             return contextPath + "/login";
         }
-        switch (role.toUpperCase()) {
-            case "ADMIN":
-                return contextPath + "/admin/dashboard";
-            case "LIBRARIAN":
-                return contextPath + "/librarian/dashboard";
-            case "MANAGER":
-                return contextPath + "/manager/dashboard";
-            case "STUDENT":
-                return contextPath + "/";
-            default:
-                return contextPath + "/login";
-        }
+        return contextPath + "/";
     }
 }

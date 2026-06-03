@@ -117,20 +117,7 @@ public class AuthFilter implements Filter {
         if (role == null) {
             return contextPath + "/auth/login.jsp";
         }
-        switch (role.toUpperCase()) {
-            case "ADMIN":
-                return contextPath + "/admin/dashboard";
-            case "LIBRARIAN":
-                return contextPath + "/librarian/dashboard";
-            case "MANAGER":
-                return contextPath + "/manager/dashboard";
-            case "STUDENT":
-                return contextPath + "/";
-            case "LECTURER":
-                return contextPath + "/lecturer/dashboard";
-            default:
-                return contextPath + "/auth/login.jsp";
-        }
+        return contextPath + "/";
     }
 
     @Override
