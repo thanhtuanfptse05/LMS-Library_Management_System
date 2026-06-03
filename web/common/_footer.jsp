@@ -164,4 +164,23 @@
             }
         }
     }
+
+    // Scoped tab switching logic for News Categories
+    function switchNewsCategory(event, paneId) {
+        const container = event.currentTarget.closest('#news');
+        if (!container) return;
+
+        container.querySelectorAll('.news-category-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        container.querySelectorAll('.news-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+        
+        event.currentTarget.classList.add('active');
+        const targetPane = container.querySelector('#' + paneId);
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+    }
 </script>
