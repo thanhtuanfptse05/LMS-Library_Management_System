@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Librarian Dashboard | Library Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #9d4300;
+            --primary-container: #f97316;
+            --primary-fixed: #ffdbca;
+            --primary-fixed-dim: #ffb690;
+            --on-primary: #ffffff;
+            --on-primary-container: #582200;
+            --secondary: #565e74;
+            --secondary-container: #dae2fd;
+            --on-secondary-container: #5c647a;
+            --tertiary: #006398;
+            --tertiary-fixed: #cde5ff;
+            --on-tertiary-fixed: #001d32;
+            --error: #ba1a1a;
+            --error-container: #ffdad6;
+            --on-error-container: #93000a;
+            --background: #f7f9fb;
+            --on-background: #191c1e;
+            --surface: #f7f9fb;
+            --on-surface: #191c1e;
+            --on-surface-variant: #584237;
+            --surface-container-lowest: #ffffff;
+            --surface-container-low: #f2f4f6;
+            --surface-container: #eceef0;
+            --surface-container-high: #e6e8ea;
+            --outline: #8c7164;
+            --outline-variant: #e0c0b1;
+            --inverse-surface: #2d3133;
+            --inverse-on-surface: #eff1f3;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--on-background);
+            overflow-x: hidden;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            background-color: var(--surface-container-low);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .07);
+            z-index: 50;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color .2s;
+            border-right: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--surface-container-high);
+            color: var(--on-surface-variant);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 700;
+            border-right-color: var(--primary);
+            background-color: rgba(255, 182, 144, .2);
+        }
+
+        /* Topbar */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 256px;
+            width: calc(100% - 256px);
+            height: 64px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--outline-variant);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 40;
+        }
+
+        /* Main */
+        .main-content {
+            margin-left: 256px;
+            padding-top: 64px;
+            min-height: 100vh;
+        }
+
+        /* Card */
+        .card-surface {
+            background-color: var(--surface-container-lowest);
+            border: 1px solid var(--outline-variant);
+            border-radius: 12px;
+        }
+
+        .bento-card {
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, .05);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: var(--inverse-surface);
+            color: var(--inverse-on-surface);
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+            transform: translateY(100px);
+            transition: transform .3s ease;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #toast.show {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="px-2 mb-5">
+            <h1 style="font-size:24px;font-weight:700;color:var(--primary);margin:0;">Library Portal</h1>
+            <p style="font-size:14px;color:var(--on-surface-variant);margin:0;opacity:.7;">Academic Resource Center</p>
+        </div>
+
+        <nav class="flex-grow-1 d-flex flex-column">
+            <a href="#" class="nav-item active"><span
+                    class="material-symbols-outlined">dashboard</span><span>Dashboard</span></a>
+            <a href="#" class="nav-item"><span
+                    class="material-symbols-outlined">menu_book</span><span>Catalog</span></a>
+            <a href="#" class="nav-item"><span
+                    class="material-symbols-outlined">swap_horiz</span><span>Circulation</span></a>
+            <a href="#" class="nav-item"><span class="material-symbols-outlined">group</span><span>Members</span></a>
+            <a href="#" class="nav-item"><span class="material-symbols-outlined">payments</span><span>Fines</span></a>
+        </nav>
+
+        <div class="mt-auto pt-3 d-flex flex-column" style="border-top:1px solid var(--outline-variant);">
+            <a href="#" class="nav-item"><span
+                    class="material-symbols-outlined">settings</span><span>Settings</span></a>
+            <a href="#" class="nav-item"><span class="material-symbols-outlined">help</span><span>Help</span></a>
+        </div>
+    </aside>
+
+    <!-- ===== TOPBAR ===== -->
+    <header class="topbar">
+        <div class="d-flex align-items-center gap-3">
+            <h2 style="font-size:20px;font-weight:700;color:var(--primary);margin:0;">Librarian Dashboard</h2>
+            <div class="d-none d-md-flex gap-3 ms-2">
+                <a href="#"
+                    style="font-size:11px;font-weight:600;color:var(--on-surface-variant);text-decoration:none;">Research
+                    Guides</a>
+                <a href="#"
+                    style="font-size:11px;font-weight:600;color:var(--on-surface-variant);text-decoration:none;">Archives</a>
+                <a href="#"
+                    style="font-size:11px;font-weight:600;color:var(--on-surface-variant);text-decoration:none;">e-Resources</a>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="position-relative" style="width:256px;">
+                <input class="form-control rounded-3"
+                    style="background-color:var(--surface-container);border:none;font-size:14px;padding:6px 36px 6px 16px;"
+                    placeholder="Global search..." type="text" />
+                <span class="material-symbols-outlined position-absolute"
+                    style="right:10px;top:50%;transform:translateY(-50%);color:var(--on-surface-variant);opacity:.6;font-size:18px;">search</span>
+            </div>
+            <button class="btn btn-link p-0" style="color:var(--on-surface-variant);">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <img alt="Staff Portrait" class="rounded-circle"
+                style="width:32px;height:32px;border:1px solid var(--outline-variant);object-fit:cover;"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwaBUWY2oUh5BWkDBVSPJSnQTphHkPK70kd0NBG6uR03I9iPApDxt2kO2rxvAyxkC6SnB2QZb55C9ZCnHMPtwp19Owf6w8VT1PuD8lZ2RDjGjwWCPfMai-UyMQplPFqAbt612xlZL6GViF2jYsbNmLr5yeUeY3BKRmV_vNwS5YWC_fwzYpQIuHW01Dp9u-1UpUBSRHSXc059nM60wTe4lCnbtvWhtIFgIVwuvkeCeh1PCSVZPi3xiBkeCjLuHVWe58RxIFWcCDD-sS" />
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <div class="p-4" style="max-width:1400px;margin:0 auto;">
+            <!-- Hero Header -->
+            <div
+                class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
+                <div>
+                    <h3 style="font-size:32px;font-weight:600;color:var(--on-surface);margin:0 0 4px;">Welcome back,
+                        Admin</h3>
+                    <p style="font-size:16px;color:var(--on-surface-variant);margin:0;">Manage circulation and
+                        university resources from one central hub.</p>
+                </div>
+                <button class="btn d-flex align-items-center gap-2 rounded-3"
+                    style="background-color:var(--primary-container);color:var(--on-primary-container);font-size:11px;font-weight:600;letter-spacing:.05em;padding:10px 20px;box-shadow:0 1px 3px rgba(0,0,0,.07);">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    New Research Request
+                </button>
+            </div>
+
+            <!-- Bento Grid -->
+            <div class="row g-3">
+
+                <!-- Circulation Desk (8 cols) -->
+                <div class="col-12 col-md-8">
+                    <div class="card-surface bento-card p-3 h-100">
+                        <div class="d-flex align-items-center gap-1 mb-3" style="color:var(--primary);">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings:'FILL' 1;">swap_horiz</span>
+                            <h4
+                                style="font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--primary);margin:0;">
+                                Circulation Desk</h4>
+                        </div>
+                        <div class="row g-4 align-items-center">
+                            <div class="col-12 col-lg-6">
+                                <p style="font-size:16px;color:var(--on-surface-variant);margin-bottom:16px;">Scan or
+                                    enter the book barcode to process a checkout or return instantly.</p>
+                                <div class="mb-3">
+                                    <label class="form-label"
+                                        style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);">Item
+                                        Barcode</label>
+                                    <div class="input-group">
+                                        <input class="form-control rounded-start-2"
+                                            style="border-color:var(--outline-variant);" placeholder="LMS-BK-10293"
+                                            type="text" />
+                                        <button class="btn rounded-end-2"
+                                            style="background-color:var(--primary);color:white;font-size:11px;font-weight:600;padding:8px 16px;">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="circ_type" id="borrow"
+                                            checked />
+                                        <label class="form-check-label" for="borrow"
+                                            style="font-size:14px;">Borrow</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="circ_type"
+                                            id="return_book" />
+                                        <label class="form-check-label" for="return_book"
+                                            style="font-size:14px;">Return</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <div class="position-relative rounded-3 overflow-hidden" style="height:192px;">
+                                    <img alt="LMS Environment" class="w-100 h-100" style="object-fit:cover;"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI1SihwfLxzkwvDfS5WGhjSwDDTnq_BfSgb-8RjphF2ZnBWqYfwLH0PCrYBsLLlUC7pKJyK0JGQiDW57oui65ysWflGYdJMxM5eHZx6GQqrQHRD4Ozw3lUp-fivLAWli4fwSWWpSR_WRse6e6nnrlL97wKRcV_FkENzroL03EAEZ3aNWHidstuUVgnUvLbl_pK_iq4H4qRO_WkXLbcWaB88RQxkQxeWIapZXcjGv9tutJOF8h4NxVH-81_FCz0aULRsNVZOZONhOYP" />
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-3"
+                                        style="background:linear-gradient(to top,rgba(157,67,0,.6),transparent);">
+                                        <span
+                                            style="color:white;font-size:11px;font-weight:600;letter-spacing:.05em;">System
+                                            Active: 2,401 Items Checked Out</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Member Status (4 cols) -->
+                <div class="col-12 col-md-4">
+                    <div class="card-surface bento-card p-3 h-100">
+                        <div class="d-flex align-items-center gap-1 mb-3" style="color:var(--secondary);">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings:'FILL' 1;">badge</span>
+                            <h4
+                                style="font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--secondary);margin:0;">
+                                Member Status</h4>
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control rounded-2"
+                                style="border-color:var(--outline-variant);font-size:14px;background-color:var(--surface);padding:6px 12px;"
+                                placeholder="Search by ID or Name" type="text" />
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <!-- Active member -->
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded-2"
+                                style="background-color:var(--surface);">
+                                <div>
+                                    <p style="font-weight:700;font-size:16px;margin:0;">Jordan Miller</p>
+                                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">ID: 230014</p>
+                                </div>
+                                <span class="badge rounded-pill"
+                                    style="background-color:#d1fae5;color:#065f46;font-size:10px;font-weight:600;padding:4px 10px;">ACTIVE</span>
+                            </div>
+                            <!-- Locked member -->
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded-2"
+                                style="background-color:var(--surface);border-left:4px solid var(--error);">
+                                <div>
+                                    <p style="font-weight:700;font-size:16px;margin:0;">S. Harrington</p>
+                                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">ID: 228910</p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge rounded-pill d-block mb-1"
+                                        style="background-color:#fee2e2;color:#991b1b;font-size:10px;font-weight:600;padding:4px 10px;">LOCKED</span>
+                                    <p style="font-size:10px;color:var(--error);margin:0;">3 failed logins</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn w-100 mt-3 rounded-2"
+                            style="border:1px solid rgba(86,94,116,.2);color:var(--secondary);font-size:11px;font-weight:600;padding:6px;">View
+                            All Members</button>
+                    </div>
+                </div>
+
+                <!-- Pending Reservations (6 cols) -->
+                <div class="col-12 col-md-6">
+                    <div class="card-surface bento-card p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-1" style="color:var(--tertiary);">
+                                <span class="material-symbols-outlined"
+                                    style="font-variation-settings:'FILL' 1;">bookmark</span>
+                                <h4
+                                    style="font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--tertiary);margin:0;">
+                                    Pending Reservations</h4>
+                            </div>
+                            <span class="badge rounded-pill"
+                                style="background-color:var(--tertiary-fixed);color:var(--on-tertiary-fixed);font-size:11px;font-weight:600;padding:4px 10px;">8
+                                Ready</span>
+                        </div>
+                        <div class="d-flex flex-column" style="border-top:1px solid var(--outline-variant);">
+                            <!-- Res Item 1 -->
+                            <div class="d-flex align-items-center gap-3 py-3"
+                                style="border-bottom:1px solid var(--outline-variant);">
+                                <div class="d-flex align-items-center justify-content-center rounded-2 flex-shrink-0"
+                                    style="width:48px;height:64px;background-color:var(--surface-container);">
+                                    <span class="material-symbols-outlined"
+                                        style="color:var(--outline);">menu_book</span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 style="font-size:16px;font-weight:700;line-height:1.3;margin:0 0 2px;">
+                                        Artificial Intelligence: A Modern Approach</h5>
+                                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">Reserved by
+                                        Elena Rostova</p>
+                                </div>
+                                <button class="btn btn-sm rounded-2 flex-shrink-0"
+                                    style="background-color:var(--surface-container-high);color:var(--on-surface-variant);font-size:11px;font-weight:600;padding:4px 10px;">Process</button>
+                            </div>
+                            <!-- Res Item 2 -->
+                            <div class="d-flex align-items-center gap-3 py-3">
+                                <div class="d-flex align-items-center justify-content-center rounded-2 flex-shrink-0"
+                                    style="width:48px;height:64px;background-color:var(--surface-container);">
+                                    <span class="material-symbols-outlined"
+                                        style="color:var(--outline);">menu_book</span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 style="font-size:16px;font-weight:700;line-height:1.3;margin:0 0 2px;">Advanced
+                                        Thermodynamics</h5>
+                                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">Reserved by
+                                        Marcus Chen</p>
+                                </div>
+                                <button class="btn btn-sm rounded-2 flex-shrink-0"
+                                    style="background-color:var(--surface-container-high);color:var(--on-surface-variant);font-size:11px;font-weight:600;padding:4px 10px;">Process</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fine Management (6 cols) -->
+                <div class="col-12 col-md-6">
+                    <div class="card-surface bento-card p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-1" style="color:var(--error);">
+                                <span class="material-symbols-outlined"
+                                    style="font-variation-settings:'FILL' 1;">receipt_long</span>
+                                <h4
+                                    style="font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--error);margin:0;">
+                                    Fine Management</h4>
+                            </div>
+                            <div class="text-end">
+                                <p
+                                    style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);margin:0;">
+                                    Uncollected Fines</p>
+                                <p style="font-size:20px;font-weight:700;color:var(--error);margin:0;">$420.50</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table mb-0" style="font-size:14px;">
+                                <thead>
+                                    <tr style="border-bottom:1px solid var(--outline-variant);">
+                                        <th
+                                            style="font-size:11px;font-weight:600;color:var(--on-surface-variant);padding:0 0 10px;border:none;">
+                                            Member</th>
+                                        <th
+                                            style="font-size:11px;font-weight:600;color:var(--on-surface-variant);padding:0 0 10px;border:none;">
+                                            Reason</th>
+                                        <th
+                                            style="font-size:11px;font-weight:600;color:var(--on-surface-variant);padding:0 0 10px;border:none;">
+                                            Amount</th>
+                                        <th
+                                            style="font-size:11px;font-weight:600;color:var(--on-surface-variant);padding:0 0 10px;border:none;text-align:right;">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom:1px solid var(--outline-variant);">
+                                        <td style="padding:10px 0;border:none;">Alice Vance</td>
+                                        <td style="padding:10px 0;border:none;opacity:.7;">Late Return (4d)</td>
+                                        <td style="padding:10px 0;border:none;font-weight:700;color:var(--error);">
+                                            $12.00</td>
+                                        <td style="padding:10px 0;border:none;text-align:right;"><button
+                                                class="btn btn-link p-0"
+                                                style="color:var(--primary);font-size:11px;font-weight:600;text-decoration:none;">Process
+                                                Payment</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:10px 0;border:none;">Kevin Smith</td>
+                                        <td style="padding:10px 0;border:none;opacity:.7;">Lost Item (BK-90)</td>
+                                        <td style="padding:10px 0;border:none;font-weight:700;color:var(--error);">
+                                            $65.00</td>
+                                        <td style="padding:10px 0;border:none;text-align:right;"><button
+                                                class="btn btn-link p-0"
+                                                style="color:var(--primary);font-size:11px;font-weight:600;text-decoration:none;">Process
+                                                Payment</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn w-100 mt-3 rounded-2"
+                            style="background-color:rgba(186,26,26,.05);color:var(--error);border:1px solid rgba(186,26,26,.1);font-size:11px;font-weight:600;padding:6px;">Export
+                            Monthly Report</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-5 pt-3 d-flex flex-column flex-md-row justify-content-between align-items-center"
+                style="border-top:1px solid var(--outline-variant);color:var(--on-surface-variant);opacity:.6;">
+                <div class="d-flex align-items-center gap-1 mb-3 mb-md-0">
+                    <span class="animate-pulse rounded-circle d-inline-block"
+                        style="width:8px;height:8px;background:#22c55e;"></span>
+                    <p style="font-size:11px;font-weight:600;letter-spacing:.05em;margin:0;">System Operational •
+                        Database v4.2.1</p>
+                </div>
+                <div class="d-flex gap-4">
+                    <a href="#" style="font-size:11px;font-weight:600;color:inherit;text-decoration:none;">Support
+                        Ticket</a>
+                    <a href="#" style="font-size:11px;font-weight:600;color:inherit;text-decoration:none;">User
+                        Manual</a>
+                    <a href="#" style="font-size:11px;font-weight:600;color:inherit;text-decoration:none;">Privacy
+                        Policy</a>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast">
+        <span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">check_circle</span>
+        <span style="font-size:14px;">Action completed successfully.</span>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            });
+        });
+    </script>
+</body>
+
+</html>

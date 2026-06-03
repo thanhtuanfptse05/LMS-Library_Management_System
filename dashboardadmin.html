@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Library Management System - Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #9d4300;
+            --primary-container: #f97316;
+            --primary-fixed: #ffdbca;
+            --primary-fixed-dim: #ffb690;
+            --on-primary: #ffffff;
+            --on-primary-container: #582200;
+            --secondary: #565e74;
+            --secondary-container: #dae2fd;
+            --secondary-fixed: #dae2fd;
+            --secondary-fixed-dim: #bec6e0;
+            --on-secondary-fixed: #131b2e;
+            --on-secondary-fixed-variant: #3f465c;
+            --on-secondary-container: #5c647a;
+            --tertiary: #006398;
+            --tertiary-fixed: #cde5ff;
+            --tertiary-fixed-dim: #93ccff;
+            --tertiary-container: #00a2f4;
+            --on-tertiary: #ffffff;
+            --on-tertiary-container: #003554;
+            --on-tertiary-fixed: #001d32;
+            --on-tertiary-fixed-variant: #004b74;
+            --error: #ba1a1a;
+            --error-container: #ffdad6;
+            --on-error: #ffffff;
+            --on-error-container: #93000a;
+            --background: #f7f9fb;
+            --on-background: #191c1e;
+            --surface: #f7f9fb;
+            --on-surface: #191c1e;
+            --on-surface-variant: #584237;
+            --surface-container-lowest: #ffffff;
+            --surface-container-low: #f2f4f6;
+            --surface-container: #eceef0;
+            --surface-container-high: #e6e8ea;
+            --surface-container-highest: #e0e3e5;
+            --surface-variant: #e0e3e5;
+            --outline: #8c7164;
+            --outline-variant: #e0c0b1;
+            --inverse-surface: #2d3133;
+            --inverse-on-surface: #eff1f3;
+            --surface-tint: #9d4300;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--on-background);
+            overflow-x: hidden;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            background-color: var(--surface-container-low);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+            z-index: 50;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color .2s;
+            border-right: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--surface-container-high);
+            color: var(--on-surface-variant);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 700;
+            border-right-color: var(--primary);
+            background-color: rgba(255, 182, 144, .2);
+        }
+
+        /* Topbar */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 256px;
+            width: calc(100% - 256px);
+            height: 64px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--outline-variant);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 40;
+        }
+
+        /* Main */
+        .main-content {
+            margin-left: 256px;
+            padding-top: 64px;
+            min-height: 100vh;
+            padding: 80px 24px 24px;
+        }
+
+        /* Cards */
+        .card-surface {
+            background-color: var(--surface-container-lowest);
+            border: 1px solid var(--outline-variant);
+            border-radius: 12px;
+        }
+
+        .bento-card {
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, .05);
+        }
+
+        /* Progress bar custom */
+        .mini-progress {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background-color: var(--surface-container-low);
+            overflow: hidden;
+        }
+
+        .mini-progress-bar {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        /* Badge pill */
+        .badge-pill {
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .05em;
+        }
+
+        /* Search input */
+        .search-input {
+            background-color: var(--surface-container-low);
+            border: 1px solid var(--outline-variant);
+            border-radius: 10px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .search-input input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--outline-variant);
+            border-radius: 10px;
+        }
+
+        /* Audit timeline */
+        .audit-item {
+            padding: 4px 0 4px 16px;
+            border-left: 2px solid var(--outline-variant);
+            position: relative;
+        }
+
+        .audit-item .audit-dot {
+            position: absolute;
+            left: -5px;
+            top: 8px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        /* System status pulse */
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Table */
+        .table-lms thead th {
+            background-color: var(--surface-container-low);
+            color: var(--on-surface-variant);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--outline-variant);
+        }
+
+        .table-lms tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--outline-variant);
+            vertical-align: middle;
+        }
+
+        .table-lms tbody tr:hover {
+            background-color: var(--surface-container-lowest);
+        }
+
+        /* Btn icon */
+        .btn-icon {
+            background: transparent;
+            border: none;
+            padding: 4px 6px;
+            border-radius: 6px;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .btn-icon:hover {
+            background-color: var(--surface-container-high);
+        }
+
+        /* Config input row */
+        .config-row label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .05em;
+            color: var(--on-surface-variant);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .config-input {
+            background-color: var(--surface-container-low);
+            border: 1px solid var(--outline-variant);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 16px;
+            flex: 1;
+            outline: none;
+        }
+
+        .config-input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-primary-sm {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .btn-primary-sm:hover {
+            background-color: var(--surface-tint);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="px-2 mb-4">
+            <div class="d-flex align-items-center gap-2">
+                <img alt="University Crest" class="rounded-2" style="width:40px;height:40px;object-fit:cover;"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuALUT1RDWqyxMSbKN44uIuzhPVmphS42tvERT5usXW_cfnts6IphlhQYKjR3LpYP0TMlE6QgiX-minfDCNroNWI2CfWRo_uezuE7H7KaUGcotCDJMAum4qIP_pRgaewHrHLc8T6xr79c8L3r9KnUwuO-Nqfp8nSB3AcHkrIcs1jrpaxH64hvoIwDeJDLgSRk4zvgsuNlwNciUTGFCLLCBf6-_PQJndJXSAXO7gcUrRpquD9ASRsvzFH-cBLiSLIq6TbenHx-cBOEhrL" />
+                <div>
+                    <div style="font-size:20px;font-weight:700;color:var(--primary);line-height:1.2;">Library Portal
+                    </div>
+                    <div style="font-size:11px;color:var(--on-surface-variant);">Academic Resource Center</div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-grow-1 d-flex flex-column gap-1">
+            <a href="#" class="nav-item active">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">group</span>
+                <span>User Management</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">verified_user</span>
+                <span>Role Assignment</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">security</span>
+                <span>Security</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">receipt_long</span>
+                <span>Audit Logs</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">settings</span>
+                <span>Configurations</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto pt-3" style="border-top:1px solid var(--outline-variant);">
+            <button class="nav-item w-100 border-0 bg-transparent text-start">
+                <span class="material-symbols-outlined">help</span>
+                <span>Help Center</span>
+            </button>
+            <div class="rounded-3 p-2 mt-2" style="background-color:var(--surface-container-high);">
+                <div style="font-size:11px;font-weight:600;color:var(--primary);margin-bottom:4px;">System Status</div>
+                <div class="d-flex align-items-center gap-1">
+                    <span class="animate-pulse rounded-circle d-inline-block"
+                        style="width:8px;height:8px;background:#10b981;"></span>
+                    <span style="font-size:14px;color:var(--on-surface-variant);">Database Online</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== TOPBAR ===== -->
+    <header class="topbar">
+        <div class="d-flex align-items-center gap-3">
+            <h2 style="font-size:24px;font-weight:600;color:var(--primary);margin:0;">System Admin Dashboard</h2>
+            <div class="vr d-none d-md-block"></div>
+            <div class="d-none d-md-flex gap-3">
+                <span
+                    style="color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:2px;cursor:pointer;font-size:16px;">Live
+                    Overview</span>
+                <span style="color:var(--on-surface-variant);cursor:pointer;font-size:16px;">Archive Search</span>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="search-input">
+                <span class="material-symbols-outlined"
+                    style="color:var(--on-surface-variant);font-size:20px;">search</span>
+                <input placeholder="Search system logs..." type="text" />
+            </div>
+            <span class="material-symbols-outlined"
+                style="color:var(--on-surface-variant);cursor:pointer;">notifications</span>
+            <div class="avatar" style="background-color:var(--primary-fixed);color:var(--on-primary-container);">AD
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <div style="max-width:1280px;margin:0 auto;">
+
+            <!-- Database Health Section -->
+            <section class="mb-4">
+                <div class="d-flex justify-content-between align-items-end mb-3">
+                    <h3 style="font-size:20px;font-weight:600;color:var(--on-background);margin:0;">Database Health</h3>
+                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">Last checked: Just now</p>
+                </div>
+                <div class="row g-3">
+                    <!-- Card 1 -->
+                    <div class="col-12 col-md-3">
+                        <div class="card-surface bento-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="material-symbols-outlined p-1 rounded-2"
+                                    style="color:var(--primary);background-color:var(--primary-fixed);">menu_book</span>
+                                <span class="badge-pill" style="color:#059669;background-color:#d1fae5;">Stable</span>
+                            </div>
+                            <p
+                                style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);text-transform:uppercase;margin-bottom:2px;">
+                                Total Books</p>
+                            <h4 style="font-size:24px;font-weight:600;color:var(--on-surface);margin:0 0 8px;">124,502
+                            </h4>
+                            <div class="mini-progress">
+                                <div class="mini-progress-bar" style="width:85%;background-color:var(--primary);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="col-12 col-md-3">
+                        <div class="card-surface bento-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="material-symbols-outlined p-1 rounded-2"
+                                    style="color:var(--tertiary);background-color:var(--tertiary-fixed);">person</span>
+                                <span class="badge-pill" style="color:#059669;background-color:#d1fae5;">Active</span>
+                            </div>
+                            <p
+                                style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);text-transform:uppercase;margin-bottom:2px;">
+                                Library Members</p>
+                            <h4 style="font-size:24px;font-weight:600;color:var(--on-surface);margin:0 0 8px;">12,890
+                            </h4>
+                            <div class="mini-progress">
+                                <div class="mini-progress-bar" style="width:62%;background-color:var(--tertiary);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="col-12 col-md-3">
+                        <div class="card-surface bento-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="material-symbols-outlined p-1 rounded-2"
+                                    style="color:var(--primary-container);background-color:var(--primary-fixed);">sync_alt</span>
+                                <span class="badge-pill" style="color:#d97706;background-color:#fef3c7;">High
+                                    Load</span>
+                            </div>
+                            <p
+                                style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);text-transform:uppercase;margin-bottom:2px;">
+                                Transactions/hr</p>
+                            <h4 style="font-size:24px;font-weight:600;color:var(--on-surface);margin:0 0 8px;">456</h4>
+                            <div class="mini-progress">
+                                <div class="mini-progress-bar"
+                                    style="width:92%;background-color:var(--primary-container);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="col-12 col-md-3">
+                        <div class="card-surface bento-card p-3 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="material-symbols-outlined p-1 rounded-2"
+                                    style="color:var(--error);background-color:var(--error-container);">database</span>
+                                <span class="badge-pill"
+                                    style="color:var(--error);background-color:var(--error-container);">Delayed</span>
+                            </div>
+                            <p
+                                style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);text-transform:uppercase;margin-bottom:2px;">
+                                Index Latency</p>
+                            <h4 style="font-size:24px;font-weight:600;color:var(--on-surface);margin:0 0 8px;">42ms</h4>
+                            <div class="mini-progress">
+                                <div class="mini-progress-bar" style="width:40%;background-color:var(--error);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Split Layout -->
+            <div class="row g-4">
+                <!-- Left 2/3: Accounts + Config -->
+                <div class="col-12 col-lg-8 d-flex flex-column gap-4">
+                    <!-- User Accounts Table -->
+                    <div class="card-surface overflow-hidden">
+                        <div class="p-3 d-flex justify-content-between align-items-center bg-white"
+                            style="border-bottom:1px solid var(--outline-variant);">
+                            <div>
+                                <h3 style="font-size:20px;font-weight:600;color:var(--on-surface);margin:0;">User
+                                    Accounts</h3>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">System-wide account
+                                    administrative controls</p>
+                            </div>
+                            <button class="btn btn-sm"
+                                style="background-color:var(--primary-container);color:white;border-radius:8px;font-size:11px;font-weight:600;letter-spacing:.05em;padding:8px 16px;">Add
+                                Admin Account</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-lms mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Last Auth</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="avatar"
+                                                    style="background-color:var(--secondary-fixed-dim);color:var(--on-secondary-fixed);">
+                                                    JS</div>
+                                                <div>
+                                                    <p style="font-weight:700;margin:0;font-size:16px;">John Stevens</p>
+                                                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">
+                                                        j.stevens@uni.edu</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge-pill"
+                                                style="background-color:var(--tertiary-fixed);color:var(--on-tertiary-fixed-variant);">Lead
+                                                Librarian</span></td>
+                                        <td><span class="d-flex align-items-center gap-1"
+                                                style="color:#059669;font-size:14px;"><span
+                                                    class="rounded-circle d-inline-block"
+                                                    style="width:8px;height:8px;background:#059669;"></span>Active</span>
+                                        </td>
+                                        <td style="font-size:14px;color:var(--on-surface-variant);">2 mins ago</td>
+                                        <td class="text-end">
+                                            <button class="btn-icon" title="Lock Account"><span
+                                                    class="material-symbols-outlined"
+                                                    style="font-size:20px;">lock</span></button>
+                                            <button class="btn-icon" title="Reset Password"><span
+                                                    class="material-symbols-outlined"
+                                                    style="font-size:20px;">key</span></button>
+                                            <button class="btn-icon" title="Edit"><span
+                                                    class="material-symbols-outlined"
+                                                    style="font-size:20px;">edit</span></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="avatar"
+                                                    style="background-color:var(--primary-fixed);color:var(--on-primary-fixed);">
+                                                    MK</div>
+                                                <div>
+                                                    <p style="font-weight:700;margin:0;font-size:16px;">Maria Kovacs</p>
+                                                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">
+                                                        m.kovacs@uni.edu</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge-pill"
+                                                style="background-color:var(--secondary-fixed);color:var(--on-secondary-fixed-variant);">SysAdmin</span>
+                                        </td>
+                                        <td><span class="d-flex align-items-center gap-1"
+                                                style="color:#059669;font-size:14px;"><span
+                                                    class="rounded-circle d-inline-block"
+                                                    style="width:8px;height:8px;background:#059669;"></span>Active</span>
+                                        </td>
+                                        <td style="font-size:14px;color:var(--on-surface-variant);">5 mins ago</td>
+                                        <td class="text-end">
+                                            <button class="btn-icon"><span class="material-symbols-outlined"
+                                                    style="font-size:20px;">lock</span></button>
+                                            <button class="btn-icon"><span class="material-symbols-outlined"
+                                                    style="font-size:20px;">key</span></button>
+                                            <button class="btn-icon"><span class="material-symbols-outlined"
+                                                    style="font-size:20px;">edit</span></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="avatar"
+                                                    style="background-color:var(--surface-container-high);color:var(--on-surface-variant);opacity:.6;">
+                                                    TW</div>
+                                                <div style="opacity:.6;">
+                                                    <p style="font-weight:700;margin:0;font-size:16px;">Tom Walker</p>
+                                                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">
+                                                        t.walker@uni.edu</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge-pill"
+                                                style="background-color:var(--surface-container-high);color:var(--on-surface-variant);">Librarian</span>
+                                        </td>
+                                        <td style="opacity:.6;"><span class="d-flex align-items-center gap-1"
+                                                style="color:var(--on-surface-variant);font-size:14px;"><span
+                                                    class="rounded-circle d-inline-block"
+                                                    style="width:8px;height:8px;background:var(--on-surface-variant);"></span>Offline</span>
+                                        </td>
+                                        <td style="font-size:14px;color:var(--on-surface-variant);">4 hours ago</td>
+                                        <td class="text-end">
+                                            <button class="btn-icon"><span class="material-symbols-outlined"
+                                                    style="font-size:20px;">lock</span></button>
+                                            <button class="btn-icon"><span class="material-symbols-outlined"
+                                                    style="font-size:20px;">key</span></button>
+                                            <button class="btn-icon"><span class="material-symbols-outlined"
+                                                    style="font-size:20px;">edit</span></button>
+                                        </td>
+                                    </tr>
+                                    <tr style="background-color:rgba(255,218,214,.1);">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="avatar"
+                                                    style="background-color:var(--error-container);color:var(--error);">
+                                                    RL</div>
+                                                <div>
+                                                    <p style="font-weight:700;margin:0;font-size:16px;">Robert Lang</p>
+                                                    <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">
+                                                        r.lang@external.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge-pill"
+                                                style="background-color:var(--surface-container-high);color:var(--on-surface-variant);">Guest</span>
+                                        </td>
+                                        <td><span class="d-flex align-items-center gap-1"
+                                                style="color:var(--error);font-size:14px;"><span
+                                                    class="rounded-circle d-inline-block"
+                                                    style="width:8px;height:8px;background:var(--error);"></span>Locked</span>
+                                        </td>
+                                        <td style="font-size:14px;color:var(--on-surface-variant);">3 days ago</td>
+                                        <td class="text-end">
+                                            <button class="btn-icon" style="color:#059669;" title="Unlock"><span
+                                                    class="material-symbols-outlined"
+                                                    style="font-size:20px;">lock_open</span></button>
+                                            <button class="btn-icon"><span class="material-symbols-outlined"
+                                                    style="font-size:20px;">key</span></button>
+                                            <button class="btn-icon"><span class="material-symbols-outlined"
+                                                    style="font-size:20px;">edit</span></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-3 text-center" style="background-color:var(--surface-container-low);">
+                            <button class="btn btn-link"
+                                style="color:var(--primary);font-size:11px;font-weight:600;text-decoration:none;">View
+                                All Accounts (421)</button>
+                        </div>
+                    </div>
+
+                    <!-- System Configurations -->
+                    <div class="card-surface overflow-hidden">
+                        <div class="p-3 bg-white d-flex justify-content-between align-items-center"
+                            style="border-bottom:1px solid var(--outline-variant);">
+                            <div>
+                                <h3 style="font-size:20px;font-weight:600;color:var(--on-surface);margin:0;">System
+                                    Configurations</h3>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">Core library
+                                    operational parameters</p>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <button class="btn-icon"><span class="material-symbols-outlined">refresh</span></button>
+                                <button class="btn-icon"><span class="material-symbols-outlined">history</span></button>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6 config-row">
+                                    <label>MAX_LOAN_DURATION_DAYS</label>
+                                    <div class="d-flex gap-2">
+                                        <input class="config-input" type="text" value="21" />
+                                        <button class="btn-primary-sm"><span class="material-symbols-outlined"
+                                                style="font-size:18px;">save</span></button>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 config-row">
+                                    <label>PENALTY_RATE_USD</label>
+                                    <div class="d-flex gap-2">
+                                        <input class="config-input" type="text" value="0.50" />
+                                        <button class="btn-primary-sm"><span class="material-symbols-outlined"
+                                                style="font-size:18px;">save</span></button>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 config-row">
+                                    <label>RESERVATION_EXPIRY_HRS</label>
+                                    <div class="d-flex gap-2">
+                                        <input class="config-input" type="text" value="48" />
+                                        <button class="btn-primary-sm"><span class="material-symbols-outlined"
+                                                style="font-size:18px;">save</span></button>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 config-row">
+                                    <label>AUTO_RENEW_LIMIT</label>
+                                    <div class="d-flex gap-2">
+                                        <input class="config-input" type="text" value="2" />
+                                        <button class="btn-primary-sm"><span class="material-symbols-outlined"
+                                                style="font-size:18px;">save</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right 1/3: Security Audit -->
+                <div class="col-12 col-lg-4">
+                    <div class="card-surface d-flex flex-column" style="height:700px;position:sticky;top:80px;">
+                        <div class="p-3 bg-white d-flex justify-content-between align-items-center"
+                            style="border-bottom:1px solid var(--outline-variant);">
+                            <div>
+                                <h3 style="font-size:20px;font-weight:600;color:var(--on-surface);margin:0;">Security
+                                    Audit</h3>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">Live AuditLogs
+                                    stream</p>
+                            </div>
+                            <div class="position-relative">
+                                <span class="animate-pulse position-absolute rounded-circle"
+                                    style="width:10px;height:10px;background:var(--error);border:2px solid white;top:-4px;right:-4px;"></span>
+                                <span class="material-symbols-outlined"
+                                    style="color:var(--on-surface-variant);">stream</span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 overflow-y-auto custom-scrollbar p-3 d-flex flex-column gap-3"
+                            style="overflow-y:auto;">
+                            <!-- Audit 1 -->
+                            <div class="audit-item" style="border-left-color:var(--primary);">
+                                <div class="audit-dot" style="background-color:var(--primary);"></div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <p style="font-weight:700;font-size:14px;color:var(--on-surface);margin:0;">Config
+                                        Updated</p>
+                                    <span style="font-size:11px;color:var(--on-surface-variant);">14:22:01</span>
+                                </div>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:2px 0;">User: <span
+                                        style="color:var(--on-surface);font-weight:500;">admin_maria</span></p>
+                                <div class="p-1 rounded-1"
+                                    style="background-color:var(--surface-container-low);font-family:monospace;font-size:11px;color:var(--secondary);">
+                                    PENALTY_RATE: 0.25 -&gt; 0.50</div>
+                            </div>
+                            <!-- Audit 2 -->
+                            <div class="audit-item" style="border-left-color:var(--error);">
+                                <div class="audit-dot" style="background-color:var(--error);"></div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <p style="font-weight:700;font-size:14px;color:var(--on-surface);margin:0;">Failed
+                                        Auth</p>
+                                    <span style="font-size:11px;color:var(--on-surface-variant);">14:18:44</span>
+                                </div>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:2px 0;">IP: <span
+                                        style="color:var(--on-surface);font-weight:500;">192.168.1.142</span></p>
+                                <p style="font-size:14px;color:var(--error);margin:0;">Alert: Multiple failed login
+                                    attempts (5)</p>
+                            </div>
+                            <!-- Audit 3 -->
+                            <div class="audit-item" style="border-left-color:var(--tertiary);">
+                                <div class="audit-dot" style="background-color:var(--tertiary);"></div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <p style="font-weight:700;font-size:14px;color:var(--on-surface);margin:0;">Account
+                                        Locked</p>
+                                    <span style="font-size:11px;color:var(--on-surface-variant);">13:55:12</span>
+                                </div>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:2px 0;">Target: <span
+                                        style="color:var(--on-surface);font-weight:500;">r.lang@external.com</span></p>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">Reason: Security
+                                    Policy violation</p>
+                            </div>
+                            <!-- Audit 4 -->
+                            <div class="audit-item" style="border-left-color:var(--outline);opacity:.6;">
+                                <div class="audit-dot" style="background-color:var(--outline);"></div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <p style="font-weight:700;font-size:14px;color:var(--on-surface);margin:0;">Entity
+                                        Deleted</p>
+                                    <span style="font-size:11px;color:var(--on-surface-variant);">12:10:00</span>
+                                </div>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:2px 0;">User: <span
+                                        style="color:var(--on-surface);font-weight:500;">system_daemon</span></p>
+                                <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">Table:
+                                    Transactions_Archive_2023</p>
+                            </div>
+                        </div>
+                        <div class="p-3" style="background-color:var(--surface-container-low);">
+                            <button class="btn btn-outline-secondary w-100 rounded-3"
+                                style="border-color:var(--outline-variant);color:var(--on-surface);font-size:11px;font-weight:600;padding:10px;">Export
+                                Full Audit Log</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-4px)');
+            card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
+        });
+    </script>
+</body>
+
+</html>

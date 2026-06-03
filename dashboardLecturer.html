@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Lecturer Dashboard | Library Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #9d4300;
+            --primary-container: #f97316;
+            --primary-fixed: #ffdbca;
+            --primary-fixed-dim: #ffb690;
+            --on-primary: #ffffff;
+            --on-primary-container: #582200;
+            --secondary: #565e74;
+            --secondary-container: #dae2fd;
+            --secondary-fixed: #dae2fd;
+            --secondary-fixed-dim: #bec6e0;
+            --on-secondary-fixed: #131b2e;
+            --on-secondary-fixed-variant: #3f465c;
+            --on-secondary-container: #5c647a;
+            --tertiary: #006398;
+            --tertiary-fixed: #cde5ff;
+            --on-tertiary: #ffffff;
+            --on-tertiary-container: #003554;
+            --error: #ba1a1a;
+            --error-container: #ffdad6;
+            --on-error: #ffffff;
+            --background: #f7f9fb;
+            --on-background: #191c1e;
+            --surface: #f7f9fb;
+            --on-surface: #191c1e;
+            --on-surface-variant: #584237;
+            --surface-container-lowest: #ffffff;
+            --surface-container-low: #f2f4f6;
+            --surface-container: #eceef0;
+            --surface-container-high: #e6e8ea;
+            --surface-container-highest: #e0e3e5;
+            --outline: #8c7164;
+            --outline-variant: #e0c0b1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--on-background);
+            overflow-x: hidden;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            background-color: var(--surface-container-low);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .07);
+            z-index: 50;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color .2s;
+            border-right: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--surface-container-high);
+            color: var(--on-surface-variant);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 700;
+            border-right-color: var(--primary);
+            background-color: rgba(255, 182, 144, .2);
+        }
+
+        /* Topbar */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 256px;
+            width: calc(100% - 256px);
+            height: 64px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--outline-variant);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 40;
+        }
+
+        /* Main */
+        .main-content {
+            margin-left: 256px;
+            padding: 84px 80px 80px;
+            min-height: 100vh;
+        }
+
+        /* Cards */
+        .card-surface {
+            background-color: var(--surface-container-lowest);
+            border: 1px solid rgba(224, 192, 177, .3);
+            border-radius: 12px;
+        }
+
+        .card-surface:hover {
+            border-color: var(--primary-container);
+        }
+
+        /* Mini progress */
+        .mini-progress {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background-color: var(--surface-container-low);
+            overflow: hidden;
+        }
+
+        .mini-progress-bar {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        /* Badge pill */
+        .badge-pill {
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        /* Search */
+        .search-wrap {
+            position: relative;
+            background-color: var(--surface-container-low);
+            border-radius: 12px;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-wrap input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        /* Stat cards */
+        .stat-card {
+            background-color: var(--surface-container-lowest);
+            border: 1px solid rgba(224, 192, 177, .3);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .04);
+            transition: border-color .2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-container);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Book thumbnail */
+        .book-thumb {
+            width: 48px;
+            height: 64px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: var(--surface-container-high);
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+        }
+
+        /* Quick action btn */
+        .quick-action {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--surface-container-lowest);
+            border: 1px solid rgba(224, 192, 177, .3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .quick-action:hover {
+            border-color: var(--primary-container);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+        }
+
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color .2s, color .2s;
+        }
+
+        .quick-action:hover .qa-primary {
+            background-color: var(--primary) !important;
+            color: white !important;
+        }
+
+        .quick-action:hover .qa-tertiary {
+            background-color: var(--tertiary) !important;
+            color: white !important;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Table */
+        .table-lms thead th {
+            background-color: var(--surface-container-low);
+            color: var(--on-surface-variant);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(224, 192, 177, .3);
+        }
+
+        .table-lms tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(224, 192, 177, .3);
+            vertical-align: middle;
+        }
+
+        .table-lms tbody tr:hover {
+            background-color: var(--surface-container-lowest);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="px-2 mb-5">
+            <div class="d-flex align-items-center gap-2">
+                <img alt="University Crest" class="rounded-2" style="width:40px;height:40px;object-fit:cover;"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFOfv41zeTR2ohLhjQRFDjowLZZvH0R2nWr6BjaHFYkZbJ9xNMtC_1mdJ_eawYmCqFInPG87GI76qn2lQVpQ19F6geCDylIcwKWNpSQIDXKjva8-k_1kgj6To3aC8Q69yZnu4OGxMiLhjRIgurdgkUwX8clHb1k4dBp6SC_hFXE6zppSka1XRirj46O_4TC7GJ-FiYJsGVZx3LhqHGCxZGXs2Rtbc6mMPVtUhCouy85uZIX2lBq_7fzmnf7utzd2YGdnsE_xTB8mnz" />
+                <div>
+                    <div style="font-size:20px;font-weight:700;color:var(--primary);line-height:1.2;">Library Portal
+                    </div>
+                    <div style="font-size:10px;color:var(--on-surface-variant);">Academic Resource Center</div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-grow-1 d-flex flex-column overflow-y-auto">
+            <a href="#" class="nav-item active">
+                <span class="material-symbols-outlined">dashboard</span><span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">menu_book</span><span>Catalog</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">auto_stories</span><span>My Loans</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">bookmark</span><span>Class Resources</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined">person</span><span>Profile</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto pt-4" style="border-top:1px solid var(--outline-variant);">
+            <button class="btn w-100 mb-3 d-flex align-items-center justify-content-center gap-2 fw-bold rounded-3"
+                style="background-color:var(--primary-container);color:var(--on-primary-container);padding:10px;">
+                <span class="material-symbols-outlined">add</span>New Research Request
+            </button>
+            <a href="#" class="nav-item"><span
+                    class="material-symbols-outlined">settings</span><span>Settings</span></a>
+            <a href="#" class="nav-item"><span class="material-symbols-outlined">help</span><span>Help</span></a>
+        </div>
+    </aside>
+
+    <!-- ===== TOPBAR ===== -->
+    <header class="topbar">
+        <nav style="font-size:11px;font-weight:600;color:var(--on-surface-variant);letter-spacing:.05em;">
+            <span>LMS</span>
+            <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
+            <span style="color:var(--primary);font-weight:700;">Dashboard</span>
+        </nav>
+        <div class="search-wrap mx-4">
+            <span class="material-symbols-outlined"
+                style="color:var(--on-surface-variant);font-size:20px;">search</span>
+            <input placeholder="Global search across catalog and archives..." type="text" />
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-link p-1 position-relative" style="color:var(--on-surface-variant);">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="position-absolute top-0 end-0 rounded-circle animate-pulse"
+                    style="width:8px;height:8px;background:var(--primary);"></span>
+            </button>
+            <div class="d-flex align-items-center gap-2 ps-3 cursor-pointer"
+                style="border-left:1px solid var(--outline-variant);">
+                <div class="text-end">
+                    <p style="font-size:11px;font-weight:600;color:var(--on-surface);margin:0;line-height:1.2;">Dr.
+                        Julian Vance</p>
+                    <p style="font-size:10px;color:var(--on-surface-variant);margin:0;">Senior Lecturer</p>
+                </div>
+                <img alt="Lecturer Portrait" class="rounded-circle"
+                    style="width:40px;height:40px;border:2px solid var(--primary-fixed-dim);object-fit:cover;"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuASk1AxJSVSz8f_Zo3nwa0N-JZ9GvkIo8-5Jln9D0aMOTmlGbK5FEZGMrfEm0XgESEQf_S_OlWjfkdaroVPiGwncb14qQJyH-DOkPUqRZlOjNBkQe0FxbNk9P9a3W2Yi0GhSs4a6W3NGoq16Z4ZwHSnBepQh9rGPzm9pDPK5tL7jL3dVT2ErjLm5VqdkvgdvUqqLglJv2Ud1eB6WgLta0fr37wQXgIAwgBp6-oyFMEoTukyzy46yKi_kiHovwUaXjrt-p2P5Si_DMJs" />
+                <span class="material-symbols-outlined" style="color:var(--on-surface-variant);">arrow_drop_down</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <!-- Welcome -->
+        <section class="mb-5">
+            <h2 style="font-size:32px;font-weight:600;letter-spacing:-.01em;color:var(--on-surface);margin-bottom:4px;">
+                Welcome back, Dr. Vance</h2>
+            <p style="font-size:18px;color:var(--on-surface-variant);margin:0;">Manage your course reading lists and
+                personal borrowing activity.</p>
+        </section>
+
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-5">
+            <div class="col-12 col-md-4">
+                <div class="stat-card">
+                    <div>
+                        <p
+                            style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);margin-bottom:4px;">
+                            Active Loans</p>
+                        <p style="font-size:32px;font-weight:600;color:var(--primary);margin:0;">08</p>
+                    </div>
+                    <div class="stat-icon" style="background-color:var(--primary-fixed);">
+                        <span class="material-symbols-outlined" style="color:var(--primary);">auto_stories</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="stat-card">
+                    <div>
+                        <p
+                            style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);margin-bottom:4px;">
+                            Course Reservations</p>
+                        <p style="font-size:32px;font-weight:600;color:var(--tertiary);margin:0;">24</p>
+                    </div>
+                    <div class="stat-icon" style="background-color:var(--tertiary-fixed);">
+                        <span class="material-symbols-outlined" style="color:var(--tertiary);">bookmark</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="stat-card">
+                    <div>
+                        <p
+                            style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--on-surface-variant);margin-bottom:4px;">
+                            New System Alerts</p>
+                        <p style="font-size:32px;font-weight:600;color:var(--error);margin:0;">02</p>
+                    </div>
+                    <div class="stat-icon" style="background-color:var(--error-container);">
+                        <span class="material-symbols-outlined"
+                            style="color:var(--error);">notification_important</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column flex-lg-row gap-4">
+            <!-- Left Column -->
+            <div class="flex-grow-1 d-flex flex-column gap-4">
+
+                <!-- Class Resources -->
+                <section>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 style="font-size:20px;font-weight:600;color:var(--on-surface);margin:0;">Class Resources
+                        </h3>
+                        <button class="btn btn-link d-flex align-items-center gap-1 p-0"
+                            style="color:var(--primary);font-size:11px;font-weight:600;text-decoration:none;">
+                            View All Departments <span class="material-symbols-outlined"
+                                style="font-size:18px;">arrow_forward</span>
+                        </button>
+                    </div>
+                    <div class="row g-3">
+                        <!-- Dept Card 1 -->
+                        <div class="col-12 col-md-6">
+                            <div class="card-surface p-3 h-100 d-flex flex-column gap-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h4 style="font-size:16px;font-weight:700;color:var(--on-surface);margin:0;">
+                                            Advanced Sociology</h4>
+                                        <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">SOC402 • 42
+                                            Students</p>
+                                    </div>
+                                    <span class="badge-pill"
+                                        style="background-color:rgba(157,67,0,.1);color:var(--primary);">Active</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 mt-1">
+                                    <div class="d-flex" style="margin-left:0;">
+                                        <img class="rounded-circle"
+                                            style="width:32px;height:32px;border:2px solid var(--surface);object-fit:cover;margin-right:-8px;"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGT_3qDEE9SqqNcG-5BTJzNqrPk7u22BanAyAqlgHVH5a8GDDKGGWn2Bst8lNs7vdafjjJMTOeKyi1QNyra7WW-GIHRIfEbsM5uF0Dh_aw9n5DA8itkWsg7v2HHPwxrbcopY2f_m7qmEoylDwKypzTISyBiNGPUNg9BWKzdYiq0y1cf86myNJCHKc3CFTHqTBkXhjqIalLOEMsek5KaqAY_AbQSsAQ2qxj-VW6YWyWIgl8acMqP6p1iKhy24ALhCwr1yVIYHzP43nC" />
+                                        <img class="rounded-circle"
+                                            style="width:32px;height:32px;border:2px solid var(--surface);object-fit:cover;margin-right:-8px;"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUQ4eZVbA7nrxEhtzq1S6GasDf6V0p2w_RTUPZpIeSLt3EY3K_gVnb3TmsF8E-LIxnnqa_tv388v8lGxmFJcY3Al76ix5HfWnQBWZ7F0oTblfrRQd_DILzyjZL2nFdyK5Lplq--KHyCWpvFtddzrO4PD4hczKX6-hkO0Wbc6ji4wcft4QdoetgBI4MEBds1vIaxFY-UtxyCxSqpO4OdrRMRlZlUGWitYg3rVsA5J8Qnrb38dhxy2XdAbAdyHLxKgiSJv_XbxYV3PlF" />
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                            style="width:32px;height:32px;background-color:var(--surface-container-high);border:2px solid var(--surface);font-size:10px;font-weight:700;">
+                                            +12</div>
+                                    </div>
+                                    <p style="font-size:12px;color:var(--on-surface-variant);margin:0;">Reading list
+                                        updated 2 days ago</p>
+                                </div>
+                                <button class="btn btn-sm w-100 mt-1 rounded-2"
+                                    style="background-color:var(--surface-container-low);color:var(--on-surface-variant);font-size:11px;font-weight:600;padding:6px;">Manage
+                                    List</button>
+                            </div>
+                        </div>
+                        <!-- Dept Card 2 -->
+                        <div class="col-12 col-md-6">
+                            <div class="card-surface p-3 h-100 d-flex flex-column gap-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h4 style="font-size:16px;font-weight:700;color:var(--on-surface);margin:0;">
+                                            Qualitative Methods</h4>
+                                        <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">SOC201 • 58
+                                            Students</p>
+                                    </div>
+                                    <span class="badge-pill"
+                                        style="background-color:var(--secondary-container);color:var(--on-secondary-container);">Review</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 mt-1">
+                                    <div class="d-flex">
+                                        <img class="rounded-circle"
+                                            style="width:32px;height:32px;border:2px solid var(--surface);object-fit:cover;margin-right:-8px;"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYbLL1b6iDzxLJLdPZ7XG34w_r-njOV4ANZI48a0Q-wSUXFjaDbx58OKB9dC_sCLioOqAb39A4gWTu6SJhWZsiuIc2KLISgYGOMRYddOG9VzzepVXPeRj4gvOblFiVKz1985RUvml-kmj-RKEMcOdmmrQg7ymv-lWCwjlVjaXXSn09IVhxsKGAsWOkxIRc4QIJ9OzmpTlh9nrE8SI7Ys24bX61i9hJTBkawAxvcYQwdjuXcy6_sYSIj5U-5ymbrEAM9hbX3T-K_TNw" />
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                            style="width:32px;height:32px;background-color:var(--surface-container-high);border:2px solid var(--surface);font-size:10px;font-weight:700;">
+                                            +5</div>
+                                    </div>
+                                    <p style="font-size:12px;color:var(--on-surface-variant);margin:0;">List pending
+                                        library approval</p>
+                                </div>
+                                <button class="btn btn-sm w-100 mt-1 rounded-2"
+                                    style="background-color:var(--surface-container-low);color:var(--on-surface-variant);font-size:11px;font-weight:600;padding:6px;">Manage
+                                    List</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Borrowing Activity -->
+                <section>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 style="font-size:20px;font-weight:600;color:var(--on-surface);margin:0;">Borrowing Activity
+                        </h3>
+                        <p style="font-size:14px;color:var(--on-surface-variant);margin:0;">Currently in hand: <strong
+                                style="color:var(--on-surface);">08 items</strong></p>
+                    </div>
+                    <div class="card-surface overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="table table-lms mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Book Detail</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="book-thumb">
+                                                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFDOnJXXHq1kSW3x1aEtdEIquMsbA-rtSPZaFVQxseEpNf5pYYQ1g44rFP0qNhnnlMHcd3sR_RIq0-2K21hfBpcci95yJ4UQA--uahCET4Z-ZdUw31DeQBfbxKphHTrVvUiZvm1fMoGMar59zWYRtv6HNuVgYJqAGqntQrJgsJ_v9qSSyP0JHPHrnUkmf3554jDOSznQAAUL6weMiXO61VmHqA4Dsa2xEC1ySsf4x2cY6rlTlcHTobQ60dxB4yuu5BG9Y1hcosTWqF"
+                                                        class="w-100 h-100" style="object-fit:cover;" />
+                                                </div>
+                                                <div>
+                                                    <p style="font-weight:700;margin:0;font-size:16px;">The Social
+                                                        Contract</p>
+                                                    <p style="font-size:12px;color:var(--on-surface-variant);margin:0;">
+                                                        Jean-Jacques Rousseau</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="font-size:14px;color:var(--on-surface);">Oct 24, 2023</td>
+                                        <td><span class="badge-pill"
+                                                style="background-color:rgba(157,67,0,.1);color:var(--primary);">In
+                                                Hand</span></td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm me-1 rounded-2"
+                                                style="border:1px solid var(--primary);color:var(--primary);font-size:11px;font-weight:600;padding:4px 10px;">Renew</button>
+                                            <button class="btn btn-sm rounded-2"
+                                                style="background-color:var(--surface-container-low);color:var(--on-surface-variant);font-size:11px;font-weight:600;padding:4px 10px;">Return</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="book-thumb">
+                                                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpX8qnlW8Afykq_QfufJauxtkQlfnGXNr4vUUxNkuOATLtdl3j7ZIfR4qzTsqDuT90ERzFL8Y-_elmBWqkQB8jdQG0S2V8e_BGDQhIHyLpXctrwkpLOwFiHNrwPj_jYTojQxla-C39aEpC1K-e6uijdTsX1qiRx5_ZSRT5Y0iw__qO3to4EG99ZEMakXi9AFC-TPHEoIomuS85RR6ys3pO4jAvKHN9LL-FOPdhtc0YQ4cZopnl5kWagLFP6nUW0idp2YREjchoGlwt"
+                                                        class="w-100 h-100" style="object-fit:cover;" />
+                                                </div>
+                                                <div>
+                                                    <p style="font-weight:700;margin:0;font-size:16px;">Modern Ethics in
+                                                        Practice</p>
+                                                    <p style="font-size:12px;color:var(--on-surface-variant);margin:0;">
+                                                        Dr. Alan Turing</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="font-size:14px;font-weight:700;color:var(--error);">Overdue (2d)</td>
+                                        <td><span class="badge-pill"
+                                                style="background-color:var(--error-container);color:var(--error);">Late</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm me-1 rounded-2"
+                                                style="background-color:var(--primary-container);color:white;font-size:11px;font-weight:600;padding:4px 10px;">Pay
+                                                Fine</button>
+                                            <button class="btn btn-sm rounded-2"
+                                                style="background-color:var(--surface-container-low);color:var(--on-surface-variant);font-size:11px;font-weight:600;padding:4px 10px;">Return</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column -->
+            <div style="width:100%;max-width:320px;" class="d-flex flex-column gap-4">
+                <!-- Quick Actions -->
+                <section>
+                    <h3 style="font-size:20px;font-weight:600;color:var(--on-surface);margin-bottom:16px;">Quick Actions
+                    </h3>
+                    <div class="d-flex flex-column gap-2">
+                        <button class="quick-action">
+                            <div class="quick-action-icon qa-primary"
+                                style="background-color:var(--primary-fixed);color:var(--primary);">
+                                <span class="material-symbols-outlined">bookmark_add</span>
+                            </div>
+                            <div>
+                                <p style="font-size:11px;font-weight:600;color:var(--on-surface);margin:0;">Reserve for
+                                    Class</p>
+                                <p style="font-size:10px;color:var(--on-surface-variant);margin:0;">Lock items for
+                                    course use</p>
+                            </div>
+                        </button>
+                        <button class="quick-action">
+                            <div class="quick-action-icon qa-tertiary"
+                                style="background-color:var(--tertiary-fixed);color:var(--tertiary);">
+                                <span class="material-symbols-outlined">library_add</span>
+                            </div>
+                            <div>
+                                <p style="font-size:11px;font-weight:600;color:var(--on-surface);margin:0;">Request New
+                                    Acquisition</p>
+                                <p style="font-size:10px;color:var(--on-surface-variant);margin:0;">Propose new books to
+                                    library</p>
+                            </div>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Research Deadline -->
+                <section class="p-3 rounded-3 position-relative overflow-hidden"
+                    style="background-color:var(--secondary-container);">
+                    <div style="position:relative;z-index:1;">
+                        <h4 style="font-size:16px;font-weight:700;color:var(--on-secondary-fixed);margin-bottom:4px;">
+                            Research Deadline</h4>
+                        <p style="font-size:14px;color:var(--on-secondary-fixed-variant);margin-bottom:16px;">Grant
+                            applications for archival access close in:</p>
+                        <div class="d-flex gap-2 mb-3">
+                            <div class="px-3 py-1 rounded text-center"
+                                style="background-color:rgba(255,255,255,.4);backdrop-filter:blur(8px);">
+                                <p style="font-weight:700;color:var(--on-secondary-fixed);margin:0;">04</p>
+                                <p style="font-size:10px;text-transform:uppercase;margin:0;">Days</p>
+                            </div>
+                            <div class="px-3 py-1 rounded text-center"
+                                style="background-color:rgba(255,255,255,.4);backdrop-filter:blur(8px);">
+                                <p style="font-weight:700;color:var(--on-secondary-fixed);margin:0;">12</p>
+                                <p style="font-size:10px;text-transform:uppercase;margin:0;">Hrs</p>
+                            </div>
+                        </div>
+                        <button class="btn w-100 rounded-2 fw-bold"
+                            style="background-color:var(--on-secondary-fixed);color:white;font-size:11px;padding:6px;">Apply
+                            Now</button>
+                    </div>
+                    <span class="material-symbols-outlined position-absolute"
+                        style="bottom:-16px;right:-16px;font-size:120px;color:rgba(19,27,46,.05);transform:rotate(12deg);pointer-events:none;">history_edu</span>
+                </section>
+
+                <!-- Librarian Contact -->
+                <section class="p-3 rounded-3 d-flex align-items-center gap-3"
+                    style="background-color:var(--surface-container-high);border:1px solid rgba(224,192,177,.5);">
+                    <img alt="Librarian Portrait" class="rounded-circle"
+                        style="width:48px;height:48px;border:2px solid white;object-fit:cover;"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwaFLLviOsGzlZdkqezeMBkDf0RxcrdPrrb8arMcGRZVZFaXicizQyChPmkmhKVCMHgeoDdTazR40GaCes8KNB2WCcm5XbR40pgV9YbOEs-uNqg-o_JD88bDJL29TsIYWAOu5evhTN6CLrHwYMf3sONAFKoo3sRhgvrCEOGhYodnRcsMvWPbe3pEOGIyvgZjOANv68-5tHOE8phEC7khR-nmBEozG0Isp74yfuy1ygFxO9dE1SBGj3eTuZYd0g6lDLNA3MEElUjVzG" />
+                    <div>
+                        <p style="font-size:11px;font-weight:600;color:var(--on-surface);margin:0;line-height:1.3;">
+                            Sarah Jenkins</p>
+                        <p style="font-size:11px;color:var(--on-surface-variant);margin:2px 0;">Liaison Librarian</p>
+                        <button class="btn btn-link p-0"
+                            style="font-size:11px;font-weight:700;color:var(--primary);text-decoration:none;">Message
+                            Expert</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-surface').forEach(card => {
+                card.addEventListener('mouseenter', () => { card.style.transform = 'translateY(-2px)'; card.style.transition = 'all .3s ease'; });
+                card.addEventListener('mouseleave', () => { card.style.transform = 'translateY(0)'; });
+            });
+        });
+    </script>
+</body>
+
+</html>
