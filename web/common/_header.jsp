@@ -49,19 +49,19 @@
                 <c:choose>
                     <c:when test="${not empty sessionScope.userId}">
                         <c:choose>
-                            <c:when test="${sessionScope.role eq 'ADMIN'}">
+                            <c:when test="${sessionScope.role eq 'ADMIN' or sessionScope.role eq 'admin'}">
                                 <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/admin/dashboard" />
                             </c:when>
-                            <c:when test="${sessionScope.role eq 'LIBRARIAN'}">
+                            <c:when test="${sessionScope.role eq 'LIBRARIAN' or sessionScope.role eq 'librarian'}">
                                 <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/librarian/dashboard" />
                             </c:when>
-                            <c:when test="${sessionScope.role eq 'MANAGER'}">
+                            <c:when test="${sessionScope.role eq 'MANAGER' or sessionScope.role eq 'manager'}">
                                 <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/manager/dashboard" />
                             </c:when>
-                            <c:when test="${sessionScope.role eq 'STUDENT'}">
+                            <c:when test="${sessionScope.role eq 'STUDENT' or sessionScope.role eq 'student'}">
                                 <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/student/dashboard" />
                             </c:when>
-                            <c:when test="${sessionScope.role eq 'LECTURER'}">
+                            <c:when test="${sessionScope.role eq 'LECTURER' or sessionScope.role eq 'lecturer'}">
                                 <c:set var="dashboardUrl" value="${pageContext.request.contextPath}/lecturer/dashboard" />
                             </c:when>
                             <c:otherwise>
