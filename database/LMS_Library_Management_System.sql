@@ -25,8 +25,8 @@ CREATE TABLE MemberProfile (
     phoneNumber NVARCHAR(20) NOT NULL,
     gender NVARCHAR(10) NOT NULL,
     dateOfBirth DATE NOT NULL,
-    startDate DATE NOT NULL,
-    endDate DATE NOT NULL,
+    startDate DATE  NULL,
+    endDate DATE  NULL,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
 );
