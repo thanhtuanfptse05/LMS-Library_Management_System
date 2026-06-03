@@ -62,28 +62,37 @@
     navLinks.forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
-            if (href.startsWith('#')) {
-                e.preventDefault();
+            if (!href) return;
+            
+            const hashIndex = href.indexOf('#');
+            if (hashIndex !== -1) {
+                const targetHash = href.substring(hashIndex);
+                const pagePath = href.substring(0, hashIndex);
+                const currentPath = window.location.pathname;
                 
-                navLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
+                // If it is just a hash, or refers to the current page/root
+                if (pagePath === '' || currentPath.endsWith(pagePath) || (pagePath.endsWith('/') && currentPath === pagePath)) {
+                    e.preventDefault();
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
 
-                if (href === '#') {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                } else {
-                    const target = document.querySelector(href);
-                    if (target) {
-                        const headerOffset = 80; // Sticky header height plus margin
-                        const elementPosition = target.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
+                    if (targetHash === '#') {
                         window.scrollTo({
-                            top: offsetPosition,
+                            top: 0,
                             behavior: 'smooth'
                         });
+                    } else {
+                        const target = document.querySelector(targetHash);
+                        if (target) {
+                            const headerOffset = 110; // Sticky header height plus margin
+                            const elementPosition = target.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
                     }
                 }
             }

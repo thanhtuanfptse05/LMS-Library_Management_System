@@ -166,8 +166,8 @@
                 <nav class="d-none d-md-flex gap-4">
                     <a class="header-nav-link" href="${dashboardUrl}">Dashboard</a>
                     <a class="header-nav-link" href="${pageContext.request.contextPath}/book-search.jsp">Catalog</a>
-                    <a class="header-nav-link" href="${pageContext.request.contextPath}/#services">Services</a>
-                    <a class="header-nav-link" href="${pageContext.request.contextPath}/#policies">Policies</a>
+                    <a class="header-nav-link" href="${pageContext.request.contextPath}/services.jsp">Services</a>
+                    <a class="header-nav-link" href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
                     <a class="header-nav-link" href="${pageContext.request.contextPath}/#contact">Support</a>
                 </nav>
             </div>

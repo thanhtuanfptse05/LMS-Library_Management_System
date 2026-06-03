@@ -250,10 +250,10 @@
                 <nav class="d-none d-md-flex gap-4 ms-4">
                     <a class="text-primary-custom fw-semibold border-bottom border-2 border-primary-custom pb-1 text-decoration-none"
                         href="${pageContext.request.contextPath}/">Home</a>
-                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#services"
+                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/services.jsp"
                         onmouseover="this.style.color='var(--primary-color)'"
                         onmouseout="this.style.color='var(--secondary)'">Services</a>
-                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#policies"
+                    <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/policies.jsp"
                         onmouseover="this.style.color='var(--primary-color)'"
                         onmouseout="this.style.color='var(--secondary)'">Policies</a>
                     <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#news"

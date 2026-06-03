@@ -26,9 +26,9 @@
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
                href="${pageContext.request.contextPath}/book-search.jsp">Catalog</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
-               href="${pageContext.request.contextPath}/#services">Services</a>
+               href="${pageContext.request.contextPath}/services.jsp">Services</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
-               href="${pageContext.request.contextPath}/#policies">Policies</a>
+               href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
                href="${pageContext.request.contextPath}/#contact">Support</a>
         </nav>

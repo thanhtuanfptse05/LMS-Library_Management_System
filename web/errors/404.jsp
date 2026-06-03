@@ -159,8 +159,8 @@
                 <div class="d-flex gap-4">
                     <a class="nav-link-custom" href="${dashboardUrl}">Dashboard</a>
                     <a class="nav-link-custom" href="${pageContext.request.contextPath}/book-search.jsp">Catalog</a>
-                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/#services">Services</a>
-                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/#policies">Policies</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Services</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
                     <a class="nav-link-custom" href="${pageContext.request.contextPath}/#contact">Support</a>
                 </div>
             </div>
