@@ -159,7 +159,8 @@
                 <div class="d-flex gap-4">
                     <a class="nav-link-custom" href="${dashboardUrl}">Dashboard</a>
                     <a class="nav-link-custom" href="${pageContext.request.contextPath}/book-search.jsp">Catalog</a>
-                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/#about">Resources</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/#services">Services</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/#policies">Policies</a>
                     <a class="nav-link-custom" href="${pageContext.request.contextPath}/#contact">Support</a>
                 </div>
             </div>
@@ -217,11 +218,11 @@
                         </a>
                     </div>
                     <div class="col-12 col-md-4">
-                        <a href="${pageContext.request.contextPath}/#about" class="text-decoration-none text-reset">
+                        <a href="${pageContext.request.contextPath}/#policies" class="text-decoration-none text-reset">
                             <div class="quick-link-card h-100">
-                                <span class="material-symbols-outlined text-primary-custom mb-2 d-block">school</span>
-                                <h3 class="h6 text-dark fw-bold mb-1">Resources</h3>
-                                <p class="small text-on-surface-variant mb-0">Access academic databases.</p>
+                                <span class="material-symbols-outlined text-primary-custom mb-2 d-block">gavel</span>
+                                <h3 class="h6 text-dark fw-bold mb-1">Policies</h3>
+                                <p class="small text-on-surface-variant mb-0">Read library policies.</p>
                             </div>
                         </a>
                     </div>
