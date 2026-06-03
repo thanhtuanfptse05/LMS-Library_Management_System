@@ -22,11 +22,11 @@ CREATE TABLE [User] (
 CREATE TABLE MemberProfile (
     userId INT PRIMARY KEY,
     fullName NVARCHAR(255) NOT NULL,
-    phoneNumber NVARCHAR(20) NULL,
-    gender NVARCHAR(10) NULL,
-    dateOfBirth DATE NULL,
-    startDate DATE NULL,
-    endDate DATE NULL,
+    phoneNumber NVARCHAR(20) NOT NULL,
+    gender NVARCHAR(10) NOT NULL,
+    dateOfBirth DATE NOT NULL,
+    startDate DATE NOT NULL,
+    endDate DATE NOT NULL,
 
     FOREIGN KEY (userId) REFERENCES [User](userId)
 );
