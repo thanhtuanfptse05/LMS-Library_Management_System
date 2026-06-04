@@ -46,7 +46,7 @@
                             <img class="shadow rounded mb-3"
                                  style="width: 192px; aspect-ratio: 2/3; object-fit: cover;"
                                  alt="Book Cover"
-                                 src="<c:out value='${not empty book.coverUrl ? book.coverUrl : \"https://lh3.googleusercontent.com/aida-public/AB6AXuBrnYGzHpZJ4BwkqVqQzKVOuwI965LL-tkSYHZ7J-uFXI7evZLzVlVEXQ0bjbdir2DCR9lZGPoQemex1kgfwXmlDoYkSGYBPDiz0jRkA1c04IBATSUNCFmFVifr0a2d-7QGhY2Ti1wpsoxd__eRLDUXUif1Lcra0rTjgPw0T0MlQ-My3LZuTm8oI_TueNYDt4VBHnJmDR4h2xxcKEpImez1Dj7xcUv06PEoH6rx7A4I-cGAc2JPlGLVsQdPlOVVmS3FTu7rqupIO94\"}' />" />
+                                 src="${not empty book.coverUrl ? book.coverUrl : 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrnYGzHpZJ4BwkqVqQzKVOuwI965LL-tkSYHZ7J-uFXI7evZLzVlVEXQ0bjbdir2DCR9lZGPoQemex1kgfwXmlDoYkSGYBPDiz0jRkA1c04IBATSUNCFmFVifr0a2d-7QGhY2Ti1wpsoxd__eRLDUXUif1Lcra0rTjgPw0T0MlQ-My3LZuTm8oI_TueNYDt4VBHnJmDR4h2xxcKEpImez1Dj7xcUv06PEoH6rx7A4I-cGAc2JPlGLVsQdPlOVVmS3FTu7rqupIO94'}" />
                             <span class="px-3 py-1 rounded-pill text-label-md font-weight-bold mb-2"
                                   style="background-color: var(--secondary-container); color: var(--on-secondary-container);">
                                 ISBN: <c:out value="${not empty book.isbn ? book.isbn : '978-0141036144'}" />

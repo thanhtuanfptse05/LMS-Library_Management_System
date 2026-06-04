@@ -94,7 +94,7 @@
                                             <div class="rounded-2 bg-light overflow-hidden flex-shrink-0 shadow-sm border border-light-subtle"
                                                  style="width: 96px; height: 144px;">
                                                 <img alt="Book Cover" class="w-100 h-100" style="object-fit: cover;"
-                                                     src="<c:out value='${not empty borrowRecord.bookCoverUrl ? borrowRecord.bookCoverUrl : \"https://lh3.googleusercontent.com/aida-public/AB6AXuAfr9Wq-8JQcE2HOz4w5ELcy7VqzxHCIdzMDfvzpEkmCqo1DqYHn8f9TXyuj7SxOZ3gJeq6eLmWm4QWqJxq14KLzBIIH4tW4vX1nuw7GJCGJIIM3L-S_d8C3eICH-BtMFeto-J8AIB6oQ4vSMTMSzlZeLpncWKmB3K_d7hL1EkFxhlZLsGi7HPJOKWjCxrZi6aIdMXJPYt8YLN1iv5pVEU6ex-TT1Lgb601MK0DY52ivGXQF4wXuoE3x7fwgGQlWsen5gfMV7bBdRc\"}' />" />
+                                                     src="${not empty borrowRecord.bookCoverUrl ? borrowRecord.bookCoverUrl : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAfr9Wq-8JQcE2HOz4w5ELcy7VqzxHCIdzMDfvzpEkmCqo1DqYHn8f9TXyuj7SxOZ3gJeq6eLmWm4QWqJxq14KLzBIIH4tW4vX1nuw7GJCGJIIM3L-S_d8C3eICH-BtMFeto-J8AIB6oQ4vSMTMSzlZeLpncWKmB3K_d7hL1EkFxhlZLsGi7HPJOKWjCxrZi6aIdMXJPYt8YLN1iv5pVEU6ex-TT1Lgb601MK0DY52ivGXQF4wXuoE3x7fwgGQlWsen5gfMV7bBdRc'}" />
                                             </div>
                                             <div class="d-flex flex-column justify-content-center">
                                                 <span class="badge font-label-md text-dark mb-2 align-self-start py-2 px-2 border-0"

@@ -42,7 +42,7 @@
                                 <img class="w-100 rounded-3 shadow-sm border"
                                      style="aspect-ratio: 3/4; object-fit: cover; border-color: var(--outline-variant) !important;"
                                      alt="Book Cover"
-                                     src="<c:out value='${not empty reservation.bookCoverUrl ? reservation.bookCoverUrl : \"https://lh3.googleusercontent.com/aida-public/AB6AXuBYGevQcDjdis4VdsuZBAu7KKFO9QtPkunlJ192hDcQNHlBRPMWcj0v0Bdld5deNjLs_Yp-qlAI-jxRNjPH8ojAKDHjrIxWdkU9QLbhemvdP6tSq_M0vT39GjKqJZgMQOUPXFA3YVLo5mQm3u6scfE-YmCLXHFAPbg-XAKuT1JbyG3J6NdpKhxfCAGuTB0upShOTJ85N9O1crEqj31qELwmaw3bXghf2b5g1fYKJOPJctkOg7SM_10QVFYh1je1cQuMzxTVgGP3ZTg\"}' />" />
+                                     src="${not empty reservation.bookCoverUrl ? reservation.bookCoverUrl : 'https://lh3.googleusercontent.com/aida-public/AB6AXuBYGevQcDjdis4VdsuZBAu7KKFO9QtPkunlJ192hDcQNHlBRPMWcj0v0Bdld5deNjLs_Yp-qlAI-jxRNjPH8ojAKDHjrIxWdkU9QLbhemvdP6tSq_M0vT39GjKqJZgMQOUPXFA3YVLo5mQm3u6scfE-YmCLXHFAPbg-XAKuT1JbyG3J6NdpKhxfCAGuTB0upShOTJ85N9O1crEqj31qELwmaw3bXghf2b5g1fYKJOPJctkOg7SM_10QVFYh1je1cQuMzxTVgGP3ZTg'}" />
                             </div>
                             <div class="flex-grow-1 d-flex flex-column justify-content-between">
                                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
@@ -126,7 +126,7 @@
                                                         <c:when test="${copy.available}">
                                                             <button class="btn btn-sm rounded-circle p-1 border-0 d-flex align-items-center justify-content-center"
                                                                     style="background-color: rgba(157,67,0,0.05); color: var(--primary); width: 28px; height: 28px;"
-                                                                    onclick="selectCopy('<c:out value=\"${copy.barcode}\" />')">
+                                                                    onclick="selectCopy('${copy.barcode}')">
                                                                 <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
                                                             </button>
                                                         </c:when>
@@ -283,7 +283,7 @@
                                                             <c:when test="${loop.index == 0 and not empty availableCopyForAssign}">
                                                                 <button class="btn btn-sm text-white fw-bold px-3 py-2 border-0 rounded-3"
                                                                         style="background-color: var(--primary); font-size: 11px;"
-                                                                        onclick="assignCopy('<c:out value=\"${availableCopyForAssign}\" />', '<c:out value=\"${q.memberId}\" />')">
+                                                                        onclick="assignCopy('${availableCopyForAssign}', '${q.memberId}')">
                                                                     Assign #<c:out value="${availableCopyForAssign}" />
                                                                 </button>
                                                             </c:when>
