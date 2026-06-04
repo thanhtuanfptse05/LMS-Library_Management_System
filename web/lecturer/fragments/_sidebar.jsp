@@ -20,6 +20,9 @@
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">library_books</span><span>My Loans</span>
         </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/lecturer/my-fines.jsp">
+            <span class="material-symbols-outlined">payments</span><span>Fines & Billing</span>
+        </a>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">bookmark</span><span>Saved Lists</span>
         </a>

@@ -39,7 +39,7 @@
         <div class="px-3 mb-1">
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
                style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Users &amp; Access</p>
-            <a class="sidebar-link" id="nav-user-management" href="#">
+            <a class="sidebar-link" id="nav-user-management" href="${pageContext.request.contextPath}/admin/user-list.jsp">
                 <span class="material-symbols-outlined">group</span>
                 <span>User Management</span>
             </a>

@@ -24,7 +24,7 @@
                 <span>Reservations</span>
             </a>
             <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/student/fines">
+               href="${pageContext.request.contextPath}/student/my-fines.jsp">
                 <span class="material-symbols-outlined">payments</span>
                 <span>Fine History</span>
             </a>
