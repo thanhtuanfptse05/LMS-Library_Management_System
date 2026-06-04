@@ -17,15 +17,10 @@
 
 <body class="d-flex flex-column">
 
+    <jsp:include page="fragments/_sidebar.jsp" />
+
 <%-- ══ Page-specific styles ══ --%>
 <style>
-    /* ── Layout: sidebar is fixed at 256px ── */
-    .notif-page-wrapper {
-        margin-left: 256px;
-        margin-top: 64px;
-        background-color: var(--background, #fff8f6);
-        min-height: calc(100vh - 64px);
-    }
 
     /* ── Page header strip ── */
     .notif-page-header {
@@ -371,7 +366,8 @@
 
     /* ── Responsive ── */
     @media (max-width: 991.98px) {
-        .notif-page-wrapper { margin-left: 0; }
+        main { margin-left: 0 !important; }
+        header.fixed-top > div { margin-left: 0 !important; }
         .notif-page-header, .notif-actions-bar, .notif-list-wrapper, .notif-summary-ribbon {
             padding-left: 16px; padding-right: 16px;
         }
@@ -379,10 +375,12 @@
     }
 </style>
 
-<jsp:include page="fragments/_header.jsp" />
+    <!-- ════════════════ BODY WRAPPER ════════════════ -->
+    <div class="d-flex main-wrapper overflow-hidden">
 
-<!-- ══ MAIN WRAPPER (sidebar is fixed, so no flex push needed) ══ -->
-<div class="notif-page-wrapper">
+        <main class="flex-grow-1 overflow-y-auto" style="background-color: var(--background, #fff8f6); margin-left: 256px;">
+
+            <jsp:include page="fragments/_header.jsp" />
 
     <!-- Page Header -->
     <div class="notif-page-header">
@@ -857,7 +855,8 @@
 
     </div><!-- /#notif-list -->
 
-</div><!-- /.notif-page-wrapper -->
+        </main>
+    </div><!-- /.main-wrapper -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
