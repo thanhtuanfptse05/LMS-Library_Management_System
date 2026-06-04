@@ -389,8 +389,8 @@
                                                 </div>
                                             </td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></button>
-                                                <button class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -422,8 +422,8 @@
                                                 </div>
                                             </td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></button>
-                                                <button class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -455,8 +455,8 @@
                                                 </div>
                                             </td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></button>
-                                                <button class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                     </c:otherwise>

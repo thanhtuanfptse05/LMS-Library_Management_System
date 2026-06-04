@@ -172,13 +172,13 @@
                         </span>
                     </div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-sm rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
-                                style="background-color: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"
-                                data-bs-toggle="modal" data-bs-target="#editConditionModal"
-                                title="Edit Condition">
+                        <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp?id=<c:out value='${copy.copyId}'/>" 
+                           class="btn btn-sm rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
+                           style="background-color: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"
+                           title="Edit Copy">
                             <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
-                            Edit Condition
-                        </button>
+                            Edit Copy
+                        </a>
                         <button class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
                                 data-bs-toggle="modal" data-bs-target="#changeStatusModal"
                                 title="Change Status">

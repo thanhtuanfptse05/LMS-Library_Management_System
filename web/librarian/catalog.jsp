@@ -357,8 +357,8 @@
                                             <td class="text-end fw-semibold" style="font-size: 13px;">1.250.000</td>
                                             <td class="text-center"><span class="qty-badge qty-ok">12</span></td>
                                             <td class="text-center">
-                                                <button class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></button>
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -373,8 +373,8 @@
                                             <td class="text-end fw-semibold" style="font-size: 13px;">1.400.000</td>
                                             <td class="text-center"><span class="qty-badge qty-low">2</span></td>
                                             <td class="text-center">
-                                                <button class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></button>
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -389,8 +389,8 @@
                                             <td class="text-end fw-semibold" style="font-size: 13px;">950.000</td>
                                             <td class="text-center"><span class="qty-badge qty-ok">24</span></td>
                                             <td class="text-center">
-                                                <button class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></button>
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -405,8 +405,8 @@
                                             <td class="text-end fw-semibold" style="font-size: 13px;">1.650.000</td>
                                             <td class="text-center"><span class="qty-badge qty-zero">0</span></td>
                                             <td class="text-center">
-                                                <button class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></button>
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                     </c:otherwise>

@@ -344,6 +344,10 @@
                                                     </c:choose>
                                                 </td>
                                                 <td class="text-end">
+                                                    <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp?id=<c:out value='${copy.copyId}'/>"
+                                                       class="btn-icon" title="View Copy Details">
+                                                        <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
+                                                    </a>
                                                     <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp?id=<c:out value='${copy.copyId}'/>"
                                                        class="btn-icon" title="Edit Copy">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
@@ -365,7 +369,8 @@
                                             <td style="font-size: 13px;">Good</td>
                                             <td><span class="copy-badge status-available">AVAILABLE</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit Copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View Copy Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit Copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                                 <button class="btn-icon" style="color: var(--error);" title="Delete Copy"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
@@ -375,7 +380,8 @@
                                             <td style="font-size: 13px;">Fair – Cover wear</td>
                                             <td><span class="copy-badge status-reserved">RESERVED</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit Copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View Copy Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit Copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                                 <button class="btn-icon" style="color: var(--error);" title="Delete Copy"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
@@ -385,7 +391,8 @@
                                             <td style="font-size: 13px;">Good</td>
                                             <td><span class="copy-badge status-borrowed">BORROWED</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit Copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View Copy Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit Copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                                 <button class="btn-icon" style="color: var(--error);" title="Delete Copy"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
@@ -395,7 +402,8 @@
                                             <td style="font-size: 13px;">Lost</td>
                                             <td><span class="copy-badge status-lost">LOST</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit Copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View Copy Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit Copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                                 <button class="btn-icon" style="color: var(--error);" title="Delete Copy"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
