@@ -45,9 +45,10 @@
                             <h2 class="fw-semibold mb-0" style="font-size: 20px; color: var(--on-surface);">Today's Circulation</h2>
                             <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Real-time desk operations overview</p>
                         </div>
-                        <button class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1">
+                        <a href="${pageContext.request.contextPath}/librarian/catalog.jsp"
+                           class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
                             <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Issue Book
-                        </button>
+                        </a>
                     </div>
                     <div class="row g-3">
                         <!-- Issued Today -->
@@ -331,5 +332,6 @@
         </main>
     </div><!-- /.main-wrapper -->
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
