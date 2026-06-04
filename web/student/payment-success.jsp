@@ -12,8 +12,8 @@
         <jsp:include page="fragments/_sidebar.jsp" />
 
         <!-- ════════════════ MAIN CONTENT ════════════════ -->
-        <main class="flex-grow-1 overflow-y-auto" style="background-color: #f7f9fb;">
-            <div class="container-xl px-4 py-5 d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 160px);">
+        <main class="flex-grow-1 overflow-y-auto d-flex flex-column" style="background-color: #f7f9fb;">
+            <div class="container-xl px-4 py-5 flex-grow-1 d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 160px);">
                 
                 <!-- Success Response Card -->
                 <div class="raised-card p-5 border border-outline-variant bg-white text-center" style="max-width: 540px; width: 100%;">
