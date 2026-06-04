@@ -248,8 +248,7 @@
 
     /* ── Responsive ── */
     @media (max-width: 991.98px) {
-        main { margin-left: 0 !important; }
-        header.fixed-top > div { margin-left: 0 !important; }
+        .d-flex.main-wrapper main { margin-left: 0 !important; }
         .meta-strip-item { min-width: 100%; border-right: none; border-bottom: 1px solid var(--outline-variant); }
         .meta-strip-item:last-child { border-bottom: none; }
     }
@@ -976,6 +975,17 @@ We appreciate your understanding. Happy National Day!
 </div>
 
 <script>
+/* ── Sidebar active state ── */
+(function() {
+    var links = document.querySelectorAll('aside .sidebar-link');
+    links.forEach(function(link) { link.classList.remove('active'); });
+    links.forEach(function(link) {
+        if (link.href && link.href.indexOf('notification-detail') !== -1) {
+            link.classList.add('active');
+        }
+    });
+})();
+
 /* ══ Recipient filter tabs ══ */
 var recipTabs  = document.querySelectorAll('.recip-tab');
 var recipRows  = document.querySelectorAll('#recipientTable tbody tr');

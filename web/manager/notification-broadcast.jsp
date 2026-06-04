@@ -277,8 +277,7 @@
 
     /* ── Responsive ── */
     @media (max-width: 991.98px) {
-        main { margin-left: 0 !important; }
-        header.fixed-top > div { margin-left: 0 !important; }
+        .d-flex.main-wrapper main { margin-left: 0 !important; }
     }
 </style>
 
@@ -817,6 +816,17 @@
 </body>
 
 <script>
+/* ── Sidebar active state ── */
+(function() {
+    var links = document.querySelectorAll('aside .sidebar-link');
+    links.forEach(function(link) { link.classList.remove('active'); });
+    links.forEach(function(link) {
+        if (link.href && link.href.indexOf('notification-broadcast') !== -1) {
+            link.classList.add('active');
+        }
+    });
+})();
+
 /* ══ Audience card selection ══ */
 document.querySelectorAll('.audience-card input[type="radio"]').forEach(function(radio) {
     radio.addEventListener('change', function() {

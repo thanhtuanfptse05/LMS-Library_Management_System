@@ -11,7 +11,8 @@
                 <a href="${pageContext.request.contextPath}/manager/dashboard"
                    style="font-size: 13px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 2px; text-decoration: none; font-weight: 600;">Overview</a>
                 <a href="#" style="font-size: 13px; color: var(--on-surface-variant); text-decoration: none; font-weight: 600;">Reports</a>
-                <a href="#" style="font-size: 13px; color: var(--on-surface-variant); text-decoration: none; font-weight: 600;">Announcements</a>
+                <a href="${pageContext.request.contextPath}/manager/notification-broadcast.jsp"
+                   style="font-size: 13px; color: var(--on-surface-variant); text-decoration: none; font-weight: 600;">Announcements</a>
             </div>
         </div>
 

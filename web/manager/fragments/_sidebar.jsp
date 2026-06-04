@@ -30,8 +30,11 @@
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">policy</span><span>Library Policies</span>
         </a>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/notification-broadcast.jsp">
             <span class="material-symbols-outlined">campaign</span><span>Announcements</span>
+        </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/notification-detail.jsp">
+            <span class="material-symbols-outlined">notifications</span><span>Notif. History</span>
         </a>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">inventory_2</span><span>Acquisitions</span>
