@@ -27,21 +27,14 @@
             <span class="material-symbols-outlined">payments</span><span>Fines Collection</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Catalog</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/catalog">
-            <span class="material-symbols-outlined">auto_stories</span><span>Master Catalog</span>
+        <a class="sidebar-link" href="#">
+            <span class="material-symbols-outlined">book</span><span>Book Records</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/copy-list">
-            <span class="material-symbols-outlined">inventory</span><span>Physical Inventory</span>
-        </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/categories">
-            <span class="material-symbols-outlined">category</span><span>Categories</span>
-        </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/tags">
-            <span class="material-symbols-outlined">sell</span><span>Tags</span>
-        </a>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Users</p>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">group</span><span>Member Directory</span>
+        </a>
+        <a class="sidebar-link" href="#">
+            <span class="material-symbols-outlined">inventory</span><span>Inventory</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Account</p>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/profile">
