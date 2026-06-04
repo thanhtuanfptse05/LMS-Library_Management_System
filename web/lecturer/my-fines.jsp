@@ -78,7 +78,7 @@
                     <div class="tab-content" id="fineTabsContent">
                         <!-- TAB 1: UNPAID FINES -->
                         <div class="tab-pane fade show active" id="unpaid-content" role="tabpanel" aria-labelledby="unpaid-tab">
-                            <form action="${pageContext.request.contextPath}/student/payment-checkout.jsp" method="POST" id="checkoutForm">
+                            <form action="${pageContext.request.contextPath}/lecturer/payment-checkout.jsp" method="POST" id="checkoutForm">
                                 <div class="table-responsive">
                                     <table class="table table-hover align-middle mb-0">
                                         <thead>
