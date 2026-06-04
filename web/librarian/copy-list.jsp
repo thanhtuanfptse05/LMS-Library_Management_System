@@ -346,11 +346,11 @@
 
                                                 <%-- Actions --%>
                                                 <td class="text-end">
-                                                    <a href="${pageContext.request.contextPath}/librarian/copies/detail?id=<c:out value='${copy.copyId}'/>"
+                                                    <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp?id=<c:out value='${copy.copyId}'/>"
                                                        class="btn-icon" title="View history">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">history</span>
                                                     </a>
-                                                    <a href="${pageContext.request.contextPath}/librarian/copies/edit?id=<c:out value='${copy.copyId}'/>"
+                                                    <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp?id=<c:out value='${copy.copyId}'/>"
                                                        class="btn-icon" title="Edit copy">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                                     </a>
@@ -570,7 +570,7 @@
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <a href="${pageContext.request.contextPath}/librarian/copies"
+                        <a href="${pageContext.request.contextPath}/librarian/copy-list.jsp"
                            class="btn btn-light rounded-pill px-4 fw-bold">Reset</a>
                         <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Apply Filters</button>
                     </div>

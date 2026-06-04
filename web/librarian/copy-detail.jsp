@@ -158,12 +158,12 @@
                 <%-- ─── Breadcrumb + Actions ─── --%>
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                     <div class="d-flex align-items-center gap-2">
-                        <a href="${pageContext.request.contextPath}/librarian/catalog" class="breadcrumb-link" aria-label="Back to Catalog">
+                        <a href="${pageContext.request.contextPath}/librarian/catalog.jsp" class="breadcrumb-link" aria-label="Back to Catalog">
                             <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
                             <span>Catalog</span>
                         </a>
                         <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
-                        <a href="${pageContext.request.contextPath}/librarian/book?id=<c:out value='${copy.bookId}'/>" class="breadcrumb-link">
+                        <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${copy.bookId}'/>" class="breadcrumb-link">
                             <span>Book Details</span>
                         </a>
                         <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
@@ -238,7 +238,7 @@
                                     </div>
                                 </div>
 
-                                <a href="${pageContext.request.contextPath}/librarian/book?id=<c:out value='${copy.bookId}'/>"
+                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${copy.bookId}'/>"
                                    class="d-inline-flex align-items-center gap-1 fw-bold text-decoration-none mt-3"
                                    style="font-size: 13px; color: var(--primary);">
                                     Manage Master Book Record

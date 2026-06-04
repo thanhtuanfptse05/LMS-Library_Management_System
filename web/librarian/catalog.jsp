@@ -186,7 +186,7 @@
                         <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Catalog Management</h2>
                         <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Manage inventory, update records, and add new acquisitions.</p>
                     </div>
-                    <a href="${pageContext.request.contextPath}/librarian/book-register"
+                    <a href="${pageContext.request.contextPath}/librarian/book-register.jsp"
                        class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-inline-flex align-items-center gap-1"
                        style="height: 40px; text-decoration: none;">
                         <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span>
@@ -256,7 +256,7 @@
                             <label class="filter-pill-label" for="tagReference">Reference Only</label>
 
                             <c:if test="${not empty param.q or not empty param.category or not empty param.tag}">
-                                <a href="${pageContext.request.contextPath}/librarian/catalog"
+                                <a href="${pageContext.request.contextPath}/librarian/catalog.jsp"
                                    class="text-decoration-none fw-semibold"
                                    style="font-size: 12px; color: var(--on-surface-variant); margin-left: 4px;">
                                     <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">close</span>
@@ -331,11 +331,11 @@
                                                     </c:choose>
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="${pageContext.request.contextPath}/librarian/book-detail?id=<c:out value='${book.bookId}'/>"
+                                                    <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${book.bookId}'/>"
                                                        class="btn-icon" title="View Details">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
                                                     </a>
-                                                    <a href="${pageContext.request.contextPath}/librarian/book-edit?id=<c:out value='${book.bookId}'/>"
+                                                    <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp?id=<c:out value='${book.bookId}'/>"
                                                        class="btn-icon" title="Edit Record">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                                     </a>

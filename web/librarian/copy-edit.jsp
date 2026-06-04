@@ -172,12 +172,12 @@
 
                     <%-- ─── Breadcrumb ─── --%>
                     <div class="d-flex align-items-center gap-2 mb-4">
-                        <a href="${pageContext.request.contextPath}/librarian/catalog" class="breadcrumb-link" aria-label="Back to Catalog">
+                        <a href="${pageContext.request.contextPath}/librarian/catalog.jsp" class="breadcrumb-link" aria-label="Back to Catalog">
                             <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
                             <span>Catalog</span>
                         </a>
                         <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
-                        <a href="${pageContext.request.contextPath}/librarian/book?id=<c:out value='${copy.bookId}'/>" class="breadcrumb-link">
+                        <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${copy.bookId}'/>" class="breadcrumb-link">
                             Book Details
                         </a>
                         <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
@@ -215,7 +215,7 @@
                                 </c:if>
                             </p>
                         </div>
-                        <a href="${pageContext.request.contextPath}/librarian/book?id=<c:out value='${copy.bookId}'/>"
+                        <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${copy.bookId}'/>"
                            class="btn-icon flex-shrink-0" title="View book record">
                             <span class="material-symbols-outlined" style="font-size: 20px;">open_in_new</span>
                         </a>
@@ -278,7 +278,7 @@
 
                         <%-- Form Actions --%>
                         <div class="d-flex justify-content-end align-items-center gap-2 pt-2 pb-5">
-                            <a href="${pageContext.request.contextPath}/librarian/book?id=<c:out value='${copy.bookId}'/>"
+                            <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp?id=<c:out value='${copy.copyId}'/>"
                                class="btn py-2 px-4 rounded-pill fw-bold"
                                style="background-color: var(--surface-container-low); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
                                 Cancel

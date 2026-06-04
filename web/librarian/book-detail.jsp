@@ -142,7 +142,7 @@
                 <%-- ─── Breadcrumb + Actions ─── --%>
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                     <div class="d-flex align-items-center gap-2">
-                        <a href="${pageContext.request.contextPath}/librarian/catalog" class="breadcrumb-link" aria-label="Back to Catalog">
+                        <a href="${pageContext.request.contextPath}/librarian/catalog.jsp" class="breadcrumb-link" aria-label="Back to Catalog">
                             <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
                             <span>Book Catalog</span>
                         </a>
@@ -150,13 +150,13 @@
                         <span style="font-size: 13px; font-weight: 600; color: var(--on-surface);">Book Details</span>
                     </div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-sm rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
-                                style="background-color: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"
-                                data-bs-toggle="modal" data-bs-target="#editBookModal"
-                                title="Edit Book">
+                        <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp?id=<c:out value='${book.bookId}'/>" 
+                           class="btn btn-sm rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
+                           style="background-color: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"
+                           title="Edit Book">
                             <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                             Edit
-                        </button>
+                        </a>
                         <button class="btn btn-sm rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
                                 style="background-color: var(--error-container); color: var(--on-error-container); border: none;"
                                 data-bs-toggle="modal" data-bs-target="#deleteBookModal"
@@ -289,12 +289,12 @@
                             <h2 class="section-title">Inventory &amp; Copies</h2>
                             <p class="section-subtitle">Operational status &amp; asset tracking. Monitor physical holdings.</p>
                         </div>
-                        <button class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
-                                data-bs-toggle="modal" data-bs-target="#addCopyModal"
-                                id="btnAddCopy">
+                        <a href="${pageContext.request.contextPath}/librarian/copy-register.jsp?bookId=<c:out value='${book.bookId}'/>" 
+                           class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
+                           id="btnAddCopy">
                             <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span>
                             Add New Copy
-                        </button>
+                        </a>
                     </div>
 
                     <div class="table-responsive">
@@ -344,11 +344,10 @@
                                                     </c:choose>
                                                 </td>
                                                 <td class="text-end">
-                                                    <button class="btn-icon"
-                                                            title="Edit Copy"
-                                                            onclick="openEditCopyModal('<c:out value="${copy.copyId}"/>', '<c:out value="${copy.barcode}"/>', '<c:out value="${copy.location}"/>', '<c:out value="${copy.condition}"/>', '<c:out value="${copy.status}"/>')">
+                                                    <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp?id=<c:out value='${copy.copyId}'/>"
+                                                       class="btn-icon" title="Edit Copy">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
-                                                    </button>
+                                                    </a>
                                                     <button class="btn-icon" style="color: var(--error);"
                                                             title="Delete Copy"
                                                             onclick="openDeleteCopyModal('<c:out value="${copy.copyId}"/>', '<c:out value="${copy.barcode}"/>')">

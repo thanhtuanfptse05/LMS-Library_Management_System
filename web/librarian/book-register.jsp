@@ -184,7 +184,7 @@
 
                 <%-- ─── Breadcrumb ─── --%>
                 <div class="d-flex align-items-center gap-2 mb-4">
-                    <a href="${pageContext.request.contextPath}/librarian/catalog" class="breadcrumb-link" aria-label="Back to Catalog">
+                    <a href="${pageContext.request.contextPath}/librarian/catalog.jsp" class="breadcrumb-link" aria-label="Back to Catalog">
                         <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
                         <span>Book Catalog</span>
                     </a>
@@ -393,7 +393,7 @@
                                     <span class="material-symbols-outlined" style="font-size: 20px;">save</span>
                                     Finalize Registration
                                 </button>
-                                <a href="${pageContext.request.contextPath}/librarian/catalog"
+                                <a href="${pageContext.request.contextPath}/librarian/catalog.jsp"
                                    class="btn py-2 rounded-3 fw-bold text-center"
                                    style="background-color: var(--surface-container-low); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
                                     Discard &amp; Go Back
