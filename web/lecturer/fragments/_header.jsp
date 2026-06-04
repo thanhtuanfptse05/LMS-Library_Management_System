@@ -21,10 +21,11 @@
                 <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">search</span>
                 <input class="header-search-input" placeholder="Search books, journals..." type="text" aria-label="Search library catalog" />
             </div>
-            <button class="btn p-2 rounded-circle border-0 position-relative" style="background: transparent;" aria-label="Notifications">
+            <a href="${pageContext.request.contextPath}/lecturer/notifications.jsp"
+               class="btn p-2 rounded-circle border-0 position-relative" style="background: transparent;" aria-label="Notifications">
                 <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
                 <span class="notif-dot"></span>
-            </button>
+            </a>
             <a href="${pageContext.request.contextPath}/lecturer/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset" style="border-left: 1px solid var(--outline-variant);" title="View Profile">
                 <div class="avatar" style="background-color: var(--tertiary-fixed); color: var(--on-tertiary-fixed-variant);">LC</div>
                 <div class="d-none d-sm-block">

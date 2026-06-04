@@ -14,7 +14,7 @@
     <!-- Navigation -->
     <div class="flex-grow-1 d-flex flex-column gap-1">
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.15em;">My Workspace</p>
-        <a class="sidebar-link active" href="${pageContext.request.contextPath}/lecturer/dashboard">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/lecturer/dashboard">
             <span class="material-symbols-outlined">dashboard</span><span>Dashboard</span>
         </a>
         <a class="sidebar-link" href="#">
@@ -22,6 +22,14 @@
         </a>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">bookmark</span><span>Saved Lists</span>
+        </a>
+        <a class="sidebar-link active" href="${pageContext.request.contextPath}/lecturer/notifications.jsp">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+            <span>Notifications</span>
+            <span style="margin-left: auto; min-width: 18px; height: 18px; border-radius: 999px;
+                         background-color: var(--tertiary, #006398); color: #fff;
+                         font-size: 10px; font-weight: 700;
+                         display: inline-flex; align-items: center; justify-content: center; padding: 0 5px;">4</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Course Resources</p>
         <a class="sidebar-link" href="#">

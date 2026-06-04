@@ -35,13 +35,14 @@
 
         <!-- Right: Notifications + User -->
         <div class="d-flex align-items-center gap-3">
-            <button class="btn p-2 rounded-circle border-0 position-relative"
+            <a href="${pageContext.request.contextPath}/student/notifications.jsp"
+                    class="btn p-2 rounded-circle border-0 position-relative"
                     style="background: transparent;"
                     aria-label="Notifications"
                     title="Notifications">
                 <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
                 <span class="notif-dot"></span>
-            </button>
+            </a>
             <button class="btn p-2 rounded-circle border-0"
                     style="background: transparent;"
                     aria-label="Help"

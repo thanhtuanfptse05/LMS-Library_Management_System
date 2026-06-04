@@ -8,7 +8,7 @@
         <p class="text-on-surface-variant fw-bold text-uppercase mb-3"
            style="font-size: 10px; letter-spacing: 0.2em;">Library Access</p>
         <div class="d-flex flex-column gap-1">
-            <a class="sidebar-link active"
+            <a class="sidebar-link"
                href="${pageContext.request.contextPath}/student/dashboard">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
                 <span>Home</span>
@@ -27,6 +27,15 @@
                href="${pageContext.request.contextPath}/student/fines">
                 <span class="material-symbols-outlined">payments</span>
                 <span>Fine History</span>
+            </a>
+            <a class="sidebar-link active"
+               href="${pageContext.request.contextPath}/student/notifications.jsp">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+                <span>Notifications</span>
+                <span style="margin-left: auto; min-width: 18px; height: 18px; border-radius: 999px;
+                             background-color: var(--primary); color: #fff;
+                             font-size: 10px; font-weight: 700;
+                             display: inline-flex; align-items: center; justify-content: center; padding: 0 5px;">3</span>
             </a>
         </div>
     </div>
