@@ -25,10 +25,10 @@
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">security</span><span>Security</span>
         </a>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/audit-logs.jsp">
             <span class="material-symbols-outlined">receipt_long</span><span>Audit Logs</span>
         </a>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/config-list.jsp">
             <span class="material-symbols-outlined">settings</span><span>Configurations</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Account</p>
