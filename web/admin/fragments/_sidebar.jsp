@@ -16,7 +16,7 @@
         <a class="sidebar-link active" href="${pageContext.request.contextPath}/admin/dashboard">
             <span class="material-symbols-outlined">dashboard</span><span>Dashboard</span>
         </a>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/user-list.jsp">
             <span class="material-symbols-outlined">group</span><span>User Management</span>
         </a>
         <a class="sidebar-link" href="#">
