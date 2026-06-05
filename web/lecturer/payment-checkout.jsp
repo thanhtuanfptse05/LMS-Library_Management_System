@@ -12,12 +12,12 @@
         <jsp:include page="fragments/_sidebar.jsp" />
 
         <!-- ════════════════ MAIN CONTENT ════════════════ -->
-        <main class="flex-grow-1 overflow-y-auto d-flex flex-column" style="background-color: #f7f9fb;">
-            <div class="container-xl px-4 py-5 flex-grow-1">
+        <main class="flex-grow-1 overflow-y-auto" style="background-color: #f7f9fb;">
+            <div class="container-xl px-4 py-5">
                 
                 <!-- Page Title -->
                 <div class="mb-4">
-                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Secure Checkout</h2>
+                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Lecturer Checkout</h2>
                     <p class="font-body-md text-on-surface-variant">Review your invoice itemization and select your payment method.</p>
                 </div>
 
@@ -48,13 +48,13 @@
                                                         <span class="material-symbols-outlined text-muted">menu_book</span>
                                                     </div>
                                                     <div>
-                                                        <p class="mb-0 fw-bold">Introduction to Algorithms (4th Edition)</p>
-                                                        <small class="text-muted">Barcode: LMS-BK-10293 • Late Return Penalty</small>
+                                                        <p class="mb-0 fw-bold">Quantum Mechanics: Concepts and Applications</p>
+                                                        <small class="text-muted">Barcode: LMS-BK-22891 • Damaged Pages (Spilled liquid)</small>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>May 20, 2026</td>
-                                            <td class="text-end fw-bold text-danger pe-3">$12.00</td>
+                                            <td>Apr 14, 2026</td>
+                                            <td class="text-end fw-bold text-danger pe-3">$30.00</td>
                                         </tr>
                                         <!-- Selected Fine 2 -->
                                         <tr>
@@ -64,13 +64,13 @@
                                                         <span class="material-symbols-outlined text-muted">menu_book</span>
                                                     </div>
                                                     <div>
-                                                        <p class="mb-0 fw-bold">Design Patterns: Elements of Reusable Object-Oriented Software</p>
-                                                        <small class="text-muted">Barcode: LMS-BK-00892 • Damaged Book Cover</small>
+                                                        <p class="mb-0 fw-bold">Thermodynamics and Statistical Mechanics</p>
+                                                        <small class="text-muted">Barcode: LMS-BK-49210 • Overdue Return Penalty</small>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>Jun 02, 2026</td>
-                                            <td class="text-end fw-bold text-danger pe-3">$12.00</td>
+                                            <td>May 29, 2026</td>
+                                            <td class="text-end fw-bold text-danger pe-3">$15.00</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -80,7 +80,7 @@
                                 <div class="col-12 col-md-6">
                                     <div class="d-flex justify-content-between py-2 border-bottom">
                                         <span class="text-muted">Fines Subtotal</span>
-                                        <span class="fw-bold text-dark">$24.00</span>
+                                        <span class="fw-bold text-dark">$45.00</span>
                                     </div>
                                     <div class="d-flex justify-content-between py-2 border-bottom">
                                         <span class="text-muted">Processing Fee (Gateway)</span>
@@ -88,7 +88,7 @@
                                     </div>
                                     <div class="d-flex justify-content-between py-2 mt-2">
                                         <span class="fw-bold text-dark fs-5">Total Amount Due</span>
-                                        <span class="fw-bold text-primary-custom fs-5">$24.00</span>
+                                        <span class="fw-bold text-primary-custom fs-5">$45.00</span>
                                     </div>
                                 </div>
                             </div>
@@ -165,9 +165,9 @@
     <script>
         function simulatedCheckout(status) {
             if (status === 'success') {
-                window.location.href = '${pageContext.request.contextPath}/student/payment-success.jsp';
+                window.location.href = '${pageContext.request.contextPath}/lecturer/payment-success.jsp';
             } else {
-                window.location.href = '${pageContext.request.contextPath}/student/payment-cancel.jsp';
+                window.location.href = '${pageContext.request.contextPath}/lecturer/payment-cancel.jsp';
             }
         }
     </script>

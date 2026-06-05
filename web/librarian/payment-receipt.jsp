@@ -12,8 +12,8 @@
         <jsp:include page="fragments/_sidebar.jsp" />
 
         <!-- ════════════════ MAIN CONTENT ════════════════ -->
-        <main class="flex-grow-1 overflow-y-auto" style="background-color: #f7f9fb;">
-            <div class="container-xl px-4 py-5">
+        <main class="flex-grow-1 overflow-y-auto d-flex flex-column" style="background-color: #f7f9fb; margin-left: 256px;">
+            <div class="container-xl px-4 py-5 flex-grow-1">
                 
                 <!-- Page Header -->
                 <div class="mb-4">
