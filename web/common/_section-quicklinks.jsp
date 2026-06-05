@@ -7,8 +7,8 @@
         <!-- Section Header -->
         <div class="mb-4">
             <span class="fw-bold text-uppercase"
-                style="font-size: 12px; letter-spacing: 0.1em; color: var(--primary-color);">Quick Access</span>
-            <h2 class="fw-bold mt-1 mb-0" style="font-size: 28px; color: var(--bs-body-color);">Library Shortcuts</h2>
+                style="font-size: 12px; letter-spacing: 0.1em; color: var(--primary-color);">Truy cập nhanh</span>
+            <h2 class="fw-bold mt-1 mb-0" style="font-size: 28px; color: var(--bs-body-color);">Lối tắt Thư viện</h2>
         </div>
 
         <div class="row g-4 row-cols-1 row-cols-md-3">
@@ -20,9 +20,9 @@
                         <div class="icon-circle mb-4">
                             <i class="bi bi-book-half fs-4"></i>
                         </div>
-                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Catalog</h3>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Mục lục</h3>
                         <p class="mb-0 small" style="color: var(--text-muted-custom);">
-                            Browse our physical and digital library collection across all disciplines.
+                            Duyệt qua bộ sưu tập thư viện vật lý và kỹ thuật số của chúng tôi trên tất cả các lĩnh vực.
                         </p>
                     </div>
                 </a>
@@ -35,9 +35,9 @@
                         <div class="icon-circle mb-4">
                             <i class="bi bi-cart3 fs-4"></i>
                         </div>
-                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Borrow</h3>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Mượn sách</h3>
                         <p class="mb-0 small" style="color: var(--text-muted-custom);">
-                            Request materials for pickup or inter-library loan with ease.
+                            Yêu cầu tài liệu để nhận trực tiếp hoặc mượn liên thư viện một cách dễ dàng.
                         </p>
                     </div>
                 </a>
@@ -50,9 +50,9 @@
                         <div class="icon-circle mb-4">
                             <i class="bi bi-arrow-clockwise fs-4"></i>
                         </div>
-                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Renew</h3>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Gia hạn</h3>
                         <p class="mb-0 small" style="color: var(--text-muted-custom);">
-                            Extend your current loans and manage your account online.
+                            Gia hạn các khoản mượn hiện tại của bạn và quản lý tài khoản trực tuyến.
                         </p>
                     </div>
                 </a>
@@ -65,9 +65,9 @@
                         <div class="icon-circle mb-4">
                             <i class="bi bi-gavel fs-4"></i>
                         </div>
-                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Policies</h3>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Chính sách</h3>
                         <p class="mb-0 small" style="color: var(--text-muted-custom);">
-                            Understand access rights, loan periods, and library guidelines.
+                            Tìm hiểu các quyền truy cập, thời hạn mượn và các hướng dẫn của thư viện.
                         </p>
                     </div>
                 </a>
@@ -107,9 +107,9 @@
                         <div class="icon-circle mb-4">
                             <i class="bi bi-speedometer2 fs-4"></i>
                         </div>
-                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Dashboard</h3>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Bảng điều khiển</h3>
                         <p class="mb-0 small" style="color: var(--text-muted-custom);">
-                            Personalized overview of your research and borrowed items.
+                            Tổng quan cá nhân hóa về nghiên cứu và các tài liệu đã mượn của bạn.
                         </p>
                     </div>
                 </a>
@@ -122,9 +122,9 @@
                         <div class="icon-circle mb-4">
                             <i class="bi bi-chat-dots fs-4"></i>
                         </div>
-                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Librarian Chat</h3>
+                        <h3 class="fw-medium mb-2" style="font-size: 22px; color: var(--bs-body-color);">Trò chuyện với Thủ thư</h3>
                         <p class="mb-0 small" style="color: var(--text-muted-custom);">
-                            Get expert research assistance from our professional librarians.
+                            Nhận sự hỗ trợ nghiên cứu chuyên môn từ các thủ thư chuyên nghiệp của chúng tôi.
                         </p>
                     </div>
                 </a>

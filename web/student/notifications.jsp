@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <%--
     Student Notifications — Hộp thư thông báo cá nhân dành cho Sinh viên
@@ -366,23 +366,23 @@
                         <ol class="breadcrumb mb-0" style="font-size: 12px;">
                             <li class="breadcrumb-item">
                                 <a href="${pageContext.request.contextPath}/student/dashboard"
-                                   class="text-decoration-none text-on-surface-variant">Home</a>
+                                   class="text-decoration-none text-on-surface-variant">Trang chủ</a>
                             </li>
-                            <li class="breadcrumb-item active text-primary-custom fw-semibold" aria-current="page">Notifications</li>
+                            <li class="breadcrumb-item active text-primary-custom fw-semibold" aria-current="page">Thông báo</li>
                         </ol>
                     </nav>
                     <h1>
                         <span class="material-symbols-outlined me-2"
                               style="font-size: 26px; vertical-align: -4px; font-variation-settings: 'FILL' 1;">notifications</span>
-                        My Notifications
+                        Thông báo của tôi
                     </h1>
-                    <p class="subtitle">Stay up to date with your loans, fines, and library announcements.</p>
+                    <p class="subtitle">Cập nhật thông tin về các khoản mượn, tiền phạt và thông báo từ thư viện.</p>
                 </div>
                 <!-- Unread badge summary -->
                 <div class="d-flex align-items-center gap-2">
                     <span class="badge rounded-pill text-white fw-bold px-3 py-2"
                           style="background-color: var(--primary); font-size: 13px;">
-                        <c:out value="${unreadCount != null ? unreadCount : 3}" /> Unread
+                        <c:out value="${unreadCount != null ? unreadCount : 3}" /> Chưa đọc
                     </span>
                 </div>
             </div>
@@ -395,7 +395,7 @@
                     <span class="material-symbols-outlined" style="color: var(--primary);">mark_email_unread</span>
                 </div>
                 <div>
-                    <div class="sc-label">Unread</div>
+                    <div class="sc-label">Chưa đọc</div>
                     <div class="sc-value text-primary-custom">
                         <c:out value="${unreadCount != null ? unreadCount : 3}" />
                     </div>
@@ -406,7 +406,7 @@
                     <span class="material-symbols-outlined" style="color: var(--error, #ba1a1a);">warning</span>
                 </div>
                 <div>
-                    <div class="sc-label">Overdue Alerts</div>
+                    <div class="sc-label">Cảnh báo quá hạn</div>
                     <div class="sc-value" style="color: var(--error, #ba1a1a);">
                         <c:out value="${overdueCount != null ? overdueCount : 1}" />
                     </div>
@@ -417,7 +417,7 @@
                     <span class="material-symbols-outlined" style="color: #16a34a;">check_circle</span>
                 </div>
                 <div>
-                    <div class="sc-label">Approved</div>
+                    <div class="sc-label">Đã phê duyệt</div>
                     <div class="sc-value" style="color: #16a34a;">
                         <c:out value="${approvedCount != null ? approvedCount : 1}" />
                     </div>
@@ -428,7 +428,7 @@
                     <span class="material-symbols-outlined" style="color: var(--tertiary, #006398);">campaign</span>
                 </div>
                 <div>
-                    <div class="sc-label">Announcements</div>
+                    <div class="sc-label">Thông báo hệ thống</div>
                     <div class="sc-value" style="color: var(--tertiary, #006398);">
                         <c:out value="${announcementCount != null ? announcementCount : 2}" />
                     </div>
@@ -442,37 +442,37 @@
             <div class="notif-tabs" role="tablist" aria-label="Notification filters">
                 <button class="notif-tab active" role="tab" aria-selected="true"
                         id="tab-all" data-filter="all" aria-controls="notif-list">
-                    All
+                    Tất cả
                     <span class="tab-count">6</span>
                 </button>
                 <button class="notif-tab" role="tab" aria-selected="false"
                         id="tab-unread" data-filter="unread" aria-controls="notif-list">
                     <span class="material-symbols-outlined" style="font-size: 14px;">mark_email_unread</span>
-                    Unread
+                    Chưa đọc
                     <span class="tab-count">3</span>
                 </button>
                 <button class="notif-tab" role="tab" aria-selected="false"
                         id="tab-overdue" data-filter="overdue">
                     <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
-                    Overdue
+                    Quá hạn
                 </button>
                 <button class="notif-tab" role="tab" aria-selected="false"
                         id="tab-system" data-filter="system">
                     <span class="material-symbols-outlined" style="font-size: 14px;">campaign</span>
-                    Announcements
+                    Thông báo hệ thống
                 </button>
             </div>
             <!-- Bulk actions -->
             <div class="d-flex align-items-center gap-2">
                 <button class="btn-notif-action" id="btn-mark-all-read"
-                        title="Mark all as read" aria-label="Mark all notifications as read">
+                        title="Đánh dấu tất cả đã đọc" aria-label="Đánh dấu tất cả thông báo đã đọc">
                     <span class="material-symbols-outlined">done_all</span>
-                    Mark all read
+                    Đánh dấu tất cả đã đọc
                 </button>
                 <button class="btn-notif-action" id="btn-clear-read"
-                        title="Clear read notifications" aria-label="Clear all read notifications">
+                        title="Xóa thông báo đã đọc" aria-label="Xóa tất cả thông báo đã đọc">
                     <span class="material-symbols-outlined">delete_sweep</span>
-                    Clear read
+                    Xóa thông báo đã đọc
                 </button>
             </div>
         </div>
@@ -485,12 +485,12 @@
                     <%-- ── Fallback demo data (replaced by real ${notifications} from Servlet) ── --%>
 
                     <!-- TODAY separator -->
-                    <div class="notif-date-sep" aria-hidden="true"><span>Today</span></div>
+                    <div class="notif-date-sep" aria-hidden="true"><span>Hôm nay</span></div>
 
                     <!-- Notification 1 — Overdue (UNREAD) -->
                     <div class="notif-item is-unread"
                          tabindex="0" role="article"
-                         aria-label="Overdue alert — unread"
+                         aria-label="Cảnh báo quá hạn — chưa đọc"
                          data-type="overdue" data-id="notif-1">
                         <div class="unread-dot" aria-hidden="true"></div>
                         <div class="notif-icon-wrap type-overdue" aria-hidden="true">
@@ -498,33 +498,33 @@
                         </div>
                         <div class="notif-content">
                             <div class="notif-meta">
-                                <span class="notif-category type-overdue">Overdue</span>
+                                <span class="notif-category type-overdue">Quá hạn</span>
                                 <span class="notif-timestamp">
                                     <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                    2 hours ago
+                                    2 giờ trước
                                 </span>
                             </div>
-                            <div class="notif-title">Your borrowed book is overdue!</div>
+                            <div class="notif-title">Sách bạn mượn đã quá hạn!</div>
                             <div class="notif-body">
-                                <strong>"Introduction to Algorithms"</strong> (3rd Edition) was due on
-                                <strong>June 2, 2026</strong>. A late fee of <strong>5,000 VND/day</strong> is being
-                                accumulated. Please return it as soon as possible to avoid further charges.
+                                <strong>"Introduction to Algorithms"</strong> (Tái bản lần 3) đã hết hạn vào ngày
+                                <strong>02/06/2026</strong>. Tiền phạt <strong>5.000 VND/ngày</strong> đang
+                                được tích lũy. Vui lòng trả sách sớm nhất có thể để tránh phát sinh thêm chi phí.
                             </div>
                             <a href="${pageContext.request.contextPath}/student/fines"
-                               class="notif-action-btn" aria-label="View fine details">
+                               class="notif-action-btn" aria-label="Xem chi tiết phạt">
                                 <span class="material-symbols-outlined">payments</span>
-                                View Fine Details
+                                Xem chi tiết phạt
                             </a>
                         </div>
-                        <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                        <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
-                    <!-- Notification 2 — Due Soon (UNREAD) -->
+                    <!-- Thông báo 2 — Sắp hết hạn (CHƯA ĐỌC) -->
                     <div class="notif-item is-unread"
                          tabindex="0" role="article"
-                         aria-label="Due soon reminder — unread"
+                         aria-label="Nhắc nhở sắp hết hạn — chưa đọc"
                          data-type="due-soon" data-id="notif-2">
                         <div class="unread-dot" aria-hidden="true"></div>
                         <div class="notif-icon-wrap type-due-soon" aria-hidden="true">
@@ -532,42 +532,42 @@
                         </div>
                         <div class="notif-content">
                             <div class="notif-meta">
-                                <span class="notif-category type-due-soon">Due Soon</span>
+                                <span class="notif-category type-due-soon">Sắp hết hạn</span>
                                 <span class="notif-timestamp">
                                     <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                    5 hours ago
+                                    5 giờ trước
                                 </span>
                             </div>
-                            <div class="notif-title">Return reminder: 2 days remaining</div>
+                            <div class="notif-title">Nhắc nhở trả sách: Còn 2 ngày</div>
                             <div class="notif-body">
                                 <strong>"Design Patterns: Elements of Reusable Object-Oriented Software"</strong>
-                                is due on <strong>June 6, 2026</strong>. You have 2 days left to return it
-                                or request a renewal.
+                                hết hạn vào ngày <strong>06/06/2026</strong>. Bạn còn 2 ngày để trả sách
+                                hoặc yêu cầu gia hạn.
                             </div>
                             <div class="d-flex gap-2 flex-wrap">
                                 <a href="${pageContext.request.contextPath}/student/loans"
-                                   class="notif-action-btn" aria-label="View loan details">
+                                   class="notif-action-btn" aria-label="Xem chi tiết khoản mượn">
                                     <span class="material-symbols-outlined">book</span>
-                                    View Loan
+                                    Xem khoản mượn
                                 </a>
                                 <a href="${pageContext.request.contextPath}/student/loans/renew"
                                    class="notif-action-btn"
                                    style="background-color: transparent; color: var(--primary); border: 1px solid var(--primary);"
-                                   aria-label="Renew book">
+                                   aria-label="Gia hạn sách">
                                     <span class="material-symbols-outlined">autorenew</span>
-                                    Request Renewal
+                                    Yêu cầu gia hạn
                                 </a>
                             </div>
                         </div>
-                        <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                        <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
-                    <!-- Notification 3 — Reservation Approved (UNREAD) -->
+                    <!-- Thông báo 3 — Đặt trước được phê duyệt (CHƯA ĐỌC) -->
                     <div class="notif-item is-unread"
                          tabindex="0" role="article"
-                         aria-label="Reservation approved — unread"
+                         aria-label="Đặt trước được phê duyệt — chưa đọc"
                          data-type="approved" data-id="notif-3">
                         <div class="unread-dot" aria-hidden="true"></div>
                         <div class="notif-icon-wrap type-approved" aria-hidden="true">
@@ -575,36 +575,36 @@
                         </div>
                         <div class="notif-content">
                             <div class="notif-meta">
-                                <span class="notif-category type-approved">Approved</span>
+                                <span class="notif-category type-approved">Đã phê duyệt</span>
                                 <span class="notif-timestamp">
                                     <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                    Yesterday, 10:45 AM
+                                    Hôm qua, 10:45 AM
                                 </span>
                             </div>
-                            <div class="notif-title">Your reservation has been approved</div>
+                            <div class="notif-title">Yêu cầu đặt trước sách của bạn đã được phê duyệt</div>
                             <div class="notif-body">
                                 <strong>"Clean Code: A Handbook of Agile Software Craftsmanship"</strong>
-                                is now ready for pickup at the <strong>Main Library — Desk B</strong>.
-                                Please collect it within <strong>3 days</strong> or your reservation will expire.
+                                hiện đã sẵn sàng để lấy tại <strong>Thư viện Trung tâm — Quầy B</strong>.
+                                Vui lòng đến lấy trong vòng <strong>3 ngày</strong> hoặc yêu cầu đặt trước sẽ hết hạn.
                             </div>
                             <a href="${pageContext.request.contextPath}/student/reservations"
-                               class="notif-action-btn" aria-label="View reservation">
+                               class="notif-action-btn" aria-label="Xem đặt trước">
                                 <span class="material-symbols-outlined">bookmark</span>
-                                View Reservation
+                                Xem đặt trước
                             </a>
                         </div>
-                        <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                        <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
                     <!-- EARLIER separator -->
-                    <div class="notif-date-sep" aria-hidden="true"><span>Earlier</span></div>
+                    <div class="notif-date-sep" aria-hidden="true"><span>Trước đó</span></div>
 
-                    <!-- Notification 4 — Return Confirmed (READ) -->
+                    <!-- Thông báo 4 — Xác nhận trả sách (ĐÃ ĐỌC) -->
                     <div class="notif-item"
                          tabindex="0" role="article"
-                         aria-label="Return confirmed"
+                         aria-label="Xác nhận trả sách"
                          data-type="return" data-id="notif-4">
                         <div class="unread-dot" aria-hidden="true"></div>
                         <div class="notif-icon-wrap type-return" aria-hidden="true">
@@ -612,27 +612,27 @@
                         </div>
                         <div class="notif-content">
                             <div class="notif-meta">
-                                <span class="notif-category type-return">Return</span>
+                                <span class="notif-category type-return">Trả sách</span>
                                 <span class="notif-timestamp">
                                     <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                    June 1, 2026
+                                    01/06/2026
                                 </span>
                             </div>
-                            <div class="notif-title">Book return confirmed</div>
+                            <div class="notif-title">Xác nhận trả sách thành công</div>
                             <div class="notif-body">
-                                You have successfully returned <strong>"Operating System Concepts"</strong>
-                                (10th Edition). No outstanding fines. Thank you!
+                                Bạn đã trả thành công <strong>"Operating System Concepts"</strong>
+                                (Tái bản lần 10). Không có khoản phạt nào. Cảm ơn bạn!
                             </div>
                         </div>
-                        <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                        <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
-                    <!-- Notification 5 — System / Announcement (READ) -->
+                    <!-- Thông báo 5 — Hệ thống / Thông báo chung (ĐÃ ĐỌC) -->
                     <div class="notif-item"
                          tabindex="0" role="article"
-                         aria-label="Library announcement"
+                         aria-label="Thông báo thư viện"
                          data-type="system" data-id="notif-5">
                         <div class="unread-dot" aria-hidden="true"></div>
                         <div class="notif-icon-wrap type-system" aria-hidden="true">
@@ -640,33 +640,33 @@
                         </div>
                         <div class="notif-content">
                             <div class="notif-meta">
-                                <span class="notif-category type-system">Announcement</span>
+                                <span class="notif-category type-system">Thông báo chung</span>
                                 <span class="notif-timestamp">
                                     <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                    May 30, 2026
+                                    30/05/2026
                                 </span>
                             </div>
-                            <div class="notif-title">Library hours extended during exam period</div>
+                            <div class="notif-title">Kéo dài giờ mở cửa thư viện trong kỳ thi</div>
                             <div class="notif-body">
-                                The university library will be open until <strong>11:00 PM</strong> from
-                                <strong>June 3 – June 20, 2026</strong> to support students during the
-                                final examination period. Additional study rooms are also available for booking.
+                                Thư viện trường sẽ mở cửa đến <strong>23:00</strong> từ
+                                <strong>03/06 – 20/06/2026</strong> để hỗ trợ sinh viên trong
+                                kỳ thi cuối kỳ. Các phòng học cũng có sẵn để đặt chỗ.
                             </div>
                             <a href="${pageContext.request.contextPath}/services.jsp"
-                               class="notif-action-btn" aria-label="View library services">
+                               class="notif-action-btn" aria-label="Xem dịch vụ thư viện">
                                 <span class="material-symbols-outlined">arrow_forward</span>
-                                Learn More
+                                Tìm hiểu thêm
                             </a>
                         </div>
-                        <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                        <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
-                    <!-- Notification 6 — General (READ) -->
+                    <!-- Thông báo 6 — Tài khoản (ĐÃ ĐỌC) -->
                     <div class="notif-item"
                          tabindex="0" role="article"
-                         aria-label="Account notification"
+                         aria-label="Thông báo tài khoản"
                          data-type="general" data-id="notif-6">
                         <div class="unread-dot" aria-hidden="true"></div>
                         <div class="notif-icon-wrap type-general" aria-hidden="true">
@@ -674,20 +674,20 @@
                         </div>
                         <div class="notif-content">
                             <div class="notif-meta">
-                                <span class="notif-category type-general">Account</span>
+                                <span class="notif-category type-general">Tài khoản</span>
                                 <span class="notif-timestamp">
                                     <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                    May 28, 2026
+                                    28/05/2026
                                 </span>
                             </div>
-                            <div class="notif-title">Your library card has been renewed</div>
+                            <div class="notif-title">Thẻ thư viện của bạn đã được gia hạn</div>
                             <div class="notif-body">
-                                Your student library access card has been renewed and is valid until
-                                <strong>May 2027</strong>. You may now borrow up to <strong>5 books</strong>
-                                simultaneously.
+                                Thẻ thư viện sinh viên của bạn đã được gia hạn và có giá trị đến
+                                <strong>05/2027</strong>. Bạn có thể mượn tối đa <strong>5 cuốn sách</strong>
+                                cùng một lúc.
                             </div>
                         </div>
-                        <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                        <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
@@ -700,13 +700,13 @@
                             <div class="empty-icon-wrap" aria-hidden="true">
                                 <span class="material-symbols-outlined">notifications_off</span>
                             </div>
-                            <h3>All caught up!</h3>
-                            <p>You have no notifications at the moment.</p>
+                            <h3>Đã xem hết thông báo!</h3>
+                            <p>Bạn không có thông báo nào vào lúc này.</p>
                         </div>
                     </c:if>
 
                     <c:if test="${not empty todayNotifications}">
-                        <div class="notif-date-sep" aria-hidden="true"><span>Today</span></div>
+                        <div class="notif-date-sep" aria-hidden="true"><span>Hôm nay</span></div>
                         <c:forEach var="notif" items="${todayNotifications}">
                             <div class="notif-item ${not notif.read ? 'is-unread' : ''}"
                                  tabindex="0" role="article"
@@ -733,7 +733,7 @@
                                         </a>
                                     </c:if>
                                 </div>
-                                <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                                <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                                     <span class="material-symbols-outlined">close</span>
                                 </button>
                             </div>
@@ -741,7 +741,7 @@
                     </c:if>
 
                     <c:if test="${not empty earlierNotifications}">
-                        <div class="notif-date-sep" aria-hidden="true"><span>Earlier</span></div>
+                        <div class="notif-date-sep" aria-hidden="true"><span>Trước đó</span></div>
                         <c:forEach var="notif" items="${earlierNotifications}">
                             <div class="notif-item ${not notif.read ? 'is-unread' : ''}"
                                  tabindex="0" role="article"
@@ -768,7 +768,7 @@
                                         </a>
                                     </c:if>
                                 </div>
-                                <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                                <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                                     <span class="material-symbols-outlined">close</span>
                                 </button>
                             </div>

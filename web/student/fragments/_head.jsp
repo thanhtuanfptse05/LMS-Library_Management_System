@@ -2,8 +2,8 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Student Dashboard - LMS University Library</title>
-    <meta name="description" content="Manage your loans, reservations, and explore book recommendations on your personal student library dashboard." />
+    <title>Bảng điều khiển Sinh viên - Thư viện Đại học LMS</title>
+    <meta name="description" content="Quản lý sách mượn, đặt chỗ và khám phá sách được đề xuất trên bảng điều khiển thư viện cá nhân của sinh viên." />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />

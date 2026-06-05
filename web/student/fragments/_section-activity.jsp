@@ -4,12 +4,12 @@
 <!-- ── Recent Activity Table ── -->
 <section class="mb-5">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="fs-4 fw-bold mb-0 text-dark">Recent Activity</h2>
+        <h2 class="fs-4 fw-bold mb-0 text-dark">Hoạt động gần đây</h2>
         <div class="d-flex gap-2">
             <a href="${pageContext.request.contextPath}/student/loans"
                class="btn btn-light bg-surface-container border-0 p-2 d-flex align-items-center justify-content-center text-decoration-none"
                style="border-radius: 0.5rem;"
-               title="View all loans">
+               title="Xem tất cả sách mượn">
                 <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">open_in_new</span>
             </a>
         </div>
@@ -21,15 +21,15 @@
                 <thead class="bg-surface-container-low" style="border-bottom: 1px solid var(--outline-variant);">
                     <tr>
                         <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold"
-                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Book Title</th>
+                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Sách Tiêu đề</th>
                         <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold"
-                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Author</th>
+                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Tác giả</th>
                         <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold"
-                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Date Borrowed</th>
+                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Ngày mượn</th>
                         <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold"
-                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Due Date</th>
+                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Hạn trả</th>
                         <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold text-center"
-                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Status</th>
+                            style="font-size: 11px; letter-spacing: 0.06em; border-bottom: none;">Trạng thái</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,13 +64,13 @@
                                     <td class="px-4 py-3 text-center">
                                         <c:choose>
                                             <c:when test="${loan.status eq 'returned'}">
-                                                <span class="badge badge-returned text-uppercase px-3 py-1" style="font-size: 10px;">Returned</span>
+                                                <span class="badge badge-returned text-uppercase px-3 py-1" style="font-size: 10px;">Đã trả</span>
                                             </c:when>
                                             <c:when test="${loan.status eq 'overdue'}">
-                                                <span class="badge badge-overdue text-uppercase px-3 py-1" style="font-size: 10px;">Overdue</span>
+                                                <span class="badge badge-overdue text-uppercase px-3 py-1" style="font-size: 10px;">Quá hạn</span>
                                             </c:when>
                                             <c:when test="${loan.status eq 'borrowed'}">
-                                                <span class="badge badge-borrowed text-uppercase px-3 py-1" style="font-size: 10px;">Borrowed</span>
+                                                <span class="badge badge-borrowed text-uppercase px-3 py-1" style="font-size: 10px;">Đang mượn</span>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="badge badge-pending text-uppercase px-3 py-1" style="font-size: 10px;">
@@ -95,7 +95,7 @@
                                 <td class="px-4 py-3 text-on-surface-variant small">Sep 15, 2024</td>
                                 <td class="px-4 py-3 text-on-surface-variant small">Sep 29, 2024</td>
                                 <td class="px-4 py-3 text-center">
-                                    <span class="badge badge-returned text-uppercase px-3 py-1" style="font-size: 10px;">Returned</span>
+                                    <span class="badge badge-returned text-uppercase px-3 py-1" style="font-size: 10px;">Đã trả</span>
                                 </td>
                             </tr>
                             <tr>
@@ -109,7 +109,7 @@
                                 <td class="px-4 py-3 text-on-surface-variant small">Aug 28, 2024</td>
                                 <td class="px-4 py-3 text-on-surface-variant small">Sep 11, 2024</td>
                                 <td class="px-4 py-3 text-center">
-                                    <span class="badge badge-returned text-uppercase px-3 py-1" style="font-size: 10px;">Returned</span>
+                                    <span class="badge badge-returned text-uppercase px-3 py-1" style="font-size: 10px;">Đã trả</span>
                                 </td>
                             </tr>
                         </c:otherwise>
@@ -121,7 +121,7 @@
              style="border-top: 1px solid var(--outline-variant);">
             <a href="${pageContext.request.contextPath}/student/loans"
                class="btn btn-link text-primary-custom text-decoration-none fw-semibold p-0 small">
-                View Full Borrowing History
+                Xem toàn bộ lịch sử mượn sách
             </a>
         </div>
     </div>

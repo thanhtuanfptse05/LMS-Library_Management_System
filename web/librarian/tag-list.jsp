@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -136,7 +136,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -144,7 +144,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -152,8 +152,8 @@
                 <%-- ─── Page Header + Quick Add ─── --%>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 flex-wrap">
                     <div>
-                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Tag Management</h2>
-                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Organize and manage metadata tags for the library catalog.</p>
+                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Quản lý thẻ</h2>
+                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Sắp xếp và quản lý các thẻ siêu dữ liệu cho danh mục thư viện.</p>
                     </div>
 
                     <%-- Quick-add inline form (POST to server) --%>
@@ -164,13 +164,13 @@
                             <div class="quick-input-wrap">
                                 <span class="material-symbols-outlined input-icon">sell</span>
                                 <input type="text" id="quickTagName" name="tagName"
-                                       placeholder="New tag name..."
+                                       placeholder="Tên thẻ mới..."
                                        required maxlength="100"
-                                       aria-label="New tag name" />
+                                       aria-label="Tên thẻ mới" />
                             </div>
                             <button type="submit" class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1" style="height: 36px;">
                                 <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
-                                Add Tag
+                                Thêm Thẻ
                             </button>
                         </div>
                     </form>
@@ -184,23 +184,23 @@
                          style="border-bottom: 1px solid var(--outline-variant); background-color: var(--surface-container-lowest);">
                         <form action="${pageContext.request.contextPath}/librarian/tags" method="GET"
                               id="sortForm" class="d-flex align-items-center gap-2">
-                            <label for="sortSelect" style="font-size: 13px; color: var(--on-surface-variant); font-weight: 600; white-space: nowrap;">Sort by:</label>
+                            <label for="sortSelect" style="font-size: 13px; color: var(--on-surface-variant); font-weight: 600; white-space: nowrap;">Sắp xếp theo:</label>
                             <select id="sortSelect" name="sort" class="sort-select"
                                     onchange="document.getElementById('sortForm').submit()">
-                                <option value="name_asc"  ${param.sort == 'name_asc'  || empty param.sort ? 'selected' : ''}>Name (A–Z)</option>
-                                <option value="name_desc" ${param.sort == 'name_desc' ? 'selected' : ''}>Name (Z–A)</option>
-                                <option value="id_asc"    ${param.sort == 'id_asc'    ? 'selected' : ''}>ID (Ascending)</option>
-                                <option value="id_desc"   ${param.sort == 'id_desc'   ? 'selected' : ''}>ID (Descending)</option>
+                                <option value="name_asc"  ${param.sort == 'name_asc'  || empty param.sort ? 'selected' : ''}>Tên (A–Z)</option>
+                                <option value="name_desc" ${param.sort == 'name_desc' ? 'selected' : ''}>Tên (Z–A)</option>
+                                <option value="id_asc"    ${param.sort == 'id_asc'    ? 'selected' : ''}>ID (Tăng dần)</option>
+                                <option value="id_desc"   ${param.sort == 'id_desc'   ? 'selected' : ''}>ID (Giảm dần)</option>
                             </select>
                         </form>
                         <span style="font-size: 13px; color: var(--on-surface-variant);">
                             <c:choose>
                                 <c:when test="${not empty totalTags}">
-                                    Showing
+                                    Hiển thị
                                     <c:out value="${(currentPage - 1) * pageSize + 1}" />–<c:out value="${currentPage * pageSize > totalTags ? totalTags : currentPage * pageSize}" />
-                                    of <c:out value="${totalTags}" /> tags
+                                    của <c:out value="${totalTags}" /> thẻ
                                 </c:when>
-                                <c:otherwise>Showing 1–5 of 42 tags</c:otherwise>
+                                <c:otherwise>Hiển thị 1–5 của 42 thẻ</c:otherwise>
                             </c:choose>
                         </span>
                     </div>
@@ -210,9 +210,9 @@
                         <table class="table table-lms mb-0" aria-label="Library metadata tags">
                             <thead>
                                 <tr>
-                                    <th style="width: 120px;">Tag ID</th>
-                                    <th>Tag Name</th>
-                                    <th class="text-end" style="width: 120px;">Actions</th>
+                                    <th style="width: 120px;">ID thẻ</th>
+                                    <th>Tên thẻ</th>
+                                    <th class="text-end" style="width: 120px;">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -230,11 +230,11 @@
                                                     </span>
                                                 </td>
                                                 <td class="text-end">
-                                                    <button class="btn-icon" title="Edit tag"
+                                                    <button class="btn-icon" title="Sửa thẻ"
                                                             onclick="openEditModal('<c:out value="${tag.tagId}"/>', '<c:out value="${tag.tagName}"/>')">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                                     </button>
-                                                    <button class="btn-icon" style="color: var(--error);" title="Delete tag"
+                                                    <button class="btn-icon" style="color: var(--error);" title="Xóa thẻ"
                                                             onclick="openDeleteModal('<c:out value="${tag.tagId}"/>', '<c:out value="${tag.tagName}"/>')">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
                                                     </button>
@@ -246,42 +246,42 @@
                                         <%-- Static sample rows --%>
                                         <tr>
                                             <td><span class="tag-id">#TG-101</span></td>
-                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Science Fiction</span></td>
+                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Khoa học viễn tưởng</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><span class="tag-id">#TG-102</span></td>
-                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Historical Fiction</span></td>
+                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Tiểu thuyết lịch sử</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><span class="tag-id">#TG-103</span></td>
-                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Biography</span></td>
+                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Tiểu sử</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><span class="tag-id">#TG-104</span></td>
-                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Academic Reference</span></td>
+                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Tài liệu học thuật</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><span class="tag-id">#TG-105</span></td>
-                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Young Adult</span></td>
+                                            <td><span class="tag-chip"><span class="material-symbols-outlined">sell</span> Thanh thiếu niên</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                     </c:otherwise>
@@ -296,8 +296,8 @@
                         <button class="page-btn fw-semibold px-3"
                                 ${currentPage <= 1 ? 'disabled' : ''}
                                 onclick="goToPage(${currentPage - 1})"
-                                aria-label="Previous page">
-                            Previous
+                                aria-label="Trang trước">
+                            Trước
                         </button>
                         <div class="d-flex gap-1 align-items-center">
                             <c:choose>
@@ -305,7 +305,7 @@
                                     <c:forEach begin="1" end="${totalPages}" var="p">
                                         <button class="page-btn ${p == currentPage ? 'active' : ''}"
                                                 onclick="goToPage(${p})"
-                                                aria-label="Page ${p}"
+                                                aria-label="Trang ${p}"
                                                 aria-current="${p == currentPage ? 'page' : 'false'}">
                                             <c:out value="${p}" />
                                         </button>
@@ -322,8 +322,8 @@
                         <button class="page-btn fw-semibold px-3"
                                 ${currentPage >= totalPages ? 'disabled' : ''}
                                 onclick="goToPage(${currentPage + 1})"
-                                aria-label="Next page">
-                            Next
+                                aria-label="Trang tiếp">
+                            Tiếp
                         </button>
                     </div>
 
@@ -343,8 +343,8 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="editTagModalLabel" style="font-size: 18px;">Edit Tag</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold" id="editTagModalLabel" style="font-size: 18px;">Sửa Thẻ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/librarian/tags" method="POST"
                       id="editTagForm" novalidate>
@@ -353,7 +353,7 @@
                     <div class="modal-body py-3">
                         <label class="form-label fw-semibold text-on-surface-variant text-uppercase"
                                style="font-size: 11px; letter-spacing: 0.05em;" for="editTagName">
-                            Tag Name <span style="color: var(--error);">*</span>
+                            Tên thẻ <span style="color: var(--error);">*</span>
                         </label>
                         <input type="text" id="editTagName" name="tagName"
                                class="form-control rounded-3 py-2"
@@ -361,8 +361,8 @@
                                required maxlength="100" />
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Save</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Lưu</button>
                     </div>
                 </form>
             </div>
@@ -376,24 +376,24 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="deleteTagModalLabel" style="font-size: 18px; color: var(--error);">Delete Tag</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold" id="deleteTagModalLabel" style="font-size: 18px; color: var(--error);">Xóa Thẻ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/librarian/tags" method="POST">
                     <input type="hidden" name="action" value="deleteTag" />
                     <input type="hidden" name="tagId" id="deleteTagId" />
                     <div class="modal-body py-3">
                         <p class="mb-1" style="font-size: 14px; color: var(--on-surface);">
-                            Remove tag <strong id="deleteTagName"></strong>?
+                            Xóa thẻ <strong id="deleteTagName"></strong>?
                         </p>
                         <p class="mb-0" style="font-size: 12px; color: var(--on-surface-variant);">
-                            This will unlink the tag from all associated books. Books will not be deleted.
+                            Thao tác này sẽ hủy liên kết thẻ khỏi tất cả các sách được liên kết. Sách sẽ không bị xóa.
                         </p>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-3 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-light rounded-pill px-3 fw-bold" data-bs-dismiss="modal">Hủy</button>
                         <button type="submit" class="btn fw-bold rounded-pill px-3"
-                                style="background-color: var(--error); color: white; border: none;">Delete</button>
+                                style="background-color: var(--error); color: white; border: none;">Xóa</button>
                     </div>
                 </form>
             </div>

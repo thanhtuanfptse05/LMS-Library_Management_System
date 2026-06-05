@@ -7,10 +7,10 @@
     <!-- Currently Reading (8 cols) -->
     <div class="col-12 col-lg-8">
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <h2 class="fs-4 fw-bold mb-0 text-dark">Currently Reading</h2>
+            <h2 class="fs-4 fw-bold mb-0 text-dark">Sách đang đọc</h2>
             <a href="${pageContext.request.contextPath}/student/loans"
                class="btn btn-link text-primary-custom text-decoration-none fw-semibold p-0 small">
-                View All
+                Xem tất cả
             </a>
         </div>
 
@@ -23,7 +23,7 @@
                             <img class="book-cover-img"
                                  src="${not empty loan.book.coverImageUrl ? loan.book.coverImageUrl : 'https://via.placeholder.com/96x144?text=No+Cover'}"
                                  alt="<c:out value='${loan.book.title}'/>"
-                                 onerror="this.src='https://via.placeholder.com/96x144?text=No+Cover'" />
+                                 onerror="this.src='https://via.placeholder.com/96x144?text=Không+Cover'" />
 
                             <div class="flex-grow-1 d-flex flex-column justify-content-between">
                                 <div>
@@ -33,18 +33,18 @@
                                                 <c:out value="${loan.book.title}"/>
                                             </h3>
                                             <p class="text-on-surface-variant small mb-0">
-                                                by <c:out value="${loan.book.author}"/> &bull;
-                                                Borrowed <fmt:formatDate value="${loan.startDate}" pattern="MMM dd"/>
+                                                bởi <c:out value="${loan.book.author}"/> &bull;
+                                                Đã mượn <fmt:formatDate value="${loan.startDate}" pattern="dd/MM/yyyy"/>
                                             </p>
                                         </div>
                                         <!-- Due date badge -->
                                         <c:choose>
                                             <c:when test="${loan.status eq 'overdue'}">
-                                                <span class="badge badge-overdue text-uppercase px-2 py-1" style="font-size: 10px;">Overdue</span>
+                                                <span class="badge badge-overdue text-uppercase px-2 py-1" style="font-size: 10px;">Quá hạn</span>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="badge badge-borrowed text-uppercase px-2 py-1" style="font-size: 10px;">
-                                                    Due <fmt:formatDate value="${loan.endDate}" pattern="MMM dd"/>
+                                                    Đến hạn <fmt:formatDate value="${loan.endDate}" pattern="dd/MM/yyyy"/>
                                                 </span>
                                             </c:otherwise>
                                         </c:choose>
@@ -53,11 +53,11 @@
                                     <!-- Progress Bar (placeholder — no actual reading tracker in DB) -->
                                     <div class="mt-4">
                                         <div class="d-flex justify-content-between small mb-1">
-                                            <span class="text-on-surface-variant">Loan Status</span>
+                                            <span class="text-on-surface-variant">Trạng thái mượn</span>
                                             <span class="text-primary-custom fw-bold">
                                                 <c:choose>
-                                                    <c:when test="${loan.status eq 'overdue'}">Overdue</c:when>
-                                                    <c:otherwise>Active</c:otherwise>
+                                                    <c:when test="${loan.status eq 'overdue'}">Quá hạn</c:when>
+                                                    <c:otherwise>Đang mượn</c:otherwise>
                                                 </c:choose>
                                             </span>
                                         </div>
@@ -75,11 +75,11 @@
                                 <div class="d-flex gap-3 mt-4">
                                     <a href="${pageContext.request.contextPath}/student/loans?action=renew&borrowRecordId=${loan.borrowRecordId}"
                                        class="btn btn-primary-custom flex-grow-1 btn-sm text-decoration-none d-block text-center rounded-3">
-                                        Renew
+                                        Gia hạn
                                     </a>
                                     <a href="${pageContext.request.contextPath}/student/loans?action=return&borrowRecordId=${loan.borrowRecordId}"
                                        class="btn btn-light bg-surface-container-high text-dark flex-grow-1 btn-sm border-0 text-decoration-none d-block text-center rounded-3">
-                                        Return
+                                        Trả sách
                                     </a>
                                 </div>
                             </div>
@@ -91,11 +91,11 @@
                     <div class="raised-card p-5 text-center">
                         <span class="material-symbols-outlined text-on-surface-variant d-block mb-3"
                               style="font-size: 48px; opacity: 0.4;">library_books</span>
-                        <p class="fw-semibold text-on-surface-variant mb-2">No active loans</p>
-                        <p class="small text-on-surface-variant mb-4">Visit the catalog to discover and borrow books.</p>
+                        <p class="fw-semibold text-on-surface-variant mb-2">Không có sách mượn</p>
+                        <p class="small text-on-surface-variant mb-4">Truy cập danh mục để khám phá và mượn sách.</p>
                         <a href="${pageContext.request.contextPath}/book-search.jsp"
                            class="btn btn-primary-custom btn-sm px-4 rounded-3 text-decoration-none">
-                            Browse Catalog
+                            Duyệt danh mục
                         </a>
                     </div>
                 </c:otherwise>
@@ -106,7 +106,7 @@
     <!-- Recommended Books (4 cols) -->
     <div class="col-12 col-lg-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <h2 class="fs-4 fw-bold mb-0 text-dark">Recommended</h2>
+            <h2 class="fs-4 fw-bold mb-0 text-dark">Gợi ý cho bạn</h2>
             <a href="${pageContext.request.contextPath}/book-search.jsp"
                class="d-flex align-items-center text-decoration-none text-primary-custom">
                 <span class="material-symbols-outlined">arrow_forward</span>
@@ -115,7 +115,7 @@
 
         <div class="raised-card p-4 d-flex flex-column">
             <p class="text-on-surface-variant small mb-4">
-                Curated picks based on your recent borrowing history.
+                Lựa chọn dựa trên lịch sử mượn sách gần đây của bạn.
             </p>
 
             <div class="row g-3 flex-grow-1">
@@ -130,7 +130,7 @@
                                              style="object-fit: cover;"
                                              src="${not empty book.coverImageUrl ? book.coverImageUrl : 'https://via.placeholder.com/100x150?text=No+Cover'}"
                                              alt="<c:out value='${book.title}'/>"
-                                             onerror="this.src='https://via.placeholder.com/100x150?text=No+Cover'" />
+                                             onerror="this.src='https://via.placeholder.com/100x150?text=Không+Cover'" />
                                     </div>
                                     <p class="fw-semibold text-dark mb-0 text-truncate small">
                                         <c:out value="${book.title}"/>
@@ -194,7 +194,7 @@
 
             <a href="${pageContext.request.contextPath}/book-search.jsp"
                class="btn btn-outline-primary-custom w-100 rounded-3 py-2 mt-4 text-decoration-none d-block text-center">
-                Explore Recommendations
+                Khám phá thêm
             </a>
         </div>
     </div>

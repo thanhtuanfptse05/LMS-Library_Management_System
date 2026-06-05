@@ -11,10 +11,10 @@
                 <c:when test="${not empty sessionScope.userId}">
                     <a href="${dashboardUrl}"
                         class="btn bg-primary-container text-white px-5 py-3 rounded-pill fw-bold shadow-lg border-0 text-decoration-none d-inline-flex align-items-center">
-                        Go to Dashboard
+                        Go to Bảng điều khiển
                     </a>
                     <a href="#contact" class="btn btn-outline-light px-5 py-3 rounded-pill fw-bold text-decoration-none d-inline-flex align-items-center">
-                        Contact Support
+                        Liên hệ Support
                     </a>
                 </c:when>
                 <c:otherwise>
@@ -23,7 +23,7 @@
                         Plan Your Visit
                     </a>
                     <a href="${pageContext.request.contextPath}/login" class="btn btn-outline-light px-5 py-3 rounded-pill fw-bold text-decoration-none d-inline-flex align-items-center">
-                        Chat with a Librarian
+                        Chat with a Thủ thư
                     </a>
                 </c:otherwise>
             </c:choose>

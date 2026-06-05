@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -25,15 +25,15 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
 
                 <%-- ─── Page Header ─── --%>
                 <header class="mb-5">
-                    <h1 class="fw-bold text-dark mb-1" style="font-size: 32px; letter-spacing: -0.01em;">My Academic Borrows</h1>
-                    <p class="mb-0" style="color: #584237;">Review your current loans, research materials, and managed course reserves.</p>
+                    <h1 class="fw-bold text-dark mb-1" style="font-size: 32px; letter-spacing: -0.01em;">Sách đã mượn (Học thuật)</h1>
+                    <p class="mb-0" style="color: #584237;">Xem xét các khoản mượn hiện tại, tài liệu nghiên cứu và sách dự trữ môn học bạn quản lý.</p>
                 </header>
 
                 <%-- ─── Summary Cards Bento Grid ─── --%>
@@ -41,7 +41,7 @@
                     <div class="col-12 col-md-4">
                         <div class="card-bento d-flex align-items-center justify-content-between border-start border-4" style="border-color: #9d4300 !important;">
                             <div>
-                                <p class="small text-uppercase mb-1" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: #584237;">Active Loans</p>
+                                <p class="small text-uppercase mb-1" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: #584237;">Đang mượn</p>
                                 <h3 class="fw-bold text-dark mb-0" style="font-size: 24px;">
                                     <c:out value="${activeLoans != null ? activeLoans : '12'}" />
                                 </h3>
@@ -55,7 +55,7 @@
                     <div class="col-12 col-md-4">
                         <div class="card-bento d-flex align-items-center justify-content-between border-start border-4" style="border-color: #ba1a1a !important;">
                             <div>
-                                <p class="small text-uppercase mb-1" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: #584237;">Overdue Items</p>
+                                <p class="small text-uppercase mb-1" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: #584237;">Sách quá hạn</p>
                                 <h3 class="fw-bold text-dark mb-0" style="font-size: 24px;">
                                     <c:out value="${overdueCount != null ? overdueCount : '2'}" />
                                 </h3>
@@ -69,7 +69,7 @@
                     <div class="col-12 col-md-4">
                         <div class="card-bento d-flex align-items-center justify-content-between border-start border-4" style="border-color: #006398 !important;">
                             <div>
-                                <p class="small text-uppercase mb-1" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: #584237;">Course Reserves</p>
+                                <p class="small text-uppercase mb-1" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: #584237;">Dự trữ môn học</p>
                                 <h3 class="fw-bold text-dark mb-0" style="font-size: 24px;">
                                     <c:out value="${courseReserves != null ? courseReserves : '8'}" />
                                 </h3>
@@ -84,8 +84,8 @@
                 <%-- ─── Currently Borrowed Section (Research Grid) ─── --%>
                 <section class="mb-5">
                     <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h2 class="h5 fw-bold text-dark mb-0" style="font-size: 20px;">Currently Borrowed (Research)</h2>
-                        <button class="btn btn-link text-primary-custom p-0 fw-bold border-0 text-decoration-none small">View All Research Materials</button>
+                        <h2 class="h5 fw-bold text-dark mb-0" style="font-size: 20px;">Sách đang mượn (Nghiên cứu)</h2>
+                        <button class="btn btn-link text-primary-custom p-0 fw-bold border-0 text-decoration-none small">Xem tất cả tài liệu nghiên cứu</button>
                     </div>
 
                     <div class="row g-4">
@@ -99,16 +99,16 @@
                                                      alt="<c:out value='${borrow.bookTitle}' />"
                                                      src="<c:out value='${borrow.bookCoverUrl}' />" />
                                                 <c:if test="${borrow.overdue}">
-                                                    <span class="position-absolute top-0 start-0 m-2 badge rounded-pill bg-danger" style="font-size: 10px;">OVERDUE</span>
+                                                    <span class="position-absolute top-0 start-0 m-2 badge rounded-pill bg-danger" style="font-size: 10px;">QUÁ HẠN</span>
                                                 </c:if>
                                             </div>
                                             <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
                                                 <div>
                                                     <h4 class="fw-bold text-dark lh-sm mb-1" style="font-size: 16px;"><c:out value="${borrow.bookTitle}" /></h4>
-                                                    <p class="small fst-italic mb-2" style="color: #584237;">by <c:out value="${borrow.bookAuthor}" /></p>
+                                                    <p class="small fst-italic mb-2" style="color: #584237;">bởi <c:out value="${borrow.bookAuthor}" /></p>
                                                     <div class="d-flex align-items-center gap-1 small ${borrow.overdue ? 'text-danger' : ''} fw-bold">
                                                         <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span>
-                                                        Due: <fmt:formatDate value="${borrow.dueDate}" pattern="MMM dd, yyyy" />
+                                                        Hạn trả: <fmt:formatDate value="${borrow.dueDate}" pattern="MMM dd, yyyy" />
                                                     </div>
                                                     <c:if test="${not borrow.overdue}">
                                                         <div class="progress mt-2" style="height: 4px;">
@@ -120,11 +120,11 @@
                                                 <div class="d-flex gap-2 mt-3">
                                                     <form action="${pageContext.request.contextPath}/lecturer/borrow-renew" method="post" class="flex-grow-1">
                                                         <input type="hidden" name="borrowId" value="${borrow.borrowId}" />
-                                                        <button class="btn btn-sm text-white w-100 fw-bold" style="background-color: #f97316; font-size: 11px; padding: 0.4rem;" type="submit">RENEW</button>
+                                                        <button class="btn btn-sm text-white w-100 fw-bold" style="background-color: #f97316; font-size: 11px; padding: 0.4rem;" type="submit">GIA HẠN</button>
                                                     </form>
                                                     <a href="${pageContext.request.contextPath}/lecturer/return?borrowId=${borrow.borrowId}"
                                                        class="btn btn-sm btn-outline-secondary flex-grow-1 fw-bold text-decoration-none text-center"
-                                                       style="font-size: 11px; padding: 0.4rem; color: #584237;">RETURN</a>
+                                                       style="font-size: 11px; padding: 0.4rem; color: #584237;">TRẢ SÁCH</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -138,19 +138,19 @@
                                         <div class="book-cover-wrapper position-relative">
                                             <img class="book-cover-img" alt="Cognitive Architectures"
                                                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmrDnfBNEnUBEWIG_dULy2_qBwMgEsBs1fR-zq8tAvklPKoJhYhB06ey1M1itWN5bWu1kEcIJo_iHVGYmnCd22I4Gfl6pD12H42FTRIjTZ8AKcIQ-cYhxV6L3r_81UJyfVX4bCGnMdV1eobPiz6RxXMH2WnmvHHhgxiVAms_7bbGK-bBsbUsVdBOmZdKOqSz4rAjg_cEIUCPAtcHxIkuv2FUu2RiAtVGdtLfFB-iq9kavXRtKhbH-ZI1JMh6jwinqP80PIkA3_R5o" />
-                                            <span class="position-absolute top-0 start-0 m-2 badge rounded-pill bg-danger" style="font-size: 10px;">OVERDUE</span>
+                                            <span class="position-absolute top-0 start-0 m-2 badge rounded-pill bg-danger" style="font-size: 10px;">QUÁ HẠN</span>
                                         </div>
                                         <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
                                             <div>
                                                 <h4 class="fw-bold text-dark lh-sm mb-1" style="font-size: 16px;">Cognitive Architectures</h4>
-                                                <p class="small fst-italic mb-2" style="color: #584237;">by Dr. Julian Vance</p>
+                                                <p class="small fst-italic mb-2" style="color: #584237;">bởi Dr. Julian Vance</p>
                                                 <div class="d-flex align-items-center gap-1 text-danger small fw-bold">
-                                                    <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span> Due: Oct 12, 2023
+                                                    <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span> Hạn trả: Oct 12, 2023
                                                 </div>
                                             </div>
                                             <div class="d-flex gap-2 mt-3">
-                                                <button class="btn btn-sm text-white flex-grow-1 fw-bold" style="background-color: #f97316; font-size: 11px; padding: 0.4rem;">RENEW</button>
-                                                <button class="btn btn-sm btn-outline-secondary flex-grow-1 fw-bold" style="font-size: 11px; padding: 0.4rem; color: #584237;">RETURN</button>
+                                                <button class="btn btn-sm text-white flex-grow-1 fw-bold" style="background-color: #f97316; font-size: 11px; padding: 0.4rem;">GIA HẠN</button>
+                                                <button class="btn btn-sm btn-outline-secondary flex-grow-1 fw-bold" style="font-size: 11px; padding: 0.4rem; color: #584237;">TRẢ SÁCH</button>
                                             </div>
                                         </div>
                                     </div>
@@ -164,17 +164,17 @@
                                         <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
                                             <div>
                                                 <h4 class="fw-bold text-dark lh-sm mb-1" style="font-size: 16px;">Principles of Digital Ethics</h4>
-                                                <p class="small fst-italic mb-2" style="color: #584237;">by Sarah Jenkins</p>
+                                                <p class="small fst-italic mb-2" style="color: #584237;">bởi Sarah Jenkins</p>
                                                 <div class="d-flex align-items-center gap-1 small" style="color: #584237;">
-                                                    <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span> Due: Nov 28, 2023
+                                                    <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span> Hạn trả: Nov 28, 2023
                                                 </div>
                                                 <div class="progress mt-2" style="height: 4px;">
                                                     <div class="progress-bar" role="progressbar" style="width: 65%; background-color: #9d4300;"></div>
                                                 </div>
                                             </div>
                                             <div class="d-flex gap-2 mt-3">
-                                                <button class="btn btn-sm text-white flex-grow-1 fw-bold" style="background-color: #f97316; font-size: 11px; padding: 0.4rem;">RENEW</button>
-                                                <button class="btn btn-sm btn-outline-secondary flex-grow-1 fw-bold" style="font-size: 11px; padding: 0.4rem; color: #584237;">RETURN</button>
+                                                <button class="btn btn-sm text-white flex-grow-1 fw-bold" style="background-color: #f97316; font-size: 11px; padding: 0.4rem;">GIA HẠN</button>
+                                                <button class="btn btn-sm btn-outline-secondary flex-grow-1 fw-bold" style="font-size: 11px; padding: 0.4rem; color: #584237;">TRẢ SÁCH</button>
                                             </div>
                                         </div>
                                     </div>
@@ -187,18 +187,18 @@
                                         </div>
                                         <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
                                             <div>
-                                                <h4 class="fw-bold text-dark lh-sm mb-1" style="font-size: 16px;">Neural Network History</h4>
-                                                <p class="small fst-italic mb-2" style="color: #584237;">by Alan Turing Inst.</p>
+                                                <h4 class="fw-bold text-dark lh-sm mb-1" style="font-size: 16px;">Lịch sử Mạng nơ-ron</h4>
+                                                <p class="small fst-italic mb-2" style="color: #584237;">bởi Alan Turing Inst.</p>
                                                 <div class="d-flex align-items-center gap-1 small" style="color: #584237;">
-                                                    <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span> Due: Dec 05, 2023
+                                                    <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span> Hạn trả: Dec 05, 2023
                                                 </div>
                                                 <div class="progress mt-2" style="height: 4px;">
                                                     <div class="progress-bar" role="progressbar" style="width: 30%; background-color: #9d4300;"></div>
                                                 </div>
                                             </div>
                                             <div class="d-flex gap-2 mt-3">
-                                                <button class="btn btn-sm text-white flex-grow-1 fw-bold" style="background-color: #f97316; font-size: 11px; padding: 0.4rem;">RENEW</button>
-                                                <button class="btn btn-sm btn-outline-secondary flex-grow-1 fw-bold" style="font-size: 11px; padding: 0.4rem; color: #584237;">RETURN</button>
+                                                <button class="btn btn-sm text-white flex-grow-1 fw-bold" style="background-color: #f97316; font-size: 11px; padding: 0.4rem;">GIA HẠN</button>
+                                                <button class="btn btn-sm btn-outline-secondary flex-grow-1 fw-bold" style="font-size: 11px; padding: 0.4rem; color: #584237;">TRẢ SÁCH</button>
                                             </div>
                                         </div>
                                     </div>
@@ -213,7 +213,7 @@
 
                 <%-- ─── Recent History List ─── --%>
                 <section class="mb-4">
-                    <h2 class="h5 fw-bold text-dark mb-4" style="font-size: 20px;">Recent History</h2>
+                    <h2 class="h5 fw-bold text-dark mb-4" style="font-size: 20px;">Lịch sử gần đây</h2>
                     <div class="d-flex flex-column gap-3">
                         <c:choose>
                             <c:when test="${not empty borrowHistory}">
@@ -226,12 +226,12 @@
                                             <div>
                                                 <h4 class="fw-bold text-dark mb-0" style="font-size: 16px;"><c:out value="${hist.bookTitle}" /></h4>
                                                 <p class="small mb-0" style="font-size: 12px; color: #584237;">
-                                                    Returned on <fmt:formatDate value="${hist.returnDate}" pattern="MMM dd, yyyy" />
+                                                    Đã trả vào <fmt:formatDate value="${hist.returnDate}" pattern="MMM dd, yyyy" />
                                                 </p>
                                             </div>
                                         </div>
                                         <a href="${pageContext.request.contextPath}/lecturer/borrow-receipt?id=${hist.borrowId}"
-                                           class="small fw-bold text-decoration-none" style="color: #584237;">View Receipt</a>
+                                           class="small fw-bold text-decoration-none" style="color: #584237;">Xem biên lai</a>
                                     </div>
                                 </c:forEach>
                             </c:when>
@@ -243,10 +243,10 @@
                                         </div>
                                         <div>
                                             <h4 class="fw-bold text-dark mb-0" style="font-size: 16px;">Quantum Field Theory</h4>
-                                            <p class="small mb-0" style="font-size: 12px; color: #584237;">Returned on Oct 14, 2023</p>
+                                            <p class="small mb-0" style="font-size: 12px; color: #584237;">Đã trả vào Oct 14, 2023</p>
                                         </div>
                                     </div>
-                                    <span class="small fw-bold" style="color: #584237;">View Receipt</span>
+                                    <span class="small fw-bold" style="color: #584237;">Xem biên lai</span>
                                 </div>
                                 <div class="card-bento p-3 border d-flex flex-row align-items-center justify-content-between hover-scale-card" style="cursor: pointer;">
                                     <div class="d-flex align-items-center gap-3">
@@ -255,10 +255,10 @@
                                         </div>
                                         <div>
                                             <h4 class="fw-bold text-dark mb-0" style="font-size: 16px;">Sociology of Education</h4>
-                                            <p class="small mb-0" style="font-size: 12px; color: #584237;">Returned on Sep 28, 2023</p>
+                                            <p class="small mb-0" style="font-size: 12px; color: #584237;">Đã trả vào Sep 28, 2023</p>
                                         </div>
                                     </div>
-                                    <span class="small fw-bold" style="color: #584237;">View Receipt</span>
+                                    <span class="small fw-bold" style="color: #584237;">Xem biên lai</span>
                                 </div>
                                 <div class="card-bento p-3 border d-flex flex-row align-items-center justify-content-between hover-scale-card" style="cursor: pointer;">
                                     <div class="d-flex align-items-center gap-3">
@@ -267,10 +267,10 @@
                                         </div>
                                         <div>
                                             <h4 class="fw-bold text-dark mb-0" style="font-size: 16px;">Macroeconomics 101</h4>
-                                            <p class="small mb-0" style="font-size: 12px; color: #584237;">Returned on Sep 15, 2023</p>
+                                            <p class="small mb-0" style="font-size: 12px; color: #584237;">Đã trả vào Sep 15, 2023</p>
                                         </div>
                                     </div>
-                                    <span class="small fw-bold" style="color: #584237;">View Receipt</span>
+                                    <span class="small fw-bold" style="color: #584237;">Xem biên lai</span>
                                 </div>
                             </c:otherwise>
                         </c:choose>
@@ -287,7 +287,7 @@
 </body>
 
 <%-- FAB button --%>
-<button class="fab-button" title="Add Course Document"
+<button class="fab-button" title="Thêm tài liệu khóa học"
         onclick="location.href='${pageContext.request.contextPath}/lecturer/course-reserves'">
     <span class="material-symbols-outlined">post_add</span>
 </button>

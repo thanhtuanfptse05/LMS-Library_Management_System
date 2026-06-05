@@ -42,20 +42,20 @@
 
     <div class="container-xl py-3">
         <div class="mb-4">
-            <span class="text-primary-custom fw-bold text-uppercase small" style="font-size: 12px; letter-spacing: 0.1em;">Updates</span>
-            <h2 class="fw-bold text-dark mt-1 mb-0" style="font-size: 28px;">Library News & Announcements</h2>
+            <span class="text-primary-custom fw-bold text-uppercase small" style="font-size: 12px; letter-spacing: 0.1em;">Cập nhật</span>
+            <h2 class="fw-bold text-dark mt-1 mb-0" style="font-size: 28px;">Tin tức Thư viện &amp; Thông báo hệ thống</h2>
         </div>
 
         <!-- News Categories Navigation -->
         <div class="news-categories d-flex flex-wrap gap-2 mb-4">
             <button class="news-category-btn active" onclick="switchNewsCategory(event, 'pane-news-activity')">
-                Activity News
+                Tin tức Hoạt động
             </button>
             <button class="news-category-btn" onclick="switchNewsCategory(event, 'pane-news-library')">
-                Library News
+                Tin tức Thư viện
             </button>
             <button class="news-category-btn" onclick="switchNewsCategory(event, 'pane-news-event')">
-                Event News
+                Tin tức Sự kiện
             </button>
         </div>
 
@@ -67,9 +67,9 @@
                     <div class="col-12 col-md-8 text-center py-5">
                         <div class="p-5 bg-white rounded-3 shadow-sm border border-outline-variant">
                             <span class="material-symbols-outlined text-muted" style="font-size: 56px;">campaign</span>
-                            <h4 class="fw-bold mt-3 mb-2 text-dark">No Activity News</h4>
+                            <h4 class="fw-bold mt-3 mb-2 text-dark">Không có Tin tức Hoạt động</h4>
                             <p class="text-muted mx-auto mb-0" style="max-width: 450px;">
-                                Updates on library workshops, student training programs, and collaborative activities will be posted here.
+                                Các cập nhật về hội thảo thư viện, chương trình đào tạo sinh viên và các hoạt động hợp tác sẽ được đăng tại đây.
                             </p>
                         </div>
                     </div>
@@ -82,9 +82,9 @@
                     <div class="col-12 col-md-8 text-center py-5">
                         <div class="p-5 bg-white rounded-3 shadow-sm border border-outline-variant">
                             <span class="material-symbols-outlined text-muted" style="font-size: 56px;">local_library</span>
-                            <h4 class="fw-bold mt-3 mb-2 text-dark">No Library News</h4>
+                            <h4 class="fw-bold mt-3 mb-2 text-dark">Không có Tin tức Thư viện</h4>
                             <p class="text-muted mx-auto mb-0" style="max-width: 450px;">
-                                Official announcements, databases resources updates, and service schedule changes will be posted here.
+                                Các thông báo chính thức, cập nhật tài nguyên cơ sở dữ liệu và thay đổi lịch trình dịch vụ sẽ được đăng tại đây.
                             </p>
                         </div>
                     </div>
@@ -97,9 +97,9 @@
                     <div class="col-12 col-md-8 text-center py-5">
                         <div class="p-5 bg-white rounded-3 shadow-sm border border-outline-variant">
                             <span class="material-symbols-outlined text-muted" style="font-size: 56px;">event</span>
-                            <h4 class="fw-bold mt-3 mb-2 text-dark">No Event News</h4>
+                            <h4 class="fw-bold mt-3 mb-2 text-dark">Không có Tin tức Sự kiện</h4>
                             <p class="text-muted mx-auto mb-0" style="max-width: 450px;">
-                                Information regarding upcoming annual book fairs, reading campaigns, and author exhibitions will be posted here.
+                                Thông tin về các hội chợ sách thường niên sắp tới, chiến dịch đọc sách và triển lãm tác giả sẽ được đăng tại đây.
                             </p>
                         </div>
                     </div>

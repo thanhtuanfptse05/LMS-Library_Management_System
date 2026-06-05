@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <%--
     Lecturer Notifications — Hộp thư thông báo cá nhân dành cho Giảng viên
@@ -390,24 +390,24 @@
                     <ol class="breadcrumb mb-0" style="font-size: 12px;">
                         <li class="breadcrumb-item">
                             <a href="${pageContext.request.contextPath}/lecturer/dashboard"
-                               class="text-decoration-none text-on-surface-variant">Home</a>
+                               class="text-decoration-none text-on-surface-variant">Trang chủ</a>
                         </li>
                         <li class="breadcrumb-item active fw-semibold" style="color: var(--tertiary, #006398);"
-                            aria-current="page">Notifications</li>
+                            aria-current="page">Thông báo</li>
                     </ol>
                 </nav>
                 <h1>
                     <span class="material-symbols-outlined me-2"
                           style="font-size: 26px; vertical-align: -4px; color: var(--tertiary, #006398); font-variation-settings: 'FILL' 1;">notifications</span>
-                    My Notifications
+                    Thông báo của tôi
                 </h1>
-                <p class="subtitle">Stay informed about your loans, course resources, and library announcements.</p>
+                <p class="subtitle">Cập nhật thông tin về các khoản mượn, giáo trình và thông báo từ thư viện.</p>
             </div>
             <!-- Unread badge -->
             <div class="d-flex align-items-center gap-2">
                 <span class="badge rounded-pill text-white fw-bold px-3 py-2"
                       style="background-color: var(--tertiary, #006398); font-size: 13px;">
-                    <c:out value="${unreadCount != null ? unreadCount : 4}" /> Unread
+                    <c:out value="${unreadCount != null ? unreadCount : 4}" /> Chưa đọc
                 </span>
             </div>
         </div>
@@ -420,7 +420,7 @@
                 <span class="material-symbols-outlined" style="color: var(--tertiary, #006398);">mark_email_unread</span>
             </div>
             <div>
-                <div class="sc-label">Unread</div>
+                <div class="sc-label">Chưa đọc</div>
                 <div class="sc-value" style="color: var(--tertiary, #006398);">
                     <c:out value="${unreadCount != null ? unreadCount : 4}" />
                 </div>
@@ -431,7 +431,7 @@
                 <span class="material-symbols-outlined" style="color: var(--error, #ba1a1a);">warning</span>
             </div>
             <div>
-                <div class="sc-label">Overdue Alerts</div>
+                <div class="sc-label">Cảnh báo quá hạn</div>
                 <div class="sc-value" style="color: var(--error, #ba1a1a);">
                     <c:out value="${overdueCount != null ? overdueCount : 1}" />
                 </div>
@@ -442,7 +442,7 @@
                 <span class="material-symbols-outlined" style="color: var(--primary, #9d4300);">science</span>
             </div>
             <div>
-                <div class="sc-label">Research Updates</div>
+                <div class="sc-label">Cập nhật nghiên cứu</div>
                 <div class="sc-value" style="color: var(--primary, #9d4300);">
                     <c:out value="${researchCount != null ? researchCount : 2}" />
                 </div>
@@ -453,7 +453,7 @@
                 <span class="material-symbols-outlined" style="color: #16a34a;">campaign</span>
             </div>
             <div>
-                <div class="sc-label">Announcements</div>
+                <div class="sc-label">Thông báo hệ thống</div>
                 <div class="sc-value" style="color: #16a34a;">
                     <c:out value="${announcementCount != null ? announcementCount : 2}" />
                 </div>
@@ -466,41 +466,41 @@
         <div class="notif-tabs" role="tablist" aria-label="Notification filters">
             <button class="notif-tab active" role="tab" aria-selected="true"
                     id="tab-all" data-filter="all" aria-controls="notif-list">
-                All
+                Tất cả
                 <span class="tab-count">7</span>
             </button>
             <button class="notif-tab" role="tab" aria-selected="false"
                     id="tab-unread" data-filter="unread" aria-controls="notif-list">
                 <span class="material-symbols-outlined" style="font-size: 14px;">mark_email_unread</span>
-                Unread
+                Chưa đọc
                 <span class="tab-count">4</span>
             </button>
             <button class="notif-tab" role="tab" aria-selected="false"
                     id="tab-overdue" data-filter="overdue">
                 <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
-                Overdue
+                Quá hạn
             </button>
             <button class="notif-tab" role="tab" aria-selected="false"
                     id="tab-research" data-filter="research">
                 <span class="material-symbols-outlined" style="font-size: 14px;">science</span>
-                Research
+                Nghiên cứu
             </button>
             <button class="notif-tab" role="tab" aria-selected="false"
                     id="tab-system" data-filter="system">
                 <span class="material-symbols-outlined" style="font-size: 14px;">campaign</span>
-                Announcements
+                Thông báo hệ thống
             </button>
         </div>
         <div class="d-flex align-items-center gap-2">
             <button class="btn-notif-action" id="btn-mark-all-read"
                     aria-label="Mark all notifications as read">
                 <span class="material-symbols-outlined">done_all</span>
-                Mark all read
+                Đánh dấu tất cả đã đọc
             </button>
             <button class="btn-notif-action" id="btn-clear-read"
                     aria-label="Clear all read notifications">
                 <span class="material-symbols-outlined">delete_sweep</span>
-                Clear read
+                Xóa thông báo đã đọc
             </button>
         </div>
     </div>
@@ -513,12 +513,12 @@
                 <%-- ── Demo / fallback data ── --%>
 
                 <!-- TODAY -->
-                <div class="notif-date-sep" aria-hidden="true"><span>Today</span></div>
+                <div class="notif-date-sep" aria-hidden="true"><span>Hôm nay</span></div>
 
                 <!-- Notif 1 — Overdue (UNREAD) -->
                 <div class="notif-item is-unread"
                      tabindex="0" role="article"
-                     aria-label="Overdue alert — unread"
+                     aria-label="Cảnh báo quá hạn — chưa đọc"
                      data-type="overdue" data-id="notif-1">
                     <div class="unread-dot" aria-hidden="true"></div>
                     <div class="notif-icon-wrap type-overdue" aria-hidden="true">
@@ -526,26 +526,26 @@
                     </div>
                     <div class="notif-content">
                         <div class="notif-meta">
-                            <span class="notif-category type-overdue">Overdue</span>
+                            <span class="notif-category type-overdue">Quá hạn</span>
                             <span class="notif-timestamp">
                                 <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                3 hours ago
+                                3 giờ trước
                             </span>
                         </div>
-                        <div class="notif-title">Borrowed book is past due date</div>
+                        <div class="notif-title">Sách mượn đã quá hạn trả</div>
                         <div class="notif-body">
-                            <strong>"Academic Writing for Graduate Students"</strong> (4th Edition)
-                            was due on <strong>June 1, 2026</strong>. A late fee of
-                            <strong>5,000 VND/day</strong> is accumulating. Please return promptly
-                            to avoid further charges.
+                            <strong>"Academic Writing for Graduate Sinh viên"</strong> (4th Edition)
+                            đã đến hạn vào <strong>June 1, 2026</strong>. Phí phạt trễ hạn
+                            <strong>5,000 VND/ngày</strong> đang được tính thêm. Vui lòng trả sách ngay
+                            để tránh phát sinh thêm phí.
                         </div>
                         <a href="${pageContext.request.contextPath}/lecturer/loans"
                            class="notif-action-btn" aria-label="View loan details">
                             <span class="material-symbols-outlined">library_books</span>
-                            View My Loans
+                            Xem sách tôi mượn
                         </a>
                     </div>
-                    <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                    <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -553,7 +553,7 @@
                 <!-- Notif 2 — Research resource available (UNREAD) -->
                 <div class="notif-item is-unread"
                      tabindex="0" role="article"
-                     aria-label="Research resource available — unread"
+                     aria-label="Tài nguyên nghiên cứu có sẵn — chưa đọc"
                      data-type="research" data-id="notif-2">
                     <div class="unread-dot" aria-hidden="true"></div>
                     <div class="notif-icon-wrap type-research" aria-hidden="true">
@@ -561,33 +561,33 @@
                     </div>
                     <div class="notif-content">
                         <div class="notif-meta">
-                            <span class="notif-category type-research">Research</span>
+                            <span class="notif-category type-research">Nghiên cứu</span>
                             <span class="notif-timestamp">
                                 <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                6 hours ago
+                                6 giờ trước
                             </span>
                         </div>
-                        <div class="notif-title">New journal collection added to your field</div>
+                        <div class="notif-title">Bộ sưu tập tạp chí mới đã được thêm vào lĩnh vực của bạn</div>
                         <div class="notif-body">
-                            <strong>15 new journals</strong> in <strong>Computer Science &amp; Software Engineering</strong>
-                            have been added to the university digital library. These include access to
-                            <em>IEEE Transactions on Software Engineering</em> and <em>ACM Digital Library</em>
-                            — fully accessible with your academic credentials.
+                            <strong>15 tạp chí mới</strong> trong lĩnh vực <strong>Khoa học máy tính &amp; Kỹ thuật phần mềm</strong>
+                            đã được thêm vào thư viện số của trường đại học. Các tài liệu này bao gồm quyền truy cập vào
+                            <em>IEEE Transactions on Software Engineering</em> và <em>ACM Digital Library</em>
+                            — có thể truy cập đầy đủ bằng thông tin đăng nhập của bạn.
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
                             <a href="${pageContext.request.contextPath}/book-search.jsp?category=journal"
                                class="notif-action-btn" aria-label="Browse new journals">
                                 <span class="material-symbols-outlined">search</span>
-                                Browse Journals
+                                Duyệt tạp chí
                             </a>
                             <a href="${pageContext.request.contextPath}/lecturer/reading-lists"
                                class="notif-action-btn-outline" aria-label="Add to reading list">
                                 <span class="material-symbols-outlined">playlist_add</span>
-                                Add to Reading List
+                                Thêm vào danh sách đọc
                             </a>
                         </div>
                     </div>
-                    <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                    <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -595,7 +595,7 @@
                 <!-- Notif 3 — Reservation approved (UNREAD) -->
                 <div class="notif-item is-unread"
                      tabindex="0" role="article"
-                     aria-label="Reservation approved — unread"
+                     aria-label="Đặt trước được phê duyệt — chưa đọc"
                      data-type="approved" data-id="notif-3">
                     <div class="unread-dot" aria-hidden="true"></div>
                     <div class="notif-icon-wrap type-approved" aria-hidden="true">
@@ -603,26 +603,26 @@
                     </div>
                     <div class="notif-content">
                         <div class="notif-meta">
-                            <span class="notif-category type-approved">Approved</span>
+                            <span class="notif-category type-approved">Đã phê duyệt</span>
                             <span class="notif-timestamp">
                                 <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                Yesterday, 2:30 PM
+                                Hôm qua, 2:30 PM
                             </span>
                         </div>
-                        <div class="notif-title">Course reserve request approved</div>
+                        <div class="notif-title">Yêu cầu tài liệu dự trữ cho môn học đã được duyệt</div>
                         <div class="notif-body">
-                            Your course reserve request for <strong>"Software Engineering" (Sommerville, 10th Ed.)</strong>
-                            has been approved. <strong>30 copies</strong> are now reserved for your class
-                            <strong>SE301 — Software Design</strong>. Students can borrow directly from the
-                            reserve shelf at <strong>Counter A</strong>.
+                            Yêu cầu dự trữ khóa học của bạn cho <strong>"Software Engineering" (Sommerville, 10th Ed.)</strong>
+                            đã được phê duyệt. <strong>30 bản sao</strong> hiện được dự trữ cho lớp của bạn
+                            <strong>SE301 — Software Design</strong>. Sinh viên có thể mượn trực tiếp từ
+                            kệ dự trữ tại <strong>Counter A</strong>.
                         </div>
                         <a href="${pageContext.request.contextPath}/lecturer/course-books"
                            class="notif-action-btn" aria-label="View course books">
                             <span class="material-symbols-outlined">menu_book</span>
-                            View Course Books
+                            Xem giáo trình môn học
                         </a>
                     </div>
-                    <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                    <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -630,7 +630,7 @@
                 <!-- Notif 4 — Due soon (UNREAD) -->
                 <div class="notif-item is-unread"
                      tabindex="0" role="article"
-                     aria-label="Due soon reminder — unread"
+                     aria-label="Nhắc nhở sắp đến hạn — chưa đọc"
                      data-type="due-soon" data-id="notif-4">
                     <div class="unread-dot" aria-hidden="true"></div>
                     <div class="notif-icon-wrap type-due-soon" aria-hidden="true">
@@ -638,43 +638,43 @@
                     </div>
                     <div class="notif-content">
                         <div class="notif-meta">
-                            <span class="notif-category type-due-soon">Due Soon</span>
+                            <span class="notif-category type-due-soon">Sắp đến hạn</span>
                             <span class="notif-timestamp">
                                 <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
-                                Yesterday, 9:00 AM
+                                Hôm qua, 9:00 AM
                             </span>
                         </div>
-                        <div class="notif-title">Return reminder: 3 days remaining</div>
+                        <div class="notif-title">Nhắc nhở trả sách: Còn 3 ngày</div>
                         <div class="notif-body">
                             <strong>"The Pragmatic Programmer"</strong> (20th Anniversary Edition)
-                            is due on <strong>June 7, 2026</strong>. You have 3 days to return or
-                            extend your loan period.
+                            đến hạn vào <strong>June 7, 2026</strong>. Bạn có 3 ngày để trả lại hoặc
+                            gia hạn thời gian mượn.
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
                             <a href="${pageContext.request.contextPath}/lecturer/loans"
                                class="notif-action-btn" aria-label="View loan">
                                 <span class="material-symbols-outlined">library_books</span>
-                                View Loan
+                                Xem khoản mượn
                             </a>
                             <a href="${pageContext.request.contextPath}/lecturer/loans/renew"
                                class="notif-action-btn-outline" aria-label="Request renewal">
                                 <span class="material-symbols-outlined">autorenew</span>
-                                Request Renewal
+                                Yêu cầu gia hạn
                             </a>
                         </div>
                     </div>
-                    <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                    <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
 
                 <!-- EARLIER separator -->
-                <div class="notif-date-sep" aria-hidden="true"><span>Earlier</span></div>
+                <div class="notif-date-sep" aria-hidden="true"><span>Trước đó</span></div>
 
                 <!-- Notif 5 — Return confirmed (READ) -->
                 <div class="notif-item"
                      tabindex="0" role="article"
-                     aria-label="Return confirmed"
+                     aria-label="Đã xác nhận trả lại"
                      data-type="return" data-id="notif-5">
                     <div class="unread-dot" aria-hidden="true"></div>
                     <div class="notif-icon-wrap type-return" aria-hidden="true">
@@ -682,19 +682,19 @@
                     </div>
                     <div class="notif-content">
                         <div class="notif-meta">
-                            <span class="notif-category type-return">Return</span>
+                            <span class="notif-category type-return">Trả lại</span>
                             <span class="notif-timestamp">
                                 <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
                                 June 1, 2026
                             </span>
                         </div>
-                        <div class="notif-title">Book return successfully recorded</div>
+                        <div class="notif-title">Ghi nhận trả sách thành công</div>
                         <div class="notif-body">
-                            You have returned <strong>"Artificial Intelligence: A Modern Approach"</strong>
-                            (4th Edition). No outstanding fines. Your borrowing record is up to date.
+                            Bạn đã trả lại <strong>"Artificial Intelligence: A Modern Approach"</strong>
+                            (4th Edition). Không có khoản tiền phạt chưa thanh toán nào. Hồ sơ mượn của bạn đã được cập nhật.
                         </div>
                     </div>
-                    <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                    <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -702,7 +702,7 @@
                 <!-- Notif 6 — System: extended access (READ) -->
                 <div class="notif-item"
                      tabindex="0" role="article"
-                     aria-label="System announcement"
+                     aria-label="Thông báo hệ thống"
                      data-type="system" data-id="notif-6">
                     <div class="unread-dot" aria-hidden="true"></div>
                     <div class="notif-icon-wrap type-system" aria-hidden="true">
@@ -710,26 +710,26 @@
                     </div>
                     <div class="notif-content">
                         <div class="notif-meta">
-                            <span class="notif-category type-system">Announcement</span>
+                            <span class="notif-category type-system">Thông báo</span>
                             <span class="notif-timestamp">
                                 <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
                                 May 31, 2026
                             </span>
                         </div>
-                        <div class="notif-title">Extended borrowing privileges for academic staff</div>
+                        <div class="notif-title">Mở rộng đặc quyền mượn sách cho cán bộ giảng dạy</div>
                         <div class="notif-body">
-                            As part of the <strong>Academic Year 2025–2026 Policy Update</strong>, all
-                            lecturers and academic staff can now borrow up to <strong>10 books</strong>
-                            simultaneously with a loan period of <strong>60 days</strong>, extendable
-                            once for an additional 30 days.
+                            Như một phần của <strong>Cập nhật chính sách năm học 2025–2026</strong>, tất cả
+                            giảng viên và nhân viên học thuật hiện có thể mượn tối đa <strong>10 cuốn sách</strong>
+                            cùng lúc với thời gian mượn là <strong>60 ngày</strong>, có thể gia hạn
+                            một lần thêm 30 ngày nữa.
                         </div>
                         <a href="${pageContext.request.contextPath}/policies.jsp"
                            class="notif-action-btn" aria-label="Read updated policy">
                             <span class="material-symbols-outlined">policy</span>
-                            Read Policy
+                            Đọc chính sách
                         </a>
                     </div>
-                    <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                    <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -737,7 +737,7 @@
                 <!-- Notif 7 — Research: reading list updated (READ) -->
                 <div class="notif-item"
                      tabindex="0" role="article"
-                     aria-label="Research reading list update"
+                     aria-label="Cập nhật danh sách đọc nghiên cứu"
                      data-type="research" data-id="notif-7">
                     <div class="unread-dot" aria-hidden="true"></div>
                     <div class="notif-icon-wrap type-research" aria-hidden="true">
@@ -745,25 +745,25 @@
                     </div>
                     <div class="notif-content">
                         <div class="notif-meta">
-                            <span class="notif-category type-research">Research</span>
+                            <span class="notif-category type-research">Nghiên cứu</span>
                             <span class="notif-timestamp">
                                 <span class="material-symbols-outlined" style="font-size: 12px; vertical-align: -2px;">schedule</span>
                                 May 29, 2026
                             </span>
                         </div>
-                        <div class="notif-title">Your saved reading list has been updated</div>
+                        <div class="notif-title">Danh sách đọc đã lưu của bạn đã được cập nhật</div>
                         <div class="notif-body">
-                            <strong>3 books</strong> from your reading list
-                            <em>"Machine Learning Fundamentals"</em> are now available in print at
-                            the main library. Reserve a copy before they run out.
+                            <strong>3 cuốn sách</strong> từ danh sách đọc của bạn
+                            <em>"Machine Learning Fundamentals"</em> hiện có sẵn bản in tại
+                            thư viện chính. Hãy đặt trước một bản trước khi hết.
                         </div>
                         <a href="${pageContext.request.contextPath}/lecturer/reading-lists"
                            class="notif-action-btn" aria-label="View reading list">
                             <span class="material-symbols-outlined">article</span>
-                            View Reading List
+                            Xem danh sách đọc
                         </a>
                     </div>
-                    <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                    <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -776,13 +776,13 @@
                         <div class="empty-icon-wrap" aria-hidden="true">
                             <span class="material-symbols-outlined">notifications_off</span>
                         </div>
-                        <h3>All caught up!</h3>
-                        <p>You have no notifications at the moment.</p>
+                        <h3>Đã xem hết thông báo!</h3>
+                        <p>Bạn không có thông báo nào vào lúc này.</p>
                     </div>
                 </c:if>
 
                 <c:if test="${not empty todayNotifications}">
-                    <div class="notif-date-sep" aria-hidden="true"><span>Today</span></div>
+                    <div class="notif-date-sep" aria-hidden="true"><span>Hôm nay</span></div>
                     <c:forEach var="notif" items="${todayNotifications}">
                         <div class="notif-item ${not notif.read ? 'is-unread' : ''}"
                              tabindex="0" role="article"
@@ -809,7 +809,7 @@
                                     </a>
                                 </c:if>
                             </div>
-                            <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                            <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                                 <span class="material-symbols-outlined">close</span>
                             </button>
                         </div>
@@ -817,7 +817,7 @@
                 </c:if>
 
                 <c:if test="${not empty earlierNotifications}">
-                    <div class="notif-date-sep" aria-hidden="true"><span>Earlier</span></div>
+                    <div class="notif-date-sep" aria-hidden="true"><span>Trước đó</span></div>
                     <c:forEach var="notif" items="${earlierNotifications}">
                         <div class="notif-item ${not notif.read ? 'is-unread' : ''}"
                              tabindex="0" role="article"
@@ -844,7 +844,7 @@
                                     </a>
                                 </c:if>
                             </div>
-                            <button class="notif-dismiss" title="Dismiss" aria-label="Dismiss notification">
+                            <button class="notif-dismiss" title="Bỏ qua" aria-label="Dismiss notification">
                                 <span class="material-symbols-outlined">close</span>
                             </button>
                         </div>

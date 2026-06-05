@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>404 - Page Not Found | LMS University Library</title>
+    <title>404 - Không tìm thấy trang | Thư viện Đại học LMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -153,15 +153,15 @@
 
     <nav class="navbar navbar-expand-md fixed-top bg-white shadow-sm py-3">
         <div class="container-xl d-flex justify-content-between align-items-center">
-            <a class="navbar-brand fw-bold text-primary-custom m-0 fs-5" href="${pageContext.request.contextPath}/">LMS University Library</a>
+            <a class="navbar-brand fw-bold text-primary-custom m-0 fs-5" href="${pageContext.request.contextPath}/">Thư viện Đại học LMS</a>
 
             <div class="collapse navbar-collapse justify-content-center d-none d-md-flex">
                 <div class="d-flex gap-4">
-                    <a class="nav-link-custom" href="${dashboardUrl}">Dashboard</a>
-                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/book-search.jsp">Catalog</a>
-                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Services</a>
-                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
-                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/#contact">Support</a>
+                    <a class="nav-link-custom" href="${dashboardUrl}">Bảng điều khiển</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/book-search.jsp">Mục lục</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/#contact">Hỗ trợ</a>
                 </div>
             </div>
 
@@ -181,7 +181,7 @@
 
                 <div class="position-absolute bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 border border-outline-variant" style="top: -16px; right: -16px; z-index: 20;">
                     <span class="material-symbols-outlined text-primary-custom">search_off</span>
-                    <span class="small fw-semibold text-on-surface-variant">Not found</span>
+                    <span class="small fw-semibold text-on-surface-variant">Không tìm thấy</span>
                 </div>
                 <div class="position-absolute bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 border border-outline-variant" style="bottom: -24px; left: -24px; z-index: 20;">
                     <span class="material-symbols-outlined text-primary-custom">book_5</span>
@@ -190,19 +190,19 @@
             </div>
 
             <div class="mt-4 max-w-2xl mx-auto">
-                <h1 class="font-display text-primary-custom tracking-tight mb-2">404 - Page Not Found</h1>
-                <h2 class="h4 fw-semibold text-dark mb-3">The requested page could not be found.</h2>
+                <h1 class="font-display text-primary-custom tracking-tight mb-2">404 - Không tìm thấy trang</h1>
+                <h2 class="h4 fw-semibold text-dark mb-3">Không thể tìm thấy trang yêu cầu.</h2>
                 <p class="text-on-surface-variant fs-5 mb-4 mx-auto" style="max-width: 600px; line-height: 1.6;">
-                    It looks like you've wandered between our digital bookshelves. This page doesn't exist or has been moved to a new address. Please check the URL or use the search bar to continue.
+                    Có vẻ như bạn đã đi lạc giữa các giá sách kỹ thuật số của chúng tôi. Trang này không tồn tại hoặc đã được chuyển sang địa chỉ mới. Vui lòng kiểm tra lại URL hoặc sử dụng thanh tìm kiếm để tiếp tục.
                 </p>
             </div>
 
             <div class="d-flex flex-column flex-sm-row gap-3 mt-3">
                 <a class="btn bg-primary-container text-white fw-semibold px-4 py-3 border-0 rounded-3 d-inline-flex align-items-center justify-content-center gap-2 shadow-sm btn-animate text-decoration-none" href="${dashboardUrl}">
-                    <span class="material-symbols-outlined">home</span> Back to Home
+                    <span class="material-symbols-outlined">home</span> Quay lại Trang chủ
                 </a>
                 <a class="btn btn-outline-secondary px-4 py-3 rounded-3 d-inline-flex align-items-center justify-content-center gap-2 border-2 text-on-surface-variant border-outline-variant btn-animate text-decoration-none" href="${pageContext.request.contextPath}/#contact">
-                    <span class="material-symbols-outlined">contact_support</span> Contact Support
+                    <span class="material-symbols-outlined">contact_support</span> Liên hệ Hỗ trợ
                 </a>
             </div>
 
@@ -212,8 +212,8 @@
                         <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none text-reset">
                             <div class="quick-link-card h-100">
                                 <span class="material-symbols-outlined text-primary-custom mb-2 d-block">menu_book</span>
-                                <h3 class="h6 text-dark fw-bold mb-1">Catalog</h3>
-                                <p class="small text-on-surface-variant mb-0">Search for study materials.</p>
+                                <h3 class="h6 text-dark fw-bold mb-1">Mục lục</h3>
+                                <p class="small text-on-surface-variant mb-0">Tìm kiếm tài liệu học tập.</p>
                             </div>
                         </a>
                     </div>
@@ -221,8 +221,8 @@
                         <a href="${pageContext.request.contextPath}/#policies" class="text-decoration-none text-reset">
                             <div class="quick-link-card h-100">
                                 <span class="material-symbols-outlined text-primary-custom mb-2 d-block">gavel</span>
-                                <h3 class="h6 text-dark fw-bold mb-1">Policies</h3>
-                                <p class="small text-on-surface-variant mb-0">Read library policies.</p>
+                                <h3 class="h6 text-dark fw-bold mb-1">Chính sách</h3>
+                                <p class="small text-on-surface-variant mb-0">Đọc các chính sách của thư viện.</p>
                             </div>
                         </a>
                     </div>
@@ -230,8 +230,8 @@
                         <a href="${dashboardUrl}" class="text-decoration-none text-reset">
                             <div class="quick-link-card h-100">
                                 <span class="material-symbols-outlined text-primary-custom mb-2 d-block">person</span>
-                                <h3 class="h6 text-dark fw-bold mb-1">Account</h3>
-                                <p class="small text-on-surface-variant mb-0">View your borrowing history.</p>
+                                <h3 class="h6 text-dark fw-bold mb-1">Tài khoản</h3>
+                                <p class="small text-on-surface-variant mb-0">Xem lịch sử mượn trả của bạn.</p>
                             </div>
                         </a>
                     </div>
@@ -244,14 +244,14 @@
     <footer class="footer mt-auto py-4 bg-light border-top border-outline-variant" style="background-color: var(--surface-container) !important;">
         <div class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
             <div class="text-center text-md-start">
-                <span class="d-block small fw-semibold text-muted" style="color: var(--secondary) !important;">LMS University Library</span>
-                <span class="small text-on-surface-variant">© 2024 LMS University Library System</span>
+                <span class="d-block small fw-semibold text-muted" style="color: var(--secondary) !important;">Thư viện Đại học LMS</span>
+                <span class="small text-on-surface-variant">© 2024 Thư viện Đại học LMS</span>
             </div>
             <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a class="small text-on-surface-variant text-decoration-underline" href="#">Privacy Policy</a>
-                <a class="small text-on-surface-variant text-decoration-underline" href="#">Terms of Service</a>
-                <a class="small text-on-surface-variant text-decoration-underline" href="#">Accessibility</a>
-                <a class="small text-on-surface-variant text-decoration-underline" href="${pageContext.request.contextPath}/#contact">Contact Support</a>
+                <a class="small text-on-surface-variant text-decoration-underline" href="#">Chính sách bảo mật</a>
+                <a class="small text-on-surface-variant text-decoration-underline" href="#">Điều khoản Dịch vụ</a>
+                <a class="small text-on-surface-variant text-decoration-underline" href="#">Trợ năng</a>
+                <a class="small text-on-surface-variant text-decoration-underline" href="${pageContext.request.contextPath}/#contact">Liên hệ Hỗ trợ</a>
             </div>
         </div>
     </footer>

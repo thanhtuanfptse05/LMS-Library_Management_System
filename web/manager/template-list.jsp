@@ -2,12 +2,12 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="vi">
 
             <head>
                 <meta charset="utf-8" />
                 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-                <title>Email Templates Management</title>
+                <title>Quản lý Mẫu Email | Thư viện Lumina</title>
 
                 <!-- Bootstrap 5 CSS -->
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -97,44 +97,44 @@
                 <!-- Sidebar Navigation -->
                 <div class="sidebar d-flex flex-col p-3">
                     <div class="mb-4 px-2">
-                        <h2 class="h4 fw-bold text-danger m-0" style="color: #9d4300 !important;">Library Portal</h2>
-                        <small class="text-muted">Academic Resource Center</small>
+                        <h2 class="h4 fw-bold text-danger m-0" style="color: #9d4300 !important;">Cổng thông tin Thư viện</h2>
+                        <small class="text-muted">Trung tâm Tài nguyên Học thuật</small>
                     </div>
 
                     <ul class="nav flex-column flex-grow-1 gap-1">
                         <li class="nav-item">
                             <a href="dashboard" class="nav-link-custom">
-                                <span class="material-symbols-outlined">dashboard</span>Dashboard
+                                <span class="material-symbols-outlined">dashboard</span>Bảng điều khiển
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="catalog" class="nav-link-custom">
-                                <span class="material-symbols-outlined">menu_book</span>Catalog
+                                <span class="material-symbols-outlined">menu_book</span>Danh mục Sách
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="loans" class="nav-link-custom">
-                                <span class="material-symbols-outlined">auto_stories</span>My Loans
+                                <span class="material-symbols-outlined">auto_stories</span>Sách tôi mượn
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="reservations" class="nav-link-custom">
-                                <span class="material-symbols-outlined">bookmark</span>Reservations
+                                <span class="material-symbols-outlined">bookmark</span>Đặt trước
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="templates" class="nav-link-custom active">
-                                <span class="material-symbols-outlined">description</span>Document Templates
+                                <span class="material-symbols-outlined">description</span>Mẫu Tài liệu
                             </a>
                         </li>
                     </ul>
 
                     <div class="mt-auto pt-3 border-top border-secondary-subtle">
                         <a href="settings" class="nav-link-custom mb-1">
-                            <span class="material-symbols-outlined">settings</span>Settings
+                            <span class="material-symbols-outlined">settings</span>Cài đặt
                         </a>
                         <a href="help" class="nav-link-custom">
-                            <span class="material-symbols-outlined">help</span>Help
+                            <span class="material-symbols-outlined">help</span>Trợ giúp
                         </a>
                     </div>
                 </div>
@@ -145,12 +145,12 @@
                     <header class="navbar navbar-expand bg-white border-bottom px-4 sticky-top justify-content-between"
                         style="height: 64px;">
                         <div class="d-flex align-items-center gap-3">
-                            <span class="navbar-brand h5 m-0 fw-semibold" style="color: #9d4300;">Library Management
-                                System</span>
+                            <span class="navbar-brand h5 m-0 fw-semibold" style="color: #9d4300;">Hệ thống Quản lý Thư viện
+                                </span>
                             <div class="d-none d-md-flex gap-3 ms-4">
-                                <a href="#" class="text-secondary text-decoration-none small">Research Guides</a>
-                                <a href="#" class="text-secondary text-decoration-none small">Archives</a>
-                                <a href="#" class="text-secondary text-decoration-none small">e-Resources</a>
+                                <a href="#" class="text-secondary text-decoration-none small">Hướng dẫn Nghiên cứu</a>
+                                <a href="#" class="text-secondary text-decoration-none small">Lưu trữ</a>
+                                <a href="#" class="text-secondary text-decoration-none small">Tài nguyên điện tử</a>
                             </div>
                         </div>
 
@@ -173,14 +173,14 @@
                         <!-- Header Section -->
                         <div class="d-flex justify-content-between align-items-end mb-4">
                             <div>
-                                <h2 class="fw-bold m-0">Automated Email Templates</h2>
-                                <p class="text-muted m-0">Manage system-generated notifications and email
-                                    communications.</p>
+                                <h2 class="fw-bold m-0">Quản lý Mẫu Email Tự động</h2>
+                                <p class="text-muted m-0">Quản lý các thông báo và liên lạc email do hệ thống tạo ra.
+                                    </p>
                             </div>
                             <button class="btn text-white fw-bold d-flex align-items-center gap-2 px-3 py-2 shadow-sm"
                                 style="background-color: #9d4300;" data-bs-toggle="modal"
                                 data-bs-target="#editTemplateModal" onclick="clearForm()">
-                                <span class="material-symbols-outlined">add_circle</span> Create New Template
+                                <span class="material-symbols-outlined">add_circle</span> Tạo Mẫu mới
                             </button>
                         </div>
 
@@ -200,7 +200,7 @@
                                         <div class="d-flex align-items-center gap-2 text-secondary small">
                                             <span class="material-symbols-outlined">filter_list</span>
                                             <span class="fw-bold text-uppercase tracking-wider"
-                                                style="font-size: 11px;">Sort by: Recent</span>
+                                                style="font-size: 11px;">Sắp xếp: Gần đây</span>
                                         </div>
                                     </div>
 
@@ -209,11 +209,11 @@
                                             <thead class="table-light text-secondary uppercase tracking-wider"
                                                 style="font-size: 12px;">
                                                 <tr>
-                                                    <th class="px-4 py-3">Template Name</th>
-                                                    <th class="px-3 py-3">Subject Line</th>
-                                                    <th class="px-3 py-3">Last Updated</th>
-                                                    <th class="px-3 py-3">Status</th>
-                                                    <th class="px-4 py-3 text-end">Actions</th>
+                                                    <th class="px-4 py-3">Tên Mẫu</th>
+                                                    <th class="px-3 py-3">Tiêu đề Email</th>
+                                                    <th class="px-3 py-3">Cập nhật lần cuối</th>
+                                                    <th class="px-3 py-3">Trạng thái</th>
+                                                    <th class="px-4 py-3 text-end">Hành động</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -237,11 +237,11 @@
                                                             <c:choose>
                                                                 <c:when class="${template.status == 'Active'}">
                                                                     <span
-                                                                        class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1">Active</span>
+                                                                        class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1">Hoạt động</span>
                                                                 </c:when>
                                                                 <c:otherwise>
                                                                     <span
-                                                                        class="badge bg-secondary-subtle text-secondary rounded-pill px-2.5 py-1">Draft</span>
+                                                                        class="badge bg-secondary-subtle text-secondary rounded-pill px-2.5 py-1">Nháp</span>
                                                                 </c:otherwise>
                                                             </c:choose>
                                                         </td>
@@ -249,7 +249,7 @@
                                                             <div class="btn-group gap-1">
                                                                 <button
                                                                     class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center"
-                                                                    title="Preview" data-bs-toggle="modal"
+                                                                    title="Xem trước" data-bs-toggle="modal"
                                                                     data-bs-target="#previewTemplateModal"
                                                                     onclick="loadPreview('${template.subject}', '${template.body}')">
                                                                     <span class="material-symbols-outlined"
@@ -257,7 +257,7 @@
                                                                 </button>
                                                                 <button
                                                                     class="btn btn-sm btn-outline-primary d-inline-flex align-items-center"
-                                                                    title="Edit Template" data-bs-toggle="modal"
+                                                                    title="Chỉnh sửa Mẫu" data-bs-toggle="modal"
                                                                     data-bs-target="#editTemplateModal"
                                                                     onclick="populateForm('${template.id}', '${template.name}', '${template.subject}', '${template.body}', '${template.status}')">
                                                                     <span class="material-symbols-outlined"
@@ -274,7 +274,7 @@
                                                             <td colspan="5" class="text-center py-5 text-muted">
                                                                 <span
                                                                     class="material-symbols-outlined display-6 d-block mb-2">mail_lock</span>
-                                                                No email templates found in the system.
+                                                                Không có mẫu email nào trong hệ thống.
                                                             </td>
                                                         </tr>
                                                     </c:if>
@@ -291,11 +291,11 @@
                                     style="background-color: #ffdbca; color: #341100 !important;">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="fw-bold text-uppercase tracking-wider"
-                                            style="font-size: 11px; opacity: 0.8;">Engagement Rate</span>
+                                            style="font-size: 11px; opacity: 0.8;">Tỷ lệ Tương tác</span>
                                         <span class="material-symbols-outlined">trending_up</span>
                                     </div>
                                     <h3 class="display-6 fw-bold m-0 mb-1">92.4%</h3>
-                                    <p class="small m-0 opacity-70">Open rate across all templates this month.</p>
+                                    <p class="small m-0 opacity-70">Tỷ lệ mở email trên tất cả các mẫu trong tháng này.</p>
                                     <div class="progress mt-3"
                                         style="height: 6px; background-color: rgba(52, 17, 0, 0.1);">
                                         <div class="progress-bar" role="progressbar"
@@ -306,19 +306,18 @@
                                 <!-- Guidelines Card -->
                                 <div class="card border-0 shadow-sm rounded-3 p-4 bg-light border">
                                     <h5 class="fw-bold d-flex align-items-center gap-2 mb-3">
-                                        <span class="material-symbols-outlined" style="color: #9d4300;">info</span> Best
-                                        Practices
+                                        <span class="material-symbols-outlined" style="color: #9d4300;">info</span> Thực hành Tốt nhất
                                     </h5>
                                     <ul class="list-unstyled d-flex flex-column gap-2 small text-muted mb-0">
                                         <li class="d-flex align-items-start gap-2">
                                             <span class="material-symbols-outlined text-success"
                                                 style="font-size: 16px; margin-top: 2px;">check_circle</span>
-                                            Use placeholders like {student_name} or {due_date} for dynamic data.
+                                            Sử dụng các biến như {student_name} hoặc {due_date} cho dữ liệu động.
                                         </li>
                                         <li class="d-flex align-items-start gap-2">
                                             <span class="material-symbols-outlined text-success"
                                                 style="font-size: 16px; margin-top: 2px;">check_circle</span>
-                                            Ensure call-to-action links direct safely to the FAP Portal.
+                                            Đảm bảo liên kết CTA dẫn đến cổng thông tin FAP một cách an toàn.
                                         </li>
                                     </ul>
                                 </div>
@@ -336,41 +335,38 @@
                         <div class="modal-content border-0 shadow">
                             <form action="templates/save" method="POST">
                                 <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="editModalLabel">Modify Email Template</h5>
+                                    <h5 class="modal-title fw-bold" id="editModalLabel">Chỉnh sửa Mẫu Email</h5>
                                     <button type="button" class="btn-close" data-bs-shadow="none"
-                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                                        data-bs-dismiss="modal" aria-label="Đóng"></button>
                                 </div>
                                 <div class="modal-body p-4">
                                     <input type="hidden" id="templateId" name="id">
 
                                     <div class="row g-3">
                                         <div class="col-md-8">
-                                            <label for="templateName" class="form-label fw-semibold small">Template
-                                                Identifier Code</label>
+                                            <label for="templateName" class="form-label fw-semibold small">Mã Định danh Mẫu</label>
                                             <input type="text" class="form-control text-uppercase" id="templateName"
                                                 name="name" required placeholder="e.g., OVERDUE_NOTICE_1">
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="templateStatus" class="form-label fw-semibold small">Publishing
-                                                Status</label>
+                                            <label for="templateStatus" class="form-label fw-semibold small">Trạng thái Xuất bản</label>
                                             <select class="form-select" id="templateStatus" name="status">
-                                                <option value="Active">Active</option>
-                                                <option value="Draft">Draft</option>
+                                                <option value="Active">Hoạt động</option>
+                                                <option value="Draft">Nháp</option>
                                             </select>
                                         </div>
                                         <div class="col-12">
-                                            <label for="templateSubject" class="form-label fw-semibold small">Email
-                                                Subject Line</label>
+                                            <label for="templateSubject" class="form-label fw-semibold small">Tiêu đề Email</label>
                                             <input type="text" class="form-control" id="templateSubject" name="subject"
-                                                required placeholder="Enter email topic title">
+                                                required placeholder="Nhập tiêu đề email">
                                         </div>
                                         <div class="col-12">
-                                            <label for="templateBody" class="form-label fw-semibold small">Email Body
-                                                (HTML/Text Content)</label>
+                                            <label for="templateBody" class="form-label fw-semibold small">Nội dung Email
+                                                (HTML/Văn bản)</label>
                                             <textarea class="form-control" id="templateBody" name="body" rows="8"
                                                 required placeholder="Dear {student_name}, ..."></textarea>
                                             <div class="form-text text-muted" style="font-size: 11px;">
-                                                Available parameters injection syntax: <code>{student_name}</code>,
+                                                Các biến có sẵn: <code>{student_name}</code>,
                                                 <code>{book_title}</code>, <code>{due_date}</code>.
                                             </div>
                                         </div>
@@ -378,9 +374,9 @@
                                 </div>
                                 <div class="modal-footer bg-light">
                                     <button type="button" class="btn btn-secondary px-4"
-                                        data-bs-dismiss="modal">Cancel</button>
+                                        data-bs-dismiss="modal">Hủy</button>
                                     <button type="submit" class="btn text-white px-4"
-                                        style="background-color: #9d4300;">Save Template Changes</button>
+                                        style="background-color: #9d4300;">Lưu Thay đổi Mẫu</button>
                                 </div>
                             </form>
                         </div>
@@ -393,16 +389,16 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content border-0 shadow">
                             <div class="modal-header">
-                                <h5 class="modal-title fw-bold" id="previewModalLabel">Mock Email Preview</h5>
+                                <h5 class="modal-title fw-bold" id="previewModalLabel">Xem trước Email</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                    aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body p-4 bg-light">
                                 <div class="card border-0 shadow-sm p-3 mb-3 bg-white">
-                                    <div class="small mb-1"><strong>From:</strong> Academic Support Center
+                                    <div class="small mb-1"><strong>Từ:</strong> Trung tâm Hỗ trợ Học thuật
                                         &lt;noreply@fpt.edu.vn&gt;</div>
-                                    <div class="small mb-1"><strong>To:</strong> student_sample@fpt.edu.vn</div>
-                                    <div class="small"><strong>Subject:</strong> <span id="previewSubjectText"
+                                    <div class="small mb-1"><strong>Đến:</strong> student_sample@fpt.edu.vn</div>
+                                    <div class="small"><strong>Tiêu đề:</strong> <span id="previewSubjectText"
                                             class="text-primary fw-semibold"></span></div>
                                 </div>
                                 <div class="preview-box shadow-sm" id="previewBodyContent">
@@ -410,8 +406,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close Mock
-                                    Window</button>
+                                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Đóng
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -429,7 +425,7 @@
                         document.getElementById('templateSubject').value = subject;
                         document.getElementById('templateBody').value = body;
                         document.getElementById('templateStatus').value = status;
-                        document.getElementById('editModalLabel').innerText = 'Modify System Template: ' + name;
+                        document.getElementById('editModalLabel').innerText = 'Chỉnh sửa Mẫu Hệ thống: ' + name;
                     }
 
                     // Reset inputs clear trigger for creation flows
@@ -439,7 +435,7 @@
                         document.getElementById('templateSubject').value = '';
                         document.getElementById('templateBody').value = '';
                         document.getElementById('templateStatus').value = 'Active';
-                        document.getElementById('editModalLabel').innerText = 'Create New Automated Template';
+                        document.getElementById('editModalLabel').innerText = 'Tạo Mẫu Tự động mới';
                     }
 
                     // Live Render simulation logic replacing placeholders variables tags

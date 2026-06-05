@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <%--
     Admin — Audit Log Detail
@@ -304,11 +304,11 @@
                             <ol class="breadcrumb mb-0" style="font-size: 12px;">
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/admin/dashboard"
-                                       class="text-decoration-none text-on-surface-variant">Dashboard</a>
+                                       class="text-decoration-none text-on-surface-variant">Bảng điều khiển</a>
                                 </li>
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp"
-                                       class="text-decoration-none text-on-surface-variant">Audit Logs</a>
+                                       class="text-decoration-none text-on-surface-variant">Nhật ký Kiểm toán</a>
                                 </li>
                                 <li class="breadcrumb-item active fw-semibold text-primary-custom"
                                     aria-current="page">
@@ -320,7 +320,7 @@
                             <span class="material-symbols-outlined me-2"
                                   style="font-size: 26px; vertical-align: -4px; color: var(--primary, #9d4300);
                                          font-variation-settings: 'FILL' 1;">manage_search</span>
-                            Audit Log Detail
+                            Audit Chi tiết nhật ký
                         </h1>
                         <p style="font-size: 14px; color: var(--on-surface-variant); margin: 0;">
                             Full snapshot of the operation — old values, new values, and technical metadata.
@@ -330,12 +330,12 @@
                         <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp"
                            class="btn-detail-back" aria-label="Back to audit log list">
                             <span class="material-symbols-outlined">arrow_back</span>
-                            Back to Logs
+                            Quay lại to Logs
                         </a>
                         <button class="btn-detail-export" id="btnExportLog"
-                                aria-label="Export this log entry as JSON">
+                                aria-label="Xuất bản ghi nhật ký dạng JSON">
                             <span class="material-symbols-outlined">download</span>
-                            Export JSON
+                            Xuất JSON
                         </button>
                     </div>
                 </div>
@@ -368,7 +368,7 @@
                                         SystemConfigurations updated
                                     </div>
                                     <div class="log-meta-header__sub">
-                                        Log ID: <strong><c:out value="${not empty param.id ? param.id : 'LOG-002'}" /></strong>
+                                        Mã nhật ký: <strong><c:out value="${not empty param.id ? param.id : 'LOG-002'}" /></strong>
                                         &nbsp;·&nbsp;
                                         <c:choose>
                                             <c:when test="${not empty auditLog.timestamp}">
@@ -400,13 +400,13 @@
                                         </span>
                                     </div>
                                     <div class="meta-item">
-                                        <span class="meta-item__label">Entity ID</span>
+                                        <span class="meta-item__label">ID thực thể</span>
                                         <span class="meta-item__value mono">
                                             <c:out value="${not empty auditLog.entityId ? auditLog.entityId : 'PENALTY_RATE_PER_DAY_VND'}" />
                                         </span>
                                     </div>
                                     <div class="meta-item">
-                                        <span class="meta-item__label">IP Address</span>
+                                        <span class="meta-item__label">IP Địa chỉ</span>
                                         <span class="meta-item__value mono">
                                             <c:out value="${not empty auditLog.ipAddress ? auditLog.ipAddress : '10.0.0.5'}" />
                                         </span>
@@ -418,13 +418,13 @@
                                         </span>
                                     </div>
                                     <div class="meta-item">
-                                        <span class="meta-item__label">Request Path</span>
+                                        <span class="meta-item__label">Đường dẫn yêu cầu</span>
                                         <span class="meta-item__value mono" style="font-size: 11px;">
                                             <c:out value="${not empty auditLog.requestPath ? auditLog.requestPath : 'POST /admin/config'}" />
                                         </span>
                                     </div>
                                     <div class="meta-item">
-                                        <span class="meta-item__label">Change Reason</span>
+                                        <span class="meta-item__label">Change Lý do</span>
                                         <span class="meta-item__value" style="font-size: 13px;">
                                             <c:out value="${not empty auditLog.changeReason ? auditLog.changeReason : 'Adjust fine rate for Q3 policy update'}" />
                                         </span>
@@ -439,7 +439,7 @@
                                 <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary,#9d4300);">
                                     compare_arrows
                                 </span>
-                                <h2>Value Changes (Old → New)</h2>
+                                <h2>Giá trị Changes (Old → New)</h2>
                                 <span style="font-size: 12px; color: var(--on-surface-variant); margin-left: auto;">
                                     <c:out value="${not empty auditLog.changedFieldCount ? auditLog.changedFieldCount : '1'}" /> field(s) modified
                                 </span>
@@ -476,14 +476,14 @@
                                                           style="font-size: 14px; vertical-align: -2px; color: var(--error,#ba1a1a);">
                                                         remove_circle
                                                     </span>
-                                                    Old Value
+                                                    Giá trị cũ
                                                 </th>
                                                 <th class="col-new" scope="col">
                                                     <span class="material-symbols-outlined"
                                                           style="font-size: 14px; vertical-align: -2px; color: #16a34a;">
                                                         add_circle
                                                     </span>
-                                                    New Value
+                                                    Giá trị mới
                                                 </th>
                                             </tr>
                                         </thead>
@@ -612,7 +612,7 @@
                                       style="font-size: 17px; vertical-align: -3px; color: var(--primary,#9d4300);">
                                     devices
                                 </span>
-                                Technical Metadata
+                                Siêu dữ liệu kỹ thuật
                             </h3>
                             <div class="row g-3">
                                 <div class="col-12 col-md-4">
@@ -625,7 +625,7 @@
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="meta-item">
-                                        <span class="meta-item__label">HTTP Method</span>
+                                        <span class="meta-item__label">Phương thức HTTP</span>
                                         <span class="meta-item__value">
                                             <c:out value="${not empty auditLog.httpMethod ? auditLog.httpMethod : 'POST'}" />
                                         </span>
@@ -641,7 +641,7 @@
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="meta-item">
-                                        <span class="meta-item__label">Duration</span>
+                                        <span class="meta-item__label">Thời hạn</span>
                                         <span class="meta-item__value">
                                             <c:out value="${not empty auditLog.durationMs ? auditLog.durationMs : '43'}" /> ms
                                         </span>
@@ -677,17 +677,17 @@
                                 <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary,#9d4300);">
                                     summarize
                                 </span>
-                                <h3>Quick Summary</h3>
+                                <h3>Tóm tắt nhanh</h3>
                             </div>
                             <div class="side-card__body">
                                 <div class="info-row">
-                                    <span class="ir-label">Log ID</span>
+                                    <span class="ir-label">Mã nhật ký</span>
                                     <span class="ir-value mono">
                                         <c:out value="${not empty param.id ? param.id : 'LOG-002'}" />
                                     </span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="ir-label">Action Type</span>
+                                    <span class="ir-label">Hành động Type</span>
                                     <span class="ir-value"><span class="action-badge config">CONFIG CHANGE</span></span>
                                 </div>
                                 <div class="info-row">
@@ -731,7 +731,7 @@
                                     </div>
                                 </div>
                                 <div class="info-row">
-                                    <span class="ir-label">Role</span>
+                                    <span class="ir-label">Vai trò</span>
                                     <span class="ir-value">System Administrator</span>
                                 </div>
                                 <div class="info-row">
@@ -739,7 +739,7 @@
                                     <span class="ir-value mono">10.0.0.5</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="ir-label">Last Login</span>
+                                    <span class="ir-label">Đăng nhập cuối</span>
                                     <span class="ir-value" style="font-size: 12px;">04/06/2026 08:01</span>
                                 </div>
                             </div>
@@ -783,17 +783,17 @@
 
                         <!-- Actions -->
                         <div class="raised-card p-4">
-                            <h3 class="fw-bold mb-3" style="font-size: 14px; color: var(--on-surface);">Actions</h3>
+                            <h3 class="fw-bold mb-3" style="font-size: 14px; color: var(--on-surface);">Hành động</h3>
                             <div class="d-flex flex-column gap-2">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=PENALTY_RATE_PER_DAY_VND"
                                    class="btn-detail-back text-decoration-none" style="justify-content: center;">
                                     <span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span>
-                                    View Config Parameter
+                                    Xem Config Parameter
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?entity=SystemConfigurations"
                                    class="btn-detail-back text-decoration-none" style="justify-content: center;">
                                     <span class="material-symbols-outlined" style="font-size: 16px;">filter_list</span>
-                                    Filter by Entity
+                                    Bộ lọc by Entity
                                 </a>
                             </div>
                         </div>

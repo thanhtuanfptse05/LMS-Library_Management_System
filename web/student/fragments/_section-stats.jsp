@@ -12,7 +12,7 @@
             </div>
             <div>
                 <p class="text-on-surface-variant text-uppercase mb-0 fw-semibold"
-                   style="font-size: 11px; letter-spacing: 0.06em;">Active Loans</p>
+                   style="font-size: 11px; letter-spacing: 0.06em;">Đang mượn</p>
                 <p class="fs-4 fw-bold mb-0 text-dark">
                     <c:out value="${not empty activeLoansCount ? activeLoansCount : '0'}"/>
                 </p>
@@ -29,7 +29,7 @@
             </div>
             <div>
                 <p class="text-on-surface-variant text-uppercase mb-0 fw-semibold"
-                   style="font-size: 11px; letter-spacing: 0.06em;">Due Soon</p>
+                   style="font-size: 11px; letter-spacing: 0.06em;">Sắp đến hạn</p>
                 <p class="fs-4 fw-bold mb-0 text-dark">
                     <c:out value="${not empty dueSoonCount ? dueSoonCount : '0'}"/>
                 </p>
@@ -46,7 +46,7 @@
             </div>
             <div>
                 <p class="text-on-surface-variant text-uppercase mb-0 fw-semibold"
-                   style="font-size: 11px; letter-spacing: 0.06em;">Reserved</p>
+                   style="font-size: 11px; letter-spacing: 0.06em;">Đã đặt trước</p>
                 <p class="fs-4 fw-bold mb-0 text-dark">
                     <c:out value="${not empty reservedCount ? reservedCount : '0'}"/>
                 </p>
@@ -63,7 +63,7 @@
             </div>
             <div>
                 <p class="text-on-surface-variant text-uppercase mb-0 fw-semibold"
-                   style="font-size: 11px; letter-spacing: 0.06em;">Overdue Fines</p>
+                   style="font-size: 11px; letter-spacing: 0.06em;">Tiền phạt quá hạn</p>
                 <p class="fs-4 fw-bold mb-0 text-dark">
                     <c:choose>
                         <c:when test="${not empty totalFines}">

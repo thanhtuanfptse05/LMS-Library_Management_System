@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -26,7 +26,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -34,7 +34,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -69,17 +69,17 @@
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-2" style="color: var(--primary);">
                                             <span class="material-symbols-outlined">analytics</span>
-                                            <span class="text-label-md text-uppercase tracking-wider">Queue Health</span>
+                                            <span class="text-label-md text-uppercase tracking-wider">Tình trạng hàng đợi</span>
                                         </div>
                                         <p class="text-display m-0 lh-1" style="color: var(--primary);">
                                             <c:out value="${not empty totalReservations ? totalReservations : '12'}" />
                                         </p>
-                                        <p class="mt-1 mb-0" style="color: var(--on-surface-variant);">Active Reservations</p>
+                                        <p class="mt-1 mb-0" style="color: var(--on-surface-variant);">Hoạt động đặt trước</p>
                                     </div>
                                     <div class="mt-4">
                                         <div class="d-flex justify-content-between text-label-md mb-2 fw-bold">
-                                            <span>Estimated Wait Time</span>
-                                            <span style="color: var(--primary);">~42 Days</span>
+                                            <span>Thời gian chờ ước tính</span>
+                                            <span style="color: var(--primary);">~42 Ngày</span>
                                         </div>
                                         <div class="progress" style="height: 8px; background-color: var(--surface-container); border-radius: 9999px;">
                                             <div class="progress-bar" role="progressbar"
@@ -96,18 +96,18 @@
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-2" style="color: var(--on-primary-fixed);">
                                             <span class="material-symbols-outlined">inventory_2</span>
-                                            <span class="text-label-md text-uppercase tracking-wider">Inventory Status</span>
+                                            <span class="text-label-md text-uppercase tracking-wider">Trạng thái kho</span>
                                         </div>
                                         <div class="d-flex align-items-end gap-2">
                                             <p class="text-display m-0 lh-1" style="color: var(--on-primary-fixed);">
                                                 <c:out value="${not empty availableCopies ? availableCopies : '0'}" />/<c:out value="${not empty totalCopies ? totalCopies : '4'}" />
                                             </p>
-                                            <p class="mb-1" style="color: var(--on-primary-fixed-variant);">Copies Available</p>
+                                            <p class="mb-1" style="color: var(--on-primary-fixed-variant);">Bản sao sẵn có</p>
                                         </div>
                                     </div>
                                     <button class="btn w-full py-3 fw-bold d-flex align-items-center justify-content-center gap-2 border-0 mt-4 text-white"
                                             style="background-color: var(--primary); border-radius: 12px;">
-                                        <span class="material-symbols-outlined">add</span> Mark Return Early
+                                        <span class="material-symbols-outlined">add</span> Đánh dấu trả sớm
                                     </button>
                                 </div>
                             </div>
@@ -124,13 +124,13 @@
                         <div class="bento-card h-100" style="border-left: 4px solid var(--primary) !important;">
                             <div class="d-flex justify-content-between align-items-start mb-4">
                                 <div>
-                                    <h4 class="fw-bold mb-1" style="font-size: 24px;">Notification Integration</h4>
+                                    <h4 class="fw-bold mb-1" style="font-size: 24px;">Tích hợp thông báo</h4>
                                     <p class="mb-0" style="color: var(--on-surface-variant);">
-                                        Configure automated 'Pickup Reminder' templates and triggers.
+                                        Cấu hình các mẫu và trình kích hoạt 'Nhắc nhở nhận sách' tự động.
                                     </p>
                                 </div>
                                 <div class="px-3 py-1 rounded fw-bold text-label-md text-uppercase"
-                                     style="background-color: rgba(0,99,152,0.1); color: var(--tertiary);">Active Engine</div>
+                                     style="background-color: rgba(0,99,152,0.1); color: var(--tertiary);">Công cụ hoạt động</div>
                             </div>
 
                             <div class="d-flex flex-column gap-2">
@@ -140,7 +140,7 @@
                                         <span class="material-symbols-outlined text-display" style="color: var(--primary);">description</span>
                                         <div>
                                             <p class="fw-bold mb-0" style="color: var(--on-surface);">Standard_Pickup_V2.html</p>
-                                            <p class="mb-0 text-muted" style="font-size: 14px;">Trigger: copy_returned | Recipients: Next_in_Queue</p>
+                                            <p class="mb-0 text-muted" style="font-size: 14px;">Kích hoạt: tra_sach | Người nhận: Nguoi_tiep_theo_trong_hang_doi</p>
                                         </div>
                                     </div>
                                     <span class="material-symbols-outlined" style="color: var(--on-surface-variant);">chevron_right</span>
@@ -152,7 +152,7 @@
                                         <span class="material-symbols-outlined text-display" style="color: var(--primary);">pending_actions</span>
                                         <div>
                                             <p class="fw-bold mb-0" style="color: var(--on-surface);">Expired_Reservation.html</p>
-                                            <p class="mb-0 text-muted" style="font-size: 14px;">Trigger: 48h_unclaimed | Action: Auto_Cancel</p>
+                                            <p class="mb-0 text-muted" style="font-size: 14px;">Kích hoạt: 48h_khong_nhan | Hành động: Tu_dong_huy</p>
                                         </div>
                                     </div>
                                     <span class="material-symbols-outlined" style="color: var(--on-surface-variant);">chevron_right</span>
@@ -168,12 +168,12 @@
                                  style="width: 80px; height: 80px; background-color: rgba(157,67,0,0.2);">
                                 <span class="material-symbols-outlined" style="font-size: 48px; color: var(--primary-fixed-dim);">auto_awesome</span>
                             </div>
-                            <h5 class="fw-bold mb-0" style="font-size: 24px;">Smart Queue Bot</h5>
+                            <h5 class="fw-bold mb-0" style="font-size: 24px;">Bot hàng đợi thông minh</h5>
                             <p class="mb-0 opacity-75" style="font-size: 14px;">
-                                Enable AI to suggest queue re-ordering based on patron history and borrowing urgency.
+                                Kích hoạt AI để đề xuất sắp xếp lại hàng đợi dựa trên lịch sử của độc giả và mức độ khẩn cấp khi mượn.
                             </p>
                             <button class="btn px-4 py-2 fw-bold rounded-pill border-0"
-                                    style="background-color: var(--primary-fixed); color: var(--on-primary-fixed);">Enable Assistant</button>
+                                    style="background-color: var(--primary-fixed); color: var(--on-primary-fixed);">Kích hoạt Trợ lý</button>
                         </div>
                     </div>
                 </section>
@@ -219,7 +219,7 @@
     function showNotificationToast(patronName) {
         const toast = document.getElementById('toast');
         const message = document.getElementById('toast-message');
-        message.innerText = `Pickup Reminder sent to ${patronName}.`;
+        message.innerText = `Đã gửi Nhắc nhở nhận sách cho ${patronName}.`;
         toast.classList.add('show');
         setTimeout(() => { hideToast(); }, 5000);
     }
@@ -241,7 +241,7 @@
 <%-- Notification Toast --%>
 <div id="toast">
     <span class="material-symbols-outlined" style="color: var(--primary-fixed-dim);">check_circle</span>
-    <p class="fw-bold mb-0" style="font-size: 14px;" id="toast-message">Notification sent successfully!</p>
+    <p class="fw-bold mb-0" style="font-size: 14px;" id="toast-message">Đã gửi thông báo thành công!</p>
     <span class="material-symbols-outlined" style="color: var(--on-surface-variant); cursor: pointer;" onclick="hideToast()">close</span>
 </div>
 

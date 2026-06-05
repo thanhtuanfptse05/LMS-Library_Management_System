@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <body class="d-flex flex-column">
     <jsp:include page="fragments/_header.jsp" />
@@ -23,17 +23,17 @@
                         <span class="material-symbols-outlined" style="font-size: 48px;">warning</span>
                     </div>
 
-                    <h2 class="mb-2 fw-bold text-danger">Payment Cancelled</h2>
-                    <p class="text-muted mb-4">The online transaction was aborted by the user or has timed out. No charges were made to your account.</p>
+                    <h2 class="mb-2 fw-bold text-danger">Thanh toán đã bị hủy</h2>
+                    <p class="text-muted mb-4">Giao dịch trực tuyến đã bị hủy bởi người dùng hoặc đã hết hạn. Không có khoản phí nào được trừ vào tài khoản của bạn.</p>
 
                     <!-- Error Details -->
                     <div class="border rounded-3 p-4 bg-light text-start mb-4" style="border-color: var(--outline-variant) !important;">
                         <div class="d-flex justify-content-between py-1">
-                            <span class="text-muted small">Response Message</span>
-                            <span class="fw-bold text-dark small">User Cancelled (Code 24)</span>
+                            <span class="text-muted small">Thông báo phản hồi</span>
+                            <span class="fw-bold text-dark small">Người dùng hủy (Mã 24)</span>
                         </div>
                         <div class="d-flex justify-content-between py-1">
-                            <span class="text-muted small">Subtotal</span>
+                            <span class="text-muted small">Tổng cộng</span>
                             <span class="fw-bold text-dark small">$24.00</span>
                         </div>
                     </div>
@@ -42,10 +42,10 @@
                     <div class="d-flex flex-column gap-2">
                         <a href="${pageContext.request.contextPath}/student/payment-checkout.jsp" class="btn btn-primary-custom py-2.5 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2">
                             <span class="material-symbols-outlined">refresh</span>
-                            Try Checkout Again
+                            Thử thanh toán lại
                         </a>
                         <a href="${pageContext.request.contextPath}/student/my-fines.jsp" class="btn btn-outline-secondary py-2 rounded-pill fw-bold">
-                            Return to Fines
+                            Quay lại Tiền phạt
                         </a>
                     </div>
                 </div>

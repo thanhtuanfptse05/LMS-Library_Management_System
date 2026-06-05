@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -164,7 +164,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -172,7 +172,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -180,15 +180,15 @@
                 <%-- ─── Page Header ─── --%>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 flex-wrap">
                     <div>
-                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Physical Copies</h2>
-                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Manage and track individual book copies across all locations.</p>
+                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Bản sao vật lý</h2>
+                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Quản lý và theo dõi các bản sao sách riêng lẻ trên tất cả các vị trí.</p>
                     </div>
                     <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
                         <%-- Search --%>
                         <div class="search-wrapper">
                             <span class="material-symbols-outlined search-icon">search</span>
-                            <input type="text" id="copySearchInput" placeholder="Search barcode or title..."
-                                   aria-label="Search copies by barcode or title"
+                            <input type="text" id="copySearchInput" placeholder="Tìm kiếm mã vạch hoặc tiêu đề..."
+                                   aria-label="Tìm kiếm bản sao theo mã vạch hoặc tiêu đề"
                                    value="<c:out value='${param.q}'/>" />
                         </div>
                         <%-- Filter --%>
@@ -197,7 +197,7 @@
                                 data-bs-toggle="modal" data-bs-target="#filterModal"
                                 id="btnFilter">
                             <span class="material-symbols-outlined" style="font-size: 18px;">filter_list</span>
-                            Filter
+                            Bộ lọc
                         </button>
                     </div>
                 </div>
@@ -210,7 +210,7 @@
                                 <span class="material-symbols-outlined" style="font-size: 24px; font-variation-settings: 'FILL' 1;">library_books</span>
                             </div>
                             <div>
-                                <p class="stat-label mb-0">Total Copies</p>
+                                <p class="stat-label mb-0">Tổng số bản sao</p>
                                 <p class="stat-value mb-0">
                                     <c:out value="${not empty totalCopies ? totalCopies : '12,450'}" />
                                 </p>
@@ -223,7 +223,7 @@
                                 <span class="material-symbols-outlined" style="font-size: 24px; font-variation-settings: 'FILL' 1;">warning</span>
                             </div>
                             <div>
-                                <p class="stat-label mb-0">Needs Repair</p>
+                                <p class="stat-label mb-0">Cần sửa chữa</p>
                                 <p class="stat-value mb-0">
                                     <c:out value="${not empty needsRepairCount ? needsRepairCount : '84'}" />
                                 </p>
@@ -236,7 +236,7 @@
                                 <span class="material-symbols-outlined" style="font-size: 24px; font-variation-settings: 'FILL' 1;">shopping_bag</span>
                             </div>
                             <div>
-                                <p class="stat-label mb-0">Checked Out</p>
+                                <p class="stat-label mb-0">Đang mượn</p>
                                 <p class="stat-value mb-0">
                                     <c:out value="${not empty checkedOutCount ? checkedOutCount : '3,102'}" />
                                 </p>
@@ -251,11 +251,11 @@
                         <table class="table table-lms mb-0" aria-label="Physical copies inventory">
                             <thead>
                                 <tr>
-                                    <th>Barcode</th>
-                                    <th>Book Details</th>
-                                    <th class="d-none d-md-table-cell">Location</th>
-                                    <th>Status / Condition</th>
-                                    <th class="text-end">Actions</th>
+                                    <th>Mã vạch</th>
+                                    <th>Chi tiết sách</th>
+                                    <th class="d-none d-md-table-cell">Vị trí</th>
+                                    <th>Trạng thái / Tình trạng</th>
+                                    <th class="text-end">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -306,16 +306,16 @@
                                                     <div class="d-flex flex-column gap-1 align-items-start">
                                                         <c:choose>
                                                             <c:when test="${copy.status == 'AVAILABLE'}">
-                                                                <span class="badge-pill status-available">Available</span>
+                                                                <span class="badge-pill status-available">Sẵn có</span>
                                                             </c:when>
                                                             <c:when test="${copy.status == 'BORROWED'}">
-                                                                <span class="badge-pill status-borrowed">Checked Out</span>
+                                                                <span class="badge-pill status-borrowed">Đang mượn</span>
                                                             </c:when>
                                                             <c:when test="${copy.status == 'RESERVED'}">
-                                                                <span class="badge-pill status-reserved">Reserved</span>
+                                                                <span class="badge-pill status-reserved">Đã đặt trước</span>
                                                             </c:when>
                                                             <c:when test="${copy.status == 'LOST'}">
-                                                                <span class="badge-pill status-lost">Lost</span>
+                                                                <span class="badge-pill status-lost">Bị mất</span>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <span class="badge-pill status-maintenance"><c:out value="${copy.status}" /></span>
@@ -323,19 +323,19 @@
                                                         </c:choose>
                                                         <c:choose>
                                                             <c:when test="${copy.condition == 'New'}">
-                                                                <span class="cond-badge cond-new">New</span>
+                                                                <span class="cond-badge cond-new">Mới</span>
                                                             </c:when>
                                                             <c:when test="${copy.condition == 'Good'}">
-                                                                <span class="cond-badge cond-good">Good</span>
+                                                                <span class="cond-badge cond-good">Tốt</span>
                                                             </c:when>
                                                             <c:when test="${copy.condition == 'Fair'}">
-                                                                <span class="cond-badge cond-fair">Fair</span>
+                                                                <span class="cond-badge cond-fair">Khá</span>
                                                             </c:when>
                                                             <c:when test="${copy.condition == 'Damaged'}">
-                                                                <span class="cond-badge cond-damaged">Damaged</span>
+                                                                <span class="cond-badge cond-damaged">Bị hỏng</span>
                                                             </c:when>
                                                             <c:when test="${copy.condition == 'Lost'}">
-                                                                <span class="cond-badge cond-lost">Lost</span>
+                                                                <span class="cond-badge cond-lost">Bị mất</span>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <span class="cond-badge cond-good"><c:out value="${copy.condition}" default="Good" /></span>
@@ -347,11 +347,11 @@
                                                 <%-- Actions --%>
                                                 <td class="text-end">
                                                     <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp?id=<c:out value='${copy.copyId}'/>"
-                                                       class="btn-icon" title="View history">
+                                                       class="btn-icon" title="Xem lịch sử">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">history</span>
                                                     </a>
                                                     <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp?id=<c:out value='${copy.copyId}'/>"
-                                                       class="btn-icon" title="Edit copy">
+                                                       class="btn-icon" title="Sửa bản sao">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                                     </a>
                                                 </td>
@@ -374,23 +374,23 @@
                                                     </div>
                                                     <div>
                                                         <p class="mb-0 fw-semibold" style="font-size: 13px;">The Design of Everyday Things</p>
-                                                        <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Don Norman &bull; 2013 Ed.</p>
+                                                        <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Don Norman &bull; Xuất bản 2013</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="d-none d-md-table-cell">
-                                                <p class="mb-0 fw-semibold" style="font-size: 13px;">Main Floor, Aisle 4</p>
-                                                <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Shelf B2</p>
+                                                <p class="mb-0 fw-semibold" style="font-size: 13px;">Tầng chính, Lối đi 4</p>
+                                                <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Kệ B2</p>
                                             </td>
                                             <td>
                                                 <div class="d-flex flex-column gap-1 align-items-start">
-                                                    <span class="badge-pill status-available">Available</span>
-                                                    <span class="cond-badge cond-good">Good</span>
+                                                    <span class="badge-pill status-available">Sẵn có</span>
+                                                    <span class="cond-badge cond-good">Tốt</span>
                                                 </div>
                                             </td>
                                             <td class="text-end">
-                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
-                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="Xem lịch sử"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Sửa bản sao"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -407,23 +407,23 @@
                                                     </div>
                                                     <div>
                                                         <p class="mb-0 fw-semibold" style="font-size: 13px;">Thinking with Type</p>
-                                                        <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Ellen Lupton &bull; 2nd Rev. Ed.</p>
+                                                        <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Ellen Lupton &bull; Tái bản lần 2</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="d-none d-md-table-cell">
-                                                <p class="mb-0 fw-semibold" style="font-size: 13px;">Design Section</p>
-                                                <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Shelf D1</p>
+                                                <p class="mb-0 fw-semibold" style="font-size: 13px;">Khu vực Thiết kế</p>
+                                                <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Kệ D1</p>
                                             </td>
                                             <td>
                                                 <div class="d-flex flex-column gap-1 align-items-start">
-                                                    <span class="badge-pill status-borrowed">Checked Out</span>
-                                                    <span class="cond-badge cond-good">Good</span>
+                                                    <span class="badge-pill status-borrowed">Đang mượn</span>
+                                                    <span class="cond-badge cond-good">Tốt</span>
                                                 </div>
                                             </td>
                                             <td class="text-end">
-                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
-                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="Xem lịch sử"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Sửa bản sao"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -440,23 +440,23 @@
                                                     </div>
                                                     <div>
                                                         <p class="mb-0 fw-semibold" style="font-size: 13px;">Interaction of Color</p>
-                                                        <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Josef Albers &bull; 50th Anniv.</p>
+                                                        <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">Josef Albers &bull; Kỷ niệm 50 năm</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="d-none d-md-table-cell">
-                                                <p class="mb-0 fw-semibold" style="font-size: 13px;">Processing Room</p>
+                                                <p class="mb-0 fw-semibold" style="font-size: 13px;">Phòng xử lý</p>
                                                 <p class="mb-0 text-on-surface-variant" style="font-size: 12px;">—</p>
                                             </td>
                                             <td>
                                                 <div class="d-flex flex-column gap-1 align-items-start">
-                                                    <span class="badge-pill status-maintenance">In Repair</span>
-                                                    <span class="cond-badge cond-damaged">Damaged</span>
+                                                    <span class="badge-pill status-maintenance">Đang sửa chữa</span>
+                                                    <span class="cond-badge cond-damaged">Bị hỏng</span>
                                                 </div>
                                             </td>
                                             <td class="text-end">
-                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="View history"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
-                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Edit copy"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-detail.jsp" class="btn-icon" title="Xem lịch sử"><span class="material-symbols-outlined" style="font-size: 18px;">history</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/copy-edit.jsp" class="btn-icon" title="Sửa bản sao"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                     </c:otherwise>
@@ -471,19 +471,19 @@
                         <span style="font-size: 13px; color: var(--on-surface-variant);">
                             <c:choose>
                                 <c:when test="${not empty totalCopies}">
-                                    Showing
+                                    Hiển thị
                                     <c:out value="${(currentPage - 1) * pageSize + 1}" /> –
                                     <c:out value="${currentPage * pageSize > totalCopies ? totalCopies : currentPage * pageSize}" />
-                                    of <c:out value="${totalCopies}" /> entries
+                                    trong số <c:out value="${totalCopies}" /> mục
                                 </c:when>
-                                <c:otherwise>Showing 1 – 3 of 12,450 entries</c:otherwise>
+                                <c:otherwise>Hiển thị 1 – 3 trong số 12,450 mục</c:otherwise>
                             </c:choose>
                         </span>
                         <div class="d-flex gap-1 align-items-center">
                             <button class="page-btn" id="btnPrevPage"
                                     ${currentPage <= 1 ? 'disabled' : ''}
                                     onclick="goToPage(${currentPage - 1})"
-                                    aria-label="Previous page">
+                                    aria-label="Trang trước">
                                 <span class="material-symbols-outlined" style="font-size: 16px;">chevron_left</span>
                             </button>
                             <c:choose>
@@ -491,7 +491,7 @@
                                     <c:forEach begin="1" end="${totalPages}" var="p">
                                         <button class="page-btn ${p == currentPage ? 'active' : ''}"
                                                 onclick="goToPage(${p})"
-                                                aria-label="Page ${p}"
+                                                aria-label="Trang ${p}"
                                                 aria-current="${p == currentPage ? 'page' : 'false'}">
                                             <c:out value="${p}" />
                                         </button>
@@ -508,7 +508,7 @@
                             <button class="page-btn" id="btnNextPage"
                                     ${currentPage >= totalPages ? 'disabled' : ''}
                                     onclick="goToPage(${currentPage + 1})"
-                                    aria-label="Next page">
+                                    aria-label="Trang sau">
                                 <span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
                             </button>
                         </div>
@@ -530,49 +530,49 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="filterModalLabel" style="font-size: 18px;">Filter Copies</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold" id="filterModalLabel" style="font-size: 18px;">Bộ lọc bản sao</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/librarian/copies" method="GET" id="filterForm">
                     <div class="modal-body py-3">
                         <div class="d-flex flex-column gap-3">
                             <div>
-                                <label class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;" for="filterStatus">Status</label>
+                                <label class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;" for="filterStatus">Trạng thái</label>
                                 <select id="filterStatus" name="status" class="form-select rounded-3"
                                         style="background-color: var(--surface-container-low); border-color: var(--outline-variant); font-size: 14px;">
-                                    <option value="">All Statuses</option>
-                                    <option value="AVAILABLE"   ${param.status == 'AVAILABLE'   ? 'selected' : ''}>Available</option>
-                                    <option value="BORROWED"    ${param.status == 'BORROWED'    ? 'selected' : ''}>Checked Out</option>
-                                    <option value="RESERVED"    ${param.status == 'RESERVED'    ? 'selected' : ''}>Reserved</option>
-                                    <option value="LOST"        ${param.status == 'LOST'        ? 'selected' : ''}>Lost</option>
-                                    <option value="MAINTENANCE" ${param.status == 'MAINTENANCE' ? 'selected' : ''}>In Repair</option>
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="AVAILABLE"   ${param.status == 'AVAILABLE'   ? 'selected' : ''}>Sẵn có</option>
+                                    <option value="BORROWED"    ${param.status == 'BORROWED'    ? 'selected' : ''}>Đang mượn</option>
+                                    <option value="RESERVED"    ${param.status == 'RESERVED'    ? 'selected' : ''}>Đã đặt trước</option>
+                                    <option value="LOST"        ${param.status == 'LOST'        ? 'selected' : ''}>Bị mất</option>
+                                    <option value="MAINTENANCE" ${param.status == 'MAINTENANCE' ? 'selected' : ''}>Đang sửa chữa</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;" for="filterCondition">Condition</label>
+                                <label class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;" for="filterCondition">Tình trạng</label>
                                 <select id="filterCondition" name="condition" class="form-select rounded-3"
                                         style="background-color: var(--surface-container-low); border-color: var(--outline-variant); font-size: 14px;">
-                                    <option value="">All Conditions</option>
-                                    <option value="New"     ${param.condition == 'New'     ? 'selected' : ''}>New</option>
-                                    <option value="Good"    ${param.condition == 'Good'    ? 'selected' : ''}>Good</option>
-                                    <option value="Fair"    ${param.condition == 'Fair'    ? 'selected' : ''}>Fair</option>
-                                    <option value="Damaged" ${param.condition == 'Damaged' ? 'selected' : ''}>Damaged</option>
-                                    <option value="Lost"    ${param.condition == 'Lost'    ? 'selected' : ''}>Lost</option>
+                                    <option value="">Tất cả tình trạng</option>
+                                    <option value="New"     ${param.condition == 'New'     ? 'selected' : ''}>Mới</option>
+                                    <option value="Good"    ${param.condition == 'Good'    ? 'selected' : ''}>Tốt</option>
+                                    <option value="Fair"    ${param.condition == 'Fair'    ? 'selected' : ''}>Khá</option>
+                                    <option value="Damaged" ${param.condition == 'Damaged' ? 'selected' : ''}>Bị hỏng</option>
+                                    <option value="Lost"    ${param.condition == 'Lost'    ? 'selected' : ''}>Bị mất</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;" for="filterLocation">Location (keyword)</label>
+                                <label class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;" for="filterLocation">Vị trí (từ khóa)</label>
                                 <input type="text" id="filterLocation" name="location" class="form-control rounded-3"
                                        style="background-color: var(--surface-container-low); border-color: var(--outline-variant); font-size: 14px;"
-                                       placeholder="e.g. Main Floor, Aisle 4"
+                                       placeholder="VD: Tầng chính, Lối đi 4"
                                        value="<c:out value='${param.location}'/>" />
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
                         <a href="${pageContext.request.contextPath}/librarian/copy-list.jsp"
-                           class="btn btn-light rounded-pill px-4 fw-bold">Reset</a>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Apply Filters</button>
+                           class="btn btn-light rounded-pill px-4 fw-bold">Đặt lại</a>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Áp dụng bộ lọc</button>
                     </div>
                 </form>
             </div>

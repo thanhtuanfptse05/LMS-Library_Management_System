@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <body class="d-flex flex-column">
     <jsp:include page="fragments/_header.jsp" />
@@ -17,8 +17,8 @@
                 
                 <!-- Page Header -->
                 <div class="mb-4">
-                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Edit User Security</h2>
-                    <p class="font-body-md text-on-surface-variant">Update credentials, toggle lock states, or trigger remote password resets.</p>
+                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Sửa User Bảo mật</h2>
+                    <p class="font-body-md text-on-surface-variant">Cập nhật credentials, toggle lock states, or trigger remote password resets.</p>
                 </div>
 
                 <div class="row g-4">
@@ -34,16 +34,16 @@
                                     </div>
                                     <div>
                                         <p class="mb-0 fw-bold">Jordan Vance</p>
-                                        <small class="text-muted">Username: jvance12 • Email: j.vance@uni.edu • Role: STUDENT</small>
+                                        <small class="text-muted">Tên đăng nhập: jvance12 • Email: j.vance@uni.edu • Vai trò: STUDENT</small>
                                     </div>
                                 </div>
 
                                 <!-- Lock Toggle Status -->
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold text-on-surface-variant mb-2" style="font-size: 14px;">1. Account Authorization State</label>
+                                    <label class="form-label fw-bold text-on-surface-variant mb-2" style="font-size: 14px;">1. Tài khoản Authorization State</label>
                                     <div class="form-check form-switch p-3 border rounded-3 d-flex align-items-center justify-content-between" style="border-color: var(--outline-variant) !important; padding-left: 3.5rem !important;">
                                         <div>
-                                            <p class="mb-0 fw-bold">Account Locked</p>
+                                            <p class="mb-0 fw-bold">Tài khoản Locked</p>
                                             <small class="text-muted">Prevents the user from logging in or borrowing books</small>
                                         </div>
                                         <input class="form-check-input" type="checkbox" id="lockStatusToggle" onchange="toggleLockReason()" style="width: 2.8em; height: 1.5em;" />
@@ -52,13 +52,13 @@
 
                                 <!-- Conditional Lock Reason -->
                                 <div class="mb-4 d-none" id="lockReasonBox">
-                                    <label class="form-label fw-bold text-on-surface-variant">Reason for Locking Account</label>
+                                    <label class="form-label fw-bold text-on-surface-variant">Lý do for Locking Tài khoản</label>
                                     <textarea class="form-control rounded-3 py-2 border-outline-variant" rows="3" placeholder="Provide a reason for administrative locks (e.g. Unresolved outstanding fines, policy violation)..."></textarea>
                                 </div>
 
                                 <!-- Password Change Override -->
                                 <div class="mb-4 border-top pt-4">
-                                    <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">2. Security Credentials Override</label>
+                                    <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">2. Bảo mật Credentials Override</label>
                                     <div class="p-3 border rounded-3 d-flex flex-column gap-3" style="border-color: var(--outline-variant) !important;">
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input" id="forceResetCheck" />
@@ -68,7 +68,7 @@
                                         </div>
                                         <div>
                                             <button type="button" class="btn btn-outline-primary-custom rounded-pill px-4 fw-bold" onclick="simulatedResetLink()">
-                                                Generate Password Reset Email
+                                                Generate Mật khẩu Đặt lại Email
                                             </button>
                                             <p class="text-muted small mt-2 mb-0" id="resetMsg"></p>
                                         </div>
@@ -77,8 +77,8 @@
 
                                 <!-- Submit Buttons -->
                                 <div class="d-flex align-items-center gap-2 pt-3 border-top">
-                                    <button type="submit" class="btn btn-primary-custom rounded-pill px-4 py-2.5 fw-bold">Save Security Policy</button>
-                                    <a href="${pageContext.request.contextPath}/admin/user-list.jsp" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold">Cancel</a>
+                                    <button type="submit" class="btn btn-primary-custom rounded-pill px-4 py-2.5 fw-bold">Lưu Bảo mật Policy</button>
+                                    <a href="${pageContext.request.contextPath}/admin/user-list.jsp" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold">Hủy</a>
                                 </div>
                             </form>
                         </div>

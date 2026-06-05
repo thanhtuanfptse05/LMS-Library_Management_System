@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -26,7 +26,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -34,16 +34,16 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
 
                 <%-- ─── Page Header ─── --%>
                 <header class="mb-4">
-                    <h3 class="font-headline-lg text-dark mb-1">Reservation Management</h3>
+                    <h3 class="font-headline-lg text-dark mb-1">Quản lý đặt trước</h3>
                     <p class="font-body-lg text-secondary-custom mb-0">
-                        Monitor and process pending book requests from across the campus network.
+                        Theo dõi và xử lý các yêu cầu mượn sách đang chờ duyệt từ khắp mạng lưới trường học.
                     </p>
                 </header>
 
@@ -54,7 +54,7 @@
                              style="border-color: var(--surface-container-highest) !important; box-shadow: 4px 4px 15px rgba(0,0,0,0.04);">
                             <div class="mb-3">
                                 <span class="material-symbols-outlined text-secondary-custom mb-2">pending_actions</span>
-                                <p class="font-label-md text-secondary-custom text-uppercase mb-0">Total Pending</p>
+                                <p class="font-label-md text-secondary-custom text-uppercase mb-0">Tổng chờ duyệt</p>
                             </div>
                             <p class="mb-0 fw-bold text-dark" style="font-size: 40px; line-height: 1;">
                                 <c:out value="${totalPending != null ? totalPending : '42'}" />
@@ -67,7 +67,7 @@
                              style="background-color: var(--primary-container); box-shadow: 4px 4px 15px rgba(0,0,0,0.1);">
                             <div class="mb-3">
                                 <span class="material-symbols-outlined mb-2" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                <p class="font-label-md text-white opacity-90 text-uppercase mb-0">Ready for Pickup</p>
+                                <p class="font-label-md text-white opacity-90 text-uppercase mb-0">Sẵn sàng để lấy</p>
                             </div>
                             <p class="mb-0 fw-bold" style="font-size: 40px; line-height: 1;">
                                 <c:out value="${readyForPickup != null ? readyForPickup : '12'}" />
@@ -80,7 +80,7 @@
                              style="border-color: var(--surface-container-highest) !important; box-shadow: 4px 4px 15px rgba(0,0,0,0.04);">
                             <div class="mb-3">
                                 <span class="material-symbols-outlined text-secondary-custom mb-2">assignment_return</span>
-                                <p class="font-label-md text-secondary-custom text-uppercase mb-0">Awaiting Return</p>
+                                <p class="font-label-md text-secondary-custom text-uppercase mb-0">Đang chờ trả</p>
                             </div>
                             <p class="mb-0 fw-bold text-dark" style="font-size: 40px; line-height: 1;">
                                 <c:out value="${awaitingReturn != null ? awaitingReturn : '28'}" />
@@ -93,7 +93,7 @@
                              style="background-color: var(--error-container); border-color: rgba(186, 26, 26, 0.1) !important; box-shadow: 4px 4px 15px rgba(0,0,0,0.04);">
                             <div class="mb-3">
                                 <span class="material-symbols-outlined text-danger mb-2">history_toggle_off</span>
-                                <p class="font-label-md text-danger text-uppercase mb-0">Expired Requests</p>
+                                <p class="font-label-md text-danger text-uppercase mb-0">Yêu cầu đã hết hạn</p>
                             </div>
                             <p class="mb-0 fw-bold" style="color: var(--on-error-container); font-size: 40px; line-height: 1;">
                                 <c:out value="${expiredCount != null ? expiredCount : '5'}" />
@@ -108,21 +108,21 @@
                     <div class="d-flex align-items-center gap-3 flex-wrap">
                         <div class="d-flex bg-low rounded-3 p-1">
                             <button class="btn btn-sm bg-white shadow-sm font-label-md text-primary-custom px-3 py-2 border-0"
-                                    style="border-radius: 6px;" id="filter-all">All Requests</button>
+                                    style="border-radius: 6px;" id="filter-all">Tất cả yêu cầu</button>
                             <button class="btn btn-sm font-label-md text-secondary-custom px-3 py-2 border-0"
-                                    id="filter-processing" style="transition: color 0.2s;">Processing</button>
+                                    id="filter-processing" style="transition: color 0.2s;">Đang xử lý</button>
                             <button class="btn btn-sm font-label-md text-secondary-custom px-3 py-2 border-0"
-                                    id="filter-ready" style="transition: color 0.2s;">Ready</button>
+                                    id="filter-ready" style="transition: color 0.2s;">Sẵn sàng</button>
                         </div>
                         <button class="btn btn-sm d-flex align-items-center gap-1 px-3 py-2 border text-secondary-custom font-label-md rounded-3"
                                 style="border-color: var(--outline-variant) !important;">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">filter_list</span> Filter
+                            <span class="material-symbols-outlined" style="font-size: 18px;">filter_list</span> Bộ lọc
                         </button>
                     </div>
                     <div class="text-secondary-custom font-label-md">
-                        Showing <span class="text-dark fw-bold">
+                        Hiển thị <span class="text-dark fw-bold">
                             <c:out value="${reservationList != null ? reservationList.size() : '12'}" />
-                        </span> of <c:out value="${totalPending != null ? totalPending : '42'}" /> records
+                        </span> của <c:out value="${totalPending != null ? totalPending : '42'}" /> bản ghi
                     </div>
                 </div>
 
@@ -134,11 +134,11 @@
                             <thead>
                                 <tr class="bg-low text-secondary-custom font-label-md border-bottom"
                                     style="font-size: 12px; border-color: var(--surface-container-highest) !important;">
-                                    <th class="py-3 px-4 fw-semibold text-uppercase border-0">Book Details</th>
-                                    <th class="py-3 px-4 fw-semibold text-uppercase border-0">Member</th>
-                                    <th class="py-3 px-4 fw-semibold text-uppercase border-0">Request Date</th>
-                                    <th class="py-3 px-4 fw-semibold text-uppercase border-0">Status</th>
-                                    <th class="py-3 px-4 fw-semibold text-uppercase text-end border-0">Actions</th>
+                                    <th class="py-3 px-4 fw-semibold text-uppercase border-0">Chi tiết sách</th>
+                                    <th class="py-3 px-4 fw-semibold text-uppercase border-0">Thành viên</th>
+                                    <th class="py-3 px-4 fw-semibold text-uppercase border-0">Ngày yêu cầu</th>
+                                    <th class="py-3 px-4 fw-semibold text-uppercase border-0">Trạng thái</th>
+                                    <th class="py-3 px-4 fw-semibold text-uppercase text-end border-0">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody class="table-group-divider border-0">
@@ -177,28 +177,28 @@
                                                             <span class="badge rounded-pill fw-bold d-inline-flex align-items-center gap-1 border-0 px-3 py-2"
                                                                   style="background-color: var(--primary-fixed); color: var(--on-primary-fixed-variant); font-size: 12px;">
                                                                 <span class="rounded-circle d-inline-block" style="width: 6px; height: 6px; background-color: var(--primary);"></span>
-                                                                Ready for Pickup
+                                                                Sẵn sàng để lấy
                                                             </span>
                                                         </c:when>
                                                         <c:when test="${res.status == 'WAITING'}">
                                                             <span class="badge rounded-pill fw-bold d-inline-flex align-items-center gap-1 border-0 px-3 py-2"
                                                                   style="background-color: var(--tertiary-fixed); color: var(--on-tertiary-fixed-variant); font-size: 12px;">
                                                                 <span class="rounded-circle d-inline-block" style="width: 6px; height: 6px; background-color: var(--tertiary);"></span>
-                                                                Awaiting Return
+                                                                Đang chờ trả
                                                             </span>
                                                         </c:when>
                                                         <c:when test="${res.status == 'EXPIRED'}">
                                                             <span class="badge rounded-pill fw-bold d-inline-flex align-items-center gap-1 border-0 px-3 py-2"
                                                                   style="background-color: var(--error-container); color: var(--on-error-container); font-size: 12px;">
                                                                 <span class="rounded-circle d-inline-block" style="width: 6px; height: 6px; background-color: var(--error);"></span>
-                                                                Expired
+                                                                Đã hết hạn
                                                             </span>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <span class="badge rounded-pill fw-bold d-inline-flex align-items-center gap-1 border-0 px-3 py-2 text-muted"
                                                                   style="background-color: var(--surface-container-high); font-size: 12px;">
                                                                 <span class="rounded-circle d-inline-block" style="width: 6px; height: 6px; background-color: var(--secondary);"></span>
-                                                                Processing
+                                                                Đang xử lý
                                                             </span>
                                                         </c:otherwise>
                                                     </c:choose>
@@ -206,25 +206,25 @@
                                                 <td class="py-3 px-4 text-end">
                                                     <div class="d-flex justify-content-end align-items-center gap-2">
                                                         <a href="${pageContext.request.contextPath}/librarian/reservation-detail?id=${res.reservationId}"
-                                                           class="btn p-2 text-secondary-custom rounded-3 border-0 shadow-none" title="View Detail">
+                                                           class="btn p-2 text-secondary-custom rounded-3 border-0 shadow-none" title="Xem chi tiết">
                                                             <span class="material-symbols-outlined">visibility</span>
                                                         </a>
                                                         <c:choose>
                                                             <c:when test="${res.status == 'WAITING'}">
                                                                 <button class="btn btn-sm text-white font-label-md px-3 py-2 border-0 rounded-3"
-                                                                        style="background-color: var(--primary);">Notify</button>
+                                                                        style="background-color: var(--primary);">Thông báo</button>
                                                             </c:when>
                                                             <c:when test="${res.status == 'READY'}">
                                                                 <button class="btn btn-sm text-white font-label-md px-3 py-2 border-0 rounded-3"
-                                                                        style="background-color: var(--on-tertiary-container);">Handover</button>
+                                                                        style="background-color: var(--on-tertiary-container);">Bàn giao</button>
                                                             </c:when>
                                                             <c:when test="${res.status == 'EXPIRED'}">
                                                                 <button class="btn btn-sm border text-dark font-label-md px-3 py-2 rounded-3"
-                                                                        style="border-color: var(--outline) !important;">Archive</button>
+                                                                        style="border-color: var(--outline) !important;">Lưu trữ</button>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <button class="btn btn-sm text-white font-label-md px-3 py-2 border-0 rounded-3"
-                                                                        style="background-color: var(--secondary);">Prepare</button>
+                                                                        style="background-color: var(--secondary);">Chuẩn bị</button>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </div>
@@ -249,7 +249,7 @@
                                             <td class="py-3 px-4">
                                                 <div class="d-flex flex-column">
                                                     <span class="font-body-md fw-semibold text-dark">Alex Rivera</span>
-                                                    <span class="font-body-sm text-secondary-custom">ID: #STU-9928 &bull; Faculty</span>
+                                                    <span class="font-body-sm text-secondary-custom">ID: #STU-9928 &bull; Giảng viên</span>
                                                 </div>
                                             </td>
                                             <td class="py-3 px-4 font-body-sm text-secondary-custom">Oct 24, 2023</td>
@@ -257,16 +257,16 @@
                                                 <span class="badge rounded-pill fw-bold d-inline-flex align-items-center gap-1 border-0 px-3 py-2"
                                                       style="background-color: var(--tertiary-fixed); color: var(--on-tertiary-fixed-variant); font-size: 12px;">
                                                     <span class="rounded-circle d-inline-block" style="width: 6px; height: 6px; background-color: var(--tertiary);"></span>
-                                                    Awaiting Return
+                                                    Đang chờ trả
                                                 </span>
                                             </td>
                                             <td class="py-3 px-4 text-end">
                                                 <div class="d-flex justify-content-end align-items-center gap-2">
-                                                    <button class="btn p-2 text-secondary-custom rounded-3 border-0 shadow-none" title="View Detail">
+                                                    <button class="btn p-2 text-secondary-custom rounded-3 border-0 shadow-none" title="Xem chi tiết">
                                                         <span class="material-symbols-outlined">visibility</span>
                                                     </button>
                                                     <button class="btn btn-sm text-white font-label-md px-3 py-2 border-0 rounded-3"
-                                                            style="background-color: var(--primary);">Notify</button>
+                                                            style="background-color: var(--primary);">Thông báo</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -285,7 +285,7 @@
                                             <td class="py-3 px-4">
                                                 <div class="d-flex flex-column">
                                                     <span class="font-body-md fw-semibold text-dark">Sarah Jenkins</span>
-                                                    <span class="font-body-sm text-secondary-custom">ID: #STU-4412 &bull; Student</span>
+                                                    <span class="font-body-sm text-secondary-custom">ID: #STU-4412 &bull; Sinh viên</span>
                                                 </div>
                                             </td>
                                             <td class="py-3 px-4 font-body-sm text-secondary-custom">Oct 25, 2023</td>
@@ -293,16 +293,16 @@
                                                 <span class="badge rounded-pill fw-bold d-inline-flex align-items-center gap-1 border-0 px-3 py-2"
                                                       style="background-color: var(--primary-fixed); color: var(--on-primary-fixed-variant); font-size: 12px;">
                                                     <span class="rounded-circle d-inline-block" style="width: 6px; height: 6px; background-color: var(--primary);"></span>
-                                                    Ready for Pickup
+                                                    Sẵn sàng để lấy
                                                 </span>
                                             </td>
                                             <td class="py-3 px-4 text-end">
                                                 <div class="d-flex justify-content-end align-items-center gap-2">
-                                                    <button class="btn p-2 text-secondary-custom rounded-3 border-0 shadow-none" title="View Detail">
+                                                    <button class="btn p-2 text-secondary-custom rounded-3 border-0 shadow-none" title="Xem chi tiết">
                                                         <span class="material-symbols-outlined">visibility</span>
                                                     </button>
                                                     <button class="btn btn-sm text-white font-label-md px-3 py-2 border-0 rounded-3"
-                                                            style="background-color: var(--on-tertiary-container);">Handover</button>
+                                                            style="background-color: var(--on-tertiary-container);">Bàn giao</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -318,7 +318,7 @@
                         <c:set var="currentPage" value="${currentPage != null ? currentPage : 1}" />
                         <button class="btn btn-link p-0 text-decoration-none font-label-md text-secondary-custom d-flex align-items-center gap-1 border-0 shadow-none"
                                 ${currentPage <= 1 ? 'disabled style="opacity:0.5;"' : ''}>
-                            <span class="material-symbols-outlined">chevron_left</span> Previous
+                            <span class="material-symbols-outlined">chevron_left</span> Trước
                         </button>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm p-0 rounded-circle text-white fw-bold d-flex align-items-center justify-content-center"
@@ -329,7 +329,7 @@
                                     style="width: 32px; height: 32px; font-size: 12px; transition: background-color 0.2s;">3</button>
                         </div>
                         <button class="btn btn-link p-0 text-decoration-none font-label-md text-secondary-custom d-flex align-items-center gap-1 border-0 shadow-none">
-                            Next <span class="material-symbols-outlined">chevron_right</span>
+                            Tiếp <span class="material-symbols-outlined">chevron_right</span>
                         </button>
                     </div>
                 </div>

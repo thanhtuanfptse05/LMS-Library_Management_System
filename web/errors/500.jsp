@@ -1,12 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>500 - Internal Server Error | LMS University Library</title>
+    <title>500 - Lỗi Máy chủ Nội bộ | Thư viện Đại học LMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -177,7 +177,7 @@
 
     <header class="fixed-top w-full bg-white border-bottom shadow-sm">
         <div class="container-max mx-auto d-flex justify-content-between align-items-center px-4" style="height: 64px; max-width: 1280px;">
-            <a href="${pageContext.request.contextPath}/" class="fs-5 fw-bold text-primary-custom text-decoration-none">LMS University Library</a>
+            <a href="${pageContext.request.contextPath}/" class="fs-5 fw-bold text-primary-custom text-decoration-none">Thư viện Đại học LMS</a>
             <div class="d-flex gap-3">
                 <a href="${pageContext.request.contextPath}/#contact" class="btn p-0 border-0 material-symbols-outlined text-on-surface-variant hover-primary transition-colors text-decoration-none">help</a>
                 <a href="${dashboardUrl}" class="btn p-0 border-0 material-symbols-outlined text-on-surface-variant hover-primary transition-colors text-decoration-none">settings</a>
@@ -199,21 +199,21 @@
             <div class="mb-4">
                 <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-error-container mb-3" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em;">
                     <span class="material-symbols-outlined" style="font-size: 14px;">error</span>
-                    <span>SYSTEM INTERRUPTED (500)</span>
+                    <span>HỆ THỐNG BỊ GIÁN ĐOẠN (500)</span>
                 </div>
-                <h1 class="display-custom text-dark mb-3">Internal Server Error.</h1>
-                <p class="fs-5 text-on-surface-variant mx-auto" style="max-width: 32rem;">We're working to fix this issue. Please try again later or contact an administrator if the problem persists.</p>
+                <h1 class="display-custom text-dark mb-3">Lỗi Máy chủ Nội bộ.</h1>
+                <p class="fs-5 text-on-surface-variant mx-auto" style="max-width: 32rem;">Chúng tôi đang nỗ lực khắc phục sự cố này. Vui lòng thử lại sau hoặc liên hệ quản trị viên nếu sự cố vẫn tiếp diễn.</p>
             </div>
 
             <div class="row g-3 justify-content-center pt-2 mb-4">
                 <div class="col-12 col-md-auto">
                     <button class="btn btn-custom-primary px-4 py-2 fw-bold rounded-3 w-100 d-inline-flex align-items-center justify-content-center gap-2" style="height: 48px;" onclick="window.location.reload()">
-                        <span class="material-symbols-outlined">refresh</span>Reload Page
+                        <span class="material-symbols-outlined">refresh</span>Tải lại trang
                     </button>
                 </div>
                 <div class="col-12 col-md-auto">
                     <a class="btn btn-custom-outline px-4 py-2 fw-semibold rounded-3 w-100 d-inline-flex align-items-center justify-content-center gap-2 text-decoration-none" style="height: 48px;" href="${dashboardUrl}">
-                        <span class="material-symbols-outlined">home</span>Back to Home
+                        <span class="material-symbols-outlined">home</span>Quay lại Trang chủ
                     </a>
                 </div>
             </div>
@@ -222,34 +222,34 @@
             <c:if test="${not empty requestScope['jakarta.servlet.error.exception'] or not empty requestScope['jakarta.servlet.error.message']}">
                 <div class="mt-4 text-start mx-auto border rounded-3 p-3" style="max-width: 32rem; background-color: var(--surface-container-high); border-color: var(--outline-variant) !important;">
                     <button class="btn btn-sm btn-link p-0 text-decoration-none text-dark fw-bold d-flex align-items-center gap-1" type="button" data-bs-toggle="collapse" data-bs-target="#errorDetails" aria-expanded="false" aria-controls="errorDetails">
-                        <span class="material-symbols-outlined" style="font-size: 16px;">code</span> Technical Details (Debug)
+                        <span class="material-symbols-outlined" style="font-size: 16px;">code</span> Chi tiết Kỹ thuật (Debug)
                     </button>
                     <div class="collapse mt-2" id="errorDetails">
                         <div class="p-2 bg-white rounded border font-monospace text-danger small overflow-auto" style="max-height: 150px; font-size: 12px; white-space: pre-wrap;">
-                            <c:if test="${not empty requestScope['jakarta.servlet.error.status_code']}"><strong>Status Code:</strong> <c:out value="${requestScope['jakarta.servlet.error.status_code']}" /><br/></c:if>
-                            <c:if test="${not empty requestScope['jakarta.servlet.error.message']}"><strong>Message:</strong> <c:out value="${requestScope['jakarta.servlet.error.message']}" /><br/></c:if>
-                            <c:if test="${not empty requestScope['jakarta.servlet.error.request_uri']}"><strong>Request URI:</strong> <c:out value="${requestScope['jakarta.servlet.error.request_uri']}" /><br/></c:if>
-                            <c:if test="${not empty requestScope['jakarta.servlet.error.servlet_name']}"><strong>Servlet Name:</strong> <c:out value="${requestScope['jakarta.servlet.error.servlet_name']}" /><br/></c:if>
+                            <c:if test="${not empty requestScope['jakarta.servlet.error.status_code']}"><strong>Mã Trạng thái:</strong> <c:out value="${requestScope['jakarta.servlet.error.status_code']}" /><br/></c:if>
+                            <c:if test="${not empty requestScope['jakarta.servlet.error.message']}"><strong>Tin nhắn:</strong> <c:out value="${requestScope['jakarta.servlet.error.message']}" /><br/></c:if>
+                            <c:if test="${not empty requestScope['jakarta.servlet.error.request_uri']}"><strong>URI Yêu cầu:</strong> <c:out value="${requestScope['jakarta.servlet.error.request_uri']}" /><br/></c:if>
+                            <c:if test="${not empty requestScope['jakarta.servlet.error.servlet_name']}"><strong>Tên Servlet:</strong> <c:out value="${requestScope['jakarta.servlet.error.servlet_name']}" /><br/></c:if>
                             <c:if test="${not empty requestScope['jakarta.servlet.error.exception']}">
-                                <strong>Exception:</strong> <span class="text-secondary"><c:out value="${requestScope['jakarta.servlet.error.exception']}" /></span>
+                                <strong>Ngoại lệ:</strong> <span class="text-secondary"><c:out value="${requestScope['jakarta.servlet.error.exception']}" /></span>
                             </c:if>
                         </div>
                     </div>
                 </div>
             </c:if>
 
-            <p class="text-on-surface-variant opacity-75 mt-4 small fst-italic">Thank you for your patience. Your security and data are always our top priority.</p>
+            <p class="text-on-surface-variant opacity-75 mt-4 small fst-italic">Cảm ơn bạn đã kiên nhẫn. Bảo mật và dữ liệu của bạn luôn là ưu tiên hàng đầu của chúng tôi.</p>
         </div>
     </main>
 
     <footer class="w-100 px-4 mt-auto bg-surface-container py-4 border-top">
         <div class="container-max mx-auto d-flex flex-column flex-md-row justify-content-between align-items-center gap-3" style="max-width: 1280px;">
-            <div class="small fw-semibold text-muted">© 2024 LMS University Library System</div>
+            <div class="small fw-semibold text-muted">© 2024 Thư viện Đại học LMS System</div>
             <div class="d-flex flex-wrap justify-content-center gap-4">
-                <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="#">Privacy Policy</a>
-                <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="#">Terms of Service</a>
-                <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="#">Accessibility</a>
-                <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="${pageContext.request.contextPath}/#contact">Contact Support</a>
+                <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="#">Chính sách bảo mật</a>
+                <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="#">Điều khoản Dịch vụ</a>
+                <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="#">Trợ năng</a>
+                <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="${pageContext.request.contextPath}/#contact">Liên hệ Hỗ trợ</a>
             </div>
         </div>
     </footer>

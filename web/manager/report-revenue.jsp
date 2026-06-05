@@ -2,12 +2,12 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="vi">
 
             <head>
                 <meta charset="utf-8" />
                 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-                <title>Fine &amp; Revenue Analytics | Lumina Library</title>
+                <title>Phân tích Tiền phạt &amp; Doanh thu | Thư viện Lumina</title>
 
                 <!-- Bootstrap 5 CSS -->
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -152,30 +152,30 @@
                 <!-- Sidebar Navigation Shell Container -->
                 <aside class="sidebar d-flex flex-column py-3 px-2">
                     <div class="mb-4 px-3">
-                        <h1 class="h4 fw-bold m-0" style="color: #9d4300;">Lumina Library</h1>
-                        <small class="text-muted opacity-75">Admin Console</small>
+                        <h1 class="h4 fw-bold m-0" style="color: #9d4300;">Thư viện Lumina</h1>
+                        <small class="text-muted opacity-75">Bảng điều khiển Quản trị</small>
                     </div>
 
                     <nav class="nav flex-column gap-1 flex-grow-1">
                         <a class="nav-link-custom" href="dashboard"><span
-                                class="material-symbols-outlined">dashboard</span>Dashboard</a>
+                                class="material-symbols-outlined">dashboard</span>Bảng điều khiển</a>
                         <a class="nav-link-custom" href="catalog"><span
-                                class="material-symbols-outlined">menu_book</span>Catalog</a>
+                                class="material-symbols-outlined">menu_book</span>Danh mục Sách</a>
                         <a class="nav-link-custom" href="circulation"><span
-                                class="material-symbols-outlined">swap_horiz</span>Circulation</a>
+                                class="material-symbols-outlined">swap_horiz</span>Lưu hành</a>
                         <a class="nav-link-custom" href="members"><span
-                                class="material-symbols-outlined">group</span>Members</a>
+                                class="material-symbols-outlined">group</span>Thành viên</a>
                         <a class="nav-link-custom active" href="reports"><span
-                                class="material-symbols-outlined">analytics</span>Reports</a>
+                                class="material-symbols-outlined">analytics</span>Báo cáo</a>
                         <a class="nav-link-custom" href="settings"><span
-                                class="material-symbols-outlined">settings</span>Settings</a>
+                                class="material-symbols-outlined">settings</span>Cài đặt</a>
                     </nav>
 
                     <div class="mt-auto pt-3 border-top px-3 d-flex align-items-center gap-3">
                         <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
                             style="width: 40px; height: 40px; background-color: #ffdbca; color: #341100;">LA</div>
                         <div>
-                            <p class="small fw-semibold m-0 leading-tight">Admin</p>
+                            <p class="small fw-semibold m-0 leading-tight">Quản trị viên</p>
                             <span class="text-muted uppercase tracking-wider" style="font-size: 10px;">LMS
                                 UNIVERSITY</span>
                         </div>
@@ -187,7 +187,7 @@
                     <div class="d-flex align-items-center bg-light rounded-pill px-3 py-1.5" style="width: 350px;">
                         <span class="material-symbols-outlined text-secondary me-2 fs-5">search</span>
                         <input class="form-control bg-transparent border-0 p-0 shadow-none small"
-                            placeholder="Search analytics..." type="text" />
+                            placeholder="Tìm kiếm phân tích..." type="text" />
                     </div>
 
                     <div class="d-flex align-items-center gap-4">
@@ -215,13 +215,13 @@
                         <!-- Workspace Title Page Section Header -->
                         <div class="d-flex justify-content-between align-items-end mb-4">
                             <div>
-                                <h2 class="fw-bold m-0 text-dark">Fine &amp; Revenue Analytics</h2>
-                                <p class="text-muted m-0 small">Tracking library fiscal health and circulation
-                                    penalties.</p>
+                                <h2 class="fw-bold m-0 text-dark">Phân tích Tiền phạt &amp; Doanh thu</h2>
+                                <p class="text-muted m-0 small">Theo dõi sức khỏe tài chính thư viện và các mức phạt lưu hành.
+                                    </p>
                             </div>
                             <button class="btn text-white fw-bold d-flex align-items-center gap-2 px-4 py-2 shadow-sm"
                                 style="background-color: #9d4300;">
-                                <span class="material-symbols-outlined fs-5">download</span> Export Report
+                                <span class="material-symbols-outlined fs-5">download</span> Xuất Báo cáo
                             </button>
                         </div>
 
@@ -237,7 +237,7 @@
                                             class="badge bg-success-subtle text-success border-0 rounded-pill px-2.5 py-1 small fw-bold">+12.4%</span>
                                     </div>
                                     <p class="text-muted text-uppercase tracking-wider fw-semibold mb-1"
-                                        style="font-size: 11px;">Total Revenue (MTD)</p>
+                                        style="font-size: 11px;">Tổng Doanh thu (Trong tháng)</p>
                                     <h3 class="fw-bold text-dark m-0">
                                         <c:choose>
                                             <c:when test="${financeStats.totalRevenue != null}">
@@ -257,7 +257,7 @@
                                             <span class="material-symbols-outlined d-block">calendar_month</span></div>
                                     </div>
                                     <p class="text-muted text-uppercase tracking-wider fw-semibold mb-1"
-                                        style="font-size: 11px;">Quarterly Collection</p>
+                                        style="font-size: 11px;">Thu nạp Theo quý</p>
                                     <h3 class="fw-bold text-dark m-0">
                                         <c:choose>
                                             <c:when test="${financeStats.quarterlyCollection != null}">
@@ -277,7 +277,7 @@
                                             <span class="material-symbols-outlined d-block">warning</span></div>
                                     </div>
                                     <p class="text-muted text-uppercase tracking-wider fw-semibold mb-1"
-                                        style="font-size: 11px;">Outstanding Fines</p>
+                                        style="font-size: 11px;">Tiền phạt Chưa thu</p>
                                     <h3 class="fw-bold text-danger m-0">
                                         <c:choose>
                                             <c:when test="${financeStats.outstandingFines != null}">
@@ -296,10 +296,10 @@
                                         <div class="rounded p-2" style="background-color: #dae2fd; color: #131b2e;">
                                             <span class="material-symbols-outlined d-block">check_circle</span></div>
                                         <span
-                                            class="badge bg-light text-primary border rounded-pill px-2.5 py-1 small fw-bold">Stable</span>
+                                            class="badge bg-light text-primary border rounded-pill px-2.5 py-1 small fw-bold">ổn định</span>
                                     </div>
                                     <p class="text-muted text-uppercase tracking-wider fw-semibold mb-1"
-                                        style="font-size: 11px;">Payment Success Rate</p>
+                                        style="font-size: 11px;">Tỷ lệ Thanh toán thành công</p>
                                     <h3 class="fw-bold text-dark m-0">${financeStats.successRate != null ?
                                         financeStats.successRate : '98.2%'}</h3>
                                 </div>
@@ -312,16 +312,16 @@
                             <div class="col-12 col-lg-8">
                                 <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h5 class="fw-bold m-0 text-dark">Monthly Revenue Trends</h5>
+                                        <h5 class="fw-bold m-0 text-dark">Xu hướng Doanh thu Hàng tháng</h5>
                                         <div class="d-flex gap-3 small text-muted font-weight-semibold">
                                             <div class="d-flex align-items-center gap-1.5"><span
                                                     class="d-inline-block rounded-circle"
                                                     style="width: 10px; height: 10px; background-color: #f97316;"></span>
-                                                Fines</div>
+                                                Tiền phạt</div>
                                             <div class="d-flex align-items-center gap-1.5"><span
                                                     class="d-inline-block rounded-circle"
                                                     style="width: 10px; height: 10px; background-color: #00a2f4;"></span>
-                                                Services</div>
+                                                Dịch vụ</div>
                                         </div>
                                     </div>
 
@@ -409,14 +409,14 @@
                             <!-- Right Section: Payment Method Donut Segment View -->
                             <div class="col-12 col-lg-4">
                                 <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex flex-column">
-                                    <h5 class="fw-bold mb-3 text-dark">Payment Methods</h5>
+                                    <h5 class="fw-bold mb-3 text-dark">Phương thức Thanh toán</h5>
                                     <div class="flex-grow-1 d-flex align-items-center justify-content-center py-3">
                                         <div class="donut-container">
                                             <div class="donut-center-hole">
                                                 <span class="fw-bold text-dark h4 m-0">${donutOnlinePercentage != null ?
                                                     donutOnlinePercentage : '75%'}</span>
                                                 <small class="text-uppercase text-muted tracking-wider"
-                                                    style="font-size: 10px;">ONLINE</small>
+                                                    style="font-size: 10px;">TRỰC TUYẾN</small>
                                             </div>
                                         </div>
                                     </div>
@@ -424,16 +424,15 @@
                                         <div class="d-flex justify-content-between align-items-center small">
                                             <div class="d-flex align-items-center gap-2">
                                                 <span class="d-inline-block rounded-circle"
-                                                    style="width: 10px; height: 10px; background-color: #f97316;"></span>Online
-                                                Portal
+                                                    style="width: 10px; height: 10px; background-color: #f97316;"></span>Cổng trực tuyến
                                             </div>
                                             <span class="fw-bold text-dark">$32,182.50</span>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center small">
                                             <div class="d-flex align-items-center gap-2">
                                                 <span class="d-inline-block rounded-circle"
-                                                    style="width: 10px; height: 10px; background-color: #00a2f4;"></span>Cash
-                                                / In-Person
+                                                    style="width: 10px; height: 10px; background-color: #00a2f4;"></span>Tiền mặt
+                                                / Trực tiếp
                                             </div>
                                             <span class="fw-bold text-dark">$10,727.50</span>
                                         </div>
@@ -445,10 +444,10 @@
                         <!-- Detailed Transactions Logs History Database Table Panels -->
                         <section class="card border-0 shadow-sm rounded-3 bg-white overflow-hidden mb-4">
                             <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
-                                <h5 class="fw-bold m-0 text-dark">Recent Fine Payments</h5>
+                                <h5 class="fw-bold m-0 text-dark">Các giao dịch Tiền phạt gần đây</h5>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-light border px-3 rounded-2">Filter</button>
-                                    <button class="btn btn-sm btn-light border px-3 rounded-2">View All</button>
+                                    <button class="btn btn-sm btn-light border px-3 rounded-2">Bộ lọc</button>
+                                    <button class="btn btn-sm btn-light border px-3 rounded-2">Xem Tất cả</button>
                                 </div>
                             </div>
 
@@ -457,12 +456,12 @@
                                     <thead class="table-light text-secondary text-uppercase tracking-wider"
                                         style="font-size: 11px;">
                                         <tr>
-                                            <th class="py-3 px-4">Member Name</th>
-                                            <th class="py-3 px-3">Amount</th>
-                                            <th class="py-3 px-3">Date</th>
-                                            <th class="py-3 px-3">Status</th>
-                                            <th class="py-3 px-3">Method</th>
-                                            <th class="py-3 px-4 text-end">Actions</th>
+                                            <th class="py-3 px-4">Tên Thành viên</th>
+                                            <th class="py-3 px-3">Số tiền</th>
+                                            <th class="py-3 px-3">Ngày</th>
+                                            <th class="py-3 px-3">Trạng thái</th>
+                                            <th class="py-3 px-3">Phương thức</th>
+                                            <th class="py-3 px-4 text-end">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top-0">
@@ -495,17 +494,17 @@
                                                         <c:when test="${payment.status == 'Paid'}">
                                                             <span
                                                                 class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 text-uppercase"
-                                                                style="font-size: 10px;">Paid</span>
+                                                                style="font-size: 10px;">Đã thanh toán</span>
                                                         </c:when>
                                                         <c:when test="${payment.status == 'Pending'}">
                                                             <span
                                                                 class="badge bg-warning-subtle text-warning rounded-pill px-2.5 py-1 text-uppercase"
-                                                                style="font-size: 10px;">Pending</span>
+                                                                style="font-size: 10px;">Chờ duyệt</span>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <span
                                                                 class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1 text-uppercase"
-                                                                style="font-size: 10px;">Failed</span>
+                                                                style="font-size: 10px;">Thất bại</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
@@ -542,10 +541,10 @@
                                                 <td class="px-3 text-muted small">Oct 24, 2023</td>
                                                 <td class="px-3"><span
                                                         class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1"
-                                                        style="font-size: 10px;">PAID</span></td>
+                                                        style="font-size: 10px;">ĐÃ THANH TOÁN</span></td>
                                                 <td class="px-3 text-secondary small">
                                                     <div class="d-flex align-items-center gap-1.5"><span
-                                                            class="material-symbols-outlined fs-6">public</span>Online
+                                                            class="material-symbols-outlined fs-6">public</span>Trực tuyến
                                                     </div>
                                                 </td>
                                                 <td class="px-4 text-end"><button
@@ -570,10 +569,10 @@
                                                 <td class="px-3 text-muted small">Oct 24, 2023</td>
                                                 <td class="px-3"><span
                                                         class="badge bg-warning-subtle text-warning rounded-pill px-2.5 py-1"
-                                                        style="font-size: 10px;">PENDING</span></td>
+                                                        style="font-size: 10px;">CHờ DUYỆT</span></td>
                                                 <td class="px-3 text-secondary small">
                                                     <div class="d-flex align-items-center gap-1.5"><span
-                                                            class="material-symbols-outlined fs-6">payments</span>Cash
+                                                            class="material-symbols-outlined fs-6">payments</span>Tiền mặt
                                                     </div>
                                                 </td>
                                                 <td class="px-4 text-end"><button
@@ -589,7 +588,7 @@
                             <!-- Table Pagination Footer Navigation Row Controls -->
                             <div
                                 class="p-3 bg-light-subtle border-top d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 small text-muted">
-                                <p class="m-0">Showing 1 to 4 of 1,248 entries</p>
+                                <p class="m-0">Hiển thị 1 đến 4 trong số 1.248 bản ghi</p>
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination pagination-sm m-0 gap-1 border-0">
                                         <li class="page-item disabled"><a
@@ -618,9 +617,9 @@
                                 <div class="card border-0 p-4 rounded-3 bg-light border position-relative overflow-hidden group"
                                     style="height: 100%;">
                                     <div class="position-relative" style="z-index: 2;">
-                                        <h5 class="fw-bold text-dark mb-2">Quarterly Revenue (Q4)</h5>
-                                        <p class="small text-muted mb-3">You have reached 84% of your projected revenue
-                                            target for this academic quarter.</p>
+                                        <h5 class="fw-bold text-dark mb-2">Doanh thu Theo quý (Q4)</h5>
+                                        <p class="small text-muted mb-3">Bạn đã đạt 84% mục tiêu doanh thu dự kiến
+                                            cho học kỳ này.</p>
                                         <div class="progress rounded-pill overflow-hidden shadow-inner"
                                             style="height: 12px; background-color: rgba(255,255,255,0.7);">
                                             <div class="progress-bar rounded-pill" role="progressbar"
@@ -640,10 +639,10 @@
                                     style="background-color: #9d4300; height: 100%;">
                                     <div class="position-relative" style="z-index: 2;">
                                         <p class="text-uppercase fw-bold mb-2 tracking-widest"
-                                            style="color: #ffdbca; font-size: 12px;">Pro-Tip</p>
-                                        <p class="m-0 lh-relaxed" style="font-size: 16px;">Early automated reminders via
-                                            the Lumina Online Portal have reduced outstanding fines by 24% compared to
-                                            the previous semester.</p>
+                                            style="color: #ffdbca; font-size: 12px;">MẸO HỮU ÍCH</p>
+                                        <p class="m-0 lh-relaxed" style="font-size: 16px;">Các nhắc nhở tự động sớm qua
+                                            Cổng trực tuyến Lumina đã giảm tiền phạt chưa thu xuống 24% so với
+                                            học kỳ trước.</p>
                                     </div>
                                     <div class="position-absolute bg-white rounded-circle opacity-5"
                                         style="width: 128px; height: 128px; top: -64px; right: -64px; z-index: 1;">

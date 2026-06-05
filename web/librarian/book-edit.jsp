@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -132,7 +132,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -140,7 +140,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -149,22 +149,22 @@
 
                     <%-- ─── Breadcrumb ─── --%>
                     <div class="d-flex align-items-center gap-2 mb-4">
-                        <a href="${pageContext.request.contextPath}/librarian/catalog" class="breadcrumb-link" aria-label="Back to Catalog">
+                        <a href="${pageContext.request.contextPath}/librarian/catalog" class="breadcrumb-link" aria-label="Quay lại mục lục">
                             <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
-                            <span>Catalog</span>
+                            <span>Mục lục Sách</span>
                         </a>
                         <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
                         <a href="${pageContext.request.contextPath}/librarian/book-detail?id=<c:out value='${book.bookId}'/>" class="breadcrumb-link">
-                            Book Details
+                            Chi tiết sách
                         </a>
                         <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
-                        <span style="font-size: 13px; font-weight: 600; color: var(--on-surface);">Edit Book</span>
+                        <span style="font-size: 13px; font-weight: 600; color: var(--on-surface);">Sửa sách</span>
                     </div>
 
                     <%-- ─── Page Title ─── --%>
                     <div class="mb-4">
-                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Edit Book Record</h2>
-                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Update metadata, classification, and cover image for this book.</p>
+                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Sửa bản ghi sách</h2>
+                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Cập nhật siêu dữ liệu, phân loại và ảnh bìa cho sách này.</p>
                     </div>
 
                     <%-- ─── Edit Form ─── --%>
@@ -176,12 +176,12 @@
                         <%-- Core Identification (Readonly ISBN) --%>
                         <div class="form-card">
                             <div class="form-section-title">
-                                <span>Core Identification</span>
+                                <span>Định danh cốt lõi</span>
                                 <span class="badge" style="background-color: var(--surface-container-high); color: var(--on-surface-variant); font-size: 10px;">ID: <c:out value="${book.bookId}" /></span>
                             </div>
                             <div class="row g-3">
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label" for="isbn">ISBN (International Standard Book Number)</label>
+                                    <label class="form-label" for="isbn">ISBN (Mã số sách tiêu chuẩn quốc tế)</label>
                                     <div class="input-group">
                                         <span class="input-group-text" style="background-color: var(--surface-container); border-color: var(--outline-variant); color: var(--on-surface-variant);">
                                             <span class="material-symbols-outlined" style="font-size: 18px;">lock</span>
@@ -190,22 +190,22 @@
                                                value="<c:out value='${book.isbn}'/>"
                                                readonly aria-describedby="isbnHelp" />
                                     </div>
-                                    <div id="isbnHelp" class="form-text">ISBN cannot be changed after registration.</div>
+                                    <div id="isbnHelp" class="form-text">Không thể thay đổi ISBN sau khi đăng ký.</div>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label" for="publisher">Publisher <span style="color: var(--error);">*</span></label>
+                                    <label class="form-label" for="publisher">Nhà xuất bản <span style="color: var(--error);">*</span></label>
                                     <input type="text" id="publisher" name="publisher" class="form-control rounded-3"
                                            value="<c:out value='${book.publisher}'/>"
                                            required />
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label" for="publishYear">Publish Year <span style="color: var(--error);">*</span></label>
+                                    <label class="form-label" for="publishYear">Năm xuất bản <span style="color: var(--error);">*</span></label>
                                     <input type="number" id="publishYear" name="publishYear" class="form-control rounded-3"
                                            value="<c:out value='${book.publishYear}'/>"
                                            min="1000" max="2100" required />
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label" for="replacementPrice">Replacement Price (VNĐ) <span style="color: var(--error);">*</span></label>
+                                    <label class="form-label" for="replacementPrice">Giá bồi thường (VNĐ) <span style="color: var(--error);">*</span></label>
                                     <input type="number" id="replacementPrice" name="replacementPrice" class="form-control rounded-3"
                                            value="<c:out value='${book.replacementPrice}'/>"
                                            min="0" required />
@@ -215,29 +215,29 @@
 
                         <%-- Metadata --%>
                         <div class="form-card">
-                            <p class="form-section-title">Book Metadata</p>
+                            <p class="form-section-title">Siêu dữ liệu sách</p>
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="form-label" for="title">Book Title <span style="color: var(--error);">*</span></label>
+                                    <label class="form-label" for="title">Tiêu đề sách <span style="color: var(--error);">*</span></label>
                                     <input type="text" id="title" name="title" class="form-control rounded-3"
                                            value="<c:out value='${book.title}'/>"
                                            required />
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label" for="author">Author(s) <span style="color: var(--error);">*</span></label>
+                                    <label class="form-label" for="author">Tác giả <span style="color: var(--error);">*</span></label>
                                     <input type="text" id="author" name="author" class="form-control rounded-3"
                                            value="<c:out value='${book.author}'/>"
-                                           placeholder="Separate multiple authors with commas" required />
+                                           placeholder="Phân tách nhiều tác giả bằng dấu phẩy" required />
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label" for="description">Synopsis / Description</label>
+                                    <label class="form-label" for="description">Tóm tắt / Mô tả</label>
                                     <textarea id="description" name="description" class="form-control rounded-3"
                                               rows="4" style="resize: vertical;"><c:out value="${book.description}" /></textarea>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label" for="categoryId">Category <span style="color: var(--error);">*</span></label>
+                                    <label class="form-label" for="categoryId">Thể loại <span style="color: var(--error);">*</span></label>
                                     <select id="categoryId" name="categoryId" class="form-select rounded-3" required>
-                                        <option value="" disabled>Select a category...</option>
+                                        <option value="" disabled>Chọn một thể loại...</option>
                                         <c:forEach var="cat" items="${categories}">
                                             <option value="${cat.categoryId}" ${book.categoryId == cat.categoryId ? 'selected' : ''}>
                                                 ${cat.categoryName}
@@ -246,7 +246,7 @@
                                     </select>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label" for="tags">Tags</label>
+                                    <label class="form-label" for="tags">Thẻ</label>
                                     <select id="tags" name="tagIds" class="form-select rounded-3" multiple aria-describedby="tagHelp">
                                         <%-- Note: Multi-select UI should ideally be enhanced with Select2 or similar --%>
                                         <c:forEach var="tag" items="${tags}">
@@ -255,14 +255,14 @@
                                             </option>
                                         </c:forEach>
                                     </select>
-                                    <div id="tagHelp" class="form-text">Hold Ctrl/Cmd to select multiple.</div>
+                                    <div id="tagHelp" class="form-text">Giữ Ctrl/Cmd để chọn nhiều thẻ.</div>
                                 </div>
                             </div>
                         </div>
 
                         <%-- Visuals --%>
                         <div class="form-card">
-                            <p class="form-section-title">Visual Assets</p>
+                            <p class="form-section-title">Tài nguyên hình ảnh</p>
                             <div class="cover-upload-area">
                                 <div class="cover-preview ${not empty book.coverImageUrl ? 'has-image' : ''}" id="coverPreviewContainer">
                                     <span class="material-symbols-outlined preview-icon" style="font-size: 32px; color: var(--outline-variant);">add_photo_alternate</span>
@@ -271,11 +271,11 @@
                                          alt="Cover Preview" />
                                 </div>
                                 <div class="flex-grow-1">
-                                    <label class="form-label" for="coverImageUrl">Cover Image URL</label>
+                                    <label class="form-label" for="coverImageUrl">URL ảnh bìa</label>
                                     <input type="url" id="coverImageUrl" name="coverImageUrl" class="form-control rounded-3 mb-2"
                                            value="<c:out value='${book.coverImageUrl}'/>"
                                            placeholder="https://example.com/cover.jpg" />
-                                    <div class="form-text">Currently, we only support external image URLs. Leave blank to use the default book icon.</div>
+                                    <div class="form-text">Hiện tại, chúng tôi chỉ hỗ trợ URL ảnh bên ngoài. Để trống để sử dụng biểu tượng sách mặc định.</div>
                                 </div>
                             </div>
                         </div>
@@ -285,11 +285,11 @@
                             <a href="${pageContext.request.contextPath}/librarian/book-detail?id=<c:out value='${book.bookId}'/>"
                                class="btn py-2 px-4 rounded-pill fw-bold"
                                style="background-color: var(--surface-container-low); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
-                                Cancel
+                                Hủy
                             </a>
                             <button type="submit" class="btn btn-primary-custom py-2 px-4 rounded-pill fw-bold d-flex align-items-center gap-2" id="btnSaveBook">
                                 <span class="material-symbols-outlined" style="font-size: 18px;">save</span>
-                                Save Changes
+                                Lưu thay đổi
                             </button>
                         </div>
 

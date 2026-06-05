@@ -2,12 +2,12 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="vi">
 
             <head>
                 <meta charset="utf-8" />
                 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-                <title>Library Performance & Circulation Report | Lumina Library</title>
+                <title>Báo cáo Hiệu suất &amp; Lưu hành Thư viện | Thư viện Lumina</title>
 
                 <!-- Bootstrap 5 CSS -->
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -164,29 +164,29 @@
                         </div>
                         <div>
                             <h1 class="h6 fw-bold m-0 text-dark">Lumina System</h1>
-                            <small class="text-muted opacity-75">Academic Hub</small>
+                            <small class="text-muted opacity-75">Trung tâm Học thuật</small>
                         </div>
                     </div>
 
                     <nav class="nav flex-column flex-grow-1 gap-1">
                         <a class="nav-link-custom" href="dashboard"><span
-                                class="material-symbols-outlined">dashboard</span>Dashboard</a>
+                                class="material-symbols-outlined">dashboard</span>Bảng điều khiển</a>
                         <a class="nav-link-custom" href="catalog"><span
-                                class="material-symbols-outlined">menu_book</span>Catalog</a>
+                                class="material-symbols-outlined">menu_book</span>Danh mục Sách</a>
                         <a class="nav-link-custom" href="circulation"><span
-                                class="material-symbols-outlined">swap_horiz</span>Circulation</a>
+                                class="material-symbols-outlined">swap_horiz</span>Lưu hành</a>
                         <a class="nav-link-custom" href="members"><span
-                                class="material-symbols-outlined">group</span>Members</a>
+                                class="material-symbols-outlined">group</span>Thành viên</a>
                         <a class="nav-link-custom active" href="reports"><span
-                                class="material-symbols-outlined">analytics</span>Reports</a>
+                                class="material-symbols-outlined">analytics</span>Báo cáo</a>
                         <a class="nav-link-custom" href="settings"><span
-                                class="material-symbols-outlined">settings</span>Settings</a>
+                                class="material-symbols-outlined">settings</span>Cài đặt</a>
                     </nav>
 
-                    <button
+                        <button
                         class="btn btn-sm text-white w-100 fw-bold py-2 rounded-3 mt-auto d-flex align-items-center justify-content-center gap-1"
                         style="background-color: #f97316;">
-                        <span class="material-symbols-outlined fs-5">add</span> Add New Resource
+                        <span class="material-symbols-outlined fs-5">add</span> Thêm Tài nguyên mới
                     </button>
                 </aside>
 
@@ -197,8 +197,8 @@
                     <header
                         class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
                         <div>
-                            <h2 class="fw-bold text-dark m-0">Library Performance &amp; Circulation Report</h2>
-                            <p class="text-muted small m-0">Comprehensive analytics for academic resource management</p>
+                            <h2 class="fw-bold text-dark m-0">Báo cáo Hiệu suất &amp; Lưu hành Thư viện</h2>
+                            <p class="text-muted small m-0">Phân tích toàn diện cho quản lý tài nguyên học thuật</p>
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <div class="bg-white border rounded-3 px-3 py-2 d-flex align-items-center gap-2 shadow-sm"
@@ -209,7 +209,7 @@
                             <button
                                 class="btn btn-white bg-white border rounded-3 px-3 py-2 d-flex align-items-center gap-2 shadow-sm text-dark small fw-semibold"
                                 id="exportBtn">
-                                <span class="material-symbols-outlined text-primary fs-5">download</span> Export Report
+                                <span class="material-symbols-outlined text-primary fs-5">download</span> Xuất Báo cáo
                             </button>
                         </div>
                     </header>
@@ -222,11 +222,11 @@
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div class="rounded p-2" style="background-color: #ffdbca; color: #783200;"><span
                                             class="material-symbols-outlined d-block">inventory_2</span></div>
-                                    <span class="badge bg-light text-success border small fw-bold">+2.4% vs last
-                                        mo</span>
+                                    <span class="badge bg-light text-success border small fw-bold">+2.4% so với
+                                        tháng trước</span>
                                 </div>
                                 <div class="mt-2">
-                                    <p class="small text-muted fw-semibold m-0 opacity-75">Total Books in Stock</p>
+                                    <p class="small text-muted fw-semibold m-0 opacity-75">Tổng sách trong kho</p>
                                     <h3 class="fw-bold text-dark m-0 mt-1">${reportStats.totalBooks != null ?
                                         reportStats.totalBooks : '42,850'}</h3>
                                 </div>
@@ -239,10 +239,10 @@
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div class="rounded p-2" style="background-color: #cde5ff; color: #004b74;"><span
                                             class="material-symbols-outlined d-block">auto_stories</span></div>
-                                    <span class="badge bg-light text-primary border small fw-bold">+12% peak</span>
+                                    <span class="badge bg-light text-primary border small fw-bold">+12% đỉnh điểm</span>
                                 </div>
                                 <div class="mt-2">
-                                    <p class="small text-muted fw-semibold m-0 opacity-75">Currently In Circulation</p>
+                                    <p class="small text-muted fw-semibold m-0 opacity-75">Hiện đang Lưu hành</p>
                                     <h3 class="fw-bold text-dark m-0 mt-1">${reportStats.inCirculation != null ?
                                         reportStats.inCirculation : '15,640'}</h3>
                                 </div>
@@ -262,7 +262,7 @@
                                     </div>
                                 </div>
                                 <div class="mt-2">
-                                    <p class="small text-muted fw-semibold m-0 opacity-75">Circulation Rate</p>
+                                    <p class="small text-muted fw-semibold m-0 opacity-75">Tỷ lệ Lưu hành</p>
                                     <h3 class="fw-bold text-dark m-0 mt-1">${reportStats.circulationRate != null ?
                                         reportStats.circulationRate : '36.5%'}</h3>
                                 </div>
@@ -275,11 +275,11 @@
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div class="rounded p-2" style="background-color: #ffdad6; color: #93000a;"><span
                                             class="material-symbols-outlined d-block">bookmark_manager</span></div>
-                                    <span class="text-danger fw-bold small" style="font-size: 11px;">82 Pending
-                                        Pick-up</span>
+                                    <span class="text-danger fw-bold small" style="font-size: 11px;">82 Chờ lấy
+                                        sách</span>
                                 </div>
                                 <div class="mt-2">
-                                    <p class="small text-muted fw-semibold m-0 opacity-75">Active Reservations</p>
+                                    <p class="small text-muted fw-semibold m-0 opacity-75">Hoạt động Đặt trước</p>
                                     <h3 class="fw-bold text-dark m-0 mt-1">${reportStats.activeReservations != null ?
                                         reportStats.activeReservations : '1,208'}</h3>
                                 </div>
@@ -294,17 +294,17 @@
                             <div
                                 class="card border-0 shadow-sm p-4 rounded-3 bg-white chart-box-wrapper d-flex flex-column position-relative">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h5 class="fw-bold m-0 text-dark">Circulation Trends</h5>
+                                    <h5 class="fw-bold m-0 text-dark">Xu hướng Lưu hành Sách</h5>
                                     <div class="d-flex gap-3 small text-muted">
                                         <div class="d-flex align-items-center gap-1.5">
                                             <span class="d-inline-block rounded-circle"
                                                 style="width: 10px; height: 10px; background-color: #f97316;"></span>
-                                            Borrows
+                                            Mượn sách
                                         </div>
                                         <div class="d-flex align-items-center gap-1.5">
                                             <span class="d-inline-block rounded-circle"
                                                 style="width: 10px; height: 10px; background-color: #006398;"></span>
-                                            Returns
+                                            Trả sách
                                         </div>
                                     </div>
                                 </div>
@@ -343,16 +343,16 @@
                                     <!-- Tooltip Layout Simulation (Displays over layout node hover bounds) -->
                                     <div class="position-absolute bg-dark text-white p-2 rounded-3 text-center small opacity-0 hover-target-tooltip shadow-lg"
                                         style="top: 20%; left: 50%; transform: translateX(-50%); pointer-events: none; transition: opacity 0.2s; font-size: 12px; z-index: 10;">
-                                        <strong class="d-block mb-0.5">Oct 15, 2026</strong>
-                                        <span class="d-block">Borrows: 842</span>
-                                        <span class="d-block">Returns: 620</span>
+                                        <strong class="d-block mb-0.5">15/10/2026</strong>
+                                        <span class="d-block">Mượn: 842</span>
+                                        <span class="d-block">Trả: 620</span>
                                     </div>
                                 </div>
 
                                 <div class="d-flex justify-content-between mt-3 text-secondary px-1 fw-semibold opacity-50"
                                     style="font-size: 12px;">
-                                    <span>Oct 1</span><span>Oct 8</span><span>Oct 15</span><span>Oct 22</span><span>Oct
-                                        31</span>
+                                    <span>01/10</span><span>08/10</span><span>15/10</span><span>22/10</span><span>31/10
+                                        </span>
                                 </div>
                             </div>
                         </div>
@@ -361,14 +361,14 @@
                         <div class="col-12 col-lg-4">
                             <div
                                 class="card border-0 shadow-sm p-4 rounded-3 bg-white chart-box-wrapper d-flex flex-column">
-                                <h5 class="fw-bold mb-4 text-dark">Category Distribution</h5>
+                                <h5 class="fw-bold mb-4 text-dark">Phân bố Thể loại</h5>
                                 <div class="d-flex flex-column gap-3 overflow-auto flex-grow-1 pe-1 custom-scrollbar">
                                     <!-- Iteration dynamic nodes rendering looping blocks pattern layout -->
                                     <c:forEach var="cat" items="${categoryDistributions}">
                                         <div>
                                             <div class="d-flex justify-content-between mb-1 small fw-semibold">
                                                 <span class="text-dark">${cat.categoryName}</span>
-                                                <span class="text-muted">${cat.bookCount} books</span>
+                                                <span class="text-muted">${cat.bookCount} cuốn</span>
                                             </div>
                                             <div class="progress rounded-pill"
                                                 style="height: 8px; background-color: #eceef0;">
@@ -382,8 +382,8 @@
                                     <c:if test="${empty categoryDistributions}">
                                         <div>
                                             <div class="d-flex justify-content-between mb-1 small fw-semibold">
-                                                <span class="text-dark">Computer Science</span><span
-                                                    class="text-muted">8,420 books</span>
+                                                <span class="text-dark">Khoa học Máy tính</span><span
+                                                    class="text-muted">8.420 cuốn</span>
                                             </div>
                                             <div class="progress rounded-pill"
                                                 style="height: 8px; background-color: #eceef0;">
@@ -393,8 +393,8 @@
                                         </div>
                                         <div>
                                             <div class="d-flex justify-content-between mb-1 small fw-semibold">
-                                                <span class="text-dark">Theoretical Physics</span><span
-                                                    class="text-muted">5,100 books</span>
+                                                <span class="text-dark">Vật lý Lý thuyết</span><span
+                                                    class="text-muted">5.100 cuốn</span>
                                             </div>
                                             <div class="progress rounded-pill"
                                                 style="height: 8px; background-color: #eceef0;">
@@ -404,8 +404,8 @@
                                         </div>
                                         <div>
                                             <div class="d-flex justify-content-between mb-1 small fw-semibold">
-                                                <span class="text-dark">World Literature</span><span
-                                                    class="text-muted">12,300 books</span>
+                                                <span class="text-dark">Văn học Thế giới</span><span
+                                                    class="text-muted">12.300 cuốn</span>
                                             </div>
                                             <div class="progress rounded-pill"
                                                 style="height: 8px; background-color: #eceef0;">
@@ -415,8 +415,8 @@
                                         </div>
                                         <div>
                                             <div class="d-flex justify-content-between mb-1 small fw-semibold">
-                                                <span class="text-dark">Economic History</span><span
-                                                    class="text-muted">4,250 books</span>
+                                                <span class="text-dark">Lịch sử Kinh tế</span><span
+                                                    class="text-muted">4.250 cuốn</span>
                                             </div>
                                             <div class="progress rounded-pill"
                                                 style="height: 8px; background-color: #eceef0;">
@@ -436,11 +436,11 @@
                         <div class="col-12 col-xl-6">
                             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="fw-bold m-0 text-dark">Most Borrowed Books</h5>
+                                    <h5 class="fw-bold m-0 text-dark">Sách được Mượn nhiều nhất</h5>
                                     <a href="catalog/popular"
                                         class="text-decoration-none small fw-bold d-flex align-items-center gap-0.5"
                                         style="color: #9d4300;">
-                                        View All <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                                        Xem Tất cả <span class="material-symbols-outlined fs-6">arrow_forward</span>
                                     </a>
                                 </div>
 
@@ -450,9 +450,9 @@
                                             class="table-light text-secondary uppercase text-uppercase tracking-wider"
                                             style="font-size: 11px;">
                                             <tr>
-                                                <th class="py-2.5 px-3">Book Details</th>
+                                                <th class="py-2.5 px-3">Chi tiết Sách</th>
                                                 <th class="py-2.5 px-2">ISBN</th>
-                                                <th class="py-2.5 px-3 text-end">Borrows</th>
+                                                <th class="py-2.5 px-3 text-end">Lượt Mượn</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -538,8 +538,8 @@
                         <div class="col-12 col-xl-6">
                             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="fw-bold m-0 text-dark">Category Performance</h5>
-                                    <span class="small text-muted opacity-75">Last 30 Days</span>
+                                    <h5 class="fw-bold m-0 text-dark">Hiệu suất Thể loại</h5>
+                                    <span class="small text-muted opacity-75">30 ngày qua</span>
                                 </div>
 
                                 <div class="table-responsive">
@@ -547,10 +547,10 @@
                                         <thead class="table-light text-secondary text-uppercase tracking-wider"
                                             style="font-size: 11px;">
                                             <tr>
-                                                <th class="py-2.5 px-3">Category</th>
-                                                <th class="py-2.5 px-2 text-end">Inventory</th>
-                                                <th class="py-2.5 px-2 text-end">Circulating</th>
-                                                <th class="py-2.5 px-3 text-end">Rate</th>
+                                                <th class="py-2.5 px-3">Thể loại</th>
+                                                <th class="py-2.5 px-2 text-end">Kho sách</th>
+                                                <th class="py-2.5 px-2 text-end">Lưu hành</th>
+                                                <th class="py-2.5 px-3 text-end">Tỷ lệ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -577,7 +577,7 @@
 
                                             <c:if test="${empty categoryPerformanceStats}">
                                                 <tr class="action-row-tr">
-                                                    <td class="px-3 fw-bold text-dark small">Literature</td>
+                                                    <td class="px-3 fw-bold text-dark small">Văn học</td>
                                                     <td class="px-2 text-end text-secondary small">12,300</td>
                                                     <td class="px-2 text-end text-secondary small">4,850</td>
                                                     <td class="px-3 text-end">
@@ -589,7 +589,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr class="action-row-tr">
-                                                    <td class="px-3 fw-bold text-dark small">Technology</td>
+                                                    <td class="px-3 fw-bold text-dark small">Công nghệ</td>
                                                     <td class="px-2 text-end text-secondary small">8,420</td>
                                                     <td class="px-2 text-end text-secondary small">5,210</td>
                                                     <td class="px-3 text-end">
@@ -621,21 +621,21 @@
                                             style="color: #9d4300;">info</span>
                                     </div>
                                     <div>
-                                        <h6 class="fw-bold text-dark m-0" style="font-size: 15px;">Data Refresh Note
+                                        <h6 class="fw-bold text-dark m-0" style="font-size: 15px;">Lưu ý Cập nhật Dữ liệu
                                         </h6>
-                                        <p class="text-muted small m-0 mt-0.5">All values are synchronized in real-time
-                                            with the central SQL Server database. Circulation rates are calculated as
-                                            `(Borrowed / TotalStock) * 100`.</p>
+                                        <p class="text-muted small m-0 mt-0.5">Tất cả giá trị được đồng bộ thời gian thực
+                                            với cơ sở dữ liệu SQL Server trung tâm. Tỷ lệ lưu hành được tính bằng
+                                            `(Mượn / TổngKho) * 100`.</p>
                                     </div>
                                 </div>
                                 <div class="text-md-end ps-5 ps-md-0">
-                                    <small class="text-muted d-block fw-semibold" style="font-size: 12px;">Last Update:
-                                        Today, 10:45 AM</small>
+                                    <small class="text-muted d-block fw-semibold" style="font-size: 12px;">Cập nhật lần cuối:
+                                        Hôm nay, 10:45 SA</small>
                                     <form action="reports/recalculate" method="POST" class="m-0 p-0 mt-1">
                                         <button type="submit"
                                             class="btn btn-link p-0 text-decoration-none fw-bold small d-flex align-items-center gap-0.5 ms-md-auto shadow-none"
                                             style="color: #9d4300; font-size: 13px;">
-                                            <span class="material-symbols-outlined fs-6">refresh</span> Re-calculate
+                                            <span class="material-symbols-outlined fs-6">refresh</span> Tính toán lại
                                         </button>
                                     </form>
                                 </div>
@@ -646,7 +646,7 @@
                 </div>
 
                 <!-- Floating Action Trigger Buttons Context (FAB) -->
-                <button type="button" class="fab-btn" onclick="location.href='catalog/add'" title="Add New Resource">
+                <button type="button" class="fab-btn" onclick="location.href='catalog/add'" title="Thêm Tài nguyên mới">
                     <span class="material-symbols-outlined fs-3">add</span>
                 </button>
 

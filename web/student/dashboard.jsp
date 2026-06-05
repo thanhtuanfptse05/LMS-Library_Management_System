@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <%--
     Student Dashboard — Shell page
     Cấu trúc: file này chỉ là "khung", toàn bộ UI được chia thành các JSP fragment
@@ -52,7 +52,7 @@
     <a href="${pageContext.request.contextPath}/book-search.jsp"
        class="d-lg-none position-fixed bottom-0 end-0 m-4 rounded-circle d-flex align-items-center justify-content-center shadow border-0 text-white bg-primary-custom text-decoration-none"
        style="width: 56px; height: 56px; z-index: 1050;"
-       title="Search Catalog">
+       title="Tra cứu Mục lục">
         <span class="material-symbols-outlined" style="font-size: 24px;">search</span>
     </a>
 

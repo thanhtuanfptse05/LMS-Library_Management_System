@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <body class="d-flex flex-column">
     <jsp:include page="fragments/_header.jsp" />
@@ -18,8 +18,8 @@
                 <!-- Page Title -->
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                     <div>
-                        <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Fines & Payments</h2>
-                        <p class="font-body-md text-on-surface-variant mb-0">View outstanding penalties and process payments online via secure gateways.</p>
+                        <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Tiền phạt & Thanh toán</h2>
+                        <p class="font-body-md text-on-surface-variant mb-0">Xem các khoản phạt chưa thanh toán và xử lý thanh toán trực tuyến qua cổng bảo mật.</p>
                     </div>
                 </div>
 
@@ -31,7 +31,7 @@
                                 <span class="material-symbols-outlined fs-2">gavel</span>
                             </div>
                             <div>
-                                <span class="font-label-md text-on-surface-variant text-uppercase">Unpaid Fines</span>
+                                <span class="font-label-md text-on-surface-variant text-uppercase">Tiền phạt chưa thanh toán</span>
                                 <h3 class="mb-0 fw-bold text-danger mt-1">$24.00</h3>
                             </div>
                         </div>
@@ -42,7 +42,7 @@
                                 <span class="material-symbols-outlined fs-2">verified</span>
                             </div>
                             <div>
-                                <span class="font-label-md text-on-surface-variant text-uppercase">Total Settled</span>
+                                <span class="font-label-md text-on-surface-variant text-uppercase">Tổng đã thanh toán</span>
                                 <h3 class="mb-0 fw-bold text-success mt-1">$65.50</h3>
                             </div>
                         </div>
@@ -53,8 +53,8 @@
                                 <span class="material-symbols-outlined fs-2">receipt</span>
                             </div>
                             <div>
-                                <span class="font-label-md text-on-surface-variant text-uppercase">Receipts Issued</span>
-                                <h3 class="mb-0 fw-bold text-primary-custom mt-1">4 Receipts</h3>
+                                <span class="font-label-md text-on-surface-variant text-uppercase">Biên lai đã xuất</span>
+                                <h3 class="mb-0 fw-bold text-primary-custom mt-1">4 Biên lai</h3>
                             </div>
                         </div>
                     </div>
@@ -65,12 +65,12 @@
                     <ul class="nav nav-pills mb-4 gap-2" id="fineTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active rounded-pill fw-bold" id="unpaid-tab" data-bs-toggle="pill" data-bs-target="#unpaid-content" type="button" role="tab" aria-controls="unpaid-content" aria-selected="true">
-                                Active Unpaid Fines (2)
+                                Tiền phạt chưa thanh toán (2)
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link rounded-pill fw-bold" id="history-tab" data-bs-toggle="pill" data-bs-target="#history-content" type="button" role="tab" aria-controls="history-content" aria-selected="false">
-                                Payment History
+                                Lịch sử thanh toán
                             </button>
                         </li>
                     </ul>
@@ -86,10 +86,10 @@
                                                 <th style="width: 50px;" class="ps-3">
                                                     <input type="checkbox" id="selectAllFines" class="form-check-input" />
                                                 </th>
-                                                <th>Violation Details</th>
-                                                <th>Issue Date</th>
-                                                <th>Days Overdue</th>
-                                                <th class="text-end">Fine Amount</th>
+                                                <th>Chi tiết vi phạm</th>
+                                                <th>Ngày lập</th>
+                                                <th>Số ngày quá hạn</th>
+                                                <th class="text-end">Số tiền phạt</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -105,12 +105,12 @@
                                                         </div>
                                                         <div>
                                                             <p class="mb-0 fw-bold">Introduction to Algorithms (4th Edition)</p>
-                                                            <small class="text-muted">Barcode: LMS-BK-10293 • Late Return Penalty</small>
+                                                            <small class="text-muted">Mã vạch: LMS-BK-10293 • Phạt trả muộn</small>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>May 20, 2026</td>
-                                                <td><span class="badge badge-overdue">24 Days</span></td>
+                                                <td><span class="badge badge-overdue">24 ngày</span></td>
                                                 <td class="text-end fw-bold text-danger">$12.00</td>
                                             </tr>
                                             <!-- Fine Item 2 -->
@@ -125,12 +125,12 @@
                                                         </div>
                                                         <div>
                                                             <p class="mb-0 fw-bold">Design Patterns: Elements of Reusable Object-Oriented Software</p>
-                                                            <small class="text-muted">Barcode: LMS-BK-00892 • Damaged Book Cover</small>
+                                                            <small class="text-muted">Mã vạch: LMS-BK-00892 • Hỏng bìa sách</small>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>Jun 02, 2026</td>
-                                                <td><span class="badge badge-overdue">2 Days</span></td>
+                                                <td><span class="badge badge-overdue">2 ngày</span></td>
                                                 <td class="text-end fw-bold text-danger">$12.00</td>
                                             </tr>
                                         </tbody>
@@ -140,12 +140,12 @@
                                 <!-- Checkout Action Bar -->
                                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-4 pt-3 border-top gap-3">
                                     <div>
-                                        <p class="mb-0 text-muted">Selected Fines: <span id="selectedCount" class="fw-bold text-dark">0</span></p>
-                                        <h4 class="mb-0 mt-1">Total to Pay: <span id="totalAmountDisplay" class="fw-bold text-primary-custom">$0.00</span></h4>
+                                        <p class="mb-0 text-muted">Tiền phạt đã chọn: <span id="selectedCount" class="fw-bold text-dark">0</span></p>
+                                        <h4 class="mb-0 mt-1">Tổng cộng: <span id="totalAmountDisplay" class="fw-bold text-primary-custom">$0.00</span></h4>
                                     </div>
                                     <button type="submit" id="checkoutBtn" class="btn btn-primary-custom px-4 py-2.5 rounded-pill fw-bold d-flex align-items-center gap-2" disabled>
                                         <span class="material-symbols-outlined">shopping_cart_checkout</span>
-                                        Proceed to Checkout
+                                        Tiến hành thanh toán
                                     </button>
                                 </div>
                             </form>
@@ -157,12 +157,12 @@
                                 <table class="table table-hover align-middle mb-0">
                                     <thead>
                                         <tr style="background-color: var(--surface-container-low);">
-                                            <th class="ps-3">Receipt ID</th>
-                                            <th>Date Paid</th>
-                                            <th>Payment Method</th>
-                                            <th>Fines Cleared</th>
-                                            <th class="text-end">Amount Paid</th>
-                                            <th class="text-center">Action</th>
+                                            <th class="ps-3">Mã biên lai</th>
+                                            <th>Ngày thanh toán</th>
+                                            <th>Phương thức thanh toán</th>
+                                            <th>Lý do phạt</th>
+                                            <th class="text-end">Số tiền đã trả</th>
+                                            <th class="text-center">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -172,13 +172,13 @@
                                             <td>
                                                 <span class="d-flex align-items-center gap-1">
                                                     <span class="material-symbols-outlined text-primary-custom" style="font-size: 18px;">qr_code_2</span>
-                                                    VNPAY Gateway
+                                                    Cổng VNPAY
                                                 </span>
                                             </td>
-                                            <td>Late return - Advanced Thermodynamics</td>
+                                            <td>Trả muộn - Advanced Thermodynamics</td>
                                             <td class="text-end fw-bold text-success">$15.50</td>
                                             <td class="text-center">
-                                                <button class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1">Print PDF</button>
+                                                <button class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1">In PDF</button>
                                             </td>
                                         </tr>
                                         <tr>
@@ -187,13 +187,13 @@
                                             <td>
                                                 <span class="d-flex align-items-center gap-1">
                                                     <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">payments</span>
-                                                    Cash Counter
+                                                    Quầy thu ngân
                                                 </span>
                                             </td>
-                                            <td>Lost book - Introduction to Java</td>
+                                            <td>Làm mất sách - Introduction to Java</td>
                                             <td class="text-end fw-bold text-success">$50.00</td>
                                             <td class="text-center">
-                                                <button class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1">Print PDF</button>
+                                                <button class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1">In PDF</button>
                                             </td>
                                         </tr>
                                     </tbody>

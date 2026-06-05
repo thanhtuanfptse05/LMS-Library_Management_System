@@ -8,14 +8,14 @@
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb mb-0" style="font-size: 13px;">
                 <li class="breadcrumb-item">
-                    <a href="${pageContext.request.contextPath}/" class="text-decoration-none" style="color: rgba(255,255,255,0.7);">Home</a>
+                    <a href="${pageContext.request.contextPath}/" class="text-decoration-none" style="color: rgba(255,255,255,0.7);">Trang chủ</a>
                 </li>
-                <li class="breadcrumb-item active" style="color: rgba(255,255,255,0.9);">Policies</li>
+                <li class="breadcrumb-item active" style="color: rgba(255,255,255,0.9);">Chính sách</li>
             </ol>
         </nav>
-        <h1 class="fw-bold text-white mb-1" style="font-size: 36px;">Library Policies &amp; Guidelines</h1>
+        <h1 class="fw-bold text-white mb-1" style="font-size: 36px;">Chính sách &amp; Hướng dẫn Thư viện</h1>
         <p class="mb-0" style="color: rgba(255,255,255,0.75); font-size: 16px;">
-            Rules, regulations, and operating standards for all library patrons.
+            Quy tắc, quy định và tiêu chuẩn vận hành dành cho tất cả bạn đọc thư viện.
         </p>
     </div>
 </div>
@@ -28,23 +28,23 @@
             <!-- ── Sidebar Tabs ──────────────────────────────────── -->
             <div class="policy-sidebar">
                 <p class="fw-bold text-uppercase mb-2 px-1"
-                    style="font-size: 10px; letter-spacing: 0.1em; color: var(--text-muted-custom);">Sections</p>
+                    style="font-size: 10px; letter-spacing: 0.1em; color: var(--text-muted-custom);">Các phần</p>
 
                 <button class="policy-btn active" onclick="switchPolicyTab(event, 'pane-general')">
                     <i class="bi bi-shield-check"></i>
-                    General Policy
+                    Chính sách chung
                 </button>
                 <button class="policy-btn" onclick="switchPolicyTab(event, 'pane-intro')">
                     <i class="bi bi-building-check"></i>
-                    About the Library
+                    Giới thiệu về Thư viện
                 </button>
                 <button class="policy-btn" onclick="switchPolicyTab(event, 'pane-rules')">
                     <i class="bi bi-journal-text"></i>
-                    Rules &amp; Regulations
+                    Nội quy &amp; Quy định
                 </button>
                 <button class="policy-btn" onclick="switchPolicyTab(event, 'pane-hours')">
                     <i class="bi bi-clock"></i>
-                    Opening Hours
+                    Giờ mở cửa
                 </button>
             </div>
 
@@ -59,8 +59,8 @@
                                 <i class="bi bi-shield-check fs-5"></i>
                             </div>
                             <div>
-                                <h3 class="policy-title mb-0">Library General Policy</h3>
-                                <p class="policy-subtitle mb-0">Guidelines &amp; Scope of Application</p>
+                                <h3 class="policy-title mb-0">Chính sách chung của Thư viện</h3>
+                                <p class="policy-subtitle mb-0">Hướng dẫn &amp; Phạm vi áp dụng</p>
                             </div>
                         </div>
                     </div>
@@ -68,54 +68,54 @@
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-people-fill" style="color: var(--primary-color);"></i>
-                            1. Scope of Application
+                            1. Phạm vi áp dụng
                         </h4>
-                        <p class="mb-2 text-secondary">This policy applies to all authorized library users, including:</p>
+                        <p class="mb-2 text-secondary">Chính sách này áp dụng cho tất cả người dùng thư viện hợp lệ, bao gồm:</p>
                         <ul class="policy-list">
-                            <li>Students</li>
-                            <li>Faculty members</li>
-                            <li>Staff members</li>
-                            <li>Alumni (where permitted)</li>
-                            <li>Visitors or other individuals authorized by the institution</li>
+                            <li>Sinh viên</li>
+                            <li>Giảng viên</li>
+                            <li>Cán bộ nhân viên</li>
+                            <li>Cựu sinh viên (nếu được phép)</li>
+                            <li>Khách hoặc các cá nhân khác được nhà trường cấp phép</li>
                         </ul>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-book-half" style="color: var(--primary-color);"></i>
-                            2. Library Usage Rights
+                            2. Quyền sử dụng thư viện
                         </h4>
                         <div class="row g-3 mt-1">
                             <div class="col-md-6">
                                 <div class="rounded-3 p-3" style="background-color: var(--surface-container-low); border: 1px solid rgba(219,194,176,0.3);">
                                     <h6 class="fw-bold mb-1" style="font-size: 14px; color: var(--bs-body-color);">
-                                        <i class="bi bi-building me-1" style="color: var(--primary-color);"></i> Study Spaces
+                                        <i class="bi bi-building me-1" style="color: var(--primary-color);"></i> Không gian học tập
                                     </h6>
-                                    <p class="text-secondary small mb-0">Access reading areas, group study rooms, and library facilities per regulations.</p>
+                                    <p class="text-secondary small mb-0">Sử dụng phòng đọc, phòng học nhóm và các trang thiết bị thư viện theo quy định.</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="rounded-3 p-3" style="background-color: var(--surface-container-low); border: 1px solid rgba(219,194,176,0.3);">
                                     <h6 class="fw-bold mb-1" style="font-size: 14px; color: var(--bs-body-color);">
-                                        <i class="bi bi-wifi me-1" style="color: var(--primary-color);"></i> Internet &amp; E-Resources
+                                        <i class="bi bi-wifi me-1" style="color: var(--primary-color);"></i> Internet &amp; Tài nguyên điện tử
                                     </h6>
-                                    <p class="text-secondary small mb-0">Access to academic databases, journals, e-books, and licensed online resources.</p>
+                                    <p class="text-secondary small mb-0">Truy cập các cơ sở dữ liệu học thuật, tạp chí, sách điện tử và tài nguyên trực tuyến được cấp phép.</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="rounded-3 p-3" style="background-color: var(--surface-container-low); border: 1px solid rgba(219,194,176,0.3);">
                                     <h6 class="fw-bold mb-1" style="font-size: 14px; color: var(--bs-body-color);">
-                                        <i class="bi bi-eye me-1" style="color: var(--primary-color);"></i> On-Site Usage
+                                        <i class="bi bi-eye me-1" style="color: var(--primary-color);"></i> Sử dụng tại chỗ
                                     </h6>
-                                    <p class="text-secondary small mb-0">Read materials on premises and access catalog information per regulations.</p>
+                                    <p class="text-secondary small mb-0">Đọc tài liệu tại chỗ và tra cứu thông tin thư mục theo quy định.</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="rounded-3 p-3" style="background-color: var(--surface-container-low); border: 1px solid rgba(219,194,176,0.3);">
                                     <h6 class="fw-bold mb-1" style="font-size: 14px; color: var(--bs-body-color);">
-                                        <i class="bi bi-arrow-left-right me-1" style="color: var(--primary-color);"></i> Borrowing &amp; Returning
+                                        <i class="bi bi-arrow-left-right me-1" style="color: var(--primary-color);"></i> Mượn &amp; Trả tài liệu
                                     </h6>
-                                    <p class="text-secondary small mb-0">Authorized users may borrow library materials per assigned borrowing privileges.</p>
+                                    <p class="text-secondary small mb-0">Người dùng hợp lệ được mượn tài liệu thư viện theo đặc quyền quy định.</p>
                                 </div>
                             </div>
                         </div>
@@ -124,44 +124,44 @@
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-database-fill" style="color: var(--primary-color);"></i>
-                            3. Access to Academic Resources
+                            3. Truy cập tài nguyên học thuật
                         </h4>
                         <p class="mb-0 text-secondary" style="line-height: 1.7;">
-                            Users may access research articles, academic publications, theses, dissertations, and digital repositories. Use must comply with applicable copyright laws, intellectual property regulations, and licensing agreements.
+                            Người dùng có thể truy cập các bài báo nghiên cứu, công bố học thuật, luận văn, luận án và kho lưu trữ số. Việc sử dụng phải tuân thủ luật bản quyền hiện hành, quy định sở hữu trí tuệ và thỏa thuận cấp phép.
                         </p>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-calendar-event-fill" style="color: var(--primary-color);"></i>
-                            4. Library Events and Activities
+                            4. Sự kiện và hoạt động thư viện
                         </h4>
                         <p class="mb-0 text-secondary" style="line-height: 1.7;">
-                            The library organizes activities to promote reading culture and academic engagement, including book fairs, seminars, workshops, exhibitions, and research development programs.
+                            Thư viện tổ chức các hoạt động nhằm thúc đẩy văn hóa đọc và gắn kết học thuật, bao gồm hội chợ sách, hội thảo, chuyên đề, triển lãm và các chương trình hỗ trợ nghiên cứu.
                         </p>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-person-check-fill" style="color: var(--primary-color);"></i>
-                            5. User Responsibilities
+                            5. Trách nhiệm của người dùng
                         </h4>
                         <ul class="policy-list">
-                            <li>Respecting and protecting library property and resources.</li>
-                            <li>Following all library rules, policies, and staff instructions.</li>
-                            <li>Maintaining a quiet and respectful environment.</li>
-                            <li>Refraining from unauthorized copying, distribution, or misuse of copyrighted materials.</li>
-                            <li>Compensating for lost, damaged, or improperly handled library materials.</li>
+                            <li>Tôn trọng và bảo vệ tài sản, tài nguyên của thư viện.</li>
+                            <li>Tuân thủ tất cả các quy tắc, chính sách của thư viện và hướng dẫn của nhân viên.</li>
+                            <li>Giữ gìn không gian yên tĩnh và văn minh.</li>
+                            <li>Không sao chép, phân phối trái phép hoặc lạm dụng các tài liệu có bản quyền.</li>
+                            <li>Bồi thường cho các tài liệu thư viện bị mất, hỏng hoặc xử lý sai quy định.</li>
                         </ul>
                     </div>
 
                     <div class="policy-card" style="background: linear-gradient(135deg, #fff9f5, #fff3e8); border-color: var(--primary-light);">
                         <h4 class="policy-card-title">
                             <i class="bi bi-shield-fill-check" style="color: var(--primary-color);"></i>
-                            6. Additional Provisions
+                            6. Điều khoản bổ sung
                         </h4>
                         <p class="mb-0 text-secondary" style="line-height: 1.7;">
-                            The library reserves the right to modify policies, update borrowing and access regulations, and temporarily suspend or limit services for maintenance, upgrades, or operational requirements. This policy becomes effective upon publication.
+                            Thư viện có quyền sửa đổi chính sách, cập nhật quy định mượn trả và truy cập, và tạm ngừng hoặc giới hạn dịch vụ để bảo trì, nâng cấp hoặc phục vụ yêu cầu vận hành. Chính sách này có hiệu lực kể từ ngày ban hành.
                         </p>
                     </div>
                 </div>
@@ -174,85 +174,85 @@
                                 <i class="bi bi-building-check fs-5"></i>
                             </div>
                             <div>
-                                <h3 class="policy-title mb-0">University Library Introduction</h3>
-                                <p class="policy-subtitle mb-0">About UniLib &amp; Mission</p>
+                                <h3 class="policy-title mb-0">Giới thiệu Thư viện Đại học</h3>
+                                <p class="policy-subtitle mb-0">Về UniLib &amp; Sứ mệnh</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="policy-card" style="background: linear-gradient(135deg, #fff9f5, #fff3e8); border-color: var(--primary-light);">
                         <p class="mb-0 fw-medium" style="font-size: 16px; line-height: 1.7; color: var(--primary-hover);">
-                            The University Library is an academic resource and information center established to effectively support teaching, learning, scientific research, and knowledge development for faculty, staff, and students.
+                            Thư viện Đại học là trung tâm thông tin và tài nguyên học thuật được thành lập nhằm hỗ trợ hiệu quả cho công tác giảng dạy, học tập, nghiên cứu khoa học và phát triển tri thức của giảng viên, cán bộ và sinh viên.
                         </p>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-gear-fill" style="color: var(--primary-color);"></i>
-                            Library Functions
+                            Chức năng của Thư viện
                         </h4>
                         <p class="mb-0 text-secondary" style="line-height: 1.7;">
-                            The library functions to collect, organize, store, preserve, and provide textbooks, reference materials, and scientific information to serve training, research, and learning needs within the university.
+                            Thư viện có chức năng thu thập, tổ chức, lưu trữ, bảo quản và cung cấp giáo trình, tài liệu tham khảo cùng thông tin khoa học phục vụ nhu cầu đào tạo, nghiên cứu và học tập trong trường.
                         </p>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-check2-all" style="color: var(--primary-color);"></i>
-                            Library Missions
+                            Sứ mệnh của Thư viện
                         </h4>
                         <ul class="policy-list">
-                            <li>Collect, supplement, and develop resource collections aligned with academic majors and research directions.</li>
-                            <li>Process, store, and preserve information resources in physical and digital formats.</li>
-                            <li>Provide catalog search, circulation services, and information exploitation support.</li>
-                            <li>Build and develop academic databases, digital libraries, and electronic resource portals.</li>
-                            <li>Collect and archive university publications, theses, dissertations, and graduation projects.</li>
-                            <li>Guide users to effectively exploit and utilize information resources.</li>
-                            <li>Advise university leadership on strategies for developing resource collections.</li>
-                            <li>Establish cooperative relations with external libraries and research organizations.</li>
+                            <li>Thu thập, bổ sung và phát triển nguồn tài nguyên phù hợp với các ngành đào tạo và hướng nghiên cứu.</li>
+                            <li>Xử lý, lưu trữ và bảo quản nguồn tài nguyên thông tin dưới dạng vật lý và dạng số.</li>
+                            <li>Cung cấp các dịch vụ tra cứu thư mục, mượn trả và hỗ trợ khai thác thông tin.</li>
+                            <li>Xây dựng và phát triển các cơ sở dữ liệu học thuật, thư viện số và cổng thông tin tài nguyên điện tử.</li>
+                            <li>Thu thập và lưu trữ các công trình công bố, luận văn, luận án, khóa luận tốt nghiệp của trường.</li>
+                            <li>Hướng dẫn người dùng khai thác và sử dụng hiệu quả nguồn tài nguyên thông tin.</li>
+                            <li>Tư vấn cho ban giám hiệu nhà trường về chiến lược phát triển nguồn tài nguyên.</li>
+                            <li>Thiết lập quan hệ hợp tác với các thư viện và tổ chức nghiên cứu bên ngoài.</li>
                         </ul>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-collection-fill" style="color: var(--primary-color);"></i>
-                            Library Resources
+                            Tài nguyên Thư viện
                         </h4>
                         <div class="row g-2 mt-1">
                             <div class="col-md-6">
                                 <div class="d-flex align-items-start gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-book mt-1 flex-shrink-0" style="color: var(--primary-color);"></i>
-                                    <span class="small text-secondary">Textbooks, reference books, and monographs</span>
+                                    <span class="small text-secondary">Giáo trình, sách tham khảo và chuyên khảo</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="d-flex align-items-start gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-newspaper mt-1 flex-shrink-0" style="color: var(--primary-color);"></i>
-                                    <span class="small text-secondary">National and international scientific journals</span>
+                                    <span class="small text-secondary">Tạp chí khoa học trong nước và quốc tế</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="d-flex align-items-start gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-mortarboard mt-1 flex-shrink-0" style="color: var(--primary-color);"></i>
-                                    <span class="small text-secondary">Theses, dissertations, and graduation projects</span>
+                                    <span class="small text-secondary">Luận văn, luận án và khóa luận tốt nghiệp</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="d-flex align-items-start gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-database mt-1 flex-shrink-0" style="color: var(--primary-color);"></i>
-                                    <span class="small text-secondary">Online databases and digital libraries</span>
+                                    <span class="small text-secondary">Cơ sở dữ liệu trực tuyến và thư viện số</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="d-flex align-items-start gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-film mt-1 flex-shrink-0" style="color: var(--primary-color);"></i>
-                                    <span class="small text-secondary">Multimedia materials and e-learning resources</span>
+                                    <span class="small text-secondary">Tài liệu đa phương tiện và học liệu điện tử</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="d-flex align-items-start gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-globe mt-1 flex-shrink-0" style="color: var(--primary-color);"></i>
-                                    <span class="small text-secondary">Resources from international publishers and global databases</span>
+                                    <span class="small text-secondary">Tài nguyên từ các nhà xuất bản quốc tế và cơ sở dữ liệu toàn cầu</span>
                                 </div>
                             </div>
                         </div>
@@ -267,44 +267,44 @@
                                 <i class="bi bi-journal-text fs-5"></i>
                             </div>
                             <div>
-                                <h3 class="policy-title mb-0">Library Rules &amp; Regulations</h3>
-                                <p class="policy-subtitle mb-0">Mandatory Rules for All Patrons</p>
+                                <h3 class="policy-title mb-0">Nội quy &amp; Quy định Thư viện</h3>
+                                <p class="policy-subtitle mb-0">Quy định bắt buộc đối với tất cả bạn đọc</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
-                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Article 1</span>
-                            Library Card
+                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Điều 1</span>
+                            Thẻ thư viện
                         </h4>
-                        <p class="mb-0 text-secondary">Your student ID card is your Library card. Use your Student or Staff ID card to access Library services and resources. Library cards are non-transferrable.</p>
+                        <p class="mb-0 text-secondary">Thẻ sinh viên cũng chính là thẻ thư viện. Hãy sử dụng thẻ sinh viên hoặc thẻ cán bộ để tiếp cận dịch vụ và tài nguyên thư viện. Thẻ thư viện không được phép cho mượn.</p>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
-                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Article 2</span>
-                            Opening Hours
+                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Điều 2</span>
+                            Giờ mở cửa
                         </h4>
                         <div class="table-responsive">
                             <table class="table-policy">
                                 <thead>
                                     <tr>
-                                        <th>Day</th>
-                                        <th>Hours</th>
-                                        <th>Service Mode</th>
+                                        <th>Ngày</th>
+                                        <th>Giờ</th>
+                                        <th>Chế độ phục vụ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><strong>Monday – Friday</strong></td>
+                                        <td><strong>Thứ Hai – Thứ Sáu</strong></td>
                                         <td>08:15 – 21:00</td>
-                                        <td>Full services</td>
+                                        <td>Đầy đủ dịch vụ</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Saturday – Sunday</strong></td>
+                                        <td><strong>Thứ Bảy – Chủ Nhật</strong></td>
                                         <td>08:00 – 17:00</td>
-                                        <td><span class="badge rounded-pill" style="background-color: #f97316; font-size: 11px;">Self-study only</span></td>
+                                        <td><span class="badge rounded-pill" style="background-color: #f97316; font-size: 11px;">Chỉ tự học</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -313,44 +313,44 @@
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
-                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Article 3</span>
-                            Library Services
+                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Điều 3</span>
+                            Các dịch vụ thư viện
                         </h4>
                         <div class="row g-2 mt-1">
                             <div class="col-6 col-md-4">
                                 <div class="d-flex align-items-center gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-arrow-left-right" style="color: var(--primary-color); font-size: 13px;"></i>
-                                    <span class="small fw-medium">Borrow / Return</span>
+                                    <span class="small fw-medium">Mượn / Trả sách</span>
                                 </div>
                             </div>
                             <div class="col-6 col-md-4">
                                 <div class="d-flex align-items-center gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-search" style="color: var(--primary-color); font-size: 13px;"></i>
-                                    <span class="small fw-medium">Catalog Search</span>
+                                    <span class="small fw-medium">Tra cứu thư mục</span>
                                 </div>
                             </div>
                             <div class="col-6 col-md-4">
                                 <div class="d-flex align-items-center gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-headset" style="color: var(--primary-color); font-size: 13px;"></i>
-                                    <span class="small fw-medium">Info Consulting</span>
+                                    <span class="small fw-medium">Tư vấn thông tin</span>
                                 </div>
                             </div>
                             <div class="col-6 col-md-4">
                                 <div class="d-flex align-items-center gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-wifi" style="color: var(--primary-color); font-size: 13px;"></i>
-                                    <span class="small fw-medium">E-Resources</span>
+                                    <span class="small fw-medium">Tài nguyên điện tử</span>
                                 </div>
                             </div>
                             <div class="col-6 col-md-4">
                                 <div class="d-flex align-items-center gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-clipboard-check" style="color: var(--primary-color); font-size: 13px;"></i>
-                                    <span class="small fw-medium">Request Materials</span>
+                                    <span class="small fw-medium">Yêu cầu tài liệu</span>
                                 </div>
                             </div>
                             <div class="col-6 col-md-4">
                                 <div class="d-flex align-items-center gap-2 p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <i class="bi bi-people" style="color: var(--primary-color); font-size: 13px;"></i>
-                                    <span class="small fw-medium">Group Work Rooms</span>
+                                    <span class="small fw-medium">Phòng làm việc nhóm</span>
                                 </div>
                             </div>
                         </div>
@@ -358,45 +358,45 @@
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
-                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Article 4</span>
-                            General Regulations
+                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Điều 4</span>
+                            Quy định chung
                         </h4>
                         <ul class="policy-list">
-                            <li><strong>4.1 Card Verification:</strong> Present a valid card to enter. Cards are non-transferrable.</li>
-                            <li><strong>4.2 Silence:</strong> Loud conversation is forbidden throughout the Library.</li>
-                            <li><strong>4.3 Cleanliness:</strong> Keep the library clean. No smoking, no graffiti, no littering.</li>
-                            <li><strong>4.4 Food &amp; Drink:</strong> Food, drink, and hazardous substances are strictly forbidden.</li>
-                            <li><strong>4.5 Mobile Devices:</strong> Set mobile phones to silent mode. No calls inside study areas.</li>
-                            <li><strong>4.6 Book Care:</strong> Do not use pencils, pens, or highlighters in the books.</li>
-                            <li><strong>4.7 Page Protection:</strong> Do not bend or tear the pages of books.</li>
-                            <li><strong>4.8 Damage Prevention:</strong> Do not let books get wet, mouldy, or damaged.</li>
+                            <li><strong>4.1 Kiểm tra thẻ:</strong> Xuất trình thẻ hợp lệ để vào cửa. Không cho mượn thẻ dưới mọi hình thức.</li>
+                            <li><strong>4.2 Giữ yên lặng:</strong> Nghiêm cấm nói chuyện to trong toàn bộ khuôn viên Thư viện.</li>
+                            <li><strong>4.3 Giữ vệ sinh:</strong> Giữ gìn vệ sinh chung. Nghiêm cấm hút thuốc, viết vẽ bậy, xả rác.</li>
+                            <li><strong>4.4 Đồ ăn &amp; Thức uống:</strong> Nghiêm cấm mang đồ ăn, nước uống và các chất gây cháy nổ vào thư viện.</li>
+                            <li><strong>4.5 Thiết bị di động:</strong> Để điện thoại ở chế độ im lặng. Không nghe gọi điện thoại trong phòng tự học.</li>
+                            <li><strong>4.6 Bảo quản sách:</strong> Không viết vẽ bậy, dùng bút chì, bút mực hoặc bút đánh dấu vào sách.</li>
+                            <li><strong>4.7 Bảo vệ trang sách:</strong> Không gấp mép trang sách, xé trang sách.</li>
+                            <li><strong>4.8 Phòng ngừa hư hỏng:</strong> Không để sách bị ẩm ướt, mốc hỏng hoặc rách nát.</li>
                         </ul>
                     </div>
 
                     <div class="policy-card">
                         <h4 class="policy-card-title">
-                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Article 5</span>
-                            Circulation Policies
+                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: var(--primary-color); font-size: 11px;">Điều 5</span>
+                            Chính sách Mượn trả
                         </h4>
                         <ul class="policy-list">
-                            <li><strong>5.1 Returning:</strong> Place books in the designated area. Do not arrange books on shelves freely.</li>
-                            <li><strong>5.2 Book Removal:</strong> Materials may not be taken out without permission of the Librarian.</li>
-                            <li><strong>5.3 Textbooks:</strong> Delivered per academic calendar. Renewable for up to 1 week with valid reason.</li>
-                            <li><strong>5.4 Reference Books:</strong> Borrow up to 10 titles. Loan: 1 week (Vietnamese) / 2 weeks (foreign language). Up to 4 renewals.</li>
-                            <li><strong>5.5 Borrowing Check:</strong> Verify the list of borrowed books and note any pre-existing damage with the librarian.</li>
+                            <li><strong>5.1 Trả tài liệu:</strong> Để sách đúng nơi quy định. Không tự ý xếp sách lên giá.</li>
+                            <li><strong>5.2 Mang sách ra ngoài:</strong> Không mang tài liệu ra khỏi thư viện khi chưa được sự cho phép của thủ thư.</li>
+                            <li><strong>5.3 Giáo trình:</strong> Mượn theo lịch học phần. Được gia hạn tối đa 1 tuần nếu có lý do chính đáng.</li>
+                            <li><strong>5.4 Sách tham khảo:</strong> Mượn tối đa 10 cuốn. Thời hạn: 1 tuần (tiếng Việt) / 2 tuần (tiếng nước ngoài). Tối đa gia hạn 4 lần.</li>
+                            <li><strong>5.5 Kiểm tra khi mượn:</strong> Kiểm tra tình trạng sách khi nhận và báo cho thủ thư các vết rách, hỏng hiện có.</li>
                         </ul>
                     </div>
 
                     <div class="policy-card" style="border-left: 4px solid #dc3545;">
                         <h4 class="policy-card-title">
-                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: #dc3545; font-size: 11px;">Article 6</span>
-                            Fines &amp; Penalties
+                            <span class="badge fw-semibold me-2 rounded-2" style="background-color: #dc3545; font-size: 11px;">Điều 6</span>
+                            Tiền phạt &amp; Hình phạt
                         </h4>
                         <ul class="policy-list">
-                            <li><strong>6.1 Violations:</strong> Patrons who violate Articles 4 and 5 may be reminded, penalized, or requested to leave.</li>
-                            <li><strong>6.2 Damaged Items:</strong> Items that can still be used will incur a fee based on severity of damage.</li>
-                            <li><strong>6.3 Overdue Fines:</strong> <strong style="color: #dc3545;">5,000 VNĐ / item / day</strong> (including weekends and holidays).</li>
-                            <li><strong>6.4 Compensation:</strong> Patrons must compensate for any damages as prescribed by regulations.</li>
+                            <li><strong>6.1 Vi phạm:</strong> Bạn đọc vi phạm Điều 4 và Điều 5 có thể bị nhắc nhở, phạt hành chính hoặc mời ra khỏi thư viện.</li>
+                            <li><strong>6.2 Tài liệu bị hỏng:</strong> Tài liệu bị hỏng nhưng vẫn sử dụng được sẽ chịu phí phạt tùy theo mức độ hỏng hóc.</li>
+                            <li><strong>6.3 Tiền phạt quá hạn:</strong> <strong style="color: #dc3545;">5,000 VNĐ / tài liệu / ngày</strong> (bao gồm cả cuối tuần và ngày lễ).</li>
+                            <li><strong>6.4 Bồi thường:</strong> Bạn đọc phải bồi thường cho bất kỳ hư hỏng tài sản nào theo quy định.</li>
                         </ul>
                     </div>
                 </div>
@@ -409,8 +409,8 @@
                                 <i class="bi bi-clock fs-5"></i>
                             </div>
                             <div>
-                                <h3 class="policy-title mb-0">Library Opening Hours</h3>
-                                <p class="policy-subtitle mb-0">Standard Hours of Operation</p>
+                                <h3 class="policy-title mb-0">Giờ mở cửa Thư viện</h3>
+                                <p class="policy-subtitle mb-0">Giờ mở cửa tiêu chuẩn</p>
                             </div>
                         </div>
                     </div>
@@ -418,32 +418,32 @@
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-calendar3" style="color: var(--primary-color);"></i>
-                            1. Weekly Schedule
+                            1. Lịch mở cửa hàng tuần
                         </h4>
                         <div class="table-responsive">
                             <table class="table-policy">
                                 <thead>
                                     <tr>
-                                        <th>Day</th>
-                                        <th>Opening Hours</th>
-                                        <th>Status</th>
+                                        <th>Ngày</th>
+                                        <th>Giờ mở cửa</th>
+                                        <th>Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><strong>Monday – Friday</strong></td>
+                                        <td><strong>Thứ Hai – Thứ Sáu</strong></td>
                                         <td>08:00 – 20:00</td>
-                                        <td><span class="badge rounded-pill" style="background-color: #198754; font-size: 11px;">Open</span></td>
+                                        <td><span class="badge rounded-pill" style="background-color: #198754; font-size: 11px;">Mở cửa</span></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Saturday</strong></td>
+                                        <td><strong>Thứ Bảy</strong></td>
                                         <td>08:00 – 17:00</td>
-                                        <td><span class="badge rounded-pill" style="background-color: #198754; font-size: 11px;">Open</span></td>
+                                        <td><span class="badge rounded-pill" style="background-color: #198754; font-size: 11px;">Mở cửa</span></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Sunday</strong></td>
+                                        <td><strong>Chủ Nhật</strong></td>
                                         <td>—</td>
-                                        <td><span class="badge rounded-pill bg-danger" style="font-size: 11px;">Closed</span></td>
+                                        <td><span class="badge rounded-pill bg-danger" style="font-size: 11px;">Đóng cửa</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -453,20 +453,20 @@
                     <div class="policy-card">
                         <h4 class="policy-card-title">
                             <i class="bi bi-arrow-left-right" style="color: var(--primary-color);"></i>
-                            2. Borrowing &amp; Returning Services
+                            2. Dịch vụ Mượn &amp; Trả
                         </h4>
                         <div class="row g-3 mt-1">
                             <div class="col-md-6">
                                 <div class="rounded-3 p-3 text-center" style="background: linear-gradient(135deg, #fff9f5, #fff3e8); border: 1px solid var(--primary-light);">
                                     <i class="bi bi-sun" style="font-size: 28px; color: var(--primary-color);"></i>
-                                    <h6 class="fw-bold mt-2 mb-1">Morning Session</h6>
+                                    <h6 class="fw-bold mt-2 mb-1">Ca sáng</h6>
                                     <p class="mb-0 fw-semibold" style="color: var(--primary-color);">08:00 – 12:00</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="rounded-3 p-3 text-center" style="background: linear-gradient(135deg, #fff9f5, #fff3e8); border: 1px solid var(--primary-light);">
                                     <i class="bi bi-brightness-alt-high" style="font-size: 28px; color: var(--primary-color);"></i>
-                                    <h6 class="fw-bold mt-2 mb-1">Afternoon Session</h6>
+                                    <h6 class="fw-bold mt-2 mb-1">Ca chiều</h6>
                                     <p class="mb-0 fw-semibold" style="color: var(--primary-color);">13:00 – 17:00</p>
                                 </div>
                             </div>
@@ -476,10 +476,10 @@
                     <div class="policy-card" style="background: linear-gradient(135deg, #fff9f5, #fff3e8); border-color: var(--primary-light);">
                         <h4 class="policy-card-title">
                             <i class="bi bi-info-circle-fill" style="color: var(--primary-color);"></i>
-                            3. Important Notes
+                            3. Lưu ý quan trọng
                         </h4>
                         <p class="mb-0 text-secondary" style="line-height: 1.7;">
-                            Outside the official borrowing and returning service hours, the library may only provide study space and reading services. Please plan your visits accordingly.
+                            Ngoài giờ phục vụ mượn trả chính thức, thư viện chỉ phục vụ phòng tự học và đọc tại chỗ. Quý bạn đọc vui lòng sắp xếp thời gian hợp lý.
                         </p>
                     </div>
                 </div>

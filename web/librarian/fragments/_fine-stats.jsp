@@ -7,7 +7,7 @@
                 <span class="material-symbols-outlined">gavel</span>
             </div>
             <div>
-                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Unpaid Fines</small>
+                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Tiền phạt chưa thanh toán</small>
                 <h4 class="mb-0 fw-bold mt-1 text-danger">48</h4>
             </div>
         </div>
@@ -18,7 +18,7 @@
                 <span class="material-symbols-outlined">payments</span>
             </div>
             <div>
-                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total Due</small>
+                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Tổng tiền phạt</small>
                 <h4 class="mb-0 fw-bold mt-1 text-primary-custom">$1,250.00</h4>
             </div>
         </div>
@@ -29,7 +29,7 @@
                 <span class="material-symbols-outlined">check_circle</span>
             </div>
             <div>
-                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Paid Today</small>
+                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Đã thanh toán hôm nay</small>
                 <h4 class="mb-0 fw-bold mt-1 text-success">$325.00</h4>
             </div>
         </div>
@@ -40,7 +40,7 @@
                 <span class="material-symbols-outlined">alarm_on</span>
             </div>
             <div>
-                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Overdue > 30 Days</small>
+                <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Quá hạn > 30 ngày</small>
                 <h4 class="mb-0 fw-bold mt-1" style="color: #7f1d1d;">12</h4>
             </div>
         </div>

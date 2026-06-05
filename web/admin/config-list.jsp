@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <%--
     Admin — System Configuration List
@@ -289,7 +289,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -297,7 +297,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -309,17 +309,17 @@
                             <ol class="breadcrumb mb-0" style="font-size: 12px;">
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/admin/dashboard"
-                                       class="text-decoration-none text-on-surface-variant">Dashboard</a>
+                                       class="text-decoration-none text-on-surface-variant">Bảng điều khiển</a>
                                 </li>
                                 <li class="breadcrumb-item active fw-semibold text-primary-custom"
-                                    aria-current="page">System Configurations</li>
+                                    aria-current="page">System Cấu hình</li>
                             </ol>
                         </nav>
                         <h1 class="fw-bold mb-1" style="font-size: 24px; color: var(--on-surface);">
                             <span class="material-symbols-outlined me-2"
                                   style="font-size: 26px; vertical-align: -4px; color: var(--primary, #9d4300);
                                          font-variation-settings: 'FILL' 1;">settings</span>
-                            System Configurations
+                            System Cấu hình
                         </h1>
                         <p style="font-size: 14px; color: var(--on-surface-variant); margin: 0;">
                             Manage library operational parameters: loan limits, fine rates, and system behaviour settings.
@@ -334,7 +334,7 @@
                         <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp"
                            class="btn-cfg-outline text-decoration-none" aria-label="View audit logs">
                             <span class="material-symbols-outlined">history</span>
-                            Audit History
+                            Audit Lịch sử
                         </a>
                     </div>
                 </div>
@@ -363,7 +363,7 @@
                                 <div class="csc-value" style="color: #16a34a;">
                                     <c:out value="${activeConfigs != null ? activeConfigs : '12'}" />
                                 </div>
-                                <div class="csc-label">Active</div>
+                                <div class="csc-label">Hoạt động</div>
                             </div>
                         </div>
                     </div>
@@ -376,7 +376,7 @@
                                 <div class="csc-value" style="color: var(--tertiary,#006398);">
                                     <c:out value="${recentChanges != null ? recentChanges : '3'}" />
                                 </div>
-                                <div class="csc-label">Changed Today</div>
+                                <div class="csc-label">Changed Hôm nay</div>
                             </div>
                         </div>
                     </div>
@@ -389,7 +389,7 @@
                                 <div class="csc-value" style="color: #854d0e;">
                                     <c:out value="${pendingReview != null ? pendingReview : '0'}" />
                                 </div>
-                                <div class="csc-label">Pending Review</div>
+                                <div class="csc-label">Chờ duyệt Review</div>
                             </div>
                         </div>
                     </div>
@@ -407,17 +407,17 @@
                                    aria-label="Search configurations" />
                         </div>
                         <select class="cfg-filter-select" id="cfgCategoryFilter" aria-label="Filter by category">
-                            <option value="all">All Categories</option>
+                            <option value="all">All Thể loại</option>
                             <option value="loan">Loan Rules</option>
                             <option value="fine">Fine &amp; Penalty</option>
-                            <option value="reserve">Reservations</option>
-                            <option value="email">Email &amp; Notifications</option>
+                            <option value="reserve">Đặt trước</option>
+                            <option value="email">Email &amp; Thông báo</option>
                             <option value="system">System</option>
                         </select>
                         <select class="cfg-filter-select" id="cfgStatusFilter" aria-label="Filter by status">
-                            <option value="all">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="all">All Trạng thái</option>
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
                         </select>
                         <span id="cfgResultCount" style="font-size: 12px; color: var(--on-surface-variant); white-space: nowrap;">
                             12 parameters
@@ -453,7 +453,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -471,7 +471,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=MAX_LOAN_DURATION_DAYS"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit MAX_LOAN_DURATION_DAYS">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit MAX_LOAN_DURATION_DAYS">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=MAX_LOAN_DURATION_DAYS"
@@ -498,7 +498,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -507,7 +507,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=MAX_BORROW_LIMIT"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit MAX_BORROW_LIMIT">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit MAX_BORROW_LIMIT">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=MAX_BORROW_LIMIT"
@@ -534,7 +534,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -543,7 +543,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=AUTO_RENEW_LIMIT"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit AUTO_RENEW_LIMIT">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit AUTO_RENEW_LIMIT">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=AUTO_RENEW_LIMIT"
@@ -583,7 +583,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -592,7 +592,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=PENALTY_RATE_PER_DAY_VND"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit PENALTY_RATE_PER_DAY_VND">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit PENALTY_RATE_PER_DAY_VND">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=PENALTY_RATE_PER_DAY_VND"
@@ -619,7 +619,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -628,7 +628,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=MAX_FINE_CAP_VND"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit MAX_FINE_CAP_VND">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit MAX_FINE_CAP_VND">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=MAX_FINE_CAP_VND"
@@ -646,8 +646,8 @@
                                 <span class="material-symbols-outlined" style="color: var(--tertiary,#006398);">bookmark</span>
                             </div>
                             <div>
-                                <h2>Reservations</h2>
-                                <p>Book reservation expiry and queue behaviour</p>
+                                <h2>Đặt trước</h2>
+                                <p>Sách reservation expiry and queue behaviour</p>
                             </div>
                         </div>
 
@@ -668,7 +668,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -677,7 +677,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=RESERVATION_EXPIRY_HRS"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit RESERVATION_EXPIRY_HRS">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit RESERVATION_EXPIRY_HRS">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=RESERVATION_EXPIRY_HRS"
@@ -704,7 +704,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -713,7 +713,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=MAX_RESERVATION_QUEUE"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit MAX_RESERVATION_QUEUE">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit MAX_RESERVATION_QUEUE">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=MAX_RESERVATION_QUEUE"
@@ -731,7 +731,7 @@
                                 <span class="material-symbols-outlined" style="color: #16a34a;">email</span>
                             </div>
                             <div>
-                                <h2>Email &amp; Notifications</h2>
+                                <h2>Email &amp; Thông báo</h2>
                                 <p>OTP expiry, reminder windows, and SMTP settings</p>
                             </div>
                         </div>
@@ -740,7 +740,7 @@
                         <div class="cfg-row" data-category="email" data-key="OTP_EXPIRY_MINUTES">
                             <div class="cfg-row__key">
                                 <div class="key-name">OTP_EXPIRY_MINUTES</div>
-                                <div class="key-desc">Minutes before a One-Time Password (OTP) for password reset expires and becomes invalid.</div>
+                                <div class="key-desc">Minutes before a One-Time Mật khẩu (OTP) for password reset expires and becomes invalid.</div>
                                 <span class="cfg-category-tag email mt-1">
                                     <span class="material-symbols-outlined" style="font-size: 10px;">email</span>
                                     Email
@@ -753,7 +753,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -762,7 +762,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=OTP_EXPIRY_MINUTES"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit OTP_EXPIRY_MINUTES">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit OTP_EXPIRY_MINUTES">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=OTP_EXPIRY_MINUTES"
@@ -789,7 +789,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -798,7 +798,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=DUE_REMINDER_DAYS_BEFORE"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit DUE_REMINDER_DAYS_BEFORE">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit DUE_REMINDER_DAYS_BEFORE">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=DUE_REMINDER_DAYS_BEFORE"
@@ -838,7 +838,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -847,7 +847,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=SESSION_TIMEOUT_MINUTES"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit SESSION_TIMEOUT_MINUTES">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit SESSION_TIMEOUT_MINUTES">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=SESSION_TIMEOUT_MINUTES"
@@ -874,7 +874,7 @@
                                 </div>
                                 <span class="cfg-status active">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block;"></span>
-                                    Active
+                                    Hoạt động
                                 </span>
                             </div>
                             <div class="cfg-row__meta">
@@ -883,7 +883,7 @@
                             </div>
                             <div class="cfg-row__actions">
                                 <a href="${pageContext.request.contextPath}/admin/config-edit.jsp?key=MAX_LOGIN_ATTEMPTS"
-                                   class="btn-icon" title="Edit parameter" aria-label="Edit MAX_LOGIN_ATTEMPTS">
+                                   class="btn-icon" title="Chỉnh sửa tham số" aria-label="Edit MAX_LOGIN_ATTEMPTS">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=MAX_LOGIN_ATTEMPTS"
@@ -903,7 +903,7 @@
                         <button class="btn-cfg-outline" id="btnAddConfig" aria-label="Add new configuration parameter"
                                 style="font-size: 12px; padding: 6px 14px;">
                             <span class="material-symbols-outlined" style="font-size: 15px;">add</span>
-                            Add Parameter
+                            Thêm Parameter
                         </button>
                     </div>
                 </div><!-- /.raised-card -->

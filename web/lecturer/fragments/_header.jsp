@@ -9,7 +9,7 @@
             <h1 class="h5 fw-bold mb-0 text-primary-custom">Academic Resources</h1>
             <div class="d-none d-md-flex gap-4 ms-2">
                 <a href="${pageContext.request.contextPath}/lecturer/dashboard"
-                   style="font-size: 13px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 2px; text-decoration: none; font-weight: 600;">Dashboard</a>
+                   style="font-size: 13px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 2px; text-decoration: none; font-weight: 600;">Bảng điều khiển</a>
                 <a href="${pageContext.request.contextPath}/book-search.jsp"
                    style="font-size: 13px; color: var(--on-surface-variant); text-decoration: none; font-weight: 600;">Catalog</a>
             </div>
@@ -22,7 +22,7 @@
                 <input class="header-search-input" placeholder="Search books, journals..." type="text" aria-label="Search library catalog" />
             </div>
             <a href="${pageContext.request.contextPath}/lecturer/notifications.jsp"
-               class="btn p-2 rounded-circle border-0 position-relative" style="background: transparent;" aria-label="Notifications">
+               class="btn p-2 rounded-circle border-0 position-relative" style="background: transparent;" aria-label="Thông báo">
                 <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
                 <span class="notif-dot"></span>
             </a>
@@ -39,7 +39,7 @@
             </a>
             <a href="${pageContext.request.contextPath}/logout"
                class="btn p-2 rounded-circle border-0 ms-1"
-               style="background: transparent; color: var(--on-surface-variant);" title="Sign out">
+               style="background: transparent; color: var(--on-surface-variant);" title="Đăng xuất">
                 <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
             </a>
         </div>

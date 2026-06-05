@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <body class="d-flex flex-column">
     <jsp:include page="fragments/_header.jsp" />
@@ -17,8 +17,8 @@
                 
                 <!-- Page Header -->
                 <div class="mb-4">
-                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Create User Account</h2>
-                    <p class="font-body-md text-on-surface-variant">Register a new reader (Student/Lecturer) or staff member (Librarian/Manager) in the system.</p>
+                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Tạo tài khoản người dùng</h2>
+                    <p class="font-body-md text-on-surface-variant">Register a new reader (Sinh viên/Giảng viên) or staff member (Thủ thư/Quản lý) in the system.</p>
                 </div>
 
                 <!-- Form Card -->
@@ -28,19 +28,19 @@
                         <div class="row g-3 mb-4">
                             <h4 class="fw-bold text-on-surface-variant mb-2 fs-5 border-bottom pb-2">1. Credentials & Primary Info</h4>
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-on-surface-variant">Full Name</label>
+                                <label class="form-label fw-bold text-on-surface-variant">Họ và tên</label>
                                 <input type="text" class="form-control rounded-3 py-2 border-outline-variant" placeholder="e.g. John Doe" required />
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-on-surface-variant">Email Address</label>
+                                <label class="form-label fw-bold text-on-surface-variant">Email Địa chỉ</label>
                                 <input type="email" class="form-control rounded-3 py-2 border-outline-variant" placeholder="john.doe@uni.edu" required />
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-on-surface-variant">Username</label>
+                                <label class="form-label fw-bold text-on-surface-variant">Tên đăng nhập</label>
                                 <input type="text" class="form-control rounded-3 py-2 border-outline-variant" placeholder="johndoe" required />
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-on-surface-variant">Temporary Password</label>
+                                <label class="form-label fw-bold text-on-surface-variant">Temporary Mật khẩu</label>
                                 <div class="input-group">
                                     <input type="password" id="tempPassword" class="form-control rounded-start-3 py-2 border-outline-variant" placeholder="••••••••" required />
                                     <button type="button" class="btn btn-outline-secondary rounded-end-3" onclick="togglePasswordVisibility()"><span class="material-symbols-outlined fs-5">visibility</span></button>
@@ -49,14 +49,14 @@
                         </div>
 
                         <div class="row g-3 mb-4">
-                            <h4 class="fw-bold text-on-surface-variant mb-2 fs-5 border-bottom pb-2">2. Role Assignment & Profile Properties</h4>
+                            <h4 class="fw-bold text-on-surface-variant mb-2 fs-5 border-bottom pb-2">2. Phân quyền & Hồ sơ Properties</h4>
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-on-surface-variant">System Role</label>
+                                <label class="form-label fw-bold text-on-surface-variant">System Vai trò</label>
                                 <select id="roleSelector" class="form-select rounded-3 py-2 border-outline-variant" onchange="handleRoleChange()" required>
-                                    <option value="STUDENT">Student</option>
-                                    <option value="LECTURER">Lecturer</option>
-                                    <option value="LIBRARIAN">Librarian</option>
-                                    <option value="MANAGER">Library Manager</option>
+                                    <option value="STUDENT">Sinh viên</option>
+                                    <option value="LECTURER">Giảng viên</option>
+                                    <option value="LIBRARIAN">Thủ thư</option>
+                                    <option value="MANAGER">Library Quản lý</option>
                                     <option value="ADMIN">Administrator</option>
                                 </select>
                             </div>
@@ -72,9 +72,9 @@
 
                         <!-- Dynamic Role-specific Section -->
                         <div class="row g-3 mb-4 p-3 border rounded-3 bg-light" id="rolePropsBox" style="border-color: var(--outline-variant) !important;">
-                            <h5 class="fw-bold text-primary-custom mb-2">Student Parameters</h5>
+                            <h5 class="fw-bold text-primary-custom mb-2">Sinh viên Parameters</h5>
                             <div class="col-12 col-md-6" id="studentCodeCol">
-                                <label class="form-label fw-bold text-on-surface-variant">Student Code / ID</label>
+                                <label class="form-label fw-bold text-on-surface-variant">Sinh viên Code / ID</label>
                                 <input type="text" class="form-control rounded-3 py-2 border-outline-variant bg-white" placeholder="e.g. SE180293" required />
                             </div>
                             <div class="col-12 col-md-6" id="studentMajorCol">
@@ -85,8 +85,8 @@
 
                         <!-- Submit Buttons -->
                         <div class="d-flex align-items-center gap-2 pt-3 border-top">
-                            <button type="submit" class="btn btn-primary-custom rounded-pill px-4 py-2.5 fw-bold">Register Account</button>
-                            <a href="${pageContext.request.contextPath}/admin/user-list.jsp" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom rounded-pill px-4 py-2.5 fw-bold">Register Tài khoản</button>
+                            <a href="${pageContext.request.contextPath}/admin/user-list.jsp" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold">Hủy</a>
                         </div>
                     </form>
                 </div>

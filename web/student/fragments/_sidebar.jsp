@@ -6,32 +6,32 @@
     <!-- Library Access -->
     <div>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-3"
-           style="font-size: 10px; letter-spacing: 0.2em;">Library Access</p>
+           style="font-size: 10px; letter-spacing: 0.2em;">Truy cập Thư viện</p>
         <div class="d-flex flex-column gap-1">
             <a class="sidebar-link"
                href="${pageContext.request.contextPath}/student/dashboard">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
-                <span>Home</span>
+                <span>Trang chủ</span>
             </a>
             <a class="sidebar-link"
                href="${pageContext.request.contextPath}/student/loans">
                 <span class="material-symbols-outlined">book</span>
-                <span>My Loans</span>
+                <span>Sách tôi mượn</span>
             </a>
             <a class="sidebar-link"
                href="${pageContext.request.contextPath}/student/reservations">
                 <span class="material-symbols-outlined">bookmark</span>
-                <span>Reservations</span>
+                <span>Đặt trước</span>
             </a>
             <a class="sidebar-link"
                href="${pageContext.request.contextPath}/student/my-fines.jsp">
                 <span class="material-symbols-outlined">payments</span>
-                <span>Fine History</span>
+                <span>Lịch sử nộp phạt</span>
             </a>
             <a class="sidebar-link active"
                href="${pageContext.request.contextPath}/student/notifications.jsp">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
-                <span>Notifications</span>
+                <span>Thông báo</span>
                 <span style="margin-left: auto; min-width: 18px; height: 18px; border-radius: 999px;
                              background-color: var(--primary); color: #fff;
                              font-size: 10px; font-weight: 700;
@@ -43,22 +43,22 @@
     <!-- Account -->
     <div>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-3"
-           style="font-size: 10px; letter-spacing: 0.2em;">Account</p>
+           style="font-size: 10px; letter-spacing: 0.2em;">Tài khoản</p>
         <div class="d-flex flex-column gap-1">
             <a class="sidebar-link"
                href="${pageContext.request.contextPath}/student/profile">
                 <span class="material-symbols-outlined">manage_accounts</span>
-                <span>My Profile</span>
+                <span>Hồ sơ của tôi</span>
             </a>
             <a class="sidebar-link"
                href="${pageContext.request.contextPath}/forgot-password">
                 <span class="material-symbols-outlined">security</span>
-                <span>Security Settings</span>
+                <span>Cài đặt Bảo mật</span>
             </a>
             <a class="sidebar-link"
                href="${pageContext.request.contextPath}/#contact">
                 <span class="material-symbols-outlined">contact_support</span>
-                <span>Help Center</span>
+                <span>Trung tâm Trợ giúp</span>
             </a>
         </div>
     </div>
@@ -66,13 +66,13 @@
     <!-- Assistance Box -->
     <div class="mt-auto p-3 rounded-3"
          style="background-color: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2);">
-        <p class="fw-bold text-primary-custom mb-1 small">Need Assistance?</p>
+        <p class="fw-bold text-primary-custom mb-1 small">Cần hỗ trợ?</p>
         <p class="text-on-surface-variant mb-3" style="font-size: 11px;">
-            Contact our librarians for research help or to report issues.
+            Liên hệ thủ thư để được trợ giúp nghiên cứu hoặc báo cáo sự cố.
         </p>
         <a href="${pageContext.request.contextPath}/#contact"
            class="btn btn-primary-custom w-100 btn-sm text-decoration-none d-block text-center rounded-3">
-            Report Issue
+            Báo cáo sự cố
         </a>
     </div>
 </aside>

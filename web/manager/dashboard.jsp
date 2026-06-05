@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -24,7 +24,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -32,7 +32,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -41,12 +41,12 @@
                 <section class="mb-4">
                     <div class="d-flex justify-content-between align-items-end mb-3">
                         <div>
-                            <h2 class="fw-semibold mb-0" style="font-size: 20px; color: var(--on-surface);">Library Performance</h2>
-                            <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Monthly KPI snapshot — <span id="current-month"></span></p>
+                            <h2 class="fw-semibold mb-0" style="font-size: 20px; color: var(--on-surface);">Hiệu suất Thư viện</h2>
+                            <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Tóm tắt KPI hàng tháng — <span id="current-month"></span></p>
                         </div>
                         <a href="#" class="btn btn-sm rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
                            style="background-color: var(--surface-container-high); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Export
+                            <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Xuất
                         </a>
                     </div>
                     <div class="row g-3">
@@ -60,7 +60,7 @@
                                         <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> +8.2%
                                     </span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Total Borrowings</p>
+                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Tổng số Mượn</p>
                                 <h3 class="fw-semibold mb-2" style="font-size: 24px; color: var(--on-surface);">
                                     <c:out value="${totalBorrowings != null ? totalBorrowings : '1,254'}" />
                                 </h3>
@@ -79,7 +79,7 @@
                                         <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> +3.5%
                                     </span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Active Members</p>
+                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Thành viên hoạt động</p>
                                 <h3 class="fw-semibold mb-2" style="font-size: 24px; color: var(--on-surface);">
                                     <c:out value="${activeMembers != null ? activeMembers : '3,401'}" />
                                 </h3>
@@ -98,7 +98,7 @@
                                         <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> +12.1%
                                     </span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Fine Revenue (VND)</p>
+                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Doanh thu Tiền phạt (VND)</p>
                                 <h3 class="fw-semibold mb-2" style="font-size: 24px; color: var(--on-surface);">
                                     <c:out value="${fineRevenue != null ? fineRevenue : '2.4M'}" />
                                 </h3>
@@ -117,7 +117,7 @@
                                         <span class="material-symbols-outlined" style="font-size: 14px;">trending_down</span> -1.4%
                                     </span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Overdue Rate</p>
+                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Tỷ lệ Trễ hạn</p>
                                 <h3 class="fw-semibold mb-2" style="font-size: 24px; color: var(--on-surface);">5.6%</h3>
                                 <div class="mini-progress">
                                     <div class="mini-progress-bar" style="width: 22%; background-color: var(--error);"></div>
@@ -137,43 +137,43 @@
                         <div class="raised-card p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
-                                    <h3 class="fw-semibold mb-0" style="font-size: 18px; color: var(--on-surface);">Monthly Borrowing Trend</h3>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Loans issued per month (last 8 months)</p>
+                                    <h3 class="fw-semibold mb-0" style="font-size: 18px; color: var(--on-surface);">Xu hướng Mượn hàng tháng</h3>
+                                    <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Số phiếu mượn mỗi tháng (8 tháng gần nhất)</p>
                                 </div>
                                 <span class="badge-pill" style="background-color: var(--primary-fixed); color: var(--primary);">2025</span>
                             </div>
                             <div class="d-flex align-items-end gap-2 pt-2" style="height: 130px; border-bottom: 1px solid var(--outline-variant);">
-                                <div class="bar-chart-col flex-fill" title="Oct: 820">
+                                <div class="bar-chart-col flex-fill" title="Tháng 10: 820">
                                     <div class="bar-track" style="height: 65%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Oct</span>
+                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th10</span>
                                 </div>
-                                <div class="bar-chart-col flex-fill" title="Nov: 940">
+                                <div class="bar-chart-col flex-fill" title="Tháng 11: 940">
                                     <div class="bar-track" style="height: 75%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Nov</span>
+                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th11</span>
                                 </div>
-                                <div class="bar-chart-col flex-fill" title="Dec: 1100">
+                                <div class="bar-chart-col flex-fill" title="Tháng 12: 1100">
                                     <div class="bar-track" style="height: 87%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Dec</span>
+                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th12</span>
                                 </div>
-                                <div class="bar-chart-col flex-fill" title="Jan: 1000">
+                                <div class="bar-chart-col flex-fill" title="Tháng 1: 1000">
                                     <div class="bar-track" style="height: 79%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Jan</span>
+                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th1</span>
                                 </div>
-                                <div class="bar-chart-col flex-fill" title="Feb: 870">
+                                <div class="bar-chart-col flex-fill" title="Tháng 2: 870">
                                     <div class="bar-track" style="height: 69%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Feb</span>
+                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th2</span>
                                 </div>
-                                <div class="bar-chart-col flex-fill" title="Mar: 1050">
+                                <div class="bar-chart-col flex-fill" title="Tháng 3: 1050">
                                     <div class="bar-track" style="height: 83%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Mar</span>
+                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th3</span>
                                 </div>
-                                <div class="bar-chart-col flex-fill" title="Apr: 1150">
+                                <div class="bar-chart-col flex-fill" title="Tháng 4: 1150">
                                     <div class="bar-track" style="height: 91%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Apr</span>
+                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th4</span>
                                 </div>
-                                <div class="bar-chart-col flex-fill" title="May: 1254">
+                                <div class="bar-chart-col flex-fill" title="Tháng 5: 1254">
                                     <div class="bar-track" style="height: 100%; background-color: var(--primary);"></div>
-                                    <span style="font-size: 10px; font-weight: 600; color: var(--primary);">May</span>
+                                    <span style="font-size: 10px; font-weight: 600; color: var(--primary);">Th5</span>
                                 </div>
                             </div>
                         </div>
@@ -183,23 +183,23 @@
                             <div class="p-3 d-flex justify-content-between align-items-center bg-white"
                                  style="border-bottom: 1px solid var(--outline-variant);">
                                 <div>
-                                    <h3 class="fw-semibold mb-0" style="font-size: 18px; color: var(--on-surface);">Staff Performance</h3>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Monthly activity by librarian</p>
+                                    <h3 class="fw-semibold mb-0" style="font-size: 18px; color: var(--on-surface);">Hiệu suất Nhân viên</h3>
+                                    <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Hoạt động hàng tháng theo thủ thư</p>
                                 </div>
                                 <a href="#" class="btn btn-sm rounded-3 fw-bold px-3 text-decoration-none"
                                    style="background-color: var(--surface-container-low); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
-                                    Full Report
+                                    Báo cáo Chi tiết
                                 </a>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-lms mb-0">
                                     <thead>
                                         <tr>
-                                            <th>Librarian</th>
-                                            <th>Issues</th>
-                                            <th>Returns</th>
-                                            <th>Fine Collected</th>
-                                            <th>Rating</th>
+                                            <th>Thủ thư</th>
+                                            <th>Số phiếu cấp</th>
+                                            <th>Số trả</th>
+                                            <th>Tiền phạt thu</th>
+                                            <th>Đánh giá</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -260,36 +260,36 @@
                         <div class="raised-card overflow-hidden">
                             <div class="p-3 bg-white d-flex justify-content-between align-items-center"
                                  style="border-bottom: 1px solid var(--outline-variant);">
-                                <h3 class="fw-semibold mb-0" style="font-size: 16px; color: var(--on-surface);">Active Policies</h3>
+                                <h3 class="fw-semibold mb-0" style="font-size: 16px; color: var(--on-surface);">Chính sách Hoạt động</h3>
                                 <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2" style="font-size: 12px;">
-                                    <span class="material-symbols-outlined" style="font-size: 15px;">add</span> New
+                                    <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Thêm mới
                                 </button>
                             </div>
                             <div class="p-3 d-flex flex-column gap-2">
                                 <div class="policy-item">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Loan Duration Policy</p>
-                                        <span class="badge-pill" style="background-color: #d1fae5; color: #059669;">Active</span>
+                                        <p class="fw-bold mb-0" style="font-size: 13px;">Chính sách Thời hạn Mượn</p>
+                                        <span class="badge-pill" style="background-color: #d1fae5; color: #059669;">Hoạt động</span>
                                     </div>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Max 21 days per loan. Renewable once.</p>
+                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Tối đa 21 ngày mỗi lần mượn. Gia hạn được 1 lần.</p>
                                 </div>
                                 <div class="policy-item">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Penalty Policy</p>
-                                        <span class="badge-pill" style="background-color: #d1fae5; color: #059669;">Active</span>
+                                        <p class="fw-bold mb-0" style="font-size: 13px;">Chính sách Tiền phạt</p>
+                                        <span class="badge-pill" style="background-color: #d1fae5; color: #059669;">Hoạt động</span>
                                     </div>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">5,000 VND/day overdue charge.</p>
+                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Phí 5.000 VND/ngày quá hạn.</p>
                                 </div>
                                 <div class="policy-item">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Reservation Expiry</p>
-                                        <span class="badge-pill" style="background-color: #fef3c7; color: #d97706;">Review</span>
+                                        <p class="fw-bold mb-0" style="font-size: 13px;">Hết hạn Đặt trước</p>
+                                        <span class="badge-pill" style="background-color: #fef3c7; color: #d97706;">Xem xét</span>
                                     </div>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Reservations auto-cancel after 48h.</p>
+                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Đặt trước tự động hủy sau 48 giờ.</p>
                                 </div>
                             </div>
                             <div class="p-3 bg-surface-container-low" style="border-top: 1px solid var(--outline-variant);">
-                                <a href="#" class="text-primary-custom fw-bold text-decoration-none" style="font-size: 13px;">Manage Policies &rarr;</a>
+                                <a href="#" class="text-primary-custom fw-bold text-decoration-none" style="font-size: 13px;">Quản lý Chính sách &rarr;</a>
                             </div>
                         </div>
 
@@ -297,9 +297,9 @@
                         <div class="raised-card overflow-hidden">
                             <div class="p-3 bg-white d-flex justify-content-between align-items-center"
                                  style="border-bottom: 1px solid var(--outline-variant);">
-                                <h3 class="fw-semibold mb-0" style="font-size: 16px; color: var(--on-surface);">Announcements</h3>
+                                <h3 class="fw-semibold mb-0" style="font-size: 16px; color: var(--on-surface);">Thông báo hệ thống</h3>
                                 <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2" style="font-size: 12px;">
-                                    <span class="material-symbols-outlined" style="font-size: 15px;">campaign</span> Post
+                                    <span class="material-symbols-outlined" style="font-size: 15px;">campaign</span> Đăng
                                 </button>
                             </div>
                             <div class="p-3 d-flex flex-column gap-2">
@@ -315,14 +315,14 @@
                                     </c:when>
                                     <c:otherwise>
                                         <div class="announcement-card">
-                                            <p class="fw-bold mb-1" style="font-size: 13px;">Summer Hours Update</p>
-                                            <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Library hours extended to 22:00 from June 10–August 31.</p>
-                                            <span class="text-on-surface-variant" style="font-size: 11px;">Posted: 01/06/2025</span>
+                                            <p class="fw-bold mb-1" style="font-size: 13px;">Cập nhật Giờ mùa hè</p>
+                                            <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Thư viện mở cửa đến 22:00 từ ngày 10/6 đến 31/8.</p>
+                                            <span class="text-on-surface-variant" style="font-size: 11px;">Ngày đăng: 01/06/2025</span>
                                         </div>
                                         <div class="announcement-card" style="border-left-color: var(--tertiary); background-color: rgba(205,229,255,0.15);">
-                                            <p class="fw-bold mb-1" style="font-size: 13px;">New Acquisition Notice</p>
-                                            <p class="text-on-surface-variant mb-1" style="font-size: 12px;">220 new Computer Science titles added to the East Wing catalog.</p>
-                                            <span class="text-on-surface-variant" style="font-size: 11px;">Posted: 28/05/2025</span>
+                                            <p class="fw-bold mb-1" style="font-size: 13px;">Thông báo bổ sung Sách mới</p>
+                                            <p class="text-on-surface-variant mb-1" style="font-size: 12px;">220 tựa sách Khoa học Máy tính mới được thêm vào danh mục Kèo Đông.</p>
+                                            <span class="text-on-surface-variant" style="font-size: 11px;">Ngày đăng: 28/05/2025</span>
                                         </div>
                                     </c:otherwise>
                                 </c:choose>
@@ -341,7 +341,7 @@
     </div><!-- /.main-wrapper -->
 
     <script>
-        document.getElementById('current-month').textContent = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        document.getElementById('current-month').textContent = new Date().toLocaleString('vi-VN', { month: 'long', year: 'numeric' });
     </script>
 
 </body>

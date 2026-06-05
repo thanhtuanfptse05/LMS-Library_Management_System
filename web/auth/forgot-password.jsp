@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>LMS University Library - Forgot Password</title>
+    <title>Thư viện Đại học LMS - Quên Mật khẩu</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -168,9 +168,9 @@
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuARaoOV6zhORKk5Hs8pVWbtuOJ9Al_XGBIW9cC3vfZUKKIM1xGpqbEF1OKiLjmSeh9T4oIahq-yFH4rn667p-Vi7OYAgeMynlg55803kXITBAuEN6PMHtlJLcAg2Ia8dSc7jITULlX_w8eW5OW9wSu9IvVREBdjLfKQYkTfoTdfn1VR5YQZEI-KDww01ItfLXU4db_qblxXPluOSIda34Xx6N9Wlw4o7NYcDj3qnXqFHJZ3xU_HWNasDV_Az8qpicjbInT9Uv7hIZFI" />
             <div class="position-relative z-3 glass-overlay p-5 rounded-4 max-w-lg text-white mx-4"
                 style="max-width: 512px;">
-                <h1 class="fw-bold mb-2" style="font-size: 24px;">LMS University Library</h1>
+                <h1 class="fw-bold mb-2" style="font-size: 24px;">Thư viện Đại học LMS</h1>
                 <p class="opacity-90 lh-base" style="font-size: 16px;">
-                    Efficiency, clarity, and knowledge at your fingertips.
+                    Hiệu quả, rõ ràng và tri thức trong tầm tay.
                 </p>
                 <div class="mt-4"
                     style="width: 64px; height: 4px; background-color: var(--primary-container); border-radius: 9999px;">
@@ -186,8 +186,8 @@
             <div class="flex-grow-1 d-flex align-items-center justify-content-center px-4 py-5">
                 <div class="w-100" style="max-width: 448px;">
                     <div class="mb-4">
-                        <h2 class="fw-semibold mb-2" style="font-size: 32px; color: var(--on-surface);">Forgot Password</h2>
-                        <p class="mb-0" style="font-size: 15px; color: var(--secondary);">Enter your email address and we'll send a new password directly to your inbox.</p>
+                        <h2 class="fw-semibold mb-2" style="font-size: 32px; color: var(--on-surface);">Quên Mật khẩu</h2>
+                        <p class="mb-0" style="font-size: 15px; color: var(--secondary);">Nhập địa chỉ email của bạn và chúng tôi sẽ gửi mật khẩu mới trực tiếp vào hộp thư đến của bạn.</p>
                     </div>
 
                     <!-- Hộp cảnh báo lỗi động từ Backend -->
@@ -208,24 +208,24 @@
                         <div>
                             <label class="form-label fw-semibold mb-1"
                                 style="font-size: 12.5px; color: var(--on-surface-variant);"
-                                for="email">Username or Email</label>
+                                for="email">Tên đăng nhập hoặc Email</label>
                             <div class="position-relative">
                                 <span class="material-symbols-outlined input-icon">mail</span>
                                 <input class="form-control custom-input" id="email" name="email"
-                                    placeholder="Enter your email" required type="email" />
+                                    placeholder="Nhập email của bạn" required type="email" />
                             </div>
-                            <p class="d-none text-error" id="email-error">Please enter a valid email address.</p>
+                            <p class="d-none text-error" id="email-error">Vui lòng nhập địa chỉ email hợp lệ.</p>
                         </div>
 
                         <button class="w-100 btn-update mt-2" onclick="submitForgotForm()" type="button">
-                            Send New Password
+                            Gửi Mật khẩu mới
                         </button>
                     </form>
 
                     <div class="mt-4 text-center">
                         <a class="link-back d-inline-flex align-items-center gap-2" href="${pageContext.request.contextPath}/login">
                             <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
-                            Back to Sign In
+                            Quay lại Đăng nhập
                         </a>
                     </div>
                 </div>
@@ -234,11 +234,11 @@
             <footer class="w-100 p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
                 style="background-color: var(--surface-container-low); border-top: 1px solid var(--outline-variant);">
                 <div class="d-flex flex-wrap justify-content-center gap-4">
-                    <a class="footer-link" href="#">Need help?</a>
-                    <a class="footer-link" href="#">Contact Librarian</a>
+                    <a class="footer-link" href="#">Cần trợ giúp?</a>
+                    <a class="footer-link" href="#">Liên hệ Thủ thư</a>
                 </div>
                 <p class="mb-0 text-center text-md-end" style="font-size: 14px; color: var(--on-surface-variant);">
-                    © 2024 LMS University Library. All rights reserved.
+                    © 2024 Thư viện Đại học LMS. Bản quyền đã được bảo lưu.
                 </p>
             </footer>
         </section>
@@ -288,7 +288,7 @@
                 const btn = document.querySelector('.btn-update');
                 const originalText = btn.innerHTML;
                 btn.disabled = true;
-                btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined spinner-border spinner-border-sm border-0" style="animation: spin 1s linear infinite;">progress_activity</span>Sending Request...</div>`;
+                btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined spinner-border spinner-border-sm border-0" style="animation: spin 1s linear infinite;">progress_activity</span>Đang gửi yêu cầu...</div>`;
 
                 const params = new URLSearchParams();
                 params.append('email', email);
@@ -306,7 +306,7 @@
                         backendSuccess.classList.remove('d-none');
                         document.getElementById('backend-success-text').textContent = data.message;
                         
-                        btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined text-success">check_circle</span>Sent Successfully</div>`;
+                        btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined text-success">check_circle</span>Gửi thành công</div>`;
                         
                         // Chuyển hướng tới trang đăng nhập cùng tham số resetSuccess
                         setTimeout(() => {
@@ -322,7 +322,7 @@
                 .catch(error => {
                     btn.disabled = false;
                     btn.innerHTML = originalText;
-                    document.getElementById('backend-error-text').textContent = 'A network error occurred. Please try again.';
+                    document.getElementById('backend-error-text').textContent = 'Đã xảy ra lỗi mạng. Vui lòng thử lại.';
                     backendAlert.classList.remove('d-none');
                     console.error('Error:', error);
                 });

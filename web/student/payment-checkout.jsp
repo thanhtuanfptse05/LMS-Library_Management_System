@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <body class="d-flex flex-column">
     <jsp:include page="fragments/_header.jsp" />
@@ -17,8 +17,8 @@
                 
                 <!-- Page Title -->
                 <div class="mb-4">
-                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Secure Checkout</h2>
-                    <p class="font-body-md text-on-surface-variant">Review your invoice itemization and select your payment method.</p>
+                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Thanh toán an toàn</h2>
+                    <p class="font-body-md text-on-surface-variant">Xem lại chi tiết hóa đơn và chọn phương thức thanh toán.</p>
                 </div>
 
                 <div class="row g-4">
@@ -27,16 +27,16 @@
                         <div class="raised-card p-4 border border-outline-variant bg-white">
                             <div class="d-flex align-items-center gap-2 mb-4">
                                 <span class="material-symbols-outlined text-primary fs-4">receipt_long</span>
-                                <h4 class="mb-0 fw-bold" style="font-size: 20px;">Invoice Summary</h4>
+                                <h4 class="mb-0 fw-bold" style="font-size: 20px;">Tóm tắt hóa đơn</h4>
                             </div>
 
                             <div class="table-responsive mb-4">
                                 <table class="table align-middle">
                                     <thead>
                                         <tr style="background-color: var(--surface-container-low);">
-                                            <th class="ps-3">Violation Details</th>
-                                            <th>Date Issued</th>
-                                            <th class="text-end pe-3">Amount</th>
+                                            <th class="ps-3">Chi tiết vi phạm</th>
+                                            <th>Ngày lập</th>
+                                            <th class="text-end pe-3">Số tiền</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -49,7 +49,7 @@
                                                     </div>
                                                     <div>
                                                         <p class="mb-0 fw-bold">Introduction to Algorithms (4th Edition)</p>
-                                                        <small class="text-muted">Barcode: LMS-BK-10293 • Late Return Penalty</small>
+                                                        <small class="text-muted">Mã vạch: LMS-BK-10293 • Phạt trả muộn</small>
                                                     </div>
                                                 </div>
                                             </td>
@@ -65,7 +65,7 @@
                                                     </div>
                                                     <div>
                                                         <p class="mb-0 fw-bold">Design Patterns: Elements of Reusable Object-Oriented Software</p>
-                                                        <small class="text-muted">Barcode: LMS-BK-00892 • Damaged Book Cover</small>
+                                                        <small class="text-muted">Mã vạch: LMS-BK-00892 • Hỏng bìa sách</small>
                                                     </div>
                                                 </div>
                                             </td>
@@ -79,15 +79,15 @@
                             <div class="row justify-content-end">
                                 <div class="col-12 col-md-6">
                                     <div class="d-flex justify-content-between py-2 border-bottom">
-                                        <span class="text-muted">Fines Subtotal</span>
+                                        <span class="text-muted">Tổng tiền phạt</span>
                                         <span class="fw-bold text-dark">$24.00</span>
                                     </div>
                                     <div class="d-flex justify-content-between py-2 border-bottom">
-                                        <span class="text-muted">Processing Fee (Gateway)</span>
+                                        <span class="text-muted">Phí xử lý (Cổng thanh toán)</span>
                                         <span class="fw-bold text-dark">$0.00</span>
                                     </div>
                                     <div class="d-flex justify-content-between py-2 mt-2">
-                                        <span class="fw-bold text-dark fs-5">Total Amount Due</span>
+                                        <span class="fw-bold text-dark fs-5">Tổng số tiền phải trả</span>
                                         <span class="fw-bold text-primary-custom fs-5">$24.00</span>
                                     </div>
                                 </div>
@@ -100,7 +100,7 @@
                         <div class="raised-card p-4 border border-outline-variant bg-white h-100 d-flex flex-column">
                             <div class="d-flex align-items-center gap-2 mb-4">
                                 <span class="material-symbols-outlined text-primary fs-4">payment</span>
-                                <h4 class="mb-0 fw-bold" style="font-size: 20px;">Payment Method</h4>
+                                <h4 class="mb-0 fw-bold" style="font-size: 20px;">Phương thức thanh toán</h4>
                             </div>
 
                             <!-- Payment Gateways Options -->
@@ -110,8 +110,8 @@
                                     <div class="d-flex align-items-center gap-3">
                                         <input type="radio" name="paymentGateway" value="vnpay" class="form-check-input" checked />
                                         <div>
-                                            <p class="mb-0 fw-bold">VNPAY Portal</p>
-                                            <small class="text-muted">QR Code, E-Banking, Credit Card</small>
+                                            <p class="mb-0 fw-bold">Cổng VNPAY</p>
+                                            <small class="text-muted">Mã QR, Ngân hàng điện tử, Thẻ tín dụng</small>
                                         </div>
                                     </div>
                                     <span class="material-symbols-outlined text-primary-custom fs-2">qr_code_2</span>
@@ -122,8 +122,8 @@
                                     <div class="d-flex align-items-center gap-3">
                                         <input type="radio" name="paymentGateway" value="bank" class="form-check-input" />
                                         <div>
-                                            <p class="mb-0 fw-bold">Local ATM Card</p>
-                                            <small class="text-muted">Domestic Bank Accounts</small>
+                                            <p class="mb-0 fw-bold">Thẻ ATM nội địa</p>
+                                            <small class="text-muted">Tài khoản ngân hàng trong nước</small>
                                         </div>
                                     </div>
                                     <span class="material-symbols-outlined text-secondary fs-2">account_balance</span>
@@ -134,7 +134,7 @@
                                     <div class="d-flex align-items-center gap-3">
                                         <input type="radio" name="paymentGateway" value="intl" class="form-check-input" />
                                         <div>
-                                            <p class="mb-0 fw-bold">International Cards</p>
+                                            <p class="mb-0 fw-bold">Thẻ quốc tế</p>
                                             <small class="text-muted">Visa, Mastercard, JCB</small>
                                         </div>
                                     </div>
@@ -146,10 +146,10 @@
                             <div class="d-flex flex-column gap-2 mt-auto">
                                 <button type="button" onclick="simulatedCheckout('success')" class="btn btn-primary-custom w-100 py-3 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2">
                                     <span class="material-symbols-outlined">shield</span>
-                                    Pay Securely with VNPAY
+                                    Thanh toán an toàn với VNPAY
                                 </button>
                                 <button type="button" onclick="simulatedCheckout('cancel')" class="btn btn-outline-secondary w-100 py-2.5 rounded-pill fw-bold">
-                                    Cancel Payment
+                                    Hủy thanh toán
                                 </button>
                             </div>
                         </div>

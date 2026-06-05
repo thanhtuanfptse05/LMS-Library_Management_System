@@ -3,9 +3,9 @@
 <footer class="w-100 px-4 py-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
         style="background-color: var(--surface-container-low); border-top: 1px solid var(--outline-variant);">
     <div class="d-flex flex-column flex-md-row align-items-center gap-4">
-        <span class="text-on-surface-variant small">&copy; 2024 LMS University Library System</span>
+        <span class="text-on-surface-variant small">&copy; 2024 Thư viện Đại học LMS System</span>
         <div class="d-flex gap-3">
-            <a class="text-on-surface-variant small text-decoration-underline" href="#">Privacy Policy</a>
+            <a class="text-on-surface-variant small text-decoration-underline" href="#">Chính sách bảo mật</a>
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Terms of Service</a>
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Research Databases</a>
         </div>

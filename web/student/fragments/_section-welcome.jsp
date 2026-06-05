@@ -5,19 +5,19 @@
          style="box-shadow: 0 8px 30px rgba(157, 67, 0, 0.25);">
     <div class="position-relative" style="max-width: 640px; z-index: 2;">
         <h1 class="fw-bold mb-2 fs-2">
-            Welcome back,
-            <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Student'}" />!
+            Chào mừng trở lại,
+            <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Sinh viên'}" />!
         </h1>
         <p class="opacity-90 mb-4" style="font-size: 18px;">
             <c:choose>
                 <c:when test="${not empty activeLoansCount and activeLoansCount gt 0}">
-                    You have <strong>${activeLoansCount}</strong> active loan(s).
+                    Bạn có <strong>${activeLoansCount}</strong> sách đang mượn.
                     <c:if test="${not empty dueSoonCount and dueSoonCount gt 0}">
-                        <strong>${dueSoonCount}</strong> book(s) due soon!
+                        <strong>${dueSoonCount}</strong> sách sắp đến hạn!
                     </c:if>
                 </c:when>
                 <c:otherwise>
-                    What are we learning today? Browse the catalog to discover new books.
+                    Hôm nay chúng ta học gì? Khám phá danh mục để tìm sách mới.
                 </c:otherwise>
             </c:choose>
         </p>
@@ -25,12 +25,12 @@
             <a href="${pageContext.request.contextPath}/book-search.jsp"
                class="btn btn-light rounded-pill px-4 fw-semibold btn-sm text-decoration-none"
                style="color: var(--primary);">
-                Search Catalog
+                Tra cứu Mục lục
             </a>
             <a href="${pageContext.request.contextPath}/student/loans"
                class="btn btn-outline-light rounded-pill px-4 fw-semibold btn-sm text-decoration-none"
                style="border-color: rgba(255,255,255,0.4);">
-                My Study Room
+                Phòng học của tôi
             </a>
         </div>
     </div>

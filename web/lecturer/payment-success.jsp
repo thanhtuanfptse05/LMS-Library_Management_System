@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <body class="d-flex flex-column">
     <jsp:include page="fragments/_header.jsp" />
@@ -23,30 +23,30 @@
                         <span class="material-symbols-outlined" style="font-size: 48px;">check_circle</span>
                     </div>
 
-                    <h2 class="mb-2 fw-bold text-success">Payment Successful!</h2>
-                    <p class="text-muted mb-4">Thank you. The institutional fine checkout has been processed, and details have been registered under your profile.</p>
+                    <h2 class="mb-2 fw-bold text-success">Thanh toán thành công!</h2>
+                    <p class="text-muted mb-4">Cảm ơn bạn. Khoản thanh toán tiền phạt đã được xử lý và thông tin chi tiết đã được ghi nhận vào hồ sơ của bạn.</p>
 
                     <!-- Receipt Summary -->
                     <div class="border rounded-3 p-4 bg-light text-start mb-4" style="border-color: var(--outline-variant) !important;">
                         <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted small">Receipt Number</span>
+                            <span class="text-muted small">Số biên lai</span>
                             <span class="fw-bold text-dark small">REC-2026-8902</span>
                         </div>
                         <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted small">Transaction ID (VNPAY)</span>
+                            <span class="text-muted small">Mã giao dịch (VNPAY)</span>
                             <span class="fw-bold text-dark small">VNP-778901239248</span>
                         </div>
                         <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted small">Date / Time</span>
+                            <span class="text-muted small">Ngày / Giờ</span>
                             <span class="fw-bold text-dark small">Jun 04, 2026 • 19:45</span>
                         </div>
                         <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted small">Amount Paid</span>
+                            <span class="text-muted small">Số tiền đã trả</span>
                             <span class="fw-bold text-success small">$45.00</span>
                         </div>
                         <div class="d-flex justify-content-between py-2">
-                            <span class="text-muted small">Status</span>
-                            <span class="badge rounded-pill bg-success-subtle text-success fw-bold px-3">PAID</span>
+                            <span class="text-muted small">Trạng thái</span>
+                            <span class="badge rounded-pill bg-success-subtle text-success fw-bold px-3">ĐÃ THANH TOÁN</span>
                         </div>
                     </div>
 
@@ -54,10 +54,10 @@
                     <div class="d-flex flex-column gap-2">
                         <a href="${pageContext.request.contextPath}/lecturer/my-fines.jsp" class="btn btn-primary-custom py-2.5 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2">
                             <span class="material-symbols-outlined">payments</span>
-                            Go to Fines & Billing
+                            Đến Tiền phạt & Thanh toán
                         </a>
                         <a href="${pageContext.request.contextPath}/lecturer/dashboard" class="btn btn-outline-secondary py-2 rounded-pill fw-bold">
-                            Return to Dashboard
+                            Quay lại Bảng điều khiển
                         </a>
                     </div>
                 </div>

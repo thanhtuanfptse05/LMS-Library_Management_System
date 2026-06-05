@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>LMS University Library - Reset Password</title>
+    <title>Thư viện Đại học LMS - Đặt lại Mật khẩu</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -168,9 +168,9 @@
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuARaoOV6zhORKk5Hs8pVWbtuOJ9Al_XGBIW9cC3vfZUKKIM1xGpqbEF1OKiLjmSeh9T4oIahq-yFH4rn667p-Vi7OYAgeMynlg55803kXITBAuEN6PMHtlJLcAg2Ia8dSc7jITULlX_w8eW5OW9wSu9IvVREBdjLfKQYkTfoTdfn1VR5YQZEI-KDww01ItfLXU4db_qblxXPluOSIda34Xx6N9Wlw4o7NYcDj3qnXqFHJZ3xU_HWNasDV_Az8qpicjbInT9Uv7hIZFI" />
             <div class="position-relative z-3 glass-overlay p-5 rounded-4 max-w-lg text-white mx-4"
                 style="max-width: 512px;">
-                <h1 class="fw-bold mb-2" style="font-size: 24px;">LMS University Library</h1>
+                <h1 class="fw-bold mb-2" style="font-size: 24px;">Thư viện Đại học LMS</h1>
                 <p class="opacity-90 lh-base" style="font-size: 16px;">
-                    Efficiency, clarity, and knowledge at your fingertips.
+                    Hiệu quả, rõ ràng và tri thức trong tầm tay.
                 </p>
                 <div class="mt-4"
                     style="width: 64px; height: 4px; background-color: var(--primary-container); border-radius: 9999px;">
@@ -186,8 +186,8 @@
             <div class="flex-grow-1 d-flex align-items-center justify-content-center px-4 py-5">
                 <div class="w-100" style="max-width: 448px;">
                     <div class="mb-4">
-                        <h2 class="fw-semibold mb-2" style="font-size: 32px; color: var(--on-surface);">Reset Password</h2>
-                        <p class="mb-0" style="font-size: 15px; color: var(--secondary);">Please enter the verification code from Admin and set up your new password.</p>
+                        <h2 class="fw-semibold mb-2" style="font-size: 32px; color: var(--on-surface);">Đặt lại Mật khẩu</h2>
+                        <p class="mb-0" style="font-size: 15px; color: var(--secondary);">Vui lòng nhập mã xác minh từ Quản trị viên và thiết lập mật khẩu mới của bạn.</p>
                     </div>
 
                     <!-- Hộp cảnh báo lỗi động từ Backend -->
@@ -205,18 +205,18 @@
                         <div>
                             <label class="form-label fw-semibold mb-1"
                                 style="font-size: 12.5px; color: var(--on-surface-variant);"
-                                for="verification-code">Verification Code from Admin</label>
+                                for="verification-code">Mã Xác minh từ Quản trị viên</label>
                             <div class="position-relative">
                                 <span class="material-symbols-outlined input-icon">verified_user</span>
                                 <input class="form-control custom-input" id="verification-code" name="verification-code"
-                                    placeholder="Enter temporary code" required type="text" />
+                                    placeholder="Nhập mã tạm thời" required type="text" />
                             </div>
-                            <p class="d-none text-error" id="code-error">Vui lòng nhập mã xác nhận từ Admin</p>
+                            <p class="d-none text-error" id="code-error">Vui lòng nhập mã xác nhận từ Quản trị viên</p>
                         </div>
 
                         <div>
                             <label class="form-label fw-semibold mb-1"
-                                style="font-size: 12.5px; color: var(--on-surface-variant);" for="new-password">New Password</label>
+                                style="font-size: 12.5px; color: var(--on-surface-variant);" for="new-password">Mật khẩu mới</label>
                             <div class="position-relative">
                                 <span class="material-symbols-outlined input-icon">lock</span>
                                 <input class="form-control custom-input" id="new-password" name="new-password"
@@ -228,7 +228,7 @@
                         <div>
                             <label class="form-label fw-semibold mb-1"
                                 style="font-size: 12.5px; color: var(--on-surface-variant);"
-                                for="confirm-password">Confirm New Password</label>
+                                for="confirm-password">Xác nhận Mật khẩu mới</label>
                             <div class="position-relative">
                                 <span class="material-symbols-outlined input-icon">key</span>
                                 <input class="form-control custom-input" id="confirm-password" name="confirm-password"
@@ -238,14 +238,14 @@
                         </div>
 
                         <button class="w-100 btn-update mt-2" onclick="submitPasswordForm()" type="button">
-                            Update Password
+                            Cập nhật Mật khẩu
                         </button>
                     </form>
 
                     <div class="mt-4 text-center">
                         <a class="link-back d-inline-flex align-items-center gap-2" href="${pageContext.request.contextPath}/login">
                             <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
-                            Back to Sign In
+                            Quay lại Đăng nhập
                         </a>
                     </div>
                 </div>
@@ -254,11 +254,11 @@
             <footer class="w-100 p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
                 style="background-color: var(--surface-container-low); border-top: 1px solid var(--outline-variant);">
                 <div class="d-flex flex-wrap justify-content-center gap-4">
-                    <a class="footer-link" href="#">Need help?</a>
-                    <a class="footer-link" href="#">Contact Librarian</a>
+                    <a class="footer-link" href="#">Cần trợ giúp?</a>
+                    <a class="footer-link" href="#">Liên hệ Thủ thư</a>
                 </div>
                 <p class="mb-0 text-center text-md-end" style="font-size: 14px; color: var(--on-surface-variant);">
-                    © 2024 LMS University Library. All rights reserved.
+                    © 2024 Thư viện Đại học LMS. Bản quyền đã được bảo lưu.
                 </p>
             </footer>
         </section>
@@ -326,7 +326,7 @@
                 const btn = document.querySelector('.btn-update');
                 const originalText = btn.innerHTML;
                 btn.disabled = true;
-                btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined spinner-border spinner-border-sm border-0" style="animation: spin 1s linear infinite;">progress_activity</span>Processing...</div>`;
+                btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined spinner-border spinner-border-sm border-0" style="animation: spin 1s linear infinite;">progress_activity</span>Đang xử lý...</div>`;
 
                 // Tạo đối tượng dữ liệu gửi lên Servlet
                 const params = new URLSearchParams();
@@ -345,7 +345,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined text-success">check_circle</span>Success</div>`;
+                        btn.innerHTML = `<div class="d-flex align-items-center justify-content-center gap-2"><span class="material-symbols-outlined text-success">check_circle</span>Thành công</div>`;
                         setTimeout(() => {
                             window.location.href = '${pageContext.request.contextPath}/login?resetSuccess=true';
                         }, 1200);

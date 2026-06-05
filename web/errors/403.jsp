@@ -1,12 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Truy cập bị từ chối - LMS University Library</title>
+    <title>Truy cập bị từ chối - Thư viện Đại học LMS</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -162,18 +162,18 @@
     <header class="fixed-top bg-white border-bottom shadow-sm">
         <div class="container-xl d-flex justify-content-between align-items-center" style="height: 64px;">
             <div class="d-flex align-items-center gap-4">
-                <a href="${pageContext.request.contextPath}/" class="h5 mb-0 fw-bold text-decoration-none" style="color: var(--primary);">LMS University Library</a>
+                <a href="${pageContext.request.contextPath}/" class="h5 mb-0 fw-bold text-decoration-none" style="color: var(--primary);">Thư viện Đại học LMS</a>
                 <nav class="d-none d-md-flex gap-4">
-                    <a class="header-nav-link" href="${dashboardUrl}">Dashboard</a>
-                    <a class="header-nav-link" href="${pageContext.request.contextPath}/book-search.jsp">Catalog</a>
-                    <a class="header-nav-link" href="${pageContext.request.contextPath}/services.jsp">Services</a>
-                    <a class="header-nav-link" href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
-                    <a class="header-nav-link" href="${pageContext.request.contextPath}/#contact">Support</a>
+                    <a class="header-nav-link" href="${dashboardUrl}">Bảng điều khiển</a>
+                    <a class="header-nav-link" href="${pageContext.request.contextPath}/book-search.jsp">Mục lục</a>
+                    <a class="header-nav-link" href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
+                    <a class="header-nav-link" href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
+                    <a class="header-nav-link" href="${pageContext.request.contextPath}/#contact">Hỗ trợ</a>
                 </nav>
             </div>
             <div class="d-flex align-items-center gap-3">
-                <a href="${pageContext.request.contextPath}/#contact" class="icon-btn fs-4" title="Help"><i class="bi bi-question-circle"></i></a>
-                <a href="${dashboardUrl}" class="icon-btn fs-4" title="Account"><i class="bi bi-person-circle"></i></a>
+                <a href="${pageContext.request.contextPath}/#contact" class="icon-btn fs-4" title="Trợ giúp"><i class="bi bi-question-circle"></i></a>
+                <a href="${dashboardUrl}" class="icon-btn fs-4" title="Tài khoản"><i class="bi bi-person-circle"></i></a>
             </div>
         </div>
     </header>
@@ -202,18 +202,18 @@
                 </div>
 
                 <div class="error-card p-4 p-md-5 rounded-4 shadow-sm mb-4 w-100">
-                    <h2 class="fw-bold text-dark mb-1" style="font-size: 32px;">Access Denied</h2>
-                    <h3 class="h5 mb-4" style="color: var(--primary); font-weight: 600;">You don't have permission to access this page.</h3>
+                    <h2 class="fw-bold text-dark mb-1" style="font-size: 32px;">Truy cập Bị từ chối</h2>
+                    <h3 class="h5 mb-4" style="color: var(--primary); font-weight: 600;">Bạn không có quyền truy cập trang này.</h3>
                     <p class="mx-auto text-muted mb-4" style="max-width: 576px; font-size: 18px; color: var(--on-surface-variant) !important;">
-                        The page you are trying to access is restricted to administrators or specific roles. If you believe this is a mistake, please contact the library's technical support.
+                        Trang bạn đang cố truy cập bị giới hạn đối với quản trị viên hoặc các vai trò cụ thể. Nếu bạn cho rằng đây là lỗi, vui lòng liên hệ bộ phận hỗ trợ kỹ thuật của thư viện.
                     </p>
 
                     <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center">
                         <a class="btn btn-primary-custom px-4 py-2.5 rounded-3 d-inline-flex align-items-center gap-2 text-decoration-none" href="${dashboardUrl}">
-                            <i class="bi bi-house-door-fill"></i> Back to Dashboard
+                            <i class="bi bi-house-door-fill"></i> Quay lại Bảng điều khiển
                         </a>
                         <a class="btn btn-secondary-custom px-4 py-2.5 rounded-3 d-inline-flex align-items-center gap-2 text-decoration-none" href="${pageContext.request.contextPath}/login">
-                            <i class="bi bi-person-exclamation"></i> Sign in with another account
+                            <i class="bi bi-person-exclamation"></i> Đăng nhập bằng tài khoản khác
                         </a>
                     </div>
                 </div>
@@ -222,22 +222,22 @@
                     <div class="col-12 col-md-4">
                         <div class="info-box p-3 rounded-3 h-100">
                             <i class="bi bi-headset d-block mb-2 fs-4" style="color: var(--primary);"></i>
-                            <h4 class="text-uppercase fw-bold mb-1" style="font-size: 12px; letter-spacing: 0.05em;">NEED SUPPORT?</h4>
-                            <p class="text-muted mb-0" style="font-size: 14px;">Contact the IT team via Live Chat or Hotline 1900-xxxx.</p>
+                            <h4 class="text-uppercase fw-bold mb-1" style="font-size: 12px; letter-spacing: 0.05em;">CẦN HỖ TRỢ?</h4>
+                            <p class="text-muted mb-0" style="font-size: 14px;">Liên hệ đội ngũ IT qua Chat Trực tuyến hoặc Hotline 1900-xxxx.</p>
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
                         <div class="info-box p-3 rounded-3 h-100">
                             <i class="bi bi-journal-check d-block mb-2 fs-4" style="color: var(--primary);"></i>
-                            <h4 class="text-uppercase fw-bold mb-1" style="font-size: 12px; letter-spacing: 0.05em;">POLICIES</h4>
-                            <p class="text-muted mb-0" style="font-size: 14px;">View regulations on access rights to library digital resources.</p>
+                            <h4 class="text-uppercase fw-bold mb-1" style="font-size: 12px; letter-spacing: 0.05em;">CHÍNH SÁCH</h4>
+                            <p class="text-muted mb-0" style="font-size: 14px;">Xem các quy định về quyền truy cập vào tài nguyên số của thư viện.</p>
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
                         <div class="info-box p-3 rounded-3 h-100">
                             <i class="bi bi-shield-lock d-block mb-2 fs-4" style="color: var(--primary);"></i>
-                            <h4 class="text-uppercase fw-bold mb-1" style="font-size: 12px; letter-spacing: 0.05em;">SECURITY</h4>
-                            <p class="text-muted mb-0" style="font-size: 14px;">Your account remains secure. This is only a restricted access notification.</p>
+                            <h4 class="text-uppercase fw-bold mb-1" style="font-size: 12px; letter-spacing: 0.05em;">BẢO MẬT</h4>
+                            <p class="text-muted mb-0" style="font-size: 14px;">Tài khoản của bạn vẫn an toàn. Đây chỉ là thông báo hạn chế truy cập.</p>
                         </div>
                     </div>
                 </div>
@@ -249,14 +249,14 @@
     <footer class="w-100 px-4 mt-auto py-4 border-t" style="background-color: var(--surface-container); border-top: 1px solid rgba(224, 192, 177, 0.5);">
         <div class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
             <div class="text-center text-md-start">
-                <span class="text-uppercase text-secondary d-block mb-1 tracking-wider" style="font-size: 12px; font-weight: 600;">LMS University Library System</span>
-                <p class="text-muted mb-0" style="font-size: 14px;">&copy; 2024 LMS University Library System</p>
+                <span class="text-uppercase text-secondary d-block mb-1 tracking-wider" style="font-size: 12px; font-weight: 600;">Hệ thống Thư viện Đại học LMS</span>
+                <p class="text-muted mb-0" style="font-size: 14px;">&copy; 2024 Thư viện Đại học LMS</p>
             </div>
             <div class="d-flex flex-wrap justify-content-center gap-4">
-                <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="#">Privacy Policy</a>
-                <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="#">Terms of Service</a>
-                <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="#">Accessibility</a>
-                <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="${pageContext.request.contextPath}/#contact">Contact Support</a>
+                <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="#">Chính sách bảo mật</a>
+                <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="#">Điều khoản Dịch vụ</a>
+                <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="#">Trợ năng</a>
+                <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="${pageContext.request.contextPath}/#contact">Liên hệ Hỗ trợ</a>
             </div>
         </div>
     </footer>

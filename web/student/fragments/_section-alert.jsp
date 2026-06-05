@@ -7,11 +7,11 @@
              style="background-color: rgba(186, 26, 26, 0.06); border-left: 4px solid var(--error);">
             <span class="material-symbols-outlined" style="color: var(--error); font-size: 28px;">warning</span>
             <div>
-                <p class="fw-bold mb-1 small" style="color: var(--error);">Return Reminder</p>
+                <p class="fw-bold mb-1 small" style="color: var(--error);">Nhắc nhở trả sách</p>
                 <p class="mb-0 small text-on-surface-variant">
-                    You have <strong>${dueSoonCount}</strong> book(s) due within 3 days.
+                    Bạn có <strong>${dueSoonCount}</strong> sách đến hạn trong vòng 3 ngày.
                     <a href="${pageContext.request.contextPath}/student/loans"
-                       class="text-primary-custom fw-semibold text-decoration-none">View my loans &rarr;</a>
+                       class="text-primary-custom fw-semibold text-decoration-none">Xem sách đang mượn &rarr;</a>
                 </p>
             </div>
         </div>

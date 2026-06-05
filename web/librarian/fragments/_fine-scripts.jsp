@@ -17,7 +17,7 @@
 
         const count = selectedRows.length;
         if (count > 0) {
-            selectedCount.textContent = `${count} fine${count > 1 ? 's' : ''} selected`;
+            selectedCount.textContent = `${count} khoản phạt được chọn`;
             bulkBar.classList.remove('d-none');
 
             const hasPaidOrWaived = selectedRows.some(tr => {
@@ -27,7 +27,7 @@
 
             if (hasPaidOrWaived) {
                 bulkWaiveBtn.disabled = true;
-                bulkWaiveBtn.setAttribute('title', 'Cannot waive completed or already waived fines.');
+                bulkWaiveBtn.setAttribute('title', 'Không thể miễn khoản phạt đã hoàn thành hoặc đã được miễn.');
             } else {
                 bulkWaiveBtn.disabled = false;
                 bulkWaiveBtn.removeAttribute('title');
@@ -60,15 +60,15 @@
 
     function waiveSelected() {
         const count = Array.from(rowCheckboxes).filter(cb => cb.checked).length;
-        if (confirm(`Are you sure you want to waive the ${count} selected fine(s)?`)) {
-            alert('Selected fines have been successfully waived.');
+        if (confirm(`Bạn có chắc chắn muốn miễn ${count} khoản phạt đã chọn không?`)) {
+            alert('Các khoản phạt đã chọn đã được miễn thành công.');
             location.reload();
         }
     }
 
     function waiveSingle(fineId) {
-        if (confirm(`Are you sure you want to waive fine ${fineId}?`)) {
-            alert(`Fine ${fineId} has been successfully waived.`);
+        if (confirm(`Bạn có chắc chắn muốn miễn khoản phạt ${fineId} không?`)) {
+            alert(`Khoản phạt ${fineId} đã được miễn thành công.`);
             location.reload();
         }
     }

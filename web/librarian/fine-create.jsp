@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <body class="d-flex flex-column">
     <jsp:include page="fragments/_header.jsp" />
@@ -17,8 +17,8 @@
                 
                 <!-- Page Header -->
                 <div class="mb-4">
-                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Issue Manual Fine</h2>
-                    <p class="font-body-md text-on-surface-variant">Lodge a penalty record for lost items, physical damage, or custom library violations.</p>
+                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">Tạo khoản phạt thủ công</h2>
+                    <p class="font-body-md text-on-surface-variant">Ghi nhận hình phạt đối với sách bị mất, hư hỏng vật lý hoặc vi phạm thư viện khác.</p>
                 </div>
 
                 <!-- Form Card -->
@@ -27,10 +27,10 @@
                         
                         <!-- Search Member -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">1. Search Library Member</label>
+                            <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">1. Tìm kiếm thành viên thư viện</label>
                             <div class="input-group">
-                                <input type="text" id="memberSearch" class="form-control rounded-start-3" placeholder="Enter student/lecturer code or email..." />
-                                <button type="button" onclick="lookupMember()" class="btn btn-primary-custom rounded-end-3 px-4 fw-bold">Search</button>
+                                <input type="text" id="memberSearch" class="form-control rounded-start-3" placeholder="Nhập mã sinh viên/giảng viên hoặc email..." />
+                                <button type="button" onclick="lookupMember()" class="btn btn-primary-custom rounded-end-3 px-4 fw-bold">Tìm kiếm</button>
                             </div>
                             <!-- Result Box -->
                             <div id="memberResultBox" class="mt-3 p-3 border rounded-3 bg-light d-none" style="border-color: var(--outline-variant) !important;">
@@ -41,47 +41,47 @@
                                         </div>
                                         <div>
                                             <p class="mb-0 fw-bold">Jordan Vance</p>
-                                            <small class="text-muted">Student • ID: 230014 • j.vance@uni.edu</small>
+                                            <small class="text-muted">Sinh viên • ID: 230014 • j.vance@uni.edu</small>
                                         </div>
                                     </div>
-                                    <span class="badge rounded-pill bg-success-subtle text-success fw-bold px-3 py-1.5">ACTIVE</span>
+                                    <span class="badge rounded-pill bg-success-subtle text-success fw-bold px-3 py-1.5">HOẠT ĐỘNG</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Select Borrowed Book -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">2. Select Violated Book Loan</label>
+                            <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">2. Chọn bản sao vi phạm</label>
                             <select id="bookSelect" class="form-select rounded-3 py-2.5" disabled>
-                                <option value="">-- Search and select member first --</option>
-                                <option value="LOAN-9902" data-due="2026-05-15">Introduction to Algorithms (Due: May 15, 2026)</option>
-                                <option value="LOAN-0082" data-due="2026-06-01">Design Patterns: Reusable Software (Due: Jun 01, 2026)</option>
+                                <option value="">-- Tìm kiếm và chọn thành viên trước --</option>
+                                <option value="LOAN-9902" data-due="2026-05-15">Introduction to Algorithms (Hạn trả: 15/05/2026)</option>
+                                <option value="LOAN-0082" data-due="2026-06-01">Design Patterns: Reusable Software (Hạn trả: 01/06/2026)</option>
                             </select>
                         </div>
 
                         <!-- Fine Category / Reason -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-on-surface-variant d-block mb-2" style="font-size: 14px;">3. Violation Reason</label>
+                            <label class="form-label fw-bold text-on-surface-variant d-block mb-2" style="font-size: 14px;">3. Lý do vi phạm</label>
                             <div class="d-flex flex-column gap-2">
                                 <label class="border rounded-3 p-3 d-flex align-items-center gap-3 cursor-pointer" style="border-color: var(--outline-variant) !important;">
                                     <input type="radio" name="violationReason" value="DAMAGED" class="form-check-input" checked />
                                     <div>
-                                        <p class="mb-0 fw-bold">Physical Damage</p>
-                                        <small class="text-muted">Torn pages, water damage, writing, defacing</small>
+                                        <p class="mb-0 fw-bold">Hư hỏng vật lý</p>
+                                        <small class="text-muted">Rách trang, vào nước, viết vẽ bậy, làm hỏng</small>
                                     </div>
                                 </label>
                                 <label class="border rounded-3 p-3 d-flex align-items-center gap-3 cursor-pointer" style="border-color: var(--outline-variant) !important;">
                                     <input type="radio" name="violationReason" value="LOST" class="form-check-input" />
                                     <div>
-                                        <p class="mb-0 fw-bold">Lost Copy / Item Replacement</p>
-                                        <small class="text-muted">Member reported item lost, copy needs replacement</small>
+                                        <p class="mb-0 fw-bold">Bị mất / Cần thay thế</p>
+                                        <small class="text-muted">Thành viên báo mất, cần thay thế bản sao</small>
                                     </div>
                                 </label>
                                 <label class="border rounded-3 p-3 d-flex align-items-center gap-3 cursor-pointer" style="border-color: var(--outline-variant) !important;">
                                     <input type="radio" name="violationReason" value="OTHER" class="form-check-input" />
                                     <div>
-                                        <p class="mb-0 fw-bold">Other Violations</p>
-                                        <small class="text-muted">Unsanctioned copy reproduction, rules violation</small>
+                                        <p class="mb-0 fw-bold">Vi phạm khác</p>
+                                        <small class="text-muted">Sao chép trái phép, vi phạm nội quy</small>
                                     </div>
                                 </label>
                             </div>
@@ -89,7 +89,7 @@
 
                         <!-- Fine Amount -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">4. Fine Amount ($)</label>
+                            <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">4. Số tiền phạt ($)</label>
                             <div class="input-group" style="max-width: 240px;">
                                 <span class="input-group-text bg-light border-outline-variant">$</span>
                                 <input type="number" step="0.01" class="form-control rounded-end-3 py-2 border-outline-variant" placeholder="0.00" value="12.00" required />
@@ -98,14 +98,14 @@
 
                         <!-- Notes -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">5. Additional Description</label>
-                            <textarea class="form-control rounded-3 py-2 border-outline-variant" rows="4" placeholder="Detail the damage or lost report circumstances here..."></textarea>
+                            <label class="form-label fw-bold text-on-surface-variant" style="font-size: 14px;">5. Mô tả thêm</label>
+                            <textarea class="form-control rounded-3 py-2 border-outline-variant" rows="4" placeholder="Chi tiết tình trạng hư hỏng hoặc hoàn cảnh mất sách tại đây..."></textarea>
                         </div>
 
                         <!-- Submit Buttons -->
                         <div class="d-flex align-items-center gap-2 pt-3 border-top">
-                            <button type="submit" class="btn btn-primary-custom rounded-pill px-4 py-2.5 fw-bold">Issue Fine Record</button>
-                            <a href="${pageContext.request.contextPath}/librarian/fine-list.jsp" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom rounded-pill px-4 py-2.5 fw-bold">Tạo biên bản phạt</button>
+                            <a href="${pageContext.request.contextPath}/librarian/fine-list.jsp" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold">Hủy</a>
                         </div>
                     </form>
                 </div>
@@ -125,7 +125,7 @@
                 
                 const select = document.getElementById('bookSelect');
                 select.disabled = false;
-                select.options[0].text = "-- Select active loan copy --";
+                select.options[0].text = "-- Chọn bản sao đang mượn --";
             }
         }
     </script>

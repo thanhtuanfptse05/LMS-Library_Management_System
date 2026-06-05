@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <%--
     Admin — Config Edit
@@ -292,7 +292,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -300,7 +300,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -312,16 +312,16 @@
                             <ol class="breadcrumb mb-0" style="font-size: 12px;">
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/admin/dashboard"
-                                       class="text-decoration-none text-on-surface-variant">Dashboard</a>
+                                       class="text-decoration-none text-on-surface-variant">Bảng điều khiển</a>
                                 </li>
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/admin/config-list.jsp"
-                                       class="text-decoration-none text-on-surface-variant">Configurations</a>
+                                       class="text-decoration-none text-on-surface-variant">Cấu hình</a>
                                 </li>
                                 <li class="breadcrumb-item active fw-semibold text-primary-custom" aria-current="page">
                                     <c:choose>
                                         <c:when test="${param.mode == 'create'}">New Parameter</c:when>
-                                        <c:otherwise>Edit — <c:out value="${not empty param.key ? param.key : 'PENALTY_RATE_PER_DAY_VND'}" /></c:otherwise>
+                                        <c:otherwise>Sửa — <c:out value="${not empty param.key ? param.key : 'PENALTY_RATE_PER_DAY_VND'}" /></c:otherwise>
                                     </c:choose>
                                 </li>
                             </ol>
@@ -332,7 +332,7 @@
                                          font-variation-settings: 'FILL' 1;">tune</span>
                             <c:choose>
                                 <c:when test="${param.mode == 'create'}">New Configuration Parameter</c:when>
-                                <c:otherwise>Edit Configuration</c:otherwise>
+                                <c:otherwise>Sửa Configuration</c:otherwise>
                             </c:choose>
                         </h1>
                         <p style="font-size: 14px; color: var(--on-surface-variant); margin: 0;">
@@ -341,7 +341,7 @@
                                     Define a new system parameter key and its initial value.
                                 </c:when>
                                 <c:otherwise>
-                                    Update the value of
+                                    Cập nhật the value of
                                     <strong><c:out value="${not empty param.key ? param.key : 'PENALTY_RATE_PER_DAY_VND'}" /></strong>.
                                     All changes are audit-logged automatically.
                                 </c:otherwise>
@@ -351,7 +351,7 @@
                     <a href="${pageContext.request.contextPath}/admin/config-list.jsp"
                        class="btn-edit-outline text-decoration-none" aria-label="Cancel and go back">
                         <span class="material-symbols-outlined">arrow_back</span>
-                        Cancel
+                        Hủy
                     </a>
                 </div>
 
@@ -393,7 +393,7 @@
                                                 Use SCREAMING_SNAKE_CASE. This key must be unique. Cannot be changed after creation.
                                             </c:when>
                                             <c:otherwise>
-                                                Parameter keys are immutable. Create a new parameter to use a different key name.
+                                                Parameter keys are immutable. Tạo a new parameter to use a different key name.
                                             </c:otherwise>
                                         </c:choose>
                                     </p>
@@ -426,7 +426,7 @@
 
                                 <!-- ── Category ── -->
                                 <div class="form-group">
-                                    <label class="form-label">Category</label>
+                                    <label class="form-label">Thể loại</label>
                                     <div class="type-chip-group" role="radiogroup" aria-label="Parameter category">
                                         <label class="type-chip-opt ${not empty configParam.category ? (configParam.category == 'LOAN' ? 'selected' : '') : ''}"
                                                for="cat-loan">
@@ -516,7 +516,7 @@
 
                                 <!-- ── Description ── -->
                                 <div class="form-group">
-                                    <label class="form-label" for="configDescription">Description</label>
+                                    <label class="form-label" for="configDescription">Mô tả</label>
                                     <textarea id="configDescription"
                                               name="configDescription"
                                               class="form-control-cfg"
@@ -558,7 +558,7 @@
                                 <!-- ── Change Reason (required for audit log) ── -->
                                 <div class="form-group mt-4">
                                     <label class="form-label" for="changeReason">
-                                        Reason for Change <span class="required-star">*</span>
+                                        Lý do for Change <span class="required-star">*</span>
                                     </label>
                                     <textarea id="changeReason"
                                               name="changeReason"
@@ -579,8 +579,8 @@
                                 <div class="d-flex align-items-center justify-content-between mt-3 p-3 rounded-3"
                                      style="background: var(--surface-container-low); border: 1px solid var(--outline-variant);">
                                     <div>
-                                        <div class="fw-bold" style="font-size: 13px; color: var(--on-surface);">Parameter Status</div>
-                                        <div class="form-hint mt-0">Inactive parameters are ignored by the system runtime.</div>
+                                        <div class="fw-bold" style="font-size: 13px; color: var(--on-surface);">Parameter Trạng thái</div>
+                                        <div class="form-hint mt-0">Không hoạt động parameters are ignored by the system runtime.</div>
                                     </div>
                                     <div class="form-check form-switch mb-0">
                                         <input class="form-check-input" type="checkbox"
@@ -589,7 +589,7 @@
                                                ${empty configParam or configParam.active ? 'checked' : ''}
                                                style="width: 48px; height: 26px; cursor: pointer;" />
                                         <label class="form-check-label fw-bold ms-2" for="configActive"
-                                               style="font-size: 13px;" id="statusLabel">Active</label>
+                                               style="font-size: 13px;" id="statusLabel">Hoạt động</label>
                                     </div>
                                 </div>
 
@@ -598,7 +598,7 @@
                                     <button type="submit" class="btn-edit-primary" id="btnSaveConfig"
                                             aria-label="Save configuration changes">
                                         <span class="material-symbols-outlined">save</span>
-                                        Save Changes
+                                        Lưu thay đổi
                                     </button>
                                     <a href="${pageContext.request.contextPath}/admin/config-list.jsp"
                                        class="btn-edit-outline text-decoration-none" aria-label="Discard and go back">
@@ -609,7 +609,7 @@
                                         <button type="button" class="btn-edit-danger ms-auto"
                                                 id="btnResetDefault" aria-label="Reset to default value">
                                             <span class="material-symbols-outlined">restart_alt</span>
-                                            Reset to Default
+                                            Đặt lại to Default
                                         </button>
                                     </c:if>
                                 </div>
@@ -755,7 +755,7 @@
                                     <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp?key=${not empty param.key ? param.key : 'PENALTY_RATE_PER_DAY_VND'}"
                                        class="text-primary-custom fw-bold text-decoration-none"
                                        style="font-size: 12px;">
-                                        View full audit history →
+                                        Xem full audit history →
                                     </a>
                                 </div>
                             </div>
@@ -783,7 +783,7 @@
                 </div>
                 <div>
                     <h2 class="fw-bold mb-0" id="resetModalTitle" style="font-size: 16px; color: var(--on-surface);">
-                        Reset to Default?
+                        Đặt lại to Default?
                     </h2>
                     <p class="text-on-surface-variant mb-0" style="font-size: 13px;">This action cannot be undone.</p>
                 </div>
@@ -796,14 +796,14 @@
                 The change will be logged in the Audit Log.
             </p>
             <div class="d-flex align-items-center gap-2 justify-content-end">
-                <button type="button" class="btn-edit-outline" id="btnCancelReset">Cancel</button>
+                <button type="button" class="btn-edit-outline" id="btnCancelReset">Hủy</button>
                 <form action="${pageContext.request.contextPath}/admin/config" method="POST" style="display:inline;">
                     <input type="hidden" name="action" value="reset" />
                     <input type="hidden" name="key"
                            value="${not empty param.key ? param.key : 'PENALTY_RATE_PER_DAY_VND'}" />
                     <button type="submit" class="btn-edit-danger">
                         <span class="material-symbols-outlined">restart_alt</span>
-                        Yes, Reset
+                        Có, Đặt lại
                     </button>
                 </form>
             </div>

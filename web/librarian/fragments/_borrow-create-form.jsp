@@ -6,9 +6,9 @@
     <div class="card-header bg-light py-3 px-4 d-flex justify-content-between align-items-center border-bottom-0">
         <div class="d-flex align-items-center">
             <span class="step-indicator bg-primary-custom text-white">1</span>
-            <h5 class="mb-0 fw-semibold">Member Verification</h5>
+            <h5 class="mb-0 fw-semibold">Xác minh thành viên</h5>
         </div>
-        <span class="badge text-dark fw-bold" style="font-size: 10px; letter-spacing: 0.1em;">REQUIRED</span>
+        <span class="badge text-dark fw-bold" style="font-size: 10px; letter-spacing: 0.1em;">BẮT BUỘC</span>
     </div>
     <div class="p-4">
         <div class="row g-3 max-w-lg-custom mb-4">
@@ -18,11 +18,11 @@
                        style="padding-left: 2.75rem;"
                        id="member_id"
                        name="memberId"
-                       placeholder="Enter Student/Lecturer ID"
+                       placeholder="Nhập mã Sinh viên/Giảng viên"
                        type="text" />
             </div>
             <div class="col-4 col-md-3">
-                <button class="btn btn-primary-lumina w-100 py-2" type="button" onclick="verifyMember()">Verify</button>
+                <button class="btn btn-primary-lumina w-100 py-2" type="button" onclick="verifyMember()">Xác minh</button>
             </div>
         </div>
 
@@ -40,16 +40,16 @@
                 <div class="col">
                     <div class="row g-3">
                         <div class="col-6 col-md-4">
-                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 10px;">Name</div>
+                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 10px;">Tên</div>
                             <div class="fw-semibold text-dark" id="display_name">Alex Johnston</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 10px;">Role</div>
-                            <div class="fw-semibold text-dark" id="display_role">Undergraduate Student</div>
+                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 10px;">Vai trò</div>
+                            <div class="fw-semibold text-dark" id="display_role">Sinh viên Đại học</div>
                         </div>
                         <div class="col-12 col-md-4">
-                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 10px;">Status</div>
-                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2">Active Account</span>
+                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 10px;">Trạng thái</div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2">Tài khoản hoạt động</span>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
 <section class="custom-card">
     <div class="card-header bg-light py-3 px-4 d-flex align-items-center border-bottom-0">
         <span class="step-indicator bg-secondary text-white">2</span>
-        <h5 class="mb-0 fw-semibold">Book Selection</h5>
+        <h5 class="mb-0 fw-semibold">Chọn sách</h5>
     </div>
     <div class="p-4">
         <div class="row g-3 max-w-lg-custom mb-4">
@@ -72,11 +72,11 @@
                        style="padding-left: 2.75rem;"
                        id="book_barcode"
                        name="bookBarcode"
-                       placeholder="Scan Book Copy Barcode"
+                       placeholder="Quét mã vạch bản sao sách"
                        type="text" />
             </div>
             <div class="col-4 col-md-3">
-                <button class="btn btn-outline-secondary w-100 py-2 fw-semibold" type="button" onclick="scanBook()">Scan</button>
+                <button class="btn btn-outline-secondary w-100 py-2 fw-semibold" type="button" onclick="scanBook()">Quét</button>
             </div>
         </div>
 
@@ -88,15 +88,15 @@
                      style="width: 60px; height: 90px;" />
                 <div class="flex-grow-1">
                     <h6 class="fw-bold mb-1" id="book_title">Advanced Computational Fluid Dynamics</h6>
-                    <p class="text-muted small mb-2" id="book_isbn_barcode">ISBN: 978-3-16-148410-0 | Barcode: CFD-2023-088</p>
+                    <p class="text-muted small mb-2" id="book_isbn_barcode">ISBN: 978-3-16-148410-0 | Mã vạch: CFD-2023-088</p>
                     <div class="row g-2">
                         <div class="col-auto me-3">
-                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 9px;">Author</div>
+                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 9px;">Tác giả</div>
                             <div class="small fw-medium" id="book_author">Dr. Elena Rodriguez</div>
                         </div>
                         <div class="col-auto">
-                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 9px;">Condition</div>
-                            <div class="small text-primary-custom fw-bold" id="book_condition">Excellent</div>
+                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 9px;">Tình trạng</div>
+                            <div class="small text-primary-custom fw-bold" id="book_condition">Tốt</div>
                         </div>
                     </div>
                 </div>
@@ -109,11 +109,11 @@
 <footer class="p-3 rounded-3 border border-light-subtle" style="background-color: var(--surface-container-low);">
     <div class="d-flex align-items-center gap-2 text-primary-custom mb-2">
         <span class="material-symbols-outlined fs-5">info</span>
-        <span class="fw-bold small text-uppercase">Standard Policy</span>
+        <span class="fw-bold small text-uppercase">Chính sách tiêu chuẩn</span>
     </div>
     <ul class="small text-muted mb-0 ps-3">
-        <li>Loan period: 14 days (Students), 30 days (Staff/Lecturers).</li>
-        <li>Overdue rate: 5,000 VND per day per book.</li>
-        <li>All books must be physically inspected before processing.</li>
+        <li>Thời gian mượn: 14 ngày (Sinh viên), 30 ngày (Nhân viên/Giảng viên).</li>
+        <li>Phí quá hạn: 5.000 VNĐ mỗi ngày mỗi cuốn.</li>
+        <li>Tất cả sách phải được kiểm tra thực tế trước khi xử lý.</li>
     </ul>
 </footer>

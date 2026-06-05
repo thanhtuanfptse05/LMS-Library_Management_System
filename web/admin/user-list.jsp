@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <body class="d-flex flex-column">
     <jsp:include page="fragments/_header.jsp" />
@@ -24,7 +24,7 @@
                     <div class="d-flex gap-2">
                         <a href="${pageContext.request.contextPath}/admin/user-add.jsp" class="btn btn-primary-custom px-4 py-2 rounded-pill fw-bold d-flex align-items-center gap-2">
                             <span class="material-symbols-outlined">person_add</span>
-                            Create New Account
+                            Tạo New Tài khoản
                         </a>
                     </div>
                 </div>
@@ -39,13 +39,13 @@
                     </div>
                     <div class="col-12 col-md-3">
                         <div class="raised-card p-3 border border-outline-variant bg-white">
-                            <span class="font-label-md text-on-surface-variant text-uppercase">Active Staff</span>
+                            <span class="font-label-md text-on-surface-variant text-uppercase">Hoạt động Staff</span>
                             <h3 class="mb-0 fw-bold text-success mt-1">12</h3>
                         </div>
                     </div>
                     <div class="col-12 col-md-3">
                         <div class="raised-card p-3 border border-outline-variant bg-white">
-                            <span class="font-label-md text-on-surface-variant text-uppercase">Active Members</span>
+                            <span class="font-label-md text-on-surface-variant text-uppercase">Thành viên hoạt động</span>
                             <h3 class="mb-0 fw-bold text-primary-custom mt-1">398</h3>
                         </div>
                     </div>
@@ -70,15 +70,15 @@
                             <select class="form-select rounded-3 py-2">
                                 <option value="">All Roles</option>
                                 <option value="ADMIN">Administrator</option>
-                                <option value="LIBRARIAN">Librarian</option>
-                                <option value="LECTURER">Lecturer</option>
-                                <option value="STUDENT">Student</option>
+                                <option value="LIBRARIAN">Thủ thư</option>
+                                <option value="LECTURER">Giảng viên</option>
+                                <option value="STUDENT">Sinh viên</option>
                             </select>
                         </div>
                         <div class="col-6 col-md-3">
                             <select class="form-select rounded-3 py-2">
                                 <option value="">All Statuses</option>
-                                <option value="ACTIVE">Active</option>
+                                <option value="ACTIVE">Hoạt động</option>
                                 <option value="LOCKED">Locked</option>
                             </select>
                         </div>
@@ -92,10 +92,10 @@
                             <thead>
                                 <tr style="background-color: var(--surface-container-low);">
                                     <th class="ps-4">User</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
+                                    <th>Vai trò</th>
+                                    <th>Trạng thái</th>
                                     <th>Date Created</th>
-                                    <th class="text-end pe-4">Actions</th>
+                                    <th class="text-end pe-4">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,13 +116,13 @@
                                     <td>
                                         <span class="d-flex align-items-center gap-1 text-success small">
                                             <span class="rounded-circle d-inline-block bg-success" style="width: 8px; height: 8px;"></span>
-                                            Active
+                                            Hoạt động
                                         </span>
                                     </td>
                                     <td>Sep 12, 2024</td>
                                     <td class="text-end pe-4">
-                                        <a href="${pageContext.request.contextPath}/admin/user-detail.jsp?id=230014" class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1 fw-bold">Detail</a>
-                                        <a href="${pageContext.request.contextPath}/admin/user-edit.jsp?id=230014" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold ms-1">Edit</a>
+                                        <a href="${pageContext.request.contextPath}/admin/user-detail.jsp?id=230014" class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1 fw-bold">Chi tiết</a>
+                                        <a href="${pageContext.request.contextPath}/admin/user-edit.jsp?id=230014" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold ms-1">Sửa</a>
                                     </td>
                                 </tr>
 
@@ -143,13 +143,13 @@
                                     <td>
                                         <span class="d-flex align-items-center gap-1 text-success small">
                                             <span class="rounded-circle d-inline-block bg-success" style="width: 8px; height: 8px;"></span>
-                                            Active
+                                            Hoạt động
                                         </span>
                                     </td>
                                     <td>Aug 20, 2024</td>
                                     <td class="text-end pe-4">
-                                        <a href="${pageContext.request.contextPath}/admin/user-detail.jsp?id=108891" class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1 fw-bold">Detail</a>
-                                        <a href="${pageContext.request.contextPath}/admin/user-edit.jsp?id=108891" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold ms-1">Edit</a>
+                                        <a href="${pageContext.request.contextPath}/admin/user-detail.jsp?id=108891" class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1 fw-bold">Chi tiết</a>
+                                        <a href="${pageContext.request.contextPath}/admin/user-edit.jsp?id=108891" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold ms-1">Sửa</a>
                                     </td>
                                 </tr>
 
@@ -175,8 +175,8 @@
                                     </td>
                                     <td>Jan 10, 2025</td>
                                     <td class="text-end pe-4">
-                                        <a href="${pageContext.request.contextPath}/admin/user-detail.jsp?id=G-9024" class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1 fw-bold">Detail</a>
-                                        <a href="${pageContext.request.contextPath}/admin/user-edit.jsp?id=G-9024" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold ms-1">Edit</a>
+                                        <a href="${pageContext.request.contextPath}/admin/user-detail.jsp?id=G-9024" class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 py-1 fw-bold">Chi tiết</a>
+                                        <a href="${pageContext.request.contextPath}/admin/user-edit.jsp?id=G-9024" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold ms-1">Sửa</a>
                                     </td>
                                 </tr>
                             </tbody>

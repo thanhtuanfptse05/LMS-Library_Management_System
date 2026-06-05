@@ -2,8 +2,8 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Library Manager Dashboard - LMS University Library</title>
-    <meta name="description" content="Strategic management and reporting panel for Library Managers at LMS University." />
+    <title>Bảng điều khiển Quản lý Thư viện - Thư viện Đại học LMS</title>
+    <meta name="description" content="Bảng phân tích và báo cáo chiến lược cho Quản lý Thư viện tại Đại học LMS." />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />

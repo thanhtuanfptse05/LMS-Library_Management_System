@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Search Results | UniLib LMS</title>
+    <title>Kết quả tìm kiếm | UniLib LMS</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -249,31 +249,31 @@
                 <a class="fs-5 fw-bold text-primary-custom text-decoration-none me-4" href="${pageContext.request.contextPath}/">UniLib LMS</a>
                 <nav class="d-none d-md-flex gap-4 ms-4">
                     <a class="text-primary-custom fw-semibold border-bottom border-2 border-primary-custom pb-1 text-decoration-none"
-                        href="${pageContext.request.contextPath}/">Home</a>
+                        href="${pageContext.request.contextPath}/">Trang chủ</a>
                     <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/services.jsp"
                         onmouseover="this.style.color='var(--primary-color)'"
-                        onmouseout="this.style.color='var(--secondary)'">Services</a>
+                        onmouseout="this.style.color='var(--secondary)'">Dịch vụ</a>
                     <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/policies.jsp"
                         onmouseover="this.style.color='var(--primary-color)'"
-                        onmouseout="this.style.color='var(--secondary)'">Policies</a>
+                        onmouseout="this.style.color='var(--secondary)'">Chính sách</a>
                     <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/news.jsp"
                         onmouseover="this.style.color='var(--primary-color)'"
-                        onmouseout="this.style.color='var(--secondary)'">News</a>
+                        onmouseout="this.style.color='var(--secondary)'">Tin tức</a>
                     <a class="text-secondary-custom text-decoration-none link-primary-hover" href="${pageContext.request.contextPath}/#contact"
                         onmouseover="this.style.color='var(--primary-color)'"
-                        onmouseout="this.style.color='var(--secondary)'">Contact</a>
+                        onmouseout="this.style.color='var(--secondary)'">Liên hệ</a>
                 </nav>
             </div>
             <div class="d-flex align-items-center gap-4">
                 <!-- Form tìm kiếm nhanh tại header công cộng -->
                 <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET" class="d-none d-md-flex align-items-center search-container">
                     <span class="material-symbols-outlined text-secondary-custom me-2">search</span>
-                    <input name="query" placeholder="Search resources..." type="text" value="<c:out value="${param.query}"/>" />
+                    <input name="query" placeholder="Tìm kiếm tài nguyên..." type="text" value="<c:out value="${param.query}"/>" />
                 </form>
                 
                 <!-- Chuyển hướng Sign In động -->
                 <a href="${pageContext.request.contextPath}/login" class="btn btn-primary-custom text-decoration-none d-inline-flex align-items-center justify-content-center">
-                    Sign In
+                    Đăng nhập
                 </a>
             </div>
         </div>
@@ -287,7 +287,7 @@
                 <div class="bg-surface-low rounded-xl p-4 shadow-soft border border-outline-variant">
                     <h2 class="fs-5 fw-bold mb-4 d-flex align-items-center gap-2">
                         <span class="material-symbols-outlined text-primary-custom">filter_list</span>
-                        Search Info
+                        Thông tin tìm kiếm
                     </h2>
                     <form action="${pageContext.request.contextPath}/book-search.jsp" method="GET" class="d-flex flex-column gap-4">
                         <!-- Truyền lại từ khóa tìm kiếm khi submit bộ lọc -->
@@ -295,73 +295,72 @@
                         
                         <div>
                             <span class="d-block text-secondary-custom fw-bold text-uppercase small tracking-wider mb-2"
-                                style="font-size: 12px; letter-spacing: 0.05em;">Category</span>
+                                style="font-size: 12px; letter-spacing: 0.05em;">Thể loại</span>
                             <div class="d-flex flex-column gap-2">
                                 <label class="d-flex align-items-center gap-2 cursor-pointer group">
                                     <input checked class="form-check-input mt-0" type="checkbox"
                                         style="border-color: var(--outline-variant); shadow: none;" />
-                                    <span class="text-on-surface">Books</span>
+                                    <span class="text-on-surface">Sách</span>
                                 </label>
                                 <label class="d-flex align-items-center gap-2 cursor-pointer group">
                                     <input class="form-check-input mt-0" type="checkbox"
                                         style="border-color: var(--outline-variant);" />
-                                    <span class="text-on-surface">News</span>
+                                    <span class="text-on-surface">Tin tức</span>
                                 </label>
                                 <label class="d-flex align-items-center gap-2 cursor-pointer group">
                                     <input class="form-check-input mt-0" type="checkbox"
                                         style="border-color: var(--outline-variant);" />
-                                    <span class="text-on-surface">Instructions</span>
+                                    <span class="text-on-surface">Hướng dẫn</span>
                                 </label>
                                 <label class="d-flex align-items-center gap-2 cursor-pointer group">
                                     <input class="form-check-input mt-0" type="checkbox"
                                         style="border-color: var(--outline-variant);" />
-                                    <span class="text-on-surface">Policies</span>
+                                    <span class="text-on-surface">Chính sách</span>
                                 </label>
                             </div>
                         </div>
 
                         <div class="pt-3 border-top border-outline-variant">
                             <span class="d-block text-secondary-custom fw-bold text-uppercase small tracking-wider mb-2"
-                                style="font-size: 12px; letter-spacing: 0.05em;">Availability</span>
+                                style="font-size: 12px; letter-spacing: 0.05em;">Tình trạng khả dụng</span>
                             <div class="d-flex flex-column gap-2">
                                 <label class="d-flex align-items-center gap-2 cursor-pointer">
                                     <input checked class="form-check-input mt-0" name="availability" type="radio"
                                         style="border-color: var(--outline-variant);" />
-                                    <span class="text-on-surface">Available Now</span>
+                                    <span class="text-on-surface">Sẵn sàng ngay</span>
                                 </label>
                                 <label class="d-flex align-items-center gap-2 cursor-pointer">
                                     <input class="form-check-input mt-0" name="availability" type="radio"
                                         style="border-color: var(--outline-variant);" />
-                                    <span class="text-on-surface">E-Resources Only</span>
+                                    <span class="text-on-surface">Chỉ tài nguyên điện tử</span>
                                 </label>
                             </div>
                         </div>
 
                         <div class="pt-3 border-top border-outline-variant">
                             <span class="d-block text-secondary-custom fw-bold text-uppercase small tracking-wider mb-2"
-                                style="font-size: 12px; letter-spacing: 0.05em;">Date Range</span>
+                                style="font-size: 12px; letter-spacing: 0.05em;">Khoảng thời gian</span>
                             <select
                                 class="form-select bg-surface-lowest border border-outline-variant rounded-3 p-2 small shadow-none">
-                                <option>Last 5 years</option>
-                                <option>Last 10 years</option>
-                                <option>Anytime</option>
+                                <option>5 năm qua</option>
+                                <option>10 năm qua</option>
+                                <option>Bất kỳ lúc nào</option>
                             </select>
                         </div>
 
                         <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/book-search.jsp'" class="w-100 py-2 btn-clear-filter rounded-3 mt-2">
-                            Clear All Filters
+                            Xóa tất cả bộ lọc
                         </button>
                     </form>
                 </div>
 
                 <div class="bg-primary-custom text-on-primary rounded-xl p-4 shadow-soft">
                     <span class="material-symbols-outlined fs-1 mb-2">help_center</span>
-                    <h3 class="fs-5 fw-bold mb-1">Need help?</h3>
-                    <p class="small opacity-75 mb-3">Our librarians are available for live chat support during business
-                        hours.</p>
+                    <h3 class="fs-5 fw-bold mb-1">Cần trợ giúp?</h3>
+                    <p class="small opacity-75 mb-3">Các thủ thư của chúng tôi sẵn sàng hỗ trợ qua trò chuyện trực tiếp trong giờ làm việc.</p>
                     <a href="${pageContext.request.contextPath}/login"
                         class="btn btn-light text-primary-custom px-4 py-2 rounded-3 fw-bold w-100 shadow-sm border-0 small text-decoration-none d-block text-center">
-                        Chat with Staff
+                        Trò chuyện với nhân viên
                     </a>
                 </div>
             </aside>
@@ -370,9 +369,9 @@
             <section class="col-12 col-md-9 d-flex flex-column gap-3">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-2">
                     <h1 class="fs-4 fw-bold m-0">
-                        Search Results for <span class="text-primary-custom">"<c:out value="${not empty param.query ? param.query : 'Quantum Physics Foundations'}"/>"</span>
+                        Kết quả tìm kiếm cho <span class="text-primary-custom">"<c:out value="${not empty param.query ? param.query : 'Nền tảng Vật lý Lượng tử'}"/>"</span>
                     </h1>
-                    <p class="small text-secondary-custom m-0">Showing 1-12 of 148 results</p>
+                    <p class="small text-secondary-custom m-0">Hiển thị 1-12 trong số 148 kết quả</p>
                 </div>
 
                 <div class="row g-3">
@@ -393,10 +392,10 @@
                                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                                     <c:choose>
                                                         <c:when test="${book.availableQuantity > 0}">
-                                                            <span class="badge bg-success-subtle text-success px-3 py-2 rounded-full-custom small">In Library</span>
+                                                            <span class="badge bg-success-subtle text-success px-3 py-2 rounded-full-custom small">Trong thư viện</span>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-full-custom small">Checked Out</span>
+                                                            <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-full-custom small">Đang mượn</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                     <span class="material-symbols-outlined text-secondary-custom cursor-pointer" style="cursor: pointer;">bookmark</span>
@@ -409,8 +408,8 @@
                                             </div>
                                             <div class="d-flex gap-2">
                                                 <a href="${pageContext.request.contextPath}/student/book-detail?id=${book.bookId}"
-                                                   class="btn bg-primary-container text-on-primary px-4 py-2 rounded-3 small border-0 fw-semibold text-decoration-none d-inline-flex align-items-center justify-content-center">Read More</a>
-                                                <button class="btn border border-secondary-subtle text-secondary-custom px-4 py-2 rounded-3 small fw-semibold bg-transparent">Locate on Shelf</button>
+                                                   class="btn bg-primary-container text-on-primary px-4 py-2 rounded-3 small border-0 fw-semibold text-decoration-none d-inline-flex align-items-center justify-content-center">Đọc thêm</a>
+                                                <button class="btn border border-secondary-subtle text-secondary-custom px-4 py-2 rounded-3 small fw-semibold bg-transparent">Vị trí trên giá</button>
                                             </div>
                                         </div>
                                     </div>
@@ -430,16 +429,16 @@
                                     <div class="flex-grow-1 d-flex flex-column justify-content-between">
                                         <div>
                                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <span class="badge bg-success-subtle text-success px-3 py-2 rounded-full-custom small">In Library</span>
+                                                <span class="badge bg-success-subtle text-success px-3 py-2 rounded-full-custom small">Trong thư viện</span>
                                                 <span class="material-symbols-outlined text-secondary-custom cursor-pointer" style="cursor: pointer;">bookmark</span>
                                             </div>
-                                            <h3 class="fs-5 fw-bold text-on-surface mb-1">Foundations of Modern Quantum Physics</h3>
-                                            <p class="small text-secondary-custom mb-2">Dr. Elena Rostova | Oxford University Press, 2022</p>
-                                            <p class="text-on-surface-variant line-clamp-2 mb-3">This comprehensive guide explores the core principles of quantum mechanics, from wave-particle duality to entanglement theory, with updated research from CERN...</p>
+                                            <h3 class="fs-5 fw-bold text-on-surface mb-1">Nền tảng của Vật lý Lượng tử Hiện đại</h3>
+                                            <p class="small text-secondary-custom mb-2">Tiến sĩ Elena Rostova | Oxford University Press, 2022</p>
+                                            <p class="text-on-surface-variant line-clamp-2 mb-3">Hướng dẫn toàn diện này khám phá các nguyên tắc cốt lõi của cơ học lượng tử, từ lưỡng tính sóng-hạt đến lý thuyết rối lượng tử, với các nghiên cứu cập nhật từ CERN...</p>
                                         </div>
                                         <div class="d-flex gap-2">
-                                            <button class="btn bg-primary-container text-on-primary px-4 py-2 rounded-3 small border-0 fw-semibold">Read More</button>
-                                            <button class="btn border border-secondary-subtle text-secondary-custom px-4 py-2 rounded-3 small fw-semibold bg-transparent">Locate on Shelf</button>
+                                            <button class="btn bg-primary-container text-on-primary px-4 py-2 rounded-3 small border-0 fw-semibold">Đọc thêm</button>
+                                            <button class="btn border border-secondary-subtle text-secondary-custom px-4 py-2 rounded-3 small fw-semibold bg-transparent">Vị trí trên giá</button>
                                         </div>
                                     </div>
                                 </div>
@@ -451,14 +450,14 @@
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <span class="material-symbols-outlined text-primary-custom small">article</span>
-                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Instruction</span>
+                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Hướng dẫn</span>
                                         </div>
-                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">How to Cite Physics Journals: APA 7th Edition</h3>
-                                        <p class="small text-on-surface-variant mb-4">A step-by-step guide on referencing complex quantum physics papers and digital datasets within the university library system.</p>
+                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">Cách trích dẫn tạp chí vật lý: APA Phiên bản 7</h3>
+                                        <p class="small text-on-surface-variant mb-4">Hướng dẫn từng bước về việc tham chiếu các bài báo vật lý lượng tử phức tạp và các bộ dữ liệu kỹ thuật số trong hệ thống thư viện đại học.</p>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <span class="small text-secondary-custom">Updated: Oct 12, 2023</span>
-                                        <button class="btn btn-link p-0 text-primary-custom fw-bold text-decoration-none small">Download PDF</button>
+                                        <span class="small text-secondary-custom">Cập nhật: 12 tháng 10, 2023</span>
+                                        <button class="btn btn-link p-0 text-primary-custom fw-bold text-decoration-none small">Tải xuống PDF</button>
                                     </div>
                                 </article>
                             </div>
@@ -469,14 +468,14 @@
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <span class="material-symbols-outlined text-primary-custom small">book</span>
-                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Book</span>
+                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Sách</span>
                                         </div>
-                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">Introduction to Particle Dynamics</h3>
+                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">Giới thiệu về Động lực học hạt</h3>
                                         <p class="small text-secondary-custom mb-4">James Miller | 2019</p>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-full-custom small">Checked Out</span>
-                                        <button class="btn bg-surface-highest text-secondary-custom px-4 py-2 rounded-3 small border-0 fw-semibold">Place Hold</button>
+                                        <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-full-custom small">Đang mượn</span>
+                                        <button class="btn bg-surface-highest text-secondary-custom px-4 py-2 rounded-3 small border-0 fw-semibold">Đặt giữ sách</button>
                                     </div>
                                 </article>
                             </div>
@@ -491,10 +490,10 @@
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center gap-2 mb-1">
                                             <span class="material-symbols-outlined text-primary-custom small">news</span>
-                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Library News</span>
+                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Tin tức Thư viện</span>
                                         </div>
-                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">New Quantum Lab Equipment Now Available for Student Projects</h3>
-                                        <p class="small text-on-surface-variant line-clamp-1 m-0">The physics department has expanded its resource pool with three new high-precision spectrometers...</p>
+                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">Thiết bị phòng thí nghiệm lượng tử mới hiện có sẵn cho các dự án của sinh viên</h3>
+                                        <p class="small text-on-surface-variant line-clamp-1 m-0">Khoa vật lý đã mở rộng nhóm tài nguyên của mình với ba máy quang phổ có độ chính xác cao mới...</p>
                                     </div>
                                     <button class="btn bg-primary-custom text-on-primary p-0 d-flex align-items-center justify-content-center rounded-circle hover-translate shadow-none" style="width: 40px; height: 40px;">
                                         <span class="material-symbols-outlined">arrow_forward</span>
@@ -508,13 +507,13 @@
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <span class="material-symbols-outlined text-primary-custom small">gavel</span>
-                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Policy</span>
+                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Chính sách</span>
                                         </div>
-                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">Borrowing Rules for Restricted Science Journals</h3>
-                                        <p class="small text-on-surface-variant mb-4">Learn about the specific borrowing limits and return policies for rare and fragile scientific texts in our special collections.</p>
+                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">Quy định mượn tạp chí khoa học hạn chế</h3>
+                                        <p class="small text-on-surface-variant mb-4">Tìm hiểu về các giới hạn mượn cụ thể và chính sách trả lại đối với các văn bản khoa học hiếm và dễ hỏng trong các bộ sưu tập đặc biệt của chúng tôi.</p>
                                     </div>
                                     <a class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1 small mt-auto" href="#">
-                                        Read Policy <span class="material-symbols-outlined small">open_in_new</span>
+                                        Đọc chính sách <span class="material-symbols-outlined small">open_in_new</span>
                                     </a>
                                 </article>
                             </div>
@@ -525,14 +524,14 @@
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <span class="material-symbols-outlined text-primary-custom small">book</span>
-                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Book</span>
+                                            <span class="text-secondary-custom fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Sách</span>
                                         </div>
-                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">The Quantum Age: History and Future</h3>
+                                        <h3 class="fs-5 fw-bold text-on-surface mb-1">Kỷ nguyên lượng tử: Lịch sử và Tương lai</h3>
                                         <p class="small text-secondary-custom mb-4">Marcus Thorne | 2024</p>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <span class="badge bg-success-subtle text-success px-3 py-2 rounded-full-custom small">Available</span>
-                                        <button class="btn bg-primary-container text-on-primary px-4 py-2 rounded-3 small border-0 fw-semibold">Request</button>
+                                        <span class="badge bg-success-subtle text-success px-3 py-2 rounded-full-custom small">Sẵn có</span>
+                                        <button class="btn bg-primary-container text-on-primary px-4 py-2 rounded-3 small border-0 fw-semibold">Yêu cầu</button>
                                     </div>
                                 </article>
                             </div>
@@ -563,18 +562,18 @@
         <div class="container-xl py-4 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
             <div class="text-center text-md-start">
                 <span class="fs-4 fw-bold text-primary-custom">UniLib LMS</span>
-                <p class="small text-secondary-custom mt-2 mb-0">Empowering academic excellence through organized knowledge.</p>
+                <p class="small text-secondary-custom mt-2 mb-0">Trao quyền cho sự xuất sắc trong học thuật thông qua kiến thức được tổ chức.</p>
             </div>
             <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="#">Instructions</a>
-                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="#">Privacy Policy</a>
-                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="#">Terms of Service</a>
-                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="#">FAQ</a>
-                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="${pageContext.request.contextPath}/login">Staff Login</a>
+                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="#">Hướng dẫn</a>
+                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="#">Chính sách bảo mật</a>
+                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="#">Điều khoản dịch vụ</a>
+                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="#">Câu hỏi thường gặp</a>
+                <a class="text-secondary-custom small text-decoration-underline fw-bold" href="${pageContext.request.contextPath}/login">Đăng nhập Nhân viên</a>
             </div>
         </div>
         <div class="w-100 text-center py-3 border-top border-secondary-subtle" style="--bs-border-opacity: .3;">
-            <p class="small text-secondary-custom m-0">© 2024 LMS University Library System. All rights reserved.</p>
+            <p class="small text-secondary-custom m-0">© 2024 Hệ thống LMS Thư viện Đại học. Bản quyền đã được bảo lưu.</p>
         </div>
     </footer>
 

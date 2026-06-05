@@ -7,9 +7,9 @@
         <span style="font-size: 11px; font-weight: 600; color: var(--on-surface-variant);">System Operational • Database v4.2.1</span>
     </div>
     <div class="d-flex flex-column flex-md-row align-items-center gap-4">
-        <span class="text-on-surface-variant small">&copy; 2024 LMS University Library System</span>
+        <span class="text-on-surface-variant small">&copy; 2024 Thư viện Đại học LMS System</span>
         <div class="d-flex gap-3">
-            <a class="text-on-surface-variant small text-decoration-underline" href="#">Privacy Policy</a>
+            <a class="text-on-surface-variant small text-decoration-underline" href="#">Chính sách bảo mật</a>
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Terms of Service</a>
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Support Ticket</a>
         </div>

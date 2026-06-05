@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -167,7 +167,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -175,7 +175,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -183,14 +183,14 @@
                 <%-- ─── Page Header ─── --%>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
                     <div>
-                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Catalog Management</h2>
-                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Manage inventory, update records, and add new acquisitions.</p>
+                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Quản lý mục lục sách</h2>
+                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Quản lý kho, cập nhật hồ sơ và thêm sách mới.</p>
                     </div>
                     <a href="${pageContext.request.contextPath}/librarian/book-register.jsp"
                        class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-inline-flex align-items-center gap-1"
                        style="height: 40px; text-decoration: none;">
                         <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span>
-                        Add New Book
+                        Thêm sách mới
                     </a>
                 </div>
 
@@ -204,7 +204,7 @@
                             <div class="search-wrapper">
                                 <span class="material-symbols-outlined search-icon">search</span>
                                 <input type="text" id="catalogSearch" name="q"
-                                       placeholder="Search by ISBN, Title, or Author..."
+                                       placeholder="Tìm kiếm theo ISBN, Tiêu đề hoặc Tác giả..."
                                        aria-label="Search catalog"
                                        value="<c:out value='${param.q}'/>" />
                             </div>
@@ -213,7 +213,7 @@
                         <div class="col-12 col-lg-4 col-md-5">
                             <select class="cat-select" name="category" id="categoryFilter"
                                     onchange="document.getElementById('filterSearchForm').submit()">
-                                <option value="">All Categories</option>
+                                <option value="">Tất cả thể loại</option>
                                 <c:choose>
                                     <c:when test="${not empty categories}">
                                         <c:forEach var="cat" items="${categories}">
@@ -224,10 +224,10 @@
                                         </c:forEach>
                                     </c:when>
                                     <c:otherwise>
-                                        <option value="cs"  ${param.category == 'cs'  ? 'selected' : ''}>Computer Science</option>
-                                        <option value="lit" ${param.category == 'lit' ? 'selected' : ''}>Literature</option>
-                                        <option value="sci" ${param.category == 'sci' ? 'selected' : ''}>Physical Sciences</option>
-                                        <option value="ref" ${param.category == 'ref' ? 'selected' : ''}>Reference</option>
+                                        <option value="cs"  ${param.category == 'cs'  ? 'selected' : ''}>Khoa học Máy tính</option>
+                                        <option value="lit" ${param.category == 'lit' ? 'selected' : ''}>Văn học</option>
+                                        <option value="sci" ${param.category == 'sci' ? 'selected' : ''}>Khoa học Vật lý</option>
+                                        <option value="ref" ${param.category == 'ref' ? 'selected' : ''}>Tham khảo</option>
                                     </c:otherwise>
                                 </c:choose>
                             </select>
@@ -237,30 +237,30 @@
                     <%-- Tag filter pills --%>
                     <div class="pt-3" style="border-top: 1px solid var(--outline-variant);">
                         <div class="d-flex flex-wrap align-items-center gap-2">
-                            <span style="font-size: 12px; font-weight: 700; color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px;">Filter:</span>
+                            <span style="font-size: 12px; font-weight: 700; color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px;">Bộ lọc:</span>
 
                             <input type="checkbox" class="btn-check" id="tagAvailable" name="tag" value="available" autocomplete="off"
                                    ${param.tag == 'available' ? 'checked' : ''} onchange="document.getElementById('filterSearchForm').submit()">
-                            <label class="filter-pill-label" for="tagAvailable">Available</label>
+                            <label class="filter-pill-label" for="tagAvailable">Sẵn có</label>
 
                             <input type="checkbox" class="btn-check" id="tagLowStock" name="tag" value="low_stock" autocomplete="off"
                                    ${param.tag == 'low_stock' ? 'checked' : ''} onchange="document.getElementById('filterSearchForm').submit()">
-                            <label class="filter-pill-label" for="tagLowStock">Low Stock</label>
+                            <label class="filter-pill-label" for="tagLowStock">Sắp hết</label>
 
                             <input type="checkbox" class="btn-check" id="tagNewArrivals" name="tag" value="new_arrival" autocomplete="off"
                                    ${param.tag == 'new_arrival' ? 'checked' : ''} onchange="document.getElementById('filterSearchForm').submit()">
-                            <label class="filter-pill-label" for="tagNewArrivals">New Arrivals</label>
+                            <label class="filter-pill-label" for="tagNewArrivals">Sách mới</label>
 
                             <input type="checkbox" class="btn-check" id="tagReference" name="tag" value="reference_only" autocomplete="off"
                                    ${param.tag == 'reference_only' ? 'checked' : ''} onchange="document.getElementById('filterSearchForm').submit()">
-                            <label class="filter-pill-label" for="tagReference">Reference Only</label>
+                            <label class="filter-pill-label" for="tagReference">Chỉ tham khảo</label>
 
                             <c:if test="${not empty param.q or not empty param.category or not empty param.tag}">
                                 <a href="${pageContext.request.contextPath}/librarian/catalog.jsp"
                                    class="text-decoration-none fw-semibold"
                                    style="font-size: 12px; color: var(--on-surface-variant); margin-left: 4px;">
                                     <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">close</span>
-                                    Clear filters
+                                    Xóa bộ lọc
                                 </a>
                             </c:if>
                         </div>
@@ -275,11 +275,11 @@
                             <thead>
                                 <tr>
                                     <th style="width: 150px;">ISBN</th>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th class="text-end" style="width: 140px;">Price (VNĐ)</th>
-                                    <th class="text-center" style="width: 80px;">Qty</th>
-                                    <th class="text-center" style="width: 100px;">Actions</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Tác giả</th>
+                                    <th class="text-end" style="width: 140px;">Giá (VNĐ)</th>
+                                    <th class="text-center" style="width: 80px;">SL</th>
+                                    <th class="text-center" style="width: 100px;">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -332,11 +332,11 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${book.bookId}'/>"
-                                                       class="btn-icon" title="View Details">
+                                                       class="btn-icon" title="Xem chi tiết">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
                                                     </a>
                                                     <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp?id=<c:out value='${book.bookId}'/>"
-                                                       class="btn-icon" title="Edit Record">
+                                                       class="btn-icon" title="Sửa bản ghi">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                                     </a>
                                                 </td>
@@ -357,8 +357,8 @@
                                             <td class="text-end fw-semibold" style="font-size: 13px;">1.250.000</td>
                                             <td class="text-center"><span class="qty-badge qty-ok">12</span></td>
                                             <td class="text-center">
-                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
-                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="Xem chi tiết"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -373,8 +373,8 @@
                                             <td class="text-end fw-semibold" style="font-size: 13px;">1.400.000</td>
                                             <td class="text-center"><span class="qty-badge qty-low">2</span></td>
                                             <td class="text-center">
-                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
-                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="Xem chi tiết"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -389,8 +389,8 @@
                                             <td class="text-end fw-semibold" style="font-size: 13px;">950.000</td>
                                             <td class="text-center"><span class="qty-badge qty-ok">24</span></td>
                                             <td class="text-center">
-                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
-                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="Xem chi tiết"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                         <tr>
@@ -405,8 +405,8 @@
                                             <td class="text-end fw-semibold" style="font-size: 13px;">1.650.000</td>
                                             <td class="text-center"><span class="qty-badge qty-zero">0</span></td>
                                             <td class="text-center">
-                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
-                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp" class="btn-icon" title="Xem chi tiết"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></a>
+                                                <a href="${pageContext.request.contextPath}/librarian/book-edit.jsp" class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></a>
                                             </td>
                                         </tr>
                                     </c:otherwise>
@@ -421,12 +421,12 @@
                         <span style="font-size: 13px; color: var(--on-surface-variant);">
                             <c:choose>
                                 <c:when test="${not empty totalBooks}">
-                                    Showing
+                                    Hiển thị
                                     <c:out value="${(currentPage - 1) * pageSize + 1}" /> –
                                     <c:out value="${currentPage * pageSize > totalBooks ? totalBooks : currentPage * pageSize}" />
-                                    of <c:out value="${totalBooks}" /> entries
+                                    của <c:out value="${totalBooks}" /> bản ghi
                                 </c:when>
-                                <c:otherwise>Showing 1 – 4 of 248 entries</c:otherwise>
+                                <c:otherwise>Hiển thị 1 – 4 của 248 bản ghi</c:otherwise>
                             </c:choose>
                         </span>
                         <div class="d-flex gap-1 align-items-center">

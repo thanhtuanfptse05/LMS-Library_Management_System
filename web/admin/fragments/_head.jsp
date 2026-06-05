@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Admin Dashboard - LMS University Library</title>
+    <title>Bảng điều khiển Quản trị viên - Thư viện Đại học LMS</title>
     <meta name="description" content="System administration panel for LMS University Library — manage users, configurations, and audit logs." />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />

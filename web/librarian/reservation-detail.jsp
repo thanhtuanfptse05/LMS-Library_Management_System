@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -27,7 +27,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -49,13 +49,13 @@
                                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                                     <div>
                                         <span class="badge font-label-md rounded-pill px-3 py-1 mb-2 border-0"
-                                              style="background-color: rgba(157,67,0,0.1); color: var(--primary); font-size: 10px;">HIGH DEMAND</span>
+                                              style="background-color: rgba(157,67,0,0.1); color: var(--primary); font-size: 10px;">NHU CẦU CAO</span>
                                         <h3 class="font-headline-md text-dark mb-1">
                                             <c:out value="${not empty reservation.bookTitle ? reservation.bookTitle : 'Advanced Quantum Mechanics'}" />
                                         </h3>
                                         <p class="font-body-md text-secondary-custom mb-0">
-                                            by <c:out value="${not empty reservation.bookAuthor ? reservation.bookAuthor : 'Prof. Julian Sterling'}" />
-                                            &bull; <c:out value="${not empty reservation.bookEdition ? reservation.bookEdition : '2023 Edition'}" />
+                                            bởi <c:out value="${not empty reservation.bookAuthor ? reservation.bookAuthor : 'Prof. Julian Sterling'}" />
+                                            &bull; <c:out value="${not empty reservation.bookEdition ? reservation.bookEdition : 'Phiên bản 2023'}" />
                                         </p>
                                     </div>
                                     <div class="text-md-end">
@@ -69,7 +69,7 @@
                                 <div class="row g-2 mt-3">
                                     <div class="col-4">
                                         <div class="bg-light p-2 rounded-3 border" style="border-color: var(--surface-container-high) !important;">
-                                            <p class="mb-1 text-secondary-custom fw-bold" style="font-size: 10px;">TOTAL RESERVED</p>
+                                            <p class="mb-1 text-secondary-custom fw-bold" style="font-size: 10px;">TỔNG SỐ ĐẶT TRƯỚC</p>
                                             <p class="font-headline-md text-primary-custom mb-0">
                                                 <c:out value="${not empty totalReserved ? totalReserved : '24'}" />
                                             </p>
@@ -77,7 +77,7 @@
                                     </div>
                                     <div class="col-4">
                                         <div class="bg-light p-2 rounded-3 border" style="border-color: var(--surface-container-high) !important;">
-                                            <p class="mb-1 text-secondary-custom fw-bold" style="font-size: 10px;">ACTIVE LOANS</p>
+                                            <p class="mb-1 text-secondary-custom fw-bold" style="font-size: 10px;">KHOẢN MƯỢN HIỆN TẠI</p>
                                             <p class="font-headline-md text-secondary-custom mb-0">
                                                 <c:out value="${not empty activeLoans ? activeLoans : '12'}" />
                                             </p>
@@ -85,9 +85,9 @@
                                     </div>
                                     <div class="col-4">
                                         <div class="bg-light p-2 rounded-3 border" style="border-color: var(--surface-container-high) !important;">
-                                            <p class="mb-1 text-secondary-custom fw-bold" style="font-size: 10px;">WAIT TIME (EST.)</p>
+                                            <p class="mb-1 text-secondary-custom fw-bold" style="font-size: 10px;">THỜI GIAN CHỜ (DỰ KIẾN)</p>
                                             <p class="font-headline-md mb-0" style="color: var(--on-tertiary-fixed-variant);">
-                                                <c:out value="${not empty estimatedWait ? estimatedWait : '14 Days'}" />
+                                                <c:out value="${not empty estimatedWait ? estimatedWait : '14 ngày'}" />
                                             </p>
                                         </div>
                                     </div>
@@ -102,11 +102,11 @@
                              style="border-color: var(--surface-container-high) !important;">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="font-title-lg text-dark mb-0 d-flex align-items-center gap-2">
-                                    <span class="material-symbols-outlined text-primary-custom">inventory_2</span> Available Stock
+                                    <span class="material-symbols-outlined text-primary-custom">inventory_2</span> Bản sao sẵn có
                                 </h4>
                                 <span class="badge font-label-md px-2 py-1 rounded border-0 text-white"
                                       style="background-color: var(--primary-container); font-size: 10px;">
-                                    <c:out value="${availableCopies != null ? availableCopies : '3'}" /> READY
+                                    <c:out value="${availableCopies != null ? availableCopies : '3'}" /> SẴN SÀNG
                                 </span>
                             </div>
 
@@ -139,7 +139,7 @@
                                                 <c:if test="${copy.returnedToday}">
                                                     <div class="mt-2 d-flex align-items-center gap-2">
                                                         <span class="text-success d-flex align-items-center gap-1 fw-semibold" style="font-size: 10px;">
-                                                            <span class="rounded-circle d-inline-block bg-success" style="width: 6px; height: 6px;"></span> Returned Today
+                                                            <span class="rounded-circle d-inline-block bg-success" style="width: 6px; height: 6px;"></span> Đã trả hôm nay
                                                         </span>
                                                     </div>
                                                 </c:if>
@@ -152,7 +152,7 @@
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
                                                     <p class="font-label-md text-dark fw-bold mb-0">#LUM-8829-X</p>
-                                                    <p class="mb-0 text-secondary-custom" style="font-size: 10px;">Floor 2, Shelf A4</p>
+                                                    <p class="mb-0 text-secondary-custom" style="font-size: 10px;">Tầng 2, Kệ A4</p>
                                                 </div>
                                                 <button class="btn btn-sm rounded-circle p-1 border-0 d-flex align-items-center justify-content-center"
                                                         style="background-color: rgba(157,67,0,0.05); color: var(--primary); width: 28px; height: 28px;"
@@ -162,7 +162,7 @@
                                             </div>
                                             <div class="mt-2 d-flex align-items-center gap-2">
                                                 <span class="text-success d-flex align-items-center gap-1 fw-semibold" style="font-size: 10px;">
-                                                    <span class="rounded-circle d-inline-block bg-success" style="width: 6px; height: 6px;"></span> Returned Today
+                                                    <span class="rounded-circle d-inline-block bg-success" style="width: 6px; height: 6px;"></span> Đã trả hôm nay
                                                 </span>
                                             </div>
                                         </div>
@@ -170,7 +170,7 @@
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
                                                     <p class="font-label-md text-dark fw-bold mb-0">#LUM-4112-Q</p>
-                                                    <p class="mb-0 text-secondary-custom" style="font-size: 10px;">Collection Desk</p>
+                                                    <p class="mb-0 text-secondary-custom" style="font-size: 10px;">Quầy sưu tập</p>
                                                 </div>
                                                 <button class="btn btn-sm rounded-circle p-1 border-0 d-flex align-items-center justify-content-center"
                                                         style="background-color: rgba(157,67,0,0.05); color: var(--primary); width: 28px; height: 28px;"
@@ -183,7 +183,7 @@
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
                                                     <p class="font-label-md text-dark fw-bold mb-0">#LUM-9003-B</p>
-                                                    <p class="mb-0 text-secondary-custom" style="font-size: 10px;">Maintenance</p>
+                                                    <p class="mb-0 text-secondary-custom" style="font-size: 10px;">Bảo trì</p>
                                                 </div>
                                                 <span class="material-symbols-outlined text-secondary-custom" style="font-size: 18px;">build</span>
                                             </div>
@@ -200,21 +200,21 @@
                          style="box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid var(--surface-container-high) !important;">
                     <div class="card-header bg-lowest p-3 border-bottom d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3"
                          style="border-color: var(--surface-container-high) !important;">
-                        <h4 class="font-title-lg text-dark mb-0">Queue Management</h4>
+                        <h4 class="font-title-lg text-dark mb-0">Quản lý hàng đợi</h4>
                         <div class="d-flex gap-2 flex-wrap">
                             <div class="position-relative">
                                 <input class="form-control bg-low border-0 rounded-3 py-2 font-body-sm shadow-none"
                                        style="padding-left: 2.5rem; width: 240px;"
-                                       placeholder="Search members..."
+                                       placeholder="Tìm kiếm thành viên..."
                                        type="text"
                                        id="queue_search" />
                                 <span class="material-symbols-outlined position-absolute start-0 top-50 translate-middle-y ms-3 text-secondary-custom opacity-75">search</span>
                             </div>
                             <select class="form-select bg-low border-0 rounded-3 py-2 font-body-sm text-secondary-custom shadow-none"
                                     style="width: 130px;" id="priority_filter">
-                                <option value="">All Status</option>
-                                <option value="URGENT">Urgent</option>
-                                <option value="NORMAL">Normal</option>
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="URGENT">Khẩn cấp</option>
+                                <option value="NORMAL">Bình thường</option>
                             </select>
                         </div>
                     </div>
@@ -224,12 +224,12 @@
                             <thead>
                                 <tr class="bg-light text-secondary-custom font-label-md border-bottom"
                                     style="font-size: 12px; border-color: var(--surface-container-high) !important;">
-                                    <th class="p-3 fw-bold border-0">Pos</th>
-                                    <th class="p-3 fw-bold border-0">Name</th>
-                                    <th class="p-3 fw-bold border-0">Member Type</th>
-                                    <th class="p-3 fw-bold border-0">Request Date</th>
-                                    <th class="p-3 fw-bold border-0">Priority Status</th>
-                                    <th class="p-3 fw-bold border-0">Action</th>
+                                    <th class="p-3 fw-bold border-0">Vị trí</th>
+                                    <th class="p-3 fw-bold border-0">Tên</th>
+                                    <th class="p-3 fw-bold border-0">Loại thành viên</th>
+                                    <th class="p-3 fw-bold border-0">Ngày yêu cầu</th>
+                                    <th class="p-3 fw-bold border-0">Trạng thái ưu tiên</th>
+                                    <th class="p-3 fw-bold border-0">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody class="table-group-divider border-0">
@@ -270,11 +270,11 @@
                                                     <c:choose>
                                                         <c:when test="${q.priority == 'URGENT'}">
                                                             <span class="text-danger fw-bold d-inline-flex align-items-center gap-1" style="font-size: 10px; letter-spacing: -0.02em;">
-                                                                <span class="material-symbols-outlined" style="font-size: 14px;">priority_high</span> Urgent / Research
+                                                                <span class="material-symbols-outlined" style="font-size: 14px;">priority_high</span> Khẩn cấp / Nghiên cứu
                                                             </span>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span class="text-secondary-custom opacity-50 fw-bold" style="font-size: 10px;">Normal</span>
+                                                            <span class="text-secondary-custom opacity-50 fw-bold" style="font-size: 10px;">Bình thường</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
@@ -285,18 +285,18 @@
                                                                 <button class="btn btn-sm text-white fw-bold px-3 py-2 border-0 rounded-3"
                                                                         style="background-color: var(--primary); font-size: 11px;"
                                                                         onclick="assignCopy('${availableCopyForAssign}', '${q.memberId}')">
-                                                                    Assign #<c:out value="${availableCopyForAssign}" />
+                                                                    Cấp #<c:out value="${availableCopyForAssign}" />
                                                                 </button>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <button class="btn btn-sm fw-bold border px-3 py-2 rounded-3 text-primary-custom"
                                                                         style="border-color: var(--outline) !important; font-size: 11px;">
-                                                                    Assign Copy
+                                                                    Cấp bản sao
                                                                 </button>
                                                             </c:otherwise>
                                                         </c:choose>
                                                         <button class="btn btn-link p-1 text-secondary-custom shadow-none border-0"
-                                                                title="Send Notification">
+                                                                title="Gửi thông báo">
                                                             <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
                                                         </button>
                                                     </div>
@@ -323,19 +323,19 @@
                                             </td>
                                             <td class="p-3">
                                                 <span class="badge text-dark font-body-sm px-2 py-1 border-0"
-                                                      style="background-color: var(--surface-container-high); font-size: 10px; font-weight: 600;">Postgrad Student</span>
+                                                      style="background-color: var(--surface-container-high); font-size: 10px; font-weight: 600;">Sinh viên cao học</span>
                                             </td>
                                             <td class="p-3 font-body-sm text-dark">Oct 12, 2023</td>
                                             <td class="p-3">
                                                 <span class="text-danger fw-bold d-inline-flex align-items-center gap-1" style="font-size: 10px; letter-spacing: -0.02em;">
-                                                    <span class="material-symbols-outlined" style="font-size: 14px;">priority_high</span> Urgent / Research
+                                                    <span class="material-symbols-outlined" style="font-size: 14px;">priority_high</span> Khẩn cấp / Nghiên cứu
                                                 </span>
                                             </td>
                                             <td class="p-3">
                                                 <div class="d-flex align-items-center gap-2">
                                                     <button class="btn btn-sm text-white fw-bold px-3 py-2 border-0 rounded-3 btn-assign-trigger"
                                                             style="background-color: var(--primary); font-size: 11px;">
-                                                        Assign #LUM-8829-X
+                                                        Cấp #LUM-8829-X
                                                     </button>
                                                     <button class="btn btn-link p-1 text-secondary-custom shadow-none border-0">
                                                         <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
@@ -360,16 +360,16 @@
                                             </td>
                                             <td class="p-3">
                                                 <span class="badge text-dark font-body-sm px-2 py-1 border-0"
-                                                      style="background-color: var(--surface-container-high); font-size: 10px; font-weight: 600;">Senior Faculty</span>
+                                                      style="background-color: var(--surface-container-high); font-size: 10px; font-weight: 600;">Giảng viên cấp cao</span>
                                             </td>
                                             <td class="p-3 font-body-sm text-dark">Oct 14, 2023</td>
                                             <td class="p-3">
-                                                <span class="text-secondary-custom opacity-50 fw-bold" style="font-size: 10px;">Normal</span>
+                                                <span class="text-secondary-custom opacity-50 fw-bold" style="font-size: 10px;">Bình thường</span>
                                             </td>
                                             <td class="p-3">
                                                 <div class="d-flex align-items-center gap-2">
                                                     <button class="btn btn-sm fw-bold border px-3 py-2 rounded-3 text-primary-custom"
-                                                            style="border-color: var(--outline) !important; font-size: 11px;">Assign Copy</button>
+                                                            style="border-color: var(--outline) !important; font-size: 11px;">Cấp bản sao</button>
                                                     <button class="btn btn-link p-1 text-secondary-custom shadow-none border-0">
                                                         <span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
                                                     </button>
@@ -385,8 +385,8 @@
                     <div class="card-footer bg-lowest p-3 border-top d-flex justify-content-between align-items-center"
                          style="font-size: 11px; font-weight: 600; letter-spacing: 0.05em; border-color: var(--surface-container-high) !important;">
                         <span class="text-secondary-custom">
-                            Showing 1-<c:out value="${queueList != null ? queueList.size() : '3'}" />
-                            of <c:out value="${totalReserved != null ? totalReserved : '24'}" /> members
+                            Hiển thị 1-<c:out value="${queueList != null ? queueList.size() : '3'}" />
+                            của <c:out value="${totalReserved != null ? totalReserved : '24'}" /> thành viên
                         </span>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm p-0 rounded border d-flex align-items-center justify-content-center shadow-none"
@@ -413,7 +413,7 @@
 <%-- Toast Notification --%>
 <div id="toast">
     <span class="material-symbols-outlined text-success">check_circle</span>
-    <span class="font-body-sm" id="toast-message">Assignment successful!</span>
+    <span class="font-body-sm" id="toast-message">Cấp bản sao thành công!</span>
 </div>
 
 <%-- Page-specific styles --%>
@@ -457,21 +457,21 @@
     }
 
     function selectCopy(barcode) {
-        showToast('Copy #' + barcode + ' selected for manual assignment');
+        showToast('Bản sao #' + barcode + ' được chọn để cấp thủ công');
     }
 
     function assignCopy(barcode, memberId) {
-        showToast('Assignment of #' + barcode + ' to member ' + memberId + ' successful!');
+        showToast('Cấp bản sao #' + barcode + ' cho thành viên ' + memberId + ' thành công!');
     }
 
     // Assign button click for sample row
     document.querySelectorAll('.btn-assign-trigger').forEach(btn => {
-        btn.onclick = () => showToast('Assignment successful!');
+        btn.onclick = () => showToast('Cấp bản sao thành công!');
     });
 
     // Stock card click for sample cards
     document.querySelectorAll('.stock-card:not(.opacity-50)').forEach(card => {
-        card.onclick = () => showToast('Copy selected for manual assignment');
+        card.onclick = () => showToast('Bản sao được chọn để cấp thủ công');
     });
 </script>
 

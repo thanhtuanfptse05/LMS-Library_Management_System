@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <%--
     Manager — Notification Detail
@@ -273,7 +273,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -281,7 +281,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -293,14 +293,14 @@
                             <ol class="breadcrumb mb-0" style="font-size: 12px;">
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/manager/dashboard"
-                                       class="text-decoration-none text-on-surface-variant">Dashboard</a>
+                                       class="text-decoration-none text-on-surface-variant">Bảng điều khiển</a>
                                 </li>
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/manager/notification-broadcast.jsp"
                                        class="text-decoration-none text-on-surface-variant">Broadcasts</a>
                                 </li>
                                 <li class="breadcrumb-item active fw-semibold text-primary-custom" aria-current="page">
-                                    Notification Detail
+                                    Chi tiết Thông báo
                                 </li>
                             </ol>
                         </nav>
@@ -308,10 +308,10 @@
                             <span class="material-symbols-outlined me-2"
                                   style="font-size: 26px; vertical-align: -4px; color: var(--primary, #9d4300);
                                          font-variation-settings: 'FILL' 1;">notifications</span>
-                            Notification Detail
+                            Chi tiết Thông báo
                         </h1>
                         <p style="font-size: 14px; color: var(--on-surface-variant); margin: 0;">
-                            View broadcast content, delivery statistics, and recipient engagement.
+                            Xem nội dung thông báo, thống kê gửi và tương tác của người nhận.
                         </p>
                     </div>
                     <!-- Page-level actions -->
@@ -320,29 +320,29 @@
                             <c:when test="${notification.status == 'DRAFT' or empty notification}">
                                 <a href="${pageContext.request.contextPath}/manager/notification-broadcast.jsp?id=${notification.id}"
                                    class="btn-detail-action primary text-decoration-none"
-                                   aria-label="Edit and send this notification">
+                                   aria-label="Chỉnh sửa và gửi thông báo này">
                                     <span class="material-symbols-outlined">edit</span>
-                                    Edit &amp; Send
+                                    Sửa &amp; Gửi
                                 </a>
                             </c:when>
                             <c:otherwise>
                                 <button class="btn-detail-action primary"
                                         onclick="window.location='${pageContext.request.contextPath}/manager/notification-broadcast.jsp'"
-                                        aria-label="Create a similar notification">
+                                        aria-label="Tạo thông báo tương tự">
                                     <span class="material-symbols-outlined">content_copy</span>
-                                    Duplicate
+                                    Nhân bản
                                 </button>
                             </c:otherwise>
                         </c:choose>
-                        <button class="btn-detail-action outline" id="btnExport" aria-label="Export notification data">
+                        <button class="btn-detail-action outline" id="btnExport" aria-label="Xuất dữ liệu thông báo">
                             <span class="material-symbols-outlined">download</span>
-                            Export
+                            Xuất dữ liệu
                         </button>
                         <button class="btn-detail-action danger" id="btnDelete"
-                                aria-label="Delete notification"
+                                aria-label="Xóa thông báo"
                                 data-bs-toggle="modal" data-bs-target="#deleteModal">
                             <span class="material-symbols-outlined">delete</span>
-                            Delete
+                            Xóa
                         </button>
                     </div>
                 </div>
@@ -359,7 +359,7 @@
                                  style="background: var(--surface-container-lowest, #fff); border-bottom: 1px solid var(--outline-variant);">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="material-symbols-outlined" style="color: var(--primary, #9d4300);">article</span>
-                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Notification Content</h2>
+                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Nội dung Thông báo</h2>
                                 </div>
                                 <c:choose>
                                     <c:when test="${not empty notification}">
@@ -378,7 +378,7 @@
                                     <c:otherwise>
                                         <span class="status-pill sent">
                                             <span class="material-symbols-outlined">check_circle</span>
-                                            SENT
+                                            ĐÃ GỬI
                                         </span>
                                     </c:otherwise>
                                 </c:choose>
@@ -408,7 +408,7 @@
                                                 <a href="${pageContext.request.contextPath}${notification.actionUrl}"
                                                    class="notif-action-link">
                                                     <span class="material-symbols-outlined">arrow_forward</span>
-                                                    <c:out value="${not empty notification.actionLabel ? notification.actionLabel : 'View Details'}" />
+                                                    <c:out value="${not empty notification.actionLabel ? notification.actionLabel : 'Xem Chi tiết'}" />
                                                 </a>
                                             </c:if>
                                         </c:when>
@@ -416,28 +416,28 @@
                                             <%-- Demo fallback content --%>
                                             <div class="notif-type-badge type-announcement">
                                                 <span class="material-symbols-outlined">campaign</span>
-                                                Announcement
+                                                Thông báo
                                             </div>
                                             <div class="notif-title-display">
-                                                Library Closed — National Day Holiday, September 2, 2026
+                                                Thư viện Đóng cửa — Nghỉ lễ Quốc khánh, 02/09/2026
                                             </div>
                                             <div class="notif-body-display">
-Dear library members,
+Kính gửi các thành viên thư viện,
 
-The university library will be closed on <strong>Tuesday, September 2, 2026</strong> in observance of the National Day public holiday.
+Thư viện trường đại học sẽ đóng cửa vào <strong>Thứ Ba, ngày 2 tháng 9 năm 2026</strong> để nghỉ lễ Quốc khánh.
 
-Regular library services, including book borrowing, returns, and reading room access, will be suspended for the day. All existing loans due on this date will be automatically extended by one day with no late fee penalty.
+Các dịch vụ thư viện thông thường, bao gồm mượn sách, trả sách và vào phòng đọc sẽ bị tạm ngừng trong ngày. Tất cả các khoản mượn hiện tại đến hạn vào ngày này sẽ được tự động gia hạn thêm một ngày mà không bị phạt quá hạn.
 
-The library will resume normal operations on <strong>Wednesday, September 3, 2026</strong> at 7:30 AM.
+Thư viện sẽ hoạt động trở lại bình thường vào <strong>Thứ Tư, ngày 3 tháng 9 năm 2026</strong> lúc 7:30 sáng.
 
-We appreciate your understanding. Happy National Day!
+Chúng tôi rất mong sự cảm thông của bạn. Chúc mừng Quốc khánh!
 
-— Library Management Team
+— Ban Quản lý Thư viện
                                             </div>
                                             <a href="${pageContext.request.contextPath}/policies.jsp"
                                                class="notif-action-link">
                                                 <span class="material-symbols-outlined">arrow_forward</span>
-                                                View Library Hours
+                                                Xem Giờ Thư viện
                                             </a>
                                         </c:otherwise>
                                     </c:choose>
@@ -449,7 +449,7 @@ We appreciate your understanding. Happy National Day!
                         <div class="raised-card p-4">
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="material-symbols-outlined" style="color: var(--primary, #9d4300);">analytics</span>
-                                <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Delivery Statistics</h2>
+                                <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Thống kê Gửi</h2>
                             </div>
                             <div class="row g-3">
                                 <div class="col-6 col-md-3">
@@ -461,7 +461,7 @@ We appreciate your understanding. Happy National Day!
                                             <div class="dsc-value">
                                                 <c:out value="${notification.totalSent != null ? notification.totalSent : '4,802'}" />
                                             </div>
-                                            <div class="dsc-label">Total Sent</div>
+                                            <div class="dsc-label">Tổng số đã gửi</div>
                                         </div>
                                     </div>
                                 </div>
@@ -474,7 +474,7 @@ We appreciate your understanding. Happy National Day!
                                             <div class="dsc-value" style="color: #16a34a;">
                                                 <c:out value="${notification.totalRead != null ? notification.totalRead : '3,147'}" />
                                             </div>
-                                            <div class="dsc-label">Read</div>
+                                            <div class="dsc-label">Đã đọc</div>
                                         </div>
                                     </div>
                                 </div>
@@ -487,7 +487,7 @@ We appreciate your understanding. Happy National Day!
                                             <div class="dsc-value" style="color: var(--tertiary,#006398);">
                                                 <c:out value="${notification.totalClicked != null ? notification.totalClicked : '892'}" />
                                             </div>
-                                            <div class="dsc-label">Clicked</div>
+                                            <div class="dsc-label">Đã nhấp</div>
                                         </div>
                                     </div>
                                 </div>
@@ -500,7 +500,7 @@ We appreciate your understanding. Happy National Day!
                                             <div class="dsc-value" style="color: var(--error,#ba1a1a);">
                                                 <c:out value="${notification.totalFailed != null ? notification.totalFailed : '12'}" />
                                             </div>
-                                            <div class="dsc-label">Failed</div>
+                                            <div class="dsc-label">Lỗi</div>
                                         </div>
                                     </div>
                                 </div>
@@ -509,7 +509,7 @@ We appreciate your understanding. Happy National Day!
                             <!-- Read rate progress bar -->
                             <div class="mt-4">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span style="font-size: 12px; font-weight: 700; color: var(--on-surface-variant);">READ RATE</span>
+                                    <span style="font-size: 12px; font-weight: 700; color: var(--on-surface-variant);">TỶ LỆ ĐỌC</span>
                                     <span style="font-size: 12px; font-weight: 700; color: #16a34a;" id="readRateText">65.5%</span>
                                 </div>
                                 <div class="mini-progress" style="height: 8px;">
@@ -518,7 +518,7 @@ We appreciate your understanding. Happy National Day!
                                 </div>
                                 <div class="d-flex justify-content-between mt-1">
                                     <span style="font-size: 10px; color: var(--on-surface-variant);">0%</span>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Click rate: 18.6%</span>
+                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Tỷ lệ nhấp: 18.6%</span>
                                     <span style="font-size: 10px; color: var(--on-surface-variant);">100%</span>
                                 </div>
                             </div>
@@ -530,28 +530,28 @@ We appreciate your understanding. Happy National Day!
                                  style="background: var(--surface-container-lowest,#fff); border-bottom: 1px solid var(--outline-variant);">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="material-symbols-outlined" style="color: var(--primary, #9d4300);">people</span>
-                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Recipient Details</h2>
+                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Chi tiết Người nhận</h2>
                                 </div>
                                 <!-- Filter tabs -->
-                                <div class="d-flex gap-2" role="tablist" aria-label="Filter recipients">
+                                <div class="d-flex gap-2" role="tablist" aria-label="Lọc người nhận">
                                     <button class="recip-tab active" data-filter="all" id="recip-tab-all"
                                             role="tab" aria-selected="true" aria-controls="recipientTable">
-                                        All
+                                        Tất cả
                                     </button>
                                     <button class="recip-tab" data-filter="read" id="recip-tab-read"
                                             role="tab" aria-selected="false">
                                         <span class="material-symbols-outlined">mark_email_read</span>
-                                        Read
+                                        Đã đọc
                                     </button>
                                     <button class="recip-tab" data-filter="unread" id="recip-tab-unread"
                                             role="tab" aria-selected="false">
                                         <span class="material-symbols-outlined">mark_email_unread</span>
-                                        Unread
+                                        Chưa đọc
                                     </button>
                                     <button class="recip-tab" data-filter="failed" id="recip-tab-failed"
                                             role="tab" aria-selected="false">
                                         <span class="material-symbols-outlined">error</span>
-                                        Failed
+                                        Lỗi
                                     </button>
                                 </div>
                             </div>
@@ -559,11 +559,11 @@ We appreciate your understanding. Happy National Day!
                                 <table class="table table-lms mb-0" id="recipientTable">
                                     <thead>
                                         <tr>
-                                            <th>Recipient</th>
-                                            <th>Role</th>
-                                            <th>Status</th>
-                                            <th>Read At</th>
-                                            <th>Clicked</th>
+                                            <th>Người nhận</th>
+                                            <th>Vai trò</th>
+                                            <th>Trạng thái</th>
+                                            <th>Đọc lúc</th>
+                                            <th>Đã nhấp</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -594,9 +594,9 @@ We appreciate your understanding. Happy National Day!
                                                                   style="font-size: 13px; font-weight: 600;">
                                                                 <span class="recipient-status-dot ${r.readStatus}"></span>
                                                                 <c:choose>
-                                                                    <c:when test="${r.readStatus == 'read'}">Read</c:when>
-                                                                    <c:when test="${r.readStatus == 'failed'}">Failed</c:when>
-                                                                    <c:otherwise>Unread</c:otherwise>
+                                                                    <c:when test="${r.readStatus == 'read'}">Đã đọc</c:when>
+                                                                    <c:when test="${r.readStatus == 'failed'}">Lỗi</c:when>
+                                                                    <c:otherwise>Chưa đọc</c:otherwise>
                                                                 </c:choose>
                                                             </span>
                                                         </td>
@@ -633,8 +633,8 @@ We appreciate your understanding. Happy National Day!
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">STUDENT</span></td>
-                                                    <td><span style="font-size: 13px; font-weight: 600; color: #16a34a;"><span class="recipient-status-dot read"></span>Read</span></td>
+                                                    <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">SINH VIÊN</span></td>
+                                                    <td><span style="font-size: 13px; font-weight: 600; color: #16a34a;"><span class="recipient-status-dot read"></span>Đã đọc</span></td>
                                                     <td style="font-size: 12px; color: var(--on-surface-variant);">03/06/2026 08:42</td>
                                                     <td style="font-size: 13px; text-align: center;"><span class="material-symbols-outlined" style="font-size: 16px; color: #16a34a;">check</span></td>
                                                 </tr>
@@ -648,8 +648,8 @@ We appreciate your understanding. Happy National Day!
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">LECTURER</span></td>
-                                                    <td><span style="font-size: 13px; font-weight: 600; color: #16a34a;"><span class="recipient-status-dot read"></span>Read</span></td>
+                                                    <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">GIẢNG VIÊN</span></td>
+                                                    <td><span style="font-size: 13px; font-weight: 600; color: #16a34a;"><span class="recipient-status-dot read"></span>Đã đọc</span></td>
                                                     <td style="font-size: 12px; color: var(--on-surface-variant);">03/06/2026 09:15</td>
                                                     <td style="font-size: 13px; text-align: center;"><span style="color: var(--on-surface-variant);">—</span></td>
                                                 </tr>
@@ -663,8 +663,8 @@ We appreciate your understanding. Happy National Day!
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">STUDENT</span></td>
-                                                    <td><span style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant);"><span class="recipient-status-dot unread"></span>Unread</span></td>
+                                                    <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">SINH VIÊN</span></td>
+                                                    <td><span style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant);"><span class="recipient-status-dot unread"></span>Chưa đọc</span></td>
                                                     <td style="font-size: 12px; color: var(--on-surface-variant);">—</td>
                                                     <td style="font-size: 13px; text-align: center;"><span style="color: var(--on-surface-variant);">—</span></td>
                                                 </tr>
@@ -678,8 +678,8 @@ We appreciate your understanding. Happy National Day!
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">STUDENT</span></td>
-                                                    <td><span style="font-size: 13px; font-weight: 600; color: var(--error);"><span class="recipient-status-dot failed"></span>Failed</span></td>
+                                                    <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">SINH VIÊN</span></td>
+                                                    <td><span style="font-size: 13px; font-weight: 600; color: var(--error);"><span class="recipient-status-dot failed"></span>Lỗi</span></td>
                                                     <td style="font-size: 12px; color: var(--on-surface-variant);">—</td>
                                                     <td style="font-size: 13px; text-align: center;"><span style="color: var(--on-surface-variant);">—</span></td>
                                                 </tr>
@@ -694,7 +694,7 @@ We appreciate your understanding. Happy National Day!
                                                         </div>
                                                     </td>
                                                     <td><span class="badge-pill" style="background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 11px;">STUDENT</span></td>
-                                                    <td><span style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant);"><span class="recipient-status-dot unread"></span>Unread</span></td>
+                                                    <td><span style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant);"><span class="recipient-status-dot unread"></span>Chưa đọc</span></td>
                                                     <td style="font-size: 12px; color: var(--on-surface-variant);">—</td>
                                                     <td style="font-size: 13px; text-align: center;"><span style="color: var(--on-surface-variant);">—</span></td>
                                                 </tr>
@@ -741,36 +741,36 @@ We appreciate your understanding. Happy National Day!
                             <div class="p-3 d-flex align-items-center gap-2"
                                  style="background: var(--surface-container-lowest,#fff); border-bottom: 1px solid var(--outline-variant);">
                                 <span class="material-symbols-outlined" style="color: var(--primary,#9d4300);">info</span>
-                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Broadcast Info</h3>
+                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Thông tin Broadcast</h3>
                             </div>
                             <div class="p-0">
                                 <div class="meta-strip">
                                     <div class="meta-strip-item">
-                                        <span class="msi-label">Audience</span>
+                                        <span class="msi-label">Đối tượng</span>
                                         <span class="msi-value">
                                             <span class="material-symbols-outlined msi-icon">groups</span>
-                                            <c:out value="${not empty notification.audienceType ? notification.audienceType : 'All Users'}" />
+                                            <c:out value="${not empty notification.audienceType ? notification.audienceType : 'Tất cả người dùng'}" />
                                         </span>
                                     </div>
                                     <div class="meta-strip-item">
-                                        <span class="msi-label">Priority</span>
+                                        <span class="msi-label">Độ ưu tiên</span>
                                         <span class="msi-value">
                                             <c:choose>
                                                 <c:when test="${notification.priority == 'URGENT'}">
-                                                    <span style="color: var(--error, #ba1a1a);">🔴 Urgent</span>
+                                                    <span style="color: var(--error, #ba1a1a);">🔴 Khẩn cấp</span>
                                                 </c:when>
                                                 <c:when test="${notification.priority == 'HIGH'}">
-                                                    <span style="color: #854d0e;">🟠 High</span>
+                                                    <span style="color: #854d0e;">🟠 Cao</span>
                                                 </c:when>
                                                 <c:when test="${notification.priority == 'LOW'}">
-                                                    <span style="color: #16a34a;">🟢 Low</span>
+                                                    <span style="color: #16a34a;">🟢 Thấp</span>
                                                 </c:when>
-                                                <c:otherwise>🔵 Normal</c:otherwise>
+                                                <c:otherwise>🔵 Bình thường</c:otherwise>
                                             </c:choose>
                                         </span>
                                     </div>
                                     <div class="meta-strip-item">
-                                        <span class="msi-label">Sent At</span>
+                                        <span class="msi-label">Gửi lúc</span>
                                         <span class="msi-value" style="font-size: 13px;">
                                             <c:choose>
                                                 <c:when test="${not empty notification.sentAt}">
@@ -781,13 +781,13 @@ We appreciate your understanding. Happy National Day!
                                         </span>
                                     </div>
                                     <div class="meta-strip-item">
-                                        <span class="msi-label">Created By</span>
+                                        <span class="msi-label">Người tạo</span>
                                         <span class="msi-value" style="font-size: 13px;">
-                                            <c:out value="${not empty notification.createdBy ? notification.createdBy : sessionScope.email != null ? sessionScope.email : 'Manager'}" />
+                                            <c:out value="${not empty notification.createdBy ? notification.createdBy : sessionScope.email != null ? sessionScope.email : 'Quản lý'}" />
                                         </span>
                                     </div>
                                     <div class="meta-strip-item">
-                                        <span class="msi-label">Notif. ID</span>
+                                        <span class="msi-label">Mã Notif.</span>
                                         <span class="msi-value" style="font-size: 12px; font-family: monospace;">
                                             #<c:out value="${not empty notification.id ? notification.id : 'BRD-20260603-001'}" />
                                         </span>
@@ -800,7 +800,7 @@ We appreciate your understanding. Happy National Day!
                         <div class="raised-card p-4">
                             <div class="d-flex align-items-center gap-2 mb-4">
                                 <span class="material-symbols-outlined" style="color: var(--primary,#9d4300);">timeline</span>
-                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Activity Log</h3>
+                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Nhật ký Hoạt động</h3>
                             </div>
                             <div class="d-flex flex-column" id="activityTimeline">
 
@@ -809,9 +809,9 @@ We appreciate your understanding. Happy National Day!
                                         <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span>
                                     </div>
                                     <div class="timeline-content">
-                                        <div class="tc-title">Delivery Completed</div>
+                                        <div class="tc-title">Hoàn tất gửi</div>
                                         <div class="tc-time">03/06/2026 — 07:35 AM</div>
-                                        <div class="tc-body">Sent to 4,802 recipients. 12 failed.</div>
+                                        <div class="tc-body">Đã gửi đến 4,802 người nhận. 12 thất bại.</div>
                                     </div>
                                 </div>
 
@@ -820,9 +820,9 @@ We appreciate your understanding. Happy National Day!
                                         <span class="material-symbols-outlined" style="font-size: 14px;">send</span>
                                     </div>
                                     <div class="timeline-content">
-                                        <div class="tc-title">Broadcast Dispatched</div>
+                                        <div class="tc-title">Broadcast Đã gửi</div>
                                         <div class="tc-time">03/06/2026 — 07:30 AM</div>
-                                        <div class="tc-body">Notification queued and dispatched by email service.</div>
+                                        <div class="tc-body">Thông báo đã được xếp hàng và gửi qua dịch vụ email.</div>
                                     </div>
                                 </div>
 
@@ -831,9 +831,9 @@ We appreciate your understanding. Happy National Day!
                                         <span class="material-symbols-outlined" style="font-size: 14px;">verified</span>
                                     </div>
                                     <div class="timeline-content">
-                                        <div class="tc-title">Approved for Sending</div>
+                                        <div class="tc-title">Đã phê duyệt gửi</div>
                                         <div class="tc-time">03/06/2026 — 07:28 AM</div>
-                                        <div class="tc-body">Final content review passed. Audience: All Users (4,802).</div>
+                                        <div class="tc-body">Nội dung cuối cùng đã được thông qua. Đối tượng: Tất cả người dùng (4,802).</div>
                                     </div>
                                 </div>
 
@@ -842,9 +842,9 @@ We appreciate your understanding. Happy National Day!
                                         <span class="material-symbols-outlined" style="font-size: 14px;">draft</span>
                                     </div>
                                     <div class="timeline-content">
-                                        <div class="tc-title">Draft Saved</div>
+                                        <div class="tc-title">Đã lưu nháp</div>
                                         <div class="tc-time">02/06/2026 — 04:55 PM</div>
-                                        <div class="tc-body">Draft saved by Library Manager.</div>
+                                        <div class="tc-body">Bản nháp được lưu bởi Quản lý Thư viện.</div>
                                     </div>
                                 </div>
 
@@ -853,10 +853,10 @@ We appreciate your understanding. Happy National Day!
                                         <span class="material-symbols-outlined" style="font-size: 14px;">add_circle</span>
                                     </div>
                                     <div class="timeline-content">
-                                        <div class="tc-title">Notification Created</div>
+                                        <div class="tc-title">Thông báo được tạo</div>
                                         <div class="tc-time">02/06/2026 — 04:50 PM</div>
-                                        <div class="tc-body">Broadcast form started by
-                                            <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Manager'}" />.
+                                        <div class="tc-body">Mẫu gửi thông báo được bắt đầu bởi
+                                            <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Quản lý'}" />.
                                         </div>
                                     </div>
                                 </div>
@@ -869,7 +869,7 @@ We appreciate your understanding. Happy National Day!
                             <div class="p-3 d-flex align-items-center gap-2"
                                  style="background: var(--surface-container-lowest,#fff); border-bottom: 1px solid var(--outline-variant);">
                                 <span class="material-symbols-outlined" style="color: var(--primary,#9d4300);">view_list</span>
-                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Other Broadcasts</h3>
+                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Các Thông báo khác</h3>
                             </div>
                             <div class="p-3 d-flex flex-column gap-2">
                                 <c:choose>
@@ -896,8 +896,8 @@ We appreciate your understanding. Happy National Day!
                                             <span class="material-symbols-outlined flex-shrink-0"
                                                   style="font-size: 20px; color: var(--primary,#9d4300); margin-top: 2px;">assignment_return</span>
                                             <div>
-                                                <p class="fw-bold mb-0 text-on-surface" style="font-size: 13px;">Book Recall — SE301 Course Materials</p>
-                                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">Students · 01/06/2026</p>
+                                                <p class="fw-bold mb-0 text-on-surface" style="font-size: 13px;">Thu hồi Sách — Tài liệu môn SE301</p>
+                                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">Sinh viên · 01/06/2026</p>
                                             </div>
                                         </a>
                                         <a href="${pageContext.request.contextPath}/manager/notification-detail.jsp"
@@ -906,8 +906,8 @@ We appreciate your understanding. Happy National Day!
                                             <span class="material-symbols-outlined flex-shrink-0"
                                                   style="font-size: 20px; color: var(--tertiary, #006398); margin-top: 2px;">policy</span>
                                             <div>
-                                                <p class="fw-bold mb-0 text-on-surface" style="font-size: 13px;">Library Policy Update v2.1</p>
-                                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">All Users · 28/05/2026</p>
+                                                <p class="fw-bold mb-0 text-on-surface" style="font-size: 13px;">Cập nhật Chính sách Thư viện v2.1</p>
+                                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">Tất cả Người dùng · 28/05/2026</p>
                                             </div>
                                         </a>
                                         <a href="${pageContext.request.contextPath}/manager/notification-detail.jsp"
@@ -916,15 +916,15 @@ We appreciate your understanding. Happy National Day!
                                             <span class="material-symbols-outlined flex-shrink-0"
                                                   style="font-size: 20px; color: #16a34a; margin-top: 2px;">event</span>
                                             <div>
-                                                <p class="fw-bold mb-0 text-on-surface" style="font-size: 13px;">Summer Extended Hours Notice</p>
-                                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">All Users · 01/06/2026</p>
+                                                <p class="fw-bold mb-0 text-on-surface" style="font-size: 13px;">Thông báo Giờ Mở cửa Kéo dài Mùa hè</p>
+                                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">Tất cả Người dùng · 01/06/2026</p>
                                             </div>
                                         </a>
                                     </c:otherwise>
                                 </c:choose>
                                 <a href="${pageContext.request.contextPath}/manager/notification-broadcast.jsp"
                                    class="text-primary-custom fw-bold text-decoration-none mt-1"
-                                   style="font-size: 13px;">Create New Broadcast →</a>
+                                   style="font-size: 13px;">Tạo Thông báo Mới →</a>
                             </div>
                         </div>
 
@@ -948,25 +948,25 @@ We appreciate your understanding. Happy National Day!
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fw-bold" id="deleteModalLabel" style="color: var(--error, #ba1a1a);">
                     <span class="material-symbols-outlined me-2" style="vertical-align: -4px;">warning</span>
-                    Delete Notification?
+                    Xóa Thông báo?
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
             <div class="modal-body py-3">
                 <p style="font-size: 14px; color: var(--on-surface-variant);">
-                    This action will permanently remove the notification and all its delivery records.
-                    This <strong>cannot be undone</strong>.
+                    Hành động này sẽ xóa vĩnh viễn thông báo và tất cả các bản ghi gửi.
+                    Hành động này <strong>không thể hoàn tác</strong>.
                 </p>
             </div>
             <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
                 <form action="${pageContext.request.contextPath}/manager/notification-broadcast" method="POST">
                     <input type="hidden" name="action" value="delete" />
                     <input type="hidden" name="notifId" value="${notification.id}" />
                     <button type="submit" class="btn rounded-pill px-4 fw-bold text-white"
                             style="background-color: var(--error, #ba1a1a);">
                         <span class="material-symbols-outlined me-1" style="font-size: 16px; vertical-align: -3px;">delete</span>
-                        Delete Permanently
+                        Xóa Vĩnh viễn
                     </button>
                 </form>
             </div>
@@ -1009,7 +1009,7 @@ recipTabs.forEach(function(tab) {
 
 /* ══ Export stub ══ */
 document.getElementById('btnExport').addEventListener('click', function() {
-    alert('Export feature: This will download the delivery report as CSV.');
+    alert('Tính năng xuất dữ liệu: Sẽ tải xuống báo cáo gửi dưới dạng CSV.');
 });
 </script>
 

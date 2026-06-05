@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <%--
     Admin — Audit Logs
@@ -226,7 +226,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -238,24 +238,24 @@
                             <ol class="breadcrumb mb-0" style="font-size: 12px;">
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/admin/dashboard"
-                                       class="text-decoration-none text-on-surface-variant">Dashboard</a>
+                                       class="text-decoration-none text-on-surface-variant">Bảng điều khiển</a>
                                 </li>
                                 <li class="breadcrumb-item active fw-semibold text-primary-custom"
-                                    aria-current="page">Audit Logs</li>
+                                    aria-current="page">Nhật ký Kiểm toán</li>
                             </ol>
                         </nav>
                         <h1 class="fw-bold mb-1" style="font-size: 24px; color: var(--on-surface);">
                             <span class="material-symbols-outlined me-2"
                                   style="font-size: 26px; vertical-align: -4px; color: var(--primary, #9d4300);
                                          font-variation-settings: 'FILL' 1;">receipt_long</span>
-                            Audit Logs
+                            Nhật ký Kiểm toán
                         </h1>
                         <p style="font-size: 14px; color: var(--on-surface-variant); margin: 0;">
                             Complete record of all system operations — who did what, when, and on which entity.
                             <c:if test="${not empty param.key}">
                                 Filtered to key: <strong><c:out value="${param.key}" /></strong>.
                                 <a href="${pageContext.request.contextPath}/admin/audit-logs.jsp"
-                                   class="text-primary-custom text-decoration-none fw-bold" style="font-size: 13px;">Clear filter ×</a>
+                                   class="text-primary-custom text-decoration-none fw-bold" style="font-size: 13px;">Xóa filter ×</a>
                             </c:if>
                         </p>
                     </div>
@@ -290,7 +290,7 @@
                             <div class="akc-value" style="color: var(--error,#ba1a1a);">
                                 <c:out value="${highSeverityToday != null ? highSeverityToday : '3'}" />
                             </div>
-                            <div class="akc-label">High-Severity Today</div>
+                            <div class="akc-label">High-Severity Hôm nay</div>
                         </div>
                     </div>
                     <div class="audit-kpi-card">
@@ -301,7 +301,7 @@
                             <div class="akc-value" style="color: var(--tertiary,#006398);">
                                 <c:out value="${activeAdminCount != null ? activeAdminCount : '7'}" />
                             </div>
-                            <div class="akc-label">Active Operators</div>
+                            <div class="akc-label">Hoạt động Operators</div>
                         </div>
                     </div>
                     <div class="audit-kpi-card">
@@ -312,7 +312,7 @@
                             <div class="akc-value" style="color: #16a34a;">
                                 <c:out value="${logsToday != null ? logsToday : '142'}" />
                             </div>
-                            <div class="akc-label">Entries Today</div>
+                            <div class="akc-label">Entries Hôm nay</div>
                         </div>
                     </div>
                 </div>
@@ -330,7 +330,7 @@
                                    aria-label="Search audit logs" />
                         </div>
                         <select class="audit-filter-select" id="actionTypeFilter" aria-label="Filter by action type">
-                            <option value="all">All Actions</option>
+                            <option value="all">All Hành động</option>
                             <option value="CREATE">CREATE</option>
                             <option value="UPDATE">UPDATE</option>
                             <option value="DELETE">DELETE</option>
@@ -347,7 +347,7 @@
                             <option value="info">Info</option>
                         </select>
                         <select class="audit-filter-select" id="dateRangeFilter" aria-label="Filter by date range">
-                            <option value="today">Today</option>
+                            <option value="today">Hôm nay</option>
                             <option value="week" selected>This Week</option>
                             <option value="month">This Month</option>
                             <option value="all">All Time</option>
@@ -364,12 +364,12 @@
                                 <tr>
                                     <th class="col-ts" scope="col">Timestamp</th>
                                     <th class="col-user" scope="col">Operator</th>
-                                    <th class="col-action" scope="col">Action</th>
+                                    <th class="col-action" scope="col">Hành động</th>
                                     <th class="col-entity" scope="col">Entity / Table</th>
-                                    <th class="col-detail" scope="col">Detail / Change</th>
-                                    <th class="col-ip" scope="col">IP Address</th>
+                                    <th class="col-detail" scope="col">Chi tiết / Change</th>
+                                    <th class="col-ip" scope="col">IP Địa chỉ</th>
                                     <th class="col-sev" scope="col">Severity</th>
-                                    <th class="col-act" scope="col">Detail</th>
+                                    <th class="col-act" scope="col">Chi tiết</th>
                                 </tr>
                             </thead>
                             <tbody>

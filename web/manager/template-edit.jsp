@@ -2,12 +2,12 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="vi">
 
             <head>
                 <meta charset="utf-8" />
                 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-                <title>Edit Email Template | UniLibrary Admin</title>
+                <title>Sửa Email Template | UniLibrary Quản trị viên</title>
 
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -119,27 +119,27 @@
                 <aside class="sidebar d-flex flex-column py-3 px-2">
                     <div class="mb-4 px-3">
                         <h1 class="h4 fw-bold tracking-tight m-0" style="color: #9d4300;">UniLibrary</h1>
-                        <p class="small text-secondary m-0 opacity-75">Admin Portal</p>
+                        <p class="small text-secondary m-0 opacity-75">Cổng Quản trị</p>
                     </div>
 
                     <nav class="nav flex-column flex-grow-1 gap-1">
                         <a class="nav-link-custom" href="dashboard"><span
-                                class="material-symbols-outlined">dashboard</span>Dashboard</a>
+                                class="material-symbols-outlined">dashboard</span>Bảng điều khiển</a>
                         <a class="nav-link-custom" href="catalog"><span
-                                class="material-symbols-outlined">menu_book</span>Catalog</a>
+                                class="material-symbols-outlined">menu_book</span>Danh mục Sách</a>
                         <a class="nav-link-custom" href="circulation"><span
-                                class="material-symbols-outlined">swap_horiz</span>Circulation</a>
+                                class="material-symbols-outlined">swap_horiz</span>Lưu hành</a>
                         <a class="nav-link-custom" href="members"><span
-                                class="material-symbols-outlined">group</span>Members</a>
+                                class="material-symbols-outlined">group</span>Thành viên</a>
                         <a class="nav-link-custom active" href="templates"><span
-                                class="material-symbols-outlined">analytics</span>Reports</a>
+                                class="material-symbols-outlined">analytics</span>Báo cáo</a>
                         <a class="nav-link-custom" href="settings"><span
-                                class="material-symbols-outlined">settings</span>Settings</a>
+                                class="material-symbols-outlined">settings</span>Cài đặt</a>
                     </nav>
 
                     <div class="p-2 mt-auto">
                         <button class="btn w-100 text-white fw-bold py-2 rounded-3"
-                            style="background-color: #f97316;">New Entry</button>
+                            style="background-color: #f97316;">Tạo mới</button>
                     </div>
                 </aside>
 
@@ -150,14 +150,14 @@
                         <div class="d-flex align-items-center bg-light rounded-pill px-3 py-1" style="width: 384px;">
                             <span class="material-symbols-outlined text-secondary me-2">search</span>
                             <input class="form-control bg-transparent border-0 p-0 shadow-none small"
-                                placeholder="Search templates..." type="text" />
+                                placeholder="Tìm kiếm mẫu..." type="text" />
                         </div>
                         <div class="d-flex align-items-center gap-3">
                             <button class="btn btn-link p-1 text-secondary position-relative">
                                 <span class="material-symbols-outlined">notifications</span>
                             </button>
                             <div class="d-flex align-items-center gap-2 border-start ps-3">
-                                <img alt="Admin" class="rounded-circle border"
+                                <img alt="Quản trị viên" class="rounded-circle border"
                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaPynAxMPZ_dyuZMxqeWcY9Lm4T_uosuT9HBdgz_r9B-7RsTX6fgEvNYBzNsohaHClWhK6gH-NajgTiZ5OP2_-8RqsdtfvsWohrprGF7_GpvS5uhbTYj-U9OlGrX2z6foHCPR6O4w2x5GjelE19sjIjJkkJ5PhpaztdfcZH2HlAyirxhcc5JSzlQ8jk3boS2wzxXSBtRyXuTWhtZl6DgrKEnN2hKv1uLoHCw1oiWPmAfSSwBKl187lJ0eryg3GGKzOdwjsIVReU7I"
                                     style="width: 32px; height: 32px;" />
                                 <span class="material-symbols-outlined text-secondary">account_circle</span>
@@ -170,12 +170,12 @@
                         <div class="mb-4">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb mb-1" style="font-size: 12px; font-weight: 600;">
-                                    <li class="breadcrumb-item text-secondary">Library Manager</li>
-                                    <li class="breadcrumb-item text-secondary">Document Templates</li>
-                                    <li class="breadcrumb-item active" style="color: #9d4300;">Edit</li>
+                                    <li class="breadcrumb-item text-secondary">Quản lý Thư viện</li>
+                                    <li class="breadcrumb-item text-secondary">Mẫu văn bản</li>
+                                    <li class="breadcrumb-item active" style="color: #9d4300;">Sửa</li>
                                 </ol>
                             </nav>
-                            <h2 class="fw-bold m-0 text-dark">Edit Email Template</h2>
+                            <h2 class="fw-bold m-0 text-dark">Sửa Email Template</h2>
                         </div>
 
                         <div class="row g-4">
@@ -186,36 +186,36 @@
 
                                         <div class="row g-3">
                                             <div class="col-md-6 d-flex flex-column gap-1">
-                                                <label class="fw-semibold text-secondary small">Template Name
-                                                    (Read-Only)</label>
+                                                <label class="fw-semibold text-secondary small">Tên Mẫu
+                                                    (Chỉ đọc)</label>
                                                 <input class="form-control bg-light text-muted font-monospace border"
                                                     readonly type="text" name="name"
                                                     value="${template.name != null ? template.name : 'PICKUP_REMINDER'}" />
                                             </div>
                                             <div class="col-md-6 d-flex flex-column gap-1">
-                                                <label class="fw-semibold text-secondary small">Last Modified</label>
+                                                <label class="fw-semibold text-secondary small">Cập nhật lần cuối</label>
                                                 <div class="form-control-plaintext text-secondary fst-italic px-2"
                                                     style="font-size: 14px;">
                                                     <c:choose>
                                                         <c:when class="${template.lastUpdated != null}">
                                                             <fmt:formatDate value="${template.lastUpdated}"
-                                                                pattern="MMMM dd, yyyy" /> by Admin
+                                                                pattern="MMMM dd, yyyy" /> by Quản trị viên
                                                         </c:when>
-                                                        <c:otherwise>October 24, 2023 by Admin</c:otherwise>
+                                                        <c:otherwise>October 24, 2023 by Quản trị viên</c:otherwise>
                                                     </c:choose>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="d-flex flex-column gap-1">
-                                            <label class="fw-semibold text-secondary small">Subject Line</label>
+                                            <label class="fw-semibold text-secondary small">Dòng Tiêu đề</label>
                                             <input class="form-control border shadow-none" type="text" name="subject"
                                                 value="${template.subject != null ? template.subject : 'Your reserved items are ready at the front desk!'}" />
                                         </div>
 
                                         <div class="d-flex flex-column gap-1">
                                             <div class="d-flex justify-content-between align-items-end mb-1">
-                                                <label class="fw-semibold text-secondary small">Body Content</label>
+                                                <label class="fw-semibold text-secondary small">Nội dung Email</label>
                                                 <div class="btn-group border rounded bg-light p-0.5">
                                                     <button class="btn btn-sm btn-light border-0 py-0 px-2"
                                                         type="button"><span
@@ -247,9 +247,9 @@ UniLibrary Management Team</c:otherwise></c:choose></textarea>
 
                                         <div class="d-flex gap-3 pt-2">
                                             <button class="btn text-white px-4 py-2 rounded-3 shadow-sm fw-bold"
-                                                style="background-color: #9d4300;" type="submit">Save Changes</button>
+                                                style="background-color: #9d4300;" type="submit">Lưu thay đổi</button>
                                             <a href="templates"
-                                                class="btn btn-outline-secondary px-4 py-2 rounded-3">Cancel</a>
+                                                class="btn btn-outline-secondary px-4 py-2 rounded-3">Hủy</a>
                                         </div>
                                     </form>
                                 </div>
@@ -266,11 +266,11 @@ UniLibrary Management Team</c:otherwise></c:choose></textarea>
                                     <div class="col-md-6">
                                         <div class="glass-preview-card p-3 h-100 d-flex flex-column shadow-sm">
                                             <h5 class="fw-bold text-uppercase tracking-widest mb-2 small"
-                                                style="color: #9d4300;">Live Preview Layout</h5>
+                                                style="color: #9d4300;">Xem trước trực tiếp</h5>
                                             <div class="preview-area-output overflow-auto flex-grow-1 custom-scrollbar"
                                                 id="previewArea">
-                                                <p class="text-muted fst-italic">Loading dynamic rendering compiler
-                                                    output...</p>
+                                                <p class="text-muted fst-italic">Bộ biên dịch đang tải...
+                                                    </p>
                                             </div>
                                         </div>
                                     </div>
@@ -282,10 +282,9 @@ UniLibrary Management Team</c:otherwise></c:choose></textarea>
                                     <div class="d-flex align-items-center gap-2 mb-3">
                                         <span class="material-symbols-outlined"
                                             style="color: #9d4300;">data_object</span>
-                                        <h5 class="fw-bold m-0">Available Placeholders</h5>
+                                        <h5 class="fw-bold m-0">Biến số có sẵn</h5>
                                     </div>
-                                    <p class="small text-muted mb-3">Click a tag to insert it into your editor at the
-                                        current cursor position.</p>
+                                    <p class="small text-muted mb-3">Nhấp vào tag để chèn vào vị trí con trỏ hiện tại.</p>
 
                                     <div class="d-flex flex-wrap gap-2">
                                         <button class="btn placeholder-pill-btn shadow-none"
@@ -306,38 +305,37 @@ UniLibrary Management Team</c:otherwise></c:choose></textarea>
                                 <div class="card border-0 p-4 rounded-3"
                                     style="background-color: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2) !important;">
                                     <h5 class="fw-bold d-flex align-items-center gap-2 mb-2" style="color: #582200;">
-                                        <span class="material-symbols-outlined">lightbulb</span> Pro-Tip
+                                        <span class="material-symbols-outlined">lightbulb</span> MẸO HỮU ÍCH
                                     </h5>
                                     <p class="small m-0 lh-relaxed" style="color: rgba(88, 34, 0, 0.85);">
-                                        Personalized emails have a 40% higher open rate. Use the
-                                        <strong>{{student_name}}</strong> tag at the beginning of your message to ensure
-                                        students recognize the communication.
+                                        Email cá nhân hóa có tỷ lệ mở cao hơn 40%. Sử dụng tag
+                                        <strong>{{student_name}}</strong> ở đầu tin nhắn để sinh viên nhận ra nội dung.
                                     </p>
                                 </div>
 
                                 <div class="card border-0 p-3 bg-light rounded-3">
                                     <h6 class="fw-bold text-muted text-uppercase tracking-wider mb-3"
-                                        style="font-size: 11px;">Quick Actions</h6>
+                                        style="font-size: 11px;">Thác tác nhanh</h6>
                                     <ul class="nav flex-column gap-2 small">
                                         <li class="nav-item">
                                             <a class="nav-link p-0 text-dark d-flex align-items-center gap-2 hover-link-primary"
                                                 href="#">
                                                 <span
                                                     class="material-symbols-outlined text-secondary fs-5">history</span>
-                                                View Revision History
+                                                Xem Lịch sử Phân phiếu
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link p-0 text-dark d-flex align-items-center gap-2" href="#">
                                                 <span class="material-symbols-outlined text-secondary fs-5">send</span>
-                                                Send Test Email
+                                                Gửi Email Kiểm thử
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link p-0 text-dark d-flex align-items-center gap-2" href="#">
                                                 <span
                                                     class="material-symbols-outlined text-secondary fs-5">content_copy</span>
-                                                Duplicate Template
+                                                Sao chép mẫu
                                             </a>
                                         </li>
                                     </ul>

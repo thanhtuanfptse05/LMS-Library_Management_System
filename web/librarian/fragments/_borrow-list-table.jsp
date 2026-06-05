@@ -8,16 +8,16 @@
          style="background-color: var(--surface-container-low); border-color: var(--outline-variant) !important;">
         <h3 class="m-0 d-flex align-items-center gap-2 fw-bold" style="font-size: 20px;">
             <span class="material-symbols-outlined">list_alt</span>
-            Reservation Queue
+            Hàng đợi đặt trước
         </h3>
         <div class="d-flex gap-2">
             <button class="btn btn-sm d-flex align-items-center gap-1 px-3 py-2 border text-dark"
                     style="border-color: var(--outline) !important; border-radius: 8px;">
-                <span class="material-symbols-outlined" style="font-size: 18px;">filter_list</span> Filter
+                <span class="material-symbols-outlined" style="font-size: 18px;">filter_list</span> Bộ lọc
             </button>
             <button class="btn btn-sm d-flex align-items-center gap-1 px-3 py-2 fw-bold border-0"
                     style="background-color: var(--surface-container-highest); color: var(--on-surface); border-radius: 8px;">
-                <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Export List
+                <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Xuất danh sách
             </button>
         </div>
     </div>
@@ -26,12 +26,12 @@
             <thead>
                 <tr style="background-color: var(--surface-container-lowest); color: var(--on-surface-variant); font-size: 12px;"
                     class="text-label-md text-uppercase border-bottom">
-                    <th class="px-4 py-3 fw-bold border-0">Pos</th>
-                    <th class="px-4 py-3 fw-bold border-0">Patron Name</th>
-                    <th class="px-4 py-3 fw-bold border-0">Contact Info</th>
-                    <th class="px-4 py-3 fw-bold border-0">Reserved Date</th>
-                    <th class="px-4 py-3 fw-bold border-0">Status</th>
-                    <th class="px-4 py-3 fw-bold text-end border-0">Actions</th>
+                    <th class="px-4 py-3 fw-bold border-0">Vị trí</th>
+                    <th class="px-4 py-3 fw-bold border-0">Tên người mượn</th>
+                    <th class="px-4 py-3 fw-bold border-0">Thông tin liên hệ</th>
+                    <th class="px-4 py-3 fw-bold border-0">Ngày đặt</th>
+                    <th class="px-4 py-3 fw-bold border-0">Trạng thái</th>
+                    <th class="px-4 py-3 fw-bold text-end border-0">Hành động</th>
                 </tr>
             </thead>
             <tbody>
@@ -75,13 +75,13 @@
                                             <span class="badge rounded-pill fw-bold d-inline-flex align-items-center gap-1 border"
                                                   style="background-color: var(--primary-fixed); color: var(--on-primary-fixed); font-size: 12px; padding: 4px 8px; border-color: rgba(157,67,0,0.2) !important;">
                                                 <span class="material-symbols-outlined" style="font-size: 14px; font-variation-settings: 'FILL' 1;">notifications_active</span>
-                                                NOTIFIED
+                                                ĐÃ THÔNG BÁO
                                             </span>
                                         </c:when>
                                         <c:otherwise>
                                             <span class="badge rounded-pill fw-bold"
                                                   style="background-color: var(--secondary-container); color: var(--on-secondary-container); font-size: 12px; padding: 4px 8px;">
-                                                WAITING
+                                                ĐANG ĐỢI
                                             </span>
                                         </c:otherwise>
                                     </c:choose>
@@ -89,13 +89,13 @@
                                 <td class="px-4 py-3 actions-cell">
                                     <div class="btn-group-actions d-flex justify-content-end gap-1">
                                         <a href="${pageContext.request.contextPath}/librarian/reservation-detail?id=${item.reservationId}"
-                                           class="btn btn-link p-2 border-0" style="color: var(--tertiary);" title="Send Reminder">
+                                           class="btn btn-link p-2 border-0" style="color: var(--tertiary);" title="Gửi nhắc nhở">
                                             <span class="material-symbols-outlined">send</span>
                                         </a>
-                                        <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Move Down">
+                                        <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Di chuyển xuống">
                                             <span class="material-symbols-outlined">arrow_downward</span>
                                         </button>
-                                        <button class="btn btn-link p-2 border-0" style="color: var(--error);" title="Cancel Reservation">
+                                        <button class="btn btn-link p-2 border-0" style="color: var(--error);" title="Hủy đặt trước">
                                             <span class="material-symbols-outlined">cancel</span>
                                         </button>
                                     </div>
@@ -134,18 +134,18 @@
                                 <span class="badge rounded-pill fw-bold d-inline-flex align-items-center gap-1 border"
                                       style="background-color: var(--primary-fixed); color: var(--on-primary-fixed); font-size: 12px; padding: 4px 8px; border-color: rgba(157,67,0,0.2) !important;">
                                     <span class="material-symbols-outlined" style="font-size: 14px; font-variation-settings: 'FILL' 1;">notifications_active</span>
-                                    NOTIFIED
+                                    ĐÃ THÔNG BÁO
                                 </span>
                             </td>
                             <td class="px-4 py-3 actions-cell">
                                 <div class="btn-group-actions d-flex justify-content-end gap-1">
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--tertiary);" title="Send Reminder">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--tertiary);" title="Gửi nhắc nhở">
                                         <span class="material-symbols-outlined">send</span>
                                     </button>
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Move Down">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Di chuyển xuống">
                                         <span class="material-symbols-outlined">arrow_downward</span>
                                     </button>
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--error);" title="Cancel Reservation">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--error);" title="Hủy đặt trước">
                                         <span class="material-symbols-outlined">cancel</span>
                                     </button>
                                 </div>
@@ -176,18 +176,18 @@
                             <td class="px-4 py-3">
                                 <span class="badge rounded-pill fw-bold"
                                       style="background-color: var(--secondary-container); color: var(--on-secondary-container); font-size: 12px; padding: 4px 8px;">
-                                    WAITING
+                                    ĐANG ĐỢI
                                 </span>
                             </td>
                             <td class="px-4 py-3 actions-cell">
                                 <div class="btn-group-actions d-flex justify-content-end gap-1">
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Move Up">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Di chuyển lên">
                                         <span class="material-symbols-outlined">arrow_upward</span>
                                     </button>
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Move Down">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Di chuyển xuống">
                                         <span class="material-symbols-outlined">arrow_downward</span>
                                     </button>
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--error);" title="Cancel Reservation">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--error);" title="Hủy đặt trước">
                                         <span class="material-symbols-outlined">cancel</span>
                                     </button>
                                 </div>
@@ -218,18 +218,18 @@
                             <td class="px-4 py-3">
                                 <span class="badge rounded-pill fw-bold"
                                       style="background-color: var(--secondary-container); color: var(--on-secondary-container); font-size: 12px; padding: 4px 8px;">
-                                    WAITING
+                                    ĐANG ĐỢI
                                 </span>
                             </td>
                             <td class="px-4 py-3 actions-cell">
                                 <div class="btn-group-actions d-flex justify-content-end gap-1">
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Move Up">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Di chuyển lên">
                                         <span class="material-symbols-outlined">arrow_upward</span>
                                     </button>
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Move Down">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--on-surface-variant);" title="Di chuyển xuống">
                                         <span class="material-symbols-outlined">arrow_downward</span>
                                     </button>
-                                    <button class="btn btn-link p-2 border-0" style="color: var(--error);" title="Cancel Reservation">
+                                    <button class="btn btn-link p-2 border-0" style="color: var(--error);" title="Hủy đặt trước">
                                         <span class="material-symbols-outlined">cancel</span>
                                     </button>
                                 </div>

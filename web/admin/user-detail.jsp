@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
 <style>
     /* Timeline style override */
@@ -42,9 +42,9 @@
                 <div class="mb-4">
                     <a href="${pageContext.request.contextPath}/admin/user-list.jsp" class="d-inline-flex align-items-center gap-1 text-decoration-none text-primary-custom fw-bold mb-2">
                         <span class="material-symbols-outlined fs-5">arrow_back</span>
-                        Back to User List
+                        Quay lại to User List
                     </a>
-                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">User Account Review</h2>
+                    <h2 class="font-headline-lg mb-1" style="color: var(--primary); font-weight: 600;">User Tài khoản Review</h2>
                     <p class="font-body-md text-on-surface-variant mb-0">Detailed activity, loan history, and invoice records for this member.</p>
                 </div>
 
@@ -61,7 +61,7 @@
                             <span class="badge rounded-pill bg-success-subtle text-success fw-bold px-3 py-1.5 mb-4">ACTIVE MEMBER</span>
                             
                             <div class="border-top pt-3 text-start">
-                                <p class="mb-2"><span class="text-muted">Username:</span> <span class="fw-bold">jvance12</span></p>
+                                <p class="mb-2"><span class="text-muted">Tên đăng nhập:</span> <span class="fw-bold">jvance12</span></p>
                                 <p class="mb-2"><span class="text-muted">Academic Major:</span> <span class="fw-bold">Software Engineering</span></p>
                                 <p class="mb-2"><span class="text-muted">Enrolled:</span> <span class="fw-bold">September 2024</span></p>
                                 <p class="mb-3"><span class="text-muted">Unpaid Penalty:</span> <span class="fw-bold text-danger">$24.00</span></p>
@@ -69,10 +69,10 @@
 
                             <div class="d-flex flex-column gap-2 mt-3">
                                 <a href="${pageContext.request.contextPath}/admin/user-edit.jsp?id=230014" class="btn btn-primary-custom py-2 rounded-pill fw-bold">
-                                    Edit Account Settings
+                                    Sửa Tài khoản Settings
                                 </a>
                                 <a href="${pageContext.request.contextPath}/librarian/payment-receipt.jsp?memberId=230014" class="btn btn-outline-primary-custom py-2 rounded-pill fw-bold">
-                                    Process Cash Payment
+                                    Process Cash Thanh toán
                                 </a>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link rounded-pill fw-bold px-3" id="fines-tab" data-bs-toggle="tab" data-bs-target="#fines-content" type="button" role="tab" aria-controls="fines-content" aria-selected="false">
-                                        Fines & Receipts
+                                        Tiền phạt & Receipts
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
@@ -107,10 +107,10 @@
                                         <table class="table align-middle">
                                             <thead>
                                                 <tr style="background-color: var(--surface-container-low);">
-                                                    <th class="ps-3">Book Title</th>
+                                                    <th class="ps-3">Sách Tiêu đề</th>
                                                     <th>Loan Date</th>
-                                                    <th>Due Date</th>
-                                                    <th>Status</th>
+                                                    <th>Hạn trả</th>
+                                                    <th>Trạng thái</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -143,10 +143,10 @@
                                         <table class="table align-middle">
                                             <thead>
                                                 <tr style="background-color: var(--surface-container-low);">
-                                                    <th class="ps-3">Violation Details</th>
+                                                    <th class="ps-3">Violation Chi tiết</th>
                                                     <th>Amount</th>
                                                     <th>Issued Date</th>
-                                                    <th>Status</th>
+                                                    <th>Trạng thái</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -157,7 +157,7 @@
                                                     <td><span class="badge rounded-pill bg-danger-subtle text-danger px-3">UNPAID</span></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="ps-3 fw-bold">Design Patterns (Damaged Book Cover)</td>
+                                                    <td class="ps-3 fw-bold">Design Patterns (Bị hỏng Sách Cover)</td>
                                                     <td class="text-danger fw-bold">$12.00</td>
                                                     <td>Jun 02, 2026</td>
                                                     <td><span class="badge rounded-pill bg-danger-subtle text-danger px-3">UNPAID</span></td>
@@ -183,7 +183,7 @@
                                         </li>
                                         <li class="timeline-item">
                                             <span class="timeline-dot" style="background-color: var(--secondary);"></span>
-                                            <p class="mb-0 fw-bold">Book Check-Out (Design Patterns)</p>
+                                            <p class="mb-0 fw-bold">Sách Check-Out (Design Patterns)</p>
                                             <small class="text-muted">May 02, 2026 • 10:14 • Processed by Librarian_John</small>
                                         </li>
                                         <li class="timeline-item">
@@ -193,7 +193,7 @@
                                         </li>
                                         <li class="timeline-item">
                                             <span class="timeline-dot" style="background-color: var(--secondary);"></span>
-                                            <p class="mb-0 fw-bold">Book Returned (Advanced Thermodynamics)</p>
+                                            <p class="mb-0 fw-bold">Sách Returned (Advanced Thermodynamics)</p>
                                             <small class="text-muted">May 10, 2026 • 14:02 • Return processed</small>
                                         </li>
                                     </ul>

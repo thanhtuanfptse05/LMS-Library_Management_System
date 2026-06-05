@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <title>Librarian Dashboard - LMS University Library</title>
+        <title>Bảng điều khiển Thủ thư - Thư viện Đại học LMS</title>
         <meta name="description"
-            content="Circulation and catalog management panel for LMS University Library librarians." />
+            content="Bảng điều khiển quản lý lưu thông và danh mục cho thủ thư Thư viện Đại học LMS." />
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />

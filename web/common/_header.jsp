@@ -15,7 +15,7 @@
                 <div class="lh-sm">
                     <span class="fw-bold d-block"
                         style="font-size: 17px; color: var(--primary-color); letter-spacing: -0.01em;">
-                        University Library Management System
+                        Hệ thống Quản lý Thư viện Đại học
                     </span>
                     <span class="d-block fw-semibold text-uppercase"
                         style="font-size: 10px; letter-spacing: 0.08em; color: var(--text-muted-custom);">
@@ -28,7 +28,7 @@
             <div class="d-none d-sm-flex align-items-center gap-2 fw-medium"
                 style="font-size: 13px; color: var(--text-muted-custom);">
                 <span class="custom-badge-pulse"></span>
-                Today's Hours:&nbsp;<strong style="color: var(--bs-body-color);">08:00 AM – 08:00 PM</strong>
+                Giờ làm việc hôm nay:&nbsp;<strong style="color: var(--bs-body-color);">08:00 AM – 08:00 PM</strong>
             </div>
         </div>
 
@@ -37,11 +37,11 @@
 
             <!-- Main Nav Links -->
             <div class="d-none d-md-flex gap-4">
-                <a class="nav-link-custom" href="${pageContext.request.contextPath}/">Home</a>
-                <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Services</a>
-                <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Policies</a>
-                <a class="nav-link-custom" href="${pageContext.request.contextPath}/news.jsp">News</a>
-                <a class="nav-link-custom" href="#contact">Contact</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/">Trang chủ</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/news.jsp">Tin tức</a>
+                <a class="nav-link-custom" href="#contact">Liên hệ</a>
             </div>
 
             <!-- Auth CTA -->
@@ -69,24 +69,24 @@
                             </c:otherwise>
                         </c:choose>
                         <span class="small fw-medium d-none d-lg-inline" style="color: var(--text-muted-custom);">
-                            Welcome, <strong><c:out value="${sessionScope.email}"/></strong>
+                            Chào mừng, <strong><c:out value="${sessionScope.email}"/></strong>
                         </span>
                         <a href="${dashboardUrl}"
                             class="btn btn-primary-custom px-3 py-2 rounded-3 fw-semibold d-inline-flex align-items-center gap-1"
                             style="font-size: 13px;">
-                            <i class="bi bi-grid-fill"></i> Dashboard
+                            <i class="bi bi-grid-fill"></i> Bảng điều khiển
                         </a>
                         <a href="${pageContext.request.contextPath}/logout"
                             class="btn btn-outline-secondary px-3 py-2 rounded-3 fw-semibold"
                             style="font-size: 13px;">
-                            Sign Out
+                            Đăng xuất
                         </a>
                     </c:when>
                     <c:otherwise>
                         <a href="${pageContext.request.contextPath}/login"
                             class="btn btn-primary-custom px-4 py-2 rounded-3 fw-semibold"
                             style="font-size: 14px;">
-                            Sign In
+                            Đăng nhập
                         </a>
                     </c:otherwise>
                 </c:choose>

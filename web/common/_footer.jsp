@@ -13,7 +13,7 @@
                     <div class="lh-sm">
                         <span class="fw-bold d-block"
                             style="font-size: 16px; color: var(--primary-color); letter-spacing: -0.01em; line-height: 1.2;">
-                            University Library<br>Management System
+                            Hệ thống quản lý thư viện<br>Đại học
                         </span>
                         <span class="fw-semibold text-uppercase d-block"
                             style="font-size: 10px; letter-spacing: 0.08em; color: var(--text-muted-custom);">
@@ -22,19 +22,19 @@
                     </div>
                 </div>
                 <p class="mb-3" style="color: var(--text-muted-custom); font-size: 14px; line-height: 1.7; max-width: 280px;">
-                    Providing world-class information access to the academic community. Your gateway to knowledge since 1954.
+                    Cung cấp quyền truy cập thông tin đẳng cấp thế giới cho cộng đồng học thuật. Cổng kết nối tri thức của bạn từ năm 1954.
                 </p>
                 <!-- Quick policy links -->
                 <div class="d-flex flex-wrap gap-3" style="font-size: 13px;">
-                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">Privacy Policy</a>
-                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">Terms of Use</a>
-                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">FAQ</a>
+                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">Chính sách bảo mật</a>
+                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">Điều khoản sử dụng</a>
+                    <a class="text-decoration-none" style="color: var(--text-muted-custom);" href="#">Câu hỏi thường gặp</a>
                 </div>
             </div>
 
             <!-- Column 2 — Contact Information -->
             <div class="col-12 col-md-4">
-                <h5 class="fw-bold mb-3" style="font-size: 15px; color: var(--bs-body-color);">Contact Us</h5>
+                <h5 class="fw-bold mb-3" style="font-size: 15px; color: var(--bs-body-color);">Liên hệ với chúng tôi</h5>
                 <ul class="list-unstyled mb-0 d-flex flex-column gap-3" style="font-size: 14px; color: var(--text-muted-custom);">
                     <li class="d-flex align-items-start gap-2">
                         <i class="bi bi-geo-alt-fill mt-1 flex-shrink-0" style="color: var(--primary-color);"></i>
@@ -54,20 +54,20 @@
                     </li>
                     <li class="d-flex align-items-center gap-2">
                         <i class="bi bi-clock-fill flex-shrink-0" style="color: var(--primary-color);"></i>
-                        <span>Mon – Sat: 08:00 AM – 08:00 PM</span>
+                        <span>Thứ Hai – Thứ Bảy: 08:00 AM – 08:00 PM</span>
                     </li>
                     <li class="d-flex align-items-center gap-2">
                         <i class="bi bi-person-badge-fill flex-shrink-0" style="color: var(--primary-color);"></i>
                         <a href="${pageContext.request.contextPath}/login"
                             class="fw-semibold text-decoration-none"
-                            style="color: var(--primary-color);">Staff Login</a>
+                            style="color: var(--primary-color);">Đăng nhập Nhân viên</a>
                     </li>
                 </ul>
             </div>
 
             <!-- Column 3 — Connect & Links -->
             <div class="col-12 col-md-4">
-                <h5 class="fw-bold mb-3" style="font-size: 15px; color: var(--bs-body-color);">Connect</h5>
+                <h5 class="fw-bold mb-3" style="font-size: 15px; color: var(--bs-body-color);">Kết nối</h5>
                 <!-- Social icons -->
                 <div class="d-flex gap-3 mb-4">
                     <a href="#" class="footer-social-icon" title="Facebook">
@@ -84,36 +84,36 @@
                     </a>
                 </div>
                 <!-- Quick navigation -->
-                <h6 class="fw-bold mb-2" style="font-size: 13px; color: var(--bs-body-color); text-transform: uppercase; letter-spacing: 0.06em;">Quick Links</h6>
+                <h6 class="fw-bold mb-2" style="font-size: 13px; color: var(--bs-body-color); text-transform: uppercase; letter-spacing: 0.06em;">Liên kết nhanh</h6>
                 <ul class="list-unstyled mb-0 d-flex flex-column gap-2" style="font-size: 14px;">
                     <li>
                         <a href="${pageContext.request.contextPath}/"
                             class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
-                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Home
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Trang chủ
                         </a>
                     </li>
                     <li>
                         <a href="${pageContext.request.contextPath}/book-search.jsp"
                             class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
-                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Search Catalog
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Tra cứu mục lục
                         </a>
                     </li>
                     <li>
                         <a href="${pageContext.request.contextPath}/services.jsp"
                             class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
-                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Services
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Dịch vụ
                         </a>
                     </li>
                     <li>
                         <a href="${pageContext.request.contextPath}/policies.jsp"
                             class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
-                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Policies
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Chính sách
                         </a>
                     </li>
                     <li>
                         <a href="${pageContext.request.contextPath}/news.jsp"
                             class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
-                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> News &amp; Events
+                            <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Tin tức &amp; Sự kiện
                         </a>
                     </li>
                 </ul>
@@ -126,11 +126,11 @@
     <div style="background-color: var(--primary-color); padding: 14px 0;">
         <div class="container-xl px-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
             <p class="mb-0 fw-medium" style="font-size: 13px; color: rgba(255,255,255,0.85);">
-                &copy; 2026 University Library Management System. All rights reserved.
+                &copy; 2026 Hệ thống Quản lý Thư viện Đại học. Bảo lưu mọi quyền.
             </p>
             <div class="d-flex align-items-center gap-1" style="font-size: 13px; color: rgba(255,255,255,0.7);">
                 <i class="bi bi-heart-fill" style="font-size: 11px; color: rgba(255,220,195,0.9);"></i>
-                Built for academic excellence
+                Xây dựng vì sự xuất sắc trong học thuật
             </div>
         </div>
     </div>

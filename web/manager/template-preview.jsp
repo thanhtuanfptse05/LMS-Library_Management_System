@@ -2,12 +2,12 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="vi">
 
             <head>
                 <meta charset="utf-8" />
                 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-                <title>Email Preview - LibraryManager</title>
+                <title>Xem trước Email - Quản lý Thư viện</title>
 
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -119,20 +119,20 @@
                         <span class="navbar-brand h4 m-0 fw-bold" style="color: #9d4300;">LibraryManager</span>
                         <div class="d-none d-md-flex gap-3 align-items-center">
                             <a href="collections"
-                                class="text-secondary text-decoration-none small fw-semibold">Collections</a>
+                                class="text-secondary text-decoration-none small fw-semibold">Bộ sưu tập</a>
                             <a href="circulation"
-                                class="text-secondary text-decoration-none small fw-semibold">Circulation</a>
+                                class="text-secondary text-decoration-none small fw-semibold">Lưu hành</a>
                             <a href="templates"
                                 class="text-decoration-none small fw-bold pb-1 border-bottom border-2 border-primary"
-                                style="color: #9d4300;">Templates</a>
-                            <a href="reports" class="text-secondary text-decoration-none small fw-semibold">Reports</a>
+                                style="color: #9d4300;">Mẫu email</a>
+                            <a href="reports" class="text-secondary text-decoration-none small fw-semibold">Báo cáo</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <a href="templates"
-                            class="btn btn-light text-secondary fw-semibold btn-sm px-3 py-2 border">Back to List</a>
+                            class="btn btn-light text-secondary fw-semibold btn-sm px-3 py-2 border">Quay lại Danh sách</a>
                         <a href="templates/edit?id=${template.id}" class="btn btn-sm text-white fw-semibold px-3 py-2"
-                            style="background-color: #f97316;">Edit Template</a>
+                            style="background-color: #f97316;">Sửa Template</a>
                     </div>
                 </header>
 
@@ -144,31 +144,31 @@
                             <div>
                                 <div class="fw-bold text-dark m-0 leading-tight" style="font-size: 16px;">Email Studio
                                 </div>
-                                <small class="text-muted" style="font-size: 12px;">Template Management</small>
+                                <small class="text-muted" style="font-size: 12px;">Quản lý Mẫu</small>
                             </div>
                         </div>
 
                         <nav class="nav flex-column flex-grow-1 gap-1">
                             <a href="#" class="nav-link-custom">
-                                <span class="material-symbols-outlined">drafts</span>Drafts
+                                <span class="material-symbols-outlined">drafts</span>Bản nháp
                             </a>
                             <a href="#" class="nav-link-custom active">
-                                <span class="material-symbols-outlined">mark_email_read</span>Active
+                                <span class="material-symbols-outlined">mark_email_read</span>Hoạt động
                             </a>
                             <a href="#" class="nav-link-custom">
-                                <span class="material-symbols-outlined">auto_fix_high</span>Automations
+                                <span class="material-symbols-outlined">auto_fix_high</span>Tự động hóa
                             </a>
                             <a href="#" class="nav-link-custom">
-                                <span class="material-symbols-outlined">history</span>Logs
+                                <span class="material-symbols-outlined">history</span>Nhật ký
                             </a>
                             <a href="#" class="nav-link-custom">
-                                <span class="material-symbols-outlined">settings</span>Settings
+                                <span class="material-symbols-outlined">settings</span>Cài đặt
                             </a>
                         </nav>
 
                         <div class="mt-auto pt-3 border-top">
                             <button class="btn btn-sm text-dark w-100 fw-bold py-2"
-                                style="background-color: #ffdbca;">Send Test Email</button>
+                                style="background-color: #ffdbca;">Gửi Email Kiểm thử</button>
                         </div>
                     </aside>
 
@@ -178,12 +178,12 @@
                             <div class="mb-4">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb mb-1" style="font-size: 12px; font-weight: 600;">
-                                        <li class="breadcrumb-item text-secondary">Library Manager</li>
-                                        <li class="breadcrumb-item text-secondary">Templates</li>
-                                        <li class="breadcrumb-item active" style="color: #9d4300;">Preview</li>
+                                        <li class="breadcrumb-item text-secondary">Quản lý Thư viện</li>
+                                        <li class="breadcrumb-item text-secondary">Mẫu email</li>
+                                        <li class="breadcrumb-item active" style="color: #9d4300;">Xem trước</li>
                                     </ol>
                                 </nav>
-                                <h2 class="fw-bold m-0">Email Template Preview</h2>
+                                <h2 class="fw-bold m-0">Xem trước Mẫu Email</h2>
                             </div>
 
                             <div class="row g-4">
@@ -192,19 +192,19 @@
 
                                         <div class="bg-light p-3 border-bottom text-dark" style="font-size: 14px;">
                                             <div class="row mb-1">
-                                                <div class="col-2 col-sm-1 text-secondary">From:</div>
-                                                <div class="col-10 col-sm-11 fw-semibold">UniLib Notifications
+                                                <div class="col-2 col-sm-1 text-secondary">Từ:</div>
+                                                <div class="col-10 col-sm-11 fw-semibold">UniLib Thông báo
                                                     &lt;noreply@unilib.edu.vn&gt;</div>
                                             </div>
                                             <div class="row mb-1">
-                                                <div class="col-2 col-sm-1 text-secondary">To:</div>
+                                                <div class="col-2 col-sm-1 text-secondary">Gửi đến:</div>
                                                 <div class="col-10 col-sm-11">
                                                     <span class="badge bg-secondary-subtle text-secondary px-2 py-1"
                                                         id="previewReceiverName">Alex Johnson</span>
                                                 </div>
                                             </div>
                                             <div class="row mt-2">
-                                                <div class="col-2 col-sm-1 text-secondary">Subject:</div>
+                                                <div class="col-2 col-sm-1 text-secondary">Tiêu đề:</div>
                                                 <div class="col-10 col-sm-11 fw-bold text-dark" id="previewSubjectLine">
                                                     ${template.subject != null ? template.subject : 'Your reserved item
                                                     is ready at the front desk!'}
@@ -229,54 +229,50 @@
 
                                                 <div class="text-dark d-flex flex-column gap-3 mb-4"
                                                     id="compiledBodyMarkup">
-                                                    <p class="m-0">Dear <span class="receiver-tag">Alex Johnson</span>,
+                                                    <p class="m-0">Kính gửi <span class="receiver-tag">Alex Johnson</span>,
                                                     </p>
                                                     <p class="m-0 lh-base">
-                                                        We are pleased to inform you that <strong
+                                                        Chúng tôi vui mừng thông báo rằng <strong
                                                             style="color: #9d4300;" id="previewBookName">"Principles of
-                                                            Quantum Mechanics"</strong> is now available for pickup at
-                                                        the Main Campus Library front desk.
+                                                            Quantum Mechanics"</strong> hiện có sẵn để nhận tại
+                                                        quầy lưu hành thư viện chính.
                                                     </p>
 
                                                     <div class="p-3 my-2 border-start border-4 rounded-end"
                                                         style="background-color: #eceef0; border-color: #9d4300 !important; font-size: 14px;">
                                                         <div class="text-uppercase fw-bold text-secondary mb-1"
-                                                            style="font-size: 11px; tracking-wider: 0.05em;">Pickup
-                                                            Details</div>
+                                                            style="font-size: 11px; tracking-wider: 0.05em;">Hướng dẫn
+                                                            Nhận sách</div>
                                                         <p class="m-0 lh-sm">
-                                                            <strong>Location:</strong> Circulation Desk, Level 1<br />
-                                                            <strong>Available Until:</strong> Oct 24, 2023 (5:00
-                                                            PM)<br />
-                                                            <strong>Hold Reference:</strong> #RES-9921-X
+                                                            <strong>Vị trí:</strong> Quầy Lưu hành, Tầng 1<br />
+                                                            <strong>Có sẵn đến:</strong> 24/10/2023 (17:00)<br />
+                                                            <strong>Mã giữ chỗ:</strong> #RES-9921-X
                                                         </p>
                                                     </div>
 
                                                     <p class="m-0 lh-base">
-                                                        Please bring your University ID card with you to facilitate the
-                                                        checkout process. If you are unable to pick this item up by the
-                                                        date listed above, it will be returned to the general collection
-                                                        or passed to the next patron in the queue.
+                                                        Vui lòng mang theo thẻ sinh viên để thuận tiện trong quá trình làm thủ tục. Nếu bạn không thể lấy sách trước ngày trên, sách sẽ được trả về bộ sưu tập chung hoặc chuyển cho người tiếp theo trong hàng đợi.
                                                     </p>
 
                                                     <div class="pt-2">
                                                         <a class="btn text-white px-4 py-2 small fw-bold shadow-sm"
                                                             style="background-color: #9d4300; font-size: 14px;"
-                                                            href="account/dashboard">View Account Dashboard</a>
+                                                            href="account/dashboard">Xem Tài khoản Bảng điều khiển</a>
                                                     </div>
 
                                                     <div
                                                         class="pt-4 mt-3 border-top border-light-subtle small text-secondary fst-italic">
-                                                        Best regards,<br />
-                                                        <span class="fw-bold text-dark not-italic d-block mt-1">The
-                                                            Library Management Team</span>
-                                                        University Library Services
+                                                        Trân trọng,<br />
+                                                        <span class="fw-bold text-dark not-italic d-block mt-1">Ban
+                                                            Quản lý Thư viện</span>
+                                                        Các dịch vụ Thư viện Trường Đại học
                                                     </div>
                                                 </div>
 
                                                 <div class="mt-5 text-center text-secondary" style="font-size: 12px;">
-                                                    <p class="mb-1">© 2026 University Library. All rights reserved.</p>
-                                                    <p class="m-0">You are receiving this email because you have a
-                                                        registered account and an active reservation alert.</p>
+                                                    <p class="mb-1">© 2026 University Library. Bản quyền đã được bảo lưu.</p>
+                                                    <p class="m-0">Bạn nhận được email này vì bạn có
+                                                        tài khoản đã đăng ký và đặt chỗ hoạt động.</p>
                                                 </div>
 
                                             </div>
@@ -287,25 +283,25 @@
 
                                 <div class="col-12 col-xl-4 d-flex flex-column gap-4">
                                     <div class="card border-0 shadow-sm p-4 rounded-3 bg-white border">
-                                        <h4 class="h5 fw-bold text-dark mb-3">Preview Controls</h4>
+                                        <h4 class="h5 fw-bold text-dark mb-3">Tùy chỉnh Xem trước</h4>
 
                                         <div class="d-flex flex-column gap-3 mb-4">
                                             <div>
-                                                <label class="form-label text-secondary fw-semibold small mb-1">Select
-                                                    Test Member</label>
+                                                <label class="form-label text-secondary fw-semibold small mb-1">Chọn
+                                                    Thành viên Kiểm thử</label>
                                                 <select class="form-select shadow-none small" id="memberSelector"
                                                     onchange="applyMockData()">
-                                                    <option value="Alex Johnson" selected>Alex Johnson (Student)
+                                                    <option value="Alex Johnson" selected>Alex Johnson (Sinh viên)
                                                     </option>
-                                                    <option value="Sarah Miller">Sarah Miller (Researcher)</option>
-                                                    <option value="Professor Higgins">Professor Higgins (Faculty)
+                                                    <option value="Sarah Miller">Sarah Miller (Nhà nghiên cứu)</option>
+                                                    <option value="Professor Higgins">Giáo sư Higgins (Giảng viên)
                                                     </option>
-                                                    <option value="Vũ Doanh Thái">Vũ Doanh Thái (FPT Student)</option>
+                                                    <option value="Vũ Doanh Thái">Vũ Doanh Thái (FPT Sinh viên)</option>
                                                 </select>
                                             </div>
                                             <div>
-                                                <label class="form-label text-secondary fw-semibold small mb-1">Select
-                                                    Test Book</label>
+                                                <label class="form-label text-secondary fw-semibold small mb-1">Chọn
+                                                    Sách Kiểm thử</label>
                                                 <select class="form-select shadow-none small" id="bookSelector"
                                                     onchange="applyMockData()">
                                                     <option value="Principles of Quantum Mechanics" selected>Principles
@@ -320,8 +316,8 @@
                                         </div>
 
                                         <div class="mb-4">
-                                            <label class="form-label text-secondary fw-semibold small mb-1">Device
-                                                Toggle View</label>
+                                            <label class="form-label text-secondary fw-semibold small mb-1">Bộ chức năng
+                                                Xem</label>
                                             <div class="btn-group w-100 bg-light p-1 rounded-3 border">
                                                 <button type="button"
                                                     class="btn btn-sm btn-white border shadow-sm fw-semibold active-device-switch d-flex align-items-center justify-content-center gap-1 py-2"
@@ -339,22 +335,22 @@
                                         </div>
 
                                         <div class="d-flex flex-column gap-2">
-                                            <label class="text-secondary fw-semibold small mb-1">Quick Actions</label>
+                                            <label class="text-secondary fw-semibold small mb-1">Thao tác nhanh</label>
                                             <button
                                                 class="btn text-white w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 fw-semibold"
                                                 style="background-color: #9d4300;">
-                                                <span class="material-symbols-outlined fs-5">send</span> Send Test to My
-                                                Email
+                                                <span class="material-symbols-outlined fs-5">send</span> Gửi Kiểm thử đến
+                                                Email của tôi
                                             </button>
                                             <a href="templates/edit?id=${template.id}"
                                                 class="btn btn-outline-secondary w-100 py-2.5 d-flex align-items-center justify-content-center gap-2">
-                                                <span class="material-symbols-outlined fs-5">edit</span> Edit Template
-                                                Content
+                                                <span class="material-symbols-outlined fs-5">edit</span> Sửa Nội dung
+                                                Mẫu
                                             </a>
                                             <button
                                                 class="btn btn-outline-secondary w-100 py-2.5 d-flex align-items-center justify-content-center gap-2">
                                                 <span class="material-symbols-outlined fs-5">picture_as_pdf</span>
-                                                Export as PDF
+                                                Xuất PDF
                                             </button>
                                         </div>
                                     </div>
@@ -367,11 +363,9 @@
                                             <div>
                                                 <h6 class="fw-bold text-uppercase m-0"
                                                     style="color: #006398; font-size: 12px; letter-spacing: 0.05em;">
-                                                    Template Tip</h6>
+                                                    MẸO SỬ DỤNG MẪU</h6>
                                                 <p class="small text-muted m-0 mt-1 lh-base">
-                                                    Placeholders variables elements inside the system are automatically
-                                                    matched and formatted dynamically based on active entity relational
-                                                    rows data.
+                                                    Các biến số placeholder trong hệ thống được tự động khớp và định dạng dựa trên dữ liệu thực tế.
                                                 </p>
                                             </div>
                                         </div>
@@ -388,14 +382,14 @@
                         <div
                             class="d-flex w-100 justify-content-around align-items-center text-center small text-secondary h-100">
                             <div class="p-2 cursor-pointer"><span
-                                    class="material-symbols-outlined d-block fs-4">collections_bookmark</span>Collections
+                                    class="material-symbols-outlined d-block fs-4">collections_bookmark</span>Bộ sưu tập
                             </div>
                             <div class="p-2 cursor-pointer"><span
-                                    class="material-symbols-outlined d-block fs-4">sync_alt</span>Circulation</div>
+                                    class="material-symbols-outlined d-block fs-4">sync_alt</span>Lưu hành</div>
                             <div class="p-2 cursor-pointer fw-bold" style="color: #9d4300;"><span
-                                    class="material-symbols-outlined d-block fs-4">mail</span>Templates</div>
+                                    class="material-symbols-outlined d-block fs-4">mail</span>Mẫu email</div>
                             <div class="p-2 cursor-pointer"><span
-                                    class="material-symbols-outlined d-block fs-4">assessment</span>Reports</div>
+                                    class="material-symbols-outlined d-block fs-4">assessment</span>Báo cáo</div>
                         </div>
                     </div>
                 </nav>

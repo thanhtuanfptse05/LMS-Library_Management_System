@@ -2,12 +2,12 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="vi">
 
             <head>
                 <meta charset="utf-8" />
                 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-                <title>System Health & Maintenance | Lumina Library</title>
+                <title>System Health & Maintenance | Thư viện Lumina</title>
 
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -205,14 +205,14 @@
                                 style="font-variation-settings: 'FILL' 1;">library_books</span>
                         </div>
                         <div>
-                            <h1 class="h6 fw-bold m-0 text-dark">Lumina Library</h1>
-                            <small class="text-muted opacity-75">System Admin</small>
+                            <h1 class="h6 fw-bold m-0 text-dark">Thư viện Lumina</h1>
+                            <small class="text-muted opacity-75">System Quản trị viên</small>
                         </div>
                     </div>
 
                     <nav class="nav flex-column gap-1 flex-grow-1">
                         <a class="nav-link-custom active" href="dashboard"><span
-                                class="material-symbols-outlined">dashboard</span>Dashboard</a>
+                                class="material-symbols-outlined">dashboard</span>Bảng điều khiển</a>
                         <a class="nav-link-custom" href="catalog"><span
                                 class="material-symbols-outlined">menu_book</span>Catalog</a>
                         <a class="nav-link-custom" href="circulation"><span
@@ -255,7 +255,7 @@
                             style="height: 24px !important; border-color: #e0e3e5 !important;"></div>
                         <div class="d-flex align-items-center gap-3">
                             <div class="text-end d-none d-sm-block lh-tight">
-                                <p class="small fw-bold text-dark m-0">Admin Profile</p>
+                                <p class="small fw-bold text-dark m-0">Hồ sơ Admin</p>
                                 <span class="text-muted" style="font-size: 11px;">Super Administrator</span>
                             </div>
                             <div class="rounded-circle overflow-hidden border border-2 border-orange"
@@ -319,7 +319,7 @@
                                             <span class="material-symbols-outlined d-block">lan</span></div>
                                     </div>
                                     <p class="text-muted fw-semibold uppercase mb-1"
-                                        style="font-size: 12px; tracking-wider: 0.05em;">Active Sessions</p>
+                                        style="font-size: 12px; tracking-wider: 0.05em;">Hoạt động Sessions</p>
                                     <h3 class="fw-bold text-dark m-0">${systemStats.activeSessions != null ?
                                         systemStats.activeSessions : '1,240'}</h3>
                                 </div>
@@ -354,7 +354,7 @@
                             <div class="col-12 col-lg-8">
                                 <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h5 class="fw-bold text-dark m-0">Account Creation Trend</h5>
+                                        <h5 class="fw-bold text-dark m-0">Tài khoản Creation Trend</h5>
                                         <select class="form-select bg-light border-0 px-3 py-1.5 small font-weight-bold"
                                             style="width: auto; font-size: 13px; box-shadow: none;">
                                             <option>Last 30 Days</option>
@@ -375,7 +375,7 @@
                                         <c:forEach var="bar" items="${accountTrendBars}">
                                             <div class="position-relative d-flex flex-column align-items-center chart-bar-wrapper"
                                                 style="flex: 1; height: 100%; justify-content: flex-end;">
-                                                <div class="chart-node-tooltip">Students: ${bar.studentCount}</div>
+                                                <div class="chart-node-tooltip">Sinh viên: ${bar.studentCount}</div>
                                                 <div class="trend-bar-node" style="height: ${bar.percentage}%;"></div>
                                             </div>
                                         </c:forEach>
@@ -383,7 +383,7 @@
                                         <c:if test="${empty accountTrendBars}">
                                             <div class="position-relative d-flex flex-column align-items-center chart-bar-wrapper"
                                                 style="flex: 1; height: 100%; justify-content: flex-end;">
-                                                <div class="chart-node-tooltip">Students</div>
+                                                <div class="chart-node-tooltip">Sinh viên</div>
                                                 <div class="trend-bar-node" style="height: 66%;"></div>
                                             </div>
                                             <div class="position-relative d-flex flex-column align-items-center chart-bar-wrapper"
@@ -448,7 +448,7 @@
 
                                 <div class="card border-0 shadow-sm p-4 rounded-3 bg-white flex-grow-1">
                                     <h5 class="fw-bold text-dark m-0">Error Frequency</h5>
-                                    <small class="text-muted d-block mt-0.5">Status 500 Log Tracker</small>
+                                    <small class="text-muted d-block mt-0.5">Trạng thái 500 Log Tracker</small>
 
                                     <div class="d-flex align-items-end gap-1.5 mt-4 border-bottom pb-1"
                                         style="height: 80px;">
@@ -481,7 +481,7 @@
                             <div class="p-3 bg-white border-bottom d-flex align-items-center justify-content-between">
                                 <h5 class="fw-bold m-0 text-dark">Recent System Events</h5>
                                 <a href="logs/all" class="text-decoration-none small fw-bold"
-                                    style="color: #9d4300;">View All Logs</a>
+                                    style="color: #9d4300;">Xem All Logs</a>
                             </div>
 
                             <div class="table-responsive">
@@ -490,9 +490,9 @@
                                         style="font-size: 11px;">
                                         <tr>
                                             <th class="py-3 px-4">Timestamp</th>
-                                            <th class="py-3 px-3">Action</th>
+                                            <th class="py-3 px-3">Hành động</th>
                                             <th class="py-3 px-3">User ID</th>
-                                            <th class="py-3 px-4">Status</th>
+                                            <th class="py-3 px-4">Trạng thái</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top-0">
@@ -537,7 +537,7 @@
                                                 <td class="px-3 small fw-semibold text-dark"><span
                                                         class="d-flex align-items-center gap-2"><span
                                                             class="material-symbols-outlined fs-5 text-info">person_add</span>
-                                                        Account Created</span></td>
+                                                        Tài khoản Created</span></td>
                                                 <td class="px-3 font-monospace text-secondary small">USR-88219</td>
                                                 <td class="px-4"><span
                                                         class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1"
@@ -552,7 +552,7 @@
                                                 <td class="px-3 font-monospace text-secondary small">SYS-ADMIN</td>
                                                 <td class="px-4"><span
                                                         class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1"
-                                                        style="font-size: 10px; font-weight: 700;">CRITICAL</span></td>
+                                                        style="font-size: 10px; font-weight: 700;">NGHIÊM TRỌNG</span></td>
                                             </tr>
                                             <tr class="event-tr-row" style="transition: transform 0.2s;">
                                                 <td class="px-4 text-muted small">2023-10-27 14:28:12</td>
@@ -570,7 +570,7 @@
                                                 <td class="px-3 small fw-semibold text-dark"><span
                                                         class="d-flex align-items-center gap-2"><span
                                                             class="material-symbols-outlined fs-5 text-warning">security</span>
-                                                        Password Reset</span></td>
+                                                        Mật khẩu Đặt lại</span></td>
                                                 <td class="px-3 font-monospace text-secondary small">USR-44210</td>
                                                 <td class="px-4"><span
                                                         class="badge bg-warning-subtle text-warning rounded-pill px-2.5 py-1"

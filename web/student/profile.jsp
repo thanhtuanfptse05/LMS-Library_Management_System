@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -133,7 +133,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -141,14 +141,14 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
 
                 <div class="mb-4">
-                    <h2 class="font-headline-lg mb-1">Member Profile</h2>
-                    <p class="font-body-md text-on-surface-variant">Manage your library credentials and academic information.</p>
+                    <h2 class="font-headline-lg mb-1">Hồ sơ thành viên</h2>
+                    <p class="font-body-md text-on-surface-variant">Quản lý thông tin xác thực thư viện và thông tin học tập của bạn.</p>
                 </div>
 
                 <div class="row g-4 align-items-start">
@@ -163,29 +163,29 @@
                                         <img alt="Profile Picture" class="w-100 h-100 object-fit-cover"
                                              src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6l7g8WPfzCAEa3aHpjxWS6DJXd-8zhl61UEXxpK7fAfzGj3BBHipMgYolqJkcyWb7x9l0lEjVmzfU-lqfWRCE0X-_WRJUtKaNrVai81L5yMIky4Ad8mf02N8GfHXJQ4d9gjaBN50z7T6o6zNdSTkU1jbUE64QGHVsWcCVYnbQQWNYdP-gh6qW9RLpT50fT8yJTTzcjkV9PtWSrLTF6lh9hM2tXSyJnuXSDjHu4sHwcO4bHkxMZ0K-sZmoF_9liZ96_MHqiwsGhsVF">
                                     </div>
-                                    <button class="btn-camera d-flex align-items-center justify-content-center" title="Change Avatar">
+                                    <button class="btn-camera d-flex align-items-center justify-content-center" title="Đổi ảnh đại diện">
                                         <span class="material-symbols-outlined style-icon" style="font-size: 20px;">photo_camera</span>
                                     </button>
                                 </div>
                                 <h3 class="font-headline-md mb-1">
-                                    <c:out value="${not empty profile.fullName ? profile.fullName : 'Guest Student'}" />
+                                    <c:out value="${not empty profile.fullName ? profile.fullName : 'Sinh viên khách'}" />
                                 </h3>
                                 <p class="font-body-sm text-on-surface-variant mb-4">
-                                    <c:out value="${not empty student.major ? student.major : 'Major not set'}" />
+                                    <c:out value="${not empty student.major ? student.major : 'Chưa thiết lập chuyên ngành'}" />
                                     <c:if test="${not empty student.enrollmentYear}">
-                                        (Class of <c:out value="${student.enrollmentYear}" />)
+                                        (Khóa <c:out value="${student.enrollmentYear}" />)
                                     </c:if>
                                 </p>
                                 <div class="d-flex flex-column gap-2">
                                     <button class="btn btn-primary w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
                                             data-bs-toggle="modal" data-bs-target="#editProfileModal">
                                         <span class="material-symbols-outlined">edit</span>
-                                        Edit Profile
+                                        Chỉnh sửa hồ sơ
                                     </button>
                                     <button class="btn btn-outline-secondary w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
                                             data-bs-toggle="modal" data-bs-target="#changePwModal">
                                         <span class="material-symbols-outlined">security</span>
-                                        Change Password
+                                        Đổi mật khẩu
                                     </button>
                                 </div>
                             </div>
@@ -193,17 +193,17 @@
                             <!-- Library Status -->
                             <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
                                 <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <h4 class="font-title-lg mb-0">Library Status</h4>
+                                    <h4 class="font-title-lg mb-0">Trạng thái thư viện</h4>
                                     <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 font-label-md d-flex align-items-center gap-2">
                                         <span class="spinner-grow spinner-grow-sm text-success" role="status"
                                               style="width: 8px; height: 8px; --bs-spinner-animation-speed: 1.2s;"></span>
-                                        Active Member
+                                        Thành viên tích cực
                                     </span>
                                 </div>
 
                                 <div class="d-flex flex-column gap-2">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="font-body-sm text-on-surface-variant">Books Borrowed</span>
+                                        <span class="font-body-sm text-on-surface-variant">Sách đã mượn</span>
                                         <span class="font-label-md fw-bold"><c:out value="${activeLoansCount}" /> / 10</span>
                                     </div>
                                     <div class="progress" style="height: 8px; background-color: var(--surface-variant);">
@@ -213,8 +213,8 @@
                                              aria-valuemin="0" aria-valuemax="10"></div>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center pt-2">
-                                        <span class="font-body-sm text-on-surface-variant">Reservations</span>
-                                        <span class="font-label-md fw-bold"><c:out value="${activeReservationsCount}" /> Active</span>
+                                        <span class="font-body-sm text-on-surface-variant">Đặt trước</span>
+                                        <span class="font-label-md fw-bold"><c:out value="${activeReservationsCount}" /> Đang đặt</span>
                                     </div>
                                 </div>
                             </div>
@@ -230,60 +230,60 @@
                             <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
                                 <div class="d-flex align-items-center gap-2 mb-4">
                                     <span class="material-symbols-outlined text-primary fs-4">badge</span>
-                                    <h4 class="font-title-lg mb-0">Personal Information</h4>
+                                    <h4 class="font-title-lg mb-0">Thông tin cá nhân</h4>
                                 </div>
 
                                 <div class="row g-4">
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Full Name</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Họ và tên</label>
                                             <p class="font-body-md mb-0">
-                                                <c:out value="${not empty profile.fullName ? profile.fullName : 'Not set'}" />
+                                                <c:out value="${not empty profile.fullName ? profile.fullName : 'Chưa thiết lập'}" />
                                             </p>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Student Code</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Mã sinh viên</label>
                                             <p class="font-body-md mb-0">
-                                                <c:out value="${not empty student.studentCode ? student.studentCode : 'Not set'}" />
+                                                <c:out value="${not empty student.studentCode ? student.studentCode : 'Chưa thiết lập'}" />
                                             </p>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Email Address</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Địa chỉ Email</label>
                                             <p class="font-body-md mb-0">
-                                                <c:out value="${not empty user.email ? user.email : 'Not set'}" />
+                                                <c:out value="${not empty user.email ? user.email : 'Chưa thiết lập'}" />
                                             </p>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Phone Number</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Số điện thoại</label>
                                             <p class="font-body-md mb-0">
-                                                <c:out value="${not empty profile.phoneNumber ? profile.phoneNumber : 'Not set'}" />
+                                                <c:out value="${not empty profile.phoneNumber ? profile.phoneNumber : 'Chưa thiết lập'}" />
                                             </p>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Gender</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Giới tính</label>
                                             <p class="font-body-md mb-0">
-                                                <c:out value="${not empty profile.gender ? profile.gender : 'Not set'}" />
+                                                <c:out value="${not empty profile.gender ? profile.gender : 'Chưa thiết lập'}" />
                                             </p>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Date of Birth</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Ngày sinh</label>
                                             <p class="font-body-md mb-0">
                                                 <c:choose>
                                                     <c:when test="${not empty profile.dateOfBirth}">
                                                         <fmt:formatDate value="${profile.dateOfBirth}" pattern="MMMM dd, yyyy" />
                                                     </c:when>
                                                     <c:otherwise>
-                                                        Not set
+                                                        Chưa thiết lập
                                                     </c:otherwise>
                                                 </c:choose>
                                             </p>
@@ -296,7 +296,7 @@
                             <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
                                 <div class="d-flex align-items-center gap-2 mb-4">
                                     <span class="material-symbols-outlined text-primary fs-4">verified_user</span>
-                                    <h4 class="font-title-lg mb-0">Membership Details</h4>
+                                    <h4 class="font-title-lg mb-0">Chi tiết thẻ thành viên</h4>
                                 </div>
 
                                 <div class="row g-3">
@@ -307,14 +307,14 @@
                                                 <span class="material-symbols-outlined">event_available</span>
                                             </div>
                                             <div>
-                                                <label class="font-label-md text-on-surface-variant d-block">Start Date</label>
+                                                <label class="font-label-md text-on-surface-variant d-block">Ngày bắt đầu</label>
                                                 <p class="font-body-md fw-bold mb-0">
                                                     <c:choose>
                                                         <c:when test="${not empty profile.startDate}">
                                                             <fmt:formatDate value="${profile.startDate}" pattern="MMMM dd, yyyy" />
                                                         </c:when>
                                                         <c:otherwise>
-                                                            Not set
+                                                            Chưa thiết lập
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </p>
@@ -328,14 +328,14 @@
                                                 <span class="material-symbols-outlined">event_busy</span>
                                             </div>
                                             <div>
-                                                <label class="font-label-md text-on-surface-variant d-block">End Date</label>
+                                                <label class="font-label-md text-on-surface-variant d-block">Ngày kết thúc</label>
                                                 <p class="font-body-md fw-bold mb-0">
                                                     <c:choose>
                                                         <c:when test="${not empty profile.endDate}">
                                                             <fmt:formatDate value="${profile.endDate}" pattern="MMMM dd, yyyy" />
                                                         </c:when>
                                                         <c:otherwise>
-                                                            Unlimited
+                                                            Không thời hạn
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </p>
@@ -351,21 +351,21 @@
                                     <div class="p-3 rounded-xl text-white h-100" style="background-color: var(--bs-primary);">
                                         <span class="material-symbols-outlined display-6 mb-2">history_edu</span>
                                         <div class="font-display mb-1">12</div>
-                                        <p class="font-label-md mb-0 text-white-50">Research Guides Read</p>
+                                        <p class="font-label-md mb-0 text-white-50">Tài liệu nghiên cứu đã đọc</p>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="bg-surface-container-high p-3 rounded-xl h-100">
                                         <span class="material-symbols-outlined text-primary display-6 mb-2">timer</span>
                                         <div class="font-display mb-1">48h</div>
-                                        <p class="font-label-md mb-0 text-on-surface-variant">Study Space Hours</p>
+                                        <p class="font-label-md mb-0 text-on-surface-variant">Giờ mượn phòng học</p>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="bg-secondary-container p-3 rounded-xl h-100">
                                         <span class="material-symbols-outlined text-on-secondary-container display-6 mb-2">workspace_premium</span>
                                         <div class="font-display text-on-secondary-container mb-1">Top</div>
-                                        <p class="font-label-md mb-0 text-on-secondary-container text-opacity-75">5% Active Users</p>
+                                        <p class="font-label-md mb-0 text-on-secondary-container text-opacity-75">5% Người dùng tích cực</p>
                                     </div>
                                 </div>
                             </div>
@@ -385,42 +385,42 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-title-lg" id="editProfileModalLabel">Edit Profile Information</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title font-title-lg" id="editProfileModalLabel">Chỉnh sửa thông tin hồ sơ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/student/profile" method="POST">
                     <input type="hidden" name="action" value="updateInfo" />
                     <div class="modal-body py-4">
                         <div class="d-flex flex-column gap-3">
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Full Name</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Họ và tên</label>
                                 <input type="text" name="fullName" class="form-control rounded-3 py-2" 
                                        value="<c:out value="${profile.fullName}" />" required />
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Phone Number</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Số điện thoại</label>
                                 <input type="text" name="phoneNumber" class="form-control rounded-3 py-2" 
                                        value="<c:out value="${profile.phoneNumber}" />" />
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Gender</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Giới tính</label>
                                 <select name="gender" class="form-select rounded-3 py-2">
-                                    <option value="" ${empty profile.gender ? 'selected' : ''}>Select Gender</option>
-                                    <option value="Male" ${profile.gender == 'Male' ? 'selected' : ''}>Male</option>
-                                    <option value="Female" ${profile.gender == 'Female' ? 'selected' : ''}>Female</option>
-                                    <option value="Other" ${profile.gender == 'Other' ? 'selected' : ''}>Other</option>
+                                    <option value="" ${empty profile.gender ? 'selected' : ''}>Chọn giới tính</option>
+                                    <option value="Male" ${profile.gender == 'Male' ? 'selected' : ''}>Nam</option>
+                                    <option value="Female" ${profile.gender == 'Female' ? 'selected' : ''}>Nữ</option>
+                                    <option value="Other" ${profile.gender == 'Other' ? 'selected' : ''}>Khác</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Date of Birth</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Ngày sinh</label>
                                 <input type="date" name="dateOfBirth" class="form-control rounded-3 py-2" 
                                        value="<c:out value="${profile.dateOfBirth}" />" />
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Save Changes</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Lưu thay đổi</button>
                     </div>
                 </form>
             </div>
@@ -433,33 +433,33 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-title-lg" id="changePwModalLabel">Change Security Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title font-title-lg" id="changePwModalLabel">Đổi mật khẩu bảo mật</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/student/profile" method="POST">
                     <input type="hidden" name="action" value="changePw" />
                     <div class="modal-body py-4">
                         <div class="d-flex flex-column gap-3">
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Current Password</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Mật khẩu hiện tại</label>
                                 <input type="password" name="currentPw" class="form-control rounded-3 py-2" required />
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">New Password</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Mật khẩu mới</label>
                                 <input type="password" name="newPw" class="form-control rounded-3 py-2" required minlength="8" />
                                 <div class="form-text font-label-md text-on-surface-variant mt-1" style="font-size: 11px;">
-                                    Must be at least 8 characters, include uppercase, lowercase, numbers, and special characters.
+                                    Phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.
                                 </div>
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Confirm New Password</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Xác nhận Mật khẩu mới</label>
                                 <input type="password" name="confirmPw" class="form-control rounded-3 py-2" required minlength="8" />
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Update Password</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Cập nhật Mật khẩu</button>
                     </div>
                 </form>
             </div>

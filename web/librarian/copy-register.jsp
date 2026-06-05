@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -178,7 +178,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -186,7 +186,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -195,22 +195,22 @@
 
                     <%-- ─── Breadcrumb ─── --%>
                     <div class="d-flex align-items-center gap-2 mb-4">
-                        <a href="${pageContext.request.contextPath}/librarian/catalog.jsp" class="breadcrumb-link" aria-label="Back to Catalog">
+                        <a href="${pageContext.request.contextPath}/librarian/catalog.jsp" class="breadcrumb-link" aria-label="Quay lại mục lục">
                             <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
-                            <span>Catalog</span>
+                            <span>Mục lục Sách</span>
                         </a>
                         <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
                         <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${book.bookId}'/>" class="breadcrumb-link">
-                            Book Details
+                            Chi tiết sách
                         </a>
                         <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
-                        <span style="font-size: 13px; font-weight: 600; color: var(--on-surface);">Add Copy</span>
+                        <span style="font-size: 13px; font-weight: 600; color: var(--on-surface);">Thêm bản sao</span>
                     </div>
 
                     <%-- ─── Page Title ─── --%>
                     <div class="mb-4">
-                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Add Physical Copy</h2>
-                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Register a new physical copy of an existing book to the inventory.</p>
+                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Thêm bản sao vật lý</h2>
+                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Đăng ký một bản sao vật lý mới của một cuốn sách hiện có vào kho.</p>
                     </div>
 
                     <%-- ─── Associated Book Banner ─── --%>
@@ -227,19 +227,19 @@
                             </c:choose>
                         </div>
                         <div class="flex-grow-1 min-width-0">
-                            <span class="book-banner-tag">Master Record</span>
+                            <span class="book-banner-tag">Bản ghi gốc</span>
                             <h3 class="fw-bold mb-1" style="font-size: 16px; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                <c:out value="${not empty book.title ? book.title : 'Selected Book Title'}" />
+                                <c:out value="${not empty book.title ? book.title : 'Tiêu đề sách đã chọn'}" />
                             </h3>
                             <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">
-                                <c:out value="${not empty book.author ? book.author : 'Author Name'}" />
+                                <c:out value="${not empty book.author ? book.author : 'Tên tác giả'}" />
                                 <c:if test="${not empty book.isbn}">
                                     &middot; ISBN: <span class="font-monospace"><c:out value="${book.isbn}" /></span>
                                 </c:if>
                             </p>
                         </div>
                         <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${book.bookId}'/>"
-                           class="btn-icon flex-shrink-0" title="View book record">
+                           class="btn-icon flex-shrink-0" title="Xem bản ghi sách">
                             <span class="material-symbols-outlined" style="font-size: 20px;">open_in_new</span>
                         </a>
                     </div>
@@ -252,63 +252,63 @@
 
                         <%-- Identification --%>
                         <div class="form-card">
-                            <p class="form-section-title">Identification</p>
+                            <p class="form-section-title">Định danh</p>
                             <div class="mb-0">
-                                <label class="form-label" for="barcode">System Barcode <span style="color: var(--error);">*</span></label>
+                                <label class="form-label" for="barcode">Mã vạch hệ thống <span style="color: var(--error);">*</span></label>
                                 <div class="barcode-group">
                                     <div class="input-icon-wrap">
                                         <span class="material-symbols-outlined input-icon">barcode_scanner</span>
                                         <input type="text" id="barcode" name="barcode" class="form-control rounded-3"
                                                value="<c:out value='${param.barcode}'/>"
-                                               placeholder="Scan or enter barcode manually"
+                                               placeholder="Quét hoặc nhập mã vạch thủ công"
                                                required aria-describedby="barcodeHelp" autofocus />
                                     </div>
-                                    <button type="button" class="btn-scan" title="Auto-generate barcode" id="btnGenerateBarcode">
+                                    <button type="button" class="btn-scan" title="Tự động tạo mã vạch" id="btnGenerateBarcode">
                                         <span class="material-symbols-outlined">auto_fix_high</span>
                                     </button>
                                 </div>
-                                <div id="barcodeHelp" class="form-text">Must be unique across the entire library system.</div>
+                                <div id="barcodeHelp" class="form-text">Phải là duy nhất trên toàn hệ thống thư viện.</div>
                             </div>
                         </div>
 
                         <%-- Physical Details --%>
                         <div class="form-card">
-                            <p class="form-section-title">Physical Details</p>
+                            <p class="form-section-title">Chi tiết vật lý</p>
                             <div class="row g-3">
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label" for="location">Shelf Location <span style="color: var(--error);">*</span></label>
+                                    <label class="form-label" for="location">Vị trí kệ <span style="color: var(--error);">*</span></label>
                                     <div class="input-icon-wrap">
                                         <span class="material-symbols-outlined input-icon">location_on</span>
                                         <input type="text" id="location" name="location" class="form-control rounded-3"
                                                value="<c:out value='${param.location}'/>"
-                                               placeholder="e.g. Main Stacks, Level 3, Shelf B4" required />
+                                               placeholder="VD: Kệ chính, Tầng 3, Kệ B4" required />
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label" for="condition">Initial Condition <span style="color: var(--error);">*</span></label>
+                                    <label class="form-label" for="condition">Tình trạng ban đầu <span style="color: var(--error);">*</span></label>
                                     <select id="condition" name="condition" class="form-select rounded-3" required>
-                                        <option value="New"     ${param.condition == 'New'     || empty param.condition ? 'selected' : ''}>New / Perfect</option>
-                                        <option value="Good"    ${param.condition == 'Good'    ? 'selected' : ''}>Good / Minor Wear</option>
-                                        <option value="Fair"    ${param.condition == 'Fair'    ? 'selected' : ''}>Fair / Usable</option>
+                                        <option value="New"     ${param.condition == 'New'     || empty param.condition ? 'selected' : ''}>Mới / Hoàn hảo</option>
+                                        <option value="Good"    ${param.condition == 'Good'    ? 'selected' : ''}>Tốt / Hao mòn nhẹ</option>
+                                        <option value="Fair"    ${param.condition == 'Fair'    ? 'selected' : ''}>Khá / Có thể sử dụng</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label" for="conditionNotes">Condition Notes <span class="form-text fw-normal text-lowercase" style="letter-spacing: 0;">(optional)</span></label>
+                                    <label class="form-label" for="conditionNotes">Ghi chú tình trạng <span class="form-text fw-normal text-lowercase" style="letter-spacing: 0;">(tùy chọn)</span></label>
                                     <textarea id="conditionNotes" name="conditionNotes" class="form-control rounded-3"
                                               rows="2" style="resize: vertical;"
-                                              placeholder="Record any existing defects upon receipt..."><c:out value="${param.conditionNotes}" /></textarea>
+                                              placeholder="Ghi lại mọi khiếm khuyết hiện có khi nhận..."><c:out value="${param.conditionNotes}" /></textarea>
                                 </div>
                             </div>
                         </div>
                         
                         <%-- Initial Status --%>
                         <div class="form-card">
-                            <p class="form-section-title">Inventory State</p>
+                            <p class="form-section-title">Trạng thái kho</p>
                             <div class="mb-0">
-                                <label class="form-label" for="status">Initial Status</label>
+                                <label class="form-label" for="status">Trạng thái ban đầu</label>
                                 <select id="status" name="status" class="form-select rounded-3">
-                                    <option value="AVAILABLE" selected>Available (Ready for circulation)</option>
-                                    <option value="MAINTENANCE">In Processing (Not yet shelvable)</option>
+                                    <option value="AVAILABLE" selected>Sẵn có (Sẵn sàng luân chuyển)</option>
+                                    <option value="MAINTENANCE">Đang xử lý (Chưa thể đưa lên kệ)</option>
                                 </select>
                             </div>
                         </div>
@@ -318,11 +318,11 @@
                             <a href="${pageContext.request.contextPath}/librarian/book-detail.jsp?id=<c:out value='${book.bookId}'/>"
                                class="btn py-2 px-4 rounded-pill fw-bold"
                                style="background-color: var(--surface-container-low); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
-                                Cancel
+                                Hủy
                             </a>
                             <button type="submit" class="btn btn-primary-custom py-2 px-4 rounded-pill fw-bold d-flex align-items-center gap-2" id="btnSaveCopy">
                                 <span class="material-symbols-outlined" style="font-size: 18px;">add_task</span>
-                                Register Copy
+                                Đăng ký bản sao
                             </button>
                         </div>
 

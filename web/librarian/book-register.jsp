@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -169,7 +169,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -177,7 +177,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -186,16 +186,16 @@
                 <div class="d-flex align-items-center gap-2 mb-4">
                     <a href="${pageContext.request.contextPath}/librarian/catalog.jsp" class="breadcrumb-link" aria-label="Back to Catalog">
                         <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
-                        <span>Book Catalog</span>
+                        <span>Mục lục Sách</span>
                     </a>
                     <span class="text-on-surface-variant" style="font-size: 16px; user-select: none;">/</span>
-                    <span style="font-size: 13px; font-weight: 600; color: var(--on-surface);">Register New Book</span>
+                    <span style="font-size: 13px; font-weight: 600; color: var(--on-surface);">Đăng ký sách mới</span>
                 </div>
 
                 <%-- ─── Page Title ─── --%>
                 <div class="mb-4">
-                    <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Register Book to Collection</h2>
-                    <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Add a new title to the library catalog. Fields marked <span class="req">*</span> are required.</p>
+                    <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Thêm sách vào bộ sưu tập</h2>
+                    <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Thêm một tiêu đề mới vào mục lục thư viện. Các trường có dấu <span class="req">*</span> là bắt buộc.</p>
                 </div>
 
                 <%-- ─── Register Form ─── --%>
@@ -212,17 +212,17 @@
                             <div class="form-card">
                                 <h3 class="form-card-title">
                                     <span class="material-symbols-outlined text-primary-custom" style="font-size: 20px;">info</span>
-                                    Basic Information
+                                    Thông tin cơ bản
                                 </h3>
                                 <div class="row g-3">
                                     <div class="col-12">
-                                        <label for="title" class="form-label">Title <span class="req">*</span></label>
+                                        <label for="title" class="form-label">Tiêu đề <span class="req">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <span class="material-symbols-outlined" style="font-size: 18px;">book</span>
                                             </span>
                                             <input type="text" class="form-control" id="title" name="title"
-                                                   placeholder="Enter full book title" required
+                                                   placeholder="Nhập tên sách đầy đủ" required
                                                    value="<c:out value='${param.title}'/>" />
                                         </div>
                                     </div>
@@ -240,7 +240,7 @@
                                         <div class="form-text mt-1">ISBN-10 or ISBN-13 format</div>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <label for="author" class="form-label">Author <span class="req">*</span></label>
+                                        <label for="author" class="form-label">Tác giả <span class="req">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <span class="material-symbols-outlined" style="font-size: 18px;">person</span>
@@ -257,22 +257,22 @@
                             <div class="form-card">
                                 <h3 class="form-card-title">
                                     <span class="material-symbols-outlined text-primary-custom" style="font-size: 20px;">domain</span>
-                                    Publishing Details
+                                    Chi tiết xuất bản
                                 </h3>
                                 <div class="row g-3">
                                     <div class="col-12 col-md-6">
-                                        <label for="publisher" class="form-label">Publisher</label>
+                                        <label for="publisher" class="form-label">Nhà xuất bản</label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <span class="material-symbols-outlined" style="font-size: 18px;">corporate_fare</span>
                                             </span>
                                             <input type="text" class="form-control" id="publisher" name="publisher"
-                                                   placeholder="Publishing house"
+                                                   placeholder="Nhà xuất bản"
                                                    value="<c:out value='${param.publisher}'/>" />
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-3">
-                                        <label for="publishYear" class="form-label">Publication Year</label>
+                                        <label for="publishYear" class="form-label">Năm xuất bản</label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <span class="material-symbols-outlined" style="font-size: 18px;">calendar_today</span>
@@ -283,7 +283,7 @@
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-3">
-                                        <label for="replacementPrice" class="form-label">Replacement Price ($)</label>
+                                        <label for="replacementPrice" class="form-label">Giá thay thế (VNĐ)</label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <span class="material-symbols-outlined" style="font-size: 18px;">payments</span>
@@ -300,12 +300,12 @@
                             <div class="form-card">
                                 <h3 class="form-card-title">
                                     <span class="material-symbols-outlined text-primary-custom" style="font-size: 20px;">notes</span>
-                                    Description
+                                    Mô tả
                                 </h3>
-                                <label for="description" class="visually-hidden">Book description</label>
+                                <label for="description" class="visually-hidden">Mô tả sách</label>
                                 <textarea class="form-control" id="description" name="description"
                                           rows="5" style="resize: vertical;"
-                                          placeholder="Enter book synopsis or catalog notes..."><c:out value="${param.description}"/></textarea>
+                                          placeholder="Nhập tóm tắt sách hoặc ghi chú mục lục..."><c:out value="${param.description}"/></textarea>
                             </div>
 
                         </div><%-- /left col --%>
@@ -317,65 +317,65 @@
                             <div class="form-card">
                                 <h3 class="form-card-title">
                                     <span class="material-symbols-outlined text-primary-custom" style="font-size: 20px;">image</span>
-                                    Cover Image
+                                    Ảnh bìa
                                 </h3>
                                 <div class="cover-upload-zone" id="coverUploadZone"
                                      onclick="document.getElementById('coverImage').click();"
                                      role="button" tabindex="0" aria-label="Upload book cover image"
                                      onkeydown="if(event.key==='Enter'||event.key===' ') document.getElementById('coverImage').click();">
                                     <span class="material-symbols-outlined" style="font-size: 48px; color: var(--outline);">add_photo_alternate</span>
-                                    <span class="upload-label-text">Click to Upload Cover</span>
-                                    <span class="upload-hint">JPEG, PNG · Max 2 MB</span>
-                                    <img id="coverPreview" src="" alt="Cover preview" />
+                                    <span class="upload-label-text">Nhấn để tải ảnh bìa lên</span>
+                                    <span class="upload-hint">JPEG, PNG · Tối đa 2 MB</span>
+                                    <img id="coverPreview" src="" alt="Ảnh xem trước" />
                                 </div>
                                 <input type="file" id="coverImage" name="coverImage"
                                        class="d-none" accept="image/jpeg, image/png" />
-                                <p class="form-text mt-2 text-center" id="coverFileName">No file selected</p>
+                                <p class="form-text mt-2 text-center" id="coverFileName">Chưa chọn tệp</p>
                             </div>
 
                             <%-- Classification --%>
                             <div class="form-card">
                                 <h3 class="form-card-title">
                                     <span class="material-symbols-outlined text-primary-custom" style="font-size: 20px;">label</span>
-                                    Classification
+                                    Phân loại
                                 </h3>
 
                                 <div class="mb-4">
-                                    <p class="form-label mb-2">Categories</p>
+                                    <p class="form-label mb-2">Thể loại</p>
                                     <div class="d-flex flex-wrap gap-2" id="categoryPills">
                                         <label class="category-pill" data-val="Fiction">
                                             <input type="checkbox" name="categories" value="Fiction" />
-                                            Fiction
+                                            Hư cấu
                                         </label>
                                         <label class="category-pill" data-val="Non-Fiction">
                                             <input type="checkbox" name="categories" value="Non-Fiction" />
-                                            Non-Fiction
+                                            Phi hư cấu
                                         </label>
                                         <label class="category-pill" data-val="Science">
                                             <input type="checkbox" name="categories" value="Science" />
-                                            Science
+                                            Khoa học
                                         </label>
                                         <label class="category-pill" data-val="Technology">
                                             <input type="checkbox" name="categories" value="Technology" />
-                                            Technology
+                                            Công nghệ
                                         </label>
                                         <label class="category-pill" data-val="History">
                                             <input type="checkbox" name="categories" value="History" />
-                                            History
+                                            Lịch sử
                                         </label>
                                         <label class="category-pill" data-val="Arts">
                                             <input type="checkbox" name="categories" value="Arts" />
-                                            Arts
+                                            Nghệ thuật
                                         </label>
                                         <label class="category-pill" data-val="Reference">
                                             <input type="checkbox" name="categories" value="Reference" />
-                                            Reference
+                                            Tham khảo
                                         </label>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label for="tags" class="form-label">Tags <span class="form-text fw-normal">(comma-separated)</span></label>
+                                    <label for="tags" class="form-label">Thẻ <span class="form-text fw-normal">(phân tách bằng dấu phẩy)</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">
                                             <span class="material-symbols-outlined" style="font-size: 18px;">sell</span>
@@ -391,12 +391,12 @@
                             <div class="d-flex flex-column gap-2">
                                 <button type="submit" class="btn btn-primary-custom py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2" id="btnSubmitBook">
                                     <span class="material-symbols-outlined" style="font-size: 20px;">save</span>
-                                    Finalize Registration
+                                    Hoàn tất đăng ký
                                 </button>
                                 <a href="${pageContext.request.contextPath}/librarian/catalog.jsp"
                                    class="btn py-2 rounded-3 fw-bold text-center"
                                    style="background-color: var(--surface-container-low); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
-                                    Discard &amp; Go Back
+                                    Hủy và Quay lại
                                 </a>
                             </div>
 
@@ -428,7 +428,7 @@
                 if (!file) return;
 
                 if (file.size > 2 * 1024 * 1024) {
-                    alert('File size exceeds 2 MB. Please choose a smaller image.');
+                    alert('Kích thước tệp vượt quá 2 MB. Vui lòng chọn ảnh nhỏ hơn.');
                     this.value = '';
                     return;
                 }

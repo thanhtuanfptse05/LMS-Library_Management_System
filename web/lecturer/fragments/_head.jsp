@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Lecturer Dashboard - LMS University Library</title>
+    <title>Bảng điều khiển Giảng viên - Thư viện Đại học LMS</title>
     <meta name="description" content="Academic resource and course material management panel for Lecturers at LMS University Library." />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />

@@ -15,9 +15,9 @@
               style="color: var(--primary); font-size: 24px;
                      font-variation-settings: 'FILL' 1;">local_library</span>
         <div>
-            <p class="fw-bold mb-0 text-primary-custom" style="font-size: 15px; line-height: 1.2;">Library Portal</p>
+            <p class="fw-bold mb-0 text-primary-custom" style="font-size: 15px; line-height: 1.2;">Cổng thông tin Thư viện</p>
             <p class="text-on-surface-variant mb-0"
-               style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;">System Administration</p>
+               style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;">Quản trị Hệ thống</p>
         </div>
     </a>
 
@@ -27,74 +27,74 @@
         <!-- Overview -->
         <div class="px-3 mb-1">
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
-               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 4px;">Overview</p>
+               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 4px;">Tổng quan</p>
             <a class="sidebar-link" id="nav-dashboard"
                href="${pageContext.request.contextPath}/admin/dashboard">
                 <span class="material-symbols-outlined">dashboard</span>
-                <span>Dashboard</span>
+                <span>Bảng điều khiển</span>
             </a>
         </div>
 
         <!-- Users & Access -->
         <div class="px-3 mb-1">
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
-               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Users &amp; Access</p>
+               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Người dùng &amp; Phân quyền</p>
             <a class="sidebar-link" id="nav-user-management" href="${pageContext.request.contextPath}/admin/user-list.jsp">
                 <span class="material-symbols-outlined">group</span>
-                <span>User Management</span>
+                <span>Quản lý Người dùng</span>
             </a>
             <a class="sidebar-link" id="nav-role-assignment" href="#">
                 <span class="material-symbols-outlined">verified_user</span>
-                <span>Role Assignment</span>
+                <span>Phân quyền</span>
             </a>
             <a class="sidebar-link" id="nav-security" href="#">
                 <span class="material-symbols-outlined">security</span>
-                <span>Security</span>
+                <span>Bảo mật</span>
             </a>
         </div>
 
         <!-- System Config -->
         <div class="px-3 mb-1">
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
-               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">System Config</p>
+               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Cấu hình Hệ thống</p>
             <a class="sidebar-link" id="nav-config-list"
                href="${pageContext.request.contextPath}/admin/config-list.jsp">
                 <span class="material-symbols-outlined">settings</span>
-                <span>Configurations</span>
+                <span>Cấu hình</span>
             </a>
             <a class="sidebar-link sidebar-sublink" id="nav-config-edit"
                href="${pageContext.request.contextPath}/admin/config-edit.jsp"
                style="padding-left: 42px; font-size: 13px;">
                 <span class="material-symbols-outlined" style="font-size: 17px;">tune</span>
-                <span>Edit Parameter</span>
+                <span>Chỉnh sửa Tham số</span>
             </a>
         </div>
 
         <!-- Audit & Monitoring -->
         <div class="px-3 mb-1">
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
-               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Audit &amp; Monitoring</p>
+               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Kiểm toán &amp; Giám sát</p>
             <a class="sidebar-link" id="nav-audit-logs"
                href="${pageContext.request.contextPath}/admin/audit-logs.jsp">
                 <span class="material-symbols-outlined">receipt_long</span>
-                <span>Audit Logs</span>
+                <span>Nhật ký Kiểm toán</span>
             </a>
             <a class="sidebar-link sidebar-sublink" id="nav-audit-detail"
                href="${pageContext.request.contextPath}/admin/audit-detail.jsp"
                style="padding-left: 42px; font-size: 13px;">
                 <span class="material-symbols-outlined" style="font-size: 17px;">manage_search</span>
-                <span>Log Detail</span>
+                <span>Chi tiết nhật ký</span>
             </a>
         </div>
 
         <!-- Account -->
         <div class="px-3 mb-1">
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
-               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Account</p>
+               style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Tài khoản</p>
             <a class="sidebar-link" id="nav-profile"
                href="${pageContext.request.contextPath}/admin/profile">
                 <span class="material-symbols-outlined">manage_accounts</span>
-                <span>My Profile</span>
+                <span>Hồ sơ của tôi</span>
             </a>
         </div>
 
@@ -104,14 +104,14 @@
     <div style="border-top: 1px solid var(--outline-variant); padding: 14px 16px 16px;">
         <a class="sidebar-link mb-2" href="#">
             <span class="material-symbols-outlined">help</span>
-            <span>Help Center</span>
+            <span>Trung tâm Trợ giúp</span>
         </a>
         <div class="p-3 rounded-3" style="background-color: var(--surface-container-high);">
-            <p class="fw-bold mb-1 text-primary-custom" style="font-size: 11px;">System Status</p>
+            <p class="fw-bold mb-1 text-primary-custom" style="font-size: 11px;">Trạng thái Hệ thống</p>
             <div class="d-flex align-items-center gap-2">
                 <span class="animate-pulse rounded-circle d-inline-block"
                       style="width: 8px; height: 8px; background: #10b981;"></span>
-                <span style="font-size: 12px; color: var(--on-surface-variant);">Database Online</span>
+                <span style="font-size: 12px; color: var(--on-surface-variant);">Cơ sở dữ liệu Hoạt động</span>
             </div>
         </div>
     </div>

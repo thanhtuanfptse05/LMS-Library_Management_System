@@ -2,7 +2,7 @@
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="vi">
 
             <jsp:include page="fragments/_head.jsp" />
 
@@ -28,7 +28,7 @@
                                                 <span class="material-symbols-outlined me-2">check_circle</span>
                                                 <c:out value="${sessionScope.successMessage}" />
                                                 <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                    aria-label="Close"></button>
+                                                    aria-label="Đóng"></button>
                                             </div>
                                             <c:remove var="successMessage" scope="session" />
                                         </c:if>
@@ -37,16 +37,15 @@
                                             <section
                                                 class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
                                                 <div>
-                                                    <h2 class="font-headline-lg text-dark mb-1">Borrowing History</h2>
-                                                    <p class="font-body-md text-secondary-custom mb-0">Manage your
-                                                        active loans and view your reading journey.</p>
+                                                    <h2 class="font-headline-lg text-dark mb-1">Lịch sử mượn sách</h2>
+                                                    <p class="font-body-md text-secondary-custom mb-0">Quản lý sách đang mượn và xem hành trình đọc của bạn.</p>
                                                 </div>
                                                 <div class="d-flex align-items-end">
                                                     <button
                                                         class="btn btn-sm d-flex align-items-center gap-1 px-3 py-2 border text-secondary-custom font-label-md"
                                                         style="border-color: var(--outline) !important; border-radius: 8px;">
                                                         <span class="material-symbols-outlined"
-                                                            style="font-size: 20px;">download</span> Export PDF
+                                                            style="font-size: 20px;">download</span> Xuất PDF
                                                     </button>
                                                 </div>
                                             </section>
@@ -56,8 +55,7 @@
                                                     <div class="col-12 col-sm-6 col-lg-3">
                                                         <div class="bg-lowest p-4 rounded-3 border premium-card d-flex flex-column gap-1 shadow-sm"
                                                             style="border-color: var(--outline-variant) !important;">
-                                                            <span class="font-label-md text-secondary-custom">Active
-                                                                Borrows</span>
+                                                            <span class="font-label-md text-secondary-custom">Sách đang mượn</span>
                                                             <div
                                                                 class="d-flex align-items-baseline justify-content-between mt-2">
                                                                 <span class="font-display text-primary-custom">
@@ -76,8 +74,7 @@
                                                     <div class="col-12 col-sm-6 col-lg-3">
                                                         <div class="bg-lowest p-4 rounded-3 border premium-card d-flex flex-column gap-1 shadow-sm"
                                                             style="border-color: var(--outline-variant) !important;">
-                                                            <span class="font-label-md text-secondary-custom">Overdue
-                                                                Items</span>
+                                                            <span class="font-label-md text-secondary-custom">Sách quá hạn</span>
                                                             <div
                                                                 class="d-flex align-items-baseline justify-content-between mt-2">
                                                                 <span class="font-display text-danger">
@@ -96,8 +93,7 @@
                                                     <div class="col-12 col-sm-6 col-lg-3">
                                                         <div class="bg-lowest p-4 rounded-3 border premium-card d-flex flex-column gap-1 shadow-sm"
                                                             style="border-color: var(--outline-variant) !important;">
-                                                            <span class="font-label-md text-secondary-custom">Total
-                                                                Lifetime Loans</span>
+                                                            <span class="font-label-md text-secondary-custom">Tổng số sách đã mượn</span>
                                                             <div
                                                                 class="d-flex align-items-baseline justify-content-between mt-2">
                                                                 <span class="font-display text-dark">
@@ -120,8 +116,7 @@
                                                                 style="right: -16px; top: -16px; width: 96px; height: 96px; background-color: rgba(255,255,255,0.1); filter: blur(24px);">
                                                             </div>
                                                             <span
-                                                                class="font-label-md opacity-90 position-relative z-1">Next
-                                                                Due Date</span>
+                                                                class="font-label-md opacity-90 position-relative z-1">Hạn trả tiếp theo</span>
                                                             <div
                                                                 class="d-flex align-items-baseline justify-content-between mt-2 position-relative z-1">
                                                                 <span class="font-headline-lg">
@@ -148,11 +143,11 @@
                                                     <section class="mb-5">
                                                         <div
                                                             class="d-flex align-items-center justify-content-between mb-3">
-                                                            <h3 class="font-title-lg text-dark mb-0">Currently Borrowed
+                                                            <h3 class="font-title-lg text-dark mb-0">Sách đang mượn
                                                             </h3>
                                                             <a class="text-primary-custom font-label-md text-decoration-none d-flex align-items-center gap-1"
                                                                 href="${pageContext.request.contextPath}/student/borrow-policy">
-                                                                View Policy <span class="material-symbols-outlined"
+                                                                Xem chính sách <span class="material-symbols-outlined"
                                                                     style="font-size: 14px;">open_in_new</span>
                                                             </a>
                                                         </div>
@@ -172,7 +167,7 @@
                                                                                     <c:if test="${borrow.overdue}">
                                                                                         <div class="position-absolute top-0 start-0 m-2 bg-danger text-white px-2 rounded"
                                                                                             style="font-size: 8px; font-weight: 700; letter-spacing: 0.05em;">
-                                                                                            Overdue</div>
+                                                                                            Quá hạn</div>
                                                                                     </c:if>
                                                                                 </div>
                                                                                 <div
@@ -198,7 +193,7 @@
                                                                   'background-color: var(--secondary-container); color: var(--on-secondary-container); border-color: rgba(86,94,116,0.2) !important;'}
                                                                   font-size: 10px;">
                                                                                             ${borrow.overdue ?
-                                                                                            'CRITICAL' : 'IN PROGRESS'}
+                                                                                            'NGHIÊM TRỌNG' : 'ĐANG MƯỢN'}
                                                                                         </span>
                                                                                     </div>
                                                                                     <div
@@ -206,7 +201,7 @@
                                                                                         <div class="col-6">
                                                                                             <p class="mb-0 text-secondary-custom"
                                                                                                 style="font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                                                                                                BORROWED</p>
+                                                                                                NGÀY MƯỢN</p>
                                                                                             <p
                                                                                                 class="font-body-sm fw-semibold text-dark mb-0 mt-1">
                                                                                                 <fmt:formatDate
@@ -217,7 +212,7 @@
                                                                                         <div class="col-6">
                                                                                             <p class="mb-0 text-secondary-custom"
                                                                                                 style="font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                                                                                                DUE DATE</p>
+                                                                                                HẠN TRẢ</p>
                                                                                             <p
                                                                                                 class="font-body-sm fw-semibold mb-0 mt-1 ${borrow.overdue ? 'text-danger' : 'text-primary-custom'}">
                                                                                                 <fmt:formatDate
@@ -232,7 +227,7 @@
                                                                                             <a href="${pageContext.request.contextPath}/student/pay-fine?borrowId=${borrow.borrowId}"
                                                                                                 class="btn btn-sm interactive-btn w-100 py-2 fw-bold text-decoration-none text-center border"
                                                                                                 style="background-color: var(--error-container); color: var(--on-error-container); border-color: rgba(186,26,26,0.1) !important; border-radius: 8px; font-size: 14px;">
-                                                                                                Pay Fine &amp; Renew
+                                                                                                Nộp phạt &amp; Gia hạn
                                                                                             </a>
                                                                                         </c:when>
                                                                                         <c:otherwise>
@@ -244,7 +239,7 @@
                                                                                                     value="${borrow.borrowId}" />
                                                                                                 <button
                                                                                                     class="btn btn-sm interactive-btn w-100 py-2 fw-bold text-white shadow-sm border-0"
-                                                                                                    style="background-color: var(--primary); border-radius: 8px; font-size: 14px;">Renew</button>
+                                                                                                    style="background-color: var(--primary); border-radius: 8px; font-size: 14px;">Gia hạn</button>
                                                                                             </form>
                                                                                         </c:otherwise>
                                                                                     </c:choose>
@@ -265,7 +260,7 @@
                                                                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3WPM3I-G32TrTtJf06pbW4jo7hEM5mrMDeh7jcpky2Iewtu-7nGoNA75DbXbjnHOyChbfnoEqXhEGm0Xi6ADsrNRtC6Ak1e00PCkBrH6AGBRUk2zU07-5et67L-MXcetG1ksw893iKofp2ecqZGWpo9Dywoa6RSa2EQfZ1V0XQQh128KdzHLw5TdtEwsnRaMuJPXEuud0FGGtYlD9oBObDyqjaGJ0Xma9oKqXgHlWXE71_j4rQjbLQJRkl-WpgSv0rvVbDJsessU" />
                                                                                     <div class="position-absolute top-0 start-0 m-2 bg-danger text-white px-2 rounded"
                                                                                         style="font-size: 8px; font-weight: 700;">
-                                                                                        Overdue</div>
+                                                                                        Quá hạn</div>
                                                                                 </div>
                                                                                 <div
                                                                                     class="d-flex flex-column flex-grow-1 py-1">
@@ -282,14 +277,14 @@
                                                                                         </div>
                                                                                         <span
                                                                                             class="badge font-label-md rounded-pill px-2 py-1 border"
-                                                                                            style="background-color: var(--error-container); color: var(--on-error-container); border-color: rgba(186,26,26,0.2) !important; font-size: 10px;">CRITICAL</span>
+                                                                                            style="background-color: var(--error-container); color: var(--on-error-container); border-color: rgba(186,26,26,0.2) !important; font-size: 10px;">NGHIÊM TRỌNG</span>
                                                                                     </div>
                                                                                     <div
                                                                                         class="row g-2 mt-auto mb-3 pt-3">
                                                                                         <div class="col-6">
                                                                                             <p class="mb-0 text-secondary-custom"
                                                                                                 style="font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                                                                                                BORROWED</p>
+                                                                                                NGÀY MƯỢN</p>
                                                                                             <p
                                                                                                 class="font-body-sm fw-semibold text-dark mb-0 mt-1">
                                                                                                 Oct 01, 2023</p>
@@ -297,7 +292,7 @@
                                                                                         <div class="col-6">
                                                                                             <p class="mb-0 text-secondary-custom"
                                                                                                 style="font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                                                                                                DUE DATE</p>
+                                                                                                HẠN TRẢ</p>
                                                                                             <p
                                                                                                 class="font-body-sm fw-semibold text-danger mb-0 mt-1">
                                                                                                 Oct 15, 2023</p>
@@ -306,7 +301,7 @@
                                                                                     <button
                                                                                         class="btn btn-sm interactive-btn w-100 py-2 fw-bold border"
                                                                                         style="background-color: var(--error-container); color: var(--on-error-container); border-color: rgba(186,26,26,0.1) !important; border-radius: 8px; font-size: 14px;">
-                                                                                        Pay Fine &amp; Renew
+                                                                                        Nộp phạt &amp; Gia hạn
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
@@ -336,14 +331,14 @@
                                                                                         <span
                                                                                             class="badge font-label-md rounded-pill px-2 py-1 border"
                                                                                             style="background-color: var(--secondary-container); color: var(--on-secondary-container); border-color: rgba(86,94,116,0.2) !important; font-size: 10px;">IN
-                                                                                            PROGRESS</span>
+                                                                                            ĐANG MƯỢN</span>
                                                                                     </div>
                                                                                     <div
                                                                                         class="row g-2 mt-auto mb-3 pt-3">
                                                                                         <div class="col-6">
                                                                                             <p class="mb-0 text-secondary-custom"
                                                                                                 style="font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                                                                                                BORROWED</p>
+                                                                                                NGÀY MƯỢN</p>
                                                                                             <p
                                                                                                 class="font-body-sm fw-semibold text-dark mb-0 mt-1">
                                                                                                 Oct 10, 2023</p>
@@ -351,7 +346,7 @@
                                                                                         <div class="col-6">
                                                                                             <p class="mb-0 text-secondary-custom"
                                                                                                 style="font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                                                                                                DUE DATE</p>
+                                                                                                HẠN TRẢ</p>
                                                                                             <p
                                                                                                 class="font-body-sm fw-semibold text-primary-custom mb-0 mt-1">
                                                                                                 Oct 31, 2023</p>
@@ -359,7 +354,7 @@
                                                                                     </div>
                                                                                     <button
                                                                                         class="btn btn-sm interactive-btn w-100 py-2 fw-bold text-white shadow-sm border-0"
-                                                                                        style="background-color: var(--primary); border-radius: 8px; font-size: 14px;">Renew</button>
+                                                                                        style="background-color: var(--primary); border-radius: 8px; font-size: 14px;">Gia hạn</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -374,8 +369,7 @@
                                                             style="border-color: var(--outline-variant) !important;">
                                                             <div class="px-4 py-3 border-bottom d-flex align-items-center justify-content-between bg-lowest"
                                                                 style="border-color: var(--surface-container) !important;">
-                                                                <h3 class="font-title-lg text-dark mb-0">Borrowing
-                                                                    History</h3>
+                                                                <h3 class="font-title-lg text-dark mb-0">Lịch sử mượn sách</h3>
                                                                 <div class="d-flex gap-2">
                                                                     <button
                                                                         class="btn btn-link p-2 text-secondary-custom rounded-3 shadow-none border-0">
@@ -398,19 +392,19 @@
                                                                             style="border-color: var(--outline-variant) !important; font-size: 12px;">
                                                                             <th
                                                                                 class="px-4 py-3 font-label-md text-uppercase border-0">
-                                                                                Title</th>
+                                                                                Tiêu đề</th>
                                                                             <th
                                                                                 class="px-4 py-3 font-label-md text-uppercase border-0">
-                                                                                Return Date</th>
+                                                                                Ngày trả</th>
                                                                             <th
                                                                                 class="px-4 py-3 font-label-md text-uppercase border-0">
-                                                                                Duration</th>
+                                                                                Thời hạn</th>
                                                                             <th
                                                                                 class="px-4 py-3 font-label-md text-uppercase border-0">
-                                                                                Rating</th>
+                                                                                Đánh giá</th>
                                                                             <th
                                                                                 class="px-4 py-3 font-label-md text-uppercase text-end border-0">
-                                                                                Actions</th>
+                                                                                Hành động</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody class="table-group-divider border-0">
@@ -454,7 +448,7 @@
                                                                                             class="px-4 py-3 font-body-sm text-dark">
                                                                                             <c:out
                                                                                                 value="${hist.durationDays}" />
-                                                                                            Days
+                                                                                            ngày
                                                                                         </td>
                                                                                         <td class="px-4 py-3">
                                                                                             <div
@@ -473,7 +467,7 @@
                                                                                                 onmouseover="this.style.backgroundColor='var(--primary-fixed)'"
                                                                                                 onmouseout="this.style.backgroundColor='transparent'"
                                                                                                 onclick="location.href='${pageContext.request.contextPath}/student/reserve?bookId=${hist.bookId}'">
-                                                                                                Borrow Again
+                                                                                                Mượn lại
                                                                                             </button>
                                                                                         </td>
                                                                                     </tr>
@@ -510,7 +504,7 @@
                                                                                             Sep 14, 2023</td>
                                                                                         <td
                                                                                             class="px-4 py-3 font-body-sm text-dark">
-                                                                                            14 Days</td>
+                                                                                            14 ngày</td>
                                                                                         <td class="px-4 py-3">
                                                                                             <div
                                                                                                 class="d-flex text-primary-custom">
@@ -537,7 +531,7 @@
                                                                                                 style="color: var(--primary); background-color: transparent; border-radius: 8px;"
                                                                                                 onmouseover="this.style.backgroundColor='var(--primary-fixed)'"
                                                                                                 onmouseout="this.style.backgroundColor='transparent'">
-                                                                                                Borrow Again
+                                                                                                Mượn lại
                                                                                             </button>
                                                                                         </td>
                                                                                     </tr>
@@ -570,7 +564,7 @@
                                                                                             Aug 28, 2023</td>
                                                                                         <td
                                                                                             class="px-4 py-3 font-body-sm text-dark">
-                                                                                            21 Days</td>
+                                                                                            21 ngày</td>
                                                                                         <td class="px-4 py-3">
                                                                                             <div
                                                                                                 class="d-flex text-primary-custom">
@@ -597,7 +591,7 @@
                                                                                                 style="color: var(--primary); background-color: transparent; border-radius: 8px;"
                                                                                                 onmouseover="this.style.backgroundColor='var(--primary-fixed)'"
                                                                                                 onmouseout="this.style.backgroundColor='transparent'">
-                                                                                                Borrow Again
+                                                                                                Mượn lại
                                                                                             </button>
                                                                                         </td>
                                                                                     </tr>
@@ -611,13 +605,13 @@
                                                                 <div class="px-4 py-3 bg-low d-flex align-items-center justify-content-between border-top"
                                                                     style="border-color: var(--outline-variant) !important;">
                                                                     <span class="font-body-sm text-secondary-custom">
-                                                                        Showing 1-
+                                                                        Hiển thị 1-
                                                                         <c:out
                                                                             value="${pageSize != null ? pageSize : '10'}" />
-                                                                        of
+                                                                        trên
                                                                         <c:out
                                                                             value="${lifetimeLoans != null ? lifetimeLoans : '42'}" />
-                                                                        entries
+                                                                        mục
                                                                     </span>
                                                                     <div class="d-flex gap-1 align-items-center">
                                                                         <button

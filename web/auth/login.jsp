@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Lumina Library - Login</title>
+    <title>Thư viện Lumina - Đăng nhập</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -273,24 +273,23 @@
                     <div class="d-flex align-items-center gap-2">
                         <span class="material-symbols-outlined text-white"
                             style="font-size: 40px; font-variation-settings: 'FILL' 1;">auto_stories</span>
-                        <span class="fs-2 fw-bold tracking-tight text-white">LMS University Library</span>
+                        <span class="fs-2 fw-bold tracking-tight text-white">Thư viện Đại học LMS</span>
                     </div>
 
                     <div style="max-width: 450px;">
-                        <h2 class="display-5 fw-bold text-white mb-4">Access the world's knowledge.</h2>
-                        <p class="fs-5 text-white-50">Manage loans, browse collections, and connect with global research
-                            resources through the Lumina Library ecosystem.</p>
+                        <h2 class="display-5 fw-bold text-white mb-4">Tiếp cận kho tàng tri thức thế giới.</h2>
+                        <p class="fs-5 text-white-50">Quản lý mượn trả, duyệt bộ sưu tập, và kết nối với các tài nguyên nghiên cứu toàn cầu thông qua hệ sinh thái Thư viện Lumina.</p>
                     </div>
 
                     <div class="d-flex align-items-center gap-3">
                         <div class="avatar-group d-flex align-items-center">
-                            <img alt="Librarian"
+                            <img alt="Thủ thư"
                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDStQM9ALcH-TjR1yJpJ59zo9jjQtcZU18Tq72P_-_Fmlfxt69RXBhGbyNbUPLktPiB-ibH8lYwX5KYSw6esfga0VIFsLXIJcj79J6eZEzOvY2wtEiZv2N8DRfQ75HyI3JjpKY0o0iJr0w0C-DuEtbKuAiyY4xknFJFk7nKBORPfXuUVMpKCUv2fStyc9SQTppUgHn5jx_lWCEsqwGlsZN8KCksZH4NCVsOSGLZhyUte1wUpsduV0LiQII21Cy6tZ2Oy5sWZ2VIK7k7">
-                            <img alt="Student"
+                            <img alt="Sinh viên"
                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO1SHGmVpGKvqAmQyGJgo5D0tj_3R9aRPfRj-9w3jRbORizYXfVFvcVGwq_shbatYAjzt8_SMXE7_TmtwOqvCf_QpwrtPXheyrP1o54py-GeUUL3umiXxDznsc-Hu4e4XDUJMzQZCjqR2ASn7yg8OusGyCeEUBm0HVdRuF_vtbaxXHuLW9zVaM88aHoofSqGRDlEpjlEXdDvyjO98czDp2oCeQcPPdkOhAry8EOtTevL1tt7wQhrmQRKXPzIKDo9EkeEnfP3hbzXlR">
                             <div class="avatar-plus">+20K</div>
                         </div>
-                        <p class="small text-white mb-0 ms-3">Join thousands of active researchers today.</p>
+                        <p class="small text-white mb-0 ms-3">Tham gia cùng hàng ngàn nhà nghiên cứu tích cực ngay hôm nay.</p>
                     </div>
                 </div>
             </div>
@@ -304,7 +303,7 @@
                             <span class="material-symbols-outlined"
                                 style="font-size: 32px; font-variation-settings: 'FILL' 1;">auto_stories</span>
                         </div>
-                        <h1 class="h3 text-primary fw-bold">Lumina Library</h1>
+                        <h1 class="h3 text-primary fw-bold">Thư viện Lumina</h1>
                     </div>
 
                     <div class="mb-4">
@@ -315,8 +314,8 @@
                     </div>
 
                     <div class="text-start mb-4">
-                        <h2 class="fw-bold text-dark mb-1" style="font-size: 32px;">Welcome back!</h2>
-                        <p class="text-muted">Please enter your library credentials to access your dashboard.</p>
+                        <h2 class="fw-bold text-dark mb-1" style="font-size: 32px;">Chào mừng trở lại!</h2>
+                        <p class="text-muted">Vui lòng nhập thông tin đăng nhập thư viện để truy cập bảng điều khiển của bạn.</p>
                     </div>
 
                     <!-- Hộp thông báo lỗi động bằng JSTL -->
@@ -333,14 +332,14 @@
                         <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert" 
                              style="border-radius: 12px; font-size: 14.5px; background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;">
                             <span class="material-symbols-outlined" style="font-size: 20px;">check_circle</span>
-                            <div>If the email is valid, a new password has been sent. Please check your inbox.</div>
+                            <div>Nếu email hợp lệ, mật khẩu mới đã được gửi. Vui lòng kiểm tra hộp thư của bạn.</div>
                         </div>
                     </c:if>
 
                     <!-- Form kết nối POST với LoginServlet -->
                     <form id="loginForm" action="${pageContext.request.contextPath}/login" method="POST" class="mb-4">
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted ms-1" for="email">Username or
+                            <label class="form-label small fw-bold text-muted ms-1" for="email">Tên đăng nhập or
                                 Email</label>
                             <div class="input-group-custom">
                                 <span class="material-symbols-outlined icon-left">person</span>
@@ -351,9 +350,9 @@
 
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center px-1 mb-1">
-                                <label class="form-label small fw-bold text-muted mb-0" for="password">Password</label>
+                                <label class="form-label small fw-bold text-muted mb-0" for="password">Mật khẩu</label>
                                 <a class="small fw-bold text-decoration-none" href="${pageContext.request.contextPath}/forgot-password"
-                                    style="color: var(--primary-color);">Forgot Password?</a>
+                                    style="color: var(--primary-color);">Quên mật khẩu?</a>
                             </div>
                             <div class="input-group-custom">
                                 <span class="material-symbols-outlined icon-left">lock</span>
@@ -368,14 +367,14 @@
                         <button
                             class="w-full btn-primary-custom w-100 d-flex align-items-center justify-content-center gap-2"
                             type="submit">
-                            Sign In
+                            Đăng nhập
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
                     </form>
 
                     <div class="divider-container">
                         <div class="divider-line"></div>
-                        <span class="divider-text">Or access via</span>
+                        <span class="divider-text">Hoặc truy cập qua</span>
                     </div>
 
                     <!-- Liên kết thẻ A tích hợp Google SSO thay cho button để chuyển hướng chính xác -->
@@ -394,7 +393,7 @@
                                 d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                                 fill="#EA4335"></path>
                         </svg>
-                        <span>Sign in with Google</span>
+                        <span>Đăng nhập bằng Google</span>
                     </a>
 
                     <footer
@@ -402,14 +401,14 @@
                         <div class="d-flex gap-4">
                             <a class="footer-link d-flex align-items-center gap-1" href="#">
                                 <span class="material-symbols-outlined" style="font-size: 18px;">help</span>
-                                Need help?
+                                Cần trợ giúp?
                             </a>
                             <a class="footer-link d-flex align-items-center gap-1" href="#">
                                 <span class="material-symbols-outlined" style="font-size: 18px;">support_agent</span>
-                                Contact Librarian
+                                Liên hệ Thủ thư
                             </a>
                         </div>
-                        <p class="small text-muted mb-0 opacity-75">© 2024 LMS University Library System</p>
+                        <p class="small text-muted mb-0 opacity-75">© 2024 Thư viện Đại học LMS System</p>
                     </footer>
 
                 </div>
@@ -440,7 +439,7 @@
             const originalContent = btn.innerHTML;
 
             // Phản hồi trực quan loading
-            btn.innerHTML = '<span class="material-symbols-outlined spinner-border spinner-border-sm me-2" role="status" style="animation: spin 1.5s linear infinite; vertical-align: middle;">progress_activity</span> Authenticating...';
+            btn.innerHTML = '<span class="material-symbols-outlined spinner-border spinner-border-sm me-2" role="status" style="animation: spin 1.5s linear infinite; vertical-align: middle;">progress_activity</span> Đang xác thực...';
             btn.disabled = true;
             btn.style.opacity = '0.8';
 

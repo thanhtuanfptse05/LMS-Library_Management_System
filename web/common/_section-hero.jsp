@@ -11,10 +11,10 @@
         <div class="w-100 glass-search p-4 p-md-5 rounded-4 shadow-lg" style="max-width: 900px;">
             <div class="text-center mb-4">
                 <h1 class="fw-bold mb-2" style="font-size: 32px; color: var(--bs-body-color);">
-                    Explore the Collection
+                    Khám phá bộ sưu tập
                 </h1>
                 <p class="mb-0" style="color: var(--text-muted-custom); font-size: 16px;">
-                    Search millions of books, journals, and digital resources.
+                    Tìm kiếm hàng triệu cuốn sách, tạp chí và tài nguyên số.
                 </p>
             </div>
 
@@ -26,11 +26,11 @@
                         <select class="form-select border-0 px-3 py-3 rounded-3 h-100"
                             name="filter"
                             style="background-color: var(--surface-container-low); color: var(--text-muted-custom); font-size: 14px;">
-                            <option value="all">Everything</option>
-                            <option value="title">Title</option>
-                            <option value="author">Author</option>
-                            <option value="keyword">Keyword</option>
-                            <option value="ddc">Subject / DDC</option>
+                            <option value="all">Tất cả</option>
+                            <option value="title">Tiêu đề</option>
+                            <option value="author">Tác giả</option>
+                            <option value="keyword">Từ khóa</option>
+                            <option value="ddc">Chủ đề / DDC</option>
                         </select>
                     </div>
 
@@ -38,7 +38,7 @@
                     <div class="col-md-6 position-relative">
                         <input class="form-control border-0 px-3 py-3 rounded-3 h-100"
                             style="background-color: var(--surface-container-low); color: var(--bs-body-color); padding-right: 2.5rem !important;"
-                            placeholder="Search by title, author, or keyword..."
+                            placeholder="Tìm kiếm theo tiêu đề, tác giả hoặc từ khóa..."
                             type="text" name="query" id="hero-search-query"
                             autocomplete="off" oninput="showHeroSuggestions(this.value)" />
                         <span class="position-absolute end-0 top-50 translate-middle-y me-3 z-3 text-secondary" style="pointer-events: none;">
@@ -56,7 +56,7 @@
                         <button type="submit"
                             class="btn btn-primary-custom w-100 h-100 py-3 rounded-3 fw-semibold"
                             style="font-size: 16px;">
-                            Search
+                            Tìm kiếm
                         </button>
                     </div>
                 </div>
@@ -67,19 +67,19 @@
                 <a href="${pageContext.request.contextPath}/book-search.jsp?advanced=true"
                     class="text-decoration-none small d-flex align-items-center gap-1"
                     style="color: var(--text-muted-custom);">
-                    <i class="bi bi-sliders"></i> Advanced Search
+                    <i class="bi bi-sliders"></i> Tìm kiếm nâng cao
                 </a>
                 <span style="color: var(--outline-variant);">|</span>
                 <a href="${pageContext.request.contextPath}/book-search.jsp?digital=true"
                     class="text-decoration-none small d-flex align-items-center gap-1"
                     style="color: var(--text-muted-custom);">
-                    <i class="bi bi-journal-bookmark"></i> Courseware by Major
+                    <i class="bi bi-journal-bookmark"></i> Giáo trình theo ngành
                 </a>
                 <span style="color: var(--outline-variant);">|</span>
                 <a href="#contact" onclick="openLibrarianChat(event)"
                     class="text-decoration-none small d-flex align-items-center gap-1"
                     style="color: var(--text-muted-custom);">
-                    <i class="bi bi-chat-dots"></i> Chat with Librarian
+                    <i class="bi bi-chat-dots"></i> Trò chuyện với Thủ thư
                 </a>
             </div>
         </div>
@@ -88,14 +88,14 @@
 
 <script>
     const heroMockSuggestions = [
-        "Introduction to Java Programming",
-        "Data Structures and Algorithms in Java",
-        "Database Management Systems",
-        "Software Engineering Principles",
-        "Discrete Mathematics and Its Applications",
-        "Introduction to Artificial Intelligence",
-        "Computer Networks: A Systems Approach",
-        "Operating System Concepts"
+        "Giới thiệu về lập trình Java",
+        "Cấu trúc dữ liệu và giải thuật trong Java",
+        "Hệ quản trị cơ sở dữ liệu",
+        "Nguyên lý kỹ nghệ phần mềm",
+        "Toán học rời rạc và ứng dụng",
+        "Giới thiệu về trí tuệ nhân tạo",
+        "Mạng máy tính: Cách tiếp cận hệ thống",
+        "Các khái niệm hệ điều hành"
     ];
 
     function showHeroSuggestions(val) {
@@ -131,6 +131,6 @@
 
     function openLibrarianChat(e) {
         e.preventDefault();
-        alert("Connecting to the UniLib AI Chatbot / Live Librarian support...");
+        alert("Đang kết nối đến Chatbot AI của UniLib / Hỗ trợ thủ thư trực tiếp...");
     }
 </script>

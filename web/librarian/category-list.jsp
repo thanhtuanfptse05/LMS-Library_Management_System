@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -87,7 +87,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -95,7 +95,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -103,28 +103,28 @@
                 <%-- ─── Page Header ─── --%>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                     <div>
-                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Category Management</h2>
-                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Organize and define classification schemas for the library catalog.</p>
+                        <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Quản lý thể loại</h2>
+                        <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Tổ chức và định nghĩa lược đồ phân loại cho mục lục thư viện.</p>
                     </div>
                     <button class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
                             style="height: 40px;"
                             data-bs-toggle="modal" data-bs-target="#addCategoryModal"
                             id="btnAddCategory">
                         <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
-                        Add New Category
+                        Thêm thể loại mới
                     </button>
                 </div>
 
                 <%-- ─── Categories Table ─── --%>
                 <section class="raised-card overflow-hidden mb-5">
                     <div class="table-responsive">
-                        <table class="table table-lms mb-0" aria-label="Book categories">
+                        <table class="table table-lms mb-0" aria-label="Thể loại sách">
                             <thead>
                                 <tr>
-                                    <th>Category Name</th>
-                                    <th>Description</th>
-                                    <th>Books</th>
-                                    <th class="text-end">Actions</th>
+                                    <th>Tên thể loại</th>
+                                    <th>Mô tả</th>
+                                    <th>Sách</th>
+                                    <th class="text-end">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -163,12 +163,12 @@
                                                 </td>
                                                 <td class="text-end">
                                                     <button class="btn-icon"
-                                                            title="Edit category"
+                                                            title="Sửa thể loại"
                                                             onclick="openEditModal('<c:out value="${cat.categoryId}"/>', '<c:out value="${cat.categoryName}"/>', '<c:out value="${cat.description}"/>')">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                                     </button>
                                                     <button class="btn-icon" style="color: var(--error);"
-                                                            title="Delete category"
+                                                            title="Xóa thể loại"
                                                             onclick="openDeleteModal('<c:out value="${cat.categoryId}"/>', '<c:out value="${cat.categoryName}"/>')">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
                                                     </button>
@@ -179,39 +179,39 @@
                                     <c:otherwise>
                                         <%-- Static sample rows --%>
                                         <tr>
-                                            <td><span class="cat-name">Science Fiction</span></td>
-                                            <td><span class="cat-desc">Imaginative and futuristic concepts such as advanced science, technology, space exploration, time travel.</span></td>
+                                            <td><span class="cat-name">Khoa học viễn tưởng</span></td>
+                                            <td><span class="cat-desc">Các khái niệm mang tính tưởng tượng và tương lai như khoa học tiên tiến, công nghệ, du hành không gian, du hành thời gian.</span></td>
                                             <td><span class="count-badge count-badge--primary">1,240</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><span class="cat-name">Historical Fiction</span></td>
-                                            <td><span class="cat-desc">Stories written to portray a time period or convey information about a specific historical period.</span></td>
+                                            <td><span class="cat-name">Tiểu thuyết lịch sử</span></td>
+                                            <td><span class="cat-desc">Những câu chuyện được viết để miêu tả một thời kỳ hoặc truyền đạt thông tin về một khoảng thời gian lịch sử cụ thể.</span></td>
                                             <td><span class="count-badge count-badge--default">856</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><span class="cat-name">Academic Journals</span></td>
-                                            <td><span class="cat-desc">Peer-reviewed periodicals in which scholarship relating to a particular academic discipline is published.</span></td>
+                                            <td><span class="cat-name">Tạp chí học thuật</span></td>
+                                            <td><span class="cat-desc">Các ấn phẩm định kỳ được bình duyệt trong đó công bố nghiên cứu liên quan đến một chuyên ngành học thuật cụ thể.</span></td>
                                             <td><span class="count-badge count-badge--tertiary">3,412</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><span class="cat-name">Biographies</span></td>
-                                            <td><span class="cat-desc">Detailed descriptions of a person's life including education, relationships, career, and achievements.</span></td>
+                                            <td><span class="cat-name">Tiểu sử</span></td>
+                                            <td><span class="cat-desc">Mô tả chi tiết về cuộc đời của một người bao gồm giáo dục, các mối quan hệ, sự nghiệp và thành tựu.</span></td>
                                             <td><span class="count-badge count-badge--default">520</span></td>
                                             <td class="text-end">
-                                                <button class="btn-icon" title="Edit"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <button class="btn-icon" style="color: var(--error);" title="Delete"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                                <button class="btn-icon" title="Sửa"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                                <button class="btn-icon" style="color: var(--error);" title="Xóa"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
                                             </td>
                                         </tr>
                                     </c:otherwise>
@@ -226,18 +226,18 @@
                         <span style="font-size: 13px; color: var(--on-surface-variant);">
                             <c:choose>
                                 <c:when test="${not empty totalCategories}">
-                                    Showing
+                                    Hiển thị
                                     <c:out value="${(currentPage - 1) * pageSize + 1}" /> –
                                     <c:out value="${currentPage * pageSize > totalCategories ? totalCategories : currentPage * pageSize}" />
-                                    of <c:out value="${totalCategories}" /> categories
+                                    trong số <c:out value="${totalCategories}" /> thể loại
                                 </c:when>
-                                <c:otherwise>Showing 1 – 4 of 24 categories</c:otherwise>
+                                <c:otherwise>Hiển thị 1 – 4 trong số 24 thể loại</c:otherwise>
                             </c:choose>
                         </span>
                         <div class="d-flex gap-1">
                             <button class="page-btn" ${currentPage <= 1 ? 'disabled' : ''}
                                     onclick="goToPage(${currentPage - 1})"
-                                    aria-label="Previous page">
+                                    aria-label="Trang trước">
                                 <span class="material-symbols-outlined" style="font-size: 16px;">chevron_left</span>
                             </button>
                             <c:choose>
@@ -245,7 +245,7 @@
                                     <c:forEach begin="1" end="${totalPages}" var="p">
                                         <button class="page-btn ${p == currentPage ? 'active' : ''}"
                                                 onclick="goToPage(${p})"
-                                                aria-label="Page ${p}"
+                                                aria-label="Trang ${p}"
                                                 aria-current="${p == currentPage ? 'page' : 'false'}">
                                             <c:out value="${p}" />
                                         </button>
@@ -259,7 +259,7 @@
                             </c:choose>
                             <button class="page-btn" ${currentPage >= totalPages ? 'disabled' : ''}
                                     onclick="goToPage(${currentPage + 1})"
-                                    aria-label="Next page">
+                                    aria-label="Trang sau">
                                 <span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
                             </button>
                         </div>
@@ -281,8 +281,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="addCategoryModalLabel" style="font-size: 18px;">Create New Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold" id="addCategoryModalLabel" style="font-size: 18px;">Tạo thể loại mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/librarian/categories" method="POST"
                       id="addCategoryForm" novalidate>
@@ -292,29 +292,29 @@
                             <div>
                                 <label class="form-label fw-semibold text-on-surface-variant text-uppercase"
                                        style="font-size: 11px; letter-spacing: 0.05em;" for="addCatName">
-                                    Category Name <span style="color: var(--error);">*</span>
+                                    Tên thể loại <span style="color: var(--error);">*</span>
                                 </label>
                                 <input type="text" id="addCatName" name="categoryName"
                                        class="form-control rounded-3 py-2"
                                        style="background-color: var(--surface-container-low); border-color: var(--outline-variant); font-size: 14px;"
-                                       placeholder="e.g. Young Adult Fiction" required />
+                                       placeholder="VD: Tiểu thuyết dành cho thanh thiếu niên" required />
                             </div>
                             <div>
                                 <label class="form-label fw-semibold text-on-surface-variant text-uppercase"
                                        style="font-size: 11px; letter-spacing: 0.05em;" for="addCatDesc">
-                                    Description <span class="fw-normal text-lowercase" style="letter-spacing: 0;">(optional)</span>
+                                    Mô tả <span class="fw-normal text-lowercase" style="letter-spacing: 0;">(tùy chọn)</span>
                                 </label>
                                 <textarea id="addCatDesc" name="description"
                                           class="form-control rounded-3 py-2"
                                           style="background-color: var(--surface-container-low); border-color: var(--outline-variant); font-size: 14px; resize: vertical;"
                                           rows="4"
-                                          placeholder="Briefly describe the contents of this category..."></textarea>
+                                          placeholder="Mô tả ngắn gọn nội dung của thể loại này..."></textarea>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Save Category</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Lưu thể loại</button>
                     </div>
                 </form>
             </div>
@@ -328,8 +328,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="editCategoryModalLabel" style="font-size: 18px;">Edit Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold" id="editCategoryModalLabel" style="font-size: 18px;">Sửa Thể loại</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/librarian/categories" method="POST"
                       id="editCategoryForm" novalidate>
@@ -340,7 +340,7 @@
                             <div>
                                 <label class="form-label fw-semibold text-on-surface-variant text-uppercase"
                                        style="font-size: 11px; letter-spacing: 0.05em;" for="editCatName">
-                                    Category Name <span style="color: var(--error);">*</span>
+                                    Tên thể loại <span style="color: var(--error);">*</span>
                                 </label>
                                 <input type="text" id="editCatName" name="categoryName"
                                        class="form-control rounded-3 py-2"
@@ -350,7 +350,7 @@
                             <div>
                                 <label class="form-label fw-semibold text-on-surface-variant text-uppercase"
                                        style="font-size: 11px; letter-spacing: 0.05em;" for="editCatDesc">
-                                    Description <span class="fw-normal text-lowercase" style="letter-spacing: 0;">(optional)</span>
+                                    Mô tả <span class="fw-normal text-lowercase" style="letter-spacing: 0;">(tùy chọn)</span>
                                 </label>
                                 <textarea id="editCatDesc" name="description"
                                           class="form-control rounded-3 py-2"
@@ -360,8 +360,8 @@
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Save Changes</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Lưu thay đổi</button>
                     </div>
                 </form>
             </div>
@@ -375,24 +375,24 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="deleteCategoryModalLabel" style="font-size: 18px; color: var(--error);">Delete Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold" id="deleteCategoryModalLabel" style="font-size: 18px; color: var(--error);">Xóa Thể loại</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/librarian/categories" method="POST">
                     <input type="hidden" name="action" value="deleteCategory" />
                     <input type="hidden" name="categoryId" id="deleteCatId" />
                     <div class="modal-body py-3">
                         <p class="mb-1" style="font-size: 14px; color: var(--on-surface);">
-                            Remove category <strong id="deleteCatName"></strong>?
+                            Xóa thể loại <strong id="deleteCatName"></strong>?
                         </p>
                         <p class="mb-0" style="font-size: 12px; color: var(--on-surface-variant);">
-                            This will unlink all associated books. The books themselves will not be deleted.
+                            Thao tác này sẽ hủy liên kết tất cả sách liên quan. Bản thân sách sẽ không bị xóa.
                         </p>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-3 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-light rounded-pill px-3 fw-bold" data-bs-dismiss="modal">Hủy</button>
                         <button type="submit" class="btn fw-bold rounded-pill px-3"
-                                style="background-color: var(--error); color: white; border: none;">Delete</button>
+                                style="background-color: var(--error); color: white; border: none;">Xóa</button>
                     </div>
                 </form>
             </div>

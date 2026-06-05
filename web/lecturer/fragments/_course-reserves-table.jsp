@@ -12,7 +12,7 @@
         <a href="${pageContext.request.contextPath}/lecturer/course-reserves/add"
            class="btn text-white px-3 py-2 border-0 rounded-3 d-flex align-items-center gap-2 small fw-bold text-decoration-none"
            style="background-color: #00a2f4;">
-            <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span> Add New Reserve
+            <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span> Thêm mới Reserve
         </a>
     </div>
 
@@ -21,10 +21,10 @@
             <table class="table align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>Book Title</th>
+                        <th>Sách Tiêu đề</th>
                         <th>Course Code</th>
-                        <th>Status</th>
-                        <th>Action</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider" style="border-top-color: #eceef0;">
@@ -61,7 +61,7 @@
                                     </td>
                                     <td>
                                         <a href="${pageContext.request.contextPath}/lecturer/course-reserves/edit?id=${reserve.reserveId}"
-                                           class="btn btn-link p-2 rounded-circle" title="Edit" style="color: #584237;">
+                                           class="btn btn-link p-2 rounded-circle" title="Sửa" style="color: #584237;">
                                             <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                         </a>
                                     </td>
@@ -84,10 +84,10 @@
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="rounded-circle" style="width: 8px; height: 8px; background-color: #9d4300;"></div>
-                                        <span class="small fw-bold text-primary-custom">Active</span>
+                                        <span class="small fw-bold text-primary-custom">Hoạt động</span>
                                     </div>
                                 </td>
-                                <td><button class="btn btn-link p-2 rounded-circle" title="Edit" style="color: #584237;"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button></td>
+                                <td><button class="btn btn-link p-2 rounded-circle" title="Sửa" style="color: #584237;"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button></td>
                             </tr>
                             <tr>
                                 <td>
@@ -103,10 +103,10 @@
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="rounded-circle" style="width: 8px; height: 8px; background-color: #584237;"></div>
-                                        <span class="small fw-bold" style="color: #584237;">Pending</span>
+                                        <span class="small fw-bold" style="color: #584237;">Chờ duyệt</span>
                                     </div>
                                 </td>
-                                <td><button class="btn btn-link p-2 rounded-circle" title="Edit" style="color: #584237;"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button></td>
+                                <td><button class="btn btn-link p-2 rounded-circle" title="Sửa" style="color: #584237;"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button></td>
                             </tr>
                             <tr>
                                 <td>
@@ -122,10 +122,10 @@
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="rounded-circle" style="width: 8px; height: 8px; background-color: #9d4300;"></div>
-                                        <span class="small fw-bold text-primary-custom">Active</span>
+                                        <span class="small fw-bold text-primary-custom">Hoạt động</span>
                                     </div>
                                 </td>
-                                <td><button class="btn btn-link p-2 rounded-circle" title="Edit" style="color: #584237;"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button></td>
+                                <td><button class="btn btn-link p-2 rounded-circle" title="Sửa" style="color: #584237;"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button></td>
                             </tr>
                         </c:otherwise>
                     </c:choose>

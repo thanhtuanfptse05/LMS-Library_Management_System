@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -26,7 +26,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -34,7 +34,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -50,15 +50,15 @@
                              aria-label="breadcrumb"
                              style="font-size: 12px; letter-spacing: 0.05em;">
                             <a class="text-decoration-none text-muted link-dark"
-                               href="${pageContext.request.contextPath}/librarian/dashboard">Dashboard</a>
+                               href="${pageContext.request.contextPath}/librarian/dashboard">Bảng điều khiển</a>
                             <span class="material-symbols-outlined fs-6">chevron_right</span>
                             <a class="text-decoration-none text-muted link-dark"
-                               href="${pageContext.request.contextPath}/librarian/borrow-list">Borrowing</a>
+                               href="${pageContext.request.contextPath}/librarian/borrow-list">Mượn trả</a>
                             <span class="material-symbols-outlined fs-6">chevron_right</span>
-                            <span class="text-dark">New Record</span>
+                            <span class="text-dark">Bản ghi mới</span>
                         </nav>
 
-                        <h1 class="h3 fw-bold mb-4 text-dark">Create New Borrowing Record</h1>
+                        <h1 class="h3 fw-bold mb-4 text-dark">Tạo bản ghi mượn sách mới</h1>
 
                         <form action="${pageContext.request.contextPath}/librarian/borrow-create"
                               method="post"
@@ -77,30 +77,30 @@
                         <div class="sticky-top" style="top: 1.5rem; z-index: 1020;">
                             <div class="custom-card shadow-sm border-0">
                                 <div class="p-4 summary-accent">
-                                    <h5 class="mb-0 fw-bold">Transaction Summary</h5>
+                                    <h5 class="mb-0 fw-bold">Tóm tắt giao dịch</h5>
                                 </div>
                                 <div class="p-4">
                                     <div class="mb-4">
                                         <div class="d-flex justify-content-between mb-2">
-                                            <span class="text-muted">Issue Date</span>
+                                            <span class="text-muted">Ngày mượn</span>
                                             <span class="fw-semibold text-dark" id="current_date"></span>
                                         </div>
                                         <div class="p-3 rounded-3 border border-warning-subtle text-center"
                                              style="background-color: #fff8f5;">
-                                            <div class="small text-muted text-uppercase fw-bold mb-1" style="font-size: 10px;">Due Date</div>
+                                            <div class="small text-muted text-uppercase fw-bold mb-1" style="font-size: 10px;">Hạn trả</div>
                                             <div class="h3 fw-bold text-primary-custom mb-0" id="due_date"></div>
-                                            <div class="small text-dark mt-1 opacity-75">14-Day Student Policy Applied</div>
+                                            <div class="small text-dark mt-1 opacity-75">Áp dụng chính sách Sinh viên 14 ngày</div>
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-column gap-3 mb-4">
                                         <div class="d-flex align-items-center gap-3 p-2 bg-light rounded-3">
                                             <span class="material-symbols-outlined text-muted">person</span>
-                                            <span class="small text-muted flex-grow-1" id="summary_member">No member verified</span>
+                                            <span class="small text-muted flex-grow-1" id="summary_member">Chưa xác minh thành viên</span>
                                         </div>
                                         <div class="d-flex align-items-center gap-3 p-2 bg-light rounded-3">
                                             <span class="material-symbols-outlined text-muted">book</span>
-                                            <span class="small text-muted flex-grow-1" id="summary_book">No book selected</span>
+                                            <span class="small text-muted flex-grow-1" id="summary_book">Chưa chọn sách</span>
                                         </div>
                                     </div>
 
@@ -109,9 +109,9 @@
                                         <div class="alert alert-lumina p-3 mb-0 d-flex align-items-start gap-2">
                                             <span class="material-symbols-outlined">warning</span>
                                             <div>
-                                                <div class="fw-bold small mb-1">Active Alerts</div>
+                                                <div class="fw-bold small mb-1">Cảnh báo hoạt động</div>
                                                 <p class="small mb-0 opacity-75">
-                                                    No outstanding fines or overdue items detected for this account.
+                                                    Không phát hiện khoản phạt chưa thanh toán hoặc mục quá hạn nào cho tài khoản này.
                                                 </p>
                                             </div>
                                         </div>
@@ -121,10 +121,10 @@
                                             style="border-radius: 0.75rem;" disabled id="finalize_btn"
                                             form="borrow_form" type="submit">
                                         <span class="material-symbols-outlined">check_circle</span>
-                                        Finalize Borrowing
+                                        Hoàn tất việc mượn
                                     </button>
                                     <p class="text-center text-muted small mt-3">
-                                        Action logged to Librarian: <strong><c:out value="${sessionScope.loginUser.userId}" default="LIB-0824" /></strong>
+                                        Hành động được ghi lại cho Thủ thư: <strong><c:out value="${sessionScope.loginUser.userId}" default="LIB-0824" /></strong>
                                     </p>
                                 </div>
                             </div>
@@ -132,15 +132,15 @@
                             <%-- Station Stats --%>
                             <div class="mt-4 p-3 bg-white rounded-3 border border-light-subtle">
                                 <h6 class="text-uppercase text-muted fw-bold mb-3"
-                                    style="font-size: 10px; letter-spacing: 0.1em;">Station Activity</h6>
+                                    style="font-size: 10px; letter-spacing: 0.1em;">Hoạt động trạm</h6>
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="small">Today's Loans</span>
+                                    <span class="small">Lượt mượn hôm nay</span>
                                     <span class="fw-bold text-primary-custom">
                                         <c:out value="${todayLoans != null ? todayLoans : '—'}" />
                                     </span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small">Uptime</span>
+                                    <span class="small">Thời gian hoạt động</span>
                                     <span class="font-monospace small text-muted" id="uptime_display">00:00:00</span>
                                 </div>
                             </div>
@@ -259,7 +259,7 @@
     document.getElementById('finalize_btn').addEventListener('click', function(e) {
         if (!this.disabled) {
             this.disabled = true;
-            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Processing...';
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Đang xử lý...';
         }
     });
 </script>

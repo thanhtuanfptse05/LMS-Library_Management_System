@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -66,7 +66,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -74,13 +74,13 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
 
                 <div class="mb-4">
-                    <h2 class="font-headline-lg mb-1" style="color: var(--on-surface);">Administrator Profile</h2>
+                    <h2 class="font-headline-lg mb-1" style="color: var(--on-surface);">Administrator Hồ sơ</h2>
                     <p class="font-body-md text-on-surface-variant">Manage your system administrator credentials and identity information.</p>
                 </div>
 
@@ -110,12 +110,12 @@
                                     <button class="btn btn-primary-custom w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
                                             data-bs-toggle="modal" data-bs-target="#editProfileModal">
                                         <span class="material-symbols-outlined">edit</span>
-                                        Edit Profile
+                                        Chỉnh sửa hồ sơ
                                     </button>
                                     <button class="btn btn-outline-secondary w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
                                             data-bs-toggle="modal" data-bs-target="#changePwModal">
                                         <span class="material-symbols-outlined">security</span>
-                                        Change Password
+                                        Đổi mật khẩu
                                     </button>
                                 </div>
                             </div>
@@ -123,7 +123,7 @@
                             <!-- System Status Mini -->
                             <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
                                 <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">System Status</h4>
+                                    <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Trạng thái Hệ thống</h4>
                                     <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 font-label-md d-flex align-items-center gap-2">
                                         <span class="spinner-grow spinner-grow-sm text-success" role="status"
                                               style="width: 8px; height: 8px; --bs-spinner-animation-speed: 1.2s;"></span>
@@ -158,7 +158,7 @@
                                 <div class="row g-4">
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Full Name</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Họ và tên</label>
                                             <p class="font-body-md mb-0 text-on-surface">
                                                 <c:out value="${not empty profile.fullName ? profile.fullName : 'Not set'}" />
                                             </p>
@@ -174,7 +174,7 @@
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Email Address</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Email Địa chỉ</label>
                                             <p class="font-body-md mb-0 text-on-surface">
                                                 <c:out value="${not empty user.email ? user.email : 'Not set'}" />
                                             </p>
@@ -182,7 +182,7 @@
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Phone Number</label>
+                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Số điện thoại</label>
                                             <p class="font-body-md mb-0 text-on-surface">
                                                 <c:out value="${not empty profile.phoneNumber ? profile.phoneNumber : 'Not set'}" />
                                             </p>
@@ -218,7 +218,7 @@
                             <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
                                 <div class="d-flex align-items-center gap-2 mb-4">
                                     <span class="material-symbols-outlined text-primary fs-4">work</span>
-                                    <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Employment Details</h4>
+                                    <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Employment Chi tiết</h4>
                                 </div>
 
                                 <div class="row g-3">
@@ -246,9 +246,9 @@
                                                 <span class="material-symbols-outlined">verified</span>
                                             </div>
                                             <div>
-                                                <label class="font-label-md text-on-surface-variant d-block">Account Status</label>
+                                                <label class="font-label-md text-on-surface-variant d-block">Tài khoản Trạng thái</label>
                                                 <p class="font-body-md fw-bold mb-0 text-success">
-                                                    Active
+                                                    Hoạt động
                                                 </p>
                                             </div>
                                         </div>
@@ -296,20 +296,20 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-title-lg" id="editProfileModalLabel">Edit Profile Information</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title font-title-lg" id="editProfileModalLabel">Chỉnh sửa hồ sơ Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/admin/profile" method="POST">
                     <input type="hidden" name="action" value="updateInfo" />
                     <div class="modal-body py-4">
                         <div class="d-flex flex-column gap-3">
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Full Name</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Họ và tên</label>
                                 <input type="text" name="fullName" class="form-control rounded-3 py-2" 
                                        value="<c:out value="${profile.fullName}" />" required />
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Phone Number</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Số điện thoại</label>
                                 <input type="text" name="phoneNumber" class="form-control rounded-3 py-2" 
                                        value="<c:out value="${profile.phoneNumber}" />" />
                             </div>
@@ -330,8 +330,8 @@
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Save Changes</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Lưu thay đổi</button>
                     </div>
                 </form>
             </div>
@@ -344,33 +344,33 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-title-lg" id="changePwModalLabel">Change Security Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title font-title-lg" id="changePwModalLabel">Change Bảo mật Mật khẩu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <form action="${pageContext.request.contextPath}/admin/profile" method="POST">
                     <input type="hidden" name="action" value="changePw" />
                     <div class="modal-body py-4">
                         <div class="d-flex flex-column gap-3">
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Current Password</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Mật khẩu hiện tại</label>
                                 <input type="password" name="currentPw" class="form-control rounded-3 py-2" required />
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">New Password</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Mật khẩu mới</label>
                                 <input type="password" name="newPw" class="form-control rounded-3 py-2" required minlength="8" />
                                 <div class="form-text font-label-md text-on-surface-variant mt-1" style="font-size: 11px;">
                                     Must be at least 8 characters, include uppercase, lowercase, numbers, and special characters.
                                 </div>
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Confirm New Password</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Xác nhận Mật khẩu mới</label>
                                 <input type="password" name="confirmPw" class="form-control rounded-3 py-2" required minlength="8" />
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Update Password</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Cập nhật Mật khẩu</button>
                     </div>
                 </form>
             </div>

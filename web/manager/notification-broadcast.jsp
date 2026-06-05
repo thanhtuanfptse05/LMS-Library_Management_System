@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <%--
     Manager — Notification Broadcast
@@ -300,7 +300,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -308,7 +308,7 @@
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">error</span>
                         <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
@@ -320,26 +320,26 @@
                             <ol class="breadcrumb mb-0" style="font-size: 12px;">
                                 <li class="breadcrumb-item">
                                     <a href="${pageContext.request.contextPath}/manager/dashboard"
-                                       class="text-decoration-none text-on-surface-variant">Dashboard</a>
+                                       class="text-decoration-none text-on-surface-variant">Bảng điều khiển</a>
                                 </li>
                                 <li class="breadcrumb-item active fw-semibold text-primary-custom"
-                                    aria-current="page">Notification Broadcast</li>
+                                    aria-current="page">Gửi thông báo hàng loạt</li>
                             </ol>
                         </nav>
                         <h1 class="fw-bold mb-1" style="font-size: 24px; color: var(--on-surface, #251913);">
                             <span class="material-symbols-outlined me-2"
                                   style="font-size: 26px; vertical-align: -4px; color: var(--primary, #9d4300);
                                          font-variation-settings: 'FILL' 1;">campaign</span>
-                            Notification Broadcast
+                            Gửi thông báo hàng loạt
                         </h1>
                         <p style="font-size: 14px; color: var(--on-surface-variant); margin: 0;">
-                            Compose and send targeted notifications to students, lecturers, or all members.
+                            Soạn và gửi thông báo theo đối tượng đến sinh viên, giảng viên, hoặc tất cả thành viên.
                         </p>
                     </div>
                     <a href="${pageContext.request.contextPath}/manager/notification-detail.jsp"
                        class="btn-broadcast-outline text-decoration-none" style="color: var(--on-surface-variant);">
                         <span class="material-symbols-outlined">history</span>
-                        View History
+                        Xem Lịch sử
                     </a>
                 </div>
 
@@ -357,7 +357,7 @@
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <div class="d-flex align-items-center justify-content-center rounded-circle fw-bold text-white"
                                          style="width:26px;height:26px;background:var(--primary,#9d4300);font-size:12px;flex-shrink:0;">1</div>
-                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Select Recipients</h2>
+                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Chọn Người nhận</h2>
                                 </div>
 
                                 <div class="row g-3 mb-3" role="radiogroup" aria-labelledby="audienceGroupLabel">
@@ -371,8 +371,8 @@
                                             <div class="ac-icon">
                                                 <span class="material-symbols-outlined">groups</span>
                                             </div>
-                                            <span class="ac-label">All Users</span>
-                                            <span class="ac-sublabel">Everyone</span>
+                                            <span class="ac-label">Tất cả Người dùng</span>
+                                            <span class="ac-sublabel">Mọi người</span>
                                         </label>
                                     </div>
 
@@ -384,8 +384,8 @@
                                             <div class="ac-icon">
                                                 <span class="material-symbols-outlined">school</span>
                                             </div>
-                                            <span class="ac-label">Students</span>
-                                            <span class="ac-sublabel">Members only</span>
+                                            <span class="ac-label">Sinh viên</span>
+                                            <span class="ac-sublabel">Chỉ Thành viên</span>
                                         </label>
                                     </div>
 
@@ -397,8 +397,8 @@
                                             <div class="ac-icon">
                                                 <span class="material-symbols-outlined">person_book</span>
                                             </div>
-                                            <span class="ac-label">Lecturers</span>
-                                            <span class="ac-sublabel">Faculty only</span>
+                                            <span class="ac-label">Giảng viên</span>
+                                            <span class="ac-sublabel">Chỉ Giảng viên</span>
                                         </label>
                                     </div>
 
@@ -410,8 +410,8 @@
                                             <div class="ac-icon">
                                                 <span class="material-symbols-outlined">badge</span>
                                             </div>
-                                            <span class="ac-label">Library Staff</span>
-                                            <span class="ac-sublabel">Librarians</span>
+                                            <span class="ac-label">Nhân viên Thư viện</span>
+                                            <span class="ac-sublabel">Thủ thư</span>
                                         </label>
                                     </div>
                                 </div>
@@ -419,15 +419,15 @@
                                 <!-- Specific user IDs (optional) -->
                                 <div>
                                     <label class="bcast-form-label" for="specificUserIds">
-                                        Specific User IDs
-                                        <span style="font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--on-surface-variant);">(optional — comma separated)</span>
+                                        ID Người dùng cụ thể
+                                        <span style="font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--on-surface-variant);">(tùy chọn — ngăn cách bởi dấu phẩy)</span>
                                     </label>
                                     <input type="text" id="specificUserIds" name="specificUserIds"
                                            class="bcast-input" placeholder="e.g. U001, U045, U120"
                                            aria-describedby="specificUserIdsHelp"
                                            value="${param.specificUserIds}" />
                                     <p id="specificUserIdsHelp" style="font-size: 11px; color: var(--on-surface-variant); margin-top: 4px; margin-bottom: 0;">
-                                        Leave blank to send to the entire selected group.
+                                        Để trống để gửi cho toàn bộ nhóm đã chọn.
                                     </p>
                                 </div>
 
@@ -440,7 +440,7 @@
                                         <div class="rc-count" id="recipientCountDisplay">
                                             <c:out value="${totalUserCount != null ? totalUserCount : '4,802'}" />
                                         </div>
-                                        <div class="rc-label">Estimated recipients</div>
+                                        <div class="rc-label">Số người nhận dự kiến</div>
                                     </div>
                                 </div>
                             </div>
@@ -450,7 +450,7 @@
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <div class="d-flex align-items-center justify-content-center rounded-circle fw-bold text-white"
                                          style="width:26px;height:26px;background:var(--primary,#9d4300);font-size:12px;flex-shrink:0;">2</div>
-                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Notification Type</h2>
+                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Loại Thông báo</h2>
                                 </div>
 
                                 <div class="d-flex flex-wrap gap-2" role="radiogroup" aria-label="Notification type">
@@ -458,37 +458,37 @@
                                         <input type="radio" name="notifType" id="type-announcement"
                                                value="announcement" checked />
                                         <span class="material-symbols-outlined">campaign</span>
-                                        Announcement
+                                        Thông báo chung
                                     </label>
                                     <label class="type-chip" for="type-holiday">
                                         <input type="radio" name="notifType" id="type-holiday"
                                                value="holiday" />
                                         <span class="material-symbols-outlined">event</span>
-                                        Holiday / Closure
+                                        Nghỉ lễ / Đóng cửa
                                     </label>
                                     <label class="type-chip" for="type-recall">
                                         <input type="radio" name="notifType" id="type-recall"
                                                value="recall" />
                                         <span class="material-symbols-outlined">assignment_return</span>
-                                        Book Recall
+                                        Thu hồi Sách
                                     </label>
                                     <label class="type-chip" for="type-overdue">
                                         <input type="radio" name="notifType" id="type-overdue"
                                                value="overdue" />
                                         <span class="material-symbols-outlined">warning</span>
-                                        Overdue Alert
+                                        Cảnh báo Quá hạn
                                     </label>
                                     <label class="type-chip" for="type-policy">
                                         <input type="radio" name="notifType" id="type-policy"
                                                value="policy" />
                                         <span class="material-symbols-outlined">policy</span>
-                                        Policy Update
+                                        Cập nhật Chính sách
                                     </label>
                                     <label class="type-chip" for="type-system">
                                         <input type="radio" name="notifType" id="type-system"
                                                value="system" />
                                         <span class="material-symbols-outlined">settings</span>
-                                        System Notice
+                                        Thông báo Hệ thống
                                     </label>
                                 </div>
                             </div>
@@ -498,35 +498,35 @@
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <div class="d-flex align-items-center justify-content-center rounded-circle fw-bold text-white"
                                          style="width:26px;height:26px;background:var(--primary,#9d4300);font-size:12px;flex-shrink:0;">3</div>
-                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Compose Message</h2>
+                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Soạn Nôi dung</h2>
                                 </div>
 
                                 <!-- Subject / Title -->
                                 <div class="mb-3">
-                                    <label class="bcast-form-label" for="notifTitle">Notification Title *</label>
+                                    <label class="bcast-form-label" for="notifTitle">Tiêu đề Thông báo *</label>
                                     <input type="text" id="notifTitle" name="notifTitle"
                                            class="bcast-input" required maxlength="200"
-                                           placeholder="e.g. Library Closed on National Day — September 2, 2026"
+                                           placeholder="VD: Thư viện Đóng cửa vào Quốc khánh - 02/09/2026"
                                            aria-required="true"
                                            value="${param.notifTitle}"/>
                                     <div id="titleError" class="text-danger" style="font-size: 12px; margin-top: 4px; display: none;">
                                         <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: -2px;">error</span>
-                                        Title is required.
+                                        Vui lòng nhập Tiêu đề.
                                     </div>
                                 </div>
 
                                 <!-- Body -->
                                 <div class="mb-3">
-                                    <label class="bcast-form-label" for="notifBody">Message Body *</label>
+                                    <label class="bcast-form-label" for="notifBody">Nội dung Tin nhắn *</label>
                                     <textarea id="notifBody" name="notifBody"
                                               class="bcast-textarea" required maxlength="2000"
-                                              placeholder="Write the full notification message here…"
+                                              placeholder="Viết nội dung thông báo đầy đủ tại đây…"
                                               aria-required="true"
                                               rows="5"><c:out value="${param.notifBody}" /></textarea>
                                     <div class="d-flex justify-content-between mt-1">
                                         <div id="bodyError" class="text-danger" style="font-size: 12px; display: none;">
                                             <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: -2px;">error</span>
-                                            Message body is required.
+                                            Vui lòng nhập nội dung tin nhắn.
                                         </div>
                                         <span id="charCount" style="font-size: 11px; color: var(--on-surface-variant); margin-left: auto;">0 / 2000</span>
                                     </div>
@@ -535,22 +535,22 @@
                                 <!-- Action URL (optional) -->
                                 <div class="mb-3">
                                     <label class="bcast-form-label" for="actionUrl">
-                                        Action URL
-                                        <span style="font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 400;">(optional)</span>
+                                        URL Hành động
+                                        <span style="font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 400;">(tùy chọn)</span>
                                     </label>
                                     <input type="text" id="actionUrl" name="actionUrl"
                                            class="bcast-input"
-                                           placeholder="/student/loans  or  /policies.jsp"
+                                           placeholder="/student/loans  hoặc  /policies.jsp"
                                            value="${param.actionUrl}" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="bcast-form-label" for="actionLabel">
-                                        Action Button Label
-                                        <span style="font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 400;">(optional)</span>
+                                        Nhãn Nút Hành động
+                                        <span style="font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 400;">(tùy chọn)</span>
                                     </label>
                                     <input type="text" id="actionLabel" name="actionLabel"
                                            class="bcast-input" maxlength="60"
-                                           placeholder="e.g. View Details, Return Book, Read Policy"
+                                           placeholder="VD: Xem Chi tiết, Trả sách, Đọc Chính sách"
                                            value="${param.actionLabel}" />
                                 </div>
                             </div>
@@ -560,31 +560,31 @@
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <div class="d-flex align-items-center justify-content-center rounded-circle fw-bold text-white"
                                          style="width:26px;height:26px;background:var(--primary,#9d4300);font-size:12px;flex-shrink:0;">4</div>
-                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Priority & Delivery</h2>
+                                    <h2 class="fw-bold mb-0" style="font-size: 16px; color: var(--on-surface);">Mức độ Ưu tiên & Gửi</h2>
                                 </div>
 
                                 <!-- Priority -->
-                                <label class="bcast-form-label">Priority Level</label>
+                                <label class="bcast-form-label">Mức độ Ưu tiên</label>
                                 <div class="priority-row mb-3" role="radiogroup" aria-label="Priority level">
                                     <label class="priority-badge prio-low" for="prio-low">
                                         <input type="radio" name="priority" id="prio-low" value="LOW" />
                                         <span class="material-symbols-outlined" style="font-size: 14px;">arrow_downward</span>
-                                        Low
+                                        Thấp
                                     </label>
                                     <label class="priority-badge prio-normal selected" for="prio-normal">
                                         <input type="radio" name="priority" id="prio-normal" value="NORMAL" checked />
                                         <span class="material-symbols-outlined" style="font-size: 14px;">remove</span>
-                                        Normal
+                                        Bình thường
                                     </label>
                                     <label class="priority-badge prio-high" for="prio-high">
                                         <input type="radio" name="priority" id="prio-high" value="HIGH" />
                                         <span class="material-symbols-outlined" style="font-size: 14px;">arrow_upward</span>
-                                        High
+                                        Cao
                                     </label>
                                     <label class="priority-badge prio-urgent" for="prio-urgent">
                                         <input type="radio" name="priority" id="prio-urgent" value="URGENT" />
                                         <span class="material-symbols-outlined" style="font-size: 14px;">priority_high</span>
-                                        Urgent
+                                        Khẩn cấp
                                     </label>
                                 </div>
 
@@ -592,15 +592,15 @@
                                 <div class="row g-3">
                                     <div class="col-12 col-sm-6">
                                         <label class="bcast-form-label" for="scheduledDate">
-                                            Send Date
-                                            <span style="font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 400;">(leave blank to send now)</span>
+                                            Ngày Gửi
+                                            <span style="font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 400;">(để trống nếu gửi ngay)</span>
                                         </label>
                                         <input type="date" id="scheduledDate" name="scheduledDate"
                                                class="bcast-input"
                                                value="${param.scheduledDate}" />
                                     </div>
                                     <div class="col-12 col-sm-6">
-                                        <label class="bcast-form-label" for="scheduledTime">Send Time</label>
+                                        <label class="bcast-form-label" for="scheduledTime">Giờ Gửi</label>
                                         <input type="time" id="scheduledTime" name="scheduledTime"
                                                class="bcast-input"
                                                value="${param.scheduledTime != null ? param.scheduledTime : '08:00'}" />
@@ -614,24 +614,24 @@
                                         class="btn-broadcast-primary" id="btnSend"
                                         aria-label="Send notification now">
                                     <span class="material-symbols-outlined">send</span>
-                                    Send Now
+                                    Gửi Ngay
                                 </button>
                                 <button type="submit" name="submitAction" value="schedule"
                                         class="btn-broadcast-outline" id="btnSchedule"
                                         aria-label="Schedule notification for later">
                                     <span class="material-symbols-outlined">schedule_send</span>
-                                    Schedule
+                                    Lên lịch
                                 </button>
                                 <button type="submit" name="submitAction" value="draft"
                                         class="btn-broadcast-outline" id="btnSaveDraft"
                                         aria-label="Save as draft">
                                     <span class="material-symbols-outlined">draft</span>
-                                    Save Draft
+                                    Lưu Draft
                                 </button>
                                 <button type="reset" class="btn-broadcast-outline ms-auto" id="btnReset"
                                         aria-label="Reset form">
                                     <span class="material-symbols-outlined">restart_alt</span>
-                                    Reset
+                                    Đặt lại
                                 </button>
                             </div>
 
@@ -646,7 +646,7 @@
                             <div class="p-3 d-flex align-items-center gap-2"
                                  style="background: var(--surface-container-lowest,#fff); border-bottom: 1px solid var(--outline-variant);">
                                 <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary, #9d4300);">preview</span>
-                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Live Preview</h3>
+                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Xem trước Trực tiếp</h3>
                             </div>
                             <div class="p-3">
                                 <div class="preview-panel" id="previewPanel">
@@ -654,22 +654,22 @@
                                         <span class="material-symbols-outlined" style="font-size: 13px;">campaign</span>
                                         <span id="previewBadgeText">Announcement</span>
                                     </div>
-                                    <div class="preview-title" id="previewTitle">Notification title appears here</div>
+                                    <div class="preview-title" id="previewTitle">Tiêu đề thông báo sẽ hiển thị ở đây</div>
                                     <div class="preview-body" id="previewBody">
-                                        Your notification message will appear here as you type.
+                                        Nội dung thông báo của bạn sẽ hiển thị ở đây khi bạn nhập.
                                     </div>
                                     <div class="preview-meta">
                                         <span class="preview-meta-item">
                                             <span class="material-symbols-outlined">groups</span>
-                                            <span id="previewAudience">All Users</span>
+                                            <span id="previewAudience">Tất cả Người dùng</span>
                                         </span>
                                         <span class="preview-meta-item">
                                             <span class="material-symbols-outlined">remove</span>
-                                            <span id="previewPriority">Normal</span>
+                                            <span id="previewPriority">Bình thường</span>
                                         </span>
                                         <span class="preview-meta-item">
                                             <span class="material-symbols-outlined">schedule</span>
-                                            Now
+                                            Bây giờ
                                         </span>
                                     </div>
                                 </div>
@@ -680,17 +680,17 @@
                         <div class="raised-card overflow-hidden">
                             <div class="p-3 d-flex justify-content-between align-items-center"
                                  style="background: var(--surface-container-lowest,#fff); border-bottom: 1px solid var(--outline-variant);">
-                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Recent Broadcasts</h3>
+                                <h3 class="fw-bold mb-0" style="font-size: 15px; color: var(--on-surface);">Thông báo Gần đây</h3>
                                 <a href="${pageContext.request.contextPath}/manager/notification-detail.jsp"
-                                   class="text-primary-custom fw-bold text-decoration-none" style="font-size: 12px;">View all →</a>
+                                   class="text-primary-custom fw-bold text-decoration-none" style="font-size: 12px;">Xem all →</a>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-lms mb-0" style="min-width: 340px;">
                                     <thead>
                                         <tr>
-                                            <th>Title</th>
-                                            <th>To</th>
-                                            <th>Status</th>
+                                            <th>Tiêu đề</th>
+                                            <th>Gửi đến</th>
+                                            <th>Trạng thái</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -720,26 +720,17 @@
                                                 <tr>
                                                     <td style="font-size: 13px; font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                                         <a href="${pageContext.request.contextPath}/manager/notification-detail.jsp"
-                                                           class="text-decoration-none text-on-surface">Library Closed — Jun 2</a>
+                                                           class="text-decoration-none text-on-surface">Thư viện Đóng cửa — 2/6</a>
                                                     </td>
-                                                    <td style="font-size: 12px; color: var(--on-surface-variant);">All Users</td>
-                                                    <td><span class="hist-row-status sent">SENT</span></td>
+                                                    <td style="font-size: 12px; color: var(--on-surface-variant);">Tất cả Người dùng</td>
+                                                    <td><span class="hist-row-status sent">ĐÃ GỬI</span></td>
                                                 </tr>
                                                 <tr>
                                                     <td style="font-size: 13px; font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                                         <a href="${pageContext.request.contextPath}/manager/notification-detail.jsp"
-                                                           class="text-decoration-none text-on-surface">Book Recall — SE301</a>
+                                                           class="text-decoration-none text-on-surface">Sách Recall — SE301</a>
                                                     </td>
-                                                    <td style="font-size: 12px; color: var(--on-surface-variant);">Students</td>
-                                                    <td><span class="hist-row-status sent">SENT</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="font-size: 13px; font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                                        <a href="${pageContext.request.contextPath}/manager/notification-detail.jsp"
-                                                           class="text-decoration-none text-on-surface">Policy Update v2.1</a>
-                                                    </td>
-                                                    <td style="font-size: 12px; color: var(--on-surface-variant);">All Users</td>
-                                                    <td><span class="hist-row-status sent">SENT</span></td>
+                                                    <td style="font-size: 12px; color: var(--on-surface-variant);">Sinh viên</td>
                                                 </tr>
                                                 <tr>
                                                     <td style="font-size: 13px; font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">

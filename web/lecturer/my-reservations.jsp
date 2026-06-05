@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <jsp:include page="fragments/_head.jsp" />
 
@@ -25,7 +25,7 @@
                     <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
                         <span class="material-symbols-outlined me-2">check_circle</span>
                         <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
@@ -33,13 +33,13 @@
                 <%-- ─── Page Header ─── --%>
                 <div class="mb-4 d-flex flex-column flex-md-row justify-content-between gap-3">
                     <div>
-                        <h3 class="fw-bold text-dark mb-1" style="font-size: 32px; letter-spacing: -0.01em;">My Reservations</h3>
-                        <p class="text-muted mb-0">Manage your active book reservations for both departmental research and upcoming course materials.</p>
+                        <h3 class="fw-bold text-dark mb-1" style="font-size: 32px; letter-spacing: -0.01em;">Đặt trước của tôi</h3>
+                        <p class="text-muted mb-0">Quản lý các lượt đặt trước sách đang hoạt động cho cả nghiên cứu cấp khoa và tài liệu khóa học sắp tới.</p>
                     </div>
                     <div class="d-flex align-self-start align-self-md-auto">
                         <div class="d-flex p-1 rounded-3" style="background-color: #eceef0;">
-                            <button class="btn-switch active" id="btn-active" onclick="filterTab('active')">Active</button>
-                            <button class="btn-switch" id="btn-history" onclick="filterTab('history')">History</button>
+                            <button class="btn-switch active" id="btn-active" onclick="filterTab('active')">Hoạt động</button>
+                            <button class="btn-switch" id="btn-history" onclick="filterTab('history')">Lịch sử</button>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                                 <span class="material-symbols-outlined">book</span>
                             </div>
                             <div>
-                                <p class="text-muted small fw-semibold text-uppercase mb-0" style="font-size: 12px; letter-spacing: 0.05em;">Research Reserves</p>
+                                <p class="text-muted small fw-semibold text-uppercase mb-0" style="font-size: 12px; letter-spacing: 0.05em;">Sách dự trữ nghiên cứu</p>
                                 <p class="h4 fw-bold mb-0" style="font-size: 24px; color: #9d4300;">
                                     <c:out value="${researchCount != null ? researchCount : '12'}" />
                                 </p>
@@ -65,7 +65,7 @@
                                 <span class="material-symbols-outlined">school</span>
                             </div>
                             <div>
-                                <p class="text-muted small fw-semibold text-uppercase mb-0" style="font-size: 12px; letter-spacing: 0.05em;">Course Related</p>
+                                <p class="text-muted small fw-semibold text-uppercase mb-0" style="font-size: 12px; letter-spacing: 0.05em;">Liên quan khóa học</p>
                                 <p class="h4 fw-bold mb-0" style="font-size: 24px; color: #006398;">
                                     <c:out value="${courseCount != null ? courseCount : '08'}" />
                                 </p>
@@ -78,7 +78,7 @@
                                 <span class="material-symbols-outlined">hourglass_empty</span>
                             </div>
                             <div>
-                                <p class="text-muted small fw-semibold text-uppercase mb-0" style="font-size: 12px; letter-spacing: 0.05em;">Pending Arrival</p>
+                                <p class="text-muted small fw-semibold text-uppercase mb-0" style="font-size: 12px; letter-spacing: 0.05em;">Đang chờ hàng</p>
                                 <p class="h4 fw-bold text-dark mb-0" style="font-size: 24px;">
                                     <c:out value="${pendingCount != null ? pendingCount : '03'}" />
                                 </p>
@@ -93,11 +93,11 @@
                         <table class="table align-middle mb-0">
                             <thead>
                                 <tr class="border-bottom" style="border-bottom-color: rgba(140, 113, 100, 0.3) !important;">
-                                    <th>Title &amp; Author</th>
-                                    <th>Category</th>
-                                    <th class="text-center">Position</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Tiêu đề &amp; Tác giả</th>
+                                    <th>Thể loại</th>
+                                    <th class="text-center">Vị trí</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody class="table-group-divider" style="border-top-color: rgba(140, 113, 100, 0.2);">
@@ -142,24 +142,24 @@
                                                         <c:when test="${res.status == 'ARRIVING_TOMORROW'}">
                                                             <div class="d-flex align-items-center gap-2">
                                                                 <span class="spinner-grow spinner-grow-sm text-warning" role="status" style="width: 8px; height: 8px;"></span>
-                                                                <span class="small fw-semibold text-dark">Arriving Tomorrow</span>
+                                                                <span class="small fw-semibold text-dark">Hàng về ngày mai</span>
                                                             </div>
                                                         </c:when>
                                                         <c:when test="${res.status == 'READY'}">
                                                             <div class="d-flex align-items-center gap-2">
                                                                 <div class="rounded-circle bg-success" style="width: 8px; height: 8px;"></div>
-                                                                <span class="small fw-semibold text-dark">Ready for Pickup</span>
+                                                                <span class="small fw-semibold text-dark">Sẵn sàng để lấy</span>
                                                             </div>
                                                         </c:when>
                                                         <c:when test="${res.status == 'IN_CIRCULATION'}">
                                                             <div class="d-flex align-items-center gap-2">
                                                                 <div class="rounded-circle bg-warning" style="width: 8px; height: 8px;"></div>
-                                                                <span class="small fw-semibold text-dark">In Circulation</span>
+                                                                <span class="small fw-semibold text-dark">Đang lưu thông</span>
                                                             </div>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <div class="d-flex flex-column" style="width: 100px;">
-                                                                <span class="small text-muted mb-1" style="font-size: 11px; font-weight: 600;">Waitlist Active</span>
+                                                                <span class="small text-muted mb-1" style="font-size: 11px; font-weight: 600;">Danh sách chờ hoạt động</span>
                                                                 <div class="progress" style="height: 4px;">
                                                                     <div class="progress-bar" role="progressbar"
                                                                          style="width: ${res.waitlistPercent}%; background-color: #9d4300;"></div>
@@ -171,15 +171,15 @@
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${res.status == 'READY' or res.status == 'ARRIVING_TOMORROW'}">
-                                                            <button class="action-icon-btn btn-info" title="View Info">
+                                                            <button class="action-icon-btn btn-info" title="Xem thông tin">
                                                                 <span class="material-symbols-outlined">info</span>
                                                             </button>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <form action="${pageContext.request.contextPath}/lecturer/reservation-cancel" method="post" style="display: inline;">
                                                                 <input type="hidden" name="reservationId" value="${res.reservationId}" />
-                                                                <button class="action-icon-btn btn-cancel" title="Cancel Reservation" type="submit"
-                                                                        onclick="return confirm('Cancel this reservation?')">
+                                                                <button class="action-icon-btn btn-cancel" title="Hủy đặt trước" type="submit"
+                                                                        onclick="return confirm('Bạn có chắc chắn muốn hủy đặt trước này không?')">
                                                                     <span class="material-symbols-outlined">cancel</span>
                                                                 </button>
                                                             </form>
@@ -208,18 +208,18 @@
                                             <td>
                                                 <span class="badge px-3 py-2 rounded-pill"
                                                       style="background-color: rgba(249, 115, 22, 0.1); color: #9d4300; border: 1px solid rgba(249, 115, 22, 0.2); font-size: 12px; font-weight: 600;">
-                                                    Research
+                                                    Nghiên cứu
                                                 </span>
                                             </td>
                                             <td class="text-center"><span class="h5 fw-bold mb-0" style="color: #9d4300;">1st</span></td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <span class="spinner-grow spinner-grow-sm text-warning" role="status" style="width: 8px; height: 8px;"></span>
-                                                    <span class="small fw-semibold text-dark">Arriving Tomorrow</span>
+                                                    <span class="small fw-semibold text-dark">Hàng về ngày mai</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <button class="action-icon-btn btn-cancel" title="Cancel Reservation">
+                                                <button class="action-icon-btn btn-cancel" title="Hủy đặt trước">
                                                     <span class="material-symbols-outlined">cancel</span>
                                                 </button>
                                             </td>
@@ -241,18 +241,18 @@
                                             <td>
                                                 <span class="badge px-3 py-2 rounded-pill"
                                                       style="background-color: rgba(0, 162, 244, 0.1); color: #006398; border: 1px solid rgba(0, 162, 244, 0.2); font-size: 12px; font-weight: 600;">
-                                                    SOC204 Course
+                                                    Khóa học SOC204
                                                 </span>
                                             </td>
                                             <td class="text-center"><span class="text-muted opacity-50">--</span></td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <div class="rounded-circle bg-success" style="width: 8px; height: 8px;"></div>
-                                                    <span class="small fw-semibold text-dark">Ready for Pickup</span>
+                                                    <span class="small fw-semibold text-dark">Sẵn sàng để lấy</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <button class="action-icon-btn btn-info" title="View Info">
+                                                <button class="action-icon-btn btn-info" title="Xem thông tin">
                                                     <span class="material-symbols-outlined">info</span>
                                                 </button>
                                             </td>
@@ -274,20 +274,20 @@
                                             <td>
                                                 <span class="badge px-3 py-2 rounded-pill"
                                                       style="background-color: rgba(249, 115, 22, 0.1); color: #9d4300; border: 1px solid rgba(249, 115, 22, 0.2); font-size: 12px; font-weight: 600;">
-                                                    Research
+                                                    Nghiên cứu
                                                 </span>
                                             </td>
                                             <td class="text-center"><span class="h5 fw-bold text-secondary mb-0">4th</span></td>
                                             <td>
                                                 <div class="d-flex flex-column" style="width: 100px;">
-                                                    <span class="small text-muted mb-1" style="font-size: 11px; font-weight: 600;">Waitlist Active</span>
+                                                    <span class="small text-muted mb-1" style="font-size: 11px; font-weight: 600;">Danh sách chờ hoạt động</span>
                                                     <div class="progress" style="height: 4px;">
                                                         <div class="progress-bar" role="progressbar" style="width: 25%; background-color: #9d4300;"></div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <button class="action-icon-btn btn-cancel" title="Cancel Reservation">
+                                                <button class="action-icon-btn btn-cancel" title="Hủy đặt trước">
                                                     <span class="material-symbols-outlined">cancel</span>
                                                 </button>
                                             </td>
@@ -301,8 +301,8 @@
                     <%-- Pagination Footer --%>
                     <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center" style="border-top-color: rgba(140, 113, 100, 0.2) !important;">
                         <span class="small fw-semibold text-secondary" style="font-size: 12px;">
-                            Showing <c:out value="${reservationList != null ? reservationList.size() : '4'}" />
-                            of <c:out value="${totalReservations != null ? totalReservations : '20'}" /> reservations
+                            Đang hiển thị <c:out value="${reservationList != null ? reservationList.size() : '4'}" />
+                            trong số <c:out value="${totalReservations != null ? totalReservations : '20'}" /> lượt đặt trước
                         </span>
                         <div class="d-flex gap-1">
                             <button class="btn btn-sm border rounded p-1 d-inline-flex align-items-center justify-content-center" style="width: 2rem; height: 2rem;">
@@ -361,7 +361,7 @@
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             const row = this.closest('tr');
-            if (confirm('Are you sure you want to cancel this reservation?')) {
+            if (confirm('Bạn có chắc chắn muốn hủy đặt trước này không?')) {
                 row.style.opacity = '0';
                 row.style.transform = 'translateX(20px)';
                 row.style.transition = 'all 0.3s ease-out';

@@ -7,60 +7,60 @@
 
     <!-- Brand -->
     <a href="${pageContext.request.contextPath}/" class="text-decoration-none d-block">
-        <p class="fw-bold mb-0 text-primary-custom" style="font-size: 18px; line-height: 1.2;">Library Portal</p>
-        <p class="text-on-surface-variant mb-0" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;">Circulation Desk</p>
+        <p class="fw-bold mb-0 text-primary-custom" style="font-size: 18px; line-height: 1.2;">Cổng thông tin Thư viện</p>
+        <p class="text-on-surface-variant mb-0" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;">Quầy lưu thông</p>
     </a>
 
     <!-- Navigation -->
     <div class="flex-grow-1 d-flex flex-column gap-1">
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.15em;">Circulation</p>
+        <p class="text-on-surface-variant fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.15em;">Lưu thông</p>
         <a class="sidebar-link active" href="${pageContext.request.contextPath}/librarian/dashboard">
-            <span class="material-symbols-outlined">dashboard</span><span>Dashboard</span>
+            <span class="material-symbols-outlined">dashboard</span><span>Bảng điều khiển</span>
         </a>
         <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">published_with_changes</span><span>Issue / Return</span>
+            <span class="material-symbols-outlined">published_with_changes</span><span>Mượn / Trả sách</span>
         </a>
         <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">bookmark_add</span><span>Reservations</span>
+            <span class="material-symbols-outlined">bookmark_add</span><span>Đặt trước</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fine-list.jsp">
-            <span class="material-symbols-outlined">payments</span><span>Fines Collection</span>
+            <span class="material-symbols-outlined">payments</span><span>Thu tiền phạt</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Catalog</p>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/catalog.jsp">
-            <span class="material-symbols-outlined">auto_stories</span><span>Master Catalog</span>
+            <span class="material-symbols-outlined">auto_stories</span><span>Danh mục chính</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/copy-list.jsp">
-            <span class="material-symbols-outlined">inventory</span><span>Physical Inventory</span>
+            <span class="material-symbols-outlined">inventory</span><span>Kho vật lý</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/category-list.jsp">
-            <span class="material-symbols-outlined">category</span><span>Categories</span>
+            <span class="material-symbols-outlined">category</span><span>Thể loại</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/tag-list.jsp">
-            <span class="material-symbols-outlined">sell</span><span>Tags</span>
+            <span class="material-symbols-outlined">sell</span><span>Thẻ</span>
         </a>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Users</p>
+        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Người dùng</p>
         <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">group</span><span>Member Directory</span>
+            <span class="material-symbols-outlined">group</span><span>Danh bạ thành viên</span>
         </a>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Account</p>
+        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Tài khoản</p>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/profile">
-            <span class="material-symbols-outlined">manage_accounts</span><span>My Profile</span>
+            <span class="material-symbols-outlined">manage_accounts</span><span>Hồ sơ của tôi</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/#contact">
-            <span class="material-symbols-outlined">contact_support</span><span>Help</span>
+            <span class="material-symbols-outlined">contact_support</span><span>Trợ giúp</span>
         </a>
     </div>
 
     <!-- Assistance Box -->
     <div class="mt-auto p-3 rounded-3"
          style="background-color: rgba(249, 115, 22, 0.08); border: 1px solid rgba(249, 115, 22, 0.2);">
-        <p class="fw-bold text-primary-custom mb-1 small">Overdue Alert</p>
+        <p class="fw-bold text-primary-custom mb-1 small">Cảnh báo quá hạn</p>
         <p class="text-on-surface-variant mb-2" style="font-size: 11px;">
-            3 loans are critically overdue. Send penalty notices.
+            3 khoản mượn quá hạn nghiêm trọng. Gửi thông báo phạt.
         </p>
         <a href="#" class="btn btn-primary-custom w-100 btn-sm text-decoration-none d-block text-center rounded-3">
-            Send Notices
+            Gửi thông báo
         </a>
     </div>
 </aside>
