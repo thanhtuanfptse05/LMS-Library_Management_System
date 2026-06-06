@@ -12,19 +12,9 @@ CREATE TABLE [User] (
     passwordHash NVARCHAR(255) NOT NULL,
     [status] NVARCHAR(50) NOT NULL DEFAULT 'active', -- active, locked
     [role] NVARCHAR(50) NOT NULL,
+    lockReason NVARCHAR(50) NULL, -- unpaid, adminban, securitybreach
     failedLoginAttempts INT NOT NULL DEFAULT 0,
     lockedUntil DATETIME NULL
-);
-
--- ============================================================
-
-CREATE TABLE UserLockReason (
-    lockReasonId INT IDENTITY(1,1) PRIMARY KEY,
-    userId INT NOT NULL,
-    reason NVARCHAR(50) NOT NULL, -- unpaid, adminban, securitybreach
-    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
-    
-    FOREIGN KEY (userId) REFERENCES [User](userId)
 );
 
 -- ============================================================
