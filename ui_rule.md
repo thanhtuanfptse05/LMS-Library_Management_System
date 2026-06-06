@@ -9,6 +9,7 @@ This document serves as the absolute, single source of truth for all User Interf
 - **Efficiency First:** Dashboards must prioritize core functional tasks (e.g., circulation, resource management) with minimal cognitive load and friction.
 - **Framework Strictness:** **Bootstrap 5.x ONLY.** Tailwind CSS and other utility-first frameworks are strictly prohibited. Use Bootstrap's native grid and component architecture.
 - **MVC & JSP Standards:** Design and render views using JSP, JSTL, Bootstrap, and Vanilla CSS. Direct Java Scriptlets (`<% %>`) are strictly banned in JSP pages.
+- **Vietnamese Language Strictness:** All user interface texts, labels, error messages, placeholders, buttons, and notifications must be generated and written **entirely in Vietnamese (100% tiếng Việt)**.
 
 ---
 

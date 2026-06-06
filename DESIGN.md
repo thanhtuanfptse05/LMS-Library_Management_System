@@ -11,6 +11,7 @@ version: 1.0.0
 *   **Efficiency First:** Minimal friction for functional tasks (circulation, resource management).
 *   **Consistency:** Unified experience across Student, Lecturer, Librarian, and Admin roles.
 *   **Framework Strictness:** Built exclusively on **Bootstrap 5.x**. Tailwind CSS is prohibited.
+*   **Language Strictness:** All user interfaces, labels, error messages, and elements must be written entirely in **Vietnamese (100% tiếng Việt)**.
 
 ---
 

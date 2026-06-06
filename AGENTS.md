@@ -40,6 +40,7 @@
 * **SEC-03 (Bảo mật SQL):** KHÔNG dùng phép cộng chuỗi (String Concatenation) để tạo câu lệnh SQL. Bắt buộc dùng PreparedStatement.
 * **DATA-01 (An toàn dữ liệu):** KHÔNG Hard-delete (DELETE SQL) các giao dịch cốt lõi. Sử dụng Soft-delete bằng cách cập nhật cột `status`.
 * **ARCH-02 (Ghi nhật ký):** KHÔNG bỏ qua Audit Log cho các thao tác C/U/D (Create/Update/Delete) quan trọng.
+* **UI-01 (Ngôn ngữ giao diện):** KHÔNG viết giao diện người dùng bằng tiếng Anh hoặc ngôn ngữ khác. Bắt buộc sinh giao diện (JSP, HTML, thông báo lỗi, thông báo thành công, nhãn) hoàn toàn bằng **tiếng Việt (100% Vietnamese)**.
 
 ## 6. DEFINITION OF DONE (per task)
 - [ ] Logic Java biên dịch thành công, không có Warning hoặc Error nghiêm trọng.
