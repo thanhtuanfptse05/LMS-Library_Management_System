@@ -1,5 +1,5 @@
 # PROJECT CONSTITUTION — LMS Library Management System
-# Version: 1.1.0 | Owner: @tech-lead
+# Version: 1.2.0 | Owner: @tech-lead | Updated: 2026-06-06
 # Status: LOCKED — Chỉ được phép thay đổi qua RFC process có chữ ký của Human
 # Áp dụng cho: Mọi AI Agent, mọi Developer, mọi Pull Request của dự án LMS
 
@@ -61,6 +61,10 @@
 * THE system SHALL NOT hiển thị stack trace lỗi hệ thống hoặc chi tiết SQL trực tiếp ra màn hình giao diện của người dùng.
 * Mọi lỗi phải được log chi tiết ở phía server và hiển thị thông báo lỗi thân thiện, dễ hiểu cho người dùng ở client kèm theo mã lỗi (error code) để hỗ trợ truy vết.
 
+## ENG-04: Chia nhỏ file để dễ bảo trì
+* THE system SHALL bắt buộc chia nhỏ các file source code (Java Class, JSP, CSS, JS) thành các component, fragment hoặc helper class nhỏ gọn, có tính chuyên biệt cao (Single Responsibility).
+* TUYỆT ĐỐI NGHIÊM CẤM viết các file quá dài hoặc ôm đồm quá nhiều logic/giao diện phức tạp. Trong JSP, sử dụng `<jsp:include>` hoặc `@include` để tách biệt các thành phần giao diện dùng chung hoặc các khối hiển thị độc lập.
+
 ═══════════════════════════════════════════════
   AI AGENT SELF-CHECK PROTOCOL
 ═══════════════════════════════════════════════
@@ -79,6 +83,7 @@
   - [ ] Tên bảng dạng PascalCase, tên cột dạng camelCase, tên JSP dạng kebab-case.
   - [ ] Mọi kết nối CSDL đều được đóng an toàn bằng try-with-resources hoặc khối `finally`.
   - [ ] Trả về thông báo lỗi thân thiện, không in stack trace ra màn hình giao diện.
+  - [ ] Các file code (JSP fragments, Java classes, CSS, JS) được chia nhỏ hợp lý và không ôm đồm nhiều nhiệm vụ.
 
 ### Quy trình xử lý vi phạm:
 Nếu phát hiện vi phạm Hiến pháp trong codebase:

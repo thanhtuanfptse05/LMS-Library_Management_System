@@ -1,5 +1,5 @@
 # AGENTS.md — Project Context for AI Agents
-# Version: 1.1.0 | Updated: 2026-05-29 | Project: LMS-Library Management System
+# Version: 1.2.0 | Updated: 2026-06-06 | Project: LMS-Library Management System
 
 ## 1. PROJECT OVERVIEW
 * **Name:** Library Management System (LMS)
@@ -22,6 +22,7 @@
   * **Model:** Chứa các entity thuần và DTO (Data Transfer Objects).
   * **View:** Sử dụng các file JSP kết hợp JSTL và EL. Cấm viết Scriptlet Java `<% %>` trong JSP.
   * **Controller:** Các Servlet tiếp nhận request, gọi Service/DAO xử lý và forward dữ liệu sang JSP.
+* **File Splitting & Modularity (Chia nhỏ file):** Bắt buộc chia nhỏ các file (JSP, CSS, JS, Java Class) thành các thành phần (components/fragments/helper classes) nhỏ gọn, chuyên biệt, tránh để một file quá dài hoặc ôm đồm nhiều nhiệm vụ để dễ bảo trì và tái sử dụng. Sử dụng cơ chế `<jsp:include>` hoặc `@include` trong JSP để tách các phần giao diện dùng chung (như header, footer, sidebar, head).
 * **Error Handling:** Sử dụng custom Exception (ví dụ: `DatabaseException`, `ValidationException`). Cấm nuốt lỗi (catch error rồi bỏ qua).
 * **Data Access:** Chỉ sử dụng `PreparedStatement` và parameterize mọi đầu vào để chống SQL Injection. Tự quản lý `Connection` và Transaction (commit/rollback) thủ công.
 * **Async Processing:** Các tác vụ I/O chậm (Gửi OTP qua email, Gửi email báo phạt) phải chạy bất đồng bộ thông qua `ExecutorService` của Java.
