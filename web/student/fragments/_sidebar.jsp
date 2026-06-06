@@ -24,12 +24,12 @@
                 <span>Đặt trước</span>
             </a>
             <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/student/my-fines.jsp">
+               href="#">
                 <span class="material-symbols-outlined">payments</span>
                 <span>Lịch sử nộp phạt</span>
             </a>
-            <a class="sidebar-link active"
-               href="${pageContext.request.contextPath}/student/notifications.jsp">
+            <a class="sidebar-link"
+               href="#">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
                 <span>Thông báo</span>
                 <span style="margin-left: auto; min-width: 18px; height: 18px; border-radius: 999px;

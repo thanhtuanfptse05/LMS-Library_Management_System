@@ -20,13 +20,13 @@
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">library_books</span><span>Sách tôi mượn</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/lecturer/my-fines.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">payments</span><span>Tiền phạt & Billing</span>
         </a>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">bookmark</span><span>Saved Lists</span>
         </a>
-        <a class="sidebar-link active" href="${pageContext.request.contextPath}/lecturer/notifications.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
             <span>Thông báo</span>
             <span style="margin-left: auto; min-width: 18px; height: 18px; border-radius: 999px;

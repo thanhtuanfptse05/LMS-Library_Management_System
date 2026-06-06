@@ -14,7 +14,7 @@
     <!-- Navigation -->
     <div class="flex-grow-1 d-flex flex-column gap-1">
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.15em;">Tổng quan</p>
-        <a class="sidebar-link active" href="${pageContext.request.contextPath}/manager/dashboard">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/dashboard">
             <span class="material-symbols-outlined">dashboard</span><span>Bảng điều khiển</span>
         </a>
         <a class="sidebar-link" href="#">
@@ -30,10 +30,10 @@
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">policy</span><span>Chính sách Thư viện</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/notification-broadcast.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">campaign</span><span>Thông báo hệ thống</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/notification-detail.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">notifications</span><span>Lịch sử Thông báo</span>
         </a>
         <a class="sidebar-link" href="#">

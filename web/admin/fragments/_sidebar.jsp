@@ -39,7 +39,7 @@
         <div class="px-3 mb-1">
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
                style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Người dùng &amp; Phân quyền</p>
-            <a class="sidebar-link" id="nav-user-management" href="${pageContext.request.contextPath}/admin/user-list.jsp">
+            <a class="sidebar-link" id="nav-user-management" href="#">
                 <span class="material-symbols-outlined">group</span>
                 <span>Quản lý Người dùng</span>
             </a>
@@ -58,12 +58,12 @@
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
                style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Cấu hình Hệ thống</p>
             <a class="sidebar-link" id="nav-config-list"
-               href="${pageContext.request.contextPath}/admin/config-list.jsp">
+               href="#">
                 <span class="material-symbols-outlined">settings</span>
                 <span>Cấu hình</span>
             </a>
             <a class="sidebar-link sidebar-sublink" id="nav-config-edit"
-               href="${pageContext.request.contextPath}/admin/config-edit.jsp"
+               href="#"
                style="padding-left: 42px; font-size: 13px;">
                 <span class="material-symbols-outlined" style="font-size: 17px;">tune</span>
                 <span>Chỉnh sửa Tham số</span>
@@ -75,12 +75,12 @@
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
                style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Kiểm toán &amp; Giám sát</p>
             <a class="sidebar-link" id="nav-audit-logs"
-               href="${pageContext.request.contextPath}/admin/audit-logs.jsp">
+               href="#">
                 <span class="material-symbols-outlined">receipt_long</span>
                 <span>Nhật ký Kiểm toán</span>
             </a>
             <a class="sidebar-link sidebar-sublink" id="nav-audit-detail"
-               href="${pageContext.request.contextPath}/admin/audit-detail.jsp"
+               href="#"
                style="padding-left: 42px; font-size: 13px;">
                 <span class="material-symbols-outlined" style="font-size: 17px;">manage_search</span>
                 <span>Chi tiết nhật ký</span>

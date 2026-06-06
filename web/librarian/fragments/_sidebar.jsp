@@ -14,7 +14,7 @@
     <!-- Navigation -->
     <div class="flex-grow-1 d-flex flex-column gap-1">
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.15em;">Lưu thông</p>
-        <a class="sidebar-link active" href="${pageContext.request.contextPath}/librarian/dashboard">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/dashboard">
             <span class="material-symbols-outlined">dashboard</span><span>Bảng điều khiển</span>
         </a>
         <a class="sidebar-link" href="#">
@@ -23,20 +23,20 @@
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">bookmark_add</span><span>Đặt trước</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fine-list.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">payments</span><span>Thu tiền phạt</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Catalog</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/catalog.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">auto_stories</span><span>Danh mục chính</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/copy-list.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">inventory</span><span>Kho vật lý</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/category-list.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">category</span><span>Thể loại</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/tag-list.jsp">
+        <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">sell</span><span>Thẻ</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Người dùng</p>
