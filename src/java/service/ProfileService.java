@@ -79,9 +79,9 @@ public class ProfileService {
         }
 
         // Chính sách mật khẩu: tối thiểu 8 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 chữ số, 1 ký tự đặc biệt
-        String pwPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        String pwPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&._\\-,#^()])[A-Za-z\\d@$!%*?&._\\-,#^()]{8,}$";
         if (!newPw.matches(pwPattern)) {
-            throw new Exception("Mật khẩu mới phải từ 8 ký tự trở lên, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.");
+            throw new Exception("Mật khẩu mới phải từ 8 ký tự trở lên, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (@$!%*?&._-).");
         }
 
         User user = userDAO.findByUserId(userId);
