@@ -14,7 +14,7 @@
     <!-- ════════════════ BODY WRAPPER ════════════════ -->
     <div class="d-flex main-wrapper overflow-hidden">
 
-        <main class="flex-grow-1 overflow-y-auto" style="background-color: var(--background); margin-left: 256px;">
+        <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: var(--background);">
 
             <jsp:include page="fragments/_header.jsp" />
 
@@ -318,9 +318,9 @@
                                 <div class="avatar" style="width: 52px; height: 52px; font-size: 18px; background-color: var(--tertiary-fixed); color: var(--on-tertiary-fixed-variant);">
                                     <c:choose>
                                         <c:when test="${not empty sessionScope.email}">
-                                            <c:out value="${fn:substring(sessionScope.email,0,2).toUpperCase()}" default="LC" />
+                                            <c:out value="${fn:substring(sessionScope.email,0,2).toUpperCase()}" default="GV" />
                                         </c:when>
-                                        <c:otherwise>LC</c:otherwise>
+                                        <c:otherwise>GV</c:otherwise>
                                     </c:choose>
                                 </div>
                                 <div>

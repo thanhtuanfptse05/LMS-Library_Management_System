@@ -1,7 +1,7 @@
 <%-- Fragment: _sidebar.jsp — Left sidebar navigation for Librarian --%>
 <!-- ════════════════ SIDEBAR ════════════════ -->
-<aside class="d-none d-lg-flex flex-column gap-4 p-4"
-       style="width: 256px; height: 100vh; position: fixed; left: 0; top: 0;
+<aside class="d-none d-lg-flex flex-column sidebar-layout gap-4 p-4"
+       style="height: 100vh; position: fixed; left: 0; top: 0;
               background-color: var(--surface-container-low);
               border-right: 1px solid var(--outline-variant); overflow-y: auto; z-index: 60;">
 

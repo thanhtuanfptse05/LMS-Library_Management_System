@@ -1,7 +1,7 @@
 <%-- Fragment: _sidebar.jsp — Left sidebar navigation --%>
 <!-- ─── SIDEBAR ─── -->
 <aside class="d-none d-lg-flex flex-column bg-surface-container-low gap-4 p-4"
-       style="width: 256px; flex-shrink: 0; border-right: 1px solid var(--outline-variant); overflow-y: auto;">
+       style="width: 280px; flex-shrink: 0; border-right: 1px solid var(--outline-variant); overflow-y: auto;">
 
     <!-- Library Access -->
     <div>

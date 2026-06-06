@@ -52,7 +52,7 @@
 
     <div class="d-flex main-wrapper overflow-hidden">
         
-        <main class="flex-grow-1 overflow-y-auto" style="background-color: #f7f9fb; margin-left: 256px;">
+        <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: #f7f9fb;">
             
             <jsp:include page="fragments/_header.jsp" />
 

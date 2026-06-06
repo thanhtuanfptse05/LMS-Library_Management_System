@@ -13,7 +13,7 @@
     <!-- ════════════════ BODY WRAPPER ════════════════ -->
     <div class="d-flex main-wrapper overflow-hidden">
 
-        <main class="flex-grow-1 overflow-y-auto" style="background-color: var(--background); margin-left: 256px;">
+        <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: var(--background);">
 
             <jsp:include page="fragments/_header.jsp" />
 

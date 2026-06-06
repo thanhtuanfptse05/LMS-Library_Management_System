@@ -54,11 +54,11 @@
                  style="border-left: 1px solid var(--outline-variant);" title="Xem Hồ sơ">
                 <span class="material-symbols-outlined text-primary-custom"
                       style="font-size: 36px; font-variation-settings: 'FILL' 1;">account_circle</span>
-                <div class="d-none d-sm-block">
-                    <p class="mb-0 fw-bold lh-sm" style="font-size: 14px;">
+                <div class="d-none d-sm-block text-start" style="max-width: 160px;">
+                    <p class="mb-0 fw-bold lh-sm text-truncate" style="font-size: 14px;" title="<c:out value="${sessionScope.email}"/>">
                         <c:out value="${sessionScope.email}" default="Sinh viên"/>
                     </p>
-                    <p class="mb-0 text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.1em;">
+                    <p class="mb-0 text-uppercase text-on-surface-variant text-truncate" style="font-size: 10px; letter-spacing: 0.1em;">
                         <c:out value="${sessionScope.role}" default="SINH VIÊN"/>
                     </p>
                 </div>

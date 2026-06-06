@@ -286,5 +286,26 @@
                     width: 100%;
                 }
             }
+
+            /* ─── Responsive Layout Offset Styles ─── */
+            @media (min-width: 992px) {
+                .sidebar-layout {
+                    width: 280px !important;
+                }
+                .main-content-layout {
+                    margin-left: 280px !important;
+                }
+                .header-layout {
+                    margin-left: 280px !important;
+                }
+            }
+            @media (max-width: 991.98px) {
+                .main-content-layout {
+                    margin-left: 0 !important;
+                }
+                .header-layout {
+                    margin-left: 0 !important;
+                }
+            }
         </style>
     </head>
