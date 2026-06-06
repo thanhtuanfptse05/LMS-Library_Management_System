@@ -5,8 +5,8 @@
     <div class="h-100 d-flex align-items-center justify-content-between px-4 header-layout">
 
         <!-- Left: Title -->
-        <div class="d-flex align-items-center gap-4">
-            <h1 class="h5 fw-bold mb-0 text-primary-custom">Hoạt động Thủ thư</h1>
+        <div class="d-flex align-items-center gap-4 text-nowrap">
+            <h1 class="h5 fw-bold mb-0 text-primary-custom text-nowrap">Hoạt động Thủ thư</h1>
         </div>
 
         <!-- Right: Search + Notifications + User -->
@@ -19,7 +19,7 @@
                 <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
                 <span class="notif-dot"></span>
             </button>
-            <a href="${pageContext.request.contextPath}/librarian/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset" style="border-left: 1px solid var(--outline-variant);" title="Xem hồ sơ">
+            <a href="${pageContext.request.contextPath}/librarian/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset text-nowrap" style="border-left: 1px solid var(--outline-variant);" title="Xem hồ sơ">
                 <div class="avatar" style="background-color: var(--primary-fixed); color: var(--on-primary-container);">TT</div>
                 <div class="d-none d-sm-block text-start" style="max-width: 160px;">
                     <p class="mb-0 fw-bold lh-sm text-truncate" style="font-size: 13px;" title="<c:out value="${sessionScope.email}"/>">

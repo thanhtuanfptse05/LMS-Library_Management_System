@@ -5,9 +5,9 @@
     <div class="h-100 d-flex align-items-center justify-content-between px-4 header-layout">
 
         <!-- Left: Title + Nav -->
-        <div class="d-flex align-items-center gap-4">
-            <h1 class="h5 fw-bold mb-0 text-primary-custom">Tài nguyên Học thuật</h1>
-            <div class="d-none d-md-flex gap-4 ms-2">
+        <div class="d-flex align-items-center gap-4 text-nowrap">
+            <h1 class="h5 fw-bold mb-0 text-primary-custom text-nowrap">Tài nguyên Học thuật</h1>
+            <div class="d-none d-md-flex gap-4 ms-2 text-nowrap">
                 <a href="${pageContext.request.contextPath}/lecturer/dashboard"
                    style="font-size: 13px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 2px; text-decoration: none; font-weight: 600;">Bảng điều khiển</a>
                 <a href="${pageContext.request.contextPath}/book-search.jsp"
@@ -26,7 +26,7 @@
                 <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
                 <span class="notif-dot"></span>
             </a>
-            <a href="${pageContext.request.contextPath}/lecturer/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset" style="border-left: 1px solid var(--outline-variant);" title="Xem Hồ sơ">
+            <a href="${pageContext.request.contextPath}/lecturer/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset text-nowrap" style="border-left: 1px solid var(--outline-variant);" title="Xem Hồ sơ">
                 <div class="avatar" style="background-color: var(--tertiary-fixed); color: var(--on-tertiary-fixed-variant);">GV</div>
                 <div class="d-none d-sm-block text-start" style="max-width: 160px;">
                     <p class="mb-0 fw-bold lh-sm text-truncate" style="font-size: 13px;" title="<c:out value="${sessionScope.email}"/>">

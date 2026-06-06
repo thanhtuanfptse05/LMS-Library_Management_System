@@ -71,7 +71,7 @@
         }
 
         .header-search-input {
-            width: 384px;
+            width: 300px;
             padding-left: 40px;
             background-color: var(--surface-container-low);
             border: none;

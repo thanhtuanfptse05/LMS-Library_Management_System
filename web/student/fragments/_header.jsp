@@ -2,12 +2,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- ════════════════ HEADER ════════════════ -->
 <header class="fixed-top bg-white shadow-sm" style="height: 64px; border-bottom: 1px solid var(--outline-variant);">
-    <div class="container-xl h-100 d-flex align-items-center justify-content-between px-4">
+    <div class="container-fluid h-100 d-flex align-items-center justify-content-between px-4">
 
         <!-- Left: Logo + Search -->
-        <div class="d-flex align-items-center gap-4">
+        <div class="d-flex align-items-center gap-4 text-nowrap">
             <a href="${pageContext.request.contextPath}/"
-               class="fs-5 fw-bold text-decoration-none text-primary-custom">
+               class="fs-5 fw-bold text-decoration-none text-primary-custom text-nowrap">
                 Thư viện Đại học LMS
             </a>
             <div class="d-none d-md-block header-search-wrapper">
@@ -20,7 +20,7 @@
         </div>
 
         <!-- Center Nav (desktop only) -->
-        <nav class="d-none d-lg-flex align-items-center gap-4">
+        <nav class="d-none d-lg-flex align-items-center gap-4 text-nowrap">
             <a class="text-primary-custom fw-semibold text-decoration-none border-bottom border-2 border-primary-custom pb-1"
                href="${pageContext.request.contextPath}/student/dashboard">Bảng điều khiển</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
@@ -50,7 +50,7 @@
                 <span class="material-symbols-outlined text-on-surface-variant">help</span>
             </button>
             <!-- User avatar + info from session -->
-            <a href="${pageContext.request.contextPath}/student/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset"
+            <a href="${pageContext.request.contextPath}/student/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset text-nowrap"
                  style="border-left: 1px solid var(--outline-variant);" title="Xem Hồ sơ">
                 <span class="material-symbols-outlined text-primary-custom"
                       style="font-size: 36px; font-variation-settings: 'FILL' 1;">account_circle</span>
