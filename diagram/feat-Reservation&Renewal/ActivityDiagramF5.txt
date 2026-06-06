@@ -1,0 +1,155 @@
+[Initial Node 1.1]
+Actor: System
+Loại: Initial Node
+Tên Action: Start Online Circulation Flow
+Nội dung Action: Điểm bắt đầu luồng tự phục vụ trực tuyến dành cho độc giả.
+Nối tới: Mũi tên đi tới [Manual Action 2.2].
+
+[Manual Action 2.2]
+Actor: User
+Loại: Manual Action
+Tên Action: Select Online Operation
+Nội dung Action: Người dùng chọn thao tác nghiệp vụ trực tuyến trên giao diện chi tiết sách hoặc lịch sử mượn.
+Nối tới: Mũi tên đi tới [Decision Node 3.3].
+
+[Decision Node 3.3]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Route Operation Type
+Nội dung Action: Phân nhánh luồng xử lý dựa trên loại thao tác được yêu cầu.
+Nối tới:
+Nhánh [Reserve Book Request]: rẽ tới [System Action Box 4.4].
+Nhánh [Renew Book Request]: rẽ tới [System Action Box 4.5].
+
+NHÁNH A: ĐĂNG KÝ MƯỢN SÁCH (HOẶC ĐĂNG KÝ ĐẶT TRƯỚC SÁCH)
+
+[System Action Box 4.4]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Retrieve User And Config Data
+Nội dung Action: Truy xuất status, lockReason từ bảng [User], kết hợp đọc giới hạn số lượng mượn/đặt trước từ SystemConfigurations.
+Nối tới: Mũi tên đi tới [Decision Node 5.6].
+
+[Decision Node 5.6]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate User Eligibility
+Nội dung Action: Đánh giá điều kiện: User.status == 'active' VÀ tổng số sách đang mượn/đặt trước chưa vượt quá giới hạn tối đa.
+Nối tới:
+Nhánh [Status != 'active' OR Limit Exceeded]: rẽ tới [System Action Box 6.7].
+Nhánh [Status == 'active' AND Under Limit]: rẽ tới [Decision Node 6.8].
+
+[System Action Box 6.7]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Eligibility Error
+Nội dung Action: Trả về thông báo từ chối giao dịch kèm lý do cụ thể (Bị khóa do nợ phạt, vi phạm an ninh, hoặc đã đạt giới hạn mượn/đặt trước).
+Nối tới: Mũi tên đi tới [Final Node 9.20].
+
+[Decision Node 6.8]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Book Availability
+Nội dung Action: Kiểm tra số lượng bản sao vật lý đang khả dụng (Book.availableQuantity).
+Nối tới:
+Nhánh [availableQuantity > 0]: rẽ tới [System Action Box 7.9].
+Nhánh [availableQuantity == 0]: rẽ tới [System Action Box 7.10].
+
+[System Action Box 7.9]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Create Ready Reservation
+Nội dung Action: Mở DB Transaction. Thực thi lệnh INSERT vào bảng Reservation (gán queuePosition = 0, status = 'readypickup'). Thực thi UPDATE giảm Book.availableQuantity đi 1.
+Nối tới: Mũi tên đi tới [System Action Box 8.11].
+
+[System Action Box 7.10]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Create Pending Reservation
+Nội dung Action: Mở DB Transaction. Truy vấn lấy MAX(queuePosition) hiện tại của đầu sách. Thực thi lệnh INSERT vào bảng Reservation (gán queuePosition = MAX + 1, status = 'pending').
+Nối tới: Mũi tên đi tới [System Action Box 8.12].
+
+[System Action Box 8.11]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Commit And Notify Ready
+Nội dung Action: Commit Transaction. Trigger gửi Email báo "Sách đã sẵn sàng để lấy". Trả về thông báo thành công trên giao diện.
+Nối tới: Mũi tên đi tới [Final Node 9.20].
+
+[System Action Box 8.12]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Commit And Notify Pending
+Nội dung Action: Commit Transaction. Trả về thông báo "Đã đưa vào hàng đợi" kèm vị trí hiện tại (queuePosition) trên giao diện.
+Nối tới: Mũi tên đi tới [Final Node 9.20].
+
+NHÁNH B: GIA HẠN SÁCH (RENEWAL)
+
+[System Action Box 4.5]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Retrieve Renew Constraints
+Nội dung Action: Truy vấn BorrowRecord của User. Đọc cấu hình % thời gian tối thiểu được phép gia hạn và Số lần gia hạn tối đa từ SystemConfigurations.
+Nối tới: Mũi tên đi tới [Decision Node 5.13].
+
+[Decision Node 5.13]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Renew Time
+Nội dung Action: Kiểm tra thời gian tính từ startDate đến hiện tại có vượt quá X% tổng thời lượng mượn quy định hay không.
+Nối tới:
+Nhánh [Under X% Time]: rẽ tới [System Action Box 6.14].
+Nhánh [Over X% Time]: rẽ tới [Decision Node 6.15].
+
+[System Action Box 6.14]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Early Renew Error
+Nội dung Action: Trả về thông báo lỗi: "Chưa đến thời điểm được phép gia hạn sách".
+Nối tới: Mũi tên đi tới [Final Node 9.20].
+
+[Decision Node 6.15]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Extension Count
+Nội dung Action: Kiểm tra giá trị BorrowRecord.extensionCount so với mức giới hạn tối đa.
+Nối tới:
+Nhánh [Limit Reached]: rẽ tới [System Action Box 7.16].
+Nhánh [Under Limit]: rẽ tới [Decision Node 7.17].
+
+[System Action Box 7.16]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Count Limit Error
+Nội dung Action: Trả về thông báo lỗi: "Sách này đã được gia hạn quá số lần cho phép."
+Nối tới: Mũi tên đi tới [Final Node 9.20].
+
+[Decision Node 7.17]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Existing Queue
+Nội dung Action: Truy vấn bảng Reservation kiểm tra tồn tại yêu cầu đang chờ (status='pending' hoặc queuePosition > 0) cho bookId hiện tại.
+Nối tới:
+Nhánh [Has Pending Queue]: rẽ tới [System Action Box 8.18].
+Nhánh [No Queue]: rẽ tới [System Action Box 8.19].
+
+[System Action Box 8.18]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Queue Exists Error
+Nội dung Action: Trả về thông báo lỗi: "Không thể gia hạn do đang có người dùng khác xếp hàng chờ mượn sách này".
+Nối tới: Mũi tên đi tới [Final Node 9.20].
+
+[System Action Box 8.19]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Renewal Update
+Nội dung Action: Cập nhật CSDL: tịnh tiến BorrowRecord.endDate theo thời hạn mới, ĐỒNG THỜI extensionCount = extensionCount + 1. Hiển thị thông báo gia hạn thành công.
+Nối tới: Mũi tên đi tới [Final Node 9.20].
+
+[Final Node 9.20]
+Actor: System
+Loại: Final Node
+Tên Action: Complete Online Circulation Flow
+Nội dung Action: Kết thúc các tiến trình nghiệp vụ thuộc luồng tự phục vụ.
+Nối tới: Không có.

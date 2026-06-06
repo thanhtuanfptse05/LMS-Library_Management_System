@@ -1,0 +1,174 @@
+[Initial Node 1.1]
+Actor: System
+Loại: Initial Node
+Tên Action: Start Book Management Flow
+Nội dung Action: Điểm bắt đầu tiến trình quản lý danh mục sách và kho vật lý.
+Nối tới: Mũi tên đi tới [Manual Action 2.2].
+
+[Manual Action 2.2]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Access Book Management
+Nội dung Action: Thủ thư truy cập vào phân hệ Quản lý Sách.
+Nối tới: Mũi tên đi tới [Decision Node 3.3].
+
+[Decision Node 3.3]
+Actor: Librarian
+Loại: Decision Node
+Tên Action: Choose Main Operation
+Nội dung Action: Lựa chọn thao tác nghiệp vụ chính.
+Nối tới:
+Nhánh [Add]: rẽ tới [Decision Node 4.4].
+Nhánh [View]: rẽ tới [Manual Action 4.5].
+
+[Decision Node 4.4]
+Actor: Librarian
+Loại: Decision Node
+Tên Action: Choose Add Operation
+Nội dung Action: Lựa chọn thao tác thêm (thêm Đầu sách online - Book hoặc Bản vật lý - Book Copy).
+Nối tới:
+Nhánh [Add New Book]: rẽ tới [Manual Action 5.6].
+Nhánh [Import Book Copy]: rẽ tới [Manual Action 5.7].
+
+[Manual Action 4.5]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: View Book
+Nội dung Action: Thủ thư xem danh sách các bản online của đầu sách và chọn một sách.(gộp cả xem danh sách và chi tiết).
+Nối tới: Mũi tên đi tới [Decision Node 5.8].
+
+[Manual Action 5.6]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Submit New Book Form
+Nội dung Action: Nhập metadata (Title, Author, ISBN, Price...) và gửi yêu cầu tạo sách mới.
+Nối tới: Mũi tên đi tới [Decision Node 6.9].
+
+[Manual Action 5.7]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Scan Barcode And Input Data
+Nội dung Action: Quét Barcode và nhập metadata cho bản sao vật lý.
+Nối tới: Mũi tên đi tới [Decision Node 6.10].
+
+[Decision Node 5.8]
+Actor: Librarian
+Loại: Decision Node
+Tên Action: Choose Manage Operation
+Nội dung Action: Thủ thư chọn cập nhật thông tin Đầu sách hoặc xem chi tiết các Bản sao vật lý.
+Nối tới:
+Nhánh [Update Book]: rẽ tới [Manual Action 6.11].
+Nhánh [View Book Copy]: rẽ tới [System Action Box 6.12].
+
+[Decision Node 6.9]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate New Book Data
+Nội dung Action: Kiểm tra tính hợp lệ dữ liệu và quét trùng lặp ISBN.
+Nối tới:
+Nhánh [Invalid / Duplicate ISBN]: rẽ tới [System Action Box 10.20].
+Nhánh [Valid]: rẽ tới [System Action Box 7.13].
+
+[Decision Node 6.10]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Barcode Uniqueness
+Nội dung Action: Quét trùng lặp Barcode của Bản sao sách.
+Nối tới:
+Nhánh [Duplicate Barcode]: rẽ tới [System Action Box 10.21].
+Nhánh [Valid]: rẽ tới [System Action Box 7.14].
+
+[Manual Action 6.11]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Update Book Data
+Nội dung Action: Thủ thư thay đổi dữ liệu cho Book (Giá, Tag, Danh mục...).
+Nối tới: Mũi tên đi tới [Decision Node 7.15].
+
+[System Action Box 6.12]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: View Book Copy
+Nội dung Action: Truy vấn và hiển thị thông tin bản sao vật lý (Book Copy).
+Nối tới: Mũi tên đi tới [Manual Action 7.16].
+
+[System Action Box 7.13]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Insert Book
+Nội dung Action: Lưu Đầu sách mới vào DB, thiết lập mặc định totalQuantity = 0, availableQuantity = 0.
+Nối tới: Mũi tên đi tới [System Action Box 11.22].
+
+[System Action Box 7.14]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Insert Copy
+Nội dung Action: Lưu Book Copy mới vào DB. Tự động cộng 1 vào totalQuantity và availableQuantity của Đầu sách.
+Nối tới: Mũi tên đi tới [System Action Box 11.22].
+
+[Decision Node 7.15]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Book Data Update
+Nội dung Action: Hệ thống kiểm tra tính hợp lệ dữ liệu cập nhật Book (Không được thay đổi thông tin định danh và quan trọng khác).
+Nối tới:
+Nhánh [Invalid]: rẽ tới [System Action Box 10.20].
+Nhánh [Valid]: rẽ tới [System Action Box 8.17].
+
+[Manual Action 7.16]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Update Book Copy Data
+Nội dung Action: Thủ thư cập nhật dữ liệu cho Book Copy (Đổi Condition, Location,..).
+Nối tới: Mũi tên đi tới [Decision Node 8.18].
+
+[System Action Box 8.17]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Book Update
+Nội dung Action: Lưu thay đổi metadata của Đầu sách vào DB.
+Nối tới: Mũi tên đi tới [System Action Box 11.22].
+
+[Decision Node 8.18]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Book Copy Data Update
+Nội dung Action: Hệ thống kiểm tra tính hợp lệ dữ liệu cập nhật Book Copy (Không được thay đổi thông tin định danh và quan trọng khác).
+Nối tới:
+Nhánh [Invalid]: rẽ tới [System Action Box 10.20].
+Nhánh [Valid]: rẽ tới [System Action Box 9.19].
+
+[System Action Box 9.19]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Book Copy Data Update
+Nội dung Action: Lưu thay đổi metadata của Book Copy vào DB. Kích hoạt trigger cập nhật đồng bộ số lượng tồn kho (availableQuantity) nếu Condition thay đổi.
+Nối tới: Mũi tên đi tới [System Action Box 11.22].
+
+[System Action Box 10.20]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return General Error
+Nội dung Action: Trả về thông báo lỗi chung (Dữ liệu không hợp lệ, trùng ISBN, không được sửa ISBN).
+Nối tới: Mũi tên đi tới [Final Node 12.23].
+
+[System Action Box 10.21]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Barcode Error
+Nội dung Action: Trả về thông báo lỗi: "Mã vạch [Barcode] đã tồn tại trên hệ thống thuộc tựa sách [Tên sách]".
+Nối tới: Mũi tên đi tới [Final Node 12.23].
+
+[System Action Box 11.22]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Success Message
+Nội dung Action: Hiển thị thông báo thao tác hoàn tất thành công.
+Nối tới: Mũi tên đi tới [Final Node 12.23].
+
+[Final Node 12.23]
+Actor: System
+Loại: Final Node
+Tên Action: Complete Book Management Flow
+Nội dung Action: Kết thúc luồng Activity tiến trình Quản lý sách.
+Nối tới: Không có.

@@ -1,0 +1,12 @@
+# CHANGELOG.md — Quản lý Luân chuyển tại quầy
+
+## [1.0.0] - 2026-06-06
+### Added
+- Khởi tạo bộ hồ sơ SDD (CONTEXT, SPEC, PLAN, TASKS) cho Feature F6 (Desk Circulation Operations).
+- Đặc tả luồng xử lý khóa/mở khóa tài khoản an toàn tuyệt đối dựa trên bảng `UserLockReason` (BR-25 / BR-30). Đếm COUNT lý do trước khi gỡ khóa.
+- Bổ sung cơ chế Mượn trực tiếp (Direct Borrow) tự động sinh `Reservation` vị trí 0 (BR-23) để chuẩn hóa nguồn dữ liệu giao dịch.
+- Thiết lập quy tắc kế toán kho đối với sách hư hỏng/mất (Damaged/Lost): Trừ vào `totalQuantity` thay vì `availableQuantity` để đảm bảo không âm kho (BR-24).
+
+### Security & Integrity
+- Tách biệt kiểm tra nợ phạt khỏi bảng `Fine`, truy vấn trực tiếp thông qua cờ khóa tài khoản ở `UserLockReason`.
+- Đảm bảo mọi giao dịch thay đổi trạng thái tồn kho và hàng đợi đều được gói gọn trong Database Transaction.

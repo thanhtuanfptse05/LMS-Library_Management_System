@@ -1,0 +1,324 @@
+// UC Specification
+
+UC-01 (Login)
+Actor: Guest, User
+Mô tả: (Đăng nhập): Người dùng cung cấp Email và Mật khẩu để xác thực quyền truy cập hệ thống.
+
+UC-02 (Logout)
+Actor: User
+Mô tả: (Đăng xuất): Người dùng chủ động kết thúc phiên làm việc để bảo mật thông tin cá nhân.
+
+UC-03 (Reset Password)
+Actor: Guest
+Mô tả: (Quên mật khẩu): Người dùng yêu cầu hệ thống cấp mật khẩu tạm thời qua Email khi không thể truy cập.
+
+UC-04 (View Profile)
+Actor: User
+Mô tả: (Xem hồ sơ cá nhân): Người dùng trích xuất và hiển thị dữ liệu định danh cùng thông tin liên lạc của bản thân.
+
+UC-05 (Update Profile)
+Actor: User
+Mô tả: (Cập nhật hồ sơ): Người dùng thay đổi các thông tin cá nhân được phép (SĐT, Ngày sinh...).
+
+UC-06 (Change Password)
+Actor: User
+Mô tả: (Thay đổi mật khẩu): Người dùng tự thiết lập mật khẩu mới sau khi xác thực mật khẩu hiện tại thành công.
+
+UC-07 (View User List)
+Actor: Admin
+Mô tả: (Xem danh sách người dùng): Quản trị viên truy vấn và xem danh sách tổng hợp mọi tài khoản trong hệ thống.
+
+UC-08 (View User Detail)
+Actor: Admin
+Mô tả: (Xem chi tiết tài khoản): Quản trị viên trích xuất dữ liệu định danh chi tiết của một người dùng cụ thể.
+
+UC-09 (Create Single Account)
+Actor: Admin
+Mô tả: (Cấp tài khoản đơn lẻ): Quản trị viên khởi tạo thủ công một tài khoản mới qua biểu mẫu nhập liệu.
+
+UC-10 (Import Bulk Accounts)
+Actor: Admin
+Mô tả: (Nhập tài khoản hàng loạt): Quản trị viên tải tệp Excel để cấp phát tài khoản số lượng lớn.
+
+UC-11 (Update User Account)
+Actor: Admin
+Mô tả: (Quản trị tài khoản): Quản trị viên thực hiện chỉnh sửa thông tin định danh hoặc thay đổi trạng thái (Khóa/Mở khóa) tài khoản.
+
+UC-12 (View Book Catalog & Inventory)
+Actor: Librarian
+Mô tả: (Xem Danh mục & Kho): Truy xuất danh sách đầu sách, chi tiết các bản sao vật lý, kèm danh mục và thẻ.
+
+UC-13 (Manage Book Catalog)
+Actor: Librarian
+Mô tả: (Quản lý Đầu sách): Khởi tạo Đầu sách mới trực tuyến, hoặc cập nhật thông tin siêu dữ liệu (metadata) của Đầu sách hiện có.
+
+UC-14 (Manage Physical Copies)
+Actor: Librarian
+Mô tả: (Quản lý Bản sao vật lý): Nhập kho Bản sao sách mới bằng cách quét mã vạch (Barcode), hoặc cập nhật tình trạng vật lý (Condition/Location) của Bản sao hiện có.
+
+UC-15 (Manage Tags & Categories)
+Actor: Librarian
+Mô tả: (Quản lý Danh mục & Thẻ): Thêm, sửa, hoặc thay đổi trạng thái của các Danh mục (Category) và Thẻ phân loại (Tag) áp dụng cho sách.
+
+UC-16 (Reserve Book Online)
+Actor: User (Student/Lecturer)
+Mô tả: (Đặt trước trực tuyến): Người dùng khởi tạo yêu cầu đặt sách. Nếu sách còn khả dụng, hệ thống cấp phát ngay (vào vị trí 0). Nếu sách hết, người dùng được xếp vào hàng đợi chờ (vị trí > 0).
+
+UC-17 (Renew Book Online)
+Actor: User (Student/Lecturer)
+Mô tả: (Gia hạn trực tuyến): Người dùng tự động kéo dài thời gian mượn của một cuốn sách đang giữ, với điều kiện không có ai khác đang xếp hàng chờ cuốn sách đó.
+
+UC-18 (Desk Check-out)
+Actor: Librarian
+Mô tả: (Giao sách tại quầy): Thủ thư quét mã vạch bản sao sách và mã độc giả để giao sách. Xử lý cả hai trường hợp: Độc giả đã đặt trước trực tuyến (có Reservation queuePosition = 0) hoặc Độc giả đến mượn trực tiếp tại chỗ.
+
+UC-19 (Desk Check-in)
+Actor: Librarian
+Mô tả: (Nhận sách tại quầy): Thủ thư nhận lại bản sao sách, đánh giá tình trạng vật lý (Condition). Tự động luân chuyển sách cho người chờ tiếp theo trong hàng đợi (nếu có) hoặc tính phạt và khóa tài khoản tức thời (nếu sách hỏng/mất).
+
+UC-20 (Process Cash Payment)
+Actor: Librarian
+Mô tả: (Duyệt thanh toán tiền mặt): Thủ thư xác nhận đã thu tiền phạt bằng tiền mặt từ độc giả, đóng khoản phạt, gỡ cờ nợ phạt và tự động mở khóa tài khoản nếu đủ điều kiện.
+
+// BR Specification
+
+BR-01 (Authentication)
+Mô tả: Hệ thống SHALL tạm đình chỉ quyền truy cập nếu người dùng cung cấp thông tin xác thực sai 5 lần liên tiếp.
+
+BR-02 (Authentication)
+Mô tả: Thời gian đình chỉ quyền truy cập mặc định cho các vi phạm bảo mật SHALL là 30 phút kể từ lần cuối.
+
+BR-03 (Security)
+Mô tả: Hệ thống SHALL cung cấp thông báo lỗi chung cho xác thực thất bại để ngăn chặn việc dò quét thông tin.
+
+BR-04 (Security)
+Mô tả: Đối với yêu cầu khôi phục mật khẩu, hệ thống SHALL trả về thông báo giả định chung bất kể định danh tồn tại hay không.
+
+BR-05 (Authentication)
+Mô tả: Việc tự động khôi phục quyền truy cập SHALL chỉ áp dụng cho tài khoản bị đình chỉ do sai sót thông tin xác thực.
+
+BR-06 (Authentication)
+Mô tả: Tài khoản bị đình chỉ do vi phạm hành chính hoặc nợ phạt SHALL KHÔNG được tự động khôi phục theo thời gian.
+
+BR-07 (Security)
+Mô tả: Thông tin xác thực tạm thời được cấp tự động (khi quên mật khẩu) SHALL bao gồm đúng 8 ký tự ngẫu nhiên.
+
+BR-08 (Data Integrity)
+Mô tả: Cập nhật hồ sơ cá nhân KHÔNG ĐƯỢC PHÉP thay đổi các trường định danh hệ thống (mã số, vai trò, trạng thái).
+
+BR-09 (Security)
+Mô tả: Mật khẩu mới BẮT BUỘC đáp ứng tiêu chuẩn bảo mật.
+
+BR-10 (Data Validation)
+Mô tả: Dữ liệu định danh gồm Email và Mã số (MSSV, MSGV...) BẮT BUỘC là duy nhất trên toàn hệ thống.
+
+BR-11 (Transaction)
+Mô tả: Quy trình nhập danh sách tài khoản khối lượng lớn BẮT BUỘC tuân thủ chiến lược "Thành công toàn bộ hoặc Hủy bỏ toàn bộ".
+
+BR-12 (Provisioning)
+Mô tả: Tài khoản khi khởi tạo BẮT BUỘC dùng Email làm mật khẩu mặc định.
+
+BR-13 (Role Assignment)
+Mô tả: File Excel dùng để Import khối lượng lớn KHÔNG ĐƯỢC chứa định nghĩa phân quyền. Quản trị viên BẮT BUỘC phải cấu hình Role chung từ giao diện trước khi thực thi tải tệp.
+
+BR-14 (Mandatory Audit)
+Mô tả: Mọi thao tác làm thay đổi dữ liệu tài khoản (Thêm, Sửa, Khóa, Mở khóa, Import) từ Quản trị viên BẮT BUỘC phải được lưu vết vào hệ thống Audit Log.
+
+BR-15 (UPSERT Mechanism)
+Mô tả: Tiến trình cập nhật hồ sơ cá nhân của người dùng BẮT BUỘC sử dụng cơ chế UPSERT (Cập nhật hoặc Chèn mới) để đảm bảo không đứt gãy dữ liệu đối với các tài khoản chưa có profile gốc.
+
+BR-16 (Uniqueness of Identifiers)
+Mô tả: Định danh sách gồm ISBN (Bảng Book) và Barcode (Bảng BookCopy) BẮT BUỘC phải là duy nhất trên toàn hệ thống.
+
+BR-17 (Inventory Synchronization)
+Mô tả: Số lượng totalQuantity và availableQuantity của bảng Book BẮT BUỘC đồng bộ với BookCopy. Khi thêm bản sao: cộng 1 vào cả hai. Khi cập nhật Condition sang hỏng/mất: trừ availableQuantity.
+
+BR-18 (Immutable Core Identifiers)
+Mô tả: KHÔNG ĐƯỢC PHÉP thay đổi thông tin định danh hệ thống (ISBN, Barcode) sau khi bản ghi sách hoặc bản sao đã được lưu thành công.
+
+BR-19 (Reservation Eligibility)
+Mô tả: Độc giả BẮT BUỘC chỉ được phép thực hiện Đặt trước hoặc Gia hạn trực tuyến nếu tài khoản đang ở trạng thái hoạt động (status = 'active') VÀ không bị khóa vì bất kỳ lý do nợ phạt nào. 
+
+BR-20 (Queue Positioning Strategy)
+Mô tả: Vị trí hàng đợi queuePosition = 0 DÀNH RIÊNG cho việc giữ sách đã sẵn sàng lấy (status = 'readypickup'). Mọi yêu cầu chờ sách (khi availableQuantity = 0) BẮT BUỘC phải có queuePosition > 0 và trạng thái 'pending'.
+
+BR-21 (Renewal Constraints)
+Mô tả: Giao dịch mượn (BorrowRecord) chỉ được phép gia hạn nếu thỏa mãn ĐỒNG THỜI 3 điều kiện: (1) Thời gian mượn đã qua % quy định, (2) extensionCount chưa vượt mức tối đa trong SystemConfigurations, (3) KHÔNG có bất kỳ Reservation nào có queuePosition > 0 đang chờ cho cùng tựa sách đó.
+
+BR-22 (Strict Fine Enforcement)
+Mô tả: Hệ thống BẮT BUỘC chặn giao dịch mượn sách nếu tồn tại bất kỳ bản ghi nào có reason = 'unpaid' trong bảng UserLockReason của người dùng. KHÔNG trực tiếp kiểm tra bảng Fine để quyết định chặn giao dịch nhằm giữ tính độc lập dữ liệu.
+
+BR-23 (Direct Borrow Queue Policy)
+Mô tả: Độc giả mượn sách trực tiếp tại quầy KHÔNG ĐƯỢC PHÉP mượn đầu sách đang có người xếp hàng chờ (tồn tại Reservation với status='pending' VÀ queuePosition > 0). Để chuẩn hóa dữ liệu, mọi giao dịch mượn trực tiếp đều BẮT BUỘC phải tự động sinh ra một Reservation ảo với queuePosition = 0 tại chỗ trước khi insert BorrowRecord.
+
+BR-24 (Damaged/Lost Inventory Deduction)
+Mô tả: Khi nhận sách trả với tình trạng 'damaged' hoặc 'lost', hệ thống BẮT BUỘC trừ 1 đơn vị vào Book.totalQuantity (vì sách không còn khả năng lưu thông). ĐỒNG THỜI, BẮT BUỘC phải insert tức thời bản ghi 'unpaid' vào UserLockReason và đổi status User thành 'locked' mà không chờ Background Job chạy ngầm, tránh lỗ hổng bảo mật.
+
+BR-25 (Conditional Auto-Unlock - BR30)
+Mô tả: Sau khi thanh toán tiền phạt (xóa reason 'unpaid'), hệ thống BẮT BUỘC đếm số lượng lý do khóa còn lại trong UserLockReason. CHỈ KHỞI ĐỘNG quy trình mở khóa (Update User.status = 'active') NẾU COUNT == 0. Tuyệt đối không mở khóa nếu tài khoản đang bị 'adminban' hoặc 'securitybreach'.
+
+// FR Specification
+
+FR-01 (Xác minh danh tính)
+Mô tả: WHEN người dùng gửi thông tin đăng nhập, THE system SHALL mã hóa mật khẩu bằng BCrypt và đối chiếu với dữ liệu bảo mật đã lưu trữ.
+Mapping: UC-01 / BR-03, BR-09
+
+FR-02 (Kiểm soát trạng thái)
+Mô tả: BEFORE cho phép truy cập luồng nghiệp vụ, THE system SHALL kiểm tra trạng thái tài khoản; WHERE trạng thái là 'locked', hệ thống SHALL chặn truy cập.
+Mapping: UC-01 / BR-06
+
+FR-03 (Tự động khôi phục)
+Mô tả: WHERE lý do khóa là vi phạm bảo mật VÀ thời điểm hiện tại vượt qua lockedUntil, THE system SHALL tự động đặt lại trạng thái hoạt động khi người dùng đăng nhập.
+Mapping: UC-01 / BR-05
+
+FR-04 (Ghi nhận đăng nhập sai)
+Mô tả: WHEN người dùng cung cấp mật khẩu không chính xác, THE system SHALL tự động tăng bộ đếm số lần vi phạm (failedLoginAttempts) trong cơ sở dữ liệu lên 1 đơn vị.
+Mapping: UC-01 / BR-01
+
+FR-05 (Thực hiện đình chỉ)
+Mô tả: WHEN bộ đếm vi phạm đạt ngưỡng 5 lần liên tiếp, THE system SHALL thiết lập trạng thái 'locked' trong 30 phút và ghi nhận lý do 'securitybreach'.
+Mapping: UC-01 / BR-01, BR-02
+
+FR-06 (Hủy bỏ phiên làm việc)
+Mô tả: WHEN có yêu cầu đăng xuất, THE system SHALL vô hiệu hóa hoàn toàn HttpSession hiện tại và điều hướng trình duyệt về màn hình đăng nhập.
+Mapping: UC-02
+
+FR-07 (Trả kết quả giả định)
+Mô tả: WHERE Email yêu cầu khôi phục mật khẩu không tồn tại, THE system SHALL trả về thông báo thành công giả định để ngăn chặn việc dò quét thông tin người dùng.
+Mapping: UC-03 / BR-04
+
+FR-08 (Cấp mật khẩu tạm)
+Mô tả: WHERE Email khôi phục hợp lệ, THE system SHALL sinh mật khẩu ngẫu nhiên 8 ký tự, mã hóa BCrypt cập nhật vào DB và gửi qua Email.
+Mapping: UC-03 / BR-07
+
+FR-09 (Hiển thị hồ sơ)
+Mô tả: WHEN người dùng truy cập trang cá nhân, THE system SHALL thực hiện truy vấn gộp (Join) dữ liệu để hiển thị thông tin định danh và thông tin liên lạc tương ứng.
+Mapping: UC-04, UC-08
+
+FR-10 (Cơ chế UPSERT hồ sơ)
+Mô tả: WHEN người dùng lưu thay đổi hồ sơ, THE system SHALL kiểm tra; WHERE bản ghi MemberProfile chưa tồn tại, hệ thống SHALL thực thi lệnh INSERT thay vì UPDATE.
+Mapping: UC-05 / BR-08
+
+FR-11 (Bảo mật sau đổi pass)
+Mô tả: WHEN thay đổi mật khẩu thành công, THE system SHALL ghi nhật ký Audit Log, đồng thời vô hiệu hóa session hiện tại và buộc người dùng đăng nhập lại.
+Mapping: UC-06 / BR-09
+
+FR-12 (Đối chiếu dữ liệu trùng)
+Mô tả: WHEN Admin thực hiện tạo hoặc cập nhật tài khoản, THE system SHALL quét toàn bộ CSDL để đảm bảo Email và Mã định danh là duy nhất.
+Mapping: UC-09, UC-11 / BR-10
+
+FR-13 (Rà soát danh sách Import)
+Mô tả: WHEN Admin tải lên tệp Excel, THE system SHALL thực hiện Phase 1 (Pre-Validation) trên RAM để kiểm tra định dạng và tính duy nhất của toàn bộ danh sách.
+Mapping: UC-10 / BR-10, BR-11
+
+FR-14 (Báo cáo lỗi Import)
+Mô tả: WHERE Phase 1 phát hiện bất kỳ dữ liệu không hợp lệ nào, THE system SHALL hủy bỏ toàn bộ tiến trình (All-or-Nothing) và xuất báo cáo JSON chi tiết vị trí lỗi.
+Mapping: UC-10 / BR-11
+
+FR-15 (Lưu trữ hàng loạt)
+Mô tả: WHEN toàn bộ danh sách import được xác nhận hợp lệ, THE system SHALL thực hiện Phase 2 (DB Transaction) để lưu trữ hàng loạt và cấp mật khẩu mặc định theo Email.
+Mapping: UC-10 / BR-11, BR-12
+
+FR-16 (Xác thực đầu vào mật khẩu)
+Mô tả: WHEN người dùng yêu cầu thay đổi mật khẩu, THE system SHALL mã hóa BCrypt mật khẩu hiện tại và đối chiếu với CSDL. WHERE mật khẩu không khớp HOẶC mật khẩu mới vi phạm chính sách bảo mật, hệ thống SHALL từ chối yêu cầu và hiển thị lỗi tương ứng.
+Mapping: UC-06 / BR-09
+
+FR-17 (Ghi nhận Audit Log Quản trị)
+Mô tả: WHEN Quản trị viên thực hiện tạo mới, cập nhật thông tin, thay đổi trạng thái (Khóa/Mở khóa), hoặc Import hàng loạt tài khoản thành công, THE system SHALL tự động ghi nhận bản ghi vào bảng AuditLogs chứa thông tin actor, actionType, và dữ liệu thay đổi.
+Mapping: UC-09, UC-10, UC-11
+
+FR-18 (Truy xuất danh sách và chi tiết)
+Mô tả: WHEN Quản trị viên yêu cầu xem danh sách hoặc chi tiết một tài khoản, THE system SHALL thực hiện truy vấn gộp (JOIN) dữ liệu từ bảng [User], MemberProfile và bảng phân quyền tương ứng (Student/Lecturer/Librarian) để hiển thị.
+Mapping: UC-07, UC-08
+
+FR-19 (Khởi tạo tài khoản đơn lẻ)
+Mô tả: WHEN Quản trị viên gửi biểu mẫu tạo tài khoản đơn lẻ hợp lệ, THE system SHALL thực thi lệnh INSERT tuần tự vào các bảng [User], MemberProfile, và bảng Role đã chọn, ĐỒNG THỜI cấp mật khẩu mặc định.
+Mapping: UC-09 / BR-12
+
+FR-20 (Cập nhật và Trạng thái tài khoản)
+Mô tả: WHEN Quản trị viên thao tác cập nhật tài khoản, THE system SHALL cho phép chỉnh sửa thông tin liên lạc tại MemberProfile, VÀ cho phép cập nhật status/lockReason tại bảng [User] để thực thi việc Khóa hoặc Mở khóa tài khoản.
+Mapping: UC-11
+
+FR-21 (Rollback ngoại lệ Phase 2)
+Mô tả: WHERE xảy ra lỗi SQLException bất ngờ trong quá trình thực thi Batch Insert (Phase 2) của tiến trình Import, THE system SHALL Rollback toàn bộ Database Transaction VÀ trả về HTTP 500 kèm lỗi hệ thống chung (ẩn stack trace).
+Mapping: UC-10 / BR-11
+
+FR-22 (Tạo Đầu sách)
+Mô tả: WHEN Quản trị viên thư viện gửi biểu mẫu tạo đầu sách mới, THE system SHALL kiểm tra tính duy nhất của ISBN. WHERE hợp lệ, hệ thống SHALL thực thi INSERT vào bảng Book VÀ gán giá trị mặc định totalQuantity = 0, availableQuantity = 0.
+Mapping: UC-13 / BR-16
+
+FR-23 (Lỗi Định danh Đầu sách)
+Mô tả: WHERE ISBN nhập vào đã tồn tại, THE system SHALL từ chối khởi tạo và báo lỗi "Trùng lặp ISBN".
+Mapping: UC-13 / BR-16
+
+FR-24 (Nhập Kho Bản sao)
+Mô tả: WHEN Quản trị viên quét Barcode để thêm Bản sao vật lý, THE system SHALL quét trùng lặp mã vạch. WHERE hợp lệ, hệ thống SHALL thực thi INSERT vào bảng BookCopy.
+Mapping: UC-14 / BR-16
+
+FR-25 (Đồng bộ Khởi tạo Bản sao)
+Mô tả: WHILE thực thi thành công việc nhập kho Bản sao mới, THE system SHALL tự động UPDATE tăng totalQuantity + 1 VÀ availableQuantity + 1 cho Book tương ứng trong cùng 1 Transaction.
+Mapping: UC-14 / BR-17
+
+FR-26 (Lỗi Mã vạch Bản sao)
+Mô tả: WHERE Barcode bị trùng, THE system SHALL từ chối và báo lỗi có cấu trúc kèm thông tin tên sách đang sở hữu Barcode đó.
+Mapping: UC-14 / BR-16
+
+FR-27 (Ngăn chặn Sửa đổi Định danh)
+Mô tả: WHEN Quản trị viên cập nhật thông tin Đầu sách hoặc Bản sao, WHERE phát hiện sửa đổi ISBN hoặc Barcode, THE system SHALL chặn giao dịch.
+Mapping: UC-13, UC-14 / BR-18
+
+FR-28 (Đồng bộ Hư hỏng/Mất mát)
+Mô tả: WHEN Quản trị viên cập nhật trường Condition của BookCopy, WHERE trạng thái chuyển từ 'good' sang 'damaged' hoặc 'lost', THE system SHALL tự động trigger giảm availableQuantity của Book đi 1 đơn vị.
+Mapping: UC-14 / BR-17
+
+FR-29 (Xác thực điều kiện Giao dịch Trực tuyến)
+Mô tả: WHEN người dùng yêu cầu đặt trước hoặc gia hạn sách, THE system SHALL kiểm tra trạng thái tài khoản và giới hạn giao dịch. WHERE tài khoản không ở trạng thái 'active' HOẶC số lượng mượn/đặt đã đạt giới hạn tối đa, hệ thống SHALL chặn giao dịch và trả về thông báo lỗi cụ thể.
+Mapping: UC-16, UC-17 / BR-19
+
+FR-30 (Đặt trước sách có sẵn)
+Mô tả: WHEN người dùng yêu cầu đặt trước VÀ Book.availableQuantity > 0, THE system SHALL tạo Reservation với queuePosition = 0 và status = 'readypickup', ĐỒNG THỜI thực thi UPDATE Book.availableQuantity = availableQuantity - 1 và gửi email thông báo.
+Mapping: UC-16 / BR-20
+
+FR-31 (Xếp hàng chờ sách hết bản sao)
+Mô tả: WHEN người dùng yêu cầu đặt trước VÀ Book.availableQuantity == 0, THE system SHALL truy vấn MAX(queuePosition) hiện tại của đầu sách đó, VÀ tạo Reservation với queuePosition = MAX + 1 và status = 'pending'.
+Mapping: UC-16 / BR-20
+
+FR-32 (Kiểm tra điều kiện Gia hạn)
+Mô tả: WHEN người dùng yêu cầu gia hạn, THE system SHALL đối chiếu BorrowRecord hiện tại với các điều kiện gia hạn (thời gian tối thiểu, số lần tối đa, và sự tồn tại của hàng đợi pending cho cuốn sách này). WHERE bất kỳ điều kiện nào không thỏa mãn, THE system SHALL từ chối và báo lỗi.
+Mapping: UC-17 / BR-21
+
+FR-33 (Thực thi Gia hạn)
+Mô tả: WHERE yêu cầu gia hạn hợp lệ, THE system SHALL thực thi UPDATE bảng BorrowRecord bằng cách cộng thêm số ngày quy định vào endDate VÀ tăng giá trị extensionCount = extensionCount + 1.
+Mapping: UC-17 / BR-21
+
+FR-34 (Kiểm tra điều kiện Giao sách)
+Mô tả: WHEN Thủ thư quét mã định danh để mượn sách, THE system SHALL truy vấn bảng UserLockReason. WHERE tồn tại bản ghi reason == 'unpaid', THE system SHALL chặn giao dịch và trả về thông báo lỗi: "Tài khoản đang nợ phạt".
+Mapping: UC-18 / BR-22
+
+FR-35 (Xử lý Mượn trực tiếp)
+Mô tả: WHERE người dùng chưa có đơn đặt trước (Mượn trực tiếp) VÀ không vi phạm nợ phạt, THE system SHALL kiểm tra hàng đợi trong bảng Reservation. WHERE queuePosition > 0, THE system SHALL từ chối. WHERE hàng đợi trống, THE system SHALL tự động CREATE Reservation tại chỗ (queuePosition = 0, status = 'readypickup').
+Mapping: UC-18 / BR-23
+
+FR-36 (Thực thi Giao sách)
+Mô tả: WHERE Reservation hợp lệ (queuePosition = 0, status = 'readypickup'), THE system SHALL thực thi một DB Transaction: INSERT BorrowRecord (status='borrowed'), UPDATE Reservation (status='fulfilled'), VÀ UPDATE BookCopy (status='borrowed').
+Mapping: UC-18
+
+FR-37 (Nhận sách Hỏng/Mất)
+Mô tả: WHEN Thủ thư trả sách với Condition IN ('damaged', 'lost'), THE system SHALL thực thi DB Transaction: UPDATE Book.totalQuantity = totalQuantity - 1, UPDATE BookCopy (status='unavailable', condition), INSERT Fine. ĐỒNG THỜI, THE system SHALL INSERT UserLockReason (reason='unpaid') VÀ UPDATE [User] (status='locked').
+Mapping: UC-19 / BR-24
+
+FR-38 (Nhận sách Nguyên vẹn)
+Mô tả: WHEN Thủ thư trả sách với Condition == 'good', THE system SHALL UPDATE BorrowRecord (status='returned', returnedAt=GETDATE()) VÀ UPDATE BookCopy (condition='good').
+Mapping: UC-19
+
+FR-39 (Điều phối Hàng chờ Check-in)
+Mô tả: WHILE hệ thống nhận trả sách 'good', THE system SHALL tìm Reservation chờ tiếp theo (queuePosition = 1). WHERE tồn tại người chờ, THE system SHALL UPDATE Reservation đó (queuePosition=0, status='readypickup', gán bookCopyId), UPDATE BookCopy.status='reserved', VÀ Trigger email. WHERE không có người chờ, THE system SHALL UPDATE Book.availableQuantity = availableQuantity + 1 VÀ BookCopy.status='available'.
+Mapping: UC-19
+
+FR-40 (Xác nhận Thanh toán Tiền mặt)
+Mô tả: WHEN Thủ thư xác nhận duyệt đơn Payment tiền mặt, THE system SHALL thực thi DB Transaction: UPDATE Payment (status='completed', paidAt=GETDATE()), UPDATE Fine (status='paid'), VÀ DELETE bản ghi có reason='unpaid' trong UserLockReason của User hiện tại.
+Mapping: UC-20
+
+FR-41 (Kiểm định Mở khóa Tự động)
+Mô tả: WHILE hoàn tất duyệt thanh toán tiền mặt, THE system SHALL COUNT số lượng bản ghi trong UserLockReason của User. WHERE COUNT == 0, THE system SHALL thực thi UPDATE [User] (status='active'). WHERE COUNT > 0, THE system SHALL giữ nguyên trạng thái khóa và hiển thị cảnh báo cho Thủ thư.
+Mapping: UC-20 / BR-25
