@@ -124,7 +124,7 @@ CREATE TABLE AuditLogs (
 
 CREATE TABLE Category (
     categoryId INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(255) NOT NULL,
+    name NVARCHAR(255) NOT NULL UNIQUE,
     description NVARCHAR(MAX) NULL
 );
 
@@ -144,12 +144,17 @@ CREATE TABLE Book (
     author NVARCHAR(500) NULL,
     publisher NVARCHAR(255) NULL,
     publicationYear INT NULL,
-    price DECIMAL(18,2) NULL,
-    totalQuantity INT NOT NULL DEFAULT 0,
-    availableQuantity INT NOT NULL DEFAULT 0,
+    price DECIMAL(18,2) NULL CHECK (price IS NULL OR price >= 0),
+    totalQuantity INT NOT NULL DEFAULT 0 CHECK (totalQuantity >= 0),
+    availableQuantity INT NOT NULL DEFAULT 0 CHECK (availableQuantity >= 0),
     [status] NVARCHAR(50) NOT NULL DEFAULT 'available',  -- unavailable, available
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
-    updatedAt DATETIME NULL 
+    updatedAt DATETIME NULL,
+
+    CONSTRAINT CK_Book_AvailableQuantity_Lte_TotalQuantity
+        CHECK (availableQuantity <= totalQuantity),
+    CONSTRAINT CK_Book_Status
+        CHECK ([status] IN ('available', 'unavailable'))
 );
 
 -- ============================================================
@@ -188,8 +193,58 @@ CREATE TABLE BookCopy (
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
     updatedAt DATETIME NULL,
 
-    FOREIGN KEY (bookId) REFERENCES Book(bookId)
+    FOREIGN KEY (bookId) REFERENCES Book(bookId),
+    CONSTRAINT CK_BookCopy_Condition
+        CHECK (condition IN ('good', 'damaged', 'lost')),
+    CONSTRAINT CK_BookCopy_Status
+        CHECK ([status] IN ('available', 'unavailable', 'borrowed', 'reserved'))
 );
+
+-- ============================================================
+
+CREATE TABLE BookImportBatch (
+    importBatchId INT IDENTITY(1,1) PRIMARY KEY,
+    importedBy INT NOT NULL,
+    fileName NVARCHAR(255) NOT NULL,
+    totalRows INT NOT NULL DEFAULT 0 CHECK (totalRows >= 0),
+    successRows INT NOT NULL DEFAULT 0 CHECK (successRows >= 0),
+    failedRows INT NOT NULL DEFAULT 0 CHECK (failedRows >= 0),
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'failed', -- success, failed
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+    expiresAt DATETIME NOT NULL DEFAULT (DATEADD(YEAR, 1, GETDATE())),
+
+    FOREIGN KEY (importedBy) REFERENCES [User](userId),
+    CONSTRAINT CK_BookImportBatch_RowCounts
+        CHECK (successRows + failedRows <= totalRows),
+    CONSTRAINT CK_BookImportBatch_Status
+        CHECK ([status] IN ('success', 'failed'))
+);
+
+-- ============================================================
+
+CREATE TABLE BookImportError (
+    importErrorId INT IDENTITY(1,1) PRIMARY KEY,
+    importBatchId INT NOT NULL,
+    sheetName NVARCHAR(50) NOT NULL,
+    rowNumber INT NOT NULL CHECK (rowNumber >= 1),
+    columnName NVARCHAR(100) NULL,
+    errorMessage NVARCHAR(1000) NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+
+    FOREIGN KEY (importBatchId) REFERENCES BookImportBatch(importBatchId)
+        ON DELETE CASCADE,
+    CONSTRAINT CK_BookImportError_SheetName
+        CHECK (sheetName IN ('Books', 'BookCopies'))
+);
+
+-- ============================================================
+
+CREATE INDEX IX_Book_Title ON Book(title);
+CREATE INDEX IX_Book_Status ON Book([status]);
+CREATE INDEX IX_BookCopy_BookId ON BookCopy(bookId);
+CREATE INDEX IX_BookCopy_BookId_Status ON BookCopy(bookId, [status]);
+CREATE INDEX IX_BookCopy_BookId_Condition ON BookCopy(bookId, condition);
+CREATE INDEX IX_BookImportBatch_CreatedAt ON BookImportBatch(createdAt);
 
 -- ============================================================
 
