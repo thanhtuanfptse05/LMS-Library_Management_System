@@ -2,6 +2,7 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,5 +69,54 @@ public class PaymentDAO {
                     "Lỗi khi cập nhật trạng thái Payment thành 'completed' cho paymentId=" + paymentId, e);
             throw e;
         }
+    }
+
+    /**
+     * Lấy {@code fineId} liên kết với một giao dịch Payment.
+     *
+     * <p>Được gọi là bước đầu tiên trong luồng Duyệt Thanh Toán (FR-F6-07)
+     * để giải quyết bài toán: {@code approveCashPayment} nhận {@code paymentId},
+     * nhưng {@code FineDAO.updateStatusToPaid} cần {@code fineId}.
+     * Hàm này là cầu nối duy nhất giữa hai bảng trong luồng thanh toán.</p>
+     *
+     * <p>Nếu hàm trả về {@code -1}, tầng Service ném
+     * {@code IllegalStateException} để Controller hiển thị thông báo lỗi
+     * "Phiếu thanh toán không tồn tại" (SPEC §6 — Error Handling).</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm nhận
+     * {@code Connection} từ tham số để đảm bảo việc đọc xảy ra trong cùng
+     * Transaction với các thao tác ghi tiếp theo, tránh TOCTOU race condition.</p>
+     *
+     * @param conn      {@code Connection} được quản lý bởi tầng Service
+     *                  (đã {@code setAutoCommit(false)})
+     * @param paymentId ID của giao dịch Payment cần tra cứu
+     * @return {@code fineId} liên kết với Payment này;
+     *         {@code -1} nếu không tìm thấy bản ghi Payment tương ứng
+     * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
+     *                      cho phép Service tầng trên thực hiện rollback
+     *
+     * @see dao.FineDAO#updateStatusToPaid(Connection, int)
+     */
+    // EARS[Event-driven]: WHEN Librarian approves cash payment,
+    // THE LMS System SHALL find fineId FROM [Payment] WHERE paymentId = ?
+    // to bridge Payment → Fine update in same Transaction [FR-F6-07]
+    public int findFineIdByPaymentId(Connection conn, int paymentId) throws SQLException {
+        String sql = "SELECT fineId FROM [Payment] WHERE paymentId = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, paymentId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("fineId");
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi tra cứu fineId cho paymentId=" + paymentId, e);
+            throw e;
+        }
+
+        return -1;
     }
 }

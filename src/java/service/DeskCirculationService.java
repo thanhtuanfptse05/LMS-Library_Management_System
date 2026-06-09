@@ -4,6 +4,7 @@ import dao.BookCopyDAO;
 import dao.BookDAO;
 import dao.BorrowRecordDAO;
 import dao.FineDAO;
+import dao.PaymentDAO;
 import dao.ReservationDAO;
 import dao.UserDAO;
 import dao.UserLockReasonDAO;
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
  * <ol>
  *   <li><strong>Check-out (Giao sách):</strong> {@link #processCheckOut(int, int, String)}</li>
  *   <li><strong>Check-in (Nhận sách):</strong> {@link #processCheckIn(int, String, String)}</li>
- *   <li><strong>Cash Payment (Thanh toán tiền mặt):</strong> sẽ implement ở T-F6-04</li>
+ *   <li><strong>Cash Payment (Thanh toán tiền mặt):</strong> {@link #approveCashPayment(int, int, int)}</li>
  * </ol></p>
  *
  * <p><strong>Nguyên tắc Transaction (CONTEXT.md §4 — Data Integrity):</strong>
@@ -69,6 +70,7 @@ public class DeskCirculationService {
     private final BookDAO           bookDAO;
     private final FineDAO           fineDAO;
     private final UserDAO           userDAO;
+    private final PaymentDAO        paymentDAO;
 
     /**
      * Constructor mặc định — khởi tạo tất cả DAO dependencies.
@@ -83,6 +85,7 @@ public class DeskCirculationService {
         this.bookDAO           = new BookDAO();
         this.fineDAO           = new FineDAO();
         this.userDAO           = new UserDAO();
+        this.paymentDAO        = new PaymentDAO();
     }
 
     /**
@@ -98,7 +101,8 @@ public class DeskCirculationService {
      */
     DeskCirculationService(UserLockReasonDAO userLockReasonDAO, ReservationDAO reservationDAO,
                            BookCopyDAO bookCopyDAO, BorrowRecordDAO borrowRecordDAO,
-                           BookDAO bookDAO, FineDAO fineDAO, UserDAO userDAO) {
+                           BookDAO bookDAO, FineDAO fineDAO, UserDAO userDAO,
+                           PaymentDAO paymentDAO) {
         this.userLockReasonDAO = userLockReasonDAO;
         this.reservationDAO    = reservationDAO;
         this.bookCopyDAO       = bookCopyDAO;
@@ -106,6 +110,7 @@ public class DeskCirculationService {
         this.bookDAO           = bookDAO;
         this.fineDAO           = fineDAO;
         this.userDAO           = userDAO;
+        this.paymentDAO        = paymentDAO;
     }
 
     // =========================================================================
@@ -549,8 +554,147 @@ public class DeskCirculationService {
     }
 
     // =========================================================================
+    // LUỒNG C: THANH TOÁN TIỀN MẶT (CASH PAYMENT)
+    // =========================================================================
+
+    /**
+     * Duyệt thanh toán tiền phạt bằng tiền mặt — thực thi BR-25 (Auto-unlock an toàn).
+     *
+     * <p>Luồng này được kích hoạt khi Thủ thư xác nhận đã nhận đủ tiền mặt từ
+     * người dùng và nhấn nút "Duyệt Thanh Toán" trên giao diện (FR-F6-07, FR-F6-08).</p>
+     *
+     * <p><strong>5 bước trong Atomic Transaction (Node 5.25 → 7.28):</strong>
+     * <ol>
+     *   <li><strong>Xác thực Payment:</strong> Tra cứu {@code fineId} từ {@code paymentId}.
+     *       Nếu không tìm thấy → ném {@code IllegalStateException}.</li>
+     *   <li><strong>UPDATE Payment.status = 'completed'</strong> — Node 5.25a</li>
+     *   <li><strong>UPDATE Fine.status = 'paid'</strong> — Node 5.25b</li>
+     *   <li><strong>DELETE UserLockReason WHERE userId=? AND reason='unpaid'</strong>
+     *       — Node 6.27 (xóa đúng lý do, không xóa lý do khác)</li>
+     *   <li><strong>Auto-unlock gate — BR-25 (Node 7.28):</strong>
+     *       COUNT tổng số lý do khóa còn lại của userId.
+     *       <ul>
+     *         <li>{@code COUNT == 0} → UPDATE {@code [User].status = 'active'}
+     *             (mọi lý do đã được giải quyết)</li>
+     *         <li>{@code COUNT > 0} → KHÔNG mở khóa (còn 'adminban' hoặc 'securitybreach')</li>
+     *       </ul>
+     *   </li>
+     * </ol></p>
+     *
+     * <p><strong>Tại sao COUNT đủ an toàn cho BR-25?</strong><br>
+     * {@code countLockReasonsByUserId} đếm <em>toàn bộ</em> bản ghi trong
+     * {@code UserLockReason} (không lọc theo reason). Sau khi xóa 'unpaid',
+     * nếu còn 'adminban' hoặc 'securitybreach', COUNT > 0 → tài khoản tiếp tục bị khóa.
+     * Không cần logic đặc biệt kiểm tra từng loại reason — COUNT đã đủ điều kiện an toàn.</p>
+     *
+     * @param librarianId ID Thủ thư đang duyệt thanh toán (ghi Audit Log)
+     * @param paymentId   ID phiếu thanh toán cần duyệt
+     * @param userId      ID người dùng đang thanh toán (để DELETE UserLockReason)
+     * @throws IllegalStateException nếu {@code paymentId} không tồn tại trong hệ thống
+     * @throws SQLException          nếu có lỗi hạ tầng DB trong bất kỳ bước nào
+     */
+    // EARS[Event-driven]: WHEN Librarian approves cash payment (paymentId + userId),
+    // THE LMS System SHALL execute atomic: UPDATE Payment + UPDATE Fine +
+    // DELETE UserLockReason + [COND] UPDATE User.status='active' [FR-F6-07, FR-F6-08, BR-25]
+    public void approveCashPayment(int librarianId, int paymentId, int userId)
+            throws IllegalStateException, SQLException {
+
+        Connection conn = null;
+
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false); // BẮT ĐẦU TRANSACTION
+
+            // ----------------------------------------------------------------
+            // [Node 5.25 - Bước 1] Xác thực Payment — lấy fineId liên kết
+            // ----------------------------------------------------------------
+            // EARS[Event-driven]: WHEN approval starts,
+            // THE LMS System SHALL validate paymentId existence and retrieve fineId [FR-F6-07]
+            int fineId = paymentDAO.findFineIdByPaymentId(conn, paymentId);
+            if (fineId == -1) {
+                throw new IllegalStateException(
+                        "Phiếu thanh toán #" + paymentId + " không tồn tại trong hệ thống.");
+            }
+
+            // ----------------------------------------------------------------
+            // [Node 5.25a - Bước 2] UPDATE Payment.status = 'completed'
+            // ----------------------------------------------------------------
+            // EARS[Event-driven]: WHEN fineId is retrieved,
+            // THE LMS System SHALL UPDATE Payment.status = 'completed' [Node 5.25a, FR-F6-07]
+            paymentDAO.updateStatusToCompleted(conn, paymentId);
+
+            // ----------------------------------------------------------------
+            // [Node 5.25b - Bước 3] UPDATE Fine.status = 'paid'
+            // ----------------------------------------------------------------
+            // EARS[Event-driven]: WHEN Payment is completed,
+            // THE LMS System SHALL UPDATE Fine.status = 'paid' [Node 5.25b, FR-F6-07]
+            fineDAO.updateStatusToPaid(conn, fineId);
+
+            // ----------------------------------------------------------------
+            // [Node 6.27 - Bước 4] DELETE UserLockReason WHERE reason='unpaid'
+            // Xóa ĐÚNG lý do 'unpaid', KHÔNG ảnh hưởng các lý do khác
+            // ('adminban', 'securitybreach') — BR-25
+            // ----------------------------------------------------------------
+            // EARS[Event-driven]: WHEN Fine is paid,
+            // THE LMS System SHALL DELETE UserLockReason WHERE userId=? AND reason='unpaid'
+            // [Node 6.27, FR-F6-08, BR-25]
+            userLockReasonDAO.deleteUnpaidReasonByUserId(conn, userId);
+
+            // ----------------------------------------------------------------
+            // [Node 7.28 - Bước 5] Auto-unlock gate — BR-25
+            // COUNT tổng số lý do khóa còn lại (bao gồm MỌI reason)
+            // CHỈ mở khóa khi COUNT == 0 (không còn bất kỳ lý do nào)
+            // ----------------------------------------------------------------
+            // EARS[Condition-driven]: WHERE UserLockReason deleted,
+            // THE LMS System SHALL COUNT remaining lock reasons.
+            // IF COUNT == 0 THEN UPDATE [User].status='active' [Node 7.28, FR-F6-08, BR-25]
+            // ELSE keep 'locked' (other reasons still exist)
+            int remainingReasons = userLockReasonDAO.countLockReasonsByUserId(conn, userId);
+
+            if (remainingReasons == 0) {
+                // Mọi lý do khóa đã được giải quyết — mở khóa tài khoản
+                userDAO.updateStatusToActive(conn, userId);
+                LOGGER.log(Level.INFO,
+                        "Cash Payment [BR-25 Auto-unlock]: userId={0} đã thanh toán xong, "
+                        + "tài khoản được kích hoạt trở lại (paymentId={1})",
+                        new Object[]{userId, paymentId});
+            } else {
+                // Còn lý do khóa khác — giữ nguyên trạng thái 'locked'
+                LOGGER.log(Level.INFO,
+                        "Cash Payment [BR-25 Keep-locked]: userId={0} thanh toán xong nhưng "
+                        + "còn {1} lý do khóa khác — tài khoản vẫn bị khóa (paymentId={2})",
+                        new Object[]{userId, remainingReasons, paymentId});
+            }
+
+            // ----------------------------------------------------------------
+            // COMMIT: Toàn bộ 5 bước thành công
+            // ----------------------------------------------------------------
+            conn.commit();
+            LOGGER.log(Level.INFO,
+                    "Duyệt thanh toán thành công: paymentId={0}, fineId={1}, userId={2}, "
+                    + "librarianId={3}",
+                    new Object[]{paymentId, fineId, userId, librarianId});
+
+        } catch (IllegalStateException e) {
+            rollbackQuietly(conn, "approveCashPayment[BusinessRule]", userId);
+            throw e;
+
+        } catch (SQLException e) {
+            rollbackQuietly(conn, "approveCashPayment[SQL]", userId);
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi SQL trong approveCashPayment: paymentId=" + paymentId
+                    + ", userId=" + userId, e);
+            throw e;
+
+        } finally {
+            closeConnectionQuietly(conn, "approveCashPayment", userId);
+        }
+    }
+
+    // =========================================================================
     // PRIVATE HELPER METHODS
     // =========================================================================
+
 
     /**
      * Tính thời điểm hết hạn mượn sách dựa trên số ngày mượn.
