@@ -4,7 +4,11 @@ Dưới đây là danh sách các thẻ (tags) được tạo ra trong quá trì
 
 ## Lịch sử Rollback Tags
 
-### 0. `rollback/before-f8-controller-step3`
+### 0. `rollback/before-f8-views`
+- **Thời gian tạo:** 2026-06-09
+- **Mô tả:** Trạng thái hệ thống trước khi bắt tay vào thiết kế tầng View (JSP, JSTL, JS) cho F8 (Book Discovery).
+
+### 0.1 `rollback/before-f8-controller-step3`
 - **Thời gian tạo:** 2026-06-09
 - **Mô tả:** Trạng thái hệ thống trước khi bắt tay vào code các Servlet Controller cho F8 (RecommendationServlet, BookSearchServlet, BookDetailServlet).
 
