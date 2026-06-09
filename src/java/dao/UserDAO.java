@@ -40,7 +40,7 @@ public class UserDAO {
     // THE LMS System SHALL Query User Data dựa trên Email [Node 5.6, 5.7]
     public User findByEmail(String email) {
         String sql = "SELECT userId, email, passwordHash, [status], [role], "
-                + "lockReason, failedLoginAttempts, lockedUntil "
+                + "failedLoginAttempts, lockedUntil "
                 + "FROM [User] WHERE email = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -67,7 +67,7 @@ public class UserDAO {
      */
     public User findByUserId(int userId) {
         String sql = "SELECT userId, email, passwordHash, [status], [role], "
-                + "lockReason, failedLoginAttempts, lockedUntil "
+                + "failedLoginAttempts, lockedUntil "
                 + "FROM [User] WHERE userId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -125,7 +125,6 @@ public class UserDAO {
     // lockReason='securitybreach', failedLoginAttempts=0) [Node 15.24]
     public void lockAccount(int userId) {
         String sql = "UPDATE [User] SET [status] = 'locked', "
-                + "lockReason = 'securitybreach', "
                 + "lockedUntil = DATEADD(minute, 30, GETDATE()), "
                 + "failedLoginAttempts = 0 "
                 + "WHERE userId = ?";
@@ -153,7 +152,6 @@ public class UserDAO {
     // failedLoginAttempts=0 [Node 10.17]
     public void unlockAccount(int userId) {
         String sql = "UPDATE [User] SET [status] = 'active', "
-                + "lockReason = NULL, "
                 + "lockedUntil = NULL, "
                 + "failedLoginAttempts = 0 "
                 + "WHERE userId = ?";
@@ -268,7 +266,7 @@ public class UserDAO {
         user.setPasswordHash(rs.getString("passwordHash"));
         user.setStatus(rs.getString("status"));
         user.setRole(rs.getString("role"));
-        user.setLockReason(rs.getString("lockReason"));
+        user.setLockReason(null); // Đã chuyển sang bảng UserLockReason
         user.setFailedLoginAttempts(rs.getInt("failedLoginAttempts"));
         user.setLockedUntil(rs.getTimestamp("lockedUntil"));
         return user;
