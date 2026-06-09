@@ -113,4 +113,99 @@ public class UserLockReasonDAO {
             throw e;
         }
     }
+
+    /**
+     * Kiểm tra nhanh xem tài khoản có đang có lý do khóa 'unpaid' hay không.
+     *
+     * <p>Được gọi là bước đầu tiên trong luồng Check-out (Node 6.6) để
+     * thực thi BR-22: nếu tài khoản đang nợ phạt, từ chối giao dịch ngay lập tức
+     * mà không cần thực thi bất kỳ thao tác ghi nào.</p>
+     *
+     * <p>Khác biệt so với {@link #countLockReasonsByUserId(Connection, int)}:
+     * hàm này chỉ kiểm tra sự tồn tại của lý do 'unpaid', không đếm tổng.
+     * Phù hợp cho gate-check nghiệp vụ cần kết quả boolean rõ ràng.</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận
+     * {@code Connection} từ tham số để đảm bảo việc kiểm tra nằm trong cùng
+     * Transaction với các thao tác ghi tiếp theo, tránh TOCTOU race condition.</p>
+     *
+     * @param conn   {@code Connection} được quản lý bởi tầng Service
+     *               (đã {@code setAutoCommit(false)})
+     * @param userId ID tài khoản cần kiểm tra
+     * @return {@code true} nếu tồn tại bản ghi với {@code reason = 'unpaid'};
+     *         {@code false} nếu không có nợ phạt
+     * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
+     *                      cho phép Service tầng trên thực hiện rollback
+     *
+     * @see #deleteUnpaidReasonByUserId(Connection, int)
+     */
+    // EARS[Condition-driven]: WHERE Check-out request arrives,
+    // THE LMS System SHALL check IF UserLockReason WHERE userId=? AND reason='unpaid' EXISTS
+    // to enforce BR-22 [Node 6.6, FR-F6-01]
+    public boolean hasUnpaidReason(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) "
+                   + "FROM   [UserLockReason] "
+                   + "WHERE  userId = ? "
+                   + "  AND  reason = 'unpaid'";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi kiểm tra lý do khóa 'unpaid' cho userId=" + userId, e);
+            throw e;
+        }
+
+        return false;
+    }
+
+    /**
+     * Thêm mới bản ghi lý do khóa 'unpaid' cho một tài khoản người dùng.
+     *
+     * <p>Được gọi trong luồng Check-in sách hỏng/mất (FR-F6-04 — Node 6.17)
+     * sau khi INSERT {@code Fine} thành công. Việc INSERT lý do khóa NÀY là bằng chứng
+     * rõ ràng cho hệ thống biết tài khoản có nợ phạt chưa thanh toán (BR-24).
+     * Sau đó thủ thư gọi {@code UserDAO.updateStatusToLocked} để khóa tài khoản
+     * trong cùng Transaction.</p>
+     *
+     * <p><strong>Khác biệt so với deleteUnpaidReasonByUserId:</strong>
+     * Hàm này thêm mới lý do khóa (tạo ra nợ phạt mới),
+     * ngược lại {@link #deleteUnpaidReasonByUserId(Connection, int)}
+     * xóa lý do khóa (giải quyết nợ phạt).</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận
+     * {@code Connection} từ tham số và KHÔNG tự commit.</p>
+     *
+     * @param conn   {@code Connection} được quản lý bởi tầng Service
+     *               (đã {@code setAutoCommit(false)})
+     * @param userId ID tài khoản cần thêm lý do khóa 'unpaid'
+     * @throws SQLException nếu có lỗi thực thi câu lệnh INSERT,
+     *                      cho phép Service tầng trên thực hiện rollback
+     *
+     * @see dao.FineDAO#insertCompensationFine(Connection, int, int, java.math.BigDecimal, String)
+     * @see dao.UserDAO#updateStatusToLocked(Connection, int)
+     */
+    // EARS[Event-driven]: WHEN Fine is inserted for damaged/lost book,
+    // THE LMS System SHALL INSERT UserLockReason (reason='unpaid')
+    // WHERE userId = ? [Node 6.17, FR-F6-04, BR-24]
+    public void insertUnpaidReason(Connection conn, int userId) throws SQLException {
+        String sql = "INSERT INTO [UserLockReason] (userId, reason) "
+                   + "VALUES (?, 'unpaid')";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi INSERT lý do khóa 'unpaid' cho userId=" + userId, e);
+            throw e;
+        }
+    }
 }
+

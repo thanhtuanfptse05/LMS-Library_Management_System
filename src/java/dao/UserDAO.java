@@ -273,4 +273,77 @@ public class UserDAO {
         user.setLockedUntil(rs.getTimestamp("lockedUntil"));
         return user;
     }
+
+    /**
+     * Khóa tài khoản người dùng trong một DB Transaction do Service kiểm soát.
+     *
+     * <p>Được gọi là bước cuối trong luồng Check-in sách hỏng/mất (FR-F6-04 — Node 6.17)
+     * sau khi INSERT {@code Fine} và INSERT {@code UserLockReason(reason='unpaid')} thành công.
+     * Cập nhật {@code [User].status = 'locked'} để ngăn người dùng mượn thêm sách (BR-24).</p>
+     *
+     * <p><strong>Khác biệt so với {@link #lockAccount(int)}:</strong>
+     * {@code lockAccount} tự mở Connection riêng và dùng cho brute-force lock
+     * (không trong Transaction). Hàm này nhận {@code Connection} từ tham số
+     * để tham gia vào DB Transaction của {@code DeskCirculationService},
+     * đảm bảo tính nguyên tử của toàn bộ luồng BR-24.</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận
+     * {@code Connection} từ tham số và KHÔNG tự commit.</p>
+     *
+     * @param conn   {@code Connection} được quản lý bởi tầng Service
+     *               (đã {@code setAutoCommit(false)})
+     * @param userId ID tài khoản cần khóa
+     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
+     *                      cho phép Service tầng trên thực hiện rollback
+     *
+     * @see dao.UserLockReasonDAO#insertUnpaidReason(Connection, int)
+     */
+    // EARS[Event-driven]: WHEN Fine and UserLockReason are inserted for damaged/lost book,
+    // THE LMS System SHALL UPDATE [User].status = 'locked'
+    // WHERE userId = ? [Node 6.17, FR-F6-04, BR-24]
+    public void updateStatusToLocked(Connection conn, int userId) throws SQLException {
+        String sql = "UPDATE [User] "
+                   + "SET    [status] = 'locked' "
+                   + "WHERE  userId  = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật [User].status thành 'locked' cho userId=" + userId, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Mở khóa tài khoản trong DB Transaction do Service kiểm soát.
+     *
+     * <p>Được gọi trong luồng Duyệt Thanh Toán (FR-F6-08) khi COUNT UserLockReason == 0.
+     * Khác với {@link #unlockAccount(int)}: hàm này nhận Connection từ tham số
+     * để tham gia vào Transaction của DeskCirculationService.</p>
+     *
+     * @param conn   {@code Connection} được quản lý bởi tầng Service
+     *               (đã {@code setAutoCommit(false)})
+     * @param userId ID tài khoản cần mở khóa
+     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
+     *                      cho phép Service tầng trên thực hiện rollback
+     */
+    // EARS[Condition-driven]: WHERE COUNT UserLockReason == 0 after payment,
+    // THE LMS System SHALL UPDATE [User].status = 'active' [FR-F6-08, BR-25]
+    public void updateStatusToActive(Connection conn, int userId) throws SQLException {
+        String sql = "UPDATE [User] "
+                   + "SET    [status] = 'active' "
+                   + "WHERE  userId  = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật [User].status thành 'active' cho userId=" + userId, e);
+            throw e;
+        }
+    }
 }
+

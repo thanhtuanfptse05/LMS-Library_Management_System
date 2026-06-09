@@ -1,0 +1,396 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import model.Reservation;
+
+/**
+ * ReservationDAO — Data Access Object cho bảng [Reservation].
+ *
+ * <p>Bảng {@code Reservation} quản lý hàng đợi đặt trước sách của người dùng.
+ * Một đơn đặt trước có thể ở các trạng thái: 'pending' (đang chờ),
+ * 'readypickup' (sẵn sàng nhận), 'fulfilled' (đã nhận), 'cancelled' (hủy).
+ * Thứ tự ưu tiên được xác định bởi {@code queuePosition}:
+ * {@code 0} = đang được phục vụ, {@code 1} = người kế tiếp trong hàng chờ.</p>
+ *
+ * <p>Tuân thủ nghiêm ngặt:</p>
+ * <ul>
+ *   <li>SEC-03: 100% câu SQL dùng {@code PreparedStatement} với tham số {@code ?}.
+ *       Không sử dụng phép cộng chuỗi (String Concatenation) để tạo SQL.</li>
+ *   <li>ENG-01: Mọi tài nguyên JDBC (PreparedStatement, ResultSet)
+ *       được đóng an toàn bằng try-with-resources.</li>
+ *   <li>ARCH-01: JDBC thuần — không ORM, không Spring JDBC.</li>
+ *   <li>TRANS-01: Mọi hàm nhận {@code Connection} từ tham số để hỗ trợ
+ *       Atomic Transaction được kiểm soát từ tầng Service. Hàm KHÔNG tự commit.</li>
+ * </ul>
+ *
+ * <p>Traceability: Mapping với Activity Diagram F6 — FR-F6-02, FR-F6-03, FR-F6-06,
+ * PLAN.md §3 (Luồng Check-in Sách Nguyên Vẹn).</p>
+ */
+public class ReservationDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(ReservationDAO.class.getName());
+
+    /**
+     * Tìm người dùng đang chờ tiếp theo trong hàng đợi đặt trước của một cuốn sách.
+     *
+     * <p>Được gọi trong luồng Check-in sách nguyên vẹn (Condition = 'good') tại
+     * {@code DeskCirculationService.processCheckIn()}, ngay sau khi cập nhật
+     * {@code BorrowRecord} và {@code BookCopy} thành công.
+     * Nếu hàm trả về kết quả khác {@code null}, tầng Service sẽ:
+     * <ol>
+     *   <li>UPDATE {@code Reservation} của bản ghi tìm được:
+     *       {@code queuePosition = 0}, {@code status = 'readypickup'},
+     *       {@code bookCopyId = } (bản sao vừa trả về).</li>
+     *   <li>Gửi email thông báo bất đồng bộ cho người dùng đó.</li>
+     * </ol>
+     * Nếu hàm trả về {@code null} (không có người chờ), tầng Service sẽ
+     * UPDATE {@code Book.availableQuantity + 1} và {@code BookCopy.status = 'available'}.</p>
+     *
+     * <p><strong>Chiến lược Concurrency (SPEC §4 — NFR):</strong>
+     * Câu SQL sử dụng {@code WITH (UPDLOCK, ROWLOCK)} hint để đặt Update Lock
+     * trên row được chọn ngay trong lần đọc, ngăn chặn race condition khi 2 sách
+     * được trả cùng lúc có thể gán cho cùng 1 người đang chờ.</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận {@code Connection}
+     * từ tham số và KHÔNG tự commit. Việc commit/rollback được kiểm soát hoàn toàn
+     * bởi {@code DeskCirculationService} để đảm bảo tính nguyên tử của toàn bộ
+     * luồng Check-in (PLAN.md §3 — Atomic Block).</p>
+     *
+     * @param conn   {@code Connection} được quản lý bởi tầng Service
+     *               (đã {@code setAutoCommit(false)})
+     * @param bookId ID cuốn sách cần tìm người chờ tiếp theo
+     * @return Đối tượng {@code Reservation} của người đang chờ tiếp theo
+     *         (có {@code queuePosition = 1} và {@code status = 'pending'});
+     *         trả về {@code null} nếu không có ai trong hàng chờ
+     * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
+     *                      cho phép Service tầng trên thực hiện rollback
+     *
+     * @see dao.ReservationDAO#updateToReadyPickup(Connection, int, int)
+     */
+    // EARS[Condition-driven]: WHILE Check-in condition = 'good',
+    // THE LMS System SHALL find Reservation WHERE bookId = ? AND queuePosition = 1 AND status = 'pending'
+    // to evaluate queue-push condition [FR-F6-06, PLAN.md §3]
+    public Reservation findNextInQueue(Connection conn, int bookId) throws SQLException {
+        // UPDLOCK: Giữ Update Lock trên row ngay khi đọc để ngăn race condition
+        // (2 sách trả cùng lúc không thể cùng đọc được 1 bản ghi chờ — SPEC §4)
+        // ROWLOCK: Chỉ lock ở mức row, không lock toàn bộ page để tối ưu concurrency
+        String sql = "SELECT reservationId, userId, bookId, bookCopyId, "
+                   + "       [status], queuePosition, startDate, endDate "
+                   + "FROM   [Reservation] WITH (UPDLOCK, ROWLOCK) "
+                   + "WHERE  bookId        = ? "
+                   + "  AND  queuePosition = 1 "
+                   + "  AND  [status]      = 'pending'";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToReservation(rs);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi tìm người chờ tiếp theo trong hàng đợi cho bookId=" + bookId, e);
+            throw e;
+        }
+
+        return null;
+    }
+
+    /**
+     * Cập nhật trạng thái Reservation thành 'readypickup' — đẩy người chờ tiếp theo lên nhận sách.
+     *
+     * <p>Được gọi ngay sau {@link #findNextInQueue(Connection, int)} trả về kết quả
+     * khác {@code null} trong luồng Check-in sách nguyên vẹn (FR-F6-06).
+     * Hàm này thực hiện đồng thời 3 thay đổi trên cùng một bản ghi Reservation:
+     * <ul>
+     *   <li>{@code queuePosition} = 0 (chuyển từ "chờ kế tiếp" sang "đang được phục vụ")</li>
+     *   <li>{@code status} = 'readypickup' (người dùng có thể đến nhận)</li>
+     *   <li>{@code bookCopyId} = ID bản sao sách vừa được trả về (gán cụ thể)</li>
+     * </ul></p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận {@code Connection}
+     * từ tham số và KHÔNG tự commit. Việc commit/rollback được kiểm soát hoàn toàn
+     * bởi {@code DeskCirculationService}.</p>
+     *
+     * @param conn          {@code Connection} được quản lý bởi tầng Service
+     *                      (đã {@code setAutoCommit(false)})
+     * @param reservationId ID bản ghi Reservation cần cập nhật
+     * @param bookCopyId    ID bản sao sách được gán cho người chờ này
+     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
+     *                      cho phép Service tầng trên thực hiện rollback
+     *
+     * @see dao.ReservationDAO#findNextInQueue(Connection, int)
+     */
+    // EARS[Event-driven]: WHEN next-in-queue Reservation is found,
+    // THE LMS System SHALL UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=?
+    // WHERE reservationId = ? [FR-F6-06]
+    public void updateToReadyPickup(Connection conn, int reservationId, int bookCopyId)
+            throws SQLException {
+        String sql = "UPDATE [Reservation] "
+                   + "SET    queuePosition = 0, "
+                   + "       [status]      = 'readypickup', "
+                   + "       bookCopyId    = ? "
+                   + "WHERE  reservationId = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookCopyId);
+            ps.setInt(2, reservationId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật Reservation thành 'readypickup' cho reservationId="
+                    + reservationId, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Cập nhật trạng thái Reservation thành 'fulfilled' — đánh dấu đơn đặt trước đã hoàn tất.
+     *
+     * <p>Được gọi trong luồng Check-out (giao sách) — FR-F6-03 — sau khi
+     * INSERT {@code BorrowRecord} thành công. Một Reservation với
+     * {@code queuePosition = 0} và {@code status = 'readypickup'} (hoặc
+     * một Reservation vừa được tạo mới tại quầy với {@code queuePosition = 0})
+     * được chuyển sang 'fulfilled' để đóng vòng đời của đơn đặt trước.</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận {@code Connection}
+     * từ tham số và KHÔNG tự commit. Việc commit/rollback được kiểm soát hoàn toàn
+     * bởi {@code DeskCirculationService}.</p>
+     *
+     * @param conn          {@code Connection} được quản lý bởi tầng Service
+     *                      (đã {@code setAutoCommit(false)})
+     * @param reservationId ID bản ghi Reservation cần đánh dấu hoàn tất
+     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
+     *                      cho phép Service tầng trên thực hiện rollback
+     */
+    // EARS[Event-driven]: WHEN BorrowRecord is inserted successfully,
+    // THE LMS System SHALL UPDATE Reservation.status = 'fulfilled'
+    // WHERE reservationId = ? [FR-F6-03]
+    public void updateStatusToFulfilled(Connection conn, int reservationId) throws SQLException {
+        String sql = "UPDATE [Reservation] "
+                   + "SET    [status] = 'fulfilled' "
+                   + "WHERE  reservationId = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, reservationId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật Reservation thành 'fulfilled' cho reservationId="
+                    + reservationId, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Tạo mới một Reservation tại quầy (mượn trực tiếp, không có đơn đặt trước sẵn).
+     *
+     * <p>Được gọi trong kịch bản mượn trực tiếp (Walk-in) tại quầy — FR-F6-02 —
+     * khi độc giả không có đơn đặt trước và hàng đợi đang trống.
+     * Hệ thống tự động tạo một Reservation với {@code queuePosition = 0}
+     * để chuẩn hóa luồng cấp phát sách (CONTEXT.md §2 — Domain Knowledge).
+     * Sau đó tầng Service sẽ tiếp tục gọi INSERT {@code BorrowRecord}
+     * và UPDATE {@code Reservation} thành 'fulfilled' trong cùng Transaction.</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận {@code Connection}
+     * từ tham số và KHÔNG tự commit. Việc commit/rollback được kiểm soát hoàn toàn
+     * bởi {@code DeskCirculationService}.</p>
+     *
+     * @param conn       {@code Connection} được quản lý bởi tầng Service
+     *                   (đã {@code setAutoCommit(false)})
+     * @param userId     ID người dùng mượn trực tiếp
+     * @param bookId     ID cuốn sách được mượn
+     * @param bookCopyId ID bản sao sách cụ thể đang giao
+     * @return ID của bản ghi Reservation vừa được tạo (GENERATED KEY)
+     * @throws SQLException nếu có lỗi thực thi câu lệnh INSERT,
+     *                      cho phép Service tầng trên thực hiện rollback
+     */
+    // EARS[Condition-driven]: WHERE walk-in borrow AND queue is empty,
+    // THE LMS System SHALL INSERT Reservation WITH queuePosition=0
+    // to normalize the allocation flow [FR-F6-02, CONTEXT.md §2]
+    public int insertWalkIn(Connection conn, int userId, int bookId, int bookCopyId)
+            throws SQLException {
+        String sql = "INSERT INTO [Reservation] (userId, bookId, bookCopyId, [status], queuePosition) "
+                   + "VALUES (?, ?, ?, 'pending', 0)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql,
+                PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, bookId);
+            ps.setInt(3, bookCopyId);
+            ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi tạo Reservation walk-in cho userId=" + userId
+                    + ", bookId=" + bookId, e);
+            throw e;
+        }
+
+        throw new SQLException("Tạo Reservation walk-in thất bại: không lấy được generated key.");
+    }
+
+    /**
+     * Kiểm tra xem một cuốn sách có người nào đang đứng trong hàng chờ không.
+     *
+     * <p>Được gọi trong kịch bản mượn trực tiếp (FR-F6-02) để kiểm tra điều kiện
+     * BR-23: nếu đang có người chờ ({@code queuePosition > 0} và {@code status = 'pending'}),
+     * hệ thống phải từ chối giao dịch walk-in để bảo vệ quyền ưu tiên của người
+     * đã đặt trước.</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận {@code Connection}
+     * từ tham số để đảm bảo việc kiểm tra xảy ra trong cùng Transaction với thao tác
+     * INSERT tiếp theo, tránh TOCTOU race condition.</p>
+     *
+     * @param conn   {@code Connection} được quản lý bởi tầng Service
+     *               (đã {@code setAutoCommit(false)})
+     * @param bookId ID cuốn sách cần kiểm tra hàng chờ
+     * @return {@code true} nếu có ít nhất 1 người đang chờ ({@code queuePosition > 0});
+     *         {@code false} nếu hàng chờ trống
+     * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
+     *                      cho phép Service tầng trên thực hiện rollback
+     */
+    // EARS[Condition-driven]: WHERE walk-in borrow request arrives,
+    // THE LMS System SHALL check IF any Reservation exists WITH queuePosition > 0
+    // to enforce BR-23 [FR-F6-02]
+    public boolean hasQueuedReservation(Connection conn, int bookId) throws SQLException {
+        String sql = "SELECT COUNT(*) "
+                   + "FROM   [Reservation] "
+                   + "WHERE  bookId        = ? "
+                   + "  AND  queuePosition > 0 "
+                   + "  AND  [status]      = 'pending'";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi kiểm tra hàng chờ đặt trước cho bookId=" + bookId, e);
+            throw e;
+        }
+
+        return false;
+    }
+
+    /**
+     * Tìm Reservation hợp lệ của một người dùng cụ thể đang sẵn sàng nhận sách.
+     *
+     * <p>Được gọi tại Decision Node 7.8 trong luồng Check-out để phân nhánh:
+     * người dùng đã có đơn đặt trước ({@code queuePosition = 0, status = 'readypickup'})
+     * hay chưa (walk-in / mượn trực tiếp)?</p>
+     *
+     * <p>Logic phân nhánh của tầng Service sau khi gọi hàm này:
+     * <ul>
+     *   <li>Kết quả {@code != null}: Người dùng đã có Reservation hợp lệ.
+     *       Tiến thẳng vào Node 11.13 (Execute Check-out Transaction).</li>
+     *   <li>Kết quả {@code == null}: Walk-in — kiểm tra hàng chờ người khác
+     *       qua {@link #hasQueuedReservation(Connection, int)} trước khi
+     *       tạo Reservation tại chỗ qua {@link #insertWalkIn(Connection, int, int, int)}.</li>
+     * </ul></p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm nhận {@code Connection}
+     * từ tham số để đảm bảo việc đọc nằm trong cùng Transaction với các thao tác
+     * ghi tiếp theo, tránh TOCTOU race condition.</p>
+     *
+     * @param conn   {@code Connection} được quản lý bởi tầng Service
+     *               (đã {@code setAutoCommit(false)})
+     * @param userId ID người dùng cần kiểm tra đơn đặt trước
+     * @param bookId ID cuốn sách đang xử lý Check-out
+     * @return Đối tượng {@code Reservation} nếu người dùng có đơn đặt trước
+     *         hợp lệ ({@code queuePosition = 0, status = 'readypickup'});
+     *         {@code null} nếu không tìm thấy (walk-in scenario)
+     * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
+     *                      cho phép Service tầng trên thực hiện rollback
+     *
+     * @see dao.ReservationDAO#insertWalkIn(Connection, int, int, int)
+     * @see dao.ReservationDAO#hasQueuedReservation(Connection, int)
+     */
+    // EARS[Condition-driven]: WHERE Check-out request arrives,
+    // THE LMS System SHALL find Reservation WHERE userId=? AND bookId=?
+    //   AND queuePosition=0 AND status='readypickup'
+    // to route pre-reservation vs walk-in flow [Node 7.8, FR-F6-02]
+    public Reservation findReadyPickupByUserAndBook(Connection conn, int userId, int bookId)
+            throws SQLException {
+        String sql = "SELECT reservationId, userId, bookId, bookCopyId, "
+                   + "       [status], queuePosition, startDate, endDate "
+                   + "FROM   [Reservation] "
+                   + "WHERE  userId        = ? "
+                   + "  AND  bookId        = ? "
+                   + "  AND  queuePosition = 0 "
+                   + "  AND  [status]      = 'readypickup'";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, bookId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToReservation(rs);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi tìm Reservation 'readypickup' cho userId=" + userId
+                    + ", bookId=" + bookId, e);
+            throw e;
+        }
+
+        return null;
+    }
+
+    // ========================
+    // PRIVATE HELPER METHODS
+    // ========================
+
+    /**
+     * Ánh xạ một hàng của {@code ResultSet} sang đối tượng {@code Reservation}.
+     *
+     * <p>Hàm tiện ích nội bộ, được tái sử dụng bởi các hàm SELECT trong cùng DAO.
+     * Xử lý an toàn cột {@code bookCopyId} có thể là NULL trong DB
+     * (dùng {@code rs.getObject} thay vì {@code rs.getInt} để tránh trả về 0
+     * khi giá trị DB là NULL).</p>
+     *
+     * @param rs {@code ResultSet} đang trỏ đến hàng cần ánh xạ
+     * @return Đối tượng {@code Reservation} đã được điền đầy đủ dữ liệu
+     * @throws SQLException nếu tên cột không tồn tại hoặc có lỗi đọc dữ liệu
+     */
+    private Reservation mapResultSetToReservation(ResultSet rs) throws SQLException {
+        Reservation r = new Reservation();
+        r.setReservationId(rs.getInt("reservationId"));
+        r.setUserId(rs.getInt("userId"));
+        r.setBookId(rs.getInt("bookId"));
+
+        // bookCopyId là NULL-able trong schema — dùng getObject để phân biệt NULL vs 0
+        int rawBookCopyId = rs.getInt("bookCopyId");
+        r.setBookCopyId(rs.wasNull() ? null : rawBookCopyId);
+
+        r.setStatus(rs.getString("status"));
+
+        // queuePosition là NULL-able trong schema
+        int rawQueuePosition = rs.getInt("queuePosition");
+        r.setQueuePosition(rs.wasNull() ? null : rawQueuePosition);
+
+        r.setStartDate(rs.getTimestamp("startDate"));
+        r.setEndDate(rs.getTimestamp("endDate"));
+        return r;
+    }
+}

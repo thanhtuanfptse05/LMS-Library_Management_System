@@ -1,7 +1,9 @@
 package dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,5 +75,70 @@ public class FineDAO {
                     "Lỗi khi cập nhật trạng thái Fine thành 'paid' cho fineId=" + fineId, e);
             throw e;
         }
+    }
+
+    /**
+     * Tạo mới bản ghi tiền phạt đền bù khi sách bị hỏng hoặc mất.
+     *
+     * <p>Được gọi trong luồng Check-in sách hỏng/mất (FR-F6-04 — Node 6.17)
+     * sau khi UPDATE {@code BorrowRecord} thành công. Số tiền phạt ({@code amount})
+     * được tính bởi {@code DeskCirculationService} dựa trên giá gốc của sách
+     * (lấy từ {@code BookDAO.findById}). Bản ghi Fine được tạo với
+     * {@code status = 'unpaid'} — trạng thái mặc định theo schema.</p>
+     *
+     * <p>Sau khi INSERT Fine, tầng Service tiếp tục trong cùng Transaction:
+     * <ol>
+     *   <li>INSERT {@code UserLockReason(reason='unpaid')}</li>
+     *   <li>UPDATE {@code [User].status = 'locked'}</li>
+     * </ol>
+     * Ba bước này PHẢI trong cùng một DB Transaction (BR-24, CONTEXT.md §4).</p>
+     *
+     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận
+     * {@code Connection} từ tham số và KHÔNG tự commit.</p>
+     *
+     * @param conn           {@code Connection} được quản lý bởi tầng Service
+     *                       (đã {@code setAutoCommit(false)})
+     * @param borrowRecordId ID bản ghi mượn liên kết với khoản phạt này
+     * @param userId         ID người dùng phải chịu phạt (người mượn sách)
+     * @param amount         Số tiền phạt đền bù (tính bởi Service từ giá sách)
+     * @param reason         Mô tả lý do phạt (ví dụ: "Sách bị hỏng", "Sách bị mất")
+     * @return ID của bản ghi Fine vừa được tạo (GENERATED KEY)
+     * @throws SQLException nếu có lỗi thực thi câu lệnh INSERT,
+     *                      cho phép Service tầng trên thực hiện rollback
+     *
+     * @see dao.UserLockReasonDAO#insertUnpaidReason(Connection, int)
+     * @see dao.UserDAO#updateStatusToLocked(Connection, int)
+     */
+    // EARS[Event-driven]: WHEN Check-in condition IN ('damaged', 'lost'),
+    // THE LMS System SHALL INSERT Fine with status='unpaid'
+    // WHERE borrowRecordId=?, userId=? [Node 6.17, FR-F6-04, BR-24]
+    public int insertCompensationFine(Connection conn, int borrowRecordId, int userId,
+                                      BigDecimal amount, String reason) throws SQLException {
+        String sql = "INSERT INTO [Fine] (borrowRecordId, userId, amount, reason, [status]) "
+                   + "VALUES (?, ?, ?, ?, 'unpaid')";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql,
+                PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, borrowRecordId);
+            ps.setInt(2, userId);
+            ps.setBigDecimal(3, amount);
+            ps.setString(4, reason);
+            ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi INSERT Fine đền bù cho borrowRecordId=" + borrowRecordId
+                    + ", userId=" + userId, e);
+            throw e;
+        }
+
+        throw new SQLException(
+                "INSERT Fine đền bù thất bại: không lấy được generated key. "
+                + "borrowRecordId=" + borrowRecordId + ", userId=" + userId);
     }
 }
