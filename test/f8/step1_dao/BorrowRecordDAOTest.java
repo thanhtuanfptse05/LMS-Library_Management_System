@@ -1,4 +1,4 @@
-package dao;
+package f8.step1_dao;
 
 import org.junit.Before;
 import org.junit.Test;
