@@ -180,9 +180,6 @@
         </main>
     </div>
 
-    <%-- ════ FOOTER ════ --%>
-    <jsp:include page="fragments/_footer.jsp" />
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Tự động focus vào ô barcode sau khi submit thành công
