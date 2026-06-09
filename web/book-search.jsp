@@ -89,42 +89,35 @@
 
     <jsp:include page="/common/_header.jsp" />
 
-    <!-- Breadcrumb & Tiêu đề chính -->
-    <div style="background-color: var(--surface-container-low); border-bottom: 1px solid var(--surface-container-high);">
-        <div class="container-xl py-5 px-4">
+    <!-- Breadcrumb & Tiêu đề chính (Hero Banner) -->
+    <div class="py-5" style="background-color: var(--surface-container-low); border-bottom: 1px solid var(--surface-container-high);">
+        <div class="container-xxl px-4">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-3" style="font-size: 14px;">
-                    <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/" class="text-decoration-none fw-medium" style="color: var(--primary-color);">Trang chủ</a></li>
+                <ol class="breadcrumb mb-2" style="font-size: 14px;">
+                    <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/" class="text-decoration-none" style="color: var(--primary-color);">Trang chủ</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Tra cứu mục lục</li>
                 </ol>
             </nav>
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="fw-bold m-0 display-6" style="color: var(--bs-body-color); letter-spacing: -0.02em;">Khám phá tài liệu</h1>
-                    <p class="mt-3 mb-0 fs-5" style="color: var(--text-muted-custom); font-weight: 400; line-height: 1.6;">
-                        <c:choose>
-                            <c:when test="${not empty param.keyword}">
-                                Kết quả tìm kiếm cho: <strong style="color: var(--primary-color);"><c:out value="${param.keyword}"/></strong>
-                            </c:when>
-                            <c:otherwise>
-                                Tra cứu hàng ngàn đầu sách, tạp chí và tài liệu học thuật.
-                            </c:otherwise>
-                        </c:choose>
-                    </p>
-                </div>
-                <div class="col-md-4 d-none d-md-flex justify-content-end text-muted opacity-25">
-                    <i class="bi bi-book" style="font-size: 5rem;"></i>
-                </div>
-            </div>
+            <h1 class="display-5 fw-bold mt-2 mb-3" style="color: var(--bs-body-color);">Khám phá tài liệu</h1>
+            <p class="lead mb-0" style="color: var(--text-muted-custom); font-weight: 400;">
+                <c:choose>
+                    <c:when test="${not empty param.keyword}">
+                        Hiển thị kết quả tìm kiếm cho từ khóa: <strong style="color: var(--primary-color);"><c:out value="${param.keyword}"/></strong>
+                    </c:when>
+                    <c:otherwise>
+                        Tra cứu hàng ngàn đầu sách, tạp chí và tài liệu học thuật.
+                    </c:otherwise>
+                </c:choose>
+            </p>
         </div>
     </div>
 
     <!-- Nội dung chính -->
-    <main class="container-fluid px-4 px-xl-5 flex-grow-1 py-5">
+    <main class="container-xxl flex-grow-1 py-5 px-4">
         <div class="row g-4">
             
             <!-- Sidebar Lọc -->
-            <aside class="col-12 col-lg-4 col-xl-3">
+            <aside class="col-12 col-lg-3">
                 <div class="search-card p-4 sticky-top" style="top: 20px;">
                     <h5 class="fw-bold mb-4 d-flex align-items-center gap-2" style="color: var(--bs-body-color);">
                         <i class="bi bi-funnel"></i> Bộ lọc tìm kiếm
@@ -204,8 +197,8 @@
                 </div>
             </aside>
 
-            <!-- Khu vực kết quả sách -->
-            <section class="col-12 col-lg-8 col-xl-9">
+            <!-- Lưới hiển thị sách -->
+            <section class="col-12 col-lg-9">
                 <c:choose>
                     <c:when test="${empty books}">
                         <!-- Empty State -->
