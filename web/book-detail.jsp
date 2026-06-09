@@ -183,7 +183,7 @@
                                         </c:when>
                                         <c:otherwise>
                                             <!-- Bắt buộc redirect về Login nếu Guest -->
-                                            <a href="${pageContext.request.contextPath}/login?redirect=student/book-detail?id=${book.bookId}" 
+                                            <a href="${pageContext.request.contextPath}/login?redirect=book-detail?id=${book.bookId}" 
                                                class="btn btn-primary-custom px-5 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
                                                 <i class="bi bi-box-arrow-in-right fs-5"></i> Đăng nhập để đặt mượn
                                             </a>

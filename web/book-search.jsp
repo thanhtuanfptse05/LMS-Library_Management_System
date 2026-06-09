@@ -260,7 +260,7 @@
                                             </p>
                                             
                                             <div class="mt-auto pt-3" style="border-top: 1px solid var(--surface-container-high);">
-                                                <a href="${pageContext.request.contextPath}/student/book-detail?id=${book.bookId}" class="btn btn-custom-outline w-100 py-2 d-flex justify-content-center align-items-center gap-2">
+                                                <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="btn btn-custom-outline w-100 py-2 d-flex justify-content-center align-items-center gap-2">
                                                     Đọc thêm <i class="bi bi-arrow-right"></i>
                                                 </a>
                                             </div>

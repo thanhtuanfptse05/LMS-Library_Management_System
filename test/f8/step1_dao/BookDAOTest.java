@@ -25,7 +25,7 @@ public class BookDAOTest {
 
     @Test
     public void testSearchBooksWithKeyword() {
-        List<Book> result = mockBookDAO.searchBooks("Java", 0, 1, 10);
+        List<Book> result = mockBookDAO.searchBooks("Java", 0, 0, false, 1, 10);
         assertNotNull("Danh sách trả về không được null", result);
         assertEquals("Phải có 2 cuốn sách giả lập chứa từ Java", 2, result.size());
     }
@@ -52,7 +52,7 @@ public class BookDAOTest {
     private static class MockBookDAO extends BookDAO {
         
         @Override
-        public List<Book> searchBooks(String keyword, int categoryId, int page, int pageSize) {
+        public List<Book> searchBooks(String keyword, int categoryId, int tagId, boolean availableOnly, int page, int pageSize) {
             List<Book> fakeDb = new ArrayList<>();
             Book b1 = new Book(); b1.setTitle("Java Programming");
             Book b2 = new Book(); b2.setTitle("Advanced Java");
