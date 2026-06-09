@@ -142,11 +142,25 @@
                         <div class="mb-4">
                             <label class="form-label filter-section-title">Thể loại</label>
                             <select name="categoryId" class="form-select" style="border-color: var(--outline-variant);">
-                                <option value="">Tất cả thể loại</option>
-                                <!-- Tương lai có thể lặp danh mục từ backend -->
-                                <option value="1" ${param.categoryId == '1' ? 'selected' : ''}>Khoa học Cơ bản</option>
-                                <option value="2" ${param.categoryId == '2' ? 'selected' : ''}>Công nghệ Thông tin</option>
-                                <option value="3" ${param.categoryId == '3' ? 'selected' : ''}>Kinh tế & Quản trị</option>
+                                <option value="0">Tất cả thể loại</option>
+                                <c:forEach var="cat" items="${categories}">
+                                    <option value="${cat.categoryId}" ${param.categoryId == cat.categoryId ? 'selected' : ''}>
+                                        <c:out value="${cat.name}"/>
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
+
+                        <!-- Lọc theo Tag -->
+                        <div class="mb-4">
+                            <label class="form-label filter-section-title">Từ khóa (Tag)</label>
+                            <select name="tagId" class="form-select" style="border-color: var(--outline-variant);">
+                                <option value="0">Tất cả từ khóa</option>
+                                <c:forEach var="tag" items="${tags}">
+                                    <option value="${tag.tagId}" ${param.tagId == tag.tagId ? 'selected' : ''}>
+                                        <c:out value="${tag.name}"/>
+                                    </option>
+                                </c:forEach>
                             </select>
                         </div>
 
@@ -262,7 +276,7 @@
                                 <ul class="pagination justify-content-center">
                                     <!-- Nút Previous -->
                                     <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                        <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&availableOnly=${param.availableOnly}&page=${currentPage - 1}" aria-label="Trang trước">
+                                        <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&tagId=${param.tagId}&availableOnly=${param.availableOnly}&page=${currentPage - 1}" aria-label="Trang trước">
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
                                     </li>
@@ -270,13 +284,13 @@
                                     <!-- Số trang -->
                                     <c:forEach begin="1" end="${totalPages}" var="i">
                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&availableOnly=${param.availableOnly}&page=${i}">${i}</a>
+                                            <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&tagId=${param.tagId}&availableOnly=${param.availableOnly}&page=${i}">${i}</a>
                                         </li>
                                     </c:forEach>
 
                                     <!-- Nút Next -->
                                     <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                        <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&availableOnly=${param.availableOnly}&page=${currentPage + 1}" aria-label="Trang tiếp theo">
+                                        <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&tagId=${param.tagId}&availableOnly=${param.availableOnly}&page=${currentPage + 1}" aria-label="Trang tiếp theo">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
                                     </li>

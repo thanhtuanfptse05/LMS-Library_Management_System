@@ -128,9 +128,23 @@
                                 <h1 class="fw-bold mb-2" style="color: var(--bs-body-color); line-height: 1.2;">
                                     <c:out value="${book.title}"/>
                                 </h1>
-                                <p class="fs-5 mb-4" style="color: var(--primary-color);">
+                                <p class="fs-5 mb-3" style="color: var(--primary-color);">
                                     <i class="bi bi-person-badge"></i> Tác giả: <strong><c:out value="${book.author}"/></strong>
                                 </p>
+
+                                <!-- Categories & Tags -->
+                                <div class="mb-4 d-flex flex-wrap gap-2">
+                                    <c:forEach var="cat" items="${book.categories}">
+                                        <span class="badge bg-secondary rounded-pill py-2 px-3 fw-normal" style="font-size: 13px;">
+                                            <i class="bi bi-folder2-open me-1"></i> <c:out value="${cat.name}"/>
+                                        </span>
+                                    </c:forEach>
+                                    <c:forEach var="tag" items="${book.tags}">
+                                        <span class="badge rounded-pill py-2 px-3 fw-normal" style="font-size: 13px; background-color: var(--surface-container-highest); color: var(--bs-body-color); border: 1px solid var(--outline-variant);">
+                                            <i class="bi bi-hash"></i><c:out value="${tag.name}"/>
+                                        </span>
+                                    </c:forEach>
+                                </div>
 
                                 <div class="row g-4 mb-5">
                                     <div class="col-sm-6">

@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Book;
+import model.Category;
+import model.Tag;
 
 /**
  * BookSearchServlet — Xử lý tìm kiếm và phân trang sách.
@@ -48,15 +50,35 @@ public class BookSearchServlet extends HttpServlet {
                 page = 1;
             }
         }
+        
+        String tagIdParam = request.getParameter("tagId");
+        int tagId = 0;
+        if (tagIdParam != null && !tagIdParam.trim().isEmpty()) {
+            try {
+                tagId = Integer.parseInt(tagIdParam);
+            } catch (NumberFormatException e) {
+                tagId = 0;
+            }
+        }
+        
+        String availableOnlyParam = request.getParameter("availableOnly");
+        boolean availableOnly = "true".equalsIgnoreCase(availableOnlyParam);
 
-        List<Book> books = bookDAO.searchBooks(keyword, categoryId, page, PAGE_SIZE);
+        List<Book> books = bookDAO.searchBooks(keyword, categoryId, tagId, availableOnly, page, PAGE_SIZE);
         
         // Cần tính tổng số trang nếu cần, nhưng tạm thời chỉ trả list.
         // Tương lai có thể thêm hàm countSearchBooks vào BookDAO để làm Pagination đầy đủ.
         
+        List<Category> categories = bookDAO.getAllCategories();
+        List<Tag> tags = bookDAO.getAllTags();
+        
         request.setAttribute("books", books);
+        request.setAttribute("categories", categories);
+        request.setAttribute("tags", tags);
         request.setAttribute("keyword", keyword);
         request.setAttribute("categoryId", categoryId);
+        request.setAttribute("tagId", tagId);
+        request.setAttribute("availableOnly", availableOnly);
         request.setAttribute("currentPage", page);
         
         request.getRequestDispatcher("/book-search.jsp").forward(request, response);
