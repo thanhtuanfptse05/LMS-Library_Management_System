@@ -172,14 +172,24 @@
                                     <c:choose>
                                         <c:when test="${isBorrowButtonEnabled}">
                                             <!-- Nếu đã đăng nhập thì gọi form submit mượn sách -->
-                                            <form action="${pageContext.request.contextPath}/student/borrow" method="POST" class="d-inline-block">
-                                                <input type="hidden" name="bookId" value="${book.bookId}">
-                                                <button type="submit" class="btn btn-primary-custom px-5 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2"
-                                                        ${book.availableQuantity <= 0 ? 'disabled' : ''}>
-                                                    <i class="bi bi-bookmark-plus fs-5"></i>
-                                                    ${book.availableQuantity <= 0 ? 'Tạm thời hết sách' : 'Đặt mượn ngay'}
-                                                </button>
-                                            </form>
+                                            <c:choose>
+                                                <c:when test="${book.availableQuantity > 0}">
+                                                    <form action="${pageContext.request.contextPath}/student/borrow" method="POST" class="d-inline-block">
+                                                        <input type="hidden" name="bookId" value="${book.bookId}">
+                                                        <button type="submit" class="btn btn-primary-custom px-5 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
+                                                            <i class="bi bi-bookmark-plus fs-5"></i> Đăng ký mượn
+                                                        </button>
+                                                    </form>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <form action="${pageContext.request.contextPath}/student/reserve" method="POST" class="d-inline-block">
+                                                        <input type="hidden" name="bookId" value="${book.bookId}">
+                                                        <button type="submit" class="btn btn-warning px-5 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
+                                                            <i class="bi bi-clock-history fs-5"></i> Đặt trước
+                                                        </button>
+                                                    </form>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:when>
                                         <c:otherwise>
                                             <!-- Bắt buộc redirect về Login nếu Guest -->

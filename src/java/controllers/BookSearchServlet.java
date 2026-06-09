@@ -24,6 +24,13 @@ public class BookSearchServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // --- KIỂM TRA PHÂN QUYỀN (Auth Check) ---
+        jakarta.servlet.http.HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login?redirect=book-search");
+            return;
+        }
+        // ----------------------------------------
         
         String keyword = request.getParameter("keyword");
         if (keyword == null) {
