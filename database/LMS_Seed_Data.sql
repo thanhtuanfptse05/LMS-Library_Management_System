@@ -626,42 +626,137 @@ INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (187, 'H
 INSERT INTO Lecturer (userId, lecturerCode, department) VALUES (188, 'LEC999', N'Information Technology');
 
 -- ------------------------------------------------------------
--- 8. GENERATING SAMPLE BOOKS FOR F8 TESTING
 -- ------------------------------------------------------------
+-- 8. GENERATING 20 SAMPLE BOOKS FOR F8 TESTING (WITH COPIES, CATEGORIES, TAGS)
+-- ------------------------------------------------------------
+
+-- 8.1. INSERT CATEGORIES
+SET IDENTITY_INSERT Category ON;
+INSERT INTO Category (categoryId, name, description) VALUES 
+(1, N'Programming', N'Sách lập trình, mã nguồn'),
+(2, N'Software Engineering', N'Sách thiết kế kiến trúc phần mềm'),
+(3, N'Data Science', N'Sách khoa học dữ liệu, AI, Machine Learning'),
+(4, N'Business', N'Sách kinh tế, quản trị kinh doanh'),
+(5, N'Self-Help', N'Sách phát triển bản thân');
+SET IDENTITY_INSERT Category OFF;
+
+-- 8.2. INSERT TAGS
+SET IDENTITY_INSERT Tag ON;
+INSERT INTO Tag (tagId, name) VALUES 
+(1, N'Java'), (2, N'Python'), (3, N'C++'), (4, N'Architecture'), 
+(5, N'Agile'), (6, N'Microservices'), (7, N'AI'), (8, N'Web'),
+(9, N'Finance'), (10, N'Startup');
+SET IDENTITY_INSERT Tag OFF;
+
+-- 8.3. INSERT 20 BOOKS
 SET IDENTITY_INSERT Book ON;
 INSERT INTO Book (bookId, isbn, title, author, publisher, publicationYear, price, totalQuantity, availableQuantity, [status]) VALUES 
-(1, '978-0134685991', N'Effective Java', N'Joshua Bloch', N'Addison-Wesley', 2017, 45.00, 10, 10, 'available'),
-(2, '978-0596009205', N'Head First Java', N'Kathy Sierra, Bert Bates', N'O''Reilly Media', 2005, 30.00, 5, 5, 'available'),
-(3, '978-0132350884', N'Clean Code', N'Robert C. Martin', N'Prentice Hall', 2008, 40.00, 8, 8, 'available'),
+(1, '978-0134685991', N'Effective Java', N'Joshua Bloch', N'Addison-Wesley', 2017, 45.00, 3, 3, 'available'),
+(2, '978-0596009205', N'Head First Java', N'Kathy Sierra', N'O''Reilly Media', 2005, 30.00, 3, 3, 'available'),
+(3, '978-0132350884', N'Clean Code', N'Robert C. Martin', N'Prentice Hall', 2008, 40.00, 3, 3, 'available'),
 (4, '978-0321125217', N'Domain-Driven Design', N'Eric Evans', N'Addison-Wesley', 2003, 50.00, 3, 3, 'available'),
-(5, '978-1449331818', N'Learning Python', N'Mark Lutz', N'O''Reilly Media', 2013, 55.00, 12, 12, 'available'),
-(6, '978-0201633610', N'Design Patterns', N'Erich Gamma', N'Addison-Wesley', 1994, 54.00, 7, 7, 'available'),
-(7, '978-1491950357', N'Building Microservices', N'Sam Newman', N'O''Reilly Media', 2021, 42.00, 6, 6, 'available'),
-(8, '978-0134686097', N'Spring in Action', N'Craig Walls', N'Manning', 2018, 49.00, 9, 9, 'available'),
-(9, '978-1789531247', N'Java 11 Cookbook', N'Nick Samoylov', N'Packt Publishing', 2018, 35.00, 4, 4, 'available'),
-(10, '978-1492041139', N'Fluent Python', N'Luciano Ramalho', N'O''Reilly Media', 2022, 60.00, 15, 15, 'available'),
-(11, '978-0134092669', N'Software Engineering', N'Roger Pressman', N'McGraw-Hill', 2014, 80.00, 2, 2, 'available'),
-(12, '978-1593279288', N'Python Crash Course', N'Eric Matthes', N'No Starch Press', 2019, 39.00, 20, 20, 'available'),
-(13, '978-0134494166', N'Clean Architecture', N'Robert C. Martin', N'Prentice Hall', 2017, 40.00, 5, 5, 'available'),
+(5, '978-1449331818', N'Learning Python', N'Mark Lutz', N'O''Reilly Media', 2013, 55.00, 3, 3, 'available'),
+(6, '978-0201633610', N'Design Patterns', N'Erich Gamma', N'Addison-Wesley', 1994, 54.00, 3, 3, 'available'),
+(7, '978-1491950357', N'Building Microservices', N'Sam Newman', N'O''Reilly Media', 2021, 42.00, 3, 3, 'available'),
+(8, '978-0134686097', N'Spring in Action', N'Craig Walls', N'Manning', 2018, 49.00, 3, 3, 'available'),
+(9, '978-1789531247', N'Java 11 Cookbook', N'Nick Samoylov', N'Packt', 2018, 35.00, 3, 3, 'available'),
+(10, '978-1492041139', N'Fluent Python', N'Luciano Ramalho', N'O''Reilly Media', 2022, 60.00, 3, 3, 'available'),
+(11, '978-0134092669', N'Software Engineering', N'Roger Pressman', N'McGraw-Hill', 2014, 80.00, 3, 3, 'available'),
+(12, '978-1593279288', N'Python Crash Course', N'Eric Matthes', N'No Starch', 2019, 39.00, 3, 3, 'available'),
+(13, '978-0134494166', N'Clean Architecture', N'Robert C. Martin', N'Prentice Hall', 2017, 40.00, 3, 3, 'available'),
 (14, '978-1118771331', N'Professional Java', N'Nicholas Williams', N'Wrox', 2014, 45.00, 3, 3, 'available'),
-(15, '978-1617294945', N'Spring Boot in Action', N'Craig Walls', N'Manning', 2015, 38.00, 8, 8, 'available');
+(15, '978-1617294945', N'Spring Boot in Action', N'Craig Walls', N'Manning', 2015, 38.00, 3, 3, 'available'),
+(16, '978-1449369415', N'Data Science from Scratch', N'Joel Grus', N'O''Reilly', 2015, 45.00, 3, 3, 'available'),
+(17, '978-0132350885', N'The Pragmatic Programmer', N'Andrew Hunt', N'Addison-Wesley', 1999, 45.00, 3, 3, 'available'),
+(18, '978-0321125218', N'Refactoring', N'Martin Fowler', N'Addison-Wesley', 1999, 45.00, 3, 3, 'available'),
+(19, '978-1449331819', N'Deep Learning', N'Ian Goodfellow', N'MIT Press', 2016, 45.00, 3, 3, 'available'),
+(20, '978-0201633611', N'The Lean Startup', N'Eric Ries', N'Crown', 2011, 45.00, 3, 3, 'available');
 SET IDENTITY_INSERT Book OFF;
 
--- Insert some dummy copies for these books
+-- 8.4. MAPPING BOOK-CATEGORY
+INSERT INTO BookCategory (bookId, categoryId) VALUES 
+(1, 1), (2, 1), (3, 2), (4, 2), (5, 1), 
+(6, 2), (7, 2), (8, 1), (9, 1), (10, 1), 
+(11, 2), (12, 1), (13, 2), (14, 1), (15, 1), 
+(16, 3), (17, 2), (18, 2), (19, 3), (20, 4);
+
+-- 8.5. MAPPING BOOK-TAG
+INSERT INTO BookTag (bookId, tagId) VALUES 
+(1, 1), (2, 1), (3, 4), (4, 4), (5, 2), 
+(6, 4), (7, 6), (8, 1), (8, 8), (9, 1), 
+(10, 2), (11, 4), (12, 2), (13, 4), (14, 1), 
+(14, 8), (15, 1), (15, 8), (16, 7), (17, 5), 
+(18, 4), (19, 7), (20, 10);
+
+-- 8.6. INSERT BOOK COPIES (20 BOOKS * 3 COPIES = 60 COPIES)
 SET IDENTITY_INSERT BookCopy ON;
-INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES 
-(1, 1, 'BC-001', 'good', 'available'),
-(2, 2, 'BC-002', 'good', 'available'),
-(3, 3, 'BC-003', 'good', 'available'),
-(4, 4, 'BC-004', 'good', 'available'),
-(5, 5, 'BC-005', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (1, 1, 'BC-001-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (2, 1, 'BC-001-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (3, 1, 'BC-001-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (4, 2, 'BC-002-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (5, 2, 'BC-002-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (6, 2, 'BC-002-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (7, 3, 'BC-003-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (8, 3, 'BC-003-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (9, 3, 'BC-003-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (10, 4, 'BC-004-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (11, 4, 'BC-004-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (12, 4, 'BC-004-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (13, 5, 'BC-005-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (14, 5, 'BC-005-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (15, 5, 'BC-005-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (16, 6, 'BC-006-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (17, 6, 'BC-006-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (18, 6, 'BC-006-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (19, 7, 'BC-007-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (20, 7, 'BC-007-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (21, 7, 'BC-007-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (22, 8, 'BC-008-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (23, 8, 'BC-008-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (24, 8, 'BC-008-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (25, 9, 'BC-009-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (26, 9, 'BC-009-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (27, 9, 'BC-009-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (28, 10, 'BC-010-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (29, 10, 'BC-010-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (30, 10, 'BC-010-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (31, 11, 'BC-011-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (32, 11, 'BC-011-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (33, 11, 'BC-011-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (34, 12, 'BC-012-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (35, 12, 'BC-012-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (36, 12, 'BC-012-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (37, 13, 'BC-013-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (38, 13, 'BC-013-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (39, 13, 'BC-013-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (40, 14, 'BC-014-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (41, 14, 'BC-014-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (42, 14, 'BC-014-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (43, 15, 'BC-015-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (44, 15, 'BC-015-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (45, 15, 'BC-015-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (46, 16, 'BC-016-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (47, 16, 'BC-016-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (48, 16, 'BC-016-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (49, 17, 'BC-017-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (50, 17, 'BC-017-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (51, 17, 'BC-017-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (52, 18, 'BC-018-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (53, 18, 'BC-018-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (54, 18, 'BC-018-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (55, 19, 'BC-019-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (56, 19, 'BC-019-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (57, 19, 'BC-019-3', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (58, 20, 'BC-020-1', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (59, 20, 'BC-020-2', 'good', 'available');
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES (60, 20, 'BC-020-3', 'good', 'available');
 SET IDENTITY_INSERT BookCopy OFF;
 
--- Insert borrow records for User 187 so AI can trigger (needs >=3 records)
+-- 8.7. INSERT BORROW RECORDS CHO USER 187 (ĐỂ TEST AI RECOMMENDATION)
 SET IDENTITY_INSERT BorrowRecord ON;
 INSERT INTO BorrowRecord (borrowRecordId, userId, bookCopyId, bookId, startDate, endDate, [status]) VALUES
 (1, 187, 1, 1, GETDATE()-20, GETDATE()-10, 'returned'),
-(2, 187, 2, 2, GETDATE()-15, GETDATE()-5, 'returned'),
-(3, 187, 3, 3, GETDATE()-10, GETDATE()-1, 'returned'),
-(4, 187, 4, 4, GETDATE()-5, GETDATE()+5, 'borrowed');
+(2, 187, 4, 2, GETDATE()-15, GETDATE()-5, 'returned'),
+(3, 187, 7, 3, GETDATE()-10, GETDATE()-1, 'returned'),
+(4, 187, 10, 4, GETDATE()-5, GETDATE()+5, 'borrowed');
 SET IDENTITY_INSERT BorrowRecord OFF;
