@@ -59,9 +59,9 @@ public class AiRecommendationServiceTest {
             if ("timeout".equals(scenario)) {
                 return null;
             } else if ("hallucination".equals(scenario)) {
-                rawAiResponse = Arrays.asList(10, 999);
+                rawAiResponse = new java.util.ArrayList<>(Arrays.asList(10, 999));
             } else {
-                rawAiResponse = Arrays.asList(10, 20);
+                rawAiResponse = new java.util.ArrayList<>(Arrays.asList(10, 20));
             }
             
             // Logic Anti-Hallucination: Chỉ giữ lại các ID có trong pool
