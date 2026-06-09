@@ -149,11 +149,11 @@ public class BookDAO {
         List<Book> books = new ArrayList<>();
         String sql = "SELECT TOP (?) b.*, COUNT(br.borrowRecordId) AS borrowCount " +
                      "FROM Book b " +
-                     "INNER JOIN BorrowRecord br ON b.bookId = br.bookId " +
+                     "LEFT JOIN BorrowRecord br ON b.bookId = br.bookId " +
                      "WHERE b.status = 'available' " +
                      "GROUP BY b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, " +
                      "b.price, b.totalQuantity, b.availableQuantity, b.status, b.createdAt, b.updatedAt " +
-                     "ORDER BY borrowCount DESC";
+                     "ORDER BY borrowCount DESC, b.createdAt DESC";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

@@ -32,9 +32,10 @@ public class BookDAOTest {
 
     @Test
     public void testGetTopTrendingBooks() {
-        List<Book> topBooks = mockBookDAO.getTopTrendingBooks(10);
+        int limit = 5;
+        List<Book> topBooks = mockBookDAO.getTopTrendingBooks(limit);
         assertNotNull(topBooks);
-        assertTrue("Không vượt quá limit 10", topBooks.size() <= 10);
+        assertEquals("Hệ thống phải luôn đảm bảo đắp đủ sách mới vào (Left Join) cho đủ số lượng limit", limit, topBooks.size());
     }
 
     @Test
