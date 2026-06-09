@@ -1,4 +1,4 @@
-package service;
+package f8.step2_service;
 
 import org.junit.Before;
 import org.junit.Test;
