@@ -124,6 +124,19 @@ public class LoginServlet extends HttpServlet {
         if (role == null) {
             return contextPath + "/login";
         }
-        return contextPath + "/";
+        switch (role.toUpperCase()) {
+            case "ADMIN":
+                return contextPath + "/admin/dashboard";
+            case "LIBRARIAN":
+                return contextPath + "/librarian/dashboard";
+            case "MANAGER":
+                return contextPath + "/manager/dashboard";
+            case "STUDENT":
+                return contextPath + "/student/dashboard";
+            case "LECTURER":
+                return contextPath + "/lecturer/dashboard";
+            default:
+                return contextPath + "/";
+        }
     }
 }

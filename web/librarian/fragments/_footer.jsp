@@ -1,20 +1,19 @@
-<%-- Fragment: _footer.jsp — Footer content + Bootstrap JS for Librarian --%>
-<!-- ── Footer ── -->
-<footer class="w-100 px-4 py-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
-        style="background-color: var(--surface-container-low); border-top: 1px solid var(--outline-variant);">
-    <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<footer class="librarian-footer w-100 px-4 py-4">
+    <div class="librarian-footer__links">
         <span class="text-on-surface-variant small">&copy; 2024 Thư viện Đại học LMS System</span>
-        <div class="d-flex gap-3">
+        <nav class="librarian-footer__policy-links" aria-label="Chính sách">
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Chính sách bảo mật</a>
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Điều khoản dịch vụ</a>
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Khả năng truy cập</a>
-        </div>
+        </nav>
     </div>
-    <div class="d-flex align-items-center gap-3">
+    <div class="librarian-footer__support">
         <p class="text-on-surface-variant small mb-0">Trợ giúp Quầy lưu thông:</p>
         <a href="${pageContext.request.contextPath}/#contact"
-           class="btn btn-sm px-3 rounded-3 text-decoration-none"
-           style="background-color: var(--on-surface-variant); color: #fff;">Liên hệ Quản trị viên</a>
+           class="librarian-footer__support-link btn btn-sm px-3 rounded-3 text-decoration-none">
+            Liên hệ Quản trị viên
+        </a>
     </div>
 </footer>
 

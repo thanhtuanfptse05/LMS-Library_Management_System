@@ -45,10 +45,16 @@
                             <h2 class="fw-semibold mb-0" style="font-size: 20px; color: var(--on-surface);">Lưu thông hôm nay</h2>
                             <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Tổng quan hoạt động quầy theo thời gian thực</p>
                         </div>
+                        <div class="d-flex flex-wrap gap-2">
+                        <a href="${pageContext.request.contextPath}/librarian/book-overview.jsp"
+                           class="btn btn-sm bm-btn-secondary rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
+                            <span class="material-symbols-outlined">auto_stories</span> Quản lý sách
+                        </a>
                         <a href="${pageContext.request.contextPath}/librarian/catalog.jsp"
                            class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
                             <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Mượn sách
                         </a>
+                        </div>
                     </div>
                     <div class="row g-3">
                         <!-- Issued Today -->

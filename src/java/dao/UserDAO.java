@@ -40,7 +40,7 @@ public class UserDAO {
     // THE LMS System SHALL Query User Data dựa trên Email [Node 5.6, 5.7]
     public User findByEmail(String email) {
         String sql = "SELECT userId, email, passwordHash, [status], [role], "
-                + "lockReason, failedLoginAttempts, lockedUntil "
+                + "failedLoginAttempts, lockedUntil "
                 + "FROM [User] WHERE email = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -67,7 +67,7 @@ public class UserDAO {
      */
     public User findByUserId(int userId) {
         String sql = "SELECT userId, email, passwordHash, [status], [role], "
-                + "lockReason, failedLoginAttempts, lockedUntil "
+                + "failedLoginAttempts, lockedUntil "
                 + "FROM [User] WHERE userId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -114,7 +114,7 @@ public class UserDAO {
     /**
      * Khóa tài khoản tạm thời 30 phút do nhập sai mật khẩu quá 5 lần.
      *
-     * <p>Cập nhật đồng thời 4 cột: status='locked', lockReason='securitybreach',
+     * <p>Cập nhật đồng thời trạng thái khóa, thời điểm mở khóa và số lần đăng nhập sai.
      * lockedUntil = NOW + 30 phút (tính bằng DATEADD phía SQL Server để tránh
      * timezone mismatch giữa JVM và DB), failedLoginAttempts = 0.</p>
      *
@@ -122,10 +122,9 @@ public class UserDAO {
      */
     // EARS[Unwanted]: WHERE failedLoginAttempts >= 5, THE LMS System SHALL
     // Execute Temp Lock (status='locked', lockedUntil=NOW+30min,
-    // lockReason='securitybreach', failedLoginAttempts=0) [Node 15.24]
+    // failedLoginAttempts=0) [Node 15.24]
     public void lockAccount(int userId) {
         String sql = "UPDATE [User] SET [status] = 'locked', "
-                + "lockReason = 'securitybreach', "
                 + "lockedUntil = DATEADD(minute, 30, GETDATE()), "
                 + "failedLoginAttempts = 0 "
                 + "WHERE userId = ?";
@@ -149,11 +148,10 @@ public class UserDAO {
      * @param userId ID tài khoản cần mở khóa
      */
     // EARS[State-driven]: WHILE status='locked' AND lockedUntil <= NOW,
-    // THE LMS System SHALL update status='active', lockReason=null,
+    // THE LMS System SHALL update status='active',
     // failedLoginAttempts=0 [Node 10.17]
     public void unlockAccount(int userId) {
         String sql = "UPDATE [User] SET [status] = 'active', "
-                + "lockReason = NULL, "
                 + "lockedUntil = NULL, "
                 + "failedLoginAttempts = 0 "
                 + "WHERE userId = ?";
@@ -268,7 +266,7 @@ public class UserDAO {
         user.setPasswordHash(rs.getString("passwordHash"));
         user.setStatus(rs.getString("status"));
         user.setRole(rs.getString("role"));
-        user.setLockReason(rs.getString("lockReason"));
+        user.setLockReason(null);
         user.setFailedLoginAttempts(rs.getInt("failedLoginAttempts"));
         user.setLockedUntil(rs.getTimestamp("lockedUntil"));
         return user;
