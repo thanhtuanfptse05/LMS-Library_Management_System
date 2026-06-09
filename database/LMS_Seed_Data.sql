@@ -625,3 +625,43 @@ INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, s
 INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (187, 'HE999999', N'Software Engineering', 2023);
 INSERT INTO Lecturer (userId, lecturerCode, department) VALUES (188, 'LEC999', N'Information Technology');
 
+-- ------------------------------------------------------------
+-- 8. GENERATING SAMPLE BOOKS FOR F8 TESTING
+-- ------------------------------------------------------------
+SET IDENTITY_INSERT Book ON;
+INSERT INTO Book (bookId, isbn, title, author, publisher, publicationYear, price, totalQuantity, availableQuantity, [status]) VALUES 
+(1, '978-0134685991', N'Effective Java', N'Joshua Bloch', N'Addison-Wesley', 2017, 45.00, 10, 10, 'available'),
+(2, '978-0596009205', N'Head First Java', N'Kathy Sierra, Bert Bates', N'O''Reilly Media', 2005, 30.00, 5, 5, 'available'),
+(3, '978-0132350884', N'Clean Code', N'Robert C. Martin', N'Prentice Hall', 2008, 40.00, 8, 8, 'available'),
+(4, '978-0321125217', N'Domain-Driven Design', N'Eric Evans', N'Addison-Wesley', 2003, 50.00, 3, 3, 'available'),
+(5, '978-1449331818', N'Learning Python', N'Mark Lutz', N'O''Reilly Media', 2013, 55.00, 12, 12, 'available'),
+(6, '978-0201633610', N'Design Patterns', N'Erich Gamma', N'Addison-Wesley', 1994, 54.00, 7, 7, 'available'),
+(7, '978-1491950357', N'Building Microservices', N'Sam Newman', N'O''Reilly Media', 2021, 42.00, 6, 6, 'available'),
+(8, '978-0134686097', N'Spring in Action', N'Craig Walls', N'Manning', 2018, 49.00, 9, 9, 'available'),
+(9, '978-1789531247', N'Java 11 Cookbook', N'Nick Samoylov', N'Packt Publishing', 2018, 35.00, 4, 4, 'available'),
+(10, '978-1492041139', N'Fluent Python', N'Luciano Ramalho', N'O''Reilly Media', 2022, 60.00, 15, 15, 'available'),
+(11, '978-0134092669', N'Software Engineering', N'Roger Pressman', N'McGraw-Hill', 2014, 80.00, 2, 2, 'available'),
+(12, '978-1593279288', N'Python Crash Course', N'Eric Matthes', N'No Starch Press', 2019, 39.00, 20, 20, 'available'),
+(13, '978-0134494166', N'Clean Architecture', N'Robert C. Martin', N'Prentice Hall', 2017, 40.00, 5, 5, 'available'),
+(14, '978-1118771331', N'Professional Java', N'Nicholas Williams', N'Wrox', 2014, 45.00, 3, 3, 'available'),
+(15, '978-1617294945', N'Spring Boot in Action', N'Craig Walls', N'Manning', 2015, 38.00, 8, 8, 'available');
+SET IDENTITY_INSERT Book OFF;
+
+-- Insert some dummy copies for these books
+SET IDENTITY_INSERT BookCopy ON;
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES 
+(1, 1, 'BC-001', 'good', 'available'),
+(2, 2, 'BC-002', 'good', 'available'),
+(3, 3, 'BC-003', 'good', 'available'),
+(4, 4, 'BC-004', 'good', 'available'),
+(5, 5, 'BC-005', 'good', 'available');
+SET IDENTITY_INSERT BookCopy OFF;
+
+-- Insert borrow records for User 187 so AI can trigger (needs >=3 records)
+SET IDENTITY_INSERT BorrowRecord ON;
+INSERT INTO BorrowRecord (borrowRecordId, userId, bookCopyId, bookId, startDate, endDate, [status]) VALUES
+(1, 187, 1, 1, GETDATE()-20, GETDATE()-10, 'returned'),
+(2, 187, 2, 2, GETDATE()-15, GETDATE()-5, 'returned'),
+(3, 187, 3, 3, GETDATE()-10, GETDATE()-1, 'returned'),
+(4, 187, 4, 4, GETDATE()-5, GETDATE()+5, 'borrowed');
+SET IDENTITY_INSERT BorrowRecord OFF;
