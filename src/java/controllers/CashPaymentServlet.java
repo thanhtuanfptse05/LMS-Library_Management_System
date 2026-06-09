@@ -1,0 +1,129 @@
+package controllers;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import service.DeskCirculationService;
+
+/**
+ * CashPaymentServlet — Controller xử lý luồng Duyệt Thanh Toán Tiền Mặt.
+ *
+ * <p>Tuân thủ Single Responsibility Principle: Servlet này CHỈ xử lý luồng
+ * thanh toán tiền mặt (Cash Payment). Mọi logic nghiệp vụ và SQL được ủy
+ * quyền cho {@code DeskCirculationService.approveCashPayment()}.</p>
+ *
+ * <p>Flow:
+ * <ul>
+ *   <li>{@code GET /librarian/cash-payment} → forward tới {@code desk-payment.jsp}</li>
+ *   <li>{@code POST /librarian/cash-payment} → gọi Service → flash message → redirect GET</li>
+ * </ul></p>
+ *
+ * <p>Traceability: FR-F6-07, FR-F6-08, BR-25, PLAN.md §2.</p>
+ */
+@WebServlet(name = "CashPaymentServlet", urlPatterns = {"/librarian/cash-payment"})
+public class CashPaymentServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(CashPaymentServlet.class.getName());
+
+    private static final String VIEW_PATH    = "/librarian/desk-payment.jsp";
+    private static final String REDIRECT_URL = "/librarian/cash-payment";
+
+    private DeskCirculationService service;
+
+    @Override
+    public void init() throws ServletException {
+        this.service = new DeskCirculationService();
+    }
+
+    /**
+     * GET /librarian/cash-payment — Hiển thị form Duyệt Thanh Toán.
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        if (!isAuthorized(request, response)) return;
+        request.getRequestDispatcher(VIEW_PATH).forward(request, response);
+    }
+
+    /**
+     * POST /librarian/cash-payment — Xử lý Duyệt Thanh Toán (PRG pattern).
+     *
+     * <p>Đọc {@code paymentId} và {@code userId} từ form. Service sẽ thực thi
+     * toàn bộ 5 bước BR-25 trong một DB Transaction nguyên tử.</p>
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        if (!isAuthorized(request, response)) return;
+
+        HttpSession session = request.getSession(false);
+        int librarianId = (int) session.getAttribute("userId");
+
+        try {
+            // ----------------------------------------------------------------
+            // Validate đầu vào
+            // ----------------------------------------------------------------
+            String paymentIdRaw = request.getParameter("paymentId");
+            String userIdRaw    = request.getParameter("userId");
+
+            if (paymentIdRaw == null || paymentIdRaw.isBlank()) {
+                session.setAttribute("errorMessage", "Vui lòng nhập mã phiếu thanh toán.");
+                response.sendRedirect(request.getContextPath() + REDIRECT_URL);
+                return;
+            }
+            if (userIdRaw == null || userIdRaw.isBlank()) {
+                session.setAttribute("errorMessage", "Vui lòng nhập mã người dùng.");
+                response.sendRedirect(request.getContextPath() + REDIRECT_URL);
+                return;
+            }
+
+            int paymentId = Integer.parseInt(paymentIdRaw.trim());
+            int userId    = Integer.parseInt(userIdRaw.trim());
+
+            // ----------------------------------------------------------------
+            // Gọi Service — BR-25 Auto-unlock
+            // ----------------------------------------------------------------
+            service.approveCashPayment(librarianId, paymentId, userId);
+
+            session.setAttribute("successMessage",
+                    "Duyệt thanh toán thành công! Phiếu #" + paymentId
+                    + " — Người dùng #" + userId + ". Trạng thái tài khoản đã được cập nhật tự động.");
+
+        } catch (NumberFormatException e) {
+            session.setAttribute("errorMessage",
+                    "Mã phiếu thanh toán hoặc mã người dùng không hợp lệ — vui lòng nhập số nguyên.");
+
+        } catch (IllegalStateException e) {
+            // Lỗi nghiệp vụ: paymentId không tồn tại
+            session.setAttribute("errorMessage", e.getMessage());
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi SQL trong CashPaymentServlet.doPost", e);
+            session.setAttribute("errorMessage",
+                    "Đã xảy ra lỗi hệ thống khi xử lý thanh toán. Vui lòng thử lại hoặc liên hệ quản trị viên.");
+        }
+
+        response.sendRedirect(request.getContextPath() + REDIRECT_URL);
+    }
+
+    private boolean isAuthorized(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null
+                || session.getAttribute("userId") == null
+                || !"LIBRARIAN".equalsIgnoreCase((String) session.getAttribute("role"))) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return false;
+        }
+        return true;
+    }
+}
