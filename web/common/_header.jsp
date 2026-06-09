@@ -94,3 +94,5 @@
         </nav>
     </div>
 </header>
+<!-- Khối đệm (Spacer) để chống việc Header (fixed-top) che mất nội dung bên dưới -->
+<div style="height: 115px;"></div>

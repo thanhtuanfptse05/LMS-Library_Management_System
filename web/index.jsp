@@ -5,8 +5,8 @@
 
     <jsp:include page="common/_header.jsp" />
 
-    <!-- Offset for the fixed-top header (approx 115px = top-row ~48px + bottom-row ~67px) -->
-    <main style="padding-top: 115px;">
+    <!-- Nội dung chính -->
+    <main>
         <jsp:include page="common/_section-hero.jsp" />
         
         <!-- Khối AI Gợi Ý Sách Cá Nhân Hóa (Render by AJAX) -->
