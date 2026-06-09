@@ -29,13 +29,13 @@ public class BookDAO {
      * 
      * @param keyword Từ khóa tìm kiếm (Title hoặc Author)
      * @param categoryId ID Danh mục (0 nếu không lọc)
-     * @param tagId ID Tag (0 nếu không lọc)
+     * @param tagIds Mảng ID Tag (null hoặc rỗng nếu không lọc)
      * @param availableOnly Chỉ lấy sách có sẵn (availableQuantity > 0)
      * @param page Trang hiện tại (bắt đầu từ 1)
      * @param pageSize Số lượng trên mỗi trang
      * @return Danh sách các sách tìm được
      */
-    public List<Book> searchBooks(String keyword, int categoryId, int tagId, boolean availableOnly, int page, int pageSize) {
+    public List<Book> searchBooks(String keyword, int categoryId, int[] tagIds, boolean availableOnly, int page, int pageSize) {
         List<Book> books = new ArrayList<>();
         int offset = (page - 1) * pageSize;
         
@@ -49,10 +49,6 @@ public class BookDAO {
             sql.append("INNER JOIN BookCategory bc ON b.bookId = bc.bookId ");
         }
 
-        if (tagId > 0) {
-            sql.append("INNER JOIN BookTag bt ON b.bookId = bt.bookId ");
-        }
-
         sql.append("WHERE 1=1 ");
 
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -63,8 +59,10 @@ public class BookDAO {
             sql.append("AND bc.categoryId = ? ");
         }
 
-        if (tagId > 0) {
-            sql.append("AND bt.tagId = ? ");
+        if (tagIds != null && tagIds.length > 0) {
+            for (int i = 0; i < tagIds.length; i++) {
+                sql.append("AND b.bookId IN (SELECT bookId FROM BookTag WHERE tagId = ?) ");
+            }
         }
 
         if (availableOnly) {
@@ -89,8 +87,10 @@ public class BookDAO {
                 ps.setInt(paramIndex++, categoryId);
             }
             
-            if (tagId > 0) {
-                ps.setInt(paramIndex++, tagId);
+            if (tagIds != null && tagIds.length > 0) {
+                for (int tId : tagIds) {
+                    ps.setInt(paramIndex++, tId);
+                }
             }
             
             ps.setInt(paramIndex++, offset);
@@ -98,7 +98,10 @@ public class BookDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    books.add(mapResultSetToBook(rs));
+                    Book book = mapResultSetToBook(rs);
+                    book.setCategories(getCategoriesByBookId(conn, book.getBookId()));
+                    book.setTags(getTagsByBookId(conn, book.getBookId()));
+                    books.add(book);
                 }
             }
         } catch (SQLException e) {
@@ -158,7 +161,10 @@ public class BookDAO {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    books.add(mapResultSetToBook(rs));
+                    Book book = mapResultSetToBook(rs);
+                    book.setCategories(getCategoriesByBookId(conn, book.getBookId()));
+                    book.setTags(getTagsByBookId(conn, book.getBookId()));
+                    books.add(book);
                 }
             }
         } catch (SQLException e) {

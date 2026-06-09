@@ -141,27 +141,29 @@
                         <!-- Lọc theo danh mục -->
                         <div class="mb-4">
                             <label class="form-label filter-section-title">Thể loại</label>
-                            <select name="categoryId" class="form-select" style="border-color: var(--outline-variant);">
-                                <option value="0">Tất cả thể loại</option>
+                            <div class="d-flex flex-wrap gap-2">
+                                <input type="radio" class="btn-check" name="categoryId" id="cat_0" value="0" ${empty param.categoryId or param.categoryId == '0' ? 'checked' : ''}>
+                                <label class="btn btn-outline-primary btn-sm" for="cat_0">Tất cả</label>
                                 <c:forEach var="cat" items="${categories}">
-                                    <option value="${cat.categoryId}" ${param.categoryId == cat.categoryId ? 'selected' : ''}>
+                                    <input type="radio" class="btn-check" name="categoryId" id="cat_${cat.categoryId}" value="${cat.categoryId}" ${param.categoryId == cat.categoryId ? 'checked' : ''}>
+                                    <label class="btn btn-outline-primary btn-sm" for="cat_${cat.categoryId}">
                                         <c:out value="${cat.name}"/>
-                                    </option>
+                                    </label>
                                 </c:forEach>
-                            </select>
+                            </div>
                         </div>
 
                         <!-- Lọc theo Tag -->
                         <div class="mb-4">
-                            <label class="form-label filter-section-title">Từ khóa (Tag)</label>
-                            <select name="tagId" class="form-select" style="border-color: var(--outline-variant);">
-                                <option value="0">Tất cả từ khóa</option>
+                            <label class="form-label filter-section-title">Nhãn</label>
+                            <div class="d-flex flex-wrap gap-2">
                                 <c:forEach var="tag" items="${tags}">
-                                    <option value="${tag.tagId}" ${param.tagId == tag.tagId ? 'selected' : ''}>
+                                    <input type="checkbox" class="btn-check" name="tagId" id="tag_${tag.tagId}" value="${tag.tagId}" ${selectedTags.contains(tag.tagId) ? 'checked' : ''}>
+                                    <label class="btn btn-outline-primary btn-sm" for="tag_${tag.tagId}">
                                         <c:out value="${tag.name}"/>
-                                    </option>
+                                    </label>
                                 </c:forEach>
-                            </select>
+                            </div>
                         </div>
 
                         <!-- Lọc theo trạng thái -->
@@ -255,9 +257,23 @@
                                                 <c:out value="${book.title}"/>
                                             </h5>
                                             
-                                            <p class="mb-3" style="font-size: 13px; color: var(--text-muted-custom);">
-                                                <i class="bi bi-person me-1"></i> <c:out value="${book.author}"/>
+                                            <p class="mb-2" style="font-size: 13px; color: var(--text-muted-custom);">
+                                                <i class="bi bi-person-badge"></i> <c:out value="${book.author}"/>
                                             </p>
+
+                                            <!-- Categories & Tags Badges -->
+                                            <div class="d-flex flex-wrap gap-1 mb-3">
+                                                <c:forEach var="cat" items="${book.categories}">
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary fw-normal" style="font-size: 11px;">
+                                                        <c:out value="${cat.name}"/>
+                                                    </span>
+                                                </c:forEach>
+                                                <c:forEach var="tg" items="${book.tags}">
+                                                    <span class="badge fw-normal" style="font-size: 11px; background-color: var(--surface-container-highest); color: var(--bs-body-color); border: 1px solid var(--outline-variant);">
+                                                        #<c:out value="${tg.name}"/>
+                                                    </span>
+                                                </c:forEach>
+                                            </div>
                                             
                                             <div class="mt-auto pt-3" style="border-top: 1px solid var(--surface-container-high);">
                                                 <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="btn btn-custom-outline w-100 py-2 d-flex justify-content-center align-items-center gap-2">
@@ -270,13 +286,21 @@
                             </c:forEach>
                         </div>
 
+                        <!-- Prepare multi tag params for pagination -->
+                        <c:set var="tagParams" value="" />
+                        <c:if test="${not empty tagIds}">
+                            <c:forEach var="tId" items="${tagIds}">
+                                <c:set var="tagParams" value="${tagParams}&tagId=${tId}" />
+                            </c:forEach>
+                        </c:if>
+
                         <!-- Phân trang Bootstrap -->
                         <c:if test="${totalPages > 1}">
                             <nav aria-label="Phân trang tìm kiếm" class="mt-4">
                                 <ul class="pagination justify-content-center">
                                     <!-- Nút Previous -->
                                     <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                        <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&tagId=${param.tagId}&availableOnly=${param.availableOnly}&page=${currentPage - 1}" aria-label="Trang trước">
+                                        <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}${tagParams}&availableOnly=${param.availableOnly}&page=${currentPage - 1}" aria-label="Trang trước">
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
                                     </li>
@@ -284,13 +308,13 @@
                                     <!-- Số trang -->
                                     <c:forEach begin="1" end="${totalPages}" var="i">
                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&tagId=${param.tagId}&availableOnly=${param.availableOnly}&page=${i}">${i}</a>
+                                            <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}${tagParams}&availableOnly=${param.availableOnly}&page=${i}">${i}</a>
                                         </li>
                                     </c:forEach>
 
                                     <!-- Nút Next -->
                                     <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                        <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}&tagId=${param.tagId}&availableOnly=${param.availableOnly}&page=${currentPage + 1}" aria-label="Trang tiếp theo">
+                                        <a class="page-link" href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}${tagParams}&availableOnly=${param.availableOnly}&page=${currentPage + 1}" aria-label="Trang tiếp theo">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
                                     </li>

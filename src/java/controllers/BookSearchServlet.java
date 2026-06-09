@@ -51,20 +51,26 @@ public class BookSearchServlet extends HttpServlet {
             }
         }
         
-        String tagIdParam = request.getParameter("tagId");
-        int tagId = 0;
-        if (tagIdParam != null && !tagIdParam.trim().isEmpty()) {
-            try {
-                tagId = Integer.parseInt(tagIdParam);
-            } catch (NumberFormatException e) {
-                tagId = 0;
+        String[] tagIdParams = request.getParameterValues("tagId");
+        int[] tagIds = null;
+        java.util.List<Integer> selectedTags = new java.util.ArrayList<>();
+        if (tagIdParams != null && tagIdParams.length > 0) {
+            tagIds = new int[tagIdParams.length];
+            for (int i = 0; i < tagIdParams.length; i++) {
+                try {
+                    int tId = Integer.parseInt(tagIdParams[i]);
+                    tagIds[i] = tId;
+                    selectedTags.add(tId);
+                } catch (NumberFormatException e) {
+                    tagIds[i] = 0;
+                }
             }
         }
         
         String availableOnlyParam = request.getParameter("availableOnly");
         boolean availableOnly = "true".equalsIgnoreCase(availableOnlyParam);
 
-        List<Book> books = bookDAO.searchBooks(keyword, categoryId, tagId, availableOnly, page, PAGE_SIZE);
+        List<Book> books = bookDAO.searchBooks(keyword, categoryId, tagIds, availableOnly, page, PAGE_SIZE);
         
         // Cần tính tổng số trang nếu cần, nhưng tạm thời chỉ trả list.
         // Tương lai có thể thêm hàm countSearchBooks vào BookDAO để làm Pagination đầy đủ.
@@ -77,7 +83,8 @@ public class BookSearchServlet extends HttpServlet {
         request.setAttribute("tags", tags);
         request.setAttribute("keyword", keyword);
         request.setAttribute("categoryId", categoryId);
-        request.setAttribute("tagId", tagId);
+        request.setAttribute("tagIds", tagIdParams); // Gửi mảng string cho URL
+        request.setAttribute("selectedTags", selectedTags); // Gửi List Integer để dùng trong c:if
         request.setAttribute("availableOnly", availableOnly);
         request.setAttribute("currentPage", page);
         

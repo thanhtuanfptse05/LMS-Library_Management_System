@@ -78,12 +78,26 @@
                                 <c:out value="${book.title}"/>
                             </h6>
                             
-                            <p class="mb-3" style="font-size: 12px; color: var(--text-muted-custom); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-                                <c:out value="${book.author}"/>
+                            <p class="mb-2" style="font-size: 12px; color: var(--text-muted-custom); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                                <i class="bi bi-person-badge"></i> <c:out value="${book.author}"/>
                             </p>
+
+                            <!-- Categories & Tags Badges -->
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                <c:forEach var="cat" items="${book.categories}">
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary fw-normal" style="font-size: 10px;">
+                                        <c:out value="${cat.name}"/>
+                                    </span>
+                                </c:forEach>
+                                <c:forEach var="tg" items="${book.tags}">
+                                    <span class="badge fw-normal" style="font-size: 10px; background-color: var(--surface-container-highest); color: var(--bs-body-color); border: 1px solid var(--outline-variant);">
+                                        #<c:out value="${tg.name}"/>
+                                    </span>
+                                </c:forEach>
+                            </div>
                             
                             <div class="mt-auto pt-2" style="border-top: 1px solid var(--surface-container-high);">
-                                <a href="${pageContext.request.contextPath}/student/book-detail?id=${book.bookId}" class="btn btn-sm btn-outline-secondary w-100 fw-bold" style="font-size: 12px;">
+                                <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="btn btn-sm btn-outline-secondary w-100 fw-bold" style="font-size: 12px;">
                                     Đọc thêm
                                 </a>
                             </div>
