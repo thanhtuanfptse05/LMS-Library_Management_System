@@ -44,8 +44,8 @@ public class BookDetailServlet extends HttpServlet {
             boolean isBorrowButtonEnabled = false;
             
             if (session != null) {
-                User user = (User) session.getAttribute("user");
-                if (user != null) {
+                Integer sessionUserId = (Integer) session.getAttribute("userId");
+                if (sessionUserId != null) {
                     isBorrowButtonEnabled = true; // Có thể kiểm tra thêm role nếu cần
                 }
             }

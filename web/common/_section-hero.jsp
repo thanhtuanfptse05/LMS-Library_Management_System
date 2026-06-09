@@ -41,7 +41,7 @@
                                 <input class="form-control border-0 px-3 py-3 rounded-3 h-100"
                                     style="background-color: var(--surface-container-low); color: var(--bs-body-color); padding-right: 2.5rem !important;"
                                     placeholder="Tìm kiếm theo tiêu đề, tác giả hoặc từ khóa..."
-                                    type="text" name="query" id="hero-search-query"
+                                    type="text" name="keyword" id="hero-search-query"
                                     autocomplete="off" oninput="showHeroSuggestions(this.value)" />
                                 <span class="position-absolute end-0 top-50 translate-middle-y me-3 z-3 text-secondary" style="pointer-events: none;">
                                     <i class="bi bi-search"></i>
