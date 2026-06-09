@@ -1,4 +1,4 @@
-package controller;
+package f8.step3_controller;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
