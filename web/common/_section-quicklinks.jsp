@@ -15,7 +15,7 @@
 
             <!-- Card 1: Catalog Search -->
             <div class="col">
-                <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none d-block h-100">
+                <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
                     <div class="shortcut-card h-100">
                         <div class="icon-circle mb-4">
                             <i class="bi bi-book-half fs-4"></i>

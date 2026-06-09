@@ -45,7 +45,7 @@
             <span class="material-symbols-outlined">science</span><span>Tài liệu nghiên cứu</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Thư viện</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-search.jsp">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-search">
             <span class="material-symbols-outlined">search</span><span>Tra cứu Mục lục</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/lecturer/profile">

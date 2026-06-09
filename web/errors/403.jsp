@@ -165,7 +165,7 @@
                 <a href="${pageContext.request.contextPath}/" class="h5 mb-0 fw-bold text-decoration-none" style="color: var(--primary);">Thư viện Đại học LMS</a>
                 <nav class="d-none d-md-flex gap-4">
                     <a class="header-nav-link" href="${dashboardUrl}">Bảng điều khiển</a>
-                    <a class="header-nav-link" href="${pageContext.request.contextPath}/book-search.jsp">Mục lục</a>
+                    <a class="header-nav-link" href="${pageContext.request.contextPath}/book-search">Mục lục</a>
                     <a class="header-nav-link" href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
                     <a class="header-nav-link" href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
                     <a class="header-nav-link" href="${pageContext.request.contextPath}/#contact">Hỗ trợ</a>

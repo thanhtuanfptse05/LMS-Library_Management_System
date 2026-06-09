@@ -75,13 +75,13 @@
 
             <!-- Quick links below search bar -->
             <div class="d-flex flex-wrap gap-3 mt-3 justify-content-center">
-                <a href="${pageContext.request.contextPath}/book-search.jsp?advanced=true"
+                <a href="${pageContext.request.contextPath}/book-search?advanced=true"
                     class="text-decoration-none small d-flex align-items-center gap-1"
                     style="color: var(--text-muted-custom);">
                     <i class="bi bi-sliders"></i> Tìm kiếm nâng cao
                 </a>
                 <span style="color: var(--outline-variant);">|</span>
-                <a href="${pageContext.request.contextPath}/book-search.jsp?digital=true"
+                <a href="${pageContext.request.contextPath}/book-search?digital=true"
                     class="text-decoration-none small d-flex align-items-center gap-1"
                     style="color: var(--text-muted-custom);">
                     <i class="bi bi-journal-bookmark"></i> Giáo trình theo ngành

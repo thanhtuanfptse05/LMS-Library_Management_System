@@ -22,7 +22,7 @@
             </c:choose>
         </p>
         <div class="d-flex flex-wrap gap-3">
-            <a href="${pageContext.request.contextPath}/book-search.jsp"
+            <a href="${pageContext.request.contextPath}/book-search"
                class="btn btn-light rounded-pill px-4 fw-semibold btn-sm text-decoration-none"
                style="color: var(--primary);">
                 Tra cứu Mục lục

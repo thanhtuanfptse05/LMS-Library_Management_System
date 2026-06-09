@@ -49,7 +49,7 @@
     </div><!-- /.d-flex.main-wrapper -->
 
     <!-- Floating Action Button (Mobile Search) -->
-    <a href="${pageContext.request.contextPath}/book-search.jsp"
+    <a href="${pageContext.request.contextPath}/book-search"
        class="d-lg-none position-fixed bottom-0 end-0 m-4 rounded-circle d-flex align-items-center justify-content-center shadow border-0 text-white bg-primary-custom text-decoration-none"
        style="width: 56px; height: 56px; z-index: 1050;"
        title="Tra cứu Mục lục">
@@ -76,7 +76,7 @@
         if (headerSearch) {
             headerSearch.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && this.value.trim()) {
-                    window.location.href = '${pageContext.request.contextPath}/book-search.jsp?query=' + encodeURIComponent(this.value.trim());
+                    window.location.href = '${pageContext.request.contextPath}/book-search?keyword=' + encodeURIComponent(this.value.trim());
                 }
             });
         }

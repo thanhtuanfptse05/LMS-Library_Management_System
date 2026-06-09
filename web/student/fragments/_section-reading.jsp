@@ -93,7 +93,7 @@
                               style="font-size: 48px; opacity: 0.4;">library_books</span>
                         <p class="fw-semibold text-on-surface-variant mb-2">Không có sách mượn</p>
                         <p class="small text-on-surface-variant mb-4">Truy cập danh mục để khám phá và mượn sách.</p>
-                        <a href="${pageContext.request.contextPath}/book-search.jsp"
+                        <a href="${pageContext.request.contextPath}/book-search"
                            class="btn btn-primary-custom btn-sm px-4 rounded-3 text-decoration-none">
                             Duyệt danh mục
                         </a>
@@ -107,7 +107,7 @@
     <div class="col-12 col-lg-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h2 class="fs-4 fw-bold mb-0 text-dark">Gợi ý cho bạn</h2>
-            <a href="${pageContext.request.contextPath}/book-search.jsp"
+            <a href="${pageContext.request.contextPath}/book-search"
                class="d-flex align-items-center text-decoration-none text-primary-custom">
                 <span class="material-symbols-outlined">arrow_forward</span>
             </a>
@@ -123,7 +123,7 @@
                     <c:when test="${not empty recommendedBooks}">
                         <c:forEach var="book" items="${recommendedBooks}" end="3">
                             <div class="col-6">
-                                <a href="${pageContext.request.contextPath}/book-search.jsp?bookId=${book.bookId}"
+                                <a href="${pageContext.request.contextPath}/book-search?bookId=${book.bookId}"
                                    class="text-decoration-none d-block h-100">
                                     <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
                                         <img class="w-100 h-100"
@@ -145,7 +145,7 @@
                     <c:otherwise>
                         <!-- Static demo books when no data from backend -->
                         <div class="col-6">
-                            <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none d-block h-100">
+                            <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
                                 <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
                                     <img class="w-100 h-100" style="object-fit: cover;"
                                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMFaVW8gTn8EGwb-vQRwM3JIZyEnvL4u-pKdL9yAZI-65Sq20ui2J-YMxpmEQOIOItZ86Bb6qOy6ZHcJqxaBjOR7EiGfP3wN6f34O9qupHmW6PAzhLDZm55ZWdHpAA3eI2LIgqt14BulT3mmBjFMT4L_m5P9IpdHI7_wdObtdNoxFA2EwEkKHAluhqx1igHxiCyM9nziAdt0p4kaDI-fi8LcMROKQu8cZOdqK24sSvC2AV1vBng6cYyCapNf6EWmoY_hwUZXOxIYtS"
@@ -156,7 +156,7 @@
                             </a>
                         </div>
                         <div class="col-6">
-                            <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none d-block h-100">
+                            <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
                                 <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
                                     <img class="w-100 h-100" style="object-fit: cover;"
                                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvmHj56MbiSMwWUZ3XWu4-2rqNDuhPvt4Y6oCnTn7lGqCTOiE5BvqH0bZQS9LY0io_T8ayyDjfQXVaVnnFW-YANKwbZ329jVi3DrMxvwV7sHIl3d4YUEHVssxUE8e5VWDpyWSjWScrecfslefdeYXYEhz_RxXGddoqaCQqSevroSqz8wwifuS8PatY0uE7Xovp-hK7wxTPDxL_zul_KymBk0awiT2rBmB1SptJPZB2rlyEwzZj5jqvpdfUiHbJTCskRE_l4k3RgDIx"
@@ -167,7 +167,7 @@
                             </a>
                         </div>
                         <div class="col-6">
-                            <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none d-block h-100">
+                            <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
                                 <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
                                     <img class="w-100 h-100" style="object-fit: cover;"
                                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJpYUg7vrYH3geQVG1-5zncrdHXnCIjw5Qd-Ai0B-Lr_uWQHrlzaX3UFdvsg2jHA1rZs7z45MV-3movSZYXhxDHaRLCmJl1xEdtNKLPgEw36TOL9sL_mfTetQR3ejrzv4brXtwvE9N4DCzlsfNroao1nalEA_wE9S7Z9poDtnxdRB9aJ2DnJp2IhoPkw55gAmKATBTLkapLhzvLAEyIREEk252tap1yiv6mziSVxv5fUnD8lddLsv4u4VB-cKxe8wSP-J79gOjJ_X_"
@@ -178,7 +178,7 @@
                             </a>
                         </div>
                         <div class="col-6">
-                            <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none d-block h-100">
+                            <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
                                 <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
                                     <img class="w-100 h-100" style="object-fit: cover;"
                                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzcoyrJvKjZ8-93QWy-1N0tVZQ_A543LikcO7FZ9PFjB185C7t6xtUi7-5uN812BfCa4m1IUqWXoRYimsivBtM3PLeDrjlYOEUSILcuYpL_MMncRmV1gdn3n2jCJohPu69tgP4ubaYwPm1ENfBAGV8qgWoPJPnzRbR0RZXx7zTTN82YM8OmmCZd9Y2PRWjv7ad8UtLcItP-2HlCt3SzYqj2xf6DdYan0u85Z7SAND8S_sqYY7PsCkhNSi7EjuIFHzBoullSfkq2GJL"
@@ -192,7 +192,7 @@
                 </c:choose>
             </div>
 
-            <a href="${pageContext.request.contextPath}/book-search.jsp"
+            <a href="${pageContext.request.contextPath}/book-search"
                class="btn btn-outline-primary-custom w-100 rounded-3 py-2 mt-4 text-decoration-none d-block text-center">
                 Khám phá thêm
             </a>
