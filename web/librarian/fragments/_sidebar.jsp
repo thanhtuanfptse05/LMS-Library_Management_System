@@ -19,7 +19,8 @@
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-overview.jsp"><span class="material-symbols-outlined">space_dashboard</span><span>Tổng quan</span></a>
         <p class="bm-sidebar-group mb-0 mt-2">Danh mục sách</p>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/titles"><span class="material-symbols-outlined">menu_book</span><span>Đầu sách</span></a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-taxonomy.jsp"><span class="material-symbols-outlined">category</span><span>Thể loại &amp; thẻ</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/categories"><span class="material-symbols-outlined">category</span><span>Thể loại</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/tags"><span class="material-symbols-outlined">sell</span><span>Tag sách</span></a>
         <p class="bm-sidebar-group mb-0 mt-2">Kho vật lý</p>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-copies.jsp"><span class="material-symbols-outlined">inventory_2</span><span>Tất cả bản sao</span></a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-damaged-lost.jsp"><span class="material-symbols-outlined">report</span><span>Hỏng &amp; mất</span></a>
