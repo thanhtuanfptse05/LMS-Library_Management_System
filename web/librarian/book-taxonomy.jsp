@@ -66,7 +66,7 @@
                                     <tr>
                                         <td><strong>Công nghệ thông tin</strong></td>
                                         <td>Lập trình, hệ thống, dữ liệu và mạng máy tính.</td>
-                                        <td><a class="bm-count-link" href="book-titles.jsp?categoryId=1">Xem 3.412 đầu sách</a></td>
+                                        <td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=1">Xem 3.412 đầu sách</a></td>
                                         <td><span class="bm-badge bm-badge--success">Đang dùng</span></td>
                                         <td>08/06/2026</td>
                                         <td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td>
@@ -74,7 +74,7 @@
                                     <tr>
                                         <td><strong>Kinh tế &amp; quản trị</strong></td>
                                         <td>Kinh tế học, tài chính, marketing và quản trị.</td>
-                                        <td><a class="bm-count-link" href="book-titles.jsp?categoryId=2">Xem 2.108 đầu sách</a></td>
+                                        <td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=2">Xem 2.108 đầu sách</a></td>
                                         <td><span class="bm-badge bm-badge--success">Đang dùng</span></td>
                                         <td>06/06/2026</td>
                                         <td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td>
@@ -82,7 +82,7 @@
                                     <tr>
                                         <td><strong>Khoa học tự nhiên</strong></td>
                                         <td>Toán học, vật lý, hóa học và sinh học.</td>
-                                        <td><a class="bm-count-link" href="book-titles.jsp?categoryId=3">Xem 1.927 đầu sách</a></td>
+                                        <td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=3">Xem 1.927 đầu sách</a></td>
                                         <td><span class="bm-badge bm-badge--success">Đang dùng</span></td>
                                         <td>03/06/2026</td>
                                         <td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td>
@@ -90,7 +90,7 @@
                                     <tr>
                                         <td><strong>Tài liệu nội bộ cũ</strong></td>
                                         <td>Nhóm tài liệu cũ, không tiếp tục gán cho đầu sách mới.</td>
-                                        <td><a class="bm-count-link" href="book-titles.jsp?categoryId=4">Xem 86 đầu sách</a></td>
+                                        <td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=4">Xem 86 đầu sách</a></td>
                                         <td><span class="bm-badge bm-badge--neutral">Đã ẩn</span></td>
                                         <td>20/05/2026</td>
                                         <td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td>
@@ -137,10 +137,10 @@
                             <table class="table table-lms">
                                 <thead><tr><th>Tên tag</th><th>Số đầu sách</th><th>Trạng thái</th><th>Cập nhật gần nhất</th><th>Người cập nhật</th><th></th></tr></thead>
                                 <tbody>
-                                    <tr><td><span class="bm-tag">Java</span></td><td><a class="bm-count-link" href="book-titles.jsp?tagId=1">Xem 428 đầu sách</a></td><td><span class="bm-badge bm-badge--success">Đang dùng</span></td><td>08/06/2026</td><td>Nguyễn Thị Lan</td><td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td></tr>
-                                    <tr><td><span class="bm-tag">Cơ sở dữ liệu</span></td><td><a class="bm-count-link" href="book-titles.jsp?tagId=2">Xem 317 đầu sách</a></td><td><span class="bm-badge bm-badge--success">Đang dùng</span></td><td>05/06/2026</td><td>Trần Hoàng Minh</td><td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td></tr>
-                                    <tr><td><span class="bm-tag">Giáo trình</span></td><td><a class="bm-count-link" href="book-titles.jsp?tagId=3">Xem 2.841 đầu sách</a></td><td><span class="bm-badge bm-badge--success">Đang dùng</span></td><td>02/06/2026</td><td>Nguyễn Thị Lan</td><td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td></tr>
-                                    <tr><td><span class="bm-tag">Tài liệu 2015</span></td><td><a class="bm-count-link" href="book-titles.jsp?tagId=4">Xem 64 đầu sách</a></td><td><span class="bm-badge bm-badge--neutral">Đã ẩn</span></td><td>18/05/2026</td><td>Trần Hoàng Minh</td><td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td></tr>
+                                    <tr><td><span class="bm-tag">Java</span></td><td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?tagId=1">Xem 428 đầu sách</a></td><td><span class="bm-badge bm-badge--success">Đang dùng</span></td><td>08/06/2026</td><td>Nguyễn Thị Lan</td><td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td></tr>
+                                    <tr><td><span class="bm-tag">Cơ sở dữ liệu</span></td><td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?tagId=2">Xem 317 đầu sách</a></td><td><span class="bm-badge bm-badge--success">Đang dùng</span></td><td>05/06/2026</td><td>Trần Hoàng Minh</td><td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td></tr>
+                                    <tr><td><span class="bm-tag">Giáo trình</span></td><td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?tagId=3">Xem 2.841 đầu sách</a></td><td><span class="bm-badge bm-badge--success">Đang dùng</span></td><td>02/06/2026</td><td>Nguyễn Thị Lan</td><td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td></tr>
+                                    <tr><td><span class="bm-tag">Tài liệu 2015</span></td><td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?tagId=4">Xem 64 đầu sách</a></td><td><span class="bm-badge bm-badge--neutral">Đã ẩn</span></td><td>18/05/2026</td><td>Trần Hoàng Minh</td><td><button class="btn btn-sm bm-btn-secondary">Chỉnh sửa</button></td></tr>
                                 </tbody>
                             </table>
                         </div>

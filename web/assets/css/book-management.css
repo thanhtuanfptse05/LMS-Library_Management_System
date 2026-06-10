@@ -408,6 +408,53 @@
     padding: 5px 10px;
 }
 
+.bm-tag--secondary {
+    background: var(--surface-container-high);
+    color: var(--on-surface-variant);
+}
+
+.bm-empty-state {
+    align-items: center;
+    color: var(--on-surface-variant);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: center;
+    min-height: 180px;
+    text-align: center;
+}
+
+.bm-empty-state .material-symbols-outlined {
+    color: var(--primary);
+    font-size: 38px;
+}
+
+.bm-choice-grid {
+    background: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: 8px;
+    display: grid;
+    gap: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.bm-choice {
+    align-items: center;
+    display: flex;
+    font-size: 12px;
+    gap: 8px;
+}
+
+.bm-choice input {
+    accent-color: var(--primary);
+}
+
+.bm-required {
+    color: var(--error);
+}
+
 .bm-segmented-tabs {
     background: var(--surface-container-low);
     border-radius: 10px;

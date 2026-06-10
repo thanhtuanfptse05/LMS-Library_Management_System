@@ -53,8 +53,20 @@ public class AuthFilter implements Filter {
         boolean isManagerRoute = path.startsWith("/manager/") || path.equals("/manager");
         boolean isStudentRoute = path.startsWith("/student/") || path.equals("/student");
         boolean isLecturerRoute = path.startsWith("/lecturer/") || path.equals("/lecturer");
+        boolean isBookManagementRoute = path.startsWith("/book-management/") || path.equals("/book-management");
 
-        if (isAdminRoute) {
+        if (isBookManagementRoute) {
+            if (!isLoggedIn) {
+                httpResponse.sendRedirect(contextPath + "/login");
+                return;
+            }
+            if (!"ADMIN".equalsIgnoreCase(role) && !"LIBRARIAN".equalsIgnoreCase(role)
+                    && !"MANAGER".equalsIgnoreCase(role)) {
+                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                        "Bạn không có quyền truy cập chức năng quản lý sách.");
+                return;
+            }
+        } else if (isAdminRoute) {
             if (!isLoggedIn) {
                 httpResponse.sendRedirect(contextPath + "/login");
                 return;
