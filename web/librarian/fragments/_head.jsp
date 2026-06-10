@@ -12,7 +12,7 @@
         <link
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
             rel="stylesheet" />
-        <link href="${pageContext.request.contextPath}/assets/css/book-management.css" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/assets/css/book-management.css?v=20260610-4" rel="stylesheet" />
 
         <style>
             :root {
