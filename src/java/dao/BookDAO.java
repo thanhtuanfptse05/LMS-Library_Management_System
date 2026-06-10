@@ -80,6 +80,21 @@ public class BookDAO {
         }
     }
 
+    public List<Book> findAllForSelection() throws SQLException {
+        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, "
+                + "totalQuantity, availableQuantity, [status], createdAt, updatedAt "
+                + "FROM Book WHERE [status] = 'available' ORDER BY title";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            List<Book> books = new ArrayList<>();
+            while (rs.next()) {
+                books.add(mapBook(rs));
+            }
+            return books;
+        }
+    }
+
     public Book findById(Connection conn, int bookId) throws SQLException {
         String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, "
                 + "totalQuantity, availableQuantity, [status], createdAt, updatedAt FROM Book WHERE bookId = ?";
@@ -130,6 +145,25 @@ public class BookDAO {
             ps.setInt(7, book.getBookId());
             if (ps.executeUpdate() != 1) {
                 throw new SQLException("Không tìm thấy đầu sách cần cập nhật.");
+            }
+        }
+    }
+
+    public void updateQuantities(Connection conn, int bookId, int totalDelta, int availableDelta) throws SQLException {
+        String sql = "UPDATE Book SET totalQuantity = totalQuantity + ?, "
+                + "availableQuantity = availableQuantity + ?, updatedAt = GETDATE() "
+                + "WHERE bookId = ? AND totalQuantity + ? >= 0 AND availableQuantity + ? >= 0 "
+                + "AND availableQuantity + ? <= totalQuantity + ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, totalDelta);
+            ps.setInt(2, availableDelta);
+            ps.setInt(3, bookId);
+            ps.setInt(4, totalDelta);
+            ps.setInt(5, availableDelta);
+            ps.setInt(6, availableDelta);
+            ps.setInt(7, totalDelta);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Không thể đồng bộ số lượng tồn kho của đầu sách.");
             }
         }
     }
