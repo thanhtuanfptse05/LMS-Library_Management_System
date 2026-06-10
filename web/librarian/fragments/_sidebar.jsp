@@ -22,7 +22,7 @@
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/categories"><span class="material-symbols-outlined">category</span><span>Thể loại</span></a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/tags"><span class="material-symbols-outlined">sell</span><span>Tag sách</span></a>
         <p class="bm-sidebar-group mb-0 mt-2">Kho vật lý</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-copies.jsp"><span class="material-symbols-outlined">inventory_2</span><span>Tất cả bản sao</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/copies"><span class="material-symbols-outlined">inventory_2</span><span>Tất cả bản sao</span></a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-damaged-lost.jsp"><span class="material-symbols-outlined">report</span><span>Hỏng &amp; mất</span></a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-inventory-reconciliation.jsp"><span class="material-symbols-outlined">fact_check</span><span>Đối chiếu tồn kho</span></a>
         <p class="bm-sidebar-group mb-0 mt-2">Import &amp; lịch sử</p>
