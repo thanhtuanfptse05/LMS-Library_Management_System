@@ -451,6 +451,15 @@
     accent-color: var(--primary);
 }
 
+.bm-choice--hidden {
+    color: var(--on-surface-variant);
+    opacity: 0.65;
+}
+
+.bm-auto-filter .bm-reset-button {
+    min-height: 42px;
+}
+
 .bm-required {
     color: var(--error);
 }
