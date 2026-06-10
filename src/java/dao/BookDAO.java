@@ -214,7 +214,7 @@ public class BookDAO {
             booksById.put(book.getBookId(), book);
         }
         String placeholders = String.join(",", java.util.Collections.nCopies(books.size(), "?"));
-        String categorySql = "SELECT bc.bookId, c.categoryId, c.name, c.description FROM BookCategory bc "
+        String categorySql = "SELECT bc.bookId, c.categoryId, c.name, c.description, c.[status] FROM BookCategory bc "
                 + "JOIN Category c ON c.categoryId = bc.categoryId WHERE bc.bookId IN (" + placeholders + ") ORDER BY c.name";
         try (PreparedStatement ps = conn.prepareStatement(categorySql)) {
             bindBookIds(ps, books);
@@ -224,11 +224,12 @@ public class BookDAO {
                     category.setCategoryId(rs.getInt("categoryId"));
                     category.setName(rs.getString("name"));
                     category.setDescription(rs.getString("description"));
+                    category.setStatus(rs.getString("status"));
                     booksById.get(rs.getInt("bookId")).getCategories().add(category);
                 }
             }
         }
-        String tagSql = "SELECT bt.bookId, t.tagId, t.name FROM BookTag bt "
+        String tagSql = "SELECT bt.bookId, t.tagId, t.name, t.[status] FROM BookTag bt "
                 + "JOIN Tag t ON t.tagId = bt.tagId WHERE bt.bookId IN (" + placeholders + ") ORDER BY t.name";
         try (PreparedStatement ps = conn.prepareStatement(tagSql)) {
             bindBookIds(ps, books);
@@ -237,6 +238,7 @@ public class BookDAO {
                     Tag tag = new Tag();
                     tag.setTagId(rs.getInt("tagId"));
                     tag.setName(rs.getString("name"));
+                    tag.setStatus(rs.getString("status"));
                     booksById.get(rs.getInt("bookId")).getTags().add(tag);
                 }
             }
@@ -250,7 +252,7 @@ public class BookDAO {
     }
 
     private List<Category> loadCategories(Connection conn, int bookId) throws SQLException {
-        String sql = "SELECT c.categoryId, c.name, c.description FROM Category c "
+        String sql = "SELECT c.categoryId, c.name, c.description, c.[status] FROM Category c "
                 + "JOIN BookCategory bc ON bc.categoryId = c.categoryId WHERE bc.bookId = ? ORDER BY c.name";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -261,6 +263,7 @@ public class BookDAO {
                     category.setCategoryId(rs.getInt("categoryId"));
                     category.setName(rs.getString("name"));
                     category.setDescription(rs.getString("description"));
+                    category.setStatus(rs.getString("status"));
                     categories.add(category);
                 }
                 return categories;
@@ -269,7 +272,7 @@ public class BookDAO {
     }
 
     private List<Tag> loadTags(Connection conn, int bookId) throws SQLException {
-        String sql = "SELECT t.tagId, t.name FROM Tag t JOIN BookTag bt ON bt.tagId = t.tagId "
+        String sql = "SELECT t.tagId, t.name, t.[status] FROM Tag t JOIN BookTag bt ON bt.tagId = t.tagId "
                 + "WHERE bt.bookId = ? ORDER BY t.name";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -279,6 +282,7 @@ public class BookDAO {
                     Tag tag = new Tag();
                     tag.setTagId(rs.getInt("tagId"));
                     tag.setName(rs.getString("name"));
+                    tag.setStatus(rs.getString("status"));
                     tags.add(tag);
                 }
                 return tags;
