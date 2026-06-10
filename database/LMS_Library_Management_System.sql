@@ -125,14 +125,26 @@ CREATE TABLE AuditLogs (
 CREATE TABLE Category (
     categoryId INT IDENTITY(1,1) PRIMARY KEY,
     name NVARCHAR(255) NOT NULL UNIQUE,
-    description NVARCHAR(MAX) NULL
+    description NVARCHAR(MAX) NULL,
+    [status] NVARCHAR(20) NOT NULL DEFAULT 'active',
+    updatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    updatedBy INT NULL,
+
+    CONSTRAINT CK_Category_Status CHECK ([status] IN ('active', 'hidden')),
+    FOREIGN KEY (updatedBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
 
 CREATE TABLE Tag (
     tagId INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL UNIQUE
+    name NVARCHAR(100) NOT NULL UNIQUE,
+    [status] NVARCHAR(20) NOT NULL DEFAULT 'active',
+    updatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    updatedBy INT NULL,
+
+    CONSTRAINT CK_Tag_Status CHECK ([status] IN ('active', 'hidden')),
+    FOREIGN KEY (updatedBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
