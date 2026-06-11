@@ -30,11 +30,11 @@
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">policy</span><span>Chính sách Thư viện</span>
         </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">campaign</span><span>Thông báo hệ thống</span>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/notifications">
+            <span class="material-symbols-outlined">campaign</span><span>Quản lý Bảng tin</span>
         </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">notifications</span><span>Lịch sử Thông báo</span>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/email-templates">
+            <span class="material-symbols-outlined">mail</span><span>Mẫu Email</span>
         </a>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">inventory_2</span><span>Nhập sách</span>
