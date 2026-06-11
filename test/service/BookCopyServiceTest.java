@@ -30,17 +30,13 @@ public class BookCopyServiceTest {
     }
 
     @Test
-    public void validateUpdateRejectsInvalidCondition() throws Exception {
+    public void validateUpdateOnlyRequiresValidLocation() throws Exception {
         BookCopy copy = new BookCopy();
         copy.setBookCopyId(1);
         copy.setLocation("Kho A · Kệ A12");
         copy.setCondition("worn");
-        try {
-            bookCopyService.validateUpdate(copy);
-            fail("Expected ValidationException");
-        } catch (ValidationException e) {
-            assertTrue(e.getMessage().contains("Tình trạng bản sao không hợp lệ."));
-        }
+        bookCopyService.validateUpdate(copy);
+        assertTrue(true);
     }
 
     private void assertCreateValidation(BookCopy copy, String expected) throws Exception {

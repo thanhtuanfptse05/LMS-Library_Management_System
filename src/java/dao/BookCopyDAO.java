@@ -91,6 +91,14 @@ public class BookCopyDAO {
         }
     }
 
+    public BookCopy findByIdForUpdate(Connection conn, int bookCopyId) throws SQLException {
+        return findForUpdate(conn, "bc.bookCopyId = ?", bookCopyId);
+    }
+
+    public BookCopy findByBarcodeForUpdate(Connection conn, String barcode) throws SQLException {
+        return findForUpdate(conn, "bc.barcode = ?", barcode);
+    }
+
     public BookCopy findByBarcode(Connection conn, String barcode) throws SQLException {
         String sql = baseSelect() + " WHERE bc.barcode = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -119,15 +127,62 @@ public class BookCopyDAO {
     }
 
     public void updateAvailableCopy(Connection conn, BookCopy copy) throws SQLException {
-        String sql = "UPDATE BookCopy SET [location] = ?, condition = ?, [status] = ?, updatedAt = GETDATE() "
-                + "WHERE bookCopyId = ? AND [status] = 'available'";
+        String sql = "UPDATE BookCopy SET [location] = ?, updatedAt = GETDATE() "
+                + "WHERE bookCopyId = ? AND [status] = 'available' AND condition = 'good'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, copy.getLocation());
-            ps.setString(2, copy.getCondition());
-            ps.setString(3, copy.getStatus());
-            ps.setInt(4, copy.getBookCopyId());
+            ps.setInt(2, copy.getBookCopyId());
             if (ps.executeUpdate() != 1) {
                 throw new SQLException("Bản sao không còn ở trạng thái sẵn sàng.");
+            }
+        }
+    }
+
+    public void markUnavailable(Connection conn, int bookCopyId) throws SQLException {
+        updateIncidentState(conn, bookCopyId, "SET [status] = 'unavailable', updatedAt = GETDATE()",
+                "[status] = 'available' AND condition = 'good'");
+    }
+
+    public void restoreAvailable(Connection conn, int bookCopyId) throws SQLException {
+        updateIncidentState(conn, bookCopyId, "SET [status] = 'available', updatedAt = GETDATE()",
+                "[status] = 'unavailable' AND condition = 'good'");
+    }
+
+    public void resolveCondition(Connection conn, int bookCopyId, String condition) throws SQLException {
+        String sql = "UPDATE BookCopy SET condition = ?, updatedAt = GETDATE() "
+                + "WHERE bookCopyId = ? AND [status] = 'unavailable' AND condition = 'good'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, condition);
+            ps.setInt(2, bookCopyId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không còn ở trạng thái chờ kết luận sự cố.");
+            }
+        }
+    }
+
+    private BookCopy findForUpdate(Connection conn, String predicate, Object value) throws SQLException {
+        String sql = "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.[location], "
+                + "bc.condition, bc.[status], bc.barcode, bc.createdAt, bc.updatedAt "
+                + "FROM BookCopy bc WITH (UPDLOCK, ROWLOCK) JOIN Book b ON b.bookId = bc.bookId WHERE " + predicate;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (value instanceof Integer) {
+                ps.setInt(1, (Integer) value);
+            } else {
+                ps.setString(1, String.valueOf(value));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
+        }
+    }
+
+    private void updateIncidentState(Connection conn, int bookCopyId, String update, String predicate)
+            throws SQLException {
+        String sql = "UPDATE BookCopy " + update + " WHERE bookCopyId = ? AND " + predicate;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookCopyId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không còn ở trạng thái phù hợp.");
             }
         }
     }

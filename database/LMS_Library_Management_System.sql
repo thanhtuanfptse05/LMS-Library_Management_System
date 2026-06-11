@@ -214,6 +214,34 @@ CREATE TABLE BookCopy (
 
 -- ============================================================
 
+CREATE TABLE BookCopyIncident (
+    incidentId INT IDENTITY(1,1) PRIMARY KEY,
+    bookCopyId INT NOT NULL,
+    incidentType NVARCHAR(20) NOT NULL, -- damaged, lost
+    description NVARCHAR(1000) NOT NULL,
+    [status] NVARCHAR(20) NOT NULL DEFAULT 'pending', -- pending, investigating, resolved, rejected
+    resolution NVARCHAR(1000) NULL,
+    reportedBy INT NOT NULL,
+    reportedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    resolvedBy INT NULL,
+    resolvedAt DATETIME NULL,
+
+    CONSTRAINT FK_BookCopyIncident_BookCopy FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId),
+    CONSTRAINT FK_BookCopyIncident_ReportedBy FOREIGN KEY (reportedBy) REFERENCES [User](userId),
+    CONSTRAINT FK_BookCopyIncident_ResolvedBy FOREIGN KEY (resolvedBy) REFERENCES [User](userId),
+    CONSTRAINT CK_BookCopyIncident_Type CHECK (incidentType IN ('damaged', 'lost')),
+    CONSTRAINT CK_BookCopyIncident_Status CHECK ([status] IN ('pending', 'investigating', 'resolved', 'rejected'))
+);
+
+CREATE UNIQUE INDEX UX_BookCopyIncident_Open
+    ON BookCopyIncident(bookCopyId)
+    WHERE [status] <> 'resolved' AND [status] <> 'rejected';
+
+CREATE INDEX IX_BookCopyIncident_Status_ReportedAt
+    ON BookCopyIncident([status], reportedAt DESC);
+
+-- ============================================================
+
 CREATE TABLE BookImportBatch (
     importBatchId INT IDENTITY(1,1) PRIMARY KEY,
     importedBy INT NOT NULL,

@@ -116,7 +116,6 @@ public class BookCopyServlet extends HttpServlet {
         BookCopy copy = new BookCopy();
         copy.setBookCopyId(Integer.parseInt(request.getParameter("bookCopyId")));
         copy.setLocation(trimToNull(request.getParameter("location")));
-        copy.setCondition(request.getParameter("condition"));
         return copy;
     }
 

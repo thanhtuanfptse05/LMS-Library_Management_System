@@ -79,11 +79,9 @@ public class BookCopyService {
                 }
                 requested.setBookId(oldCopy.getBookId());
                 requested.setBarcode(oldCopy.getBarcode());
-                requested.setStatus("good".equals(requested.getCondition()) ? "available" : "unavailable");
+                requested.setCondition(oldCopy.getCondition());
+                requested.setStatus(oldCopy.getStatus());
                 bookCopyDAO.updateAvailableCopy(conn, requested);
-                if (!"available".equals(requested.getStatus())) {
-                    bookDAO.updateQuantities(conn, oldCopy.getBookId(), 0, -1);
-                }
                 auditLogDAO.insert(conn, actorId, "UPDATE_BOOK_COPY", "BookCopy", requested.getBookCopyId(),
                         toAuditValue(oldCopy), toAuditValue(requested));
                 conn.commit();
@@ -119,10 +117,6 @@ public class BookCopyService {
             throw new ValidationException("Bản sao không hợp lệ.");
         }
         validateLocation(copy.getLocation());
-        if (!"good".equals(copy.getCondition()) && !"damaged".equals(copy.getCondition())
-                && !"lost".equals(copy.getCondition())) {
-            throw new ValidationException("Tình trạng bản sao không hợp lệ.");
-        }
     }
 
     private void validateLocation(String location) throws ValidationException {
