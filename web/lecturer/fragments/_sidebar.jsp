@@ -26,13 +26,9 @@
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">bookmark</span><span>Danh sách đã lưu</span>
         </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
-            <span>Thông báo</span>
-            <span style="margin-left: auto; min-width: 18px; height: 18px; border-radius: 999px;
-                         background-color: var(--tertiary, #006398); color: #fff;
-                         font-size: 10px; font-weight: 700;
-                         display: inline-flex; align-items: center; justify-content: center; padding: 0 5px;">4</span>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/notifications">
+            <span class="material-symbols-outlined">campaign</span>
+            <span>Bảng tin</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Tài nguyên học tập</p>
         <a class="sidebar-link" href="#">
