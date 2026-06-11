@@ -28,14 +28,10 @@
                 <span class="material-symbols-outlined">payments</span>
                 <span>Lịch sử nộp phạt</span>
             </a>
-            <a class="sidebar-link active"
-               href="${pageContext.request.contextPath}/student/notifications.jsp">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
-                <span>Thông báo</span>
-                <span style="margin-left: auto; min-width: 18px; height: 18px; border-radius: 999px;
-                             background-color: var(--primary); color: #fff;
-                             font-size: 10px; font-weight: 700;
-                             display: inline-flex; align-items: center; justify-content: center; padding: 0 5px;">3</span>
+            <a class="sidebar-link"
+               href="${pageContext.request.contextPath}/notifications">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">campaign</span>
+                <span>Bảng tin</span>
             </a>
         </div>
     </div>
