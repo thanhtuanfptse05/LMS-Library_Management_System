@@ -159,6 +159,43 @@ public class NotificationDAO {
     }
 
     /**
+     * Ghi Audit Log vào bảng AuditLogs (ARCH-02).
+     *
+     * @param userId     ID người thực hiện hành động
+     * @param actionType Loại hành động (VD: 'CREATE_NOTIFICATION')
+     * @param entityName Tên bảng chịu tác động
+     * @param entityId   ID bản ghi chịu tác động (có thể null)
+     * @param oldValues  Giá trị cũ (có thể null)
+     * @param newValues  Giá trị mới (có thể null)
+     */
+    public void insertAuditLog(Integer userId, String actionType, String entityName, Integer entityId, String oldValues, String newValues) {
+        String sql = "INSERT INTO AuditLogs (userId, actionType, [entityName], [entityId], oldValues, newValues, [timestamp]) "
+                + "VALUES (?, ?, ?, ?, ?, ?, GETDATE())";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            if (userId != null) {
+                ps.setInt(1, userId);
+            } else {
+                ps.setNull(1, java.sql.Types.INTEGER);
+            }
+            ps.setString(2, actionType);
+            ps.setString(3, entityName);
+            if (entityId != null) {
+                ps.setInt(4, entityId);
+            } else {
+                ps.setNull(4, java.sql.Types.INTEGER);
+            }
+            ps.setString(5, oldValues);
+            ps.setString(6, newValues);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error inserting audit log for action=" + actionType, e);
+        }
+    }
+
+    /**
      * Ánh xạ một dòng ResultSet thành đối tượng Notification.
      *
      * @param rs ResultSet đang trỏ tới dòng dữ liệu hợp lệ
