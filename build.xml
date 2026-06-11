@@ -10,6 +10,22 @@
 <project name="LMS-Library_Management_System" default="default" basedir=".">
     <description>Builds, tests, and runs the project LMS-Library Management System.</description>
     <import file="nbproject/build-impl.xml"/>
+    <target name="-post-compile">
+        <copy todir="${build.web.dir}/WEB-INF/lib">
+            <fileset dir="allowedlib">
+                <include name="poi-*.jar"/>
+                <include name="xmlbeans-*.jar"/>
+                <include name="commons-compress-*.jar"/>
+                <include name="commons-io-*.jar"/>
+                <include name="commons-collections4-*.jar"/>
+                <include name="curvesapi-*.jar"/>
+                <include name="log4j-*.jar"/>
+                <include name="commons-codec-*.jar"/>
+                <include name="commons-math3-*.jar"/>
+                <include name="SparseBitSet-*.jar"/>
+            </fileset>
+        </copy>
+    </target>
     <!--
 
     There exist several targets which are by default empty and which can be 

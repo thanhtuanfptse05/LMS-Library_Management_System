@@ -62,6 +62,20 @@ public class TagDAO {
         }
     }
 
+    public Tag findByName(Connection conn, String name) throws SQLException {
+        String sql = "SELECT t.tagId, t.name, t.[status], t.updatedAt, t.updatedBy, "
+                + "COALESCE(mp.fullName, u.email, N'Chưa cập nhật') AS updatedByName, "
+                + "(SELECT COUNT(*) FROM BookTag bt WHERE bt.tagId = t.tagId) AS bookCount "
+                + "FROM Tag t LEFT JOIN [User] u ON u.userId = t.updatedBy "
+                + "LEFT JOIN MemberProfile mp ON mp.userId = t.updatedBy WHERE LOWER(t.name) = LOWER(?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
+        }
+    }
+
     public boolean existsByName(Connection conn, String name, Integer excludedId) throws SQLException {
         String sql = "SELECT 1 FROM Tag WHERE LOWER(name) = LOWER(?)"
                 + (excludedId == null ? "" : " AND tagId <> ?");

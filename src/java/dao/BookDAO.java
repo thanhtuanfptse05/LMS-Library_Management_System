@@ -111,6 +111,17 @@ public class BookDAO {
         }
     }
 
+    public Book findByIsbn(Connection conn, String isbn) throws SQLException {
+        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, "
+                + "totalQuantity, availableQuantity, [status], createdAt, updatedAt FROM Book WHERE isbn = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, isbn);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? mapBook(rs) : null;
+            }
+        }
+    }
+
     public boolean existsByIsbn(Connection conn, String isbn) throws SQLException {
         String sql = "SELECT 1 FROM Book WHERE isbn = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

@@ -63,6 +63,20 @@ public class CategoryDAO {
         }
     }
 
+    public Category findByName(Connection conn, String name) throws SQLException {
+        String sql = "SELECT c.categoryId, c.name, c.description, c.[status], c.updatedAt, c.updatedBy, "
+                + "COALESCE(mp.fullName, u.email, N'Chưa cập nhật') AS updatedByName, "
+                + "(SELECT COUNT(*) FROM BookCategory bc WHERE bc.categoryId = c.categoryId) AS bookCount "
+                + "FROM Category c LEFT JOIN [User] u ON u.userId = c.updatedBy "
+                + "LEFT JOIN MemberProfile mp ON mp.userId = c.updatedBy WHERE LOWER(c.name) = LOWER(?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
+        }
+    }
+
     public boolean existsByName(Connection conn, String name, Integer excludedId) throws SQLException {
         String sql = "SELECT 1 FROM Category WHERE LOWER(name) = LOWER(?)"
                 + (excludedId == null ? "" : " AND categoryId <> ?");

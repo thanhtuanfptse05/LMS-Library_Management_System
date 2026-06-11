@@ -23,11 +23,11 @@
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/tags"><span class="material-symbols-outlined">sell</span><span>Tag sách</span></a>
         <p class="bm-sidebar-group mb-0 mt-2">Kho vật lý</p>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/copies"><span class="material-symbols-outlined">inventory_2</span><span>Tất cả bản sao</span></a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-damaged-lost.jsp"><span class="material-symbols-outlined">report</span><span>Hỏng &amp; mất</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/incidents"><span class="material-symbols-outlined">report</span><span>Hỏng &amp; mất</span></a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-inventory-reconciliation.jsp"><span class="material-symbols-outlined">fact_check</span><span>Đối chiếu tồn kho</span></a>
         <p class="bm-sidebar-group mb-0 mt-2">Import &amp; lịch sử</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-import.jsp"><span class="material-symbols-outlined">upload_file</span><span>Import dữ liệu</span></a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-import-history.jsp"><span class="material-symbols-outlined">history</span><span>Lịch sử xử lý</span></a>
+        <c:if test="${sessionScope.role == 'ADMIN' or sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'admin' or sessionScope.role == 'librarian'}"><a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import"><span class="material-symbols-outlined">upload_file</span><span>Import dữ liệu</span></a></c:if>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import-history"><span class="material-symbols-outlined">history</span><span>Lịch sử xử lý</span></a>
 
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3 small">Người dùng</p>
         <a class="sidebar-link" href="#"><span class="material-symbols-outlined">group</span><span>Danh bạ thành viên</span></a>

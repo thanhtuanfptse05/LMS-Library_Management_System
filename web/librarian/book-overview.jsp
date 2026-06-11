@@ -73,7 +73,7 @@
                             <span class="bm-alert-item__icon material-symbols-outlined">report</span>
                             <div>
                                 <p class="bm-alert-item__title mb-1">8 bản sao báo hỏng</p>
-                                <a class="bm-action-link" href="book-damaged-lost.jsp">Mở danh sách hỏng &amp; mất</a>
+                                <a class="bm-action-link" href="${pageContext.request.contextPath}/book-management/incidents">Mở danh sách hỏng &amp; mất</a>
                             </div>
                         </div>
                         <div class="bm-alert-item">
@@ -87,7 +87,7 @@
                             <span class="bm-alert-item__icon material-symbols-outlined">upload_file</span>
                             <div>
                                 <p class="bm-alert-item__title mb-1">1 phiên import có lỗi</p>
-                                <a class="bm-action-link" href="book-import-history.jsp">Xem lịch sử xử lý</a>
+                                <a class="bm-action-link" href="${pageContext.request.contextPath}/book-management/import-history">Xem lịch sử xử lý</a>
                             </div>
                         </div>
                     </div>
