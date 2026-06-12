@@ -138,6 +138,15 @@ public class BookCopyDAO {
         }
     }
 
+    public void updateLocation(Connection conn, int bookCopyId, String location) throws SQLException {
+        String sql = "UPDATE BookCopy SET [location] = ?, updatedAt = GETDATE() WHERE bookCopyId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, location);
+            ps.setInt(2, bookCopyId);
+            if (ps.executeUpdate() != 1) throw new SQLException("Bản sao không tồn tại.");
+        }
+    }
+
     public void markUnavailable(Connection conn, int bookCopyId) throws SQLException {
         updateIncidentState(conn, bookCopyId, "SET [status] = 'unavailable', updatedAt = GETDATE()",
                 "[status] = 'available' AND condition = 'good'");

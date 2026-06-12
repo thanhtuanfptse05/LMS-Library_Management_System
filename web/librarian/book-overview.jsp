@@ -80,7 +80,7 @@
                             <span class="bm-alert-item__icon material-symbols-outlined">difference</span>
                             <div>
                                 <p class="bm-alert-item__title mb-1">5 lệch kho chưa xác minh</p>
-                                <a class="bm-action-link" href="book-inventory-reconciliation.jsp">Xem lệch kho</a>
+                                <a class="bm-action-link" href="${pageContext.request.contextPath}/book-management/inventory">Xem lệch kho</a>
                             </div>
                         </div>
                         <div class="bm-alert-item">
