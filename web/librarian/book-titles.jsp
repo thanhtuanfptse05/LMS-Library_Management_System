@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
@@ -9,7 +10,7 @@
 <div class="d-flex main-wrapper overflow-hidden">
     <main class="flex-grow-1 overflow-y-auto main-content-layout">
         <jsp:include page="fragments/_header.jsp" />
-        <div class="container-fluid px-4 py-4 bm-page">
+        <div class="container-fluid px-4 py-4 bm-page bm-title-page">
             <c:if test="${not empty sessionScope.successMessage}">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <c:out value="${sessionScope.successMessage}" />
@@ -39,7 +40,7 @@
                 </c:if>
             </section>
 
-            <form class="bm-filter-card bm-filter-card--compact mb-2" method="get" action="${pageContext.request.contextPath}/book-management/titles">
+            <form class="bm-filter-card bm-title-filter mb-4" method="get" action="${pageContext.request.contextPath}/book-management/titles">
                 <c:if test="${not empty selectedTagId}"><input type="hidden" name="tagId" value="${selectedTagId}"></c:if>
                 <div class="row g-2">
                     <div class="col-xl-5 col-lg-6 bm-search">
@@ -80,17 +81,39 @@
                 </div>
             </form>
 
-            <div class="bm-summary-strip bm-summary-strip--compact mb-2">
-                <span class="bm-summary-strip__item">Tổng cộng: <strong><fmt:formatNumber value="${summary.totalBooks}" /> đầu sách</strong></span>
-                <span class="bm-summary-strip__item">Tổng bản sao: <strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span>
-                <span class="bm-summary-strip__item">Sẵn sàng: <strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span>
-                <span class="bm-summary-strip__item">Chưa có bản sao: <strong><fmt:formatNumber value="${summary.booksWithoutCopies}" /> đầu sách</strong></span>
+            <div class="bm-title-stats mb-3">
+                <div class="bm-title-stat">
+                    <span class="bm-title-stat__icon material-symbols-outlined">menu_book</span>
+                    <span><small>Tổng đầu sách</small><strong><fmt:formatNumber value="${summary.totalBooks}" /></strong></span>
+                </div>
+                <div class="bm-title-stat">
+                    <span class="bm-title-stat__icon material-symbols-outlined">inventory_2</span>
+                    <span><small>Tổng bản sao</small><strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span>
+                </div>
+                <div class="bm-title-stat bm-title-stat--success">
+                    <span class="bm-title-stat__icon material-symbols-outlined">check_circle</span>
+                    <span><small>Sẵn sàng</small><strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span>
+                </div>
+                <div class="bm-title-stat bm-title-stat--warning">
+                    <span class="bm-title-stat__icon material-symbols-outlined">library_add</span>
+                    <span><small>Chưa có bản sao</small><strong><fmt:formatNumber value="${summary.booksWithoutCopies}" /></strong></span>
+                </div>
             </div>
 
-            <section class="bm-table-card bm-table-card--primary">
+            <section class="bm-table-card bm-table-card--primary bm-title-table">
                 <div class="table-responsive">
                     <table class="table table-lms">
-                        <thead><tr><th>Đầu sách</th><th>ISBN</th><th>Thể loại &amp; tag</th><th>Xuất bản</th><th>Tổng bản sao</th><th>Sẵn sàng</th><th>Trạng thái</th><th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th></tr></thead>
+                        <colgroup>
+                            <col class="bm-title-col-book">
+                            <col class="bm-title-col-isbn">
+                            <col class="bm-title-col-tags">
+                            <col class="bm-title-col-publisher">
+                            <col class="bm-title-col-number">
+                            <col class="bm-title-col-number">
+                            <col class="bm-title-col-status">
+                            <col class="bm-title-col-action">
+                        </colgroup>
+                        <thead><tr><th>Đầu sách</th><th>ISBN</th><th>Thể loại &amp; tag</th><th>Xuất bản</th><th class="bm-number-cell">Tổng bản sao</th><th class="bm-number-cell">Sẵn sàng</th><th>Trạng thái</th><th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th></tr></thead>
                         <tbody>
                             <c:forEach var="book" items="${books}">
                                 <tr>
@@ -110,17 +133,41 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td><c:out value="${book.isbn}" /></td>
+                                    <td class="bm-isbn-cell"><c:out value="${book.isbn}" /></td>
                                     <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <c:forEach var="category" items="${book.categories}"><span class="bm-tag"><c:out value="${category.name}" /></span></c:forEach>
-                                            <c:forEach var="tag" items="${book.tags}"><span class="bm-tag bm-tag--secondary"><c:out value="${tag.name}" /></span></c:forEach>
+                                        <c:set var="labelCount" value="${fn:length(book.categories) + fn:length(book.tags)}" />
+                                        <c:set var="shownLabels" value="0" />
+                                        <c:set var="allLabels" value="" />
+                                        <c:forEach var="category" items="${book.categories}">
+                                            <c:set var="allLabels" value="${allLabels}${empty allLabels ? '' : ', '}${category.name}" />
+                                        </c:forEach>
+                                        <c:forEach var="tag" items="${book.tags}">
+                                            <c:set var="allLabels" value="${allLabels}${empty allLabels ? '' : ', '}${tag.name}" />
+                                        </c:forEach>
+                                        <div class="bm-label-list">
+                                            <c:forEach var="category" items="${book.categories}">
+                                                <c:if test="${shownLabels < 2}">
+                                                    <span class="bm-tag"><c:out value="${category.name}" /></span>
+                                                    <c:set var="shownLabels" value="${shownLabels + 1}" />
+                                                </c:if>
+                                            </c:forEach>
+                                            <c:forEach var="tag" items="${book.tags}">
+                                                <c:if test="${shownLabels < 2}">
+                                                    <span class="bm-tag bm-tag--secondary"><c:out value="${tag.name}" /></span>
+                                                    <c:set var="shownLabels" value="${shownLabels + 1}" />
+                                                </c:if>
+                                            </c:forEach>
+                                            <c:if test="${labelCount > 2}">
+                                                <button class="bm-tag-overflow" type="button" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top" title="<c:out value="${allLabels}" />"
+                                                        aria-label="Xem đầy đủ thể loại và tag">+${labelCount - 2}</button>
+                                            </c:if>
                                             <c:if test="${empty book.categories and empty book.tags}"><span class="bm-empty-note">Chưa phân loại</span></c:if>
                                         </div>
                                     </td>
                                     <td><c:out value="${empty book.publisher ? 'Chưa cập nhật' : book.publisher}" /><c:if test="${not empty book.publicationYear}">, <c:out value="${book.publicationYear}" /></c:if></td>
-                                    <td><strong><fmt:formatNumber value="${book.totalQuantity}" /></strong></td>
-                                    <td><strong><fmt:formatNumber value="${book.availableQuantity}" /></strong></td>
+                                    <td class="bm-number-cell"><strong><fmt:formatNumber value="${book.totalQuantity}" /></strong></td>
+                                    <td class="bm-number-cell"><strong><fmt:formatNumber value="${book.availableQuantity}" /></strong></td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${book.totalQuantity == 0}"><span class="bm-badge bm-badge--neutral">Chưa có bản sao</span></c:when>
@@ -165,7 +212,7 @@
             </c:if>
         </div>
         <jsp:include page="fragments/_footer.jsp" />
-        <script src="${pageContext.request.contextPath}/assets/js/book-titles.js?v=20260610-1"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/book-titles.js?v=20260612-2"></script>
     </main>
 </div>
 

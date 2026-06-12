@@ -24,13 +24,13 @@
                 <c:if test="${canEdit}"><button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#reportModal"><span class="material-symbols-outlined">add</span>Ghi nhận sự cố</button></c:if>
             </section>
 
-            <div class="row g-3 mb-3">
-                <div class="col-md-4"><article class="raised-card p-3"><p class="bm-stat-card__label mb-1">Chờ xác minh</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.pendingCount}" /></p></article></div>
-                <div class="col-md-4"><article class="raised-card p-3"><p class="bm-stat-card__label mb-1">Đang xử lý</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.investigatingCount}" /></p></article></div>
-                <div class="col-md-4"><article class="raised-card p-3"><p class="bm-stat-card__label mb-1">Đã xử lý tháng này</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.resolvedThisMonthCount}" /></p></article></div>
+            <div class="bm-list-stats mb-3">
+                <article class="bm-list-stat bm-list-stat--warning"><span class="material-symbols-outlined">pending_actions</span><div><p class="bm-stat-card__label mb-1">Chờ xác minh</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.pendingCount}" /></p></div></article>
+                <article class="bm-list-stat bm-list-stat--info"><span class="material-symbols-outlined">manage_search</span><div><p class="bm-stat-card__label mb-1">Đang xử lý</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.investigatingCount}" /></p></div></article>
+                <article class="bm-list-stat bm-list-stat--success"><span class="material-symbols-outlined">task_alt</span><div><p class="bm-stat-card__label mb-1">Đã xử lý tháng này</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.resolvedThisMonthCount}" /></p></div></article>
             </div>
 
-            <form class="bm-filter-card bm-filter-card--compact mb-2" method="get" action="${pageContext.request.contextPath}/book-management/incidents">
+            <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/book-management/incidents">
                 <div class="row g-2">
                     <div class="col-xl-5 col-lg-6 bm-search"><span class="material-symbols-outlined">search</span><input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Tìm mã vạch hoặc đầu sách"></div>
                     <div class="col-xl-3 col-md-4"><select class="form-select" name="type"><option value="">Tất cả loại sự cố</option><option value="damaged" ${selectedType == 'damaged' ? 'selected' : ''}>Hỏng</option><option value="lost" ${selectedType == 'lost' ? 'selected' : ''}>Mất</option></select></div>
@@ -41,7 +41,7 @@
 
             <div class="bm-rule-note mb-3"><strong>Quy tắc:</strong> Ghi nhận sự cố sẽ tạm ngừng lưu thông bản sao. Tình trạng Hỏng/Mất chỉ được cập nhật sau khi có kết luận.</div>
 
-            <section class="bm-table-card bm-table-card--primary"><div class="table-responsive"><table class="table table-lms">
+            <section class="bm-table-card bm-table-card--primary bm-data-table"><div class="table-responsive"><table class="table table-lms">
                 <thead><tr><th>Bản sao</th><th>Sự cố</th><th>Ghi nhận</th><th>Người báo</th><th>Trạng thái</th><th>Hướng xử lý</th><th></th></tr></thead>
                 <tbody>
                     <c:forEach var="incident" items="${incidents}"><tr>

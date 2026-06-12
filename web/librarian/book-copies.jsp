@@ -24,7 +24,7 @@
                 <c:if test="${canEdit}"><button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCopyModal"><span class="material-symbols-outlined">add</span>Thêm bản sao</button></c:if>
             </section>
 
-            <form class="bm-filter-card bm-filter-card--compact mb-2" method="get" action="${pageContext.request.contextPath}/book-management/copies">
+            <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/book-management/copies">
                 <div class="row g-2">
                     <div class="col-xl-4 col-lg-6 bm-search"><span class="material-symbols-outlined">barcode_scanner</span><input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Quét mã vạch hoặc tìm tên sách"></div>
                     <div class="col-xl-3 col-md-4"><select class="form-select" name="location"><option value="">Tất cả vị trí</option><c:forEach var="item" items="${locations}"><option value="<c:out value="${item}" />" ${selectedLocation == item ? 'selected' : ''}><c:out value="${item}" /></option></c:forEach></select></div>
@@ -33,10 +33,10 @@
                 </div>
             </form>
 
-            <div class="bm-rule-note bm-rule-note--compact mb-2"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đã đặt trước hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
-            <div class="bm-summary-strip bm-summary-strip--compact mb-2"><span class="bm-summary-strip__item">Tổng: <strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span><span class="bm-summary-strip__item">Sẵn sàng: <strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span><span class="bm-summary-strip__item">Đang mượn: <strong><fmt:formatNumber value="${summary.borrowedCopies}" /></strong></span><span class="bm-summary-strip__item">Hỏng/mất: <strong><fmt:formatNumber value="${summary.incidentCopies}" /></strong></span></div>
+            <div class="bm-rule-note bm-rule-note--compact mb-3"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đã đặt trước hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
+            <div class="bm-summary-strip bm-list-summary mb-3"><span class="bm-summary-strip__item">Tổng: <strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span><span class="bm-summary-strip__item">Sẵn sàng: <strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span><span class="bm-summary-strip__item">Đang mượn: <strong><fmt:formatNumber value="${summary.borrowedCopies}" /></strong></span><span class="bm-summary-strip__item">Hỏng/mất: <strong><fmt:formatNumber value="${summary.incidentCopies}" /></strong></span></div>
 
-            <section class="bm-table-card bm-table-card--primary"><div class="table-responsive"><table class="table table-lms">
+            <section class="bm-table-card bm-table-card--primary bm-data-table"><div class="table-responsive"><table class="table table-lms">
                 <thead><tr><th>Mã vạch</th><th>Đầu sách</th><th>Vị trí</th><th>Tình trạng</th><th>Lưu thông</th><th>Cập nhật</th><th class="bm-copy-action-column">Thao tác</th></tr></thead>
                 <tbody>
                     <c:forEach var="copy" items="${copies}"><tr>

@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
+    if (window.bootstrap) {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (trigger) {
+            window.bootstrap.Tooltip.getOrCreateInstance(trigger);
+        });
+    }
+
     const editModal = document.querySelector('#editBookModal[data-auto-open="true"]');
     if (editModal && window.bootstrap) {
         window.bootstrap.Modal.getOrCreateInstance(editModal).show();
