@@ -4,9 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.MemberProfile;
 import model.User;
+import model.UserDTO;
 import util.DatabaseConnection;
 
 /**
@@ -272,5 +277,591 @@ public class UserDAO {
         user.setFailedLoginAttempts(rs.getInt("failedLoginAttempts"));
         user.setLockedUntil(rs.getTimestamp("lockedUntil"));
         return user;
+    }
+
+    // =========================================================================
+    // ADMIN USER MANAGEMENT METHODS
+    // =========================================================================
+
+    /**
+     * Truy vấn danh sách người dùng gộp thông tin DTO, hỗ trợ tìm kiếm, lọc, phân trang.
+     */
+    public List<UserDTO> findAllUsers(String search, String role, String status, int offset, int limit) {
+        List<UserDTO> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT u.userId, u.email, u.status, u.role, u.lockReason, u.failedLoginAttempts, u.lockedUntil, "
+              + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
+              + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
+              + "s.major, s.enrollmentYear, l.department "
+              + "FROM [User] u "
+              + "LEFT JOIN MemberProfile p ON u.userId = p.userId "
+              + "LEFT JOIN Student s ON u.userId = s.userId "
+              + "LEFT JOIN Lecturer l ON u.userId = l.userId "
+              + "LEFT JOIN Librarian lib ON u.userId = lib.userId "
+              + "LEFT JOIN LibraryManager mgr ON u.userId = mgr.userId "
+              + "LEFT JOIN Admin adm ON u.userId = adm.userId "
+              + "WHERE 1=1 "
+        );
+        
+        List<Object> params = new ArrayList<>();
+        if (search != null && !search.trim().isEmpty()) {
+            String likeSearch = "%" + search.trim() + "%";
+            sql.append("AND (u.email LIKE ? OR p.fullName LIKE ? OR s.studentCode LIKE ? OR l.lecturerCode LIKE ? OR lib.staffCode LIKE ? OR mgr.staffCode LIKE ? OR adm.staffCode LIKE ?) ");
+            for (int i = 0; i < 7; i++) {
+                params.add(likeSearch);
+            }
+        }
+        if (role != null && !role.trim().isEmpty() && !"ALL".equalsIgnoreCase(role)) {
+            sql.append("AND u.role = ? ");
+            params.add(role.trim());
+        }
+        if (status != null && !status.trim().isEmpty() && !"ALL".equalsIgnoreCase(status)) {
+            sql.append("AND u.status = ? ");
+            params.add(status.trim());
+        }
+        
+        sql.append("ORDER BY u.userId DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        params.add(offset);
+        params.add(limit);
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            
+            for (int i = 0; i < params.size(); i++) {
+                Object param = params.get(i);
+                if (param instanceof String) {
+                    ps.setString(i + 1, (String) param);
+                } else if (param instanceof Integer) {
+                    ps.setInt(i + 1, (Integer) param);
+                }
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToUserDTO(rs));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error in findAllUsers", e);
+        }
+        return list;
+    }
+
+    /**
+     * Đếm tổng số người dùng thỏa mãn điều kiện tìm kiếm và lọc.
+     */
+    public int countAllUsers(String search, String role, String status) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) "
+              + "FROM [User] u "
+              + "LEFT JOIN MemberProfile p ON u.userId = p.userId "
+              + "LEFT JOIN Student s ON u.userId = s.userId "
+              + "LEFT JOIN Lecturer l ON u.userId = l.userId "
+              + "LEFT JOIN Librarian lib ON u.userId = lib.userId "
+              + "LEFT JOIN LibraryManager mgr ON u.userId = mgr.userId "
+              + "LEFT JOIN Admin adm ON u.userId = adm.userId "
+              + "WHERE 1=1 "
+        );
+        
+        List<Object> params = new ArrayList<>();
+        if (search != null && !search.trim().isEmpty()) {
+            String likeSearch = "%" + search.trim() + "%";
+            sql.append("AND (u.email LIKE ? OR p.fullName LIKE ? OR s.studentCode LIKE ? OR l.lecturerCode LIKE ? OR lib.staffCode LIKE ? OR mgr.staffCode LIKE ? OR adm.staffCode LIKE ?) ");
+            for (int i = 0; i < 7; i++) {
+                params.add(likeSearch);
+            }
+        }
+        if (role != null && !role.trim().isEmpty() && !"ALL".equalsIgnoreCase(role)) {
+            sql.append("AND u.role = ? ");
+            params.add(role.trim());
+        }
+        if (status != null && !status.trim().isEmpty() && !"ALL".equalsIgnoreCase(status)) {
+            sql.append("AND u.status = ? ");
+            params.add(status.trim());
+        }
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            
+            for (int i = 0; i < params.size(); i++) {
+                Object param = params.get(i);
+                if (param instanceof String) {
+                    ps.setString(i + 1, (String) param);
+                }
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error in countAllUsers", e);
+        }
+        return 0;
+    }
+
+    /**
+     * Kiểm tra Email đã tồn tại hay chưa.
+     */
+    public boolean existsByEmail(String email, Integer excludeUserId) {
+        String sql = "SELECT COUNT(*) FROM [User] WHERE email = ?";
+        if (excludeUserId != null) {
+            sql += " AND userId != ?";
+        }
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            if (excludeUserId != null) {
+                ps.setInt(2, excludeUserId);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error checking email existence", e);
+        }
+        return false;
+    }
+
+    /**
+     * Kiểm tra Mã số định danh (studentCode/lecturerCode/staffCode) đã tồn tại hay chưa.
+     */
+    public boolean existsByCode(String code, String role, Integer excludeUserId) {
+        String sql = "";
+        if ("STUDENT".equalsIgnoreCase(role)) {
+            sql = "SELECT COUNT(*) FROM Student WHERE studentCode = ?";
+        } else if ("LECTURER".equalsIgnoreCase(role)) {
+            sql = "SELECT COUNT(*) FROM Lecturer WHERE lecturerCode = ?";
+        } else if ("LIBRARIAN".equalsIgnoreCase(role)) {
+            sql = "SELECT COUNT(*) FROM Librarian WHERE staffCode = ?";
+        } else if ("MANAGER".equalsIgnoreCase(role)) {
+            sql = "SELECT COUNT(*) FROM LibraryManager WHERE staffCode = ?";
+        } else if ("ADMIN".equalsIgnoreCase(role)) {
+            sql = "SELECT COUNT(*) FROM Admin WHERE staffCode = ?";
+        } else {
+            return false;
+        }
+
+        if (excludeUserId != null) {
+            sql += " AND userId != ?";
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, code);
+            if (excludeUserId != null) {
+                ps.setInt(2, excludeUserId);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error checking code existence", e);
+        }
+        return false;
+    }
+
+    /**
+     * Tạo tài khoản mới cùng hồ sơ cá nhân và bảng vai trò trong 1 DB Transaction.
+     */
+    public boolean createUserWithProfile(User user, MemberProfile profile, String code, String major, Integer enrollmentYear, String department) throws SQLException {
+        Connection conn = null;
+        String sqlUser = "INSERT INTO [User] (email, passwordHash, [status], [role], lockReason, failedLoginAttempts) VALUES (?, ?, ?, ?, ?, 0)";
+        String sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+            
+            int userId = 0;
+            // 1. Insert User
+            try (PreparedStatement psUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
+                psUser.setString(1, user.getEmail());
+                psUser.setString(2, user.getPasswordHash());
+                psUser.setString(3, user.getStatus() != null ? user.getStatus() : "active");
+                psUser.setString(4, user.getRole());
+                psUser.setString(5, user.getLockReason());
+                psUser.executeUpdate();
+                
+                try (ResultSet rsUser = psUser.getGeneratedKeys()) {
+                    if (rsUser.next()) {
+                        userId = rsUser.getInt(1);
+                    } else {
+                        throw new SQLException("Creating user failed, no ID obtained.");
+                    }
+                }
+            }
+            user.setUserId(userId);
+            
+            // 2. Insert MemberProfile
+            try (PreparedStatement psProfile = conn.prepareStatement(sqlProfile)) {
+                psProfile.setInt(1, userId);
+                psProfile.setString(2, profile.getFullName());
+                psProfile.setString(3, profile.getPhoneNumber());
+                psProfile.setString(4, profile.getGender());
+                psProfile.setDate(5, profile.getDateOfBirth());
+                psProfile.setDate(6, profile.getStartDate() != null ? profile.getStartDate() : new java.sql.Date(System.currentTimeMillis()));
+                psProfile.setDate(7, profile.getEndDate() != null ? profile.getEndDate() : new java.sql.Date(System.currentTimeMillis() + 31536000000L)); // 1 year
+                psProfile.executeUpdate();
+            }
+            
+            // 3. Insert Role Table
+            String sqlRole = "";
+            if ("STUDENT".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (?, ?, ?, ?)";
+            } else if ("LECTURER".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "INSERT INTO Lecturer (userId, lecturerCode, department) VALUES (?, ?, ?)";
+            } else if ("LIBRARIAN".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "INSERT INTO Librarian (userId, staffCode) VALUES (?, ?)";
+            } else if ("MANAGER".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "INSERT INTO LibraryManager (userId, staffCode) VALUES (?, ?)";
+            } else if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "INSERT INTO Admin (userId, staffCode) VALUES (?, ?)";
+            }
+            
+            if (!sqlRole.isEmpty()) {
+                try (PreparedStatement psRole = conn.prepareStatement(sqlRole)) {
+                    psRole.setInt(1, userId);
+                    psRole.setString(2, code);
+                    if ("STUDENT".equalsIgnoreCase(user.getRole())) {
+                        psRole.setString(3, major);
+                        if (enrollmentYear != null) {
+                            psRole.setInt(4, enrollmentYear);
+                        } else {
+                            psRole.setNull(4, java.sql.Types.INTEGER);
+                        }
+                    } else if ("LECTURER".equalsIgnoreCase(user.getRole())) {
+                        psRole.setString(3, department);
+                    }
+                    psRole.executeUpdate();
+                }
+            }
+            
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error rolling back transaction", ex);
+                }
+            }
+            LOGGER.log(Level.SEVERE, "Error in createUserWithProfile", e);
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error closing connection", ex);
+                }
+            }
+        }
+    }
+
+    /**
+     * Cập nhật tài khoản, hồ sơ cá nhân và bảng vai trò (sử dụng UPSERT cho Profile).
+     */
+    public boolean updateUserWithProfile(User user, MemberProfile profile, String code, String major, Integer enrollmentYear, String department) throws SQLException {
+        Connection conn = null;
+        String sqlUser = "UPDATE [User] SET [status] = ?, lockReason = ? WHERE userId = ?";
+        
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+            
+            // 1. Update User status & lockReason
+            try (PreparedStatement psUser = conn.prepareStatement(sqlUser)) {
+                psUser.setString(1, user.getStatus());
+                psUser.setString(2, user.getLockReason());
+                psUser.setInt(3, user.getUserId());
+                psUser.executeUpdate();
+            }
+            
+            // 2. UPSERT MemberProfile (BR-15)
+            boolean profileExists = false;
+            String sqlCheckProfile = "SELECT COUNT(*) FROM MemberProfile WHERE userId = ?";
+            try (PreparedStatement psCheckProfile = conn.prepareStatement(sqlCheckProfile)) {
+                psCheckProfile.setInt(1, user.getUserId());
+                try (ResultSet rsCheck = psCheckProfile.executeQuery()) {
+                    if (rsCheck.next() && rsCheck.getInt(1) > 0) {
+                        profileExists = true;
+                    }
+                }
+            }
+            
+            String sqlProfile;
+            if (profileExists) {
+                sqlProfile = "UPDATE MemberProfile SET fullName = ?, phoneNumber = ?, gender = ?, dateOfBirth = ? WHERE userId = ?";
+            } else {
+                sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            }
+            
+            try (PreparedStatement psProfile = conn.prepareStatement(sqlProfile)) {
+                if (profileExists) {
+                    psProfile.setString(1, profile.getFullName());
+                    psProfile.setString(2, profile.getPhoneNumber());
+                    psProfile.setString(3, profile.getGender());
+                    psProfile.setDate(4, profile.getDateOfBirth());
+                    psProfile.setInt(5, user.getUserId());
+                } else {
+                    psProfile.setInt(1, user.getUserId());
+                    psProfile.setString(2, profile.getFullName());
+                    psProfile.setString(3, profile.getPhoneNumber());
+                    psProfile.setString(4, profile.getGender());
+                    psProfile.setDate(5, profile.getDateOfBirth());
+                    psProfile.setDate(6, profile.getStartDate() != null ? profile.getStartDate() : new java.sql.Date(System.currentTimeMillis()));
+                    psProfile.setDate(7, profile.getEndDate() != null ? profile.getEndDate() : new java.sql.Date(System.currentTimeMillis() + 31536000000L));
+                }
+                psProfile.executeUpdate();
+            }
+            
+            // 3. Update Role Table
+            String sqlRole = "";
+            if ("STUDENT".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "UPDATE Student SET studentCode = ?, major = ?, enrollmentYear = ? WHERE userId = ?";
+            } else if ("LECTURER".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "UPDATE Lecturer SET lecturerCode = ?, department = ? WHERE userId = ?";
+            } else if ("LIBRARIAN".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "UPDATE Librarian SET staffCode = ? WHERE userId = ?";
+            } else if ("MANAGER".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "UPDATE LibraryManager SET staffCode = ? WHERE userId = ?";
+            } else if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                sqlRole = "UPDATE Admin SET staffCode = ? WHERE userId = ?";
+            }
+            
+            if (!sqlRole.isEmpty()) {
+                try (PreparedStatement psRole = conn.prepareStatement(sqlRole)) {
+                    psRole.setString(1, code);
+                    if ("STUDENT".equalsIgnoreCase(user.getRole())) {
+                        psRole.setString(2, major);
+                        if (enrollmentYear != null) {
+                            psRole.setInt(3, enrollmentYear);
+                        } else {
+                            psRole.setNull(3, java.sql.Types.INTEGER);
+                        }
+                        psRole.setInt(4, user.getUserId());
+                    } else if ("LECTURER".equalsIgnoreCase(user.getRole())) {
+                        psRole.setString(2, department);
+                        psRole.setInt(3, user.getUserId());
+                    } else {
+                        psRole.setInt(2, user.getUserId());
+                    }
+                    psRole.executeUpdate();
+                }
+            }
+            
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error rolling back transaction", ex);
+                }
+            }
+            LOGGER.log(Level.SEVERE, "Error in updateUserWithProfile", e);
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error closing connection", ex);
+                }
+            }
+        }
+    }
+
+    /**
+     * Cập nhật nhanh trạng thái hoạt động/khóa của người dùng.
+     */
+    public boolean updateUserStatus(int userId, String status, String lockReason) {
+        String sql = "UPDATE [User] SET [status] = ?, lockReason = ? WHERE userId = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setString(2, lockReason);
+            ps.setInt(3, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error in updateUserStatus", e);
+        }
+        return false;
+    }
+
+    /**
+     * Tìm kiếm thông tin gộp UserDTO theo ID.
+     */
+    public UserDTO findUserDTOById(int userId) {
+        String sql = "SELECT u.userId, u.email, u.status, u.role, u.lockReason, u.failedLoginAttempts, u.lockedUntil, "
+              + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
+              + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
+              + "s.major, s.enrollmentYear, l.department "
+              + "FROM [User] u "
+              + "LEFT JOIN MemberProfile p ON u.userId = p.userId "
+              + "LEFT JOIN Student s ON u.userId = s.userId "
+              + "LEFT JOIN Lecturer l ON u.userId = l.userId "
+              + "LEFT JOIN Librarian lib ON u.userId = lib.userId "
+              + "LEFT JOIN LibraryManager mgr ON u.userId = mgr.userId "
+              + "LEFT JOIN Admin adm ON u.userId = adm.userId "
+              + "WHERE u.userId = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUserDTO(rs);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error in findUserDTOById", e);
+        }
+        return null;
+    }
+
+    /**
+     * Ánh xạ ResultSet thành UserDTO.
+     */
+    private UserDTO mapResultSetToUserDTO(ResultSet rs) throws SQLException {
+        UserDTO dto = new UserDTO();
+        dto.setUserId(rs.getInt("userId"));
+        dto.setEmail(rs.getString("email"));
+        dto.setStatus(rs.getString("status"));
+        dto.setRole(rs.getString("role"));
+        dto.setLockReason(rs.getString("lockReason"));
+        dto.setFailedLoginAttempts(rs.getInt("failedLoginAttempts"));
+        dto.setLockedUntil(rs.getTimestamp("lockedUntil"));
+        
+        dto.setFullName(rs.getString("fullName"));
+        dto.setPhoneNumber(rs.getString("phoneNumber"));
+        dto.setGender(rs.getString("gender"));
+        dto.setDateOfBirth(rs.getDate("dateOfBirth"));
+        dto.setStartDate(rs.getDate("startDate"));
+        dto.setEndDate(rs.getDate("endDate"));
+        
+        dto.setCode(rs.getString("code"));
+        dto.setMajor(rs.getString("major"));
+        
+        int year = rs.getInt("enrollmentYear");
+        dto.setEnrollmentYear(rs.wasNull() ? null : year);
+        
+        dto.setDepartment(rs.getString("department"));
+        return dto;
+    }
+
+    /**
+     * Nhập danh sách tài khoản hàng loạt trong 1 Database Transaction duy nhất (All-or-Nothing).
+     */
+    public boolean importUsersBatch(List<UserDTO> users, String role) throws SQLException {
+        Connection conn = null;
+        String sqlUser = "INSERT INTO [User] (email, passwordHash, [status], [role], lockReason, failedLoginAttempts) VALUES (?, ?, 'active', ?, NULL, 0)";
+        String sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+            
+            try (PreparedStatement psUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS);
+                 PreparedStatement psProfile = conn.prepareStatement(sqlProfile)) {
+                
+                String sqlRole = "";
+                if ("STUDENT".equalsIgnoreCase(role)) {
+                    sqlRole = "INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (?, ?, ?, ?)";
+                } else if ("LECTURER".equalsIgnoreCase(role)) {
+                    sqlRole = "INSERT INTO Lecturer (userId, lecturerCode, department) VALUES (?, ?, ?)";
+                } else if ("LIBRARIAN".equalsIgnoreCase(role)) {
+                    sqlRole = "INSERT INTO Librarian (userId, staffCode) VALUES (?, ?)";
+                } else if ("MANAGER".equalsIgnoreCase(role)) {
+                    sqlRole = "INSERT INTO LibraryManager (userId, staffCode) VALUES (?, ?)";
+                } else if ("ADMIN".equalsIgnoreCase(role)) {
+                    sqlRole = "INSERT INTO Admin (userId, staffCode) VALUES (?, ?)";
+                }
+                
+                PreparedStatement psRole = null;
+                try {
+                    if (!sqlRole.isEmpty()) {
+                        psRole = conn.prepareStatement(sqlRole);
+                    }
+                    
+                    for (UserDTO u : users) {
+                        // 1. Insert User
+                        psUser.setString(1, u.getEmail());
+                        psUser.setString(2, u.getPasswordHash());
+                        psUser.setString(3, role);
+                        psUser.executeUpdate();
+                        
+                        int userId = 0;
+                        try (ResultSet rsUser = psUser.getGeneratedKeys()) {
+                            if (rsUser.next()) {
+                                userId = rsUser.getInt(1);
+                            } else {
+                                throw new SQLException("Creating user failed during batch import, no ID obtained.");
+                            }
+                        }
+                        
+                        // 2. Insert Profile
+                        psProfile.setInt(1, userId);
+                        psProfile.setString(2, u.getFullName());
+                        psProfile.setString(3, u.getPhoneNumber() != null ? u.getPhoneNumber() : "");
+                        psProfile.setString(4, u.getGender() != null ? u.getGender() : "Khác");
+                        psProfile.setDate(5, u.getDateOfBirth() != null ? u.getDateOfBirth() : new java.sql.Date(System.currentTimeMillis()));
+                        psProfile.setDate(6, new java.sql.Date(System.currentTimeMillis()));
+                        psProfile.setDate(7, new java.sql.Date(System.currentTimeMillis() + 31536000000L)); // 1 year
+                        psProfile.executeUpdate();
+                        
+                        // 3. Insert Role Table
+                        if (psRole != null) {
+                            psRole.setInt(1, userId);
+                            psRole.setString(2, u.getCode());
+                            if ("STUDENT".equalsIgnoreCase(role)) {
+                                psRole.setString(3, u.getMajor());
+                                if (u.getEnrollmentYear() != null) {
+                                    psRole.setInt(4, u.getEnrollmentYear());
+                                } else {
+                                    psRole.setNull(4, java.sql.Types.INTEGER);
+                                }
+                            } else if ("LECTURER".equalsIgnoreCase(role)) {
+                                psRole.setString(3, u.getDepartment());
+                            }
+                            psRole.executeUpdate();
+                        }
+                    }
+                } finally {
+                    if (psRole != null) {
+                        psRole.close();
+                    }
+                }
+            }
+            
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error rolling back batch import transaction", ex);
+                }
+            }
+            LOGGER.log(Level.SEVERE, "Error in importUsersBatch", e);
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error closing connection", ex);
+                }
+            }
+        }
     }
 }

@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import dao.UserDAO;
+import model.User;
 
 /**
  * AuthFilter — Bộ lọc xác thực và phân quyền (Role-based Access Control).
@@ -38,6 +40,40 @@ public class AuthFilter implements Filter {
         // 1. Kiểm tra trạng thái đăng nhập
         boolean isLoggedIn = (session != null && session.getAttribute("userId") != null
                 && session.getAttribute("role") != null);
+
+        if (isLoggedIn) {
+            boolean isStaticResource = path.startsWith("/assets/") 
+                    || path.startsWith("/common/")
+                    || path.endsWith(".css") 
+                    || path.endsWith(".js") 
+                    || path.endsWith(".png") 
+                    || path.endsWith(".jpg") 
+                    || path.endsWith(".jpeg") 
+                    || path.endsWith(".gif") 
+                    || path.endsWith(".svg") 
+                    || path.endsWith(".ico") 
+                    || path.endsWith(".woff") 
+                    || path.endsWith(".woff2");
+
+            if (!isStaticResource) {
+                int userId = (Integer) session.getAttribute("userId");
+                UserDAO userDAO = new UserDAO();
+                User user = userDAO.findByUserId(userId);
+                if (user == null || "locked".equals(user.getStatus())) {
+                    session.invalidate();
+                    isLoggedIn = false;
+                    session = null;
+                    
+                    String errorParam = "locked";
+                    if (user != null && "unpaid".equals(user.getLockReason())) {
+                        errorParam = "unpaid";
+                    }
+                    httpResponse.sendRedirect(contextPath + "/login?error=" + errorParam);
+                    return;
+                }
+            }
+        }
+
         String role = isLoggedIn ? (String) session.getAttribute("role") : null;
 
         // 2. Nếu đã đăng nhập mà cố ý truy cập lại trang /login hoặc /auth/login.jsp
