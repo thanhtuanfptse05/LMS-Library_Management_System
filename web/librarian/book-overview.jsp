@@ -47,7 +47,7 @@
 
             <div class="row g-3 mb-4">
                 <section class="col-xl-8">
-                    <div class="bm-table-card h-100">
+                    <div class="bm-table-card bm-table-card--primary h-100">
                         <div class="bm-table-card__header">
                             <h3 class="bm-section-title mb-1">Tình trạng kho</h3>
                             <p class="bm-section-note mb-0">Số liệu cập nhật gần nhất lúc 09:30 hôm nay</p>
@@ -94,7 +94,7 @@
                 </aside>
             </div>
 
-            <section class="bm-table-card">
+            <section class="bm-table-card bm-table-card--primary">
                 <div class="bm-table-card__header">
                     <h3 class="bm-section-title mb-1">Hoạt động gần đây</h3>
                     <p class="bm-section-note mb-0">Các thay đổi mới nhất liên quan đến danh mục và kho sách.</p>

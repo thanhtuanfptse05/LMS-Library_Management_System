@@ -31,7 +31,7 @@
             </div>
 
             <c:if test="${not empty preview}">
-                <section class="bm-table-card mb-3">
+                <section class="bm-table-card bm-table-card--primary mb-3">
                     <div class="bm-table-card__header d-flex flex-wrap justify-content-between gap-2"><div><h3 class="bm-section-title mb-1">Kết quả kiểm tra</h3><p class="bm-section-note mb-0"><c:out value="${preview.fileName}" /> · ${preview.books.size()} đầu sách · ${preview.bookCopies.size()} bản sao</p></div><c:choose><c:when test="${preview.valid}"><span class="bm-badge bm-badge--success">Tệp hợp lệ</span></c:when><c:otherwise><span class="bm-badge bm-badge--danger">${preview.errors.size()} lỗi cần sửa</span></c:otherwise></c:choose></div>
                     <div class="table-responsive"><table class="table table-lms"><thead><tr><th>Sheet</th><th>Dòng</th><th>Cột</th><th>Kết quả kiểm tra</th></tr></thead><tbody>
                         <c:forEach var="error" items="${preview.errors}"><tr><td><strong><c:out value="${error.sheetName}" /></strong></td><td>${error.rowNumber}</td><td><c:out value="${empty error.columnName ? 'Cấu trúc' : error.columnName}" /></td><td class="bm-text-danger"><c:out value="${error.errorMessage}" /></td></tr></c:forEach>
@@ -39,7 +39,7 @@
                     </tbody></table></div>
                 </section>
 
-                <section class="bm-table-card">
+                <section class="bm-table-card bm-table-card--primary">
                     <div class="bm-table-card__header"><h3 class="bm-section-title mb-1">Xem trước bản sao</h3><p class="bm-section-note mb-0">Hiển thị tối đa 10 dòng đầu tiên trong sheet BookCopies.</p></div>
                     <div class="table-responsive"><table class="table table-lms"><thead><tr><th>Dòng</th><th>ISBN</th><th>Mã vạch</th><th>Vị trí</th><th>Khởi tạo</th></tr></thead><tbody><c:forEach var="row" items="${preview.bookCopies}" varStatus="loop"><c:if test="${loop.index < 10}"><tr><td>${row.rowNumber}</td><td><c:out value="${row.isbn}" /></td><td><strong><c:out value="${row.barcode}" /></strong></td><td><c:out value="${row.location}" /></td><td><span class="bm-badge bm-badge--success">Tốt · Sẵn sàng</span></td></tr></c:if></c:forEach></tbody></table></div>
                 </section>

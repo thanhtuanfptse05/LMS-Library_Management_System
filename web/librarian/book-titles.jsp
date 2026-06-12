@@ -39,10 +39,10 @@
                 </c:if>
             </section>
 
-            <form class="bm-filter-card mb-3" method="get" action="${pageContext.request.contextPath}/book-management/titles">
+            <form class="bm-filter-card bm-filter-card--compact mb-2" method="get" action="${pageContext.request.contextPath}/book-management/titles">
                 <c:if test="${not empty selectedTagId}"><input type="hidden" name="tagId" value="${selectedTagId}"></c:if>
                 <div class="row g-2">
-                    <div class="col-xl-4 col-lg-6 bm-search">
+                    <div class="col-xl-5 col-lg-6 bm-search">
                         <span class="material-symbols-outlined">search</span>
                         <input class="form-control" name="q" value="<c:out value="${q}" />"
                                placeholder="Tìm theo tên sách, ISBN hoặc tác giả">
@@ -65,17 +65,9 @@
                             <option value="unavailable" ${selectedStatus == 'unavailable' ? 'selected' : ''}>Ngừng sử dụng</option>
                         </select>
                     </div>
-                    <div class="col-xl-2 col-md-4">
-                        <select class="form-select" name="sort" aria-label="Sắp xếp theo">
-                            <option value="recent" ${selectedSort == 'recent' ? 'selected' : ''}>Mới cập nhật</option>
-                            <option value="title" ${selectedSort == 'title' ? 'selected' : ''}>Tên sách A-Z</option>
-                            <option value="copies" ${selectedSort == 'copies' ? 'selected' : ''}>Nhiều bản sao nhất</option>
-                            <option value="noCopies" ${selectedSort == 'noCopies' ? 'selected' : ''}>Chưa có bản sao</option>
-                        </select>
-                    </div>
-                    <div class="col-xl-2 col-lg-6">
-                        <div class="bm-filter-actions">
-                            <button class="btn bm-filter-button flex-grow-1" type="submit">
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="bm-filter-actions bm-filter-actions--compact">
+                            <button class="btn bm-filter-button" type="submit">
                                 <span class="material-symbols-outlined">filter_alt</span>
                                 Lọc
                             </button>
@@ -88,23 +80,30 @@
                 </div>
             </form>
 
-            <div class="bm-summary-strip mb-3">
+            <div class="bm-summary-strip bm-summary-strip--compact mb-2">
                 <span class="bm-summary-strip__item">Tổng cộng: <strong><fmt:formatNumber value="${summary.totalBooks}" /> đầu sách</strong></span>
                 <span class="bm-summary-strip__item">Tổng bản sao: <strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span>
                 <span class="bm-summary-strip__item">Sẵn sàng: <strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span>
                 <span class="bm-summary-strip__item">Chưa có bản sao: <strong><fmt:formatNumber value="${summary.booksWithoutCopies}" /> đầu sách</strong></span>
             </div>
 
-            <section class="bm-table-card">
+            <section class="bm-table-card bm-table-card--primary">
                 <div class="table-responsive">
                     <table class="table table-lms">
-                        <thead><tr><th>Đầu sách</th><th>ISBN</th><th>Thể loại &amp; tag</th><th>Xuất bản</th><th>Tổng bản sao</th><th>Sẵn sàng</th><th>Trạng thái</th><th></th></tr></thead>
+                        <thead><tr><th>Đầu sách</th><th>ISBN</th><th>Thể loại &amp; tag</th><th>Xuất bản</th><th>Tổng bản sao</th><th>Sẵn sàng</th><th>Trạng thái</th><th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th></tr></thead>
                         <tbody>
                             <c:forEach var="book" items="${books}">
                                 <tr>
                                     <td>
                                         <div class="bm-book">
-                                            <span class="bm-book__cover material-symbols-outlined">menu_book</span>
+                                            <c:choose>
+                                                <c:when test="${not empty book.imagePath}">
+                                                    <img class="bm-book__cover" src="${pageContext.request.contextPath}/book-images/${book.imagePath}" alt="Ảnh bìa đầu sách" loading="lazy">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="bm-book__cover material-symbols-outlined">menu_book</span>
+                                                </c:otherwise>
+                                            </c:choose>
                                             <div>
                                                 <p class="bm-book__title mb-1"><c:out value="${book.title}" /></p>
                                                 <p class="bm-book__meta mb-0"><c:out value="${empty book.author ? 'Chưa cập nhật tác giả' : book.author}" /></p>
@@ -129,13 +128,16 @@
                                             <c:otherwise><span class="bm-badge bm-badge--neutral">Ngừng sử dụng</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td>
+                                    <td class="bm-action-column">
                                         <c:choose>
                                             <c:when test="${canEdit}">
                                                 <c:url var="editUrl" value="/book-management/titles">
                                                     <c:param name="editId" value="${book.bookId}" />
                                                 </c:url>
-                                                <a class="btn btn-sm bm-btn-secondary" href="${editUrl}">Chỉnh sửa</a>
+                                                <a class="bm-action-icon" href="${editUrl}" title="Chỉnh sửa đầu sách"
+                                                   aria-label="Chỉnh sửa đầu sách">
+                                                    <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+                                                </a>
                                             </c:when>
                                             <c:otherwise><span class="bm-badge bm-badge--neutral">Chỉ xem</span></c:otherwise>
                                         </c:choose>
@@ -154,8 +156,8 @@
                 <nav class="d-flex justify-content-between align-items-center mt-3" aria-label="Phân trang đầu sách">
                     <span class="bm-section-note">Trang ${currentPage}/${totalPages} · ${totalItems} kết quả</span>
                     <div class="bm-actions">
-                        <c:url var="previousUrl" value="/book-management/titles"><c:param name="q" value="${q}" /><c:param name="categoryId" value="${selectedCategoryId}" /><c:param name="tagId" value="${selectedTagId}" /><c:param name="status" value="${selectedStatus}" /><c:param name="sort" value="${selectedSort}" /><c:param name="page" value="${currentPage - 1}" /></c:url>
-                        <c:url var="nextUrl" value="/book-management/titles"><c:param name="q" value="${q}" /><c:param name="categoryId" value="${selectedCategoryId}" /><c:param name="tagId" value="${selectedTagId}" /><c:param name="status" value="${selectedStatus}" /><c:param name="sort" value="${selectedSort}" /><c:param name="page" value="${currentPage + 1}" /></c:url>
+                        <c:url var="previousUrl" value="/book-management/titles"><c:param name="q" value="${q}" /><c:param name="categoryId" value="${selectedCategoryId}" /><c:param name="tagId" value="${selectedTagId}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage - 1}" /></c:url>
+                        <c:url var="nextUrl" value="/book-management/titles"><c:param name="q" value="${q}" /><c:param name="categoryId" value="${selectedCategoryId}" /><c:param name="tagId" value="${selectedTagId}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage + 1}" /></c:url>
                         <a class="btn bm-btn-secondary ${currentPage == 1 ? 'disabled' : ''}" href="${previousUrl}">Trang trước</a>
                         <a class="btn bm-btn-secondary ${currentPage == totalPages ? 'disabled' : ''}" href="${nextUrl}">Trang sau</a>
                     </div>
@@ -170,7 +172,7 @@
 <c:if test="${canEdit}">
     <div class="modal fade bm-modal" id="createBookModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg"><div class="modal-content">
-            <form method="post" action="${pageContext.request.contextPath}/book-management/titles">
+            <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/book-management/titles">
                 <input type="hidden" name="action" value="create">
                 <div class="modal-header"><div><h5 class="modal-title">Tạo đầu sách</h5><p class="bm-section-note mb-0">Đầu sách mới được khởi tạo với số lượng bằng 0.</p></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>
                 <div class="modal-body"><jsp:include page="fragments/_book-form-fields.jsp" /></div>
@@ -183,7 +185,7 @@
 <c:if test="${canEdit and not empty editBook}">
     <div class="modal fade bm-modal" id="editBookModal" tabindex="-1" aria-hidden="true" data-auto-open="true">
         <div class="modal-dialog modal-lg"><div class="modal-content">
-            <form method="post" action="${pageContext.request.contextPath}/book-management/titles">
+            <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/book-management/titles">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="bookId" value="${editBook.bookId}">
                 <div class="modal-header"><div><h5 class="modal-title">Chỉnh sửa đầu sách</h5><p class="bm-section-note mb-0">ISBN và số lượng tồn kho không thể sửa trực tiếp.</p></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>

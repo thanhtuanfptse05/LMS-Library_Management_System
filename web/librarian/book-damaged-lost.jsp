@@ -30,18 +30,18 @@
                 <div class="col-md-4"><article class="raised-card p-3"><p class="bm-stat-card__label mb-1">Đã xử lý tháng này</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.resolvedThisMonthCount}" /></p></article></div>
             </div>
 
-            <form class="bm-filter-card mb-3" method="get" action="${pageContext.request.contextPath}/book-management/incidents">
+            <form class="bm-filter-card bm-filter-card--compact mb-2" method="get" action="${pageContext.request.contextPath}/book-management/incidents">
                 <div class="row g-2">
                     <div class="col-xl-5 col-lg-6 bm-search"><span class="material-symbols-outlined">search</span><input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Tìm mã vạch hoặc đầu sách"></div>
                     <div class="col-xl-3 col-md-4"><select class="form-select" name="type"><option value="">Tất cả loại sự cố</option><option value="damaged" ${selectedType == 'damaged' ? 'selected' : ''}>Hỏng</option><option value="lost" ${selectedType == 'lost' ? 'selected' : ''}>Mất</option></select></div>
                     <div class="col-xl-2 col-md-4"><select class="form-select" name="status"><option value="">Mọi trạng thái</option><option value="pending" ${selectedStatus == 'pending' ? 'selected' : ''}>Chờ xác minh</option><option value="investigating" ${selectedStatus == 'investigating' ? 'selected' : ''}>Đang xử lý</option><option value="resolved" ${selectedStatus == 'resolved' ? 'selected' : ''}>Đã xử lý</option><option value="rejected" ${selectedStatus == 'rejected' ? 'selected' : ''}>Báo sai</option></select></div>
-                    <div class="col-xl-2 col-lg-6"><div class="bm-filter-actions"><button class="btn bm-filter-button flex-grow-1" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc</span></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/incidents" title="Đặt lại bộ lọc"><span class="material-symbols-outlined">refresh</span></a></div></div>
+                    <div class="col-xl-2 col-lg-6"><div class="bm-filter-actions bm-filter-actions--compact"><button class="btn bm-filter-button" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc</span></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/incidents" title="Đặt lại bộ lọc"><span class="material-symbols-outlined">refresh</span></a></div></div>
                 </div>
             </form>
 
             <div class="bm-rule-note mb-3"><strong>Quy tắc:</strong> Ghi nhận sự cố sẽ tạm ngừng lưu thông bản sao. Tình trạng Hỏng/Mất chỉ được cập nhật sau khi có kết luận.</div>
 
-            <section class="bm-table-card"><div class="table-responsive"><table class="table table-lms">
+            <section class="bm-table-card bm-table-card--primary"><div class="table-responsive"><table class="table table-lms">
                 <thead><tr><th>Bản sao</th><th>Sự cố</th><th>Ghi nhận</th><th>Người báo</th><th>Trạng thái</th><th>Hướng xử lý</th><th></th></tr></thead>
                 <tbody>
                     <c:forEach var="incident" items="${incidents}"><tr>

@@ -14,6 +14,7 @@ public class Book {
     private String publisher;
     private Integer publicationYear;
     private BigDecimal price;
+    private String imagePath;
     private int totalQuantity;
     private int availableQuantity;
     private String status;
@@ -44,6 +45,8 @@ public class Book {
     public void setPublicationYear(Integer publicationYear) { this.publicationYear = publicationYear; }
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
     public int getTotalQuantity() { return totalQuantity; }
     public void setTotalQuantity(int totalQuantity) { this.totalQuantity = totalQuantity; }
     public int getAvailableQuantity() { return availableQuantity; }

@@ -24,20 +24,20 @@
                 <c:if test="${canEdit}"><button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCopyModal"><span class="material-symbols-outlined">add</span>Thêm bản sao</button></c:if>
             </section>
 
-            <form class="bm-filter-card mb-3" method="get" action="${pageContext.request.contextPath}/book-management/copies">
+            <form class="bm-filter-card bm-filter-card--compact mb-2" method="get" action="${pageContext.request.contextPath}/book-management/copies">
                 <div class="row g-2">
                     <div class="col-xl-4 col-lg-6 bm-search"><span class="material-symbols-outlined">barcode_scanner</span><input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Quét mã vạch hoặc tìm tên sách"></div>
                     <div class="col-xl-3 col-md-4"><select class="form-select" name="location"><option value="">Tất cả vị trí</option><c:forEach var="item" items="${locations}"><option value="<c:out value="${item}" />" ${selectedLocation == item ? 'selected' : ''}><c:out value="${item}" /></option></c:forEach></select></div>
                     <div class="col-xl-3 col-md-4"><select class="form-select" name="status"><option value="">Mọi trạng thái</option><option value="available" ${selectedStatus == 'available' ? 'selected' : ''}>Sẵn sàng</option><option value="borrowed" ${selectedStatus == 'borrowed' ? 'selected' : ''}>Đang mượn</option><option value="reserved" ${selectedStatus == 'reserved' ? 'selected' : ''}>Đặt trước</option><option value="incident" ${selectedStatus == 'incident' ? 'selected' : ''}>Hỏng hoặc mất</option><option value="unavailable" ${selectedStatus == 'unavailable' ? 'selected' : ''}>Ngừng lưu thông</option></select></div>
-                    <div class="col-xl-2 col-lg-6"><div class="bm-filter-actions"><button class="btn bm-filter-button flex-grow-1" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc kho</span></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/copies" title="Đặt lại bộ lọc"><span class="material-symbols-outlined">refresh</span></a></div></div>
+                    <div class="col-xl-2 col-lg-6"><div class="bm-filter-actions bm-filter-actions--compact"><button class="btn bm-filter-button" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc</span></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/copies" title="Đặt lại bộ lọc" aria-label="Đặt lại bộ lọc"><span class="material-symbols-outlined">refresh</span></a></div></div>
                 </div>
             </form>
 
-            <div class="bm-rule-note mb-3"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đã đặt trước hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
-            <div class="bm-summary-strip mb-3"><span class="bm-summary-strip__item">Tổng: <strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span><span class="bm-summary-strip__item">Sẵn sàng: <strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span><span class="bm-summary-strip__item">Đang mượn: <strong><fmt:formatNumber value="${summary.borrowedCopies}" /></strong></span><span class="bm-summary-strip__item">Hỏng/mất: <strong><fmt:formatNumber value="${summary.incidentCopies}" /></strong></span></div>
+            <div class="bm-rule-note bm-rule-note--compact mb-2"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đã đặt trước hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
+            <div class="bm-summary-strip bm-summary-strip--compact mb-2"><span class="bm-summary-strip__item">Tổng: <strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span><span class="bm-summary-strip__item">Sẵn sàng: <strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span><span class="bm-summary-strip__item">Đang mượn: <strong><fmt:formatNumber value="${summary.borrowedCopies}" /></strong></span><span class="bm-summary-strip__item">Hỏng/mất: <strong><fmt:formatNumber value="${summary.incidentCopies}" /></strong></span></div>
 
-            <section class="bm-table-card"><div class="table-responsive"><table class="table table-lms">
-                <thead><tr><th>Mã vạch</th><th>Đầu sách</th><th>Vị trí</th><th>Tình trạng</th><th>Lưu thông</th><th>Cập nhật</th><th></th></tr></thead>
+            <section class="bm-table-card bm-table-card--primary"><div class="table-responsive"><table class="table table-lms">
+                <thead><tr><th>Mã vạch</th><th>Đầu sách</th><th>Vị trí</th><th>Tình trạng</th><th>Lưu thông</th><th>Cập nhật</th><th class="bm-copy-action-column">Thao tác</th></tr></thead>
                 <tbody>
                     <c:forEach var="copy" items="${copies}"><tr>
                         <td><strong><c:out value="${copy.barcode}" /></strong></td>
@@ -46,7 +46,21 @@
                         <td><c:choose><c:when test="${copy.condition == 'good'}"><span class="bm-badge bm-badge--success">Tốt</span></c:when><c:when test="${copy.condition == 'damaged'}"><span class="bm-badge bm-badge--danger">Hỏng</span></c:when><c:otherwise><span class="bm-badge bm-badge--danger">Mất</span></c:otherwise></c:choose></td>
                         <td><c:choose><c:when test="${copy.status == 'available'}"><span class="bm-badge bm-badge--success">Sẵn sàng</span></c:when><c:when test="${copy.status == 'borrowed'}"><span class="bm-badge bm-badge--info">Đang mượn</span></c:when><c:when test="${copy.status == 'reserved'}"><span class="bm-badge bm-badge--warning">Đặt trước</span></c:when><c:otherwise><span class="bm-badge bm-badge--neutral">Ngừng lưu thông</span></c:otherwise></c:choose></td>
                         <td><fmt:formatDate value="${empty copy.updatedAt ? copy.createdAt : copy.updatedAt}" pattern="dd/MM/yyyy" /></td>
-                        <td><c:choose><c:when test="${canEdit and copy.condition != 'good'}"><a class="btn btn-sm bm-incident-button" href="${pageContext.request.contextPath}/book-management/incidents?q=${copy.barcode}">Xem sự cố</a></c:when><c:when test="${canEdit and copy.status == 'available' and copy.condition == 'good'}"><div class="bm-actions"><a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/copies?editId=${copy.bookCopyId}">Cập nhật</a><a class="btn btn-sm bm-incident-button" href="${pageContext.request.contextPath}/book-management/incidents?bookCopyId=${copy.bookCopyId}">Ghi nhận sự cố</a></div></c:when><c:when test="${canEdit and copy.status == 'unavailable'}"><a class="btn btn-sm bm-incident-button" href="${pageContext.request.contextPath}/book-management/incidents?q=${copy.barcode}">Xem sự cố</a></c:when><c:otherwise><span class="bm-badge bm-badge--neutral">Chỉ xem</span></c:otherwise></c:choose></td>
+                        <td class="bm-copy-action-column"><c:choose>
+                            <c:when test="${canEdit and copy.condition != 'good'}">
+                                <a class="bm-action-icon bm-action-icon--danger" href="${pageContext.request.contextPath}/book-management/incidents?q=${copy.barcode}" title="Xem sự cố" aria-label="Xem sự cố"><span class="material-symbols-outlined" aria-hidden="true">visibility</span></a>
+                            </c:when>
+                            <c:when test="${canEdit and copy.status == 'available' and copy.condition == 'good'}">
+                                <div class="bm-copy-actions">
+                                    <a class="bm-action-icon" href="${pageContext.request.contextPath}/book-management/copies?editId=${copy.bookCopyId}" title="Cập nhật vị trí" aria-label="Cập nhật vị trí"><span class="material-symbols-outlined" aria-hidden="true">edit</span></a>
+                                    <a class="bm-action-icon bm-action-icon--danger" href="${pageContext.request.contextPath}/book-management/incidents?bookCopyId=${copy.bookCopyId}" title="Ghi nhận sự cố" aria-label="Ghi nhận sự cố"><span class="material-symbols-outlined" aria-hidden="true">report</span></a>
+                                </div>
+                            </c:when>
+                            <c:when test="${canEdit and copy.status == 'unavailable'}">
+                                <a class="bm-action-icon bm-action-icon--danger" href="${pageContext.request.contextPath}/book-management/incidents?q=${copy.barcode}" title="Xem sự cố" aria-label="Xem sự cố"><span class="material-symbols-outlined" aria-hidden="true">visibility</span></a>
+                            </c:when>
+                            <c:otherwise><span class="bm-badge bm-badge--neutral">Chỉ xem</span></c:otherwise>
+                        </c:choose></td>
                     </tr></c:forEach>
                     <c:if test="${empty copies}"><tr><td colspan="7"><div class="bm-empty-state"><span class="material-symbols-outlined">inventory_2</span><strong>Không tìm thấy bản sao</strong><span>Hãy thử thay đổi bộ lọc hoặc thêm bản sao mới.</span></div></td></tr></c:if>
                 </tbody>

@@ -118,6 +118,7 @@ public class BookService {
 
     private String toAuditValue(Book book) {
         return "{\"isbn\":\"" + escape(book.getIsbn()) + "\",\"title\":\"" + escape(book.getTitle())
+                + "\",\"imagePath\":\"" + escape(book.getImagePath())
                 + "\",\"status\":\"" + escape(book.getStatus()) + "\"}";
     }
 

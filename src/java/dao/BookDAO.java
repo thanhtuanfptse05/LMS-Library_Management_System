@@ -17,15 +17,16 @@ import util.DatabaseConnection;
 
 public class BookDAO {
 
-    public List<Book> search(String keyword, Integer categoryId, Integer tagId, String status, String sort,
+    public List<Book> search(String keyword, Integer categoryId, Integer tagId, String status,
             int offset, int pageSize) throws SQLException {
         StringBuilder sql = new StringBuilder(
-                "SELECT b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, b.price, "
+                "SELECT b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, b.price, b.imagePath, "
                 + "b.totalQuantity, b.availableQuantity, b.[status], b.createdAt, b.updatedAt "
                 + "FROM Book b WHERE 1=1 ");
         List<Object> parameters = new ArrayList<>();
         appendFilters(sql, parameters, keyword, categoryId, tagId, status);
-        sql.append(" ORDER BY ").append(resolveSort(sort)).append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        sql.append(" ORDER BY COALESCE(b.updatedAt, b.createdAt) DESC, b.bookId DESC "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
         parameters.add(offset);
         parameters.add(pageSize);
 
@@ -81,7 +82,7 @@ public class BookDAO {
     }
 
     public List<Book> findAllForSelection() throws SQLException {
-        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, "
+        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, imagePath, "
                 + "totalQuantity, availableQuantity, [status], createdAt, updatedAt "
                 + "FROM Book WHERE [status] = 'available' ORDER BY title";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -96,7 +97,7 @@ public class BookDAO {
     }
 
     public Book findById(Connection conn, int bookId) throws SQLException {
-        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, "
+        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, imagePath, "
                 + "totalQuantity, availableQuantity, [status], createdAt, updatedAt FROM Book WHERE bookId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -112,7 +113,7 @@ public class BookDAO {
     }
 
     public Book findByIsbn(Connection conn, String isbn) throws SQLException {
-        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, "
+        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, imagePath, "
                 + "totalQuantity, availableQuantity, [status], createdAt, updatedAt FROM Book WHERE isbn = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, isbn);
@@ -133,9 +134,9 @@ public class BookDAO {
     }
 
     public int insert(Connection conn, Book book) throws SQLException {
-        String sql = "INSERT INTO Book (isbn, title, author, publisher, publicationYear, price, "
+        String sql = "INSERT INTO Book (isbn, title, author, publisher, publicationYear, price, imagePath, "
                 + "totalQuantity, availableQuantity, [status], createdAt) "
-                + "VALUES (?, ?, ?, ?, ?, ?, 0, 0, 'available', GETDATE())";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 'available', GETDATE())";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             bindBookMetadata(ps, book, true);
             ps.executeUpdate();
@@ -150,10 +151,10 @@ public class BookDAO {
 
     public void update(Connection conn, Book book) throws SQLException {
         String sql = "UPDATE Book SET title = ?, author = ?, publisher = ?, publicationYear = ?, "
-                + "price = ?, [status] = ?, updatedAt = GETDATE() WHERE bookId = ?";
+                + "price = ?, imagePath = ?, [status] = ?, updatedAt = GETDATE() WHERE bookId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             bindBookMetadata(ps, book, false);
-            ps.setInt(7, book.getBookId());
+            ps.setInt(8, book.getBookId());
             if (ps.executeUpdate() != 1) {
                 throw new SQLException("Không tìm thấy đầu sách cần cập nhật.");
             }
@@ -230,19 +231,6 @@ public class BookDAO {
             sql.append("AND b.[status] = ? ");
             parameters.add(status);
         }
-    }
-
-    private String resolveSort(String sort) {
-        if ("title".equals(sort)) {
-            return "b.title ASC";
-        }
-        if ("copies".equals(sort)) {
-            return "b.totalQuantity DESC, b.title ASC";
-        }
-        if ("noCopies".equals(sort)) {
-            return "CASE WHEN b.totalQuantity = 0 THEN 0 ELSE 1 END, b.title ASC";
-        }
-        return "COALESCE(b.updatedAt, b.createdAt) DESC, b.bookId DESC";
     }
 
     private void loadRelations(Connection conn, Book book) throws SQLException {
@@ -345,6 +333,7 @@ public class BookDAO {
         int year = rs.getInt("publicationYear");
         book.setPublicationYear(rs.wasNull() ? null : year);
         book.setPrice(rs.getBigDecimal("price"));
+        book.setImagePath(rs.getString("imagePath"));
         book.setTotalQuantity(rs.getInt("totalQuantity"));
         book.setAvailableQuantity(rs.getInt("availableQuantity"));
         book.setStatus(rs.getString("status"));
@@ -367,6 +356,7 @@ public class BookDAO {
             ps.setInt(index++, book.getPublicationYear());
         }
         ps.setBigDecimal(index++, book.getPrice());
+        ps.setString(index++, book.getImagePath());
         if (!includeIsbn) {
             ps.setString(index, book.getStatus());
         }

@@ -28,7 +28,7 @@
                 <c:if test="${canEdit}"><button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCategoryModal"><span class="material-symbols-outlined">add</span>Tạo thể loại</button></c:if>
             </section>
 
-            <form class="bm-filter-card mb-3 bm-auto-filter" method="get" action="${pageContext.request.contextPath}/book-management/categories">
+            <form class="bm-filter-card bm-filter-card--compact mb-2 bm-auto-filter" method="get" action="${pageContext.request.contextPath}/book-management/categories">
                 <div class="row g-2">
                     <div class="col-lg-8 bm-search"><span class="material-symbols-outlined">search</span><input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Tìm kiếm thể loại..."></div>
                     <div class="col-lg-3"><select class="form-select" name="status"><option value="">Mọi trạng thái</option><option value="active" ${selectedStatus == 'active' ? 'selected' : ''}>Đang dùng</option><option value="hidden" ${selectedStatus == 'hidden' ? 'selected' : ''}>Đã ẩn</option></select></div>
@@ -36,8 +36,8 @@
                 </div>
             </form>
 
-            <section class="bm-table-card"><div class="table-responsive"><table class="table table-lms">
-                <thead><tr><th>Tên thể loại</th><th>Mô tả</th><th>Số đầu sách</th><th>Trạng thái</th><th>Cập nhật gần nhất</th><th></th></tr></thead>
+            <section class="bm-table-card bm-table-card--primary"><div class="table-responsive"><table class="table table-lms">
+                <thead><tr><th>Tên thể loại</th><th>Mô tả</th><th>Số đầu sách</th><th>Trạng thái</th><th>Cập nhật gần nhất</th><th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th></tr></thead>
                 <tbody>
                     <c:forEach var="category" items="${categories}"><tr>
                         <td><strong><c:out value="${category.name}" /></strong></td>
@@ -45,7 +45,7 @@
                         <td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=${category.categoryId}">Xem <fmt:formatNumber value="${category.bookCount}" /> đầu sách</a></td>
                         <td><span class="bm-badge ${category.status == 'active' ? 'bm-badge--success' : 'bm-badge--neutral'}">${category.status == 'active' ? 'Đang dùng' : 'Đã ẩn'}</span></td>
                         <td><fmt:formatDate value="${category.updatedAt}" pattern="dd/MM/yyyy HH:mm" /></td>
-                        <td><c:choose><c:when test="${canEdit}"><a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/categories?editId=${category.categoryId}">Chỉnh sửa</a></c:when><c:otherwise><span class="bm-badge bm-badge--neutral">Chỉ xem</span></c:otherwise></c:choose></td>
+                        <td class="bm-action-column"><c:choose><c:when test="${canEdit}"><a class="bm-action-icon" href="${pageContext.request.contextPath}/book-management/categories?editId=${category.categoryId}" title="Chỉnh sửa thể loại" aria-label="Chỉnh sửa thể loại"><span class="material-symbols-outlined" aria-hidden="true">edit</span></a></c:when><c:otherwise><span class="bm-badge bm-badge--neutral">Chỉ xem</span></c:otherwise></c:choose></td>
                     </tr></c:forEach>
                     <c:if test="${empty categories}"><tr><td colspan="6"><div class="bm-empty-state"><span class="material-symbols-outlined">category</span><strong>Không tìm thấy thể loại</strong><span>Hãy thử thay đổi từ khóa hoặc trạng thái.</span></div></td></tr></c:if>
                 </tbody>

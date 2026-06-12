@@ -2,6 +2,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="formBook" value="${param.editing == 'true' ? editBook : null}" />
 <div class="row g-3">
+    <div class="col-12">
+        <label class="form-label">Ảnh bìa</label>
+        <div class="bm-cover-upload">
+            <div class="bm-cover-upload__preview">
+                <c:choose>
+                    <c:when test="${not empty formBook.imagePath}">
+                        <img data-cover-preview src="${pageContext.request.contextPath}/book-images/${formBook.imagePath}" alt="Ảnh bìa hiện tại">
+                    </c:when>
+                    <c:otherwise>
+                        <span data-cover-placeholder class="material-symbols-outlined">menu_book</span>
+                        <img data-cover-preview alt="Xem trước ảnh bìa" hidden>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+            <div class="flex-grow-1">
+                <input class="form-control" name="coverImage" type="file" accept="image/jpeg,image/png" data-cover-input>
+                <p class="bm-section-note mt-2 mb-0">Chấp nhận JPG hoặc PNG, tối đa 5 MB.<c:if test="${param.editing == 'true'}"> Không chọn ảnh mới để giữ ảnh hiện tại.</c:if></p>
+            </div>
+        </div>
+    </div>
     <div class="col-12"><label class="form-label">Tên sách <span class="bm-required">*</span></label><input class="form-control" name="title" required maxlength="500" value="<c:out value="${formBook.title}" />"></div>
     <div class="col-md-6"><label class="form-label">ISBN <span class="bm-required">*</span></label><input class="form-control" name="isbn" required maxlength="20" value="<c:out value="${formBook.isbn}" />" ${param.editing == 'true' ? 'readonly' : ''}></div>
     <div class="col-md-6"><label class="form-label">Tác giả</label><input class="form-control" name="author" maxlength="500" value="<c:out value="${formBook.author}" />"></div>

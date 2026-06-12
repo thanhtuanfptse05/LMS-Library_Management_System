@@ -6,6 +6,7 @@ import dao.TagDAO;
 import exception.DatabaseException;
 import exception.ValidationException;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +19,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Book;
 import service.BookService;
+import util.BookImageStorage;
 
 @WebServlet(name = "BookServlet", urlPatterns = {"/book-management/titles"})
+@MultipartConfig(maxFileSize = BookImageStorage.MAX_FILE_SIZE, maxRequestSize = BookImageStorage.MAX_FILE_SIZE + 1024 * 1024)
 public class BookServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 20;
@@ -29,6 +32,7 @@ public class BookServlet extends HttpServlet {
     private final CategoryDAO categoryDAO = new CategoryDAO();
     private final TagDAO tagDAO = new TagDAO();
     private final BookService bookService = new BookService();
+    private final BookImageStorage imageStorage = new BookImageStorage();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -45,7 +49,6 @@ public class BookServlet extends HttpServlet {
         Integer categoryId = parseOptionalInt(request.getParameter("categoryId"));
         Integer tagId = parseOptionalInt(request.getParameter("tagId"));
         String status = normalizeStatus(request.getParameter("status"));
-        String sort = normalizeSort(request.getParameter("sort"));
         int page = Math.max(1, parseInt(request.getParameter("page"), 1));
 
         try {
@@ -53,7 +56,7 @@ public class BookServlet extends HttpServlet {
             int totalPages = Math.max(1, (int) Math.ceil(totalItems / (double) PAGE_SIZE));
             page = Math.min(page, totalPages);
 
-            request.setAttribute("books", bookDAO.search(keyword, categoryId, tagId, status, sort,
+            request.setAttribute("books", bookDAO.search(keyword, categoryId, tagId, status,
                     (page - 1) * PAGE_SIZE, PAGE_SIZE));
             request.setAttribute("summary", bookDAO.getSummary());
             request.setAttribute("categories", categoryDAO.findAll());
@@ -63,7 +66,6 @@ public class BookServlet extends HttpServlet {
             request.setAttribute("selectedCategoryId", categoryId);
             request.setAttribute("selectedTagId", tagId);
             request.setAttribute("selectedStatus", status);
-            request.setAttribute("selectedSort", sort);
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalItems", totalItems);
@@ -93,9 +95,21 @@ public class BookServlet extends HttpServlet {
             return;
         }
 
-        String action = request.getParameter("action");
+        String action = null;
+        String newImagePath = null;
+        String oldImagePath = null;
         try {
+            action = request.getParameter("action");
             Book book = readBook(request, "update".equals(action));
+            if ("update".equals(action)) {
+                Book existing = bookDAO.findById(book.getBookId());
+                if (existing == null) {
+                    throw new ValidationException("Đầu sách không tồn tại.");
+                }
+                oldImagePath = existing.getImagePath();
+            }
+            newImagePath = imageStorage.save(request.getPart("coverImage"));
+            book.setImagePath(newImagePath == null ? oldImagePath : newImagePath);
             int[] categoryIds = parseIds(request.getParameterValues("categoryIds"));
             int[] tagIds = parseIds(request.getParameterValues("tagIds"));
             int actorId = (Integer) session.getAttribute("userId");
@@ -109,9 +123,14 @@ public class BookServlet extends HttpServlet {
             } else {
                 throw new ValidationException("Thao tác không hợp lệ.");
             }
+            if (newImagePath != null && oldImagePath != null) {
+                imageStorage.deleteQuietly(oldImagePath);
+            }
         } catch (ValidationException e) {
+            imageStorage.deleteQuietly(newImagePath);
             session.setAttribute("errorMessage", e.getMessage());
-        } catch (DatabaseException | NumberFormatException e) {
+        } catch (DatabaseException | SQLException | NumberFormatException | IllegalStateException | IOException e) {
+            imageStorage.deleteQuietly(newImagePath);
             LOGGER.log(Level.SEVERE, "Không thể lưu đầu sách.", e);
             session.setAttribute("errorMessage", "Không thể lưu đầu sách. Vui lòng kiểm tra dữ liệu và thử lại.");
         }
@@ -156,10 +175,6 @@ public class BookServlet extends HttpServlet {
 
     private String normalizeBookStatus(String status) {
         return "unavailable".equals(status) ? "unavailable" : "available";
-    }
-
-    private String normalizeSort(String sort) {
-        return "title".equals(sort) || "copies".equals(sort) || "noCopies".equals(sort) ? sort : "recent";
     }
 
     private Integer parseOptionalInt(String value) {

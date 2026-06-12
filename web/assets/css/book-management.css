@@ -269,6 +269,41 @@
     height: 52px;
     justify-content: center;
     width: 40px;
+    object-fit: cover;
+}
+
+.bm-cover-upload {
+    align-items: center;
+    background: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: 10px;
+    display: flex;
+    gap: 16px;
+    padding: 12px;
+}
+
+.bm-cover-upload__preview {
+    align-items: center;
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+    border-radius: 8px;
+    color: var(--primary);
+    display: flex;
+    flex: 0 0 auto;
+    height: 112px;
+    justify-content: center;
+    overflow: hidden;
+    width: 82px;
+}
+
+.bm-cover-upload__preview img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.bm-cover-upload__preview .material-symbols-outlined {
+    font-size: 34px;
 }
 
 .bm-book__title {
@@ -617,6 +652,123 @@
 
 .bm-table-card .table td strong {
     color: var(--on-surface);
+}
+
+.bm-filter-card--compact {
+    background: transparent;
+    border-color: rgba(140, 113, 100, 0.28);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.bm-filter-card--compact .form-control,
+.bm-filter-card--compact .form-select {
+    background-color: rgba(255, 255, 255, 0.72);
+    min-height: 38px;
+}
+
+.bm-filter-actions--compact {
+    justify-content: flex-end;
+}
+
+.bm-filter-actions--compact .bm-filter-button {
+    background: var(--surface-container-high);
+    color: var(--on-surface-variant);
+    flex: 0 0 108px;
+}
+
+.bm-filter-actions--compact .bm-filter-button:hover {
+    background: var(--primary-fixed);
+    color: var(--primary);
+}
+
+.bm-filter-actions--compact .bm-reset-button {
+    background: transparent;
+    border: 1px solid var(--outline-variant);
+    flex-basis: 40px;
+}
+
+.bm-summary-strip--compact {
+    background: transparent;
+    border-color: rgba(140, 113, 100, 0.22);
+    gap: 22px;
+    padding: 8px 12px;
+}
+
+.bm-table-card--primary {
+    border-color: rgba(157, 67, 0, 0.32);
+    box-shadow: 0 3px 12px rgba(88, 34, 0, 0.06);
+}
+
+.bm-table-card--primary .table-lms thead th {
+    background: var(--surface-container);
+    color: var(--on-surface);
+    font-weight: 700;
+}
+
+.bm-table-card--primary .table-lms tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.bm-action-column {
+    text-align: center;
+    width: 56px;
+}
+
+.bm-copy-action-column {
+    min-width: 96px;
+    text-align: center;
+    width: 96px;
+}
+
+.bm-copy-actions {
+    align-items: center;
+    display: inline-flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.bm-action-icon {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--on-surface-variant);
+    display: inline-flex;
+    height: 34px;
+    justify-content: center;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    width: 34px;
+}
+
+.bm-action-icon .material-symbols-outlined {
+    font-size: 19px;
+}
+
+.bm-action-icon:hover,
+.bm-action-icon:focus-visible {
+    background: var(--primary-fixed);
+    border-color: var(--outline-variant);
+    color: var(--primary);
+    outline: none;
+}
+
+.bm-action-icon--danger {
+    color: #b91c1c;
+}
+
+.bm-action-icon--danger:hover,
+.bm-action-icon--danger:focus-visible {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+.bm-rule-note--compact {
+    background: rgba(205, 229, 255, 0.22);
+    border-color: rgba(0, 99, 152, 0.14);
+    padding: 9px 12px;
 }
 
 .bm-side-card {

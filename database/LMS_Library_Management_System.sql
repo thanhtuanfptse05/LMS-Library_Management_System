@@ -157,6 +157,7 @@ CREATE TABLE Book (
     publisher NVARCHAR(255) NULL,
     publicationYear INT NULL,
     price DECIMAL(18,2) NULL CHECK (price IS NULL OR price >= 0),
+    imagePath NVARCHAR(255) NULL,
     totalQuantity INT NOT NULL DEFAULT 0 CHECK (totalQuantity >= 0),
     availableQuantity INT NOT NULL DEFAULT 0 CHECK (availableQuantity >= 0),
     [status] NVARCHAR(50) NOT NULL DEFAULT 'available',  -- unavailable, available
