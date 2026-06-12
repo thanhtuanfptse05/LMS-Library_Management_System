@@ -39,7 +39,7 @@
         <div class="px-3 mb-1">
             <p class="text-on-surface-variant fw-bold text-uppercase mb-1 px-2"
                style="font-size: 10px; letter-spacing: 0.15em; margin-top: 8px;">Người dùng &amp; Phân quyền</p>
-            <a class="sidebar-link" id="nav-user-management" href="#">
+            <a class="sidebar-link" id="nav-user-management" href="${pageContext.request.contextPath}/admin/user">
                 <span class="material-symbols-outlined">group</span>
                 <span>Quản lý Người dùng</span>
             </a>

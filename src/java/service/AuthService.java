@@ -53,7 +53,7 @@ public class AuthService {
         }
         java.sql.Timestamp lockedUntil = user.getLockedUntil();
         if (lockedUntil == null) {
-            return false;
+            return true; // Khóa bởi Admin (vĩnh viễn / cho đến khi được mở)
         }
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
         return lockedUntil.after(now);

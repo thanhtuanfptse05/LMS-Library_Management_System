@@ -245,7 +245,7 @@
                                 </table>
                             </div>
                             <div class="p-3 text-center bg-surface-container-low">
-                                <a href="#" class="text-primary-custom fw-bold text-decoration-none" style="font-size: 13px;">
+                                <a href="${pageContext.request.contextPath}/admin/user" class="text-primary-custom fw-bold text-decoration-none" style="font-size: 13px;">
                                     Xem Tất cả Tài khoản &rarr;
                                 </a>
                             </div>

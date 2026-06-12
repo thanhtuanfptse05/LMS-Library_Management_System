@@ -54,15 +54,25 @@ public class GoogleLoginServlet extends HttpServlet {
                 Timestamp lockedUntil = user.getLockedUntil();
                 Timestamp now = new Timestamp(System.currentTimeMillis());
 
-                if (lockedUntil != null && lockedUntil.after(now)) {
-                    request.setAttribute("errorMessage", "Tài khoản bị khóa do đăng nhập sai nhiều lần. Tự động mở khóa lúc: " + lockedUntil);
+                if (lockedUntil != null) {
+                    if (lockedUntil.after(now)) {
+                        request.setAttribute("errorMessage", "Tài khoản bị khóa do đăng nhập sai nhiều lần. Tự động mở khóa lúc: " + lockedUntil);
+                        request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+                        return;
+                    } else {
+                        userDAO.unlockAccount(user.getUserId());
+                        user.setStatus("active");
+                        user.setFailedLoginAttempts(0);
+                        LOGGER.log(Level.INFO, "Auto-unlocked account for user email via Google SSO: {0}", email);
+                    }
+                } else {
+                    String errorMsg = "Tài khoản của bạn đã bị khóa bởi quản trị viên.";
+                    if ("unpaid".equals(user.getLockReason())) {
+                        errorMsg = "Tài khoản của bạn đã bị khóa do nợ tiền phạt chưa thanh toán.";
+                    }
+                    request.setAttribute("errorMessage", errorMsg);
                     request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
                     return;
-                } else {
-                    userDAO.unlockAccount(user.getUserId());
-                    user.setStatus("active");
-                    user.setFailedLoginAttempts(0);
-                    LOGGER.log(Level.INFO, "Auto-unlocked account for user email via Google SSO: {0}", email);
                 }
             }
 

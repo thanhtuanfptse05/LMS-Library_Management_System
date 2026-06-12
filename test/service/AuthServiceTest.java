@@ -95,6 +95,19 @@ public class AuthServiceTest {
     }
 
     /**
+     * Test isAccountLocked khi tài khoản bị khóa bởi admin (lockedUntil = null).
+     */
+    @Test
+    public void testIsAccountLockedAdmin() {
+        testUser.setStatus("locked");
+        testUser.setLockedUntil(null);
+        testUser.setLockReason("adminban");
+
+        boolean result = authService.isAccountLocked(testUser);
+        assertTrue("Tài khoản bị khóa bởi admin (lockedUntil = null) phải trả về true", result);
+    }
+
+    /**
      * Test handleFailedLogin bình thường (chưa đạt ngưỡng 5 lần).
      */
     @Test
