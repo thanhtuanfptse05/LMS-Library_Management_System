@@ -20,8 +20,8 @@ import model.Book;
 import model.BookCopy;
 import model.BookImportBatch;
 import model.BookImportError;
-import model.BookImportPreview;
-import model.BookImportRowDTO;
+import dto.BookImportPreviewDTO;
+import dto.BookImportRowDTO;
 import model.Category;
 import model.Tag;
 import util.DatabaseConnection;
@@ -52,14 +52,14 @@ public class BookImportService {
         this.auditDAO = auditDAO;
     }
 
-    public void validate(BookImportPreview preview, int actorId) throws DatabaseException {
+    public void validate(BookImportPreviewDTO preview, int actorId) throws DatabaseException {
         validator.validate(preview);
         if (!preview.isValid()) {
             saveFailedBatch(preview, actorId, preview.getErrors());
         }
     }
 
-    public int confirm(BookImportPreview preview, int actorId) throws ValidationException, DatabaseException {
+    public int confirm(BookImportPreviewDTO preview, int actorId) throws ValidationException, DatabaseException {
         preview.getErrors().clear();
         validator.validate(preview);
         if (!preview.isValid()) {
@@ -175,7 +175,7 @@ public class BookImportService {
         return ids.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    private void saveFailedBatch(BookImportPreview preview, int actorId, List<BookImportError> errors)
+    private void saveFailedBatch(BookImportPreviewDTO preview, int actorId, List<BookImportError> errors)
             throws DatabaseException {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
@@ -195,7 +195,7 @@ public class BookImportService {
         }
     }
 
-    private BookImportBatch batch(BookImportPreview preview, int actorId, int successRows, int failedRows,
+    private BookImportBatch batch(BookImportPreviewDTO preview, int actorId, int successRows, int failedRows,
             String status) {
         BookImportBatch batch = new BookImportBatch();
         batch.setImportedBy(actorId);

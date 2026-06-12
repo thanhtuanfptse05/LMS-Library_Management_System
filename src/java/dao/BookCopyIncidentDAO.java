@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.BookCopyIncident;
-import model.BookCopyIncidentSummary;
+import dto.BookCopyIncidentSummaryDTO;
 import util.DatabaseConnection;
 
 public class BookCopyIncidentDAO {
@@ -49,7 +49,7 @@ public class BookCopyIncidentDAO {
         }
     }
 
-    public BookCopyIncidentSummary getSummary() throws SQLException {
+    public BookCopyIncidentSummaryDTO getSummary() throws SQLException {
         String sql = "SELECT "
                 + "SUM(CASE WHEN [status] = 'pending' THEN 1 ELSE 0 END) pendingCount, "
                 + "SUM(CASE WHEN [status] = 'investigating' THEN 1 ELSE 0 END) investigatingCount, "
@@ -59,7 +59,7 @@ public class BookCopyIncidentDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            BookCopyIncidentSummary summary = new BookCopyIncidentSummary();
+            BookCopyIncidentSummaryDTO summary = new BookCopyIncidentSummaryDTO();
             if (rs.next()) {
                 summary.setPendingCount(rs.getInt("pendingCount"));
                 summary.setInvestigatingCount(rs.getInt("investigatingCount"));

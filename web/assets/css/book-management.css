@@ -1122,6 +1122,10 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.bm-list-stats--four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .bm-list-stat {
     align-items: center;
     background: var(--surface-container-lowest);
@@ -1175,6 +1179,15 @@
 .bm-list-stat--success > .material-symbols-outlined {
     background: #d1fae5;
     color: #047857;
+}
+
+.bm-list-stat--danger {
+    border-left-color: #ef4444;
+}
+
+.bm-list-stat--danger > .material-symbols-outlined {
+    background: #fee2e2;
+    color: #b91c1c;
 }
 
 .bm-data-table {

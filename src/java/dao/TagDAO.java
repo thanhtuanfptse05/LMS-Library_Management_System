@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Tag;
+import dto.ManagementSummaryDTO;
 import util.DatabaseConnection;
 
 public class TagDAO {
@@ -45,6 +46,27 @@ public class TagDAO {
                 }
                 return tags;
             }
+        }
+    }
+
+    public ManagementSummaryDTO getSummary() throws SQLException {
+        String sql = "SELECT COUNT(*) AS totalCount, "
+                + "SUM(CASE WHEN t.[status] = 'active' THEN 1 ELSE 0 END) AS activeCount, "
+                + "SUM(CASE WHEN t.[status] = 'hidden' THEN 1 ELSE 0 END) AS hiddenCount, "
+                + "SUM(CASE WHEN used.tagId IS NULL THEN 1 ELSE 0 END) AS unusedCount "
+                + "FROM Tag t LEFT JOIN (SELECT DISTINCT tagId FROM BookTag) used "
+                + "ON used.tagId = t.tagId";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            ManagementSummaryDTO summary = new ManagementSummaryDTO();
+            if (rs.next()) {
+                summary.setTotalCount(rs.getInt("totalCount"));
+                summary.setActiveCount(rs.getInt("activeCount"));
+                summary.setHiddenCount(rs.getInt("hiddenCount"));
+                summary.setUnusedCount(rs.getInt("unusedCount"));
+            }
+            return summary;
         }
     }
 

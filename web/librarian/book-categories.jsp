@@ -36,18 +36,24 @@
                 </div>
             </form>
 
+            <div class="bm-list-stats bm-list-stats--four mb-3">
+                <article class="bm-list-stat"><span class="material-symbols-outlined">category</span><div><p class="bm-stat-card__label mb-1">Tổng thể loại</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.totalCount}" /></p></div></article>
+                <article class="bm-list-stat bm-list-stat--success"><span class="material-symbols-outlined">check_circle</span><div><p class="bm-stat-card__label mb-1">Đang sử dụng</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.activeCount}" /></p></div></article>
+                <article class="bm-list-stat bm-list-stat--warning"><span class="material-symbols-outlined">visibility_off</span><div><p class="bm-stat-card__label mb-1">Đã ẩn</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.hiddenCount}" /></p></div></article>
+                <article class="bm-list-stat bm-list-stat--info"><span class="material-symbols-outlined">library_add</span><div><p class="bm-stat-card__label mb-1">Chưa có đầu sách</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.unusedCount}" /></p></div></article>
+            </div>
+
             <section class="bm-table-card bm-table-card--primary bm-data-table"><div class="table-responsive"><table class="table table-lms">
-                <thead><tr><th>Tên thể loại</th><th>Mô tả</th><th>Số đầu sách</th><th>Trạng thái</th><th>Cập nhật gần nhất</th><th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th></tr></thead>
+                <thead><tr><th>Tên thể loại</th><th>Mô tả</th><th>Số đầu sách</th><th>Trạng thái</th><th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th></tr></thead>
                 <tbody>
                     <c:forEach var="category" items="${categories}"><tr>
                         <td><strong><c:out value="${category.name}" /></strong></td>
                         <td><c:out value="${empty category.description ? 'Chưa có mô tả' : category.description}" /></td>
                         <td><a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=${category.categoryId}">Xem <fmt:formatNumber value="${category.bookCount}" /> đầu sách</a></td>
                         <td><span class="bm-badge ${category.status == 'active' ? 'bm-badge--success' : 'bm-badge--neutral'}">${category.status == 'active' ? 'Đang dùng' : 'Đã ẩn'}</span></td>
-                        <td><fmt:formatDate value="${category.updatedAt}" pattern="dd/MM/yyyy HH:mm" /></td>
                         <td class="bm-action-column"><c:choose><c:when test="${canEdit}"><a class="bm-action-icon" href="${pageContext.request.contextPath}/book-management/categories?editId=${category.categoryId}" title="Chỉnh sửa thể loại" aria-label="Chỉnh sửa thể loại"><span class="material-symbols-outlined" aria-hidden="true">edit</span></a></c:when><c:otherwise><span class="bm-badge bm-badge--neutral">Chỉ xem</span></c:otherwise></c:choose></td>
                     </tr></c:forEach>
-                    <c:if test="${empty categories}"><tr><td colspan="6"><div class="bm-empty-state"><span class="material-symbols-outlined">category</span><strong>Không tìm thấy thể loại</strong><span>Hãy thử thay đổi từ khóa hoặc trạng thái.</span></div></td></tr></c:if>
+                    <c:if test="${empty categories}"><tr><td colspan="5"><div class="bm-empty-state"><span class="material-symbols-outlined">category</span><strong>Không tìm thấy thể loại</strong><span>Hãy thử thay đổi từ khóa hoặc trạng thái.</span></div></td></tr></c:if>
                 </tbody>
             </table></div></section>
         </div>

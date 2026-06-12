@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.BookCopy;
-import model.BookCopySummary;
+import dto.BookCopySummaryDTO;
 import util.DatabaseConnection;
 
 public class BookCopyDAO {
@@ -62,7 +62,7 @@ public class BookCopyDAO {
         }
     }
 
-    public BookCopySummary getSummary() throws SQLException {
+    public BookCopySummaryDTO getSummary() throws SQLException {
         String sql = "SELECT COUNT(*) totalCopies, "
                 + "SUM(CASE WHEN [status] = 'available' THEN 1 ELSE 0 END) availableCopies, "
                 + "SUM(CASE WHEN [status] = 'borrowed' THEN 1 ELSE 0 END) borrowedCopies, "
@@ -70,7 +70,7 @@ public class BookCopyDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            BookCopySummary summary = new BookCopySummary();
+            BookCopySummaryDTO summary = new BookCopySummaryDTO();
             if (rs.next()) {
                 summary.setTotalCopies(rs.getInt("totalCopies"));
                 summary.setAvailableCopies(rs.getInt("availableCopies"));

@@ -1,6 +1,6 @@
-package model;
+package dto;
 
-public class BookCatalogSummary {
+public class BookCatalogSummaryDTO {
 
     private int totalBooks;
     private int totalCopies;

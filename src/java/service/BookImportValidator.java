@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 import model.Book;
 import model.BookImportError;
-import model.BookImportPreview;
-import model.BookImportRowDTO;
+import dto.BookImportPreviewDTO;
+import dto.BookImportRowDTO;
 import util.DatabaseConnection;
 
 public class BookImportValidator {
@@ -30,7 +30,7 @@ public class BookImportValidator {
         this.bookService = bookService;
     }
 
-    public void validate(BookImportPreview preview) throws DatabaseException {
+    public void validate(BookImportPreviewDTO preview) throws DatabaseException {
         Set<String> availableIsbns = new HashSet<>();
         try (Connection conn = DatabaseConnection.getConnection()) {
             for (BookImportRowDTO row : preview.getBooks()) {
@@ -47,7 +47,7 @@ public class BookImportValidator {
         }
     }
 
-    private void validateBookRow(BookImportPreview preview, BookImportRowDTO row) {
+    private void validateBookRow(BookImportPreviewDTO preview, BookImportRowDTO row) {
         Book book = new Book();
         book.setIsbn(row.getIsbn());
         book.setTitle(row.getTitle());
@@ -75,7 +75,7 @@ public class BookImportValidator {
         }
     }
 
-    private void validateCopyRow(Connection conn, BookImportPreview preview, BookImportRowDTO row,
+    private void validateCopyRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row,
             Set<String> availableIsbns) throws SQLException {
         if (row.getIsbn() != null && !row.getIsbn().isBlank()
                 && !availableIsbns.contains(row.getIsbn().toLowerCase())

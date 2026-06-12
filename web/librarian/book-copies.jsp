@@ -34,7 +34,12 @@
             </form>
 
             <div class="bm-rule-note bm-rule-note--compact mb-3"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đã đặt trước hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
-            <div class="bm-summary-strip bm-list-summary mb-3"><span class="bm-summary-strip__item">Tổng: <strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span><span class="bm-summary-strip__item">Sẵn sàng: <strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span><span class="bm-summary-strip__item">Đang mượn: <strong><fmt:formatNumber value="${summary.borrowedCopies}" /></strong></span><span class="bm-summary-strip__item">Hỏng/mất: <strong><fmt:formatNumber value="${summary.incidentCopies}" /></strong></span></div>
+            <div class="bm-list-stats bm-list-stats--four mb-3">
+                <article class="bm-list-stat"><span class="material-symbols-outlined">inventory_2</span><div><p class="bm-stat-card__label mb-1">Tổng bản sao</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.totalCopies}" /></p></div></article>
+                <article class="bm-list-stat bm-list-stat--success"><span class="material-symbols-outlined">check_circle</span><div><p class="bm-stat-card__label mb-1">Sẵn sàng</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.availableCopies}" /></p></div></article>
+                <article class="bm-list-stat bm-list-stat--info"><span class="material-symbols-outlined">menu_book</span><div><p class="bm-stat-card__label mb-1">Đang mượn</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.borrowedCopies}" /></p></div></article>
+                <article class="bm-list-stat bm-list-stat--danger"><span class="material-symbols-outlined">report</span><div><p class="bm-stat-card__label mb-1">Hỏng/mất</p><p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.incidentCopies}" /></p></div></article>
+            </div>
 
             <section class="bm-table-card bm-table-card--primary bm-data-table"><div class="table-responsive"><table class="table table-lms">
                 <thead><tr><th>Mã vạch</th><th>Đầu sách</th><th>Vị trí</th><th>Tình trạng</th><th>Lưu thông</th><th>Cập nhật</th><th class="bm-copy-action-column">Thao tác</th></tr></thead>

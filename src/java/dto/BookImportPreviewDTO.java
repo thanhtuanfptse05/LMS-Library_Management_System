@@ -1,9 +1,10 @@
-package model;
+package dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import model.BookImportError;
 
-public class BookImportPreview {
+public class BookImportPreviewDTO {
 
     private String fileName;
     private List<BookImportRowDTO> books = new ArrayList<>();

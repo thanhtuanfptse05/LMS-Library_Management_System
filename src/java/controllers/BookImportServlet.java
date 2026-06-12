@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.BookImportPreview;
+import dto.BookImportPreviewDTO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -67,7 +67,7 @@ public class BookImportServlet extends HttpServlet {
                 if (fileName.length() > 255) {
                     throw new ValidationException("Tên tệp không được vượt quá 255 ký tự.");
                 }
-                BookImportPreview preview = workbookReader.read(file.getInputStream(), fileName);
+                BookImportPreviewDTO preview = workbookReader.read(file.getInputStream(), fileName);
                 importService.validate(preview, actorId);
                 session.setAttribute("bookImportPreview", preview);
                 if (preview.isValid()) {
@@ -78,7 +78,7 @@ public class BookImportServlet extends HttpServlet {
                             "Tệp có " + preview.getErrors().size() + " lỗi. Không có dữ liệu sách nào được lưu.");
                 }
             } else if ("confirm".equals(action)) {
-                BookImportPreview preview = (BookImportPreview) session.getAttribute("bookImportPreview");
+                BookImportPreviewDTO preview = (BookImportPreviewDTO) session.getAttribute("bookImportPreview");
                 if (preview == null || !preview.isValid()) {
                     throw new ValidationException("Không có tệp hợp lệ đang chờ xác nhận.");
                 }

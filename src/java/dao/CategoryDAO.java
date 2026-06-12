@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Category;
+import dto.ManagementSummaryDTO;
 import util.DatabaseConnection;
 
 public class CategoryDAO {
@@ -46,6 +47,27 @@ public class CategoryDAO {
                 }
                 return categories;
             }
+        }
+    }
+
+    public ManagementSummaryDTO getSummary() throws SQLException {
+        String sql = "SELECT COUNT(*) AS totalCount, "
+                + "SUM(CASE WHEN c.[status] = 'active' THEN 1 ELSE 0 END) AS activeCount, "
+                + "SUM(CASE WHEN c.[status] = 'hidden' THEN 1 ELSE 0 END) AS hiddenCount, "
+                + "SUM(CASE WHEN used.categoryId IS NULL THEN 1 ELSE 0 END) AS unusedCount "
+                + "FROM Category c LEFT JOIN (SELECT DISTINCT categoryId FROM BookCategory) used "
+                + "ON used.categoryId = c.categoryId";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            ManagementSummaryDTO summary = new ManagementSummaryDTO();
+            if (rs.next()) {
+                summary.setTotalCount(rs.getInt("totalCount"));
+                summary.setActiveCount(rs.getInt("activeCount"));
+                summary.setHiddenCount(rs.getInt("hiddenCount"));
+                summary.setUnusedCount(rs.getInt("unusedCount"));
+            }
+            return summary;
         }
     }
 

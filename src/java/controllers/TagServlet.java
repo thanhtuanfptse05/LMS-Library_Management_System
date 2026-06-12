@@ -39,6 +39,7 @@ public class TagServlet extends HttpServlet {
         try {
             request.setAttribute("tags", tagDAO.search(keyword, status));
             request.setAttribute("allTags", tagDAO.findAll());
+            request.setAttribute("summary", tagDAO.getSummary());
             request.setAttribute("canEdit", canEdit);
             request.setAttribute("q", keyword == null ? "" : keyword);
             request.setAttribute("selectedStatus", status == null ? "" : status);

@@ -1,6 +1,6 @@
-package model;
+package dto;
 
-public class BookCopyIncidentSummary {
+public class BookCopyIncidentSummaryDTO {
 
     private int pendingCount;
     private int investigatingCount;

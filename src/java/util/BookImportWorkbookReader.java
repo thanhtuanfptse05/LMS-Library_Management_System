@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import model.BookImportError;
-import model.BookImportPreview;
-import model.BookImportRowDTO;
+import dto.BookImportPreviewDTO;
+import dto.BookImportRowDTO;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -24,8 +24,8 @@ public class BookImportWorkbookReader {
     public static final List<String> COPY_HEADERS = Arrays.asList("isbn", "barcode", "location");
     private final DataFormatter formatter = new DataFormatter(Locale.ROOT);
 
-    public BookImportPreview read(InputStream input, String fileName) throws IOException {
-        BookImportPreview preview = new BookImportPreview();
+    public BookImportPreviewDTO read(InputStream input, String fileName) throws IOException {
+        BookImportPreviewDTO preview = new BookImportPreviewDTO();
         preview.setFileName(fileName);
         try (XSSFWorkbook workbook = new XSSFWorkbook(input)) {
             Sheet books = workbook.getSheet("Books");
@@ -50,7 +50,7 @@ public class BookImportWorkbookReader {
         return preview;
     }
 
-    private boolean validateHeaders(Sheet sheet, List<String> expected, BookImportPreview preview) {
+    private boolean validateHeaders(Sheet sheet, List<String> expected, BookImportPreviewDTO preview) {
         Row header = sheet.getRow(0);
         if (header == null) {
             preview.getErrors().add(new BookImportError(sheet.getSheetName(), 1, null,
@@ -76,7 +76,7 @@ public class BookImportWorkbookReader {
         return valid;
     }
 
-    private void readBooks(Sheet sheet, BookImportPreview preview) {
+    private void readBooks(Sheet sheet, BookImportPreviewDTO preview) {
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             if (isBlank(row, BOOK_HEADERS.size())) {
@@ -96,7 +96,7 @@ public class BookImportWorkbookReader {
         }
     }
 
-    private void readCopies(Sheet sheet, BookImportPreview preview) {
+    private void readCopies(Sheet sheet, BookImportPreviewDTO preview) {
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             if (isBlank(row, COPY_HEADERS.size())) {
@@ -121,7 +121,7 @@ public class BookImportWorkbookReader {
     }
 
     private Integer integerValue(Sheet sheet, int rowIndex, Row row, int column, String name,
-            BookImportPreview preview) {
+            BookImportPreviewDTO preview) {
         String raw = value(row, column);
         if (raw.isBlank()) {
             return null;
@@ -136,7 +136,7 @@ public class BookImportWorkbookReader {
     }
 
     private BigDecimal decimalValue(Sheet sheet, int rowIndex, Row row, int column, String name,
-            BookImportPreview preview) {
+            BookImportPreviewDTO preview) {
         String raw = value(row, column);
         if (raw.isBlank()) {
             return null;
@@ -150,7 +150,7 @@ public class BookImportWorkbookReader {
         }
     }
 
-    private void validateInternalDuplicates(BookImportPreview preview) {
+    private void validateInternalDuplicates(BookImportPreviewDTO preview) {
         Set<String> isbns = new HashSet<>();
         for (BookImportRowDTO row : preview.getBooks()) {
             if (!row.getIsbn().isBlank() && !isbns.add(row.getIsbn().toLowerCase())) {
@@ -167,7 +167,7 @@ public class BookImportWorkbookReader {
         }
     }
 
-    private void require(String value, Sheet sheet, int rowIndex, String column, BookImportPreview preview) {
+    private void require(String value, Sheet sheet, int rowIndex, String column, BookImportPreviewDTO preview) {
         if (value == null || value.isBlank()) {
             preview.getErrors().add(new BookImportError(sheet.getSheetName(), rowIndex + 1, column,
                     "Dữ liệu bắt buộc không được để trống."));

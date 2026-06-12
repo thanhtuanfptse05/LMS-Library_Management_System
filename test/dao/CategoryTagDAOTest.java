@@ -2,8 +2,10 @@ package dao;
 
 import java.sql.Connection;
 import model.Category;
+import dto.ManagementSummaryDTO;
 import model.Tag;
 import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import util.DatabaseConnection;
@@ -39,5 +41,20 @@ public class CategoryTagDAOTest {
                 conn.setAutoCommit(true);
             }
         }
+    }
+
+    @Test
+    public void loadCategoryAndTagSummaries() throws Exception {
+        ManagementSummaryDTO categorySummary = new CategoryDAO().getSummary();
+        ManagementSummaryDTO tagSummary = new TagDAO().getSummary();
+
+        assertNotNull(categorySummary);
+        assertNotNull(tagSummary);
+        assertTrue(categorySummary.getTotalCount() >= categorySummary.getActiveCount());
+        assertTrue(categorySummary.getTotalCount() >= categorySummary.getHiddenCount());
+        assertTrue(categorySummary.getTotalCount() >= categorySummary.getUnusedCount());
+        assertTrue(tagSummary.getTotalCount() >= tagSummary.getActiveCount());
+        assertTrue(tagSummary.getTotalCount() >= tagSummary.getHiddenCount());
+        assertTrue(tagSummary.getTotalCount() >= tagSummary.getUnusedCount());
     }
 }

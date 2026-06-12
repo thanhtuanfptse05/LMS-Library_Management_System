@@ -2,7 +2,7 @@ package util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import model.BookImportPreview;
+import dto.BookImportPreviewDTO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,7 +16,7 @@ public class BookImportWorkbookReaderTest {
     @Test
     public void readsValidWorkbookAndSkipsBlankRows() throws Exception {
         byte[] workbook = workbook(false, false);
-        BookImportPreview preview = new BookImportWorkbookReader().read(
+        BookImportPreviewDTO preview = new BookImportWorkbookReader().read(
                 new ByteArrayInputStream(workbook), "valid.xlsx");
         assertTrue(preview.isValid());
         assertEquals(1, preview.getBooks().size());
@@ -25,7 +25,7 @@ public class BookImportWorkbookReaderTest {
 
     @Test
     public void rejectsDuplicateBarcodeInsideWorkbook() throws Exception {
-        BookImportPreview preview = new BookImportWorkbookReader().read(
+        BookImportPreviewDTO preview = new BookImportWorkbookReader().read(
                 new ByteArrayInputStream(workbook(true, false)), "duplicate.xlsx");
         assertFalse(preview.isValid());
         assertTrue(preview.getErrors().stream()
@@ -34,7 +34,7 @@ public class BookImportWorkbookReaderTest {
 
     @Test
     public void rejectsMissingRequiredSheet() throws Exception {
-        BookImportPreview preview = new BookImportWorkbookReader().read(
+        BookImportPreviewDTO preview = new BookImportWorkbookReader().read(
                 new ByteArrayInputStream(workbook(false, true)), "missing.xlsx");
         assertFalse(preview.isValid());
         assertTrue(preview.getErrors().stream()

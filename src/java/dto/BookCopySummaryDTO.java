@@ -1,6 +1,6 @@
-package model;
+package dto;
 
-public class BookCopySummary {
+public class BookCopySummaryDTO {
 
     private int totalCopies;
     private int availableCopies;

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import model.Book;
-import model.BookCatalogSummary;
+import dto.BookCatalogSummaryDTO;
 import model.Category;
 import model.Tag;
 import util.DatabaseConnection;
@@ -57,14 +57,14 @@ public class BookDAO {
         }
     }
 
-    public BookCatalogSummary getSummary() throws SQLException {
+    public BookCatalogSummaryDTO getSummary() throws SQLException {
         String sql = "SELECT COUNT(*) AS totalBooks, COALESCE(SUM(totalQuantity), 0) AS totalCopies, "
                 + "COALESCE(SUM(availableQuantity), 0) AS availableCopies, "
                 + "COALESCE(SUM(CASE WHEN totalQuantity = 0 THEN 1 ELSE 0 END), 0) AS booksWithoutCopies FROM Book";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            BookCatalogSummary summary = new BookCatalogSummary();
+            BookCatalogSummaryDTO summary = new BookCatalogSummaryDTO();
             if (rs.next()) {
                 summary.setTotalBooks(rs.getInt("totalBooks"));
                 summary.setTotalCopies(rs.getInt("totalCopies"));

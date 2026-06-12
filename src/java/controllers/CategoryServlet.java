@@ -38,6 +38,7 @@ public class CategoryServlet extends HttpServlet {
         String status = normalizeStatus(request.getParameter("status"));
         try {
             request.setAttribute("categories", categoryDAO.search(keyword, status));
+            request.setAttribute("summary", categoryDAO.getSummary());
             request.setAttribute("canEdit", canEdit);
             request.setAttribute("q", keyword == null ? "" : keyword);
             request.setAttribute("selectedStatus", status == null ? "" : status);
