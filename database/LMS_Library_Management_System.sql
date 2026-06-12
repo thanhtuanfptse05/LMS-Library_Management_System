@@ -126,12 +126,12 @@ CREATE TABLE Category (
     categoryId INT IDENTITY(1,1) PRIMARY KEY,
     name NVARCHAR(255) NOT NULL UNIQUE,
     description NVARCHAR(MAX) NULL,
-    [status] NVARCHAR(20) NOT NULL DEFAULT 'active',
-    updatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    [status] NVARCHAR(20) NOT NULL CONSTRAINT DF_Category_Status DEFAULT 'active',
+    updatedAt DATETIME NOT NULL CONSTRAINT DF_Category_UpdatedAt DEFAULT GETDATE(),
     updatedBy INT NULL,
 
     CONSTRAINT CK_Category_Status CHECK ([status] IN ('active', 'hidden')),
-    FOREIGN KEY (updatedBy) REFERENCES [User](userId)
+    CONSTRAINT FK_Category_UpdatedBy FOREIGN KEY (updatedBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
@@ -139,12 +139,12 @@ CREATE TABLE Category (
 CREATE TABLE Tag (
     tagId INT IDENTITY(1,1) PRIMARY KEY,
     name NVARCHAR(100) NOT NULL UNIQUE,
-    [status] NVARCHAR(20) NOT NULL DEFAULT 'active',
-    updatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    [status] NVARCHAR(20) NOT NULL CONSTRAINT DF_Tag_Status DEFAULT 'active',
+    updatedAt DATETIME NOT NULL CONSTRAINT DF_Tag_UpdatedAt DEFAULT GETDATE(),
     updatedBy INT NULL,
 
     CONSTRAINT CK_Tag_Status CHECK ([status] IN ('active', 'hidden')),
-    FOREIGN KEY (updatedBy) REFERENCES [User](userId)
+    CONSTRAINT FK_Tag_UpdatedBy FOREIGN KEY (updatedBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
@@ -220,10 +220,10 @@ CREATE TABLE BookCopyIncident (
     bookCopyId INT NOT NULL,
     incidentType NVARCHAR(20) NOT NULL, -- damaged, lost
     description NVARCHAR(1000) NOT NULL,
-    [status] NVARCHAR(20) NOT NULL DEFAULT 'pending', -- pending, investigating, resolved, rejected
+    [status] NVARCHAR(20) NOT NULL CONSTRAINT DF_BookCopyIncident_Status DEFAULT 'pending', -- pending, investigating, resolved, rejected
     resolution NVARCHAR(1000) NULL,
     reportedBy INT NOT NULL,
-    reportedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    reportedAt DATETIME NOT NULL CONSTRAINT DF_BookCopyIncident_ReportedAt DEFAULT GETDATE(),
     resolvedBy INT NULL,
     resolvedAt DATETIME NULL,
 
@@ -254,7 +254,7 @@ CREATE TABLE BookImportBatch (
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
     expiresAt DATETIME NOT NULL DEFAULT (DATEADD(YEAR, 1, GETDATE())),
 
-    FOREIGN KEY (importedBy) REFERENCES [User](userId),
+    CONSTRAINT FK_BookImportBatch_ImportedBy FOREIGN KEY (importedBy) REFERENCES [User](userId),
     CONSTRAINT CK_BookImportBatch_RowCounts
         CHECK (successRows + failedRows <= totalRows),
     CONSTRAINT CK_BookImportBatch_Status
@@ -272,7 +272,7 @@ CREATE TABLE BookImportError (
     errorMessage NVARCHAR(1000) NOT NULL,
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
 
-    FOREIGN KEY (importBatchId) REFERENCES BookImportBatch(importBatchId)
+    CONSTRAINT FK_BookImportError_Batch FOREIGN KEY (importBatchId) REFERENCES BookImportBatch(importBatchId)
         ON DELETE CASCADE,
     CONSTRAINT CK_BookImportError_SheetName
         CHECK (sheetName IN ('Books', 'BookCopies'))
