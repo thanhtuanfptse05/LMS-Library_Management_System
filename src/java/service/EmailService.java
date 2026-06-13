@@ -98,6 +98,37 @@ public class EmailService {
     }
 
     // =========================================================================
+    // Public API: Gửi Email HTML tùy ý (Bất đồng bộ) — dùng cho Thông báo Khẩn
+    // =========================================================================
+
+    /**
+     * Gửi bất đồng bộ một Email HTML đã được render sẵn.
+     * Dùng để gửi Thông báo Khẩn cấp (urgent notification) tới Student/Lecturer.
+     *
+     * <p>Nội dung {@code finalHtmlBody} phải là HTML hoàn chỉnh (các placeholder
+     * {{...}} đã được replace tại Controller trước khi gọi hàm này).</p>
+     *
+     * @param toEmail       Địa chỉ email người nhận
+     * @param subject       Tiêu đề Email
+     * @param finalHtmlBody Nội dung HTML hoàn chỉnh, sẵn sàng để gửi
+     */
+    public static void sendAsyncHtmlEmail(String toEmail, String subject, String finalHtmlBody) {
+        if (toEmail == null || toEmail.trim().isEmpty()) {
+            LOGGER.log(Level.WARNING, "[ASYNC MAIL] Bỏ qua gửi email — địa chỉ rỗng.");
+            return;
+        }
+        EXECUTOR.submit(() -> {
+            try {
+                LOGGER.log(Level.INFO, "[ASYNC MAIL] Đang gửi email HTML tới: {0}", toEmail);
+                sendEmail(toEmail, subject, finalHtmlBody);
+                LOGGER.log(Level.INFO, "[ASYNC MAIL] Gửi email HTML thành công tới: {0}", toEmail);
+            } catch (MessagingException | UnsupportedEncodingException e) {
+                LOGGER.log(Level.SEVERE, "[ASYNC MAIL] Lỗi khi gửi email HTML tới: " + toEmail, e);
+            }
+        });
+    }
+
+    // =========================================================================
     // Private helper: Tạo nội dung HTML cho email khôi phục mật khẩu
     // =========================================================================
 

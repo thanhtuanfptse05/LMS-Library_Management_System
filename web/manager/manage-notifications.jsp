@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
@@ -10,132 +10,425 @@
 
     <jsp:include page="fragments/_sidebar.jsp" />
 
-    <!-- ════════════════ BODY WRAPPER ════════════════ -->
+    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ BODY WRAPPER ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
     <div class="d-flex main-wrapper overflow-hidden">
 
         <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: var(--background);">
 
             <jsp:include page="fragments/_header.jsp" />
 
-            <div class="container-fluid px-4 py-4" style="max-width: 1200px; margin: 0 auto;">
+            <div class="container-fluid px-4 py-4" style="max-width: 1300px; margin: 0 auto;">
 
-                <!-- ─── Breadcrumb ─── -->
+                <!-- ΓöÇΓöÇΓöÇ Breadcrumb ΓöÇΓöÇΓöÇ -->
                 <nav class="mb-2 d-flex align-items-center gap-1 text-muted small fw-semibold text-uppercase"
                      aria-label="breadcrumb" style="font-size: 12px; letter-spacing: 0.05em;">
-                    <a class="text-decoration-none text-muted" href="${pageContext.request.contextPath}/manager/dashboard">Bảng điều khiển</a>
+                    <a class="text-decoration-none text-muted"
+                       href="${pageContext.request.contextPath}/manager/dashboard">Bß║úng ─æiß╗üu khiß╗ân</a>
                     <span class="material-symbols-outlined fs-6">chevron_right</span>
-                    <span class="text-dark">Quản lý Bảng tin</span>
+                    <span style="color: var(--on-surface);">Quß║ún l├╜ Bß║úng tin</span>
                 </nav>
 
-                <!-- ─── Page Title ─── -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <!-- ΓöÇΓöÇΓöÇ Page Title ΓöÇΓöÇΓöÇ -->
+                <div class="d-flex justify-content-between align-items-start mb-5 flex-wrap gap-3">
                     <div>
-                        <h1 class="h3 fw-bold mb-1" style="color: var(--on-surface);">Quản lý Bảng tin</h1>
-                        <p class="text-on-surface-variant mb-0" style="font-size: 14px;">
-                            Đăng thông báo chung cho toàn bộ Sinh viên và Giảng viên.
+                        <h1 class="fw-bold mb-1" style="font-size: 28px; color: var(--on-surface);">
+                            <span class="material-symbols-outlined me-2 align-middle"
+                                  style="font-size: 30px; color: var(--primary); font-variation-settings: 'FILL' 1;">campaign</span>
+                            Quß║ún l├╜ Bß║úng tin
+                        </h1>
+                        <p style="color: var(--on-surface-variant); font-size: 14px;" class="mb-0">
+                            ─É─âng th├┤ng b├ío nß╗Öi bß╗Ö ─æß║┐n to├án bß╗Ö Sinh vi├¬n v├á Giß║úng vi├¬n trong hß╗ç thß╗æng.
                         </p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="px-3 py-2 rounded-3 d-flex align-items-center gap-2"
+                             style="background: linear-gradient(135deg, rgba(157,67,0,0.08), rgba(249,115,22,0.05)); border: 1px solid rgba(157,67,0,0.15);">
+                            <span class="material-symbols-outlined" style="color: var(--primary); font-size: 18px;">notifications_active</span>
+                            <span class="fw-bold" style="font-size: 22px; color: var(--primary);">${totalCount}</span>
+                            <span style="font-size: 12px; color: var(--on-surface-variant);">th├┤ng b├ío</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ─── Alert Messages ─── -->
+                <!-- ΓöÇΓöÇΓöÇ Alert Messages ΓöÇΓöÇΓöÇ -->
                 <c:if test="${not empty param.success}">
-                    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <span class="material-symbols-outlined me-2">check_circle</span>
-                        <c:out value="${param.success}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    <div class="alert alert-dismissible fade show mb-4 d-flex align-items-center gap-2 rounded-3"
+                         role="alert"
+                         style="background: linear-gradient(135deg, rgba(22,163,74,0.08), rgba(22,163,74,0.04)); border: 1px solid rgba(22,163,74,0.25); color: #15803d;">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; color: #16a34a;">check_circle</span>
+                        <span class="fw-semibold"><c:out value="${param.success}" /></span>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="─É├│ng"></button>
                     </div>
                 </c:if>
                 <c:if test="${not empty param.error}">
-                    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <span class="material-symbols-outlined me-2">error</span>
-                        <c:out value="${param.error}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    <div class="alert alert-dismissible fade show mb-4 d-flex align-items-center gap-2 rounded-3"
+                         role="alert"
+                         style="background: linear-gradient(135deg, rgba(186,26,26,0.08), rgba(186,26,26,0.04)); border: 1px solid rgba(186,26,26,0.2); color: #93000a;">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; color: #ef4444;">error</span>
+                        <span class="fw-semibold"><c:out value="${param.error}" /></span>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="─É├│ng"></button>
                     </div>
                 </c:if>
 
                 <div class="row g-4">
 
-                    <!-- Left: Form tạo thông báo mới -->
-                    <div class="col-12 col-lg-4">
-                        <div class="raised-card p-4">
-                            <h5 class="fw-bold mb-3" style="color: var(--on-surface);">
-                                <span class="material-symbols-outlined me-2 align-middle" style="color: var(--primary);">campaign</span>
-                                Đăng thông báo mới
-                            </h5>
-                            <form method="post" action="${pageContext.request.contextPath}/manager/notifications">
-                                <input type="hidden" name="action" value="create">
-                                <div class="mb-3">
-                                    <label for="notifTitle" class="form-label small fw-semibold text-on-surface-variant">Tiêu đề <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3" id="notifTitle" name="title"
-                                           placeholder="Nhập tiêu đề thông báo..." required maxlength="500">
+                    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+                         LEFT: Form ─æ─âng / chß╗ënh sß╗¡a th├┤ng b├ío
+                    ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+                    <div class="col-12 col-xl-4">
+
+                        <!-- Form tß║ío mß╗¢i hoß║╖c chß╗ënh sß╗¡a -->
+                        <div class="raised-card p-4 mb-4" id="notifFormCard">
+
+                            <c:choose>
+                                <c:when test="${not empty editNotification}">
+                                    <!-- Chß║┐ ─æß╗Ö CHß╗êNH Sß╗¼A -->
+                                    <div class="d-flex align-items-center gap-2 mb-4">
+                                        <div class="rounded-2 d-flex align-items-center justify-content-center"
+                                             style="width: 36px; height: 36px; background: rgba(0,99,152,0.1);">
+                                            <span class="material-symbols-outlined"
+                                                  style="color: var(--tertiary); font-size: 20px; font-variation-settings: 'FILL' 1;">edit_note</span>
+                                        </div>
+                                        <div>
+                                            <h5 class="fw-bold mb-0" style="color: var(--on-surface);">Chß╗ënh sß╗¡a th├┤ng b├ío</h5>
+                                            <p class="mb-0" style="font-size: 11px; color: var(--on-surface-variant);">ID #${editNotification.notificationId}</p>
+                                        </div>
+                                    </div>
+                                    <form method="post"
+                                          action="${pageContext.request.contextPath}/manager/notifications"
+                                          id="notifForm">
+                                        <input type="hidden" name="action" value="update">
+                                        <input type="hidden" name="notificationId" value="${editNotification.notificationId}">
+
+                                        <div class="mb-3">
+                                            <label for="editTitle" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">Ti├¬u ─æß╗ü <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control rounded-3" id="editTitle" name="title"
+                                                   value="<c:out value='${editNotification.title}'/>"
+                                                   placeholder="Ti├¬u ─æß╗ü th├┤ng b├ío..." required maxlength="500">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="editType" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">Ph├ón loß║íi</label>
+                                            <select class="form-select rounded-3" id="editType" name="type">
+                                                <option value="general" ${editNotification.type == 'general' ? 'selected' : ''}>≡ƒôó Th├┤ng tin chung</option>
+                                                <option value="urgent"  ${editNotification.type == 'urgent'  ? 'selected' : ''}>≡ƒö┤ Khß║⌐n cß║Ñp</option>
+                                                <option value="policy"  ${editNotification.type == 'policy'  ? 'selected' : ''}>≡ƒôï Nß╗Öi quy / Ch├¡nh s├ích</option>
+                                                <option value="event"   ${editNotification.type == 'event'   ? 'selected' : ''}>≡ƒÄ» Sß╗▒ kiß╗çn / Hoß║ít ─æß╗Öng</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="editContent" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">Nß╗Öi dung</label>
+                                            <textarea class="form-control rounded-3" id="editContent" name="content"
+                                                      rows="6"
+                                                      placeholder="M├┤ tß║ú chi tiß║┐t th├┤ng b├ío..."><c:out value="${editNotification.content}"/></textarea>
+                                        </div>
+
+                                        <div class="form-check mb-4 d-flex align-items-center gap-2 p-0">
+                                            <input class="form-check-input m-0" type="checkbox" id="editPinned"
+                                                   name="isPinned" style="width: 18px; height: 18px;"
+                                                   ${editNotification.pinned ? 'checked' : ''}>
+                                            <label class="form-check-label small fw-semibold ms-2"
+                                                   for="editPinned" style="color: var(--on-surface-variant);">
+                                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 16px;">push_pin</span>
+                                                Ghim th├┤ng b├ío l├¬n ─æß║ºu
+                                            </label>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary-custom flex-grow-1 rounded-3 fw-bold py-2">
+                                                <span class="material-symbols-outlined me-1 align-middle">save</span>L╞░u thay ─æß╗òi
+                                            </button>
+                                            <a href="${pageContext.request.contextPath}/manager/notifications"
+                                               class="btn rounded-3 py-2"
+                                               style="background-color: var(--surface-container-high); color: var(--on-surface-variant);">
+                                                Hß╗ºy
+                                            </a>
+                                        </div>
+                                    </form>
+                                </c:when>
+
+                                <c:otherwise>
+                                    <!-- Chß║┐ ─æß╗Ö Tß║áO Mß╗ÜI -->
+                                    <div class="d-flex align-items-center gap-2 mb-4">
+                                        <div class="rounded-2 d-flex align-items-center justify-content-center"
+                                             style="width: 36px; height: 36px; background: linear-gradient(135deg, rgba(157,67,0,0.12), rgba(249,115,22,0.08));">
+                                            <span class="material-symbols-outlined"
+                                                  style="color: var(--primary); font-size: 20px; font-variation-settings: 'FILL' 1;">campaign</span>
+                                        </div>
+                                        <div>
+                                            <h5 class="fw-bold mb-0" style="color: var(--on-surface);">─É─âng th├┤ng b├ío mß╗¢i</h5>
+                                            <p class="mb-0" style="font-size: 11px; color: var(--on-surface-variant);">Gß╗¡i ─æß║┐n to├án bß╗Ö th├ánh vi├¬n</p>
+                                        </div>
+                                    </div>
+                                    <form method="post"
+                                          action="${pageContext.request.contextPath}/manager/notifications"
+                                          id="notifForm">
+                                        <input type="hidden" name="action" value="create">
+
+                                        <div class="mb-3">
+                                            <label for="notifTitle" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">Ti├¬u ─æß╗ü <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control rounded-3" id="notifTitle" name="title"
+                                                   placeholder="VD: Th╞░ viß╗çn nghß╗ë lß╗à 30/4 - 1/5" required maxlength="500">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="notifType" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">Ph├ón loß║íi</label>
+                                            <select class="form-select rounded-3" id="notifType" name="type">
+                                                <option value="general">≡ƒôó Th├┤ng tin chung</option>
+                                                <option value="urgent">≡ƒö┤ Khß║⌐n cß║Ñp</option>
+                                                <option value="policy">≡ƒôï Nß╗Öi quy / Ch├¡nh s├ích</option>
+                                                <option value="event">≡ƒÄ» Sß╗▒ kiß╗çn / Hoß║ít ─æß╗Öng</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="notifContent" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">Nß╗Öi dung</label>
+                                            <textarea class="form-control rounded-3" id="notifContent" name="content"
+                                                      rows="6" placeholder="M├┤ tß║ú chi tiß║┐t nß╗Öi dung th├┤ng b├ío..."></textarea>
+<small class="text-secondary d-block mt-1" style="font-size:12px;"><i class="bi bi-markdown"></i> Hß╗ù trß╗ú ─æß╗ïnh dß║íng Markdown (**in ─æß║¡m**, *in nghi├¬ng*, - danh s├ích, # ti├¬u ─æß╗ü)</small>
+                                        </div>
+
+                                        <div class="form-check mb-4 d-flex align-items-center gap-2 p-0">
+                                            <input class="form-check-input m-0" type="checkbox" id="notifPinned"
+                                                   name="isPinned" style="width: 18px; height: 18px;">
+                                            <label class="form-check-label small fw-semibold ms-2"
+                                                   for="notifPinned" style="color: var(--on-surface-variant);">
+                                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 16px;">push_pin</span>
+                                                Ghim th├┤ng b├ío l├¬n ─æß║ºu
+                                            </label>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary-custom w-100 rounded-3 fw-bold py-2">
+                                            <span class="material-symbols-outlined me-1 align-middle">send</span>
+                                            ─É─âng l├¬n Bß║úng tin
+                                        </button>
+                                    </form>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+
+                        <!-- H╞░ß╗¢ng dß║½n ph├ón loß║íi -->
+                        <div class="raised-card p-4" style="background: linear-gradient(135deg, var(--surface-container-low), var(--surface-container));">
+                            <h6 class="fw-bold mb-3" style="color: var(--on-surface); font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                H╞░ß╗¢ng dß║½n ph├ón loß║íi
+                            </h6>
+                            <div class="d-flex flex-column gap-2" style="font-size: 13px;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="notif-badge-type type-general" style="flex-shrink:0;">Chung</span>
+                                    <span style="color: var(--on-surface-variant);">Lß╗ïch hoß║ít ─æß╗Öng, th├┤ng tin ─æß╗ïnh kß╗│</span>
                                 </div>
-                                <div class="mb-4">
-                                    <label for="notifContent" class="form-label small fw-semibold text-on-surface-variant">Nội dung</label>
-                                    <textarea class="form-control rounded-3" id="notifContent" name="content"
-                                              rows="6" placeholder="Nhập nội dung chi tiết thông báo..."></textarea>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="notif-badge-type type-urgent" style="flex-shrink:0;">Khß║⌐n</span>
+                                    <span style="color: var(--on-surface-variant);">─É├│ng cß╗¡a ─æß╗Öt xuß║Ñt, thay ─æß╗òi khß║⌐n</span>
                                 </div>
-                                <button type="submit" class="btn btn-primary-custom w-100 rounded-3 fw-bold py-2">
-                                    <span class="material-symbols-outlined me-1 align-middle">send</span>
-                                    Đăng lên Bảng tin
-                                </button>
-                            </form>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="notif-badge-type type-policy" style="flex-shrink:0;">Nß╗Öi quy</span>
+                                    <span style="color: var(--on-surface-variant);">Quy ─æß╗ïnh m╞░ß╗ún trß║ú, nß╗Öi quy mß╗¢i</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="notif-badge-type type-event" style="flex-shrink:0;">Sß╗▒ kiß╗çn</span>
+                                    <span style="color: var(--on-surface-variant);">Workshop, triß╗ân l├úm, hoß║ít ─æß╗Öng</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right: Danh sách thông báo -->
-                    <div class="col-12 col-lg-8">
+                    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+                         RIGHT: Danh s├ích th├┤ng b├ío
+                    ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+                    <div class="col-12 col-xl-8">
                         <div class="raised-card overflow-hidden">
-                            <div class="p-3 d-flex justify-content-between align-items-center"
+
+                            <!-- Toolbar: t├¼m kiß║┐m & lß╗ìc -->
+                            <div class="p-3 d-flex flex-wrap gap-2 align-items-center justify-content-between"
                                  style="border-bottom: 1px solid var(--outline-variant); background-color: var(--surface-container-low);">
-                                <div>
-                                    <h5 class="fw-bold mb-0" style="color: var(--on-surface);">Danh sách thông báo đã đăng</h5>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Tổng: ${notifications.size()} thông báo</p>
-                                </div>
+                                <form method="get" action="${pageContext.request.contextPath}/manager/notifications"
+                                      class="d-flex flex-wrap gap-2 flex-grow-1">
+                                    <!-- Search -->
+                                    <div class="input-group" style="width: 260px; flex-shrink: 0;">
+                                        <span class="input-group-text bg-white border-end-0 rounded-start-3"
+                                              style="border-color: var(--outline-variant);">
+                                            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--on-surface-variant);">search</span>
+                                        </span>
+                                        <input type="text" name="keyword" class="form-control border-start-0 rounded-end-3"
+                                               value="${keyword}" placeholder="T├¼m theo ti├¬u ─æß╗ü..."
+                                               style="border-color: var(--outline-variant);">
+                                    </div>
+                                    <!-- Type filter -->
+                                    <select name="typeFilter" class="form-select rounded-3"
+                                            style="width: 180px; border-color: var(--outline-variant);">
+                                        <option value="">Tß║Ñt cß║ú loß║íi</option>
+                                        <option value="general" ${typeFilter == 'general' ? 'selected' : ''}>≡ƒôó Chung</option>
+                                        <option value="urgent"  ${typeFilter == 'urgent'  ? 'selected' : ''}>≡ƒö┤ Khß║⌐n cß║Ñp</option>
+                                        <option value="policy"  ${typeFilter == 'policy'  ? 'selected' : ''}>≡ƒôï Nß╗Öi quy</option>
+                                        <option value="event"   ${typeFilter == 'event'   ? 'selected' : ''}>≡ƒÄ» Sß╗▒ kiß╗çn</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary-custom rounded-3 px-3">
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">filter_list</span>
+                                    </button>
+                                    <c:if test="${not empty keyword or not empty typeFilter}">
+                                        <a href="${pageContext.request.contextPath}/manager/notifications"
+                                           class="btn rounded-3 px-3" style="background: var(--surface-container-high); color: var(--on-surface-variant);">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+                                        </a>
+                                    </c:if>
+                                </form>
                             </div>
 
+                            <!-- Danh s├ích -->
                             <c:choose>
                                 <c:when test="${not empty notifications}">
-                                    <div class="d-flex flex-column">
+                                    <div class="d-flex flex-column" id="notifList">
                                         <c:forEach var="notif" items="${notifications}">
-                                            <div class="p-3 d-flex align-items-start gap-3" style="border-bottom: 1px solid var(--outline-variant);">
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center bg-info-subtle text-info flex-shrink-0"
-                                                     style="width: 40px; height: 40px;">
-                                                    <span class="material-symbols-outlined">campaign</span>
-                                                </div>
-                                                <div class="flex-grow-1 min-w-0">
-                                                    <div class="d-flex justify-content-between align-items-start gap-2">
-                                                        <h6 class="fw-bold mb-1 text-truncate" style="color: var(--on-surface);">
-                                                            <c:out value="${notif.title}" />
-                                                        </h6>
-                                                        <span class="text-on-surface-variant small font-monospace flex-shrink-0">
-                                                            <fmt:formatDate value="${notif.createdAt}" pattern="dd/MM/yyyy" />
-                                                        </span>
-                                                    </div>
-                                                    <p class="text-on-surface-variant small mb-1 text-truncate">
-                                                        <c:out value="${notif.content}" />
-                                                    </p>
-                                                    <span class="small text-on-surface-variant">
-                                                        Đăng bởi: <c:out value="${not empty notif.createdByName ? notif.createdByName : 'Quản trị viên'}" />
+                                            <div class="notif-row px-4 py-3 d-flex align-items-start gap-3
+                            ${notif.pinned ? 'notif-pinned' : ''}"
+                            data-title="<c:out value='${notif.title}'/>"
+                            data-author="<c:out value='${not empty notif.createdByName ? notif.createdByName : "Quß║ún l├╜"}'/>"
+                            data-time="<fmt:formatDate value='${notif.createdAt}' pattern='dd/MM/yyyy HH:mm' />"
+                            data-type="${notif.type}"
+                            data-pinned="${notif.pinned}">
+
+                                                <!-- Icon type -->
+                                                <div class="notif-type-icon flex-shrink-0
+                                                            ${notif.type == 'urgent'  ? 'icon-urgent'  :
+                                                              notif.type == 'policy'  ? 'icon-policy'  :
+                                                              notif.type == 'event'   ? 'icon-event'   : 'icon-general'}">
+                                                    <span class="material-symbols-outlined"
+                                                          style="font-variation-settings: 'FILL' 1; font-size: 20px;">
+                                                        ${notif.type == 'urgent'  ? 'error'         :
+                                                          notif.type == 'policy'  ? 'policy'        :
+                                                          notif.type == 'event'   ? 'celebration'   : 'campaign'}
                                                     </span>
                                                 </div>
-                                                <!-- Nút xóa -->
-                                                <form method="post" action="${pageContext.request.contextPath}/manager/notifications"
-                                                      onsubmit="return confirm('Xác nhận xóa thông báo này?')">
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="notificationId" value="${notif.notificationId}">
-                                                    <button type="submit" class="btn btn-link text-danger p-1 rounded-circle" title="Xóa thông báo">
-                                                        <span class="material-symbols-outlined">delete</span>
-                                                    </button>
-                                                </form>
+
+                                                <!-- Content -->
+                                                <div class="flex-grow-1 min-w-0">
+                                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                                        <!-- Pin badge -->
+                                                        <c:if test="${notif.pinned}">
+                                                            <span class="material-symbols-outlined"
+                                                                  style="font-size: 14px; color: var(--primary); font-variation-settings: 'FILL' 1;"
+                                                                  title="─É├ú ghim">push_pin</span>
+                                                        </c:if>
+                                                        <!-- Type badge -->
+                                                        <span class="notif-badge-type type-${notif.type}">
+                                                            ${notif.type == 'urgent'  ? 'Khß║⌐n cß║Ñp'        :
+                                                              notif.type == 'policy'  ? 'Nß╗Öi quy'          :
+                                                              notif.type == 'event'   ? 'Sß╗▒ kiß╗çn'          : 'Chung'}
+                                                        </span>
+                                                        <h6 class="fw-bold mb-0 text-truncate"
+                                                            style="color: var(--on-surface); max-width: 340px;">
+                                                            <c:out value="${notif.title}" />
+                                                        </h6>
+                                                    </div>
+                                                    <p class="mb-1 text-truncate notif-content-text"
+                                                       style="font-size: 13px; color: var(--on-surface-variant); max-width: 380px; cursor: pointer;"
+                                                       onclick="openManagerDetail(this)" title="Nhß║Ñn ─æß╗â xem chi tiß║┐t">
+                                                        <c:out value="${notif.content}" />
+                                                    </p>
+                                                    <!-- Hidden full content for modal -->
+                                                    <div class="d-none notif-full-content">
+                                                        <c:out value="${notif.content}" />
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-3" style="font-size: 12px; color: var(--on-surface-variant);">
+                                                        <span class="d-flex align-items-center gap-1">
+                                                            <span class="material-symbols-outlined" style="font-size: 14px;">person</span>
+                                                            <c:out value="${not empty notif.createdByName ? notif.createdByName : 'Quß║ún l├╜'}" />
+                                                        </span>
+                                                        <span class="d-flex align-items-center gap-1">
+                                                            <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span>
+                                                            <fmt:formatDate value="${notif.createdAt}" pattern="dd/MM/yyyy HH:mm" />
+                                                        </span>
+                                                        <c:if test="${not empty notif.updatedAt}">
+                                                            <span class="d-flex align-items-center gap-1"
+                                                                  style="font-style: italic;">
+                                                                <span class="material-symbols-outlined" style="font-size: 14px;">edit</span>
+                                                                <fmt:formatDate value="${notif.updatedAt}" pattern="dd/MM HH:mm" />
+                                                            </span>
+                                                        </c:if>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Actions -->
+                                                <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                                                    <!-- N├║t sß╗¡a -->
+                                                    <a href="${pageContext.request.contextPath}/manager/notifications?action=edit&notificationId=${notif.notificationId}"
+                                                       class="btn-icon rounded-2" title="Chß╗ënh sß╗¡a th├┤ng b├ío">
+                                                        <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                                                    </a>
+                                                    <!-- N├║t x├│a -->
+                                                    <form method="post"
+                                                          action="${pageContext.request.contextPath}/manager/notifications"
+                                                          onsubmit="return confirmDelete(event, '${notif.title}')">
+                                                        <input type="hidden" name="action" value="delete">
+                                                        <input type="hidden" name="notificationId" value="${notif.notificationId}">
+                                                        <button type="submit" class="btn-icon rounded-2"
+                                                                style="color: var(--error);" title="X├│a th├┤ng b├ío">
+                                                            <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </c:forEach>
                                     </div>
+
+                                    <!-- Ph├ón trang -->
+                                    <c:if test="${totalPages > 1}">
+                                        <div class="d-flex justify-content-between align-items-center px-4 py-3"
+                                             style="border-top: 1px solid var(--outline-variant); background-color: var(--surface-container-low);">
+                                            <span style="font-size: 13px; color: var(--on-surface-variant);">
+                                                Trang <strong>${currentPage}</strong> / ${totalPages}
+                                                &nbsp;┬╖&nbsp; ${totalCount} th├┤ng b├ío
+                                            </span>
+                                            <nav>
+                                                <ul class="pagination pagination-sm mb-0 gap-1">
+                                                    <c:if test="${currentPage > 1}">
+                                                        <li class="page-item">
+                                                            <a class="page-link rounded-2"
+                                                               href="${pageContext.request.contextPath}/manager/notifications?page=${currentPage-1}&keyword=${keyword}&typeFilter=${typeFilter}">
+                                                                <span class="material-symbols-outlined" style="font-size: 16px;">chevron_left</span>
+                                                            </a>
+                                                        </li>
+                                                    </c:if>
+                                                    <c:forEach begin="1" end="${totalPages}" var="p">
+                                                        <li class="page-item ${p == currentPage ? 'active' : ''}">
+                                                            <a class="page-link rounded-2"
+                                                               href="${pageContext.request.contextPath}/manager/notifications?page=${p}&keyword=${keyword}&typeFilter=${typeFilter}">
+                                                                ${p}
+                                                            </a>
+                                                        </li>
+                                                    </c:forEach>
+                                                    <c:if test="${currentPage < totalPages}">
+                                                        <li class="page-item">
+                                                            <a class="page-link rounded-2"
+                                                               href="${pageContext.request.contextPath}/manager/notifications?page=${currentPage+1}&keyword=${keyword}&typeFilter=${typeFilter}">
+                                                                <span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+                                                            </a>
+                                                        </li>
+                                                    </c:if>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </c:if>
                                 </c:when>
+
                                 <c:otherwise>
                                     <div class="text-center py-5">
-                                        <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 48px;">notifications_off</span>
-                                        <p class="fw-semibold mt-3 text-on-surface-variant">Chưa có thông báo nào được đăng.</p>
-                                        <p class="text-on-surface-variant small">Sử dụng form bên trái để tạo thông báo đầu tiên.</p>
+                                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                             style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(157,67,0,0.06), rgba(249,115,22,0.04));">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: var(--primary); font-variation-settings: 'FILL' 1;">notifications_off</span>
+                                        </div>
+                                        <h5 class="fw-bold mb-1" style="color: var(--on-surface);">Ch╞░a c├│ th├┤ng b├ío n├áo</h5>
+                                        <p style="color: var(--on-surface-variant); font-size: 14px;">
+                                            Sß╗¡ dß╗Ñng form b├¬n tr├íi ─æß╗â tß║ío th├┤ng b├ío ─æß║ºu ti├¬n cho hß╗ç thß╗æng.
+                                        </p>
                                     </div>
                                 </c:otherwise>
                             </c:choose>
@@ -151,5 +444,220 @@
         </main>
     </div><!-- /.main-wrapper -->
 
+    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ DETAIL MODAL ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+    <div class="modal fade" id="notifDetailModal" tabindex="-1" aria-labelledby="notifDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+                <!-- Modal Header -->
+                <div class="modal-header border-0 px-4 py-3" id="modalHeaderBg" style="background-color: #f7f9fb;">
+                    <div class="d-flex align-items-center gap-3 w-100">
+                        <div id="modalTypeIcon" class="notif-type-icon icon-general">
+                            <span class="material-symbols-outlined" id="modalTypeIconSymbol"
+                                  style="font-variation-settings: 'FILL' 1; font-size: 22px;">campaign</span>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span id="modalTypeBadge" class="notif-badge-type type-general">Th├┤ng tin</span>
+                                <span id="modalPinBadge" class="d-none material-symbols-outlined"
+                                      style="font-size: 14px; color: var(--primary); font-variation-settings: 'FILL' 1;">push_pin</span>
+                            </div>
+                            <h5 class="modal-title fw-bold" id="notifDetailModalLabel"
+                                style="color: #191c1e; font-size: 17px;">Chi tiß║┐t th├┤ng b├ío</h5>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="─É├│ng"></button>
+                    </div>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body px-4 py-3">
+                    <div class="d-flex align-items-center gap-3 mb-3 pb-3"
+                         style="border-bottom: 1px solid #f0f0f0;">
+                        <div class="d-flex align-items-center gap-2 text-secondary small">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">person</span>
+                            <span id="modalAuthor"></span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 text-secondary small">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">schedule</span>
+                            <span id="modalTime"></span>
+                        </div>
+                    </div>
+                    <div id="modalContent" class="text-secondary"
+                         style="line-height: 1.75; font-size: 14.5px;"></div>
+                </div>
+                <!-- Modal Footer -->
+                <div class="modal-footer border-0 px-4 py-3" style="background-color: #fafafa;">
+                    <button type="button" class="btn rounded-3 px-4 fw-semibold"
+                            style="background: var(--surface-container-high); color: var(--on-surface-variant);"
+                            data-bs-dismiss="modal">─É├│ng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ Confirm Delete Modal ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+                <div class="modal-body text-center p-4">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 64px; height: 64px; background: rgba(239,68,68,0.08);">
+                        <span class="material-symbols-outlined" style="font-size: 32px; color: #ef4444; font-variation-settings: 'FILL' 1;">delete_forever</span>
+                    </div>
+                    <h6 class="fw-bold mb-2" style="color: var(--on-surface);">X├íc nhß║¡n x├│a th├┤ng b├ío?</h6>
+                    <p class="small mb-4" style="color: var(--on-surface-variant);" id="deleteModalTitle"></p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn flex-grow-1 rounded-3"
+                                style="background: var(--surface-container-high); color: var(--on-surface-variant);"
+                                data-bs-dismiss="modal">Hß╗ºy</button>
+                        <button type="button" class="btn flex-grow-1 rounded-3 fw-bold"
+                                id="confirmDeleteBtn"
+                                style="background: #ef4444; color: white;">X├│a</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Highlight sidebar active link
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            if (link.href === window.location.href.split('?')[0]) {
+                link.classList.add('active');
+            }
+        });
+
+        let pendingDeleteForm = null;
+
+        function confirmDelete(event, title) {
+            event.preventDefault();
+            pendingDeleteForm = event.target;
+            document.getElementById('deleteModalTitle').textContent = '"' + title + '"';
+            new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
+            return false;
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            if (pendingDeleteForm) pendingDeleteForm.submit();
+        });
+    </script>
+
+    <style>
+        /* ΓöÇΓöÇΓöÇ Notification Row ΓöÇΓöÇΓöÇ */
+        .notif-row {
+            border-bottom: 1px solid var(--outline-variant);
+            transition: background-color 0.2s ease;
+        }
+        .notif-row:last-child { border-bottom: none; }
+        .notif-row:hover { background-color: var(--surface-container-low); }
+        .notif-pinned {
+            background: linear-gradient(90deg, rgba(157,67,0,0.04), transparent);
+        }
+        .notif-pinned:hover {
+            background: linear-gradient(90deg, rgba(157,67,0,0.08), var(--surface-container-low));
+        }
+
+        /* ΓöÇΓöÇΓöÇ Type Icon ΓöÇΓöÇΓöÇ */
+        .notif-type-icon {
+            width: 42px; height: 42px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .icon-general { background: rgba(0,99,152,0.10); color: var(--tertiary); }
+        .icon-urgent  { background: rgba(239,68,68,0.10); color: #ef4444; }
+        .icon-policy  { background: rgba(157,67,0,0.10);  color: var(--primary); }
+        .icon-event   { background: rgba(22,163,74,0.10); color: var(--success); }
+
+        /* ΓöÇΓöÇΓöÇ Type Badges ΓöÇΓöÇΓöÇ */
+        .notif-badge-type {
+            display: inline-flex; align-items: center;
+            padding: 2px 10px; border-radius: 999px;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+        .type-general { background: rgba(0,99,152,0.10);  color: var(--tertiary); }
+        .type-urgent  { background: rgba(239,68,68,0.12); color: #dc2626; }
+        .type-policy  { background: rgba(157,67,0,0.10);  color: var(--primary); }
+        .type-event   { background: rgba(22,163,74,0.10); color: #15803d; }
+
+        /* ΓöÇΓöÇΓöÇ Pagination ΓöÇΓöÇΓöÇ */
+        .page-link {
+            border-color: var(--outline-variant);
+            color: var(--on-surface-variant);
+            font-size: 13px;
+            padding: 4px 10px;
+        }
+        .page-item.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .page-link:hover { background-color: var(--surface-container-high); color: var(--primary); }
+
+        /* ΓöÇΓöÇΓöÇ Modal Markdown Rendering ΓöÇΓöÇΓöÇ */
+        #modalContent { color: #333; }
+        #modalContent p { margin-bottom: 1rem; }
+        #modalContent ul, #modalContent ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        #modalContent li { margin-bottom: 0.5rem; }
+        #modalContent h1, #modalContent h2, #modalContent h3, #modalContent h4 { color: #191c1e; margin-top: 1.5rem; margin-bottom: 1rem; font-weight: bold; }
+        #modalContent blockquote { border-left: 4px solid #e5e5e5; padding-left: 1rem; color: #555; font-style: italic; }
+        #modalContent img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem; }
+        #modalContent a { color: var(--primary); text-decoration: none; }
+        #modalContent a:hover { text-decoration: underline; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof marked !== 'undefined') {
+                document.querySelectorAll('.notif-content-text').forEach(el => {
+                    let rawText = el.textContent || '';
+                    let tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = marked.parse(rawText);
+                    let plainText = tempDiv.textContent || tempDiv.innerText || "";
+                    el.textContent = plainText.replace(/\s+/g, ' ').trim();
+                });
+            }
+        });
+
+const typeIconMap = {
+            urgent:  { symbol: 'error',       cls: 'icon-urgent',  badgeCls: 'type-urgent',  label: 'Khß║⌐n cß║Ñp' },
+            policy:  { symbol: 'policy',      cls: 'icon-policy',  badgeCls: 'type-policy',  label: 'Nß╗Öi quy' },
+            event:   { symbol: 'celebration', cls: 'icon-event',   badgeCls: 'type-event',   label: 'Sß╗▒ kiß╗çn' },
+            general: { symbol: 'campaign',    cls: 'icon-general', badgeCls: 'type-general', label: 'Th├┤ng tin' }
+        };
+
+        function openManagerDetail(btn) {
+            const row = btn.closest('.notif-row');
+            if (!row) return;
+
+            const title = row.getAttribute('data-title');
+            const author = row.getAttribute('data-author');
+            const time = row.getAttribute('data-time');
+            const type = row.getAttribute('data-type') || 'general';
+            const isPinned = row.getAttribute('data-pinned') === 'true';
+            const content = row.querySelector('.notif-full-content').textContent.trim();
+
+            const meta = typeIconMap[type] || typeIconMap.general;
+
+            document.getElementById('notifDetailModalLabel').textContent = title;
+            document.getElementById('modalContent').innerHTML = marked.parse(content);
+            document.getElementById('modalTime').textContent = time;
+            document.getElementById('modalAuthor').textContent = author;
+
+            const iconEl = document.getElementById('modalTypeIcon');
+            iconEl.className = 'notif-type-icon ' + meta.cls;
+            document.getElementById('modalTypeIconSymbol').textContent = meta.symbol;
+
+            const badgeModalEl = document.getElementById('modalTypeBadge');
+            badgeModalEl.className = 'notif-badge-type ' + meta.badgeCls;
+            badgeModalEl.textContent = meta.label;
+
+            const pinEl = document.getElementById('modalPinBadge');
+            isPinned ? pinEl.classList.remove('d-none') : pinEl.classList.add('d-none');
+
+            new bootstrap.Modal(document.getElementById('notifDetailModal')).show();
+        }
+
+    </script>
 </body>
 </html>

@@ -1,5 +1,15 @@
-create database LMS_Library_Management_System;
-go
+USE master;
+GO
+
+IF DB_ID('LMS_Library_Management_System') IS NOT NULL
+BEGIN
+    ALTER DATABASE LMS_Library_Management_System SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE LMS_Library_Management_System;
+END
+GO
+
+CREATE DATABASE LMS_Library_Management_System;
+GO
 use LMS_Library_Management_System;
 go
 -- ============================================================
@@ -266,10 +276,26 @@ CREATE TABLE Notification (
     notificationId INT IDENTITY(1,1) PRIMARY KEY,
     title NVARCHAR(500) NOT NULL,
     content NVARCHAR(MAX) NULL,
+    [type] NVARCHAR(50) NOT NULL DEFAULT 'general', -- general, urgent, policy, event
+    isPinned BIT NOT NULL DEFAULT 0,               -- 1 = ghim lên đầu danh sách
     createdBy INT NOT NULL,
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+    updatedAt DATETIME NULL,
 
     FOREIGN KEY (createdBy) REFERENCES [User](userId)
+);
+
+-- ============================================================
+
+CREATE TABLE UserNotificationStatus (
+    userId         INT      NOT NULL,
+    notificationId INT      NOT NULL,
+    readAt         DATETIME NOT NULL DEFAULT GETDATE(),
+
+    PRIMARY KEY (userId, notificationId),
+
+    CONSTRAINT FK_UNS_User         FOREIGN KEY (userId)         REFERENCES [User](userId)         ON DELETE CASCADE,
+    CONSTRAINT FK_UNS_Notification FOREIGN KEY (notificationId) REFERENCES Notification(notificationId) ON DELETE CASCADE
 );
 
 -- ============================================================

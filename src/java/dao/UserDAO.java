@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.MemberProfile;
 import model.User;
+import model.UserContactDTO;
 import model.UserDTO;
 import util.DatabaseConnection;
 
@@ -21,31 +22,30 @@ import util.DatabaseConnection;
  * <ul>
  *   <li>SEC-03: 100% câu SQL dùng {@code PreparedStatement} với tham số {@code ?}.
  *       Không sử dụng phép cộng chuỗi (String Concatenation) để tạo SQL.</li>
- *   <li>ENG-01: Mọi tài nguyên JDBC (Connection, PreparedStatement, ResultSet)
+ *   <li>ENG-01: Mỗi tài nguyên JDBC (Connection, PreparedStatement, ResultSet)
  *       được đóng an toàn bằng try-with-resources.</li>
  *   <li>ARCH-01: JDBC thuần — không ORM, không Spring JDBC.</li>
+ *   <li>1B: lockReason được lưu trong bảng UserLockReason thay vì cột trong [User].</li>
  * </ul>
- *
- * <p>Traceability: Mỗi hàm được mapping với EARS pattern và Node ID
- * từ SPEC.md và ActivityDiagramF1.txt.</p>
  */
 public class UserDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
 
+    // =========================================================================
+    // AUTH CORE METHODS (dùng UserLockReason theo Phương án 1B)
+    // =========================================================================
+
     /**
      * Tìm kiếm tài khoản người dùng theo địa chỉ email.
-     *
-     * <p>Sử dụng cho cả luồng Login [Node 5.6] và Forgot Password [Node 5.7].</p>
-     *
-     * @param email Địa chỉ email cần tìm
-     * @return Đối tượng {@link User} nếu tìm thấy, {@code null} nếu không tồn tại
+     * lockReason được lấy từ bảng UserLockReason (TOP 1, sắp xếp theo thời gian mới nhất).
      */
     // EARS[Event-driven]: WHEN Guest submits Login/Forgot Password Form,
     // THE LMS System SHALL Query User Data dựa trên Email [Node 5.6, 5.7]
     public User findByEmail(String email) {
         String sql = "SELECT userId, email, passwordHash, [status], [role], "
-                + "lockReason, failedLoginAttempts, lockedUntil "
+                + "(SELECT TOP 1 reason FROM UserLockReason WHERE userId = [User].userId ORDER BY createdAt DESC) AS lockReason, "
+                + "failedLoginAttempts, lockedUntil "
                 + "FROM [User] WHERE email = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -66,13 +66,12 @@ public class UserDAO {
 
     /**
      * Tìm kiếm tài khoản người dùng theo ID tài khoản.
-     *
-     * @param userId ID tài khoản cần tìm
-     * @return Đối tượng User nếu tìm thấy, null nếu không tồn tại
+     * lockReason được lấy từ bảng UserLockReason (TOP 1, sắp xếp theo thời gian mới nhất).
      */
     public User findByUserId(int userId) {
         String sql = "SELECT userId, email, passwordHash, [status], [role], "
-                + "lockReason, failedLoginAttempts, lockedUntil "
+                + "(SELECT TOP 1 reason FROM UserLockReason WHERE userId = [User].userId ORDER BY createdAt DESC) AS lockReason, "
+                + "failedLoginAttempts, lockedUntil "
                 + "FROM [User] WHERE userId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -91,14 +90,8 @@ public class UserDAO {
         return null;
     }
 
-
     /**
      * Cập nhật số lần đăng nhập sai liên tiếp.
-     *
-     * <p>Được gọi khi người dùng nhập sai mật khẩu [Node 13.20].</p>
-     *
-     * @param userId   ID tài khoản cần cập nhật
-     * @param attempts Số lần đăng nhập sai mới
      */
     // EARS[Unwanted]: WHERE Password incorrect, THE LMS System SHALL
     // Increase failedLoginAttempts += 1 [Node 13.20]
@@ -118,28 +111,31 @@ public class UserDAO {
 
     /**
      * Khóa tài khoản tạm thời 30 phút do nhập sai mật khẩu quá 5 lần.
-     *
-     * <p>Cập nhật đồng thời 4 cột: status='locked', lockReason='securitybreach',
-     * lockedUntil = NOW + 30 phút (tính bằng DATEADD phía SQL Server để tránh
-     * timezone mismatch giữa JVM và DB), failedLoginAttempts = 0.</p>
-     *
-     * @param userId ID tài khoản cần khóa
+     * Ghi lý do khóa vào bảng UserLockReason thay vì cột lockReason.
      */
     // EARS[Unwanted]: WHERE failedLoginAttempts >= 5, THE LMS System SHALL
     // Execute Temp Lock (status='locked', lockedUntil=NOW+30min,
-    // lockReason='securitybreach', failedLoginAttempts=0) [Node 15.24]
+    // reason='securitybreach' in UserLockReason, failedLoginAttempts=0) [Node 15.24]
     public void lockAccount(int userId) {
         String sql = "UPDATE [User] SET [status] = 'locked', "
-                + "lockReason = 'securitybreach', "
                 + "lockedUntil = DATEADD(minute, 30, GETDATE()), "
                 + "failedLoginAttempts = 0 "
                 + "WHERE userId = ?";
+        String sqlReason = "INSERT INTO UserLockReason (userId, reason) VALUES (?, 'securitybreach')";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, userId);
-            ps.executeUpdate();
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement ps = conn.prepareStatement(sql);
+                 PreparedStatement psReason = conn.prepareStatement(sqlReason)) {
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+                psReason.setInt(1, userId);
+                psReason.executeUpdate();
+                conn.commit();
+            } catch (SQLException ex) {
+                conn.rollback();
+                throw ex;
+            }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error locking account for userId=" + userId, e);
         }
@@ -147,18 +143,12 @@ public class UserDAO {
 
     /**
      * Mở khóa tài khoản — reset về trạng thái hoạt động bình thường.
-     *
-     * <p>Được gọi khi phát hiện {@code lockedUntil <= NOW} tại thời điểm
-     * đăng nhập [Node 10.17], hoặc khi Admin chủ động mở khóa.</p>
-     *
-     * @param userId ID tài khoản cần mở khóa
+     * KHÔNG xóa bản ghi trong UserLockReason để giữ audit history.
      */
     // EARS[State-driven]: WHILE status='locked' AND lockedUntil <= NOW,
-    // THE LMS System SHALL update status='active', lockReason=null,
-    // failedLoginAttempts=0 [Node 10.17]
+    // THE LMS System SHALL update status='active', failedLoginAttempts=0 [Node 10.17]
     public void unlockAccount(int userId) {
         String sql = "UPDATE [User] SET [status] = 'active', "
-                + "lockReason = NULL, "
                 + "lockedUntil = NULL, "
                 + "failedLoginAttempts = 0 "
                 + "WHERE userId = ?";
@@ -175,15 +165,6 @@ public class UserDAO {
 
     /**
      * Cập nhật mật khẩu đã mã hóa BCrypt vào cơ sở dữ liệu.
-     *
-     * <p>Dùng cho luồng Quên mật khẩu sau khi sinh mật khẩu ngẫu nhiên 8 ký tự
-     * và mã hóa BCrypt [Node 7.12].</p>
-     *
-     * <p>Lưu ý: Hàm này nhận vào hash đã mã hóa, KHÔNG nhận plaintext.
-     * Việc mã hóa BCrypt phải được thực hiện tại tầng Service (AuthService).</p>
-     *
-     * @param userId  ID tài khoản cần đổi mật khẩu
-     * @param newHash Chuỗi BCrypt hash mới (đã mã hóa)
      */
     // EARS[Event-driven]: WHERE Email tồn tại, THE LMS System SHALL
     // Generate New Password, mã hóa BCrypt VÀ update DB [Node 7.12]
@@ -203,8 +184,6 @@ public class UserDAO {
 
     /**
      * Reset số lần đăng nhập sai về 0 sau khi đăng nhập thành công.
-     *
-     * @param userId ID tài khoản vừa đăng nhập thành công
      */
     // EARS[Event-driven]: WHERE Password is correct, THE LMS System SHALL
     // set failedLoginAttempts = 0 [Node 13.21]
@@ -223,13 +202,6 @@ public class UserDAO {
 
     /**
      * Ghi Audit Log vào bảng AuditLogs.
-     *
-     * @param userId     ID tài khoản thực hiện hành động (có thể null)
-     * @param actionType Loại hành động (ví dụ: 'CHANGE_PASSWORD', 'RESET_PASSWORD')
-     * @param entityName Tên bảng hoặc thực thể chịu tác động
-     * @param entityId   ID của thực thể chịu tác động (có thể null)
-     * @param oldValues  Giá trị cũ dưới dạng JSON/Text (có thể null)
-     * @param newValues  Giá trị mới dưới dạng JSON/Text (có thể null)
      */
     public void insertAuditLog(Integer userId, String actionType, String entityName, Integer entityId, String oldValues, String newValues) {
         String sql = "INSERT INTO AuditLogs (userId, actionType, [entityName], [entityId], oldValues, newValues, [timestamp]) "
@@ -260,11 +232,49 @@ public class UserDAO {
     }
 
     /**
-     * Hàm tiện ích nội bộ — ánh xạ một dòng ResultSet thành đối tượng User.
+     * Lấy danh sách Email và Tên đầy đủ của các tài khoản đang Active
+     * thuộc một hoặc nhiều Role cụ thể. Dùng để gửi Email thông báo hàng loạt.
      *
-     * @param rs ResultSet đang trỏ tới dòng dữ liệu hợp lệ
-     * @return Đối tượng User đã được populate đầy đủ
-     * @throws SQLException nếu có lỗi đọc dữ liệu từ ResultSet
+     * @param roles Danh sách role cần lấy (VD: "student", "lecturer")
+     * @return Danh sách UserContactDTO, rỗng nếu không tìm thấy
+     */
+    public List<UserContactDTO> getActiveContactsByRoles(String... roles) {
+        if (roles == null || roles.length == 0) {
+            return new ArrayList<>();
+        }
+
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < roles.length; i++) {
+            if (i > 0) placeholders.append(",");
+            placeholders.append("?");
+        }
+
+        String sql = "SELECT u.email, COALESCE(mp.fullName, SUBSTRING(u.email, 1, CHARINDEX('@', u.email) - 1)) AS fullName "
+                + "FROM [User] u "
+                + "LEFT JOIN MemberProfile mp ON u.userId = mp.userId "
+                + "WHERE u.[status] = 'active' AND u.[role] IN (" + placeholders + ")";
+
+        List<UserContactDTO> result = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            for (int i = 0; i < roles.length; i++) {
+                ps.setString(i + 1, roles[i]);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(new UserContactDTO(rs.getString("email"), rs.getString("fullName")));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching active contacts by roles", e);
+        }
+        return result;
+    }
+
+    /**
+     * Hàm tiện ích nội bộ — ánh xạ một dòng ResultSet thành đối tượng User.
      */
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();
@@ -280,16 +290,18 @@ public class UserDAO {
     }
 
     // =========================================================================
-    // ADMIN USER MANAGEMENT METHODS
+    // ADMIN USER MANAGEMENT METHODS (từ dev, cập nhật dùng UserLockReason)
     // =========================================================================
 
     /**
      * Truy vấn danh sách người dùng gộp thông tin DTO, hỗ trợ tìm kiếm, lọc, phân trang.
+     * lockReason được lấy qua subquery từ UserLockReason.
      */
     public List<UserDTO> findAllUsers(String search, String role, String status, int offset, int limit) {
         List<UserDTO> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT u.userId, u.email, u.status, u.role, u.lockReason, u.failedLoginAttempts, u.lockedUntil, "
+                "SELECT u.userId, u.email, u.status, u.role, u.failedLoginAttempts, u.lockedUntil, "
+              + "(SELECT TOP 1 reason FROM UserLockReason WHERE userId = u.userId ORDER BY createdAt DESC) AS lockReason, "
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
               + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
@@ -302,7 +314,7 @@ public class UserDAO {
               + "LEFT JOIN Admin adm ON u.userId = adm.userId "
               + "WHERE 1=1 "
         );
-        
+
         List<Object> params = new ArrayList<>();
         if (search != null && !search.trim().isEmpty()) {
             String likeSearch = "%" + search.trim() + "%";
@@ -319,14 +331,14 @@ public class UserDAO {
             sql.append("AND u.status = ? ");
             params.add(status.trim());
         }
-        
+
         sql.append("ORDER BY u.userId DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
         params.add(offset);
         params.add(limit);
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            
+
             for (int i = 0; i < params.size(); i++) {
                 Object param = params.get(i);
                 if (param instanceof String) {
@@ -335,7 +347,7 @@ public class UserDAO {
                     ps.setInt(i + 1, (Integer) param);
                 }
             }
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(mapResultSetToUserDTO(rs));
@@ -362,7 +374,7 @@ public class UserDAO {
               + "LEFT JOIN Admin adm ON u.userId = adm.userId "
               + "WHERE 1=1 "
         );
-        
+
         List<Object> params = new ArrayList<>();
         if (search != null && !search.trim().isEmpty()) {
             String likeSearch = "%" + search.trim() + "%";
@@ -379,17 +391,17 @@ public class UserDAO {
             sql.append("AND u.status = ? ");
             params.add(status.trim());
         }
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            
+
             for (int i = 0; i < params.size(); i++) {
                 Object param = params.get(i);
                 if (param instanceof String) {
                     ps.setString(i + 1, (String) param);
                 }
             }
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -468,16 +480,17 @@ public class UserDAO {
 
     /**
      * Tạo tài khoản mới cùng hồ sơ cá nhân và bảng vai trò trong 1 DB Transaction.
+     * Không còn cột lockReason trong [User] — sử dụng UserLockReason khi cần.
      */
     public boolean createUserWithProfile(User user, MemberProfile profile, String code, String major, Integer enrollmentYear, String department) throws SQLException {
         Connection conn = null;
-        String sqlUser = "INSERT INTO [User] (email, passwordHash, [status], [role], lockReason, failedLoginAttempts) VALUES (?, ?, ?, ?, ?, 0)";
+        String sqlUser = "INSERT INTO [User] (email, passwordHash, [status], [role], failedLoginAttempts) VALUES (?, ?, ?, ?, 0)";
         String sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+
         try {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false);
-            
+
             int userId = 0;
             // 1. Insert User
             try (PreparedStatement psUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
@@ -485,9 +498,8 @@ public class UserDAO {
                 psUser.setString(2, user.getPasswordHash());
                 psUser.setString(3, user.getStatus() != null ? user.getStatus() : "active");
                 psUser.setString(4, user.getRole());
-                psUser.setString(5, user.getLockReason());
                 psUser.executeUpdate();
-                
+
                 try (ResultSet rsUser = psUser.getGeneratedKeys()) {
                     if (rsUser.next()) {
                         userId = rsUser.getInt(1);
@@ -497,7 +509,7 @@ public class UserDAO {
                 }
             }
             user.setUserId(userId);
-            
+
             // 2. Insert MemberProfile
             try (PreparedStatement psProfile = conn.prepareStatement(sqlProfile)) {
                 psProfile.setInt(1, userId);
@@ -506,10 +518,10 @@ public class UserDAO {
                 psProfile.setString(4, profile.getGender());
                 psProfile.setDate(5, profile.getDateOfBirth());
                 psProfile.setDate(6, profile.getStartDate() != null ? profile.getStartDate() : new java.sql.Date(System.currentTimeMillis()));
-                psProfile.setDate(7, profile.getEndDate() != null ? profile.getEndDate() : new java.sql.Date(System.currentTimeMillis() + 31536000000L)); // 1 year
+                psProfile.setDate(7, profile.getEndDate() != null ? profile.getEndDate() : new java.sql.Date(System.currentTimeMillis() + 31536000000L));
                 psProfile.executeUpdate();
             }
-            
+
             // 3. Insert Role Table
             String sqlRole = "";
             if ("STUDENT".equalsIgnoreCase(user.getRole())) {
@@ -523,7 +535,7 @@ public class UserDAO {
             } else if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                 sqlRole = "INSERT INTO Admin (userId, staffCode) VALUES (?, ?)";
             }
-            
+
             if (!sqlRole.isEmpty()) {
                 try (PreparedStatement psRole = conn.prepareStatement(sqlRole)) {
                     psRole.setInt(1, userId);
@@ -541,7 +553,17 @@ public class UserDAO {
                     psRole.executeUpdate();
                 }
             }
-            
+
+            // 4. Nếu tạo user với trạng thái locked, ghi lý do vào UserLockReason
+            if ("locked".equalsIgnoreCase(user.getStatus()) && user.getLockReason() != null) {
+                String sqlLockReason = "INSERT INTO UserLockReason (userId, reason) VALUES (?, ?)";
+                try (PreparedStatement psLock = conn.prepareStatement(sqlLockReason)) {
+                    psLock.setInt(1, userId);
+                    psLock.setString(2, user.getLockReason());
+                    psLock.executeUpdate();
+                }
+            }
+
             conn.commit();
             return true;
         } catch (SQLException e) {
@@ -567,23 +589,34 @@ public class UserDAO {
 
     /**
      * Cập nhật tài khoản, hồ sơ cá nhân và bảng vai trò (sử dụng UPSERT cho Profile).
+     * Thay đổi status/lockReason: nếu lockReason thay đổi, ghi vào UserLockReason.
      */
     public boolean updateUserWithProfile(User user, MemberProfile profile, String code, String major, Integer enrollmentYear, String department) throws SQLException {
         Connection conn = null;
-        String sqlUser = "UPDATE [User] SET [status] = ?, lockReason = ? WHERE userId = ?";
-        
+        // Chỉ cập nhật [status] trên bảng [User] — không còn cột lockReason
+        String sqlUser = "UPDATE [User] SET [status] = ? WHERE userId = ?";
+
         try {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false);
-            
-            // 1. Update User status & lockReason
+
+            // 1. Update User status
             try (PreparedStatement psUser = conn.prepareStatement(sqlUser)) {
                 psUser.setString(1, user.getStatus());
-                psUser.setString(2, user.getLockReason());
-                psUser.setInt(3, user.getUserId());
+                psUser.setInt(2, user.getUserId());
                 psUser.executeUpdate();
             }
-            
+
+            // 1b. Nếu đang khóa và có lý do, ghi vào UserLockReason
+            if ("locked".equalsIgnoreCase(user.getStatus()) && user.getLockReason() != null && !user.getLockReason().trim().isEmpty()) {
+                String sqlLockReason = "INSERT INTO UserLockReason (userId, reason) VALUES (?, ?)";
+                try (PreparedStatement psLock = conn.prepareStatement(sqlLockReason)) {
+                    psLock.setInt(1, user.getUserId());
+                    psLock.setString(2, user.getLockReason());
+                    psLock.executeUpdate();
+                }
+            }
+
             // 2. UPSERT MemberProfile (BR-15)
             boolean profileExists = false;
             String sqlCheckProfile = "SELECT COUNT(*) FROM MemberProfile WHERE userId = ?";
@@ -595,14 +628,14 @@ public class UserDAO {
                     }
                 }
             }
-            
+
             String sqlProfile;
             if (profileExists) {
                 sqlProfile = "UPDATE MemberProfile SET fullName = ?, phoneNumber = ?, gender = ?, dateOfBirth = ? WHERE userId = ?";
             } else {
                 sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
             }
-            
+
             try (PreparedStatement psProfile = conn.prepareStatement(sqlProfile)) {
                 if (profileExists) {
                     psProfile.setString(1, profile.getFullName());
@@ -621,7 +654,7 @@ public class UserDAO {
                 }
                 psProfile.executeUpdate();
             }
-            
+
             // 3. Update Role Table
             String sqlRole = "";
             if ("STUDENT".equalsIgnoreCase(user.getRole())) {
@@ -635,7 +668,7 @@ public class UserDAO {
             } else if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                 sqlRole = "UPDATE Admin SET staffCode = ? WHERE userId = ?";
             }
-            
+
             if (!sqlRole.isEmpty()) {
                 try (PreparedStatement psRole = conn.prepareStatement(sqlRole)) {
                     psRole.setString(1, code);
@@ -656,7 +689,7 @@ public class UserDAO {
                     psRole.executeUpdate();
                 }
             }
-            
+
             conn.commit();
             return true;
         } catch (SQLException e) {
@@ -682,17 +715,45 @@ public class UserDAO {
 
     /**
      * Cập nhật nhanh trạng thái hoạt động/khóa của người dùng.
+     * Nếu lockReason được cung cấp và status='locked', ghi vào UserLockReason.
      */
     public boolean updateUserStatus(int userId, String status, String lockReason) {
-        String sql = "UPDATE [User] SET [status] = ?, lockReason = ? WHERE userId = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, status);
-            ps.setString(2, lockReason);
-            ps.setInt(3, userId);
-            return ps.executeUpdate() > 0;
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            String sqlStatus = "UPDATE [User] SET [status] = ? WHERE userId = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sqlStatus)) {
+                ps.setString(1, status);
+                ps.setInt(2, userId);
+                ps.executeUpdate();
+            }
+
+            if ("locked".equalsIgnoreCase(status) && lockReason != null && !lockReason.trim().isEmpty()) {
+                String sqlReason = "INSERT INTO UserLockReason (userId, reason) VALUES (?, ?)";
+                try (PreparedStatement psReason = conn.prepareStatement(sqlReason)) {
+                    psReason.setInt(1, userId);
+                    psReason.setString(2, lockReason);
+                    psReason.executeUpdate();
+                }
+            }
+
+            conn.commit();
+            return true;
         } catch (SQLException e) {
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error rolling back updateUserStatus", ex);
+                }
+            }
             LOGGER.log(Level.SEVERE, "Error in updateUserStatus", e);
+        } finally {
+            if (conn != null) {
+                try { conn.close(); } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error closing connection", ex);
+                }
+            }
         }
         return false;
     }
@@ -701,7 +762,8 @@ public class UserDAO {
      * Tìm kiếm thông tin gộp UserDTO theo ID.
      */
     public UserDTO findUserDTOById(int userId) {
-        String sql = "SELECT u.userId, u.email, u.status, u.role, u.lockReason, u.failedLoginAttempts, u.lockedUntil, "
+        String sql = "SELECT u.userId, u.email, u.status, u.role, u.failedLoginAttempts, u.lockedUntil, "
+              + "(SELECT TOP 1 reason FROM UserLockReason WHERE userId = u.userId ORDER BY createdAt DESC) AS lockReason, "
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
               + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
@@ -713,7 +775,7 @@ public class UserDAO {
               + "LEFT JOIN LibraryManager mgr ON u.userId = mgr.userId "
               + "LEFT JOIN Admin adm ON u.userId = adm.userId "
               + "WHERE u.userId = ?";
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -740,20 +802,20 @@ public class UserDAO {
         dto.setLockReason(rs.getString("lockReason"));
         dto.setFailedLoginAttempts(rs.getInt("failedLoginAttempts"));
         dto.setLockedUntil(rs.getTimestamp("lockedUntil"));
-        
+
         dto.setFullName(rs.getString("fullName"));
         dto.setPhoneNumber(rs.getString("phoneNumber"));
         dto.setGender(rs.getString("gender"));
         dto.setDateOfBirth(rs.getDate("dateOfBirth"));
         dto.setStartDate(rs.getDate("startDate"));
         dto.setEndDate(rs.getDate("endDate"));
-        
+
         dto.setCode(rs.getString("code"));
         dto.setMajor(rs.getString("major"));
-        
+
         int year = rs.getInt("enrollmentYear");
         dto.setEnrollmentYear(rs.wasNull() ? null : year);
-        
+
         dto.setDepartment(rs.getString("department"));
         return dto;
     }
@@ -763,16 +825,16 @@ public class UserDAO {
      */
     public boolean importUsersBatch(List<UserDTO> users, String role) throws SQLException {
         Connection conn = null;
-        String sqlUser = "INSERT INTO [User] (email, passwordHash, [status], [role], lockReason, failedLoginAttempts) VALUES (?, ?, 'active', ?, NULL, 0)";
+        String sqlUser = "INSERT INTO [User] (email, passwordHash, [status], [role], failedLoginAttempts) VALUES (?, ?, 'active', ?, 0)";
         String sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+
         try {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false);
-            
+
             try (PreparedStatement psUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS);
                  PreparedStatement psProfile = conn.prepareStatement(sqlProfile)) {
-                
+
                 String sqlRole = "";
                 if ("STUDENT".equalsIgnoreCase(role)) {
                     sqlRole = "INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (?, ?, ?, ?)";
@@ -785,20 +847,20 @@ public class UserDAO {
                 } else if ("ADMIN".equalsIgnoreCase(role)) {
                     sqlRole = "INSERT INTO Admin (userId, staffCode) VALUES (?, ?)";
                 }
-                
+
                 PreparedStatement psRole = null;
                 try {
                     if (!sqlRole.isEmpty()) {
                         psRole = conn.prepareStatement(sqlRole);
                     }
-                    
+
                     for (UserDTO u : users) {
                         // 1. Insert User
                         psUser.setString(1, u.getEmail());
                         psUser.setString(2, u.getPasswordHash());
                         psUser.setString(3, role);
                         psUser.executeUpdate();
-                        
+
                         int userId = 0;
                         try (ResultSet rsUser = psUser.getGeneratedKeys()) {
                             if (rsUser.next()) {
@@ -807,7 +869,7 @@ public class UserDAO {
                                 throw new SQLException("Creating user failed during batch import, no ID obtained.");
                             }
                         }
-                        
+
                         // 2. Insert Profile
                         psProfile.setInt(1, userId);
                         psProfile.setString(2, u.getFullName());
@@ -815,9 +877,9 @@ public class UserDAO {
                         psProfile.setString(4, u.getGender() != null ? u.getGender() : "Khác");
                         psProfile.setDate(5, u.getDateOfBirth() != null ? u.getDateOfBirth() : new java.sql.Date(System.currentTimeMillis()));
                         psProfile.setDate(6, new java.sql.Date(System.currentTimeMillis()));
-                        psProfile.setDate(7, new java.sql.Date(System.currentTimeMillis() + 31536000000L)); // 1 year
+                        psProfile.setDate(7, new java.sql.Date(System.currentTimeMillis() + 31536000000L));
                         psProfile.executeUpdate();
-                        
+
                         // 3. Insert Role Table
                         if (psRole != null) {
                             psRole.setInt(1, userId);
@@ -841,7 +903,7 @@ public class UserDAO {
                     }
                 }
             }
-            
+
             conn.commit();
             return true;
         } catch (SQLException e) {
