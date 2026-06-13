@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- TopAppBar — 2-row layout -->
 <header class="w-100 shadow-sm fixed-top" style="background-color: var(--surface-container-high);" id="main-header">
@@ -94,3 +94,5 @@
         </nav>
     </div>
 </header>
+<!-- Khối đệm (Spacer) để chống việc Header (fixed-top) che mất nội dung bên dưới — DRY: tập trung tại đây thay vì padding-top từng trang -->
+<div style="height: 115px;"></div>

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en" class="h-100">
@@ -158,7 +158,7 @@
             <div class="collapse navbar-collapse justify-content-center d-none d-md-flex">
                 <div class="d-flex gap-4">
                     <a class="nav-link-custom" href="${dashboardUrl}">Bảng điều khiển</a>
-                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/book-search.jsp">Mục lục</a>
+                    <a class="nav-link-custom" href="${pageContext.request.contextPath}/book-search">Mục lục</a>
                     <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
                     <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
                     <a class="nav-link-custom" href="${pageContext.request.contextPath}/#contact">Hỗ trợ</a>
@@ -209,7 +209,7 @@
             <div class="mt-5 w-100" style="max-width: 768px;">
                 <div class="row g-3">
                     <div class="col-12 col-md-4">
-                        <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none text-reset">
+                        <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none text-reset">
                             <div class="quick-link-card h-100">
                                 <span class="material-symbols-outlined text-primary-custom mb-2 d-block">menu_book</span>
                                 <h3 class="h6 text-dark fw-bold mb-1">Mục lục</h3>

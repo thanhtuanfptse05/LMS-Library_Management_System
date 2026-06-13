@@ -10,7 +10,7 @@
             <div class="d-none d-md-flex gap-4 ms-2 text-nowrap">
                 <a href="${pageContext.request.contextPath}/lecturer/dashboard"
                    style="font-size: 13px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 2px; text-decoration: none; font-weight: 600;">Bảng điều khiển</a>
-                <a href="${pageContext.request.contextPath}/book-search.jsp"
+                <a href="${pageContext.request.contextPath}/book-search"
                    style="font-size: 13px; color: var(--on-surface-variant); text-decoration: none; font-weight: 600;">Danh mục</a>
             </div>
         </div>

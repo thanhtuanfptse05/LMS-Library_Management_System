@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -338,6 +338,8 @@
 
                     <!-- Form kết nối POST với LoginServlet -->
                     <form id="loginForm" action="${pageContext.request.contextPath}/login" method="POST" class="mb-4">
+                        <!-- Tham số redirect: quay lại trang cũ sau khi đăng nhập thành công -->
+                        <input type="hidden" name="redirect" value="${param.redirect}">
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-muted ms-1" for="email">Tên đăng nhập or
                                 Email</label>

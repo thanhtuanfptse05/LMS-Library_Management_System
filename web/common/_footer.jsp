@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <!-- Footer — 3-column layout + copyright bar -->
 <footer id="contact" style="background-color: var(--surface-lowest); border-top: 1px solid rgba(219, 194, 176, 0.5);">
 

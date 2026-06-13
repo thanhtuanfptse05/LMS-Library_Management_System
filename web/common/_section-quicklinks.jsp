@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- Quick Access / Shortcut Grid -->
 <section class="py-5" style="background-color: var(--bs-body-bg);" id="quicklinks">
@@ -15,7 +15,7 @@
 
             <!-- Card 1: Catalog Search -->
             <div class="col">
-                <a href="${pageContext.request.contextPath}/book-search.jsp" class="text-decoration-none d-block h-100">
+                <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
                     <div class="shortcut-card h-100">
                         <div class="icon-circle mb-4">
                             <i class="bi bi-book-half fs-4"></i>

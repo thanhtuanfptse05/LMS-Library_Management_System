@@ -120,8 +120,14 @@ public class LoginServlet extends HttpServlet {
 
             LOGGER.log(Level.INFO, "User logged in successfully: {0} with role {1}", new Object[]{email, user.getRole()});
 
-            // Chuyển hướng người dùng về Dashboard tương ứng theo vai trò [Node 13.21, 14.23]
+            // Kiểm tra xem người dùng có truyền tham số redirect để quay lại trang cũ không (ví dụ: book-detail?id=1)
+            String redirectParam = request.getParameter("redirect");
             String redirectUrl = getRedirectByRole(request.getContextPath(), user.getRole());
+            if (redirectParam != null && !redirectParam.trim().isEmpty()) {
+                redirectUrl = request.getContextPath() + "/" + redirectParam;
+            }
+
+            // Chuyển hướng người dùng về Dashboard tương ứng hoặc trang được yêu cầu [Node 13.21, 14.23]
             response.sendRedirect(redirectUrl);
         } else {
             // Đăng nhập thất bại -> Tăng số lần đăng nhập sai [Node 13.20]

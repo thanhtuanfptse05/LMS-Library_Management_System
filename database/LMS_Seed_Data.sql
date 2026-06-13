@@ -1,4 +1,4 @@
-﻿USE LMS_Library_Management_System;
+USE LMS_Library_Management_System;
 GO
 
 -- ==========================================================================
@@ -624,4 +624,394 @@ INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, s
 
 INSERT INTO Student (userId, studentCode, major, enrollmentYear) VALUES (187, 'HE999999', N'Software Engineering', 2023);
 INSERT INTO Lecturer (userId, lecturerCode, department) VALUES (188, 'LEC999', N'Information Technology');
+
+INSERT INTO SystemConfigurations (configKey, configValue, description)
+VALUES ('GEMINI_API_KEY', 'YOUR_GEMINI_API_KEY', N'API Key cho Google Gemini AI Recommendation');
+
+USE LMS_Library_Management_System;
+GO
+
+-- ------------------------------------------------------------
+-- 1. CLEANUP OLD TEST DATA
+-- ------------------------------------------------------------
+DELETE FROM BorrowRecord WHERE borrowRecordId BETWEEN 1 AND 30;
+DELETE FROM BookCopy WHERE bookCopyId BETWEEN 1 AND 150;
+DELETE FROM BookTag WHERE bookId BETWEEN 1 AND 75;
+DELETE FROM BookCategory WHERE bookId BETWEEN 1 AND 75;
+DELETE FROM Book WHERE bookId BETWEEN 1 AND 75;
+DELETE FROM Tag WHERE tagId BETWEEN 1 AND 15;
+DELETE FROM Category WHERE categoryId BETWEEN 1 AND 6;
+
+-- ------------------------------------------------------------
+-- 2. INSERT CATEGORIES (6 CATEGORIES)
+-- ------------------------------------------------------------
+SET IDENTITY_INSERT Category ON;
+INSERT INTO Category (categoryId, name, description) VALUES 
+(1, N'Programming Languages', N'Sách về các ngôn ngữ lập trình phổ biến'),
+(2, N'Software Architecture', N'Sách về thiết kế kiến trúc và mẫu thiết kế phần mềm'),
+(3, N'Databases & SQL', N'Sách về cơ sở dữ liệu quan hệ, NoSQL và SQL tối ưu'),
+(4, N'Web Development', N'Sách phát triển giao diện và ứng dụng web (React, Node, JS)'),
+(5, N'DevOps & Cloud', N'Sách về điện toán đám mây, Docker, Kubernetes và CI/CD'),
+(6, N'AI & Data Science', N'Sách về Trí tuệ nhân tạo, Machine Learning và Khoa học dữ liệu');
+SET IDENTITY_INSERT Category OFF;
+
+-- ------------------------------------------------------------
+-- 3. INSERT TAGS (15 TAGS)
+-- ------------------------------------------------------------
+SET IDENTITY_INSERT Tag ON;
+INSERT INTO Tag (tagId, name) VALUES 
+(1, 'Java'),
+(2, 'Python'),
+(3, 'Go'),
+(4, 'C++'),
+(5, 'JavaScript'),
+(6, 'React'),
+(7, 'Node.js'),
+(8, 'Architecture'),
+(9, 'Design Patterns'),
+(10, 'Microservices'),
+(11, 'SQL'),
+(12, 'NoSQL'),
+(13, 'Docker & Kubernetes'),
+(14, 'Cloud Native'),
+(15, 'Machine Learning');
+SET IDENTITY_INSERT Tag OFF;
+
+-- ------------------------------------------------------------
+-- 4. INSERT BOOKS (75 BOOKS)
+-- ------------------------------------------------------------
+SET IDENTITY_INSERT Book ON;
+INSERT INTO Book (bookId, isbn, title, author, publisher, publicationYear, price, totalQuantity, availableQuantity, [status]) VALUES 
+-- Category 1: Programming Languages (1-8, 46-48)
+(1, '978-0134685991', N'Effective Java', N'Joshua Bloch', N'Addison-Wesley', 2017, 45.00, 2, 2, 'available'),
+(2, '978-0596009205', N'Head First Java', N'Kathy Sierra', N'O''Reilly Media', 2005, 30.00, 2, 2, 'available'),
+(3, '978-1449331818', N'Learning Python', N'Mark Lutz', N'O''Reilly Media', 2013, 55.00, 2, 2, 'available'),
+(4, '978-1491946008', N'Fluent Python', N'Luciano Ramalho', N'O''Reilly Media', 2015, 60.00, 2, 2, 'available'),
+(5, '978-1453916701', N'The Go Programming Language', N'Alan A. A. Donovan', N'Addison-Wesley', 2015, 49.00, 2, 2, 'available'),
+(6, '978-1449311605', N'Programming in Go', N'Mark Summerfield', N'Addison-Wesley', 2012, 45.00, 2, 2, 'available'),
+(7, '978-0321714114', N'C++ Primer', N'Stanley B. Lippman', N'Addison-Wesley', 2012, 50.00, 2, 2, 'available'),
+(8, '978-0131103627', N'The C Programming Language', N'Brian W. Kernighan', N'Prentice Hall', 1988, 40.00, 2, 2, 'available'),
+
+-- Category 2: Software Architecture (9-16, 49-51)
+(9, '978-0134494166', N'Clean Architecture', N'Robert C. Martin', N'Prentice Hall', 2017, 42.00, 2, 2, 'available'),
+(10, '978-0321125217', N'Domain-Driven Design', N'Eric Evans', N'Addison-Wesley', 2003, 50.00, 2, 2, 'available'),
+(11, '978-0201633610', N'Design Patterns', N'Erich Gamma', N'Addison-Wesley', 1994, 55.00, 2, 2, 'available'),
+(12, '978-1491956250', N'Building Microservices', N'Sam Newman', N'O''Reilly Media', 2015, 48.00, 2, 2, 'available'),
+(13, '978-1617294549', N'Microservices Patterns', N'Chris Richardson', N'Manning', 2018, 52.00, 2, 2, 'available'),
+(14, '978-1449373320', N'Designing Data-Intensive Applications', N'Martin Kleppmann', N'O''Reilly Media', 2017, 48.00, 2, 2, 'available'),
+(15, '978-1492056812', N'Fundamentals of Software Architecture', N'Mark Richards', N'O''Reilly Media', 2020, 55.00, 2, 2, 'available'),
+(16, '978-0321127426', N'Patterns of Enterprise Application Architecture', N'Martin Fowler', N'Addison-Wesley', 2002, 58.00, 2, 2, 'available'),
+
+-- Category 3: Databases & SQL (17-24, 52-54)
+(17, '978-0134858333', N'SQL Queries for Mere Mortals', N'John L. Viescas', N'Addison-Wesley', 2018, 40.00, 2, 2, 'available'),
+(18, '978-1449314286', N'High Performance MySQL', N'Baron Schwartz', N'O''Reilly Media', 2012, 45.00, 2, 2, 'available'),
+(19, '978-1491954461', N'MongoDB: The Definitive Guide', N'Shannon Bradshaw', N'O''Reilly Media', 2019, 46.00, 2, 2, 'available'),
+(20, '978-1449310301', N'NoSQL Distilled', N'Pramod J. Sadalage', N'Addison-Wesley', 2012, 38.00, 2, 2, 'available'),
+(21, '978-1492057611', N'Learning SQL', N'Alan Beaulieu', N'O''Reilly Media', 2020, 39.00, 2, 2, 'available'),
+(22, '978-1492004738', N'SQL Cookbook', N'Anthony Molinaro', N'O''Reilly Media', 2020, 48.00, 2, 2, 'available'),
+(23, '978-1449309398', N'Seven Databases in Seven Weeks', N'Eric Redmond', N'Pragmatic Bookshelf', 2012, 40.00, 2, 2, 'available'),
+(24, '978-0073523323', N'Database System Concepts', N'Abraham Silberschatz', N'McGraw-Hill', 2010, 75.00, 2, 2, 'available'),
+
+-- Category 4: Web Development (25-32, 55-57)
+(25, '978-0596517748', N'JavaScript: The Good Parts', N'Douglas Crockford', N'O''Reilly Media', 2008, 25.00, 2, 2, 'available'),
+(26, '978-1492054375', N'You Don''t Know JS Yet', N'Kyle Simpson', N'O''Reilly Media', 2020, 30.00, 2, 2, 'available'),
+(27, '978-1732329393', N'Eloquent JavaScript', N'Marijn Haverbeke', N'No Starch Press', 2018, 35.00, 2, 2, 'available'),
+(28, '978-1492082904', N'Learning React', N'Alex Banks', N'O''Reilly Media', 2020, 45.00, 2, 2, 'available'),
+(29, '978-1484254585', N'Pro React 16', N'Adam Freeman', N'Apress', 2019, 49.00, 2, 2, 'available'),
+(30, '978-1839214110', N'Node.js Design Patterns', N'Mario Casciaro', N'Packt', 2020, 50.00, 2, 2, 'available'),
+(31, '978-1492053514', N'Web Development with Node and Express', N'Ethan Brown', N'O''Reilly Media', 2019, 42.00, 2, 2, 'available'),
+(32, '978-1543997675', N'Beginning Node.js, Express & MongoDB', N'Greg Lim', N'Greg Lim Publishing', 2020, 25.00, 2, 2, 'available'),
+
+-- Category 5: DevOps & Cloud (33-39, 58-60)
+(33, '978-1942788003', N'The DevOps Handbook', N'Gene Kim', N'IT Revolution Press', 2016, 45.00, 2, 2, 'available'),
+(34, '978-1916585126', N'Docker Deep Dive', N'Nigel Poulton', N'Nigel Poulton Publishing', 2020, 38.00, 2, 2, 'available'),
+(35, '978-1492003290', N'Kubernetes Up and Running', N'Kelsey Hightower', N'O''Reilly Media', 2019, 45.00, 2, 2, 'available'),
+(36, '978-1119504221', N'AWS Certified Solutions Architect Study Guide', N'Ben Piper', N'Sybex', 2019, 50.00, 2, 2, 'available'),
+(37, '978-1617294006', N'Cloud Native Patterns', N'Cornelia Davis', N'Manning', 2019, 47.00, 2, 2, 'available'),
+(38, '978-1492046905', N'Terraform: Up & Running', N'Yevgeniy Brikman', N'O''Reilly Media', 2019, 45.00, 2, 2, 'available'),
+(39, '978-1491929124', N'Site Reliability Engineering', N'Betsy Beyer', N'O''Reilly Media', 2016, 49.00, 2, 2, 'available'),
+
+-- Category 6: AI & Data Science (40-45, 61-75)
+(40, '978-1492032649', N'Hands-On Machine Learning', N'Aurélien Géron', N'O''Reilly Media', 2019, 65.00, 2, 2, 'available'),
+(41, '978-1491957660', N'Python for Data Analysis', N'Wes McKinney', N'O''Reilly Media', 2017, 50.00, 2, 2, 'available'),
+(42, '978-1492041139', N'Data Science from Scratch', N'Joel Grus', N'O''Reilly Media', 2019, 40.00, 2, 2, 'available'),
+(43, '978-1492051053', N'Introduction to Machine Learning with Python', N'Andreas C. Müller', N'O''Reilly Media', 2020, 48.00, 2, 2, 'available'),
+(44, '978-1462935513', N'Deep Learning', N'Ian Goodfellow', N'MIT Press', 2016, 80.00, 2, 2, 'available'),
+(45, '978-1108488051', N'Mathematics for Machine Learning', N'Marc Peter Deisenroth', N'Cambridge University Press', 2020, 55.00, 2, 2, 'available'),
+
+-- Category 1 (Added)
+(46, '978-0135111529', N'Core Java Volume I--Fundamentals', N'Cay S. Horstmann', N'Pearson', 2018, 48.00, 2, 2, 'available'),
+(47, '978-0321334879', N'Effective C++', N'Scott Meyers', N'Addison-Wesley', 2005, 45.00, 2, 2, 'available'),
+(48, '978-0131872486', N'Thinking in Java', N'Bruce Eckel', N'Prentice Hall', 2006, 50.00, 2, 2, 'available'),
+
+-- Category 2 (Added)
+(49, '978-1492086895', N'Software Architecture: The Hard Parts', N'Neal Ford', N'O''Reilly Media', 2021, 54.00, 2, 2, 'available'),
+(50, '978-0321200686', N'Enterprise Integration Patterns', N'Gregor Hohpe', N'Addison-Wesley', 2003, 58.00, 2, 2, 'available'),
+(51, '978-1736049112', N'System Design Interview', N'Alex Xu', N'ByteByteGo', 2020, 39.00, 2, 2, 'available'),
+
+-- Category 3 (Added)
+(52, '978-1540801821', N'SQL Practice Problems', N'Sylvia Moestl Vasilik', N'Independently Published', 2016, 20.00, 2, 2, 'available'),
+(53, '978-0134023212', N'NoSQL for Mere Mortals', N'Dan Sullivan', N'Addison-Wesley', 2015, 42.00, 2, 2, 'available'),
+(54, '978-3950307825', N'SQL Performance Explained', N'Markus Winand', N'Markus Winand', 2012, 35.00, 2, 2, 'available'),
+
+-- Category 4 (Added)
+(55, '978-1118008188', N'HTML and CSS: Design and Build Websites', N'Jon Duckett', N'Wiley', 2011, 29.00, 2, 2, 'available'),
+(56, '978-1803234502', N'React Key Concepts', N'Maximilian Schwarzmüller', N'Packt', 2022, 38.00, 2, 2, 'available'),
+(57, '978-1838987589', N'Node.js Web Development', N'David Herron', N'Packt', 2020, 44.00, 2, 2, 'available'),
+
+-- Category 5 (Added)
+(58, '978-1491979440', N'Kubernetes Cookbook', N'Sébastien Goasguen', N'O''Reilly Media', 2018, 46.00, 2, 2, 'available'),
+(59, '978-1492029420', N'Implementing Service Quality', N'SRE Team', N'O''Reilly Media', 2019, 45.00, 2, 2, 'available'),
+(60, '978-1119756163', N'AWS Certified Cloud Practitioner', N'CLF', N'Sybex', 2021, 30.00, 2, 2, 'available'),
+
+-- Category 6 (Added)
+(61, '978-1466575577', N'Introduction to Probability', N'Joseph K. Blitzstein', N'Chapman and Hall/CRC', 2019, 75.00, 2, 2, 'available'),
+(62, '978-0387310732', N'Pattern Recognition and Machine Learning', N'Christopher M. Bishop', N'Springer', 2006, 95.00, 2, 2, 'available'),
+(63, '978-0986001002', N'Neural Networks and Deep Learning', N'Michael Nielsen', N'Determination Press', 2015, 30.00, 2, 2, 'available'),
+(64, '978-1491907337', N'Think Stats', N'Allen B. Downey', N'O''Reilly Media', 2014, 35.00, 2, 2, 'available'),
+(65, '978-1491912058', N'Python Data Science Handbook', N'Jake VanderPlas', N'O''Reilly Media', 2016, 55.00, 2, 2, 'available'),
+(66, '978-1617294433', N'Deep Learning with Python', N'François Chollet', N'Manning', 2017, 50.00, 2, 2, 'available'),
+(67, '978-1098103248', N'Natural Language Processing with Transformers', N'Lewis Tunstall', N'O''Reilly Media', 2022, 58.00, 2, 2, 'available'),
+(68, '978-0262039245', N'Reinforcement Learning', N'Richard S. Sutton', N'MIT Press', 2018, 90.00, 2, 2, 'available'),
+(69, '978-1800563452', N'Hands-On Data Analysis with Pandas', N'Stefanie Molin', N'Packt', 2021, 40.00, 2, 2, 'available'),
+(70, '978-1491953242', N'Feature Engineering for Machine Learning', N'Alice Zheng', N'O''Reilly Media', 2018, 38.00, 2, 2, 'available'),
+(71, '978-0486832869', N'Introduction to Artificial Intelligence', N'Philip C Jackson', N'Dover Publications', 2019, 18.00, 2, 2, 'available'),
+(72, '978-0134610993', N'Artificial Intelligence: A Modern Approach', N'Stuart Russell', N'Pearson', 2020, 120.00, 2, 2, 'available'),
+(73, '978-1492072942', N'Practical Statistics for Data Scientists', N'Peter Bruce', N'O''Reilly Media', 2020, 42.00, 2, 2, 'available'),
+(74, '978-1492079361', N'Data Science on AWS', N'Chris Fregly', N'O''Reilly Media', 2021, 58.00, 2, 2, 'available'),
+(75, '978-1098115784', N'Machine Learning Design Patterns', N'Lakshmanan', N'O''Reilly Media', 2021, 55.00, 2, 2, 'available');
+SET IDENTITY_INSERT Book OFF;
+
+-- ------------------------------------------------------------
+-- 5. INSERT BOOK CATEGORIES (75 BOOKS)
+-- ------------------------------------------------------------
+INSERT INTO BookCategory (bookId, categoryId) VALUES 
+(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1),
+(9, 2), (10, 2), (11, 2), (12, 2), (13, 2), (14, 2), (15, 2), (16, 2),
+(17, 3), (18, 3), (19, 3), (20, 3), (21, 3), (22, 3), (23, 3), (24, 3),
+(25, 4), (26, 4), (27, 4), (28, 4), (29, 4), (30, 4), (31, 4), (32, 4),
+(33, 5), (34, 5), (35, 5), (36, 5), (37, 5), (38, 5), (39, 5),
+(40, 6), (41, 6), (42, 6), (43, 6), (44, 6), (45, 6),
+(46, 1), (47, 1), (48, 1),
+(49, 2), (50, 2), (51, 2),
+(52, 3), (53, 3), (54, 3),
+(55, 4), (56, 4), (57, 4),
+(58, 5), (59, 5), (60, 5),
+(61, 6), (62, 6), (63, 6), (64, 6), (65, 6), (66, 6), (67, 6), (68, 6), (69, 6), (70, 6), (71, 6), (72, 6), (73, 6), (74, 6), (75, 6);
+
+-- ------------------------------------------------------------
+-- 6. INSERT BOOK TAGS
+-- ------------------------------------------------------------
+INSERT INTO BookTag (bookId, tagId) VALUES 
+-- Programming Languages
+(1, 1), (1, 9),
+(2, 1),
+(3, 2),
+(4, 2),
+(5, 3),
+(6, 3),
+(7, 4),
+(8, 4),
+-- Software Architecture
+(9, 8), (9, 9),
+(10, 8), (10, 9),
+(11, 9),
+(12, 10), (12, 14),
+(13, 10), (13, 9),
+(14, 8), (14, 10),
+(15, 8),
+(16, 8), (16, 9),
+-- Databases & SQL
+(17, 11),
+(18, 11),
+(19, 12),
+(20, 12),
+(21, 11),
+(22, 11),
+(23, 11), (23, 12),
+(24, 11),
+-- Web Development
+(25, 5),
+(26, 5),
+(27, 5),
+(28, 6), (28, 5),
+(29, 6),
+(30, 7), (30, 9),
+(31, 7), (31, 5),
+(32, 7), (32, 12),
+-- DevOps & Cloud
+(33, 14),
+(34, 13),
+(35, 13), (35, 14),
+(36, 14),
+(37, 14), (37, 10),
+(38, 14),
+(39, 14),
+-- AI & Data Science
+(40, 15), (40, 2),
+(41, 2),
+(42, 15), (42, 2),
+(43, 15), (43, 2),
+(44, 15),
+(45, 15),
+-- Added Books Tags
+(46, 1),
+(47, 4),
+(48, 1), (48, 9),
+(49, 8), (49, 10),
+(50, 8), (50, 9),
+(51, 8),
+(52, 11),
+(53, 12),
+(54, 11),
+(55, 5),
+(56, 6), (56, 5),
+(57, 7), (57, 5),
+(58, 13), (58, 14),
+(59, 14),
+(60, 14),
+(61, 15),
+(62, 15),
+(63, 15),
+(64, 2),
+(65, 2), (65, 15),
+(66, 2), (66, 15),
+(67, 15), (67, 2),
+(68, 15),
+(69, 2), (69, 11),
+(70, 15), (70, 2),
+(71, 15),
+(72, 15),
+(73, 2),
+(74, 14), (74, 15),
+(75, 15), (75, 9);
+
+-- ------------------------------------------------------------
+-- 7. INSERT BOOK COPIES (75 BOOKS * 2 COPIES = 150 COPIES)
+-- ------------------------------------------------------------
+SET IDENTITY_INSERT BookCopy ON;
+INSERT INTO BookCopy (bookCopyId, bookId, barcode, condition, [status]) VALUES 
+(1, 1, 'BC-001-1', 'good', 'available'), (2, 1, 'BC-001-2', 'good', 'available'),
+(3, 2, 'BC-002-1', 'good', 'available'), (4, 2, 'BC-002-2', 'good', 'available'),
+(5, 3, 'BC-003-1', 'good', 'available'), (6, 3, 'BC-003-2', 'good', 'available'),
+(7, 4, 'BC-004-1', 'good', 'available'), (8, 4, 'BC-004-2', 'good', 'available'),
+(9, 5, 'BC-005-1', 'good', 'available'), (10, 5, 'BC-005-2', 'good', 'available'),
+(11, 6, 'BC-006-1', 'good', 'available'), (12, 6, 'BC-006-2', 'good', 'available'),
+(13, 7, 'BC-007-1', 'good', 'available'), (14, 7, 'BC-007-2', 'good', 'available'),
+(15, 8, 'BC-008-1', 'good', 'available'), (16, 8, 'BC-008-2', 'good', 'available'),
+(17, 9, 'BC-009-1', 'good', 'available'), (18, 9, 'BC-009-2', 'good', 'available'),
+(19, 10, 'BC-010-1', 'good', 'available'), (20, 10, 'BC-010-2', 'good', 'available'),
+(21, 11, 'BC-011-1', 'good', 'available'), (22, 11, 'BC-011-2', 'good', 'available'),
+(23, 12, 'BC-012-1', 'good', 'available'), (24, 12, 'BC-012-2', 'good', 'available'),
+(25, 13, 'BC-013-1', 'good', 'available'), (26, 13, 'BC-013-2', 'good', 'available'),
+(27, 14, 'BC-014-1', 'good', 'available'), (28, 14, 'BC-014-2', 'good', 'available'),
+(29, 15, 'BC-015-1', 'good', 'available'), (30, 15, 'BC-015-2', 'good', 'available'),
+(31, 16, 'BC-016-1', 'good', 'available'), (32, 16, 'BC-016-2', 'good', 'available'),
+(33, 17, 'BC-017-1', 'good', 'available'), (34, 17, 'BC-017-2', 'good', 'available'),
+(35, 18, 'BC-018-1', 'good', 'available'), (36, 18, 'BC-018-2', 'good', 'available'),
+(37, 19, 'BC-019-1', 'good', 'available'), (38, 19, 'BC-019-2', 'good', 'available'),
+(39, 20, 'BC-020-1', 'good', 'available'), (40, 20, 'BC-020-2', 'good', 'available'),
+(41, 21, 'BC-021-1', 'good', 'available'), (42, 21, 'BC-021-2', 'good', 'available'),
+(43, 22, 'BC-022-1', 'good', 'available'), (44, 22, 'BC-022-2', 'good', 'available'),
+(45, 23, 'BC-023-1', 'good', 'available'), (46, 23, 'BC-023-2', 'good', 'available'),
+(47, 24, 'BC-024-1', 'good', 'available'), (48, 24, 'BC-024-2', 'good', 'available'),
+(49, 25, 'BC-025-1', 'good', 'available'), (50, 25, 'BC-025-2', 'good', 'available'),
+(51, 26, 'BC-026-1', 'good', 'available'), (52, 26, 'BC-026-2', 'good', 'available'),
+(53, 27, 'BC-027-1', 'good', 'available'), (54, 27, 'BC-027-2', 'good', 'available'),
+(55, 28, 'BC-028-1', 'good', 'available'), (56, 28, 'BC-028-2', 'good', 'available'),
+(57, 29, 'BC-029-1', 'good', 'available'), (58, 29, 'BC-029-2', 'good', 'available'),
+(59, 30, 'BC-030-1', 'good', 'available'), (60, 30, 'BC-030-2', 'good', 'available'),
+(61, 31, 'BC-031-1', 'good', 'available'), (62, 31, 'BC-031-2', 'good', 'available'),
+(63, 32, 'BC-032-1', 'good', 'available'), (64, 32, 'BC-032-2', 'good', 'available'),
+(65, 33, 'BC-033-1', 'good', 'available'), (66, 33, 'BC-033-2', 'good', 'available'),
+(67, 34, 'BC-034-1', 'good', 'available'), (68, 34, 'BC-034-2', 'good', 'available'),
+(69, 35, 'BC-035-1', 'good', 'available'), (70, 35, 'BC-035-2', 'good', 'available'),
+(71, 36, 'BC-036-1', 'good', 'available'), (72, 36, 'BC-036-2', 'good', 'available'),
+(73, 37, 'BC-037-1', 'good', 'available'), (74, 37, 'BC-037-2', 'good', 'available'),
+(75, 38, 'BC-038-1', 'good', 'available'), (76, 38, 'BC-038-2', 'good', 'available'),
+(77, 39, 'BC-039-1', 'good', 'available'), (78, 39, 'BC-039-2', 'good', 'available'),
+(79, 40, 'BC-040-1', 'good', 'available'), (80, 40, 'BC-040-2', 'good', 'available'),
+(81, 41, 'BC-041-1', 'good', 'available'), (82, 41, 'BC-041-2', 'good', 'available'),
+(83, 42, 'BC-042-1', 'good', 'available'), (84, 42, 'BC-042-2', 'good', 'available'),
+(85, 43, 'BC-043-1', 'good', 'available'), (86, 43, 'BC-043-2', 'good', 'available'),
+(87, 44, 'BC-044-1', 'good', 'available'), (88, 44, 'BC-044-2', 'good', 'available'),
+(89, 45, 'BC-045-1', 'good', 'available'), (90, 45, 'BC-045-2', 'good', 'available'),
+-- Added Books copies (91-150)
+(91, 46, 'BC-046-1', 'good', 'available'), (92, 46, 'BC-046-2', 'good', 'available'),
+(93, 47, 'BC-047-1', 'good', 'available'), (94, 47, 'BC-047-2', 'good', 'available'),
+(95, 48, 'BC-048-1', 'good', 'available'), (96, 48, 'BC-048-2', 'good', 'available'),
+(97, 49, 'BC-049-1', 'good', 'available'), (98, 49, 'BC-049-2', 'good', 'available'),
+(99, 50, 'BC-050-1', 'good', 'available'), (100, 50, 'BC-050-2', 'good', 'available'),
+(101, 51, 'BC-051-1', 'good', 'available'), (102, 51, 'BC-051-2', 'good', 'available'),
+(103, 52, 'BC-052-1', 'good', 'available'), (104, 52, 'BC-052-2', 'good', 'available'),
+(105, 53, 'BC-053-1', 'good', 'available'), (106, 53, 'BC-053-2', 'good', 'available'),
+(107, 54, 'BC-054-1', 'good', 'available'), (108, 54, 'BC-054-2', 'good', 'available'),
+(109, 55, 'BC-055-1', 'good', 'available'), (110, 55, 'BC-055-2', 'good', 'available'),
+(111, 56, 'BC-056-1', 'good', 'available'), (112, 56, 'BC-056-2', 'good', 'available'),
+(113, 57, 'BC-057-1', 'good', 'available'), (114, 57, 'BC-057-2', 'good', 'available'),
+(115, 58, 'BC-058-1', 'good', 'available'), (116, 58, 'BC-058-2', 'good', 'available'),
+(117, 59, 'BC-059-1', 'good', 'available'), (118, 59, 'BC-059-2', 'good', 'available'),
+(119, 60, 'BC-060-1', 'good', 'available'), (120, 60, 'BC-060-2', 'good', 'available'),
+(121, 61, 'BC-061-1', 'good', 'available'), (122, 61, 'BC-061-2', 'good', 'available'),
+(123, 62, 'BC-062-1', 'good', 'available'), (124, 62, 'BC-062-2', 'good', 'available'),
+(125, 63, 'BC-063-1', 'good', 'available'), (126, 63, 'BC-063-2', 'good', 'available'),
+(127, 64, 'BC-064-1', 'good', 'available'), (128, 64, 'BC-064-2', 'good', 'available'),
+(129, 65, 'BC-065-1', 'good', 'available'), (130, 65, 'BC-065-2', 'good', 'available'),
+(131, 66, 'BC-066-1', 'good', 'available'), (132, 66, 'BC-066-2', 'good', 'available'),
+(133, 67, 'BC-067-1', 'good', 'available'), (134, 67, 'BC-067-2', 'good', 'available'),
+(135, 68, 'BC-068-1', 'good', 'available'), (136, 68, 'BC-068-2', 'good', 'available'),
+(137, 69, 'BC-069-1', 'good', 'available'), (138, 69, 'BC-069-2', 'good', 'available'),
+(139, 70, 'BC-070-1', 'good', 'available'), (140, 70, 'BC-070-2', 'good', 'available'),
+(141, 71, 'BC-071-1', 'good', 'available'), (142, 71, 'BC-071-2', 'good', 'available'),
+(143, 72, 'BC-072-1', 'good', 'available'), (144, 72, 'BC-072-2', 'good', 'available'),
+(145, 73, 'BC-073-1', 'good', 'available'), (146, 73, 'BC-073-2', 'good', 'available'),
+(147, 74, 'BC-074-1', 'good', 'available'), (148, 74, 'BC-074-2', 'good', 'available'),
+(149, 75, 'BC-075-1', 'good', 'available'), (150, 75, 'BC-075-2', 'good', 'available');
+SET IDENTITY_INSERT BookCopy OFF;
+
+-- ------------------------------------------------------------
+-- 8. INSERT BORROW RECORDS (10 BORROW RECORDS PER USER, STRENGTHENED TENDENCIES)
+-- ------------------------------------------------------------
+SET IDENTITY_INSERT BorrowRecord ON;
+
+-- User 86 (student1@lms.com): Tendency "Java Enterprise Backend & Cloud Native Developer"
+INSERT INTO BorrowRecord (borrowRecordId, userId, bookCopyId, bookId, startDate, endDate, returnedAt, [status]) VALUES
+(1, 86, 1, 1, DATEADD(day, -45, GETDATE()), DATEADD(day, -30, GETDATE()), DATEADD(day, -31, GETDATE()), 'returned'),
+(2, 86, 3, 2, DATEADD(day, -40, GETDATE()), DATEADD(day, -25, GETDATE()), DATEADD(day, -26, GETDATE()), 'returned'),
+(3, 86, 17, 9, DATEADD(day, -35, GETDATE()), DATEADD(day, -20, GETDATE()), DATEADD(day, -21, GETDATE()), 'returned'),
+(4, 86, 19, 10, DATEADD(day, -30, GETDATE()), DATEADD(day, -15, GETDATE()), DATEADD(day, -16, GETDATE()), 'returned'),
+(5, 86, 21, 11, DATEADD(day, -25, GETDATE()), DATEADD(day, -10, GETDATE()), DATEADD(day, -11, GETDATE()), 'returned'),
+(6, 86, 23, 12, DATEADD(day, -20, GETDATE()), DATEADD(day, -5, GETDATE()), DATEADD(day, -6, GETDATE()), 'returned'),
+(7, 86, 25, 13, DATEADD(day, -15, GETDATE()), DATEADD(day, -1, GETDATE()), DATEADD(day, -2, GETDATE()), 'returned'),
+(8, 86, 33, 17, DATEADD(day, -10, GETDATE()), DATEADD(day, 5, GETDATE()), NULL, 'borrowed'),
+(9, 86, 67, 34, DATEADD(day, -5, GETDATE()), DATEADD(day, 10, GETDATE()), NULL, 'borrowed'),
+(10, 86, 69, 35, DATEADD(day, -2, GETDATE()), DATEADD(day, 13, GETDATE()), NULL, 'borrowed');
+
+-- User 87 (student2@lms.com): Tendency "Modern Fullstack JavaScript Developer (Node, React, NoSQL)"
+INSERT INTO BorrowRecord (borrowRecordId, userId, bookCopyId, bookId, startDate, endDate, returnedAt, [status]) VALUES
+(11, 87, 49, 25, DATEADD(day, -45, GETDATE()), DATEADD(day, -30, GETDATE()), DATEADD(day, -31, GETDATE()), 'returned'),
+(12, 87, 51, 26, DATEADD(day, -40, GETDATE()), DATEADD(day, -25, GETDATE()), DATEADD(day, -26, GETDATE()), 'returned'),
+(13, 87, 53, 27, DATEADD(day, -35, GETDATE()), DATEADD(day, -20, GETDATE()), DATEADD(day, -21, GETDATE()), 'returned'),
+(14, 87, 55, 28, DATEADD(day, -30, GETDATE()), DATEADD(day, -15, GETDATE()), DATEADD(day, -16, GETDATE()), 'returned'),
+(15, 87, 57, 29, DATEADD(day, -25, GETDATE()), DATEADD(day, -10, GETDATE()), DATEADD(day, -11, GETDATE()), 'returned'),
+(16, 87, 59, 30, DATEADD(day, -20, GETDATE()), DATEADD(day, -5, GETDATE()), DATEADD(day, -6, GETDATE()), 'returned'),
+(17, 87, 61, 31, DATEADD(day, -15, GETDATE()), DATEADD(day, -1, GETDATE()), DATEADD(day, -2, GETDATE()), 'returned'),
+(18, 87, 63, 32, DATEADD(day, -10, GETDATE()), DATEADD(day, 5, GETDATE()), NULL, 'borrowed'),
+(19, 87, 37, 19, DATEADD(day, -5, GETDATE()), DATEADD(day, 10, GETDATE()), NULL, 'borrowed'),
+(20, 87, 39, 20, DATEADD(day, -2, GETDATE()), DATEADD(day, 13, GETDATE()), NULL, 'borrowed');
+
+-- User 88 (student3@lms.com): Tendency "AI/ML Engineer & Data Scientist (Python, ML, Data Analytics)"
+INSERT INTO BorrowRecord (borrowRecordId, userId, bookCopyId, bookId, startDate, endDate, returnedAt, [status]) VALUES
+(21, 88, 5, 3, DATEADD(day, -45, GETDATE()), DATEADD(day, -30, GETDATE()), DATEADD(day, -31, GETDATE()), 'returned'),
+(22, 88, 7, 4, DATEADD(day, -40, GETDATE()), DATEADD(day, -25, GETDATE()), DATEADD(day, -26, GETDATE()), 'returned'),
+(23, 88, 79, 40, DATEADD(day, -35, GETDATE()), DATEADD(day, -20, GETDATE()), DATEADD(day, -21, GETDATE()), 'returned'),
+(24, 88, 81, 41, DATEADD(day, -30, GETDATE()), DATEADD(day, -15, GETDATE()), DATEADD(day, -16, GETDATE()), 'returned'),
+(25, 88, 83, 42, DATEADD(day, -25, GETDATE()), DATEADD(day, -10, GETDATE()), DATEADD(day, -11, GETDATE()), 'returned'),
+(26, 88, 85, 43, DATEADD(day, -20, GETDATE()), DATEADD(day, -5, GETDATE()), DATEADD(day, -6, GETDATE()), 'returned'),
+(27, 88, 87, 44, DATEADD(day, -15, GETDATE()), DATEADD(day, -1, GETDATE()), DATEADD(day, -2, GETDATE()), 'returned'),
+(28, 88, 89, 45, DATEADD(day, -10, GETDATE()), DATEADD(day, 5, GETDATE()), NULL, 'borrowed'),
+(29, 88, 41, 21, DATEADD(day, -5, GETDATE()), DATEADD(day, 10, GETDATE()), NULL, 'borrowed'),
+(30, 88, 43, 22, DATEADD(day, -2, GETDATE()), DATEADD(day, 13, GETDATE()), NULL, 'borrowed');
+
+SET IDENTITY_INSERT BorrowRecord OFF;
 

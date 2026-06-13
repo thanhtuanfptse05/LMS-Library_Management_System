@@ -155,6 +155,7 @@ CREATE TABLE Book (
     publisher NVARCHAR(255) NULL,
     publicationYear INT NULL,
     price DECIMAL(18,2) NULL,
+    coverImage NVARCHAR(255) NULL,          -- URL ảnh bìa sách (tính năng Book Discovery)
     totalQuantity INT NOT NULL DEFAULT 0,
     availableQuantity INT NOT NULL DEFAULT 0,
     [status] NVARCHAR(50) NOT NULL DEFAULT 'available',  -- unavailable, available
