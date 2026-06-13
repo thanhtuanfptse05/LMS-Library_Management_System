@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
@@ -10,34 +10,34 @@
 
     <jsp:include page="fragments/_header.jsp" />
 
-    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ BODY WRAPPER ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+    <!-- ════════════════ BODY WRAPPER ════════════════ -->
     <div class="d-flex main-wrapper overflow-hidden">
 
         <jsp:include page="fragments/_sidebar.jsp" />
 
-        <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ MAIN CONTENT ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+        <!-- ════════════════ MAIN CONTENT ════════════════ -->
         <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: #faf9f8;">
             <div class="container-xl px-4 py-5" style="max-width: 1200px; margin: 0 auto;">
 
-                <!-- ΓöÇΓöÇΓöÇ BREADCRUMB ΓöÇΓöÇΓöÇ -->
+                <!-- ─── BREADCRUMB ─── -->
                 <nav class="mb-2 d-flex align-items-center gap-1 text-muted small fw-semibold text-uppercase"
                      aria-label="breadcrumb" style="font-size: 12px; letter-spacing: 0.05em;">
                     <a class="text-decoration-none text-muted link-dark"
-                       href="${pageContext.request.contextPath}/lecturer/dashboard">Trang chß╗º</a>
+                       href="${pageContext.request.contextPath}/lecturer/dashboard">Trang chủ</a>
                     <span class="material-symbols-outlined fs-6">chevron_right</span>
-                    <span class="text-dark">Bß║úng tin hß╗ç thß╗æng</span>
+                    <span class="text-dark">Bảng tin hệ thống</span>
                 </nav>
 
-                <!-- ΓöÇΓöÇΓöÇ PAGE HEADER ΓöÇΓöÇΓöÇ -->
+                <!-- ─── PAGE HEADER ─── -->
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-5">
                     <div>
                         <h1 class="fw-bold mb-1" style="font-size: 28px; color: #191c1e;">
                             <span class="material-symbols-outlined me-2 align-middle"
                                   style="font-size: 30px; color: var(--primary); font-variation-settings: 'FILL' 1;">campaign</span>
-                            Bß║úng tin Th╞░ viß╗çn
+                            Bảng tin Thư viện
                         </h1>
                         <p class="text-secondary mb-0" style="font-size: 14px;">
-                            Cß║¡p nhß║¡t th├┤ng b├ío, ch├¡nh s├ích v├á sß╗▒ kiß╗çn tß╗½ Th╞░ viß╗çn ─Éß║íi hß╗ìc LMS.
+                            Cập nhật thông báo, chính sách và sự kiện từ Thư viện Đại học LMS.
                         </p>
                     </div>
                     <c:if test="${unreadCount > 0}">
@@ -46,12 +46,12 @@
                                  style="background: linear-gradient(135deg, rgba(157,67,0,0.08), rgba(249,115,22,0.05)); border: 1px solid rgba(157,67,0,0.2);">
                                 <div class="pulsing-dot"></div>
                                 <span class="fw-bold" style="font-size: 15px; color: var(--primary);">${unreadCount}</span>
-                                <span style="font-size: 13px; color: var(--on-surface-variant);">ch╞░a ─æß╗ìc</span>
+                                <span style="font-size: 13px; color: var(--on-surface-variant);">chưa đọc</span>
                             </div>
                             <button id="markAllReadBtn" class="btn rounded-3 fw-semibold"
                                     style="font-size: 13px; background: var(--surface-container-high); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
                                 <span class="material-symbols-outlined me-1 align-middle" style="font-size: 16px;">done_all</span>
-                                ─É├ính dß║Ñu tß║Ñt cß║ú ─æ├ú ─æß╗ìc
+                                Đánh dấu tất cả đã đọc
                             </button>
                         </div>
                     </c:if>
@@ -59,9 +59,9 @@
 
                 <div class="row g-4">
 
-                    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-                         LEFT: Danh s├ích th├┤ng b├ío
-                    ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+                    <!-- ═══════════════════════════════════════════
+                         LEFT: Danh sách thông báo
+                    ═══════════════════════════════════════════ -->
                     <div class="col-12 col-lg-8">
 
                         <!-- Search & Filter Bar -->
@@ -74,18 +74,18 @@
                                         <span class="material-symbols-outlined" style="font-size: 18px; color: var(--on-surface-variant);">search</span>
                                     </span>
                                     <input type="text" name="keyword" class="form-control border-start-0 rounded-end-3"
-                                           value="${keyword}" placeholder="T├¼m th├┤ng b├ío..."
+                                           value="${keyword}" placeholder="Tìm thông báo..."
                                            style="border-color: #e5e5e5;">
                                 </div>
                                 <select name="typeFilter" class="form-select rounded-3" style="width: 160px; border-color: #e5e5e5;">
-                                    <option value="">Tß║Ñt cß║ú loß║íi</option>
-                                    <option value="general" ${typeFilter == 'general' ? 'selected' : ''}>≡ƒôó Chung</option>
-                                    <option value="urgent"  ${typeFilter == 'urgent'  ? 'selected' : ''}>≡ƒö┤ Khß║⌐n cß║Ñp</option>
-                                    <option value="policy"  ${typeFilter == 'policy'  ? 'selected' : ''}>≡ƒôï Nß╗Öi quy</option>
-                                    <option value="event"   ${typeFilter == 'event'   ? 'selected' : ''}>≡ƒÄ» Sß╗▒ kiß╗çn</option>
+                                    <option value="">Tất cả loại</option>
+                                    <option value="general" ${typeFilter == 'general' ? 'selected' : ''}>📢 Chung</option>
+                                    <option value="urgent"  ${typeFilter == 'urgent'  ? 'selected' : ''}>🔴 Khẩn cấp</option>
+                                    <option value="policy"  ${typeFilter == 'policy'  ? 'selected' : ''}>📋 Nội quy</option>
+                                    <option value="event"   ${typeFilter == 'event'   ? 'selected' : ''}>🎯 Sự kiện</option>
                                 </select>
                                 <button type="submit" class="btn btn-primary-custom rounded-3 px-3 fw-semibold">
-                                    Lß╗ìc
+                                    Lọc
                                 </button>
                                 <c:if test="${not empty keyword or not empty typeFilter}">
                                     <a href="${pageContext.request.contextPath}/notifications"
@@ -132,17 +132,17 @@
                                                             <c:if test="${notif.pinned}">
                                                                 <span class="material-symbols-outlined"
                                                                       style="font-size: 14px; color: var(--primary); font-variation-settings: 'FILL' 1;"
-                                                                      title="─É├ú ghim">push_pin</span>
+                                                                      title="Đã ghim">push_pin</span>
                                                             </c:if>
                                                             <!-- Type badge -->
                                                             <span class="notif-badge-type type-${notif.type}">
-                                                                ${notif.type == 'urgent'  ? 'Khß║⌐n cß║Ñp'     :
-                                                                  notif.type == 'policy'  ? 'Nß╗Öi quy'       :
-                                                                  notif.type == 'event'   ? 'Sß╗▒ kiß╗çn'       : 'Th├┤ng tin'}
+                                                                ${notif.type == 'urgent'  ? 'Khẩn cấp'     :
+                                                                  notif.type == 'policy'  ? 'Nội quy'       :
+                                                                  notif.type == 'event'   ? 'Sự kiện'       : 'Thông tin'}
                                                             </span>
                                                             <!-- Unread dot -->
                                                             <c:if test="${not notif.read}">
-                                                                <span class="unread-dot" title="Ch╞░a ─æß╗ìc"></span>
+                                                                <span class="unread-dot" title="Chưa đọc"></span>
                                                             </c:if>
                                                         </div>
                                                         <span class="text-secondary small font-monospace flex-shrink-0"
@@ -173,12 +173,12 @@
                                                         <span class="d-flex align-items-center gap-1 text-secondary"
                                                               style="font-size: 12px;">
                                                             <span class="material-symbols-outlined" style="font-size: 14px;">person</span>
-                                                            <c:out value="${not empty notif.createdByName ? notif.createdByName : 'Ban Quß║ún l├╜'}" />
+                                                            <c:out value="${not empty notif.createdByName ? notif.createdByName : 'Ban Quản lý'}" />
                                                         </span>
                                                         <button class="btn-read-more d-flex align-items-center gap-1 fw-semibold"
                                                                 onclick="openNotifDetail(this)"
                                                                 style="font-size: 13px; color: var(--primary); background: none; border: none; padding: 0; cursor: pointer;">
-                                                            Xem chi tiß║┐t
+                                                            Xem chi tiết
                                                             <span class="material-symbols-outlined" style="font-size: 16px;">arrow_right_alt</span>
                                                         </button>
                                                     </div>
@@ -188,12 +188,12 @@
                                     </c:forEach>
                                 </div>
 
-                                <!-- Ph├ón trang -->
+                                <!-- Phân trang -->
                                 <c:if test="${totalPages > 1}">
                                     <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2">
                                         <span class="text-secondary small">
                                             Trang <strong>${currentPage}</strong> / ${totalPages}
-                                            &nbsp;┬╖&nbsp; ${totalCount} th├┤ng b├ío
+                                            &nbsp;·&nbsp; ${totalCount} thông báo
                                         </span>
                                         <nav>
                                             <ul class="pagination pagination-sm mb-0 gap-1">
@@ -233,40 +233,40 @@
                                     <div class="empty-state-icon mx-auto mb-3">
                                         <span class="material-symbols-outlined" style="font-size: 40px; color: var(--on-surface-variant); font-variation-settings: 'FILL' 1;">mail_outline</span>
                                     </div>
-                                    <h4 class="fw-bold mb-1" style="color: #191c1e;">Kh├┤ng c├│ th├┤ng b├ío n├áo</h4>
+                                    <h4 class="fw-bold mb-1" style="color: #191c1e;">Không có thông báo nào</h4>
                                     <p class="text-secondary small mb-4">
                                         <c:choose>
                                             <c:when test="${not empty keyword or not empty typeFilter}">
-                                                Kh├┤ng t├¼m thß║Ñy th├┤ng b├ío ph├╣ hß╗úp vß╗¢i bß╗Ö lß╗ìc. H├úy thß╗¡ thay ─æß╗òi tß╗½ kh├│a.
+                                                Không tìm thấy thông báo phù hợp với bộ lọc. Hãy thử thay đổi từ khóa.
                                             </c:when>
                                             <c:otherwise>
-                                                Bß║úng tin hiß╗çn ─æang trß╗æng. H├úy quay lß║íi sau ─æß╗â xem cß║¡p nhß║¡t mß╗¢i!
+                                                Bảng tin hiện đang trống. Hãy quay lại sau để xem cập nhật mới!
                                             </c:otherwise>
                                         </c:choose>
                                     </p>
                                     <a href="${pageContext.request.contextPath}/lecturer/dashboard"
                                        class="btn btn-primary-custom rounded-pill px-4 py-2 fw-semibold">
-                                        Vß╗ü trang chß╗º
+                                        Về trang chủ
                                     </a>
                                 </div>
                             </c:otherwise>
                         </c:choose>
                     </div>
 
-                    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-                         RIGHT: Sidebar thß╗æng k├¬ & info
-                    ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+                    <!-- ═══════════════════════════════════════════
+                         RIGHT: Sidebar thống kê & info
+                    ═══════════════════════════════════════════ -->
                     <div class="col-12 col-lg-4">
 
-                        <!-- Thß╗æng k├¬ nhanh -->
+                        <!-- Thống kê nhanh -->
                         <div class="raised-card p-4 mb-4">
-                            <h5 class="fw-bold mb-3" style="color: #191c1e; font-size: 15px;">Tß╗òng quan Bß║úng tin</h5>
+                            <h5 class="fw-bold mb-3" style="color: #191c1e; font-size: 15px;">Tổng quan Bảng tin</h5>
                             <div class="d-flex flex-column gap-2">
                                 <div class="stat-row d-flex justify-content-between align-items-center p-3 rounded-3"
                                      style="background-color: #f7f9fb;">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary); font-variation-settings: 'FILL' 1;">notifications</span>
-                                        <span class="small fw-semibold text-secondary">Tß╗òng th├┤ng b├ío</span>
+                                        <span class="small fw-semibold text-secondary">Tổng thông báo</span>
                                     </div>
                                     <span class="fw-bold" style="color: #191c1e;">${totalCount}</span>
                                 </div>
@@ -275,7 +275,7 @@
                                          style="background: linear-gradient(135deg, rgba(157,67,0,0.06), rgba(249,115,22,0.04)); border: 1px solid rgba(157,67,0,0.12);">
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary); font-variation-settings: 'FILL' 1;">mark_email_unread</span>
-                                            <span class="small fw-semibold" style="color: var(--primary);">Ch╞░a ─æß╗ìc</span>
+                                            <span class="small fw-semibold" style="color: var(--primary);">Chưa đọc</span>
                                         </div>
                                         <span class="fw-bold" style="color: var(--primary);">${unreadCount}</span>
                                     </div>
@@ -283,39 +283,39 @@
                             </div>
                         </div>
 
-                        <!-- Ph├ón loß║íi th├┤ng b├ío -->
+                        <!-- Phân loại thông báo -->
                         <div class="raised-card p-4 mb-4">
-                            <h5 class="fw-bold mb-3" style="color: #191c1e; font-size: 15px;">Ph├ón loß║íi</h5>
+                            <h5 class="fw-bold mb-3" style="color: #191c1e; font-size: 15px;">Phân loại</h5>
                             <div class="d-flex flex-column gap-2">
                                 <a href="${pageContext.request.contextPath}/notifications?typeFilter=urgent"
                                    class="type-filter-btn ${typeFilter == 'urgent' ? 'active-filter' : ''}">
-                                    <span class="notif-badge-type type-urgent me-2">Khß║⌐n cß║Ñp</span>
-                                    <span class="text-secondary small">Th├┤ng b├ío hß╗Åa tß╗æc</span>
+                                    <span class="notif-badge-type type-urgent me-2">Khẩn cấp</span>
+                                    <span class="text-secondary small">Thông báo hỏa tốc</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/notifications?typeFilter=policy"
                                    class="type-filter-btn ${typeFilter == 'policy' ? 'active-filter' : ''}">
-                                    <span class="notif-badge-type type-policy me-2">Nß╗Öi quy</span>
-                                    <span class="text-secondary small">Quy ─æß╗ïnh m╞░ß╗ún trß║ú</span>
+                                    <span class="notif-badge-type type-policy me-2">Nội quy</span>
+                                    <span class="text-secondary small">Quy định mượn trả</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/notifications?typeFilter=event"
                                    class="type-filter-btn ${typeFilter == 'event' ? 'active-filter' : ''}">
-                                    <span class="notif-badge-type type-event me-2">Sß╗▒ kiß╗çn</span>
-                                    <span class="text-secondary small">Hoß║ít ─æß╗Öng, workshop</span>
+                                    <span class="notif-badge-type type-event me-2">Sự kiện</span>
+                                    <span class="text-secondary small">Hoạt động, workshop</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/notifications?typeFilter=general"
                                    class="type-filter-btn ${typeFilter == 'general' ? 'active-filter' : ''}">
                                     <span class="notif-badge-type type-general me-2">Chung</span>
-                                    <span class="text-secondary small">Th├┤ng tin th╞░ß╗¥ng kß╗│</span>
+                                    <span class="text-secondary small">Thông tin thường kỳ</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/notifications"
                                    class="type-filter-btn ${empty typeFilter ? 'active-filter' : ''}">
                                     <span class="material-symbols-outlined me-2" style="font-size: 16px; color: var(--on-surface-variant);">format_list_bulleted</span>
-                                    <span class="text-secondary small">Tß║Ñt cß║ú th├┤ng b├ío</span>
+                                    <span class="text-secondary small">Tất cả thông báo</span>
                                 </a>
                             </div>
                         </div>
 
-                        <!-- L╞░u ├╜ -->
+                        <!-- Lưu ý -->
                         <div class="raised-card p-4"
                              style="background: linear-gradient(135deg, rgba(0,99,152,0.04), rgba(0,99,152,0.02)); border: 1px solid rgba(0,99,152,0.15);">
                             <div class="d-flex align-items-start gap-3">
@@ -324,10 +324,10 @@
                                     <span class="material-symbols-outlined" style="color: var(--tertiary); font-size: 20px; font-variation-settings: 'FILL' 1;">info</span>
                                 </div>
                                 <div>
-                                    <h6 class="fw-bold mb-1" style="color: #191c1e;">Vß╗ü Bß║úng tin</h6>
+                                    <h6 class="fw-bold mb-1" style="color: #191c1e;">Về Bảng tin</h6>
                                     <p class="small text-secondary mb-0" style="line-height: 1.6; font-size: 12.5px;">
-                                        Bß║úng tin cung cß║Ñp th├┤ng b├ío vß╗ü lß╗ïch nghß╗ë lß╗à, thay ─æß╗òi ch├¡nh s├ích, v├á sß╗▒ kiß╗çn th╞░ viß╗çn.
-                                        C├íc cß║únh b├ío c├í nh├ón (qu├í hß║ín, tiß╗ün phß║ít) ─æ╞░ß╗úc gß╗¡i trß╗▒c tiß║┐p qua Email.
+                                        Bảng tin cung cấp thông báo về lịch nghỉ lễ, thay đổi chính sách, và sự kiện thư viện.
+                                        Các cảnh báo cá nhân (quá hạn, tiền phạt) được gửi trực tiếp qua Email.
                                     </p>
                                 </div>
                             </div>
@@ -343,7 +343,7 @@
     </div><!-- /.main-wrapper -->
 
 
-    <!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ DETAIL MODAL ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+    <!-- ════════════════ DETAIL MODAL ════════════════ -->
     <div class="modal fade" id="notifDetailModal" tabindex="-1" aria-labelledby="notifDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
@@ -356,14 +356,14 @@
                         </div>
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-1">
-                                <span id="modalTypeBadge" class="notif-badge-type type-general">Th├┤ng tin</span>
+                                <span id="modalTypeBadge" class="notif-badge-type type-general">Thông tin</span>
                                 <span id="modalPinBadge" class="d-none material-symbols-outlined"
                                       style="font-size: 14px; color: var(--primary); font-variation-settings: 'FILL' 1;">push_pin</span>
                             </div>
                             <h5 class="modal-title fw-bold" id="notifDetailModalLabel"
-                                style="color: #191c1e; font-size: 17px;">Chi tiß║┐t th├┤ng b├ío</h5>
+                                style="color: #191c1e; font-size: 17px;">Chi tiết thông báo</h5>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="─É├│ng"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     </div>
                 </div>
                 <!-- Modal Body -->
@@ -386,7 +386,7 @@
                 <div class="modal-footer border-0 px-4 py-3" style="background-color: #fafafa;">
                     <button type="button" class="btn rounded-3 px-4 fw-semibold"
                             style="background: var(--surface-container-high); color: var(--on-surface-variant);"
-                            data-bs-dismiss="modal">─É├│ng</button>
+                            data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>
@@ -410,12 +410,12 @@
 
         const CTX_PATH = '${pageContext.request.contextPath}';
 
-        // ΓöÇΓöÇ Highlight sidebar active link ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        // ── Highlight sidebar active link ─────────────────────────
         document.querySelectorAll('.sidebar-link').forEach(link => {
             if (link.href.includes('/notifications')) link.classList.add('active');
         });
 
-        // ΓöÇΓöÇ Badge counter (live, in-session) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        // ── Badge counter (live, in-session) ─────────────────────
         let currentUnreadCount = ${unreadCount};
 
         function updateBadgeCount(newCount) {
@@ -431,7 +431,7 @@
             }
         }
 
-        // ΓöÇΓöÇ Mark single notification as read ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        // ── Mark single notification as read ─────────────────────
         async function markOneRead(notifId) {
             const cardEl = document.getElementById('notif-' + notifId);
             if (!cardEl || cardEl.dataset.read === 'true') return;
@@ -453,12 +453,12 @@
             } catch (e) { /* Silent fail */ }
         }
 
-        // ΓöÇΓöÇ Mark ALL as read ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        // ── Mark ALL as read ─────────────────────────────────────
         const markAllBtn = document.getElementById('markAllReadBtn');
         if (markAllBtn) {
             markAllBtn.addEventListener('click', async () => {
                 markAllBtn.disabled = true;
-                markAllBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>─Éang xß╗¡ l├╜...';
+                markAllBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang xử lý...';
                 try {
                     const resp = await fetch(CTX_PATH + '/notification/mark-read', {
                         method: 'POST',
@@ -478,17 +478,17 @@
                     }
                 } catch (e) {
                     markAllBtn.disabled = false;
-                    markAllBtn.innerHTML = '<span class="material-symbols-outlined me-1 align-middle" style="font-size:16px">done_all</span>─É├ính dß║Ñu tß║Ñt cß║ú ─æ├ú ─æß╗ìc';
+                    markAllBtn.innerHTML = '<span class="material-symbols-outlined me-1 align-middle" style="font-size:16px">done_all</span>Đánh dấu tất cả đã đọc';
                 }
             });
         }
 
-        // ΓöÇΓöÇ Open detail modal + auto mark as read ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        // ── Open detail modal + auto mark as read ────────────────
         const typeIconMap = {
-            urgent:  { symbol: 'error',       cls: 'icon-urgent',  badgeCls: 'type-urgent',  label: 'Khß║⌐n cß║Ñp' },
-            policy:  { symbol: 'policy',      cls: 'icon-policy',  badgeCls: 'type-policy',  label: 'Nß╗Öi quy' },
-            event:   { symbol: 'celebration', cls: 'icon-event',   badgeCls: 'type-event',   label: 'Sß╗▒ kiß╗çn' },
-            general: { symbol: 'campaign',    cls: 'icon-general', badgeCls: 'type-general', label: 'Th├┤ng tin' }
+            urgent:  { symbol: 'error',       cls: 'icon-urgent',  badgeCls: 'type-urgent',  label: 'Khẩn cấp' },
+            policy:  { symbol: 'policy',      cls: 'icon-policy',  badgeCls: 'type-policy',  label: 'Nội quy' },
+            event:   { symbol: 'celebration', cls: 'icon-event',   badgeCls: 'type-event',   label: 'Sự kiện' },
+            general: { symbol: 'campaign',    cls: 'icon-general', badgeCls: 'type-general', label: 'Thông tin' }
         };
 
         function openNotifDetail(btn) {
@@ -530,7 +530,7 @@
     </script>
 
     <style>
-        /* ΓöÇΓöÇΓöÇ Notification Cards ΓöÇΓöÇΓöÇ */
+        /* ─── Notification Cards ─── */
         .notif-card {
             background: #ffffff;
             border-radius: 1rem;
@@ -554,7 +554,7 @@
         }
         .notif-card--unread .notif-title { font-weight: 700 !important; }
 
-        /* ΓöÇΓöÇΓöÇ Unread strip ΓöÇΓöÇΓöÇ */
+        /* ─── Unread strip ─── */
         .notif-unread-strip {
             position: absolute;
             left: 0; top: 0; bottom: 0;
@@ -565,7 +565,7 @@
         }
         .strip-visible { background: var(--primary); }
 
-        /* ΓöÇΓöÇΓöÇ Unread dot ΓöÇΓöÇΓöÇ */
+        /* ─── Unread dot ─── */
         .unread-dot {
             display: inline-block;
             width: 8px; height: 8px;
@@ -574,7 +574,7 @@
             flex-shrink: 0;
         }
 
-        /* ΓöÇΓöÇΓöÇ Pulsing dot ΓöÇΓöÇΓöÇ */
+        /* ─── Pulsing dot ─── */
         .pulsing-dot {
             width: 10px; height: 10px;
             border-radius: 50%;
@@ -586,7 +586,7 @@
             50%       { box-shadow: 0 0 0 5px rgba(157,67,0,0); }
         }
 
-        /* ΓöÇΓöÇΓöÇ Type Icon ΓöÇΓöÇΓöÇ */
+        /* ─── Type Icon ─── */
         .notif-card-icon {
             width: 48px; height: 48px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
@@ -597,7 +597,7 @@
         .icon-policy  { background: rgba(157,67,0,0.10);  color: var(--primary); }
         .icon-event   { background: rgba(22,163,74,0.10); color: #16a34a; }
 
-        /* ΓöÇΓöÇΓöÇ Type Badges ΓöÇΓöÇΓöÇ */
+        /* ─── Type Badges ─── */
         .notif-badge-type {
             display: inline-flex; align-items: center;
             padding: 2px 10px; border-radius: 999px;
@@ -608,7 +608,7 @@
         .type-policy  { background: rgba(157,67,0,0.10);  color: var(--primary); }
         .type-event   { background: rgba(22,163,74,0.10); color: #15803d; }
 
-        /* ΓöÇΓöÇΓöÇ Type filter sidebar buttons ΓöÇΓöÇΓöÇ */
+        /* ─── Type filter sidebar buttons ─── */
         .type-filter-btn {
             display: flex; align-items: center;
             padding: 8px 12px; border-radius: 0.5rem;
@@ -618,14 +618,14 @@
         .type-filter-btn:hover { background-color: var(--surface-container-high); }
         .active-filter { background-color: rgba(157,67,0,0.06); }
 
-        /* ΓöÇΓöÇΓöÇ Empty state icon ΓöÇΓöÇΓöÇ */
+        /* ─── Empty state icon ─── */
         .empty-state-icon {
             width: 80px; height: 80px; border-radius: 50%;
             background: #f4f3f2; display: flex;
             align-items: center; justify-content: center;
         }
 
-        /* ΓöÇΓöÇΓöÇ Pagination ΓöÇΓöÇΓöÇ */
+        /* ─── Pagination ─── */
         .page-link {
             border-color: #e5e5e5; color: #737373;
             font-size: 13px; padding: 4px 10px;
@@ -635,10 +635,10 @@
         }
         .page-link:hover { background-color: var(--surface-container-high); color: var(--primary); }
 
-        /* ΓöÇΓöÇΓöÇ Read-more button hover ΓöÇΓöÇΓöÇ */
+        /* ─── Read-more button hover ─── */
         .btn-read-more:hover { color: #7a2e00 !important; text-decoration: underline; }
 
-        /* ΓöÇΓöÇΓöÇ Modal Markdown Rendering ΓöÇΓöÇΓöÇ */
+        /* ─── Modal Markdown Rendering ─── */
         #modalContent { color: #333; }
         #modalContent p { margin-bottom: 1rem; }
         #modalContent ul, #modalContent ol { padding-left: 1.5rem; margin-bottom: 1rem; }

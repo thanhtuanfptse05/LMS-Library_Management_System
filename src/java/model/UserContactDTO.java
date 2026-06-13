@@ -1,12 +1,12 @@
-﻿package model;
+package model;
 
 /**
- * UserContactDTO ΓÇö Data Transfer Object d├╣ng ─æß╗â gß╗¡i Email h├áng loß║ít.
+ * UserContactDTO — Data Transfer Object dùng để gửi Email hàng loạt.
  *
- * <p>Chß╗⌐a th├┤ng tin li├¬n lß║íc tß╗æi thiß╗âu cß║ºn thiß║┐t cho viß╗çc gß╗¡i Email:
- * ─æß╗ïa chß╗ë email v├á t├¬n hiß╗ân thß╗ï cß╗ºa ng╞░ß╗¥i nhß║¡n.</p>
+ * <p>Chứa thông tin liên lạc tối thiểu cần thiết cho việc gửi Email:
+ * địa chỉ email và tên hiển thị của người nhận.</p>
  *
- * <p>Tu├ón thß╗º: ARCH-01 (Java Bean thuß║ºn, kh├┤ng ORM).</p>
+ * <p>Tuân thủ: ARCH-01 (Java Bean thuần, không ORM).</p>
  */
 public class UserContactDTO {
 

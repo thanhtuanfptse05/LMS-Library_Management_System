@@ -1,4 +1,4 @@
-﻿package controllers;
+package controllers;
 
 import dao.NotificationDAO;
 import jakarta.servlet.ServletException;
@@ -11,18 +11,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * NotificationStatusServlet ΓÇö Xß╗¡ l├╜ y├¬u cß║ºu AJAX ─æ├ính dß║Ñu th├┤ng b├ío ─æ├ú ─æß╗ìc.
+ * NotificationStatusServlet — Xử lý yêu cầu AJAX đánh dấu thông báo đã đọc.
  *
  * <p>URL Pattern: /notification/mark-read</p>
- * <p>Quyß╗ün truy cß║¡p: STUDENT, LECTURER (─æ─âng nhß║¡p hß╗úp lß╗ç l├á ─æß╗º).</p>
+ * <p>Quyền truy cập: STUDENT, LECTURER (đăng nhập hợp lệ là đủ).</p>
  *
- * <p>Hß╗ù trß╗ú:</p>
+ * <p>Hỗ trợ:</p>
  * <ul>
- *   <li>POST action=markOne  : ─É├ính dß║Ñu mß╗Öt th├┤ng b├ío ─æ├ú ─æß╗ìc (tham sß╗æ: notificationId)</li>
- *   <li>POST action=markAll  : ─É├ính dß║Ñu tß║Ñt cß║ú th├┤ng b├ío ─æ├ú ─æß╗ìc</li>
+ *   <li>POST action=markOne  : Đánh dấu một thông báo đã đọc (tham số: notificationId)</li>
+ *   <li>POST action=markAll  : Đánh dấu tất cả thông báo đã đọc</li>
  * </ul>
  *
- * <p>Phß║ún hß╗ôi: JSON ─æ╞ín giß║ún { "status": "ok" } hoß║╖c { "status": "error" }</p>
+ * <p>Phản hồi: JSON đơn giản { "status": "ok" } hoặc { "status": "error" }</p>
  */
 @WebServlet(name = "NotificationStatusServlet", urlPatterns = {"/notification/mark-read"})
 public class NotificationStatusServlet extends HttpServlet {
@@ -30,7 +30,7 @@ public class NotificationStatusServlet extends HttpServlet {
     private final NotificationDAO notificationDAO = new NotificationDAO();
 
     /**
-     * POST ΓÇö ─É├ính dß║Ñu th├┤ng b├ío ─æ├ú ─æß╗ìc qua AJAX.
+     * POST — Đánh dấu thông báo đã đọc qua AJAX.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -42,7 +42,7 @@ public class NotificationStatusServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.print("{\"status\":\"error\",\"message\":\"Ch╞░a ─æ─âng nhß║¡p\"}");
+            out.print("{\"status\":\"error\",\"message\":\"Chưa đăng nhập\"}");
             return;
         }
 
@@ -57,23 +57,23 @@ public class NotificationStatusServlet extends HttpServlet {
             String idParam = request.getParameter("notificationId");
             if (idParam == null || idParam.trim().isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"status\":\"error\",\"message\":\"ID kh├┤ng hß╗úp lß╗ç\"}");
+                out.print("{\"status\":\"error\",\"message\":\"ID không hợp lệ\"}");
                 return;
             }
             try {
                 int notificationId = Integer.parseInt(idParam.trim());
                 notificationDAO.markAsRead(userId, notificationId);
-                // Trß║ú vß╗ü sß╗æ l╞░ß╗úng th├┤ng b├ío ch╞░a ─æß╗ìc cß║¡p nhß║¡t mß╗¢i
+                // Trả về số lượng thông báo chưa đọc cập nhật mới
                 int unreadCount = notificationDAO.countUnread(userId);
                 session.setAttribute("unreadNotificationCount", unreadCount);
                 out.print("{\"status\":\"ok\",\"unreadCount\":" + unreadCount + "}");
             } catch (NumberFormatException e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"status\":\"error\",\"message\":\"ID kh├┤ng hß╗úp lß╗ç\"}");
+                out.print("{\"status\":\"error\",\"message\":\"ID không hợp lệ\"}");
             }
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"status\":\"error\",\"message\":\"Action kh├┤ng hß╗úp lß╗ç\"}");
+            out.print("{\"status\":\"error\",\"message\":\"Action không hợp lệ\"}");
         }
     }
 }

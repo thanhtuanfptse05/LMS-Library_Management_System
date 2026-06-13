@@ -1,48 +1,48 @@
-﻿package model;
+package model;
 
 import java.sql.Timestamp;
 
 /**
- * Notification ΓÇö Entity bean ├ính xß║í 1-1 vß╗¢i bß║úng [Notification] trong CSDL.
+ * Notification — Entity bean ánh xạ 1-1 với bảng [Notification] trong CSDL.
  *
  * <p>Schema mapping:</p>
  * <ul>
- *   <li>{@code notificationId} ΓÇö INT IDENTITY(1,1) PRIMARY KEY</li>
- *   <li>{@code title}          ΓÇö NVARCHAR(500) NOT NULL</li>
- *   <li>{@code content}        ΓÇö NVARCHAR(MAX) NULL</li>
- *   <li>{@code type}           ΓÇö NVARCHAR(50) NOT NULL DEFAULT 'general'</li>
- *   <li>{@code isPinned}       ΓÇö BIT NOT NULL DEFAULT 0</li>
- *   <li>{@code createdBy}      ΓÇö INT NOT NULL (FK -> User.userId)</li>
- *   <li>{@code createdAt}      ΓÇö DATETIME NOT NULL DEFAULT GETDATE()</li>
- *   <li>{@code updatedAt}      ΓÇö DATETIME NULL</li>
+ *   <li>{@code notificationId} — INT IDENTITY(1,1) PRIMARY KEY</li>
+ *   <li>{@code title}          — NVARCHAR(500) NOT NULL</li>
+ *   <li>{@code content}        — NVARCHAR(MAX) NULL</li>
+ *   <li>{@code type}           — NVARCHAR(50) NOT NULL DEFAULT 'general'</li>
+ *   <li>{@code isPinned}       — BIT NOT NULL DEFAULT 0</li>
+ *   <li>{@code createdBy}      — INT NOT NULL (FK -> User.userId)</li>
+ *   <li>{@code createdAt}      — DATETIME NOT NULL DEFAULT GETDATE()</li>
+ *   <li>{@code updatedAt}      — DATETIME NULL</li>
  * </ul>
  *
- * <p>Tr╞░ß╗¥ng mß╗ƒ rß╗Öng (kh├┤ng ├ính xß║í trß╗▒c tiß║┐p v├áo DB column):</p>
+ * <p>Trường mở rộng (không ánh xạ trực tiếp vào DB column):</p>
  * <ul>
- *   <li>{@code createdByName} ΓÇö T├¬n ng╞░ß╗¥i tß║ío, JOIN tß╗½ MemberProfile</li>
- *   <li>{@code isRead}        ΓÇö Trß║íng th├íi ─æ├ú ─æß╗ìc cß╗ºa ng╞░ß╗¥i d├╣ng hiß╗çn tß║íi (tß╗½ UserNotificationStatus)</li>
+ *   <li>{@code createdByName} — Tên người tạo, JOIN từ MemberProfile</li>
+ *   <li>{@code isRead}        — Trạng thái đã đọc của người dùng hiện tại (từ UserNotificationStatus)</li>
  * </ul>
  *
- * <p>Tu├ón thß╗º: ARCH-01 (Java Bean thuß║ºn, kh├┤ng ORM annotation).</p>
+ * <p>Tuân thủ: ARCH-01 (Java Bean thuần, không ORM annotation).</p>
  */
 public class Notification {
 
-    // ΓöÇΓöÇ C├íc cß╗Öt trong bß║úng Notification ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    // ── Các cột trong bảng Notification ──────────────────────────
     private int notificationId;
     private String title;
     private String content;
-    /** Loß║íi th├┤ng b├ío: general | urgent | policy | event */
+    /** Loại thông báo: general | urgent | policy | event */
     private String type;
-    /** true = ghim l├¬n ─æß║ºu danh s├ích */
+    /** true = ghim lên đầu danh sách */
     private boolean isPinned;
     private int createdBy;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    // ΓöÇΓöÇ Tr╞░ß╗¥ng mß╗ƒ rß╗Öng (UI helper, kh├┤ng l╞░u trß╗▒c tiß║┐p v├áo DB) ΓöÇΓöÇ
-    /** T├¬n ─æß║ºy ─æß╗º cß╗ºa ng╞░ß╗¥i tß║ío (JOIN tß╗½ MemberProfile) */
+    // ── Trường mở rộng (UI helper, không lưu trực tiếp vào DB) ──
+    /** Tên đầy đủ của người tạo (JOIN từ MemberProfile) */
     private String createdByName;
-    /** Trß║íng th├íi ─æ├ú ─æß╗ìc cß╗ºa ng╞░ß╗¥i d├╣ng ─æang ─æ─âng nhß║¡p (tß╗½ UserNotificationStatus) */
+    /** Trạng thái đã đọc của người dùng đang đăng nhập (từ UserNotificationStatus) */
     private boolean isRead;
 
     public Notification() {

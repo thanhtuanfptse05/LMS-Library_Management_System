@@ -1,6 +1,6 @@
-﻿<%-- Fragment: _header.jsp ΓÇö Fixed top navigation bar --%>
+<%-- Fragment: _header.jsp — Fixed top navigation bar --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ HEADER ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+<!-- ════════════════ HEADER ════════════════ -->
 <header class="fixed-top bg-white shadow-sm" style="height: 64px; border-bottom: 1px solid var(--outline-variant);">
     <div class="container-fluid h-100 d-flex align-items-center justify-content-between px-4">
 
@@ -8,29 +8,29 @@
         <div class="d-flex align-items-center gap-4 text-nowrap">
             <a href="${pageContext.request.contextPath}/"
                class="fs-5 fw-bold text-decoration-none text-primary-custom text-nowrap">
-                Th╞░ viß╗çn ─Éß║íi hß╗ìc LMS
+                Thư viện Đại học LMS
             </a>
             <div class="d-none d-md-block header-search-wrapper">
                 <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">search</span>
                 <input class="header-search-input"
-                       placeholder="T├¼m kiß║┐m s├ích, tß║íp ch├¡, hoß║╖c t├ái liß╗çu..."
+                       placeholder="Tìm kiếm sách, tạp chí, hoặc tài liệu..."
                        type="text"
-                       aria-label="T├¼m kiß║┐m danh mß╗Ñc th╞░ viß╗çn" />
+                       aria-label="Tìm kiếm danh mục thư viện" />
             </div>
         </div>
 
         <!-- Center Nav (desktop only) -->
         <nav class="d-none d-lg-flex align-items-center gap-4 text-nowrap">
             <a class="text-primary-custom fw-semibold text-decoration-none border-bottom border-2 border-primary-custom pb-1"
-               href="${pageContext.request.contextPath}/student/dashboard">Bß║úng ─æiß╗üu khiß╗ân</a>
+               href="${pageContext.request.contextPath}/student/dashboard">Bảng điều khiển</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
-               href="${pageContext.request.contextPath}/book-search.jsp">Danh mß╗Ñc</a>
+               href="${pageContext.request.contextPath}/book-search.jsp">Danh mục</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
-               href="${pageContext.request.contextPath}/services.jsp">Dß╗ïch vß╗Ñ</a>
+               href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
-               href="${pageContext.request.contextPath}/policies.jsp">Ch├¡nh s├ích</a>
+               href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
-               href="${pageContext.request.contextPath}/#contact">Hß╗ù trß╗ú</a>
+               href="${pageContext.request.contextPath}/#contact">Hỗ trợ</a>
         </nav>
 
         <!-- Right: Notifications + User -->
@@ -38,8 +38,8 @@
             <a href="${pageContext.request.contextPath}/notifications"
                     class="btn p-2 rounded-circle border-0 position-relative"
                     style="background: transparent;"
-                    aria-label="Th├┤ng b├ío"
-                    title="Th├┤ng b├ío">
+                    aria-label="Thông báo"
+                    title="Thông báo">
                 <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
                 <c:choose>
                     <c:when test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
@@ -60,20 +60,20 @@
             <button class="btn p-2 rounded-circle border-0"
                     style="background: transparent;"
                     aria-label="Help"
-                    title="Trung t├óm Trß╗ú gi├║p">
+                    title="Trung tâm Trợ giúp">
                 <span class="material-symbols-outlined text-on-surface-variant">help</span>
             </button>
             <!-- User avatar + info from session -->
             <a href="${pageContext.request.contextPath}/student/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset text-nowrap"
-                 style="border-left: 1px solid var(--outline-variant);" title="Xem Hß╗ô s╞í">
+                 style="border-left: 1px solid var(--outline-variant);" title="Xem Hồ sơ">
                 <span class="material-symbols-outlined text-primary-custom"
                       style="font-size: 36px; font-variation-settings: 'FILL' 1;">account_circle</span>
                 <div class="d-none d-sm-block text-start" style="max-width: 160px;">
                     <p class="mb-0 fw-bold lh-sm text-truncate" style="font-size: 14px;" title="<c:out value="${sessionScope.email}"/>">
-                        <c:out value="${sessionScope.email}" default="Sinh vi├¬n"/>
+                        <c:out value="${sessionScope.email}" default="Sinh viên"/>
                     </p>
                     <p class="mb-0 text-uppercase text-on-surface-variant text-truncate" style="font-size: 10px; letter-spacing: 0.1em;">
-                        <c:out value="${sessionScope.role}" default="SINH VI├èN"/>
+                        <c:out value="${sessionScope.role}" default="SINH VIÊN"/>
                     </p>
                 </div>
             </a>
@@ -81,7 +81,7 @@
                 <a href="${pageContext.request.contextPath}/logout"
                    class="btn p-2 rounded-circle border-0 ms-1"
                    style="background: transparent; color: var(--on-surface-variant);"
-                   title="─É─âng xuß║Ñt">
+                   title="Đăng xuất">
                     <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
                 </a>
             </div>

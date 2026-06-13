@@ -1,4 +1,4 @@
-﻿package controllers;
+package controllers;
 
 import dao.NotificationDAO;
 import jakarta.servlet.ServletException;
@@ -12,18 +12,18 @@ import java.util.List;
 import model.Notification;
 
 /**
- * NewsServlet ΓÇö Servlet hiß╗ân thß╗ï Bß║úng tin hß╗ç thß╗æng cho Student v├á Lecturer.
+ * NewsServlet — Servlet hiển thị Bảng tin hệ thống cho Student và Lecturer.
  *
- * <p>URL Pattern: /notifications ΓÇö D├╣ng chung cho cß║ú 2 role. Servlet tß╗▒ kiß╗âm tra
- * role trong Session ─æß╗â forward tß╗¢i ─æ├║ng trang JSP t╞░╞íng ß╗⌐ng.</p>
+ * <p>URL Pattern: /notifications — Dùng chung cho cả 2 role. Servlet tự kiểm tra
+ * role trong Session để forward tới đúng trang JSP tương ứng.</p>
  *
- * <p>Quyß╗ün truy cß║¡p: STUDENT, LECTURER (kiß╗âm tra qua {@link filter.AuthFilter}).</p>
+ * <p>Quyền truy cập: STUDENT, LECTURER (kiểm tra qua {@link filter.AuthFilter}).</p>
  *
- * <p>T├¡nh n─âng:</p>
+ * <p>Tính năng:</p>
  * <ul>
- *   <li>Lß║Ñy danh s├ích th├┤ng b├ío k├¿m trß║íng th├íi ─æ├ú ─æß╗ìc/ch╞░a ─æß╗ìc cß╗ºa ng╞░ß╗¥i d├╣ng.</li>
- *   <li>Hß╗ù trß╗ú ph├ón trang (pageSize=10) v├á lß╗ìc theo tß╗½ kh├│a v├á loß║íi th├┤ng b├ío.</li>
- *   <li>─É╞░a sß╗æ th├┤ng b├ío ch╞░a ─æß╗ìc v├áo session ─æß╗â hiß╗ân thß╗ï badge tr├¬n to├án hß╗ç thß╗æng.</li>
+ *   <li>Lấy danh sách thông báo kèm trạng thái đã đọc/chưa đọc của người dùng.</li>
+ *   <li>Hỗ trợ phân trang (pageSize=10) và lọc theo từ khóa và loại thông báo.</li>
+ *   <li>Đưa số thông báo chưa đọc vào session để hiển thị badge trên toàn hệ thống.</li>
  * </ul>
  */
 @WebServlet(name = "NewsServlet", urlPatterns = {"/notifications"})
@@ -33,7 +33,7 @@ public class NewsServlet extends HttpServlet {
     private final NotificationDAO notificationDAO = new NotificationDAO();
 
     /**
-     * Xß╗¡ l├╜ GET ΓÇö Tß║úi danh s├ích th├┤ng b├ío tß╗½ DB v├á forward sang view ph├╣ hß╗úp.
+     * Xử lý GET — Tải danh sách thông báo từ DB và forward sang view phù hợp.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -41,7 +41,7 @@ public class NewsServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        // Kiß╗âm tra x├íc thß╗▒c
+        // Kiểm tra xác thực
         if (session == null || session.getAttribute("userId") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
@@ -49,15 +49,15 @@ public class NewsServlet extends HttpServlet {
 
         String role = (String) session.getAttribute("role");
 
-        // Chß╗ë Student v├á Lecturer ─æ╞░ß╗úc ph├⌐p xem
+        // Chỉ Student và Lecturer được phép xem
         if (!"STUDENT".equalsIgnoreCase(role) && !"LECTURER".equalsIgnoreCase(role)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Kh├┤ng c├│ quyß╗ün truy cß║¡p trang n├áy.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập trang này.");
             return;
         }
 
         int userId = (int) session.getAttribute("userId");
 
-        // ─Éß╗ìc tham sß╗æ lß╗ìc v├á ph├ón trang
+        // Đọc tham số lọc và phân trang
         String keyword    = request.getParameter("keyword");
         String typeFilter = request.getParameter("typeFilter");
         int page = 1;
@@ -66,12 +66,12 @@ public class NewsServlet extends HttpServlet {
             if (pageParam != null) page = Math.max(1, Integer.parseInt(pageParam.trim()));
         } catch (NumberFormatException ignored) { }
 
-        // Lß║Ñy danh s├ích th├┤ng b├ío k├¿m trß║íng th├íi ─æß╗ìc
+        // Lấy danh sách thông báo kèm trạng thái đọc
         int totalCount = notificationDAO.countFiltered(keyword, typeFilter);
         int totalPages = (int) Math.ceil((double) totalCount / PAGE_SIZE);
         List<Notification> notifications = notificationDAO.getAllForUser(userId, keyword, typeFilter, page, PAGE_SIZE);
 
-        // ─Éß║┐m sß╗æ th├┤ng b├ío ch╞░a ─æß╗ìc ΓåÆ cß║¡p nhß║¡t v├áo session ─æß╗â badge hiß╗ân thß╗ï khß║»p n╞íi
+        // Đếm số thông báo chưa đọc → cập nhật vào session để badge hiển thị khắp nơi
         int unreadCount = notificationDAO.countUnread(userId);
         session.setAttribute("unreadNotificationCount", unreadCount);
 
@@ -83,7 +83,7 @@ public class NewsServlet extends HttpServlet {
         request.setAttribute("totalCount",    totalCount);
         request.setAttribute("unreadCount",   unreadCount);
 
-        // Forward tß╗¢i ─æ├║ng view theo role
+        // Forward tới đúng view theo role
         if ("LECTURER".equalsIgnoreCase(role)) {
             request.getRequestDispatcher("/lecturer/notifications.jsp").forward(request, response);
         } else {

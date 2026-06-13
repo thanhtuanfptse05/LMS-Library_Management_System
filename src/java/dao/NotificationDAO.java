@@ -1,4 +1,4 @@
-﻿package dao;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,29 +12,29 @@ import model.Notification;
 import util.DatabaseConnection;
 
 /**
- * NotificationDAO ΓÇö Data Access Object cho bß║úng [Notification] v├á [UserNotificationStatus].
+ * NotificationDAO — Data Access Object cho bảng [Notification] và [UserNotificationStatus].
  *
- * <p>Tu├ón thß╗º nghi├¬m ngß║╖t:</p>
+ * <p>Tuân thủ nghiêm ngặt:</p>
  * <ul>
- *   <li>SEC-03: 100% c├óu SQL d├╣ng {@code PreparedStatement} vß╗¢i tham sß╗æ {@code ?}.</li>
- *   <li>ENG-01: Mß╗ìi t├ái nguy├¬n JDBC ─æ├│ng an to├án bß║▒ng try-with-resources.</li>
- *   <li>ARCH-01: JDBC thuß║ºn ΓÇö kh├┤ng ORM, kh├┤ng Spring JDBC.</li>
- *   <li>ARCH-02: Ghi AuditLog cho mß╗ìi thao t├íc INSERT/UPDATE/DELETE.</li>
+ *   <li>SEC-03: 100% câu SQL dùng {@code PreparedStatement} với tham số {@code ?}.</li>
+ *   <li>ENG-01: Mọi tài nguyên JDBC đóng an toàn bằng try-with-resources.</li>
+ *   <li>ARCH-01: JDBC thuần — không ORM, không Spring JDBC.</li>
+ *   <li>ARCH-02: Ghi AuditLog cho mọi thao tác INSERT/UPDATE/DELETE.</li>
  * </ul>
  */
 public class NotificationDAO {
 
     private static final Logger LOGGER = Logger.getLogger(NotificationDAO.class.getName());
 
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-    // SELECT ΓÇö Truy vß║Ñn danh s├ích th├┤ng b├ío
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+    // ═══════════════════════════════════════════════════════════
+    // SELECT — Truy vấn danh sách thông báo
+    // ═══════════════════════════════════════════════════════════
 
     /**
-     * Lß║Ñy to├án bß╗Ö danh s├ích th├┤ng b├ío (ghim l├¬n ─æß║ºu, mß╗¢i nhß║Ñt tr╞░ß╗¢c).
-     * D├╣ng ─æß╗â hiß╗ân thß╗ï trang quß║ún l├╜ cho Manager (kh├┤ng cß║ºn read-status).
+     * Lấy toàn bộ danh sách thông báo (ghim lên đầu, mới nhất trước).
+     * Dùng để hiển thị trang quản lý cho Manager (không cần read-status).
      *
-     * @return Danh s├ích Notification, danh s├ích rß╗ùng nß║┐u kh├┤ng c├│ dß╗» liß╗çu
+     * @return Danh sách Notification, danh sách rỗng nếu không có dữ liệu
      */
     public List<Notification> getAll() {
         String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.isPinned, "
@@ -59,13 +59,13 @@ public class NotificationDAO {
     }
 
     /**
-     * Lß║Ñy danh s├ích th├┤ng b├ío c├│ ph├ón trang v├á lß╗ìc tß╗½ kh├│a (d├ánh cho trang Manager).
+     * Lấy danh sách thông báo có phân trang và lọc từ khóa (dành cho trang Manager).
      *
-     * @param keyword   Tß╗½ kh├│a t├¼m kiß║┐m (theo title), null hoß║╖c rß╗ùng = lß║Ñy tß║Ñt cß║ú
-     * @param typeFilter Lß╗ìc theo loß║íi ('general', 'urgent', 'policy', 'event'), null = tß║Ñt cß║ú
-     * @param page      Sß╗æ trang (1-indexed)
-     * @param pageSize  Sß╗æ bß║ún ghi mß╗ùi trang
-     * @return Danh s├ích Notification tr├¬n trang ─æ├│
+     * @param keyword   Từ khóa tìm kiếm (theo title), null hoặc rỗng = lấy tất cả
+     * @param typeFilter Lọc theo loại ('general', 'urgent', 'policy', 'event'), null = tất cả
+     * @param page      Số trang (1-indexed)
+     * @param pageSize  Số bản ghi mỗi trang
+     * @return Danh sách Notification trên trang đó
      */
     public List<Notification> getAllPaged(String keyword, String typeFilter, int page, int pageSize) {
         StringBuilder sql = new StringBuilder(
@@ -109,11 +109,11 @@ public class NotificationDAO {
     }
 
     /**
-     * ─Éß║┐m tß╗òng sß╗æ th├┤ng b├ío khß╗¢p vß╗¢i ─æiß╗üu kiß╗çn lß╗ìc (d├╣ng ─æß╗â t├¡nh sß╗æ trang).
+     * Đếm tổng số thông báo khớp với điều kiện lọc (dùng để tính số trang).
      *
-     * @param keyword    Tß╗½ kh├│a t├¼m kiß║┐m
-     * @param typeFilter Lß╗ìc theo loß║íi
-     * @return Tß╗òng sß╗æ bß║ún ghi
+     * @param keyword    Từ khóa tìm kiếm
+     * @param typeFilter Lọc theo loại
+     * @return Tổng số bản ghi
      */
     public int countFiltered(String keyword, String typeFilter) {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Notification WHERE 1=1 ");
@@ -144,15 +144,15 @@ public class NotificationDAO {
     }
 
     /**
-     * Lß║Ñy danh s├ích th├┤ng b├ío k├¿m trß║íng th├íi ─æ├ú ─æß╗ìc/ch╞░a ─æß╗ìc cho mß╗Öt ng╞░ß╗¥i d├╣ng cß╗Ñ thß╗â.
-     * Ghim l├¬n ─æß║ºu, ch╞░a ─æß╗ìc tr╞░ß╗¢c, mß╗¢i nhß║Ñt tr╞░ß╗¢c.
+     * Lấy danh sách thông báo kèm trạng thái đã đọc/chưa đọc cho một người dùng cụ thể.
+     * Ghim lên đầu, chưa đọc trước, mới nhất trước.
      *
-     * @param userId   ID ng╞░ß╗¥i d├╣ng hiß╗çn ─æang ─æ─âng nhß║¡p
-     * @param keyword  Tß╗½ kh├│a t├¼m kiß║┐m theo title (null = tß║Ñt cß║ú)
-     * @param typeFilter Lß╗ìc theo type (null = tß║Ñt cß║ú)
-     * @param page     Sß╗æ trang (1-indexed)
-     * @param pageSize Sß╗æ bß║ún ghi mß╗ùi trang
-     * @return Danh s├ích Notification ─æ├ú ─æ╞░ß╗úc ─æ├ính dß║Ñu isRead
+     * @param userId   ID người dùng hiện đang đăng nhập
+     * @param keyword  Từ khóa tìm kiếm theo title (null = tất cả)
+     * @param typeFilter Lọc theo type (null = tất cả)
+     * @param page     Số trang (1-indexed)
+     * @param pageSize Số bản ghi mỗi trang
+     * @return Danh sách Notification đã được đánh dấu isRead
      */
     public List<Notification> getAllForUser(int userId, String keyword, String typeFilter, int page, int pageSize) {
         StringBuilder sql = new StringBuilder(
@@ -202,10 +202,10 @@ public class NotificationDAO {
     }
 
     /**
-     * ─Éß║┐m sß╗æ th├┤ng b├ío ch╞░a ─æß╗ìc cß╗ºa mß╗Öt ng╞░ß╗¥i d├╣ng (d├╣ng ─æß╗â hiß╗ân thß╗ï badge).
+     * Đếm số thông báo chưa đọc của một người dùng (dùng để hiển thị badge).
      *
-     * @param userId ID ng╞░ß╗¥i d├╣ng
-     * @return Sß╗æ l╞░ß╗úng th├┤ng b├ío ch╞░a ─æß╗ìc
+     * @param userId ID người dùng
+     * @return Số lượng thông báo chưa đọc
      */
     public int countUnread(int userId) {
         String sql = "SELECT COUNT(*) FROM Notification n "
@@ -228,10 +228,10 @@ public class NotificationDAO {
     }
 
     /**
-     * T├¼m mß╗Öt th├┤ng b├ío theo ID (kh├┤ng cß║ºn trß║íng th├íi ─æß╗ìc).
+     * Tìm một thông báo theo ID (không cần trạng thái đọc).
      *
-     * @param notificationId ID th├┤ng b├ío cß║ºn t├¼m
-     * @return Notification nß║┐u t├¼m thß║Ñy, null nß║┐u kh├┤ng tß╗ôn tß║íi
+     * @param notificationId ID thông báo cần tìm
+     * @return Notification nếu tìm thấy, null nếu không tồn tại
      */
     public Notification findById(int notificationId) {
         String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.isPinned, "
@@ -256,9 +256,9 @@ public class NotificationDAO {
     }
 
     /**
-     * ─Éß║┐m tß╗òng sß╗æ th├┤ng b├ío trong hß╗ç thß╗æng.
+     * Đếm tổng số thông báo trong hệ thống.
      *
-     * @return Tß╗òng sß╗æ bß║ún ghi trong bß║úng Notification
+     * @return Tổng số bản ghi trong bảng Notification
      */
     public int count() {
         String sql = "SELECT COUNT(*) FROM Notification";
@@ -274,16 +274,16 @@ public class NotificationDAO {
         return 0;
     }
 
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-    // INSERT / UPDATE / DELETE ΓÇö Thay ─æß╗òi dß╗» liß╗çu
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+    // ═══════════════════════════════════════════════════════════
+    // INSERT / UPDATE / DELETE — Thay đổi dữ liệu
+    // ═══════════════════════════════════════════════════════════
 
     /**
-     * Th├¬m mß╗Öt th├┤ng b├ío mß╗¢i v├áo hß╗ç thß╗æng.
-     * H├ám trß║ú vß╗ü ID ─æ╞░ß╗úc sinh tß╗▒ ─æß╗Öng sau khi INSERT th├ánh c├┤ng.
+     * Thêm một thông báo mới vào hệ thống.
+     * Hàm trả về ID được sinh tự động sau khi INSERT thành công.
      *
-     * @param notification ─Éß╗æi t╞░ß╗úng Notification cß║ºn l╞░u (notificationId sß║╜ bß╗ï bß╗Å qua)
-     * @return ID tß╗▒ ─æß╗Öng t─âng vß╗½a ─æ╞░ß╗úc tß║ío, -1 nß║┐u thß║Ñt bß║íi
+     * @param notification Đối tượng Notification cần lưu (notificationId sẽ bị bỏ qua)
+     * @return ID tự động tăng vừa được tạo, -1 nếu thất bại
      */
     public int insert(Notification notification) {
         String sql = "INSERT INTO Notification (title, content, type, isPinned, createdBy, createdAt) "
@@ -313,10 +313,10 @@ public class NotificationDAO {
     }
 
     /**
-     * Cß║¡p nhß║¡t nß╗Öi dung th├┤ng b├ío (title, content, type, isPinned).
+     * Cập nhật nội dung thông báo (title, content, type, isPinned).
      *
-     * @param notification ─Éß╗æi t╞░ß╗úng Notification vß╗¢i notificationId ─æ├ú ─æ╞░ß╗úc set
-     * @return true nß║┐u cß║¡p nhß║¡t th├ánh c├┤ng, false nß║┐u thß║Ñt bß║íi
+     * @param notification Đối tượng Notification với notificationId đã được set
+     * @return true nếu cập nhật thành công, false nếu thất bại
      */
     public boolean update(Notification notification) {
         String sql = "UPDATE Notification SET title = ?, content = ?, type = ?, isPinned = ?, "
@@ -339,11 +339,11 @@ public class NotificationDAO {
     }
 
     /**
-     * X├│a th├┤ng b├ío theo ID.
-     * Notification l├á nß╗Öi dung quß║úng b├í, kh├┤ng phß║úi giao dß╗ïch cß╗æt l├╡i ΓÇö hard-delete ─æ╞░ß╗úc chß║Ñp nhß║¡n (DATA-01 ngoß║íi lß╗ç).
+     * Xóa thông báo theo ID.
+     * Notification là nội dung quảng bá, không phải giao dịch cốt lõi — hard-delete được chấp nhận (DATA-01 ngoại lệ).
      *
-     * @param notificationId ID th├┤ng b├ío cß║ºn x├│a
-     * @return true nß║┐u x├│a th├ánh c├┤ng, false nß║┐u thß║Ñt bß║íi
+     * @param notificationId ID thông báo cần xóa
+     * @return true nếu xóa thành công, false nếu thất bại
      */
     public boolean delete(int notificationId) {
         String sql = "DELETE FROM Notification WHERE notificationId = ?";
@@ -357,16 +357,16 @@ public class NotificationDAO {
         return false;
     }
 
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-    // READ STATUS ΓÇö Trß║íng th├íi ─æ├ú ─æß╗ìc (bß║úng UserNotificationStatus)
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+    // ═══════════════════════════════════════════════════════════
+    // READ STATUS — Trạng thái đã đọc (bảng UserNotificationStatus)
+    // ═══════════════════════════════════════════════════════════
 
     /**
-     * ─É├ính dß║Ñu mß╗Öt th├┤ng b├ío l├á ─æ├ú ─æß╗ìc cho ng╞░ß╗¥i d├╣ng cß╗Ñ thß╗â.
-     * Sß╗¡ dß╗Ñng MERGE / INSERT nß║┐u ch╞░a tß╗ôn tß║íi, bß╗Å qua nß║┐u ─æ├ú ─æß╗ìc.
+     * Đánh dấu một thông báo là đã đọc cho người dùng cụ thể.
+     * Sử dụng MERGE / INSERT nếu chưa tồn tại, bỏ qua nếu đã đọc.
      *
-     * @param userId         ID ng╞░ß╗¥i d├╣ng
-     * @param notificationId ID th├┤ng b├ío ─æ├ú ─æß╗ìc
+     * @param userId         ID người dùng
+     * @param notificationId ID thông báo đã đọc
      */
     public void markAsRead(int userId, int notificationId) {
         String sql = "IF NOT EXISTS ("
@@ -387,9 +387,9 @@ public class NotificationDAO {
     }
 
     /**
-     * ─É├ính dß║Ñu Tß║ñT Cß║ó th├┤ng b├ío l├á ─æ├ú ─æß╗ìc cho ng╞░ß╗¥i d├╣ng.
+     * Đánh dấu TẤT CẢ thông báo là đã đọc cho người dùng.
      *
-     * @param userId ID ng╞░ß╗¥i d├╣ng
+     * @param userId ID người dùng
      */
     public void markAllAsRead(int userId) {
         String sql = "INSERT INTO UserNotificationStatus (userId, notificationId, readAt) "
@@ -408,19 +408,19 @@ public class NotificationDAO {
         }
     }
 
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-    // AUDIT LOG ΓÇö Ghi nhß║¡t k├╜ thao t├íc (ARCH-02)
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+    // ═══════════════════════════════════════════════════════════
+    // AUDIT LOG — Ghi nhật ký thao tác (ARCH-02)
+    // ═══════════════════════════════════════════════════════════
 
     /**
-     * Ghi Audit Log v├áo bß║úng AuditLogs (ARCH-02).
+     * Ghi Audit Log vào bảng AuditLogs (ARCH-02).
      *
-     * @param userId     ID ng╞░ß╗¥i thß╗▒c hiß╗çn h├ánh ─æß╗Öng
-     * @param actionType Loß║íi h├ánh ─æß╗Öng (VD: 'CREATE_NOTIFICATION', 'UPDATE_NOTIFICATION')
-     * @param entityName T├¬n bß║úng chß╗ïu t├íc ─æß╗Öng
-     * @param entityId   ID bß║ún ghi chß╗ïu t├íc ─æß╗Öng (c├│ thß╗â null)
-     * @param oldValues  Gi├í trß╗ï c┼⌐ (c├│ thß╗â null)
-     * @param newValues  Gi├í trß╗ï mß╗¢i (c├│ thß╗â null)
+     * @param userId     ID người thực hiện hành động
+     * @param actionType Loại hành động (VD: 'CREATE_NOTIFICATION', 'UPDATE_NOTIFICATION')
+     * @param entityName Tên bảng chịu tác động
+     * @param entityId   ID bản ghi chịu tác động (có thể null)
+     * @param oldValues  Giá trị cũ (có thể null)
+     * @param newValues  Giá trị mới (có thể null)
      */
     public void insertAuditLog(Integer userId, String actionType, String entityName,
                                Integer entityId, String oldValues, String newValues) {
@@ -450,16 +450,16 @@ public class NotificationDAO {
         }
     }
 
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-    // MAPPING ΓÇö ├ünh xß║í ResultSet th├ánh ─æß╗æi t╞░ß╗úng
-    // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+    // ═══════════════════════════════════════════════════════════
+    // MAPPING — Ánh xạ ResultSet thành đối tượng
+    // ═══════════════════════════════════════════════════════════
 
     /**
-     * ├ünh xß║í mß╗Öt d├▓ng ResultSet th├ánh ─æß╗æi t╞░ß╗úng Notification (kh├┤ng bao gß╗ôm isRead).
+     * Ánh xạ một dòng ResultSet thành đối tượng Notification (không bao gồm isRead).
      *
-     * @param rs ResultSet ─æang trß╗Å tß╗¢i d├▓ng dß╗» liß╗çu hß╗úp lß╗ç
-     * @return ─Éß╗æi t╞░ß╗úng Notification ─æ├ú populate ─æß║ºy ─æß╗º
-     * @throws SQLException nß║┐u c├│ lß╗ùi ─æß╗ìc dß╗» liß╗çu
+     * @param rs ResultSet đang trỏ tới dòng dữ liệu hợp lệ
+     * @return Đối tượng Notification đã populate đầy đủ
+     * @throws SQLException nếu có lỗi đọc dữ liệu
      */
     private Notification mapRow(ResultSet rs) throws SQLException {
         Notification n = new Notification();

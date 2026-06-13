@@ -1,4 +1,4 @@
-﻿package controllers;
+package controllers;
 
 import dao.DocumentTempDAO;
 import dao.NotificationDAO;
@@ -21,21 +21,21 @@ import service.EmailService;
 import service.MarkdownUtil;
 
 /**
- * NotificationManagerServlet ΓÇö Servlet quß║ún l├╜ Bß║úng tin hß╗ç thß╗æng cho Manager.
+ * NotificationManagerServlet — Servlet quản lý Bảng tin hệ thống cho Manager.
  *
  * <p>URL Pattern: /manager/notifications</p>
- * <p>Quyß╗ün truy cß║¡p: MANAGER (kiß╗âm tra qua {@link filter.AuthFilter}).</p>
+ * <p>Quyền truy cập: MANAGER (kiểm tra qua {@link filter.AuthFilter}).</p>
  *
- * <p>Hß╗ù trß╗ú c├íc thao t├íc:</p>
+ * <p>Hỗ trợ các thao tác:</p>
  * <ul>
- *   <li>GET              : Hiß╗ân thß╗ï danh s├ích th├┤ng b├ío c├│ ph├ón trang v├á lß╗ìc.</li>
- *   <li>GET action=edit  : Load form chß╗ënh sß╗¡a th├┤ng b├ío theo notificationId.</li>
- *   <li>POST action=create : Tß║ío th├┤ng b├ío mß╗¢i.</li>
- *   <li>POST action=update : Cß║¡p nhß║¡t th├┤ng b├ío ─æ├ú c├│.</li>
- *   <li>POST action=delete : X├│a mß╗Öt th├┤ng b├ío.</li>
+ *   <li>GET              : Hiển thị danh sách thông báo có phân trang và lọc.</li>
+ *   <li>GET action=edit  : Load form chỉnh sửa thông báo theo notificationId.</li>
+ *   <li>POST action=create : Tạo thông báo mới.</li>
+ *   <li>POST action=update : Cập nhật thông báo đã có.</li>
+ *   <li>POST action=delete : Xóa một thông báo.</li>
  * </ul>
  *
- * <p>Ghi AuditLog: Mß╗ìi thao t├íc CREATE/UPDATE/DELETE ─æß╗üu ─æ╞░ß╗úc ghi v├áo AuditLogs (ARCH-02).</p>
+ * <p>Ghi AuditLog: Mọi thao tác CREATE/UPDATE/DELETE đều được ghi vào AuditLogs (ARCH-02).</p>
  */
 @WebServlet(name = "NotificationManagerServlet", urlPatterns = {"/manager/notifications"})
 public class NotificationManagerServlet extends HttpServlet {
@@ -48,7 +48,7 @@ public class NotificationManagerServlet extends HttpServlet {
     private final UserDAO userDAO = new UserDAO();
 
     /**
-     * GET ΓÇö Tß║úi danh s├ích th├┤ng b├ío (c├│ ph├ón trang, lß╗ìc) v├á forward sang trang quß║ún l├╜.
+     * GET — Tải danh sách thông báo (có phân trang, lọc) và forward sang trang quản lý.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -63,7 +63,7 @@ public class NotificationManagerServlet extends HttpServlet {
             return;
         }
 
-        // ─Éß╗ìc tham sß╗æ lß╗ìc v├á ph├ón trang
+        // Đọc tham số lọc và phân trang
         String keyword    = request.getParameter("keyword");
         String typeFilter = request.getParameter("typeFilter");
         int page = 1;
@@ -87,7 +87,7 @@ public class NotificationManagerServlet extends HttpServlet {
     }
 
     /**
-     * POST ΓÇö Xß╗¡ l├╜ tß║ío mß╗¢i, cß║¡p nhß║¡t hoß║╖c x├│a th├┤ng b├ío.
+     * POST — Xử lý tạo mới, cập nhật hoặc xóa thông báo.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -108,42 +108,42 @@ public class NotificationManagerServlet extends HttpServlet {
         }
     }
 
-    // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    // ─────────────────────────────────────────────────────────────
     // HANDLERS
-    // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    // ─────────────────────────────────────────────────────────────
 
     /**
-     * Load form chß╗ënh sß╗¡a th├┤ng b├ío (GET action=edit).
+     * Load form chỉnh sửa thông báo (GET action=edit).
      */
     private void handleEditForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String idParam = request.getParameter("notificationId");
         if (idParam == null || idParam.trim().isEmpty()) {
-            redirectWithError(request, response, "ID kh├┤ng hß╗úp lß╗ç");
+            redirectWithError(request, response, "ID không hợp lệ");
             return;
         }
         try {
             int notificationId = Integer.parseInt(idParam.trim());
             Notification existing = notificationDAO.findById(notificationId);
             if (existing == null) {
-                redirectWithError(request, response, "Kh├┤ng t├¼m thß║Ñy th├┤ng b├ío");
+                redirectWithError(request, response, "Không tìm thấy thông báo");
                 return;
             }
             request.setAttribute("editNotification", existing);
-            // Vß║½n load danh s├ích cho bß║úng b├¬n cß║ính
+            // Vẫn load danh sách cho bảng bên cạnh
             request.setAttribute("notifications", notificationDAO.getAll());
             request.setAttribute("totalCount",    notificationDAO.count());
             request.setAttribute("currentPage",   1);
             request.setAttribute("totalPages",    1);
             request.getRequestDispatcher("/manager/manage-notifications.jsp").forward(request, response);
         } catch (NumberFormatException e) {
-            redirectWithError(request, response, "ID kh├┤ng hß╗úp lß╗ç");
+            redirectWithError(request, response, "ID không hợp lệ");
         }
     }
 
     /**
-     * Xß╗¡ l├╜ tß║ío th├┤ng b├ío mß╗¢i (POST action=create). Ghi AuditLog sau INSERT.
+     * Xử lý tạo thông báo mới (POST action=create). Ghi AuditLog sau INSERT.
      */
     private void handleCreate(HttpServletRequest request, HttpServletResponse response, int managerId)
             throws IOException {
@@ -154,7 +154,7 @@ public class NotificationManagerServlet extends HttpServlet {
         boolean isPinned = "on".equals(request.getParameter("isPinned"));
 
         if (title == null || title.trim().isEmpty()) {
-            redirectWithError(request, response, "Ti├¬u ─æß╗ü kh├┤ng ─æ╞░ß╗úc ─æß╗â trß╗æng");
+            redirectWithError(request, response, "Tiêu đề không được để trống");
             return;
         }
 
@@ -170,19 +170,19 @@ public class NotificationManagerServlet extends HttpServlet {
             notificationDAO.insertAuditLog(managerId, "CREATE_NOTIFICATION", "Notification", newId,
                     null, "title=" + title + "; type=" + type);
 
-            // ΓöÇΓöÇ Gß╗¡i Email Khß║⌐n Cß║Ñp (Async) nß║┐u loß║íi l├á urgent ΓöÇΓöÇ
+            // ── Gửi Email Khẩn Cấp (Async) nếu loại là urgent ──
             if ("urgent".equals(type)) {
                 sendUrgentEmailAsync(title, content);
             }
 
-            redirectWithSuccess(request, response, "─É├ú ─æ─âng th├┤ng b├ío th├ánh c├┤ng");
+            redirectWithSuccess(request, response, "Đã đăng thông báo thành công");
         } else {
-            redirectWithError(request, response, "C├│ lß╗ùi xß║úy ra khi l╞░u th├┤ng b├ío");
+            redirectWithError(request, response, "Có lỗi xảy ra khi lưu thông báo");
         }
     }
 
     /**
-     * Xß╗¡ l├╜ cß║¡p nhß║¡t th├┤ng b├ío ─æ├ú c├│ (POST action=update). Ghi AuditLog sau UPDATE.
+     * Xử lý cập nhật thông báo đã có (POST action=update). Ghi AuditLog sau UPDATE.
      */
     private void handleUpdate(HttpServletRequest request, HttpServletResponse response, int managerId)
             throws IOException {
@@ -194,7 +194,7 @@ public class NotificationManagerServlet extends HttpServlet {
         boolean isPinned = "on".equals(request.getParameter("isPinned"));
 
         if (idParam == null || idParam.trim().isEmpty() || title == null || title.trim().isEmpty()) {
-            redirectWithError(request, response, "Dß╗» liß╗çu kh├┤ng hß╗úp lß╗ç");
+            redirectWithError(request, response, "Dữ liệu không hợp lệ");
             return;
         }
 
@@ -215,29 +215,30 @@ public class NotificationManagerServlet extends HttpServlet {
                 String newVal = "title=" + title + "; type=" + type + "; isPinned=" + isPinned;
                 notificationDAO.insertAuditLog(managerId, "UPDATE_NOTIFICATION", "Notification", notificationId, oldVal, newVal);
 
-                // ΓöÇΓöÇ Gß╗¡i Email Khß║⌐n Cß║Ñp (Async) nß║┐u loß║íi l├á urgent sau khi cß║¡p nhß║¡t ΓöÇΓöÇ
-                if ("urgent".equals(type)) {
+                // ── Gửi Email Khẩn Cấp (Async) nếu loại là urgent sau khi cập nhật ──
+                // Chỉ gửi email nếu từ loại khác chuyển sang urgent
+                if ("urgent".equals(type) && (old == null || !"urgent".equals(old.getType()))) {
                     sendUrgentEmailAsync(title, content);
                 }
 
-                redirectWithSuccess(request, response, "─É├ú cß║¡p nhß║¡t th├┤ng b├ío th├ánh c├┤ng");
+                redirectWithSuccess(request, response, "Đã cập nhật thông báo thành công");
             } else {
-                redirectWithError(request, response, "Cß║¡p nhß║¡t thß║Ñt bß║íi");
+                redirectWithError(request, response, "Cập nhật thất bại");
             }
         } catch (NumberFormatException e) {
-            redirectWithError(request, response, "ID kh├┤ng hß╗úp lß╗ç");
+            redirectWithError(request, response, "ID không hợp lệ");
         }
     }
 
     /**
-     * Xß╗¡ l├╜ x├│a th├┤ng b├ío (POST action=delete). Ghi AuditLog sau DELETE.
+     * Xử lý xóa thông báo (POST action=delete). Ghi AuditLog sau DELETE.
      */
     private void handleDelete(HttpServletRequest request, HttpServletResponse response, int managerId)
             throws IOException {
 
         String idParam = request.getParameter("notificationId");
         if (idParam == null || idParam.trim().isEmpty()) {
-            redirectWithError(request, response, "ID kh├┤ng hß╗úp lß╗ç");
+            redirectWithError(request, response, "ID không hợp lệ");
             return;
         }
 
@@ -247,50 +248,50 @@ public class NotificationManagerServlet extends HttpServlet {
             if (deleted) {
                 notificationDAO.insertAuditLog(managerId, "DELETE_NOTIFICATION", "Notification", notificationId,
                         "id=" + notificationId, null);
-                redirectWithSuccess(request, response, "─É├ú x├│a th├┤ng b├ío th├ánh c├┤ng");
+                redirectWithSuccess(request, response, "Đã xóa thông báo thành công");
             } else {
-                redirectWithError(request, response, "Kh├┤ng t├¼m thß║Ñy th├┤ng b├ío cß║ºn x├│a");
+                redirectWithError(request, response, "Không tìm thấy thông báo cần xóa");
             }
         } catch (NumberFormatException e) {
-            redirectWithError(request, response, "ID kh├┤ng hß╗úp lß╗ç");
+            redirectWithError(request, response, "ID không hợp lệ");
         }
     }
 
-    // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    // ─────────────────────────────────────────────────────────────
     // URGENT EMAIL HELPER
-    // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    // ─────────────────────────────────────────────────────────────
 
     /**
-     * Gß╗¡i Email Th├┤ng b├ío Khß║⌐n cß║Ñp bß║Ñt ─æß╗ông bß╗Ö tß╗¢i to├án bß╗Ö STUDENT v├á LECTURER ─æang active.
-     * Sß╗¡ dß╗Ñng mß║½u email c├│ t├¬n ─æß╗ïnh danh 'URGENT_NOTIFICATION' tß╗½ bß║úng DocumentTemp.
-     * Nß╗Öi dung Markdown ─æ╞░ß╗úc chuyß╗ân ─æß╗òi sang HTML tr╞░ß╗¢c khi gß╗¡i.
+     * Gửi Email Thông báo Khẩn cấp bất đồng bộ tới toàn bộ STUDENT và LECTURER đang active.
+     * Sử dụng mẫu email có tên định danh 'URGENT_NOTIFICATION' từ bảng DocumentTemp.
+     * Nội dung Markdown được chuyển đổi sang HTML trước khi gửi.
      *
-     * @param notifTitle   Ti├¬u ─æß╗ü th├┤ng b├ío (replace v├áo {{notificationTitle}})
-     * @param notifContent Nß╗Öi dung th├┤ng b├ío dß║íng Markdown (replace v├áo {{notificationContent}})
+     * @param notifTitle   Tiêu đề thông báo (replace vào {{notificationTitle}})
+     * @param notifContent Nội dung thông báo dạng Markdown (replace vào {{notificationContent}})
      */
     private void sendUrgentEmailAsync(String notifTitle, String notifContent) {
         DocumentTemp template = documentTempDAO.findByTempName("URGENT_NOTIFICATION");
         if (template == null) {
-            LOGGER.warning("[URGENT EMAIL] Kh├┤ng t├¼m thß║Ñy mß║½u email 'URGENT_NOTIFICATION' trong DocumentTemp. Bß╗Å qua gß╗¡i email.");
+            LOGGER.warning("[URGENT EMAIL] Không tìm thấy mẫu email 'URGENT_NOTIFICATION' trong DocumentTemp. Bỏ qua gửi email.");
             return;
         }
 
         List<UserContactDTO> contacts = userDAO.getActiveContactsByRoles("STUDENT", "LECTURER");
         if (contacts.isEmpty()) {
-            LOGGER.info("[URGENT EMAIL] Kh├┤ng c├│ STUDENT hoß║╖c LECTURER n├áo ─æang active ─æß╗â gß╗¡i.");
+            LOGGER.info("[URGENT EMAIL] Không có STUDENT hoặc LECTURER nào đang active để gửi.");
             return;
         }
 
-        // Chuyß╗ân Markdown sang HTML mß╗Öt lß║ºn (d├╣ng chung cho tß║Ñt cß║ú ng╞░ß╗¥i nhß║¡n)
+        // Chuyển Markdown sang HTML một lần (dùng chung cho tất cả người nhận)
         String contentHtml = MarkdownUtil.toHtml(notifContent != null ? notifContent : "");
 
         LOGGER.log(Level.INFO,
-                "[URGENT EMAIL] Bß║»t ─æß║ºu gß╗¡i {0} email khß║⌐n cß║Ñp cho STUDENT/LECTURER.",
+                "[URGENT EMAIL] Bắt đầu gửi {0} email khẩn cấp cho STUDENT/LECTURER.",
                 contacts.size());
 
         for (UserContactDTO contact : contacts) {
             String displayName = (contact.getFullName() != null && !contact.getFullName().isBlank())
-                    ? contact.getFullName() : "Bß║ín";
+                    ? contact.getFullName() : "Bạn";
 
             String finalSubject = template.getSubject()
                     .replace("{{notificationTitle}}", notifTitle);
@@ -304,7 +305,7 @@ public class NotificationManagerServlet extends HttpServlet {
         }
     }
 
-    // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    // ─────────────────────────────────────────────────────────────
     // HELPERS
 
     private void redirectWithError(HttpServletRequest request, HttpServletResponse response, String msg) throws IOException {
@@ -315,15 +316,15 @@ public class NotificationManagerServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/manager/notifications?success=" + java.net.URLEncoder.encode(msg, "UTF-8"));
     }
 
-    // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    // ─────────────────────────────────────────────────────────────
 
-    /** Kiß╗âm tra type hß╗úp lß╗ç */
+    /** Kiểm tra type hợp lệ */
     private boolean isValidType(String type) {
         return type != null && (type.equals("general") || type.equals("urgent")
                 || type.equals("policy") || type.equals("event"));
     }
 
-    /** Kiß╗âm tra x├íc thß╗▒c v├á ph├ón quyß╗ün Manager. */
+    /** Kiểm tra xác thực và phân quyền Manager. */
     private boolean isAuthorizedManager(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         HttpSession session = request.getSession(false);
@@ -333,7 +334,7 @@ public class NotificationManagerServlet extends HttpServlet {
         }
         String role = (String) session.getAttribute("role");
         if (!"MANAGER".equalsIgnoreCase(role)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Kh├┤ng c├│ quyß╗ün truy cß║¡p.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập.");
             return false;
         }
         return true;
