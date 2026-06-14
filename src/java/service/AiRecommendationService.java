@@ -64,7 +64,7 @@ public class AiRecommendationService {
             List<Integer> aiRecommendedIds = parseResponse(jsonResponse);
             return filterHallucination(aiRecommendedIds, candidatePool);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "[AI-SVC] AI error occurred (network/timeout/invalid JSON), triggering fallback.", e);
+            LOGGER.log(Level.WARNING, "[AI-SVC] AI error occurred (network/timeout/invalid JSON), triggering fallback: {0}", e.getMessage());
             return null;
         }
     }

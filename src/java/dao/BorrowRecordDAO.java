@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,6 +22,34 @@ import util.DatabaseConnection;
 public class BorrowRecordDAO {
 
     private static final Logger LOGGER = Logger.getLogger(BorrowRecordDAO.class.getName());
+
+    public int insert(Connection conn, int userId, int bookCopyId, int bookId,
+                      int createdBy, Timestamp endDate) throws SQLException {
+        String sql = "INSERT INTO [BorrowRecord] "
+                   + "    (userId, bookCopyId, bookId, startDate, endDate, "
+                   + "     [status], extensionCount, createdBy) "
+                   + "VALUES (?, ?, ?, GETDATE(), ?, 'borrowed', 0, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql,
+                PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, bookCopyId);
+            ps.setInt(3, bookId);
+            ps.setTimestamp(4, endDate);
+            ps.setInt(5, createdBy);
+            ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error inserting BorrowRecord", e);
+            throw e;
+        }
+        return -1;
+    }
 
     // =========================================================================
     // F8 BOOK DISCOVERY / AI RECOMMENDATION METHODS (từ nhánh dev)

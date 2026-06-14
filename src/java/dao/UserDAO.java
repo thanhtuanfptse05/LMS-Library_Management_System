@@ -923,6 +923,21 @@ public class UserDAO {
      * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
      *                      cho phép Service tầng trên thực hiện rollback
      */
+    public void updateStatusToLocked(Connection conn, int userId) throws SQLException {
+        String sql = "UPDATE [User] "
+                   + "SET    [status] = 'locked' "
+                   + "WHERE  userId  = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật [User].status thành 'locked' cho userId=" + userId, e);
+            throw e;
+        }
+    }
+
     // EARS[Condition-driven]: WHERE COUNT UserLockReason == 0 after payment,
     // THE LMS System SHALL UPDATE [User].status = 'active' [FR-F6-08, BR-25]
     public void updateStatusToActive(Connection conn, int userId) throws SQLException {
