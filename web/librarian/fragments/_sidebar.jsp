@@ -17,13 +17,13 @@
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/dashboard">
             <span class="material-symbols-outlined">dashboard</span><span>Bảng điều khiển</span>
         </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">published_with_changes</span><span>Mượn / Trả sách</span>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-dashboard">
+            <span class="material-symbols-outlined">room_service</span><span>Quầy lưu thông</span>
         </a>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">bookmark_add</span><span>Đặt trước</span>
         </a>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/cash-payment">
             <span class="material-symbols-outlined">payments</span><span>Thu tiền phạt</span>
         </a>
         <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Catalog</p>

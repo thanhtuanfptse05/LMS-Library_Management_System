@@ -904,4 +904,39 @@ public class UserDAO {
             }
         }
     }
+
+    // =========================================================================
+    // F6 DESK CIRCULATION METHODS (từ nhánh Thai)
+    // =========================================================================
+
+    /**
+     * Cập nhật trạng thái tài khoản thành 'active' sau khi người dùng thanh toán
+     * hết nợ phạt.
+     *
+     * <p>Được gọi bởi {@code DeskCirculationService} trong luồng thu tiền phạt
+     * (FR-F6-08 — Node 8.x): Khi không còn bản ghi nào trong {@code UserLockReason}
+     * có reason='unpaid', tài khoản sẽ được mở khóa tự động.</p>
+     *
+     * @param conn   {@code Connection} được quản lý bởi tầng Service
+     *               (đã {@code setAutoCommit(false)})
+     * @param userId ID người dùng cần cập nhật trạng thái
+     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
+     *                      cho phép Service tầng trên thực hiện rollback
+     */
+    // EARS[Condition-driven]: WHERE COUNT UserLockReason == 0 after payment,
+    // THE LMS System SHALL UPDATE [User].status = 'active' [FR-F6-08, BR-25]
+    public void updateStatusToActive(Connection conn, int userId) throws SQLException {
+        String sql = "UPDATE [User] "
+                   + "SET    [status] = 'active' "
+                   + "WHERE  userId  = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật [User].status thành 'active' cho userId=" + userId, e);
+            throw e;
+        }
+    }
 }
