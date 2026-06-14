@@ -65,9 +65,6 @@ public class AuthFilter implements Filter {
                     session = null;
                     
                     String errorParam = "locked";
-                    if (user != null && "unpaid".equals(user.getLockReason())) {
-                        errorParam = "unpaid";
-                    }
                     httpResponse.sendRedirect(contextPath + "/login?error=" + errorParam);
                     return;
                 }

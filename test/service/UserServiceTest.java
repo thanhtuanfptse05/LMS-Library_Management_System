@@ -180,7 +180,7 @@ public class UserServiceTest {
      */
     @Test
     public void testToggleUserStatusLock() throws Exception {
-        mockUserDAO.dbUser = new User(10, "test@lms.com", "hash", "active", "STUDENT", null, 0, null);
+        mockUserDAO.dbUser = new User(10, "test@lms.com", "hash", "active", "STUDENT", 0, null);
 
         userService.toggleUserStatus(10, "locked", "unpaid", 99);
 
@@ -196,7 +196,7 @@ public class UserServiceTest {
      */
     @Test
     public void testToggleUserStatusUnlock() throws Exception {
-        mockUserDAO.dbUser = new User(10, "test@lms.com", "hash", "locked", "STUDENT", "adminban", 0, null);
+        mockUserDAO.dbUser = new User(10, "test@lms.com", "hash", "locked", "STUDENT", 0, null);
 
         userService.toggleUserStatus(10, "active", null, 99);
 
@@ -279,7 +279,7 @@ public class UserServiceTest {
      */
     @Test
     public void testToggleUserStatusAdminByAnotherAdminFailure() {
-        mockUserDAO.dbUser = new User(10, "admin1@uni.edu.vn", "hash", "active", "ADMIN", null, 0, null);
+        mockUserDAO.dbUser = new User(10, "admin1@uni.edu.vn", "hash", "active", "ADMIN", 0, null);
 
         try {
             userService.toggleUserStatus(10, "locked", "adminban", 20); // actorId = 20 (khác 10)
@@ -295,7 +295,7 @@ public class UserServiceTest {
      */
     @Test
     public void testToggleUserStatusAdminBySelfSuccess() throws Exception {
-        mockUserDAO.dbUser = new User(10, "admin1@uni.edu.vn", "hash", "active", "ADMIN", null, 0, null);
+        mockUserDAO.dbUser = new User(10, "admin1@uni.edu.vn", "hash", "active", "ADMIN", 0, null);
 
         userService.toggleUserStatus(10, "locked", "adminban", 10); // actorId = 10 (chính mình)
         assertTrue("Trạng thái phải được cập nhật ở DB", mockUserDAO.updateStatusCalled);
@@ -453,7 +453,6 @@ public class UserServiceTest {
             this.newLockReason = lockReason;
             if (dbUser != null && dbUser.getUserId() == userId) {
                 dbUser.setStatus(status);
-                dbUser.setLockReason(lockReason);
             }
             return true;
         }

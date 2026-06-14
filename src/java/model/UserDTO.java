@@ -15,7 +15,6 @@ public class UserDTO {
     private String passwordHash;
     private String status;
     private String role;
-    private String lockReason;
     private int failedLoginAttempts;
     private Timestamp lockedUntil;
     
@@ -78,14 +77,6 @@ public class UserDTO {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public String getLockReason() {
-        return lockReason;
-    }
-
-    public void setLockReason(String lockReason) {
-        this.lockReason = lockReason;
     }
 
     public int getFailedLoginAttempts() {

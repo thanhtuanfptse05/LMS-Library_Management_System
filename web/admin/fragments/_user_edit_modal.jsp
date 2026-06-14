@@ -141,7 +141,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const code = button.getAttribute("data-code");
         const role = button.getAttribute("data-role");
         const status = button.getAttribute("data-status");
-        const lockReason = button.getAttribute("data-lockreason");
         const major = button.getAttribute("data-major");
         const year = button.getAttribute("data-year");
         const dept = button.getAttribute("data-dept");
@@ -158,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (status === "locked") {
             lockReasonContainer.classList.remove("d-none");
-            document.getElementById("editLockReason").value = lockReason || "adminban";
+            document.getElementById("editLockReason").value = "adminban";
         } else {
             lockReasonContainer.classList.add("d-none");
         }

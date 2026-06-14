@@ -44,7 +44,6 @@ public class UserDAO {
     // THE LMS System SHALL Query User Data dựa trên Email [Node 5.6, 5.7]
     public User findByEmail(String email) {
         String sql = "SELECT userId, email, passwordHash, [status], [role], "
-                + "(SELECT TOP 1 reason FROM UserLockReason WHERE userId = [User].userId ORDER BY createdAt DESC) AS lockReason, "
                 + "failedLoginAttempts, lockedUntil "
                 + "FROM [User] WHERE email = ?";
 
@@ -70,7 +69,6 @@ public class UserDAO {
      */
     public User findByUserId(int userId) {
         String sql = "SELECT userId, email, passwordHash, [status], [role], "
-                + "(SELECT TOP 1 reason FROM UserLockReason WHERE userId = [User].userId ORDER BY createdAt DESC) AS lockReason, "
                 + "failedLoginAttempts, lockedUntil "
                 + "FROM [User] WHERE userId = ?";
 
@@ -283,7 +281,6 @@ public class UserDAO {
         user.setPasswordHash(rs.getString("passwordHash"));
         user.setStatus(rs.getString("status"));
         user.setRole(rs.getString("role"));
-        user.setLockReason(rs.getString("lockReason"));
         user.setFailedLoginAttempts(rs.getInt("failedLoginAttempts"));
         user.setLockedUntil(rs.getTimestamp("lockedUntil"));
         return user;
@@ -301,7 +298,6 @@ public class UserDAO {
         List<UserDTO> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT u.userId, u.email, u.status, u.role, u.failedLoginAttempts, u.lockedUntil, "
-              + "(SELECT TOP 1 reason FROM UserLockReason WHERE userId = u.userId ORDER BY createdAt DESC) AS lockReason, "
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
               + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
@@ -554,15 +550,7 @@ public class UserDAO {
                 }
             }
 
-            // 4. Nếu tạo user với trạng thái locked, ghi lý do vào UserLockReason
-            if ("locked".equalsIgnoreCase(user.getStatus()) && user.getLockReason() != null) {
-                String sqlLockReason = "INSERT INTO UserLockReason (userId, reason) VALUES (?, ?)";
-                try (PreparedStatement psLock = conn.prepareStatement(sqlLockReason)) {
-                    psLock.setInt(1, userId);
-                    psLock.setString(2, user.getLockReason());
-                    psLock.executeUpdate();
-                }
-            }
+            // LockReason is handled by toggleUserStatus separately if needed
 
             conn.commit();
             return true;
@@ -607,15 +595,7 @@ public class UserDAO {
                 psUser.executeUpdate();
             }
 
-            // 1b. Nếu đang khóa và có lý do, ghi vào UserLockReason
-            if ("locked".equalsIgnoreCase(user.getStatus()) && user.getLockReason() != null && !user.getLockReason().trim().isEmpty()) {
-                String sqlLockReason = "INSERT INTO UserLockReason (userId, reason) VALUES (?, ?)";
-                try (PreparedStatement psLock = conn.prepareStatement(sqlLockReason)) {
-                    psLock.setInt(1, user.getUserId());
-                    psLock.setString(2, user.getLockReason());
-                    psLock.executeUpdate();
-                }
-            }
+            // LockReason is handled by toggleUserStatus separately if needed
 
             // 2. UPSERT MemberProfile (BR-15)
             boolean profileExists = false;
@@ -763,7 +743,6 @@ public class UserDAO {
      */
     public UserDTO findUserDTOById(int userId) {
         String sql = "SELECT u.userId, u.email, u.status, u.role, u.failedLoginAttempts, u.lockedUntil, "
-              + "(SELECT TOP 1 reason FROM UserLockReason WHERE userId = u.userId ORDER BY createdAt DESC) AS lockReason, "
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
               + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
@@ -799,7 +778,6 @@ public class UserDAO {
         dto.setEmail(rs.getString("email"));
         dto.setStatus(rs.getString("status"));
         dto.setRole(rs.getString("role"));
-        dto.setLockReason(rs.getString("lockReason"));
         dto.setFailedLoginAttempts(rs.getInt("failedLoginAttempts"));
         dto.setLockedUntil(rs.getTimestamp("lockedUntil"));
 

@@ -27,7 +27,6 @@ public class User {
     private String passwordHash;
     private String status;
     private String role;
-    private String lockReason;
     private int failedLoginAttempts;
     private Timestamp lockedUntil;
 
@@ -45,19 +44,15 @@ public class User {
      * @param passwordHash        Mật khẩu đã mã hóa BCrypt
      * @param status              Trạng thái tài khoản ('active' hoặc 'locked')
      * @param role                Vai trò phân quyền
-     * @param lockReason          Lý do khóa (null nếu không bị khóa)
-     * @param failedLoginAttempts Số lần đăng nhập sai liên tiếp
-     * @param lockedUntil         Thời điểm hết hạn khóa (null nếu không bị khóa)
      */
     public User(int userId, String email, String passwordHash, String status,
-                String role, String lockReason, int failedLoginAttempts,
+                String role, int failedLoginAttempts,
                 Timestamp lockedUntil) {
         this.userId = userId;
         this.email = email;
         this.passwordHash = passwordHash;
         this.status = status;
         this.role = role;
-        this.lockReason = lockReason;
         this.failedLoginAttempts = failedLoginAttempts;
         this.lockedUntil = lockedUntil;
     }
@@ -104,14 +99,6 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public String getLockReason() {
-        return lockReason;
-    }
-
-    public void setLockReason(String lockReason) {
-        this.lockReason = lockReason;
     }
 
     public int getFailedLoginAttempts() {

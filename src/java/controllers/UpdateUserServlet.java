@@ -80,7 +80,6 @@ public class UpdateUserServlet extends HttpServlet {
                 dto.setMajor(major != null ? major.trim() : null);
                 dto.setDepartment(department != null ? department.trim() : null);
                 dto.setStatus(status != null ? status.trim() : "active");
-                dto.setLockReason(lockReason != null ? lockReason.trim() : null);
 
                 if (enrollmentYearStr != null && !enrollmentYearStr.trim().isEmpty()) {
                     dto.setEnrollmentYear(Integer.valueOf(enrollmentYearStr.trim()));

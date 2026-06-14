@@ -67,9 +67,6 @@ public class GoogleLoginServlet extends HttpServlet {
                     }
                 } else {
                     String errorMsg = "Tài khoản của bạn đã bị khóa bởi quản trị viên.";
-                    if ("unpaid".equals(user.getLockReason())) {
-                        errorMsg = "Tài khoản của bạn đã bị khóa do nợ tiền phạt chưa thanh toán.";
-                    }
                     request.setAttribute("errorMessage", errorMsg);
                     request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
                     return;

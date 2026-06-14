@@ -101,7 +101,6 @@ public class AuthServiceTest {
     public void testIsAccountLockedAdmin() {
         testUser.setStatus("locked");
         testUser.setLockedUntil(null);
-        testUser.setLockReason("adminban");
 
         boolean result = authService.isAccountLocked(testUser);
         assertTrue("Tài khoản bị khóa bởi admin (lockedUntil = null) phải trả về true", result);

@@ -71,7 +71,6 @@ public class UserService {
         user.setPasswordHash(passwordHash);
         user.setStatus(dto.getStatus() != null ? dto.getStatus() : "active");
         user.setRole(dto.getRole().toUpperCase());
-        user.setLockReason(dto.getLockReason());
 
         MemberProfile profile = new MemberProfile();
         profile.setFullName(dto.getFullName().trim());
@@ -119,12 +118,7 @@ public class UserService {
         user.setStatus(dto.getStatus() != null ? dto.getStatus() : "active");
         user.setRole(oldDto.getRole()); // Không cho phép đổi vai trò hệ thống từ form chỉnh sửa cơ bản
         
-        // Nếu thay đổi trạng thái mở khóa
-        if ("active".equals(dto.getStatus())) {
-            user.setLockReason(null);
-        } else {
-            user.setLockReason(dto.getLockReason());
-        }
+        // Lock reason is handled separately if needed
 
         MemberProfile profile = new MemberProfile();
         profile.setFullName(dto.getFullName().trim());
@@ -147,10 +141,10 @@ public class UserService {
         }
 
         // Ghi Audit Log (BR-14)
-        String oldValues = String.format("{\"fullName\":\"%s\",\"phoneNumber\":\"%s\",\"status\":\"%s\",\"lockReason\":\"%s\"}", 
-                oldDto.getFullName(), oldDto.getPhoneNumber(), oldDto.getStatus(), oldDto.getLockReason());
-        String newValues = String.format("{\"fullName\":\"%s\",\"phoneNumber\":\"%s\",\"status\":\"%s\",\"lockReason\":\"%s\"}", 
-                dto.getFullName(), dto.getPhoneNumber(), dto.getStatus(), user.getLockReason());
+        String oldValues = String.format("{\"fullName\":\"%s\",\"phoneNumber\":\"%s\",\"status\":\"%s\"}", 
+                oldDto.getFullName(), oldDto.getPhoneNumber(), oldDto.getStatus());
+        String newValues = String.format("{\"fullName\":\"%s\",\"phoneNumber\":\"%s\",\"status\":\"%s\"}", 
+                dto.getFullName(), dto.getPhoneNumber(), dto.getStatus());
         userDAO.insertAuditLog(updaterId, "UPDATE_USER", "User", dto.getUserId(), oldValues, newValues);
     }
 
@@ -180,7 +174,7 @@ public class UserService {
 
         // Ghi Audit Log (BR-14)
         String actionType = "active".equals(status) ? "UNLOCK_USER" : "LOCK_USER";
-        String oldValues = "{\"status\":\"" + user.getStatus() + "\",\"lockReason\":\"" + user.getLockReason() + "\"}";
+        String oldValues = "{\"status\":\"" + user.getStatus() + "\"}";
         String newValues = "{\"status\":\"" + status + "\",\"lockReason\":\"" + lockReason + "\"}";
         userDAO.insertAuditLog(actorId, actionType, "User", userId, oldValues, newValues);
     }

@@ -169,17 +169,12 @@
                                                         </c:when>
                                                         <c:otherwise>
                                                             <div class="d-flex flex-column align-items-start">
-                                                                <span class="d-flex align-items-center gap-1 fw-semibold" style="color: var(--error); font-size: 13px;" title="Lý do: <c:out value="${u.lockReason}" />">
+                                                                <span class="d-flex align-items-center gap-1 fw-semibold" style="color: var(--error); font-size: 13px;" title="Tài khoản bị khóa">
                                                                     <span class="rounded-circle d-inline-block animate-pulse" style="width: 8px; height: 8px; background: var(--error);"></span>
                                                                     Đã khóa
                                                                 </span>
                                                                 <span class="text-danger mt-1 fw-medium" style="font-size: 11px; padding-left: 12px;">
-                                                                    <c:choose>
-                                                                        <c:when test="${u.lockReason eq 'adminban'}">Lý do: Admin cấm</c:when>
-                                                                        <c:when test="${u.lockReason eq 'unpaid'}">Lý do: Nợ tiền phạt</c:when>
-                                                                        <c:when test="${u.lockReason eq 'securitybreach'}">Lý do: Bảo mật / Sai pass</c:when>
-                                                                        <c:otherwise>Lý do: <c:out value="${u.lockReason != null ? u.lockReason : 'Không rõ'}" /></c:otherwise>
-                                                                    </c:choose>
+                                                                    Lý do: Bởi quản trị viên
                                                                 </span>
                                                             </div>
                                                         </c:otherwise>
@@ -216,7 +211,6 @@
                                                                     data-code="${u.code}"
                                                                     data-role="${u.role}"
                                                                     data-status="${u.status}"
-                                                                    data-lockreason="${u.lockReason}"
                                                                     data-major="${u.major}"
                                                                     data-year="${u.enrollmentYear}"
                                                                     data-dept="${u.department}"
