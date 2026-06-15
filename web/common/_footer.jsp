@@ -93,7 +93,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="${pageContext.request.contextPath}/book-search.jsp"
+                        <a href="${pageContext.request.contextPath}/book-search"
                             class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
                             <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Tra cứu mục lục
                         </a>
