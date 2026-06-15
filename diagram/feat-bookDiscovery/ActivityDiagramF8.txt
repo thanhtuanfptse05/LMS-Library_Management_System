@@ -1,0 +1,153 @@
+[Initial Node 1.1]
+Actor: System
+Loại: Initial Node
+Tên Action: Start Book Discovery Flow
+Nội dung Action: Điểm bắt đầu luồng khám phá và tra cứu tài nguyên thư viện.
+Nối tới: Mũi tên đi tới [Decision Node 2.2].
+
+[Decision Node 2.2]
+Actor: Guest, User
+Loại: Decision Node
+Tên Action: Route Discovery Method
+Nội dung Action: Người dùng quyết định hành vi khám phá dữ liệu.
+Nối tới:
+Nhánh [Access Homepage]: rẽ tới [Manual Action 3.3].
+Nhánh [Submit Search/Filter]: rẽ tới [Manual Action 3.16].
+
+NHÁNH A: NHẬN GỢI Ý BẤT ĐỒNG BỘ (ASYNC RECOMMENDATION)
+
+[Manual Action 3.3]
+Actor: Guest, User
+Loại: Manual Action
+Tên Action: Access Homepage
+Nội dung Action: Trình duyệt tải trang chủ và tự động kích hoạt HTTP Request bất đồng bộ để lấy dữ liệu gợi ý (FR-44).
+Nối tới: Mũi tên đi tới [Decision Node 4.4].
+
+[Decision Node 4.4]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Login Status
+Nội dung Action: Đánh giá Request đến từ người dùng đã đăng nhập hay Guest chưa định danh.
+Nối tới:
+Nhánh [Is Guest]: rẽ tới [System Action Box 7.5].
+Nhánh [Is Authenticated User]: rẽ tới [System Action Box 5.6].
+
+[System Action Box 5.6]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Count User Borrow Records
+Nội dung Action: Truy vấn đếm số lượng bản ghi trong bảng BorrowRecord của userId hiện tại.
+Nối tới: Mũi tên đi tới [Decision Node 6.7].
+
+[Decision Node 6.7]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Evaluate Threshold
+Nội dung Action: So sánh kết quả đếm với ngưỡng cố định (Threshold >= 3) theo BR-26.
+Nối tới:
+Nhánh [COUNT < 3]: rẽ tới [System Action Box 7.5].
+Nhánh [COUNT >= 3]: rẽ tới [System Action Box 7.8].
+
+[System Action Box 7.5]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Top Trending Query
+Nội dung Action: Thực thi câu lệnh SQL nội bộ để lấy top 10 sách thịnh hành có sẵn trong kho (FR-45).
+Nối tới: Mũi tên đi tới [System Action Box 10.15].
+
+[System Action Box 7.8]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Extract Context And Call AI
+Nội dung Action: Trích xuất lịch sử Topic Distribution, Recent Trajectory (3 cuốn gần nhất). Dùng SQL Scoring Engine lấy TỐI ĐA 50 Candidate Books, lọc sanitize (FR-46, BR-28, BR-30) và gửi request sang AI Service.
+Nối tới: Mũi tên đi tới [Decision Node 8.9].
+
+[Decision Node 8.9]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate AI Response
+Nội dung Action: Lắng nghe phản hồi từ AI Service, đánh giá HTTP Status, Timeout VÀ xác thực mọi book_id trả về có thuộc Candidate Pool không (FR-47).
+Nối tới:
+Nhánh [HTTP 200 Success AND Valid Book IDs]: rẽ tới [System Action Box 9.10].
+Nhánh [Timeout OR HTTP 5xx OR Invalid Book IDs]: rẽ tới [System Action Box 9.11].
+
+[System Action Box 9.10]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Parse Valid AI Output
+Nội dung Action: Parse danh sách book_id hợp lệ kèm reason do AI trả về (FR-47).
+Nối tới: Mũi tên đi tới [System Action Box 10.15].
+
+[System Action Box 9.11]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute AI Fallback
+Nội dung Action: Ghi log cảnh báo lỗi AI hoặc phát hiện AI ảo giác (Hallucination). Tự động chuyển hướng xử lý sang việc gọi hàm Lấy Top Trending SQL (FR-48).
+Nối tới: Mũi tên đi tới [System Action Box 10.15].
+
+[System Action Box 10.15]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Render Unified Component
+Nội dung Action: Parse danh sách kết quả (từ AI hoặc SQL) theo chung một định dạng chuẩn và render lên UI chung của trang chủ (BR-27).
+Nối tới: Mũi tên đi tới [Final Node 11.23].
+
+NHÁNH B: TRA CỨU THỦ CÔNG VÀ XEM CHI TIẾT (SEARCH & VIEW)
+
+[Manual Action 3.16]
+Actor: Guest, User
+Loại: Manual Action
+Tên Action: Input Search Criteria
+Nội dung Action: Nhập từ khóa text (tiêu đề, tác giả) hoặc chọn bộ lọc (Danh mục, Thẻ).
+Nối tới: Mũi tên đi tới [System Action Box 4.17].
+
+[System Action Box 4.17]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Search Query
+Nội dung Action: Thực hiện truy vấn LIKE trên Book kết hợp JOIN với BookCategory, BookTag và trả về danh sách (FR-42).
+Nối tới: Mũi tên đi tới [Manual Action 5.18].
+
+[Manual Action 5.18]
+Actor: Guest, User
+Loại: Manual Action
+Tên Action: Select Book
+Nội dung Action: Người dùng bấm chọn một tựa sách cụ thể từ danh sách kết quả để xem chi tiết.
+Nối tới: Mũi tên đi tới [System Action Box 6.19].
+
+[System Action Box 6.19]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Retrieve Book Metadata
+Nội dung Action: Trích xuất dữ liệu chi tiết từ bảng Book và tính toán availableQuantity hiện tại (FR-43).
+Nối tới: Mũi tên đi tới [Decision Node 7.20].
+
+[Decision Node 7.20]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Auth For Reservation
+Nội dung Action: Kiểm tra quyền để quyết định hiển thị đích đến của nút "Đặt mượn".
+Nối tới:
+Nhánh [Is Guest]: rẽ tới [System Action Box 8.21].
+Nhánh [Is Authenticated User]: rẽ tới [System Action Box 8.22].
+
+[System Action Box 8.21]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Render Detail With Login Redirect
+Nội dung Action: Hiển thị trang chi tiết sách, thay đổi đích đến của nút "Đặt mượn" thành hành động điều hướng (Redirect) về trang Đăng nhập (FR-43).
+Nối tới: Mũi tên đi tới [Final Node 11.23].
+
+[System Action Box 8.22]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Render Detail With Action
+Nội dung Action: Hiển thị trang chi tiết sách với nút "Đặt mượn" kích hoạt, sẵn sàng điều hướng sang Module F5.
+Nối tới: Mũi tên đi tới [Final Node 11.23].
+
+[Final Node 11.23]
+Actor: System
+Loại: Final Node
+Tên Action: Complete Book Discovery Flow
+Nội dung Action: Kết thúc luồng hoạt động Khám phá và tra cứu sách.
+Nối tới: Không có.
