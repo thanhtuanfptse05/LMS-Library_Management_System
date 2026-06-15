@@ -12,6 +12,7 @@ import util.DatabaseConnection;
 /**
  * StudentDAO — Data Access Object for Student table.
  */
+// Verified compatibility with PostgreSQL
 public class StudentDAO {
 
     private static final Logger LOGGER = Logger.getLogger(StudentDAO.class.getName());
