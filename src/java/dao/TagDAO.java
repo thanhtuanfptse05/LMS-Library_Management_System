@@ -19,11 +19,11 @@ public class TagDAO {
 
     public List<Tag> search(String keyword, String status) throws SQLException {
         StringBuilder sql = new StringBuilder(
-                "SELECT t.tagId, t.name, t.[status], t.updatedAt, t.updatedBy, "
-                + "COALESCE(mp.fullName, u.email, N'Chưa cập nhật') AS updatedByName, "
+                "SELECT t.tagId, t.name, t.status, t.updatedAt, t.updatedBy, "
+                + "COALESCE(mp.fullName, u.email, 'Chưa cập nhật') AS updatedByName, "
                 + "COUNT(bt.bookId) AS bookCount FROM Tag t "
                 + "LEFT JOIN BookTag bt ON bt.tagId = t.tagId "
-                + "LEFT JOIN [User] u ON u.userId = t.updatedBy "
+                + "LEFT JOIN \"User\" u ON u.userId = t.updatedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId = t.updatedBy WHERE 1 = 1 ");
         List<String> values = new ArrayList<>();
         if (keyword != null) {
@@ -31,11 +31,11 @@ public class TagDAO {
             values.add("%" + keyword.toLowerCase() + "%");
         }
         if (status != null) {
-            sql.append("AND t.[status] = ? ");
+            sql.append("AND t.status = ? ");
             values.add(status);
         }
-        sql.append("GROUP BY t.tagId, t.name, t.[status], t.updatedAt, t.updatedBy, mp.fullName, u.email "
-                + "ORDER BY CASE WHEN t.[status] = 'active' THEN 0 ELSE 1 END, t.name");
+        sql.append("GROUP BY t.tagId, t.name, t.status, t.updatedAt, t.updatedBy, mp.fullName, u.email "
+                + "ORDER BY CASE WHEN t.status = 'active' THEN 0 ELSE 1 END, t.name");
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bindStrings(ps, values);
@@ -51,8 +51,8 @@ public class TagDAO {
 
     public ManagementSummaryDTO getSummary() throws SQLException {
         String sql = "SELECT COUNT(*) AS totalCount, "
-                + "SUM(CASE WHEN t.[status] = 'active' THEN 1 ELSE 0 END) AS activeCount, "
-                + "SUM(CASE WHEN t.[status] = 'hidden' THEN 1 ELSE 0 END) AS hiddenCount, "
+                + "SUM(CASE WHEN t.status = 'active' THEN 1 ELSE 0 END) AS activeCount, "
+                + "SUM(CASE WHEN t.status = 'hidden' THEN 1 ELSE 0 END) AS hiddenCount, "
                 + "SUM(CASE WHEN used.tagId IS NULL THEN 1 ELSE 0 END) AS unusedCount "
                 + "FROM Tag t LEFT JOIN (SELECT DISTINCT tagId FROM BookTag) used "
                 + "ON used.tagId = t.tagId";
@@ -71,10 +71,10 @@ public class TagDAO {
     }
 
     public Tag findById(Connection conn, int tagId) throws SQLException {
-        String sql = "SELECT t.tagId, t.name, t.[status], t.updatedAt, t.updatedBy, "
-                + "COALESCE(mp.fullName, u.email, N'Chưa cập nhật') AS updatedByName, "
+        String sql = "SELECT t.tagId, t.name, t.status, t.updatedAt, t.updatedBy, "
+                + "COALESCE(mp.fullName, u.email, 'Chưa cập nhật') AS updatedByName, "
                 + "(SELECT COUNT(*) FROM BookTag bt WHERE bt.tagId = t.tagId) AS bookCount "
-                + "FROM Tag t LEFT JOIN [User] u ON u.userId = t.updatedBy "
+                + "FROM Tag t LEFT JOIN \"User\" u ON u.userId = t.updatedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId = t.updatedBy WHERE t.tagId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, tagId);
@@ -85,10 +85,10 @@ public class TagDAO {
     }
 
     public Tag findByName(Connection conn, String name) throws SQLException {
-        String sql = "SELECT t.tagId, t.name, t.[status], t.updatedAt, t.updatedBy, "
-                + "COALESCE(mp.fullName, u.email, N'Chưa cập nhật') AS updatedByName, "
+        String sql = "SELECT t.tagId, t.name, t.status, t.updatedAt, t.updatedBy, "
+                + "COALESCE(mp.fullName, u.email, 'Chưa cập nhật') AS updatedByName, "
                 + "(SELECT COUNT(*) FROM BookTag bt WHERE bt.tagId = t.tagId) AS bookCount "
-                + "FROM Tag t LEFT JOIN [User] u ON u.userId = t.updatedBy "
+                + "FROM Tag t LEFT JOIN \"User\" u ON u.userId = t.updatedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId = t.updatedBy WHERE LOWER(t.name) = LOWER(?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, name);
@@ -113,7 +113,7 @@ public class TagDAO {
     }
 
     public int insert(Connection conn, Tag tag, int actorId) throws SQLException {
-        String sql = "INSERT INTO Tag (name, [status], updatedAt, updatedBy) VALUES (?, ?, GETDATE(), ?)";
+        String sql = "INSERT INTO Tag (name, status, updatedAt, updatedBy) VALUES (?, ?, NOW(), ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, tag.getName());
             ps.setString(2, tag.getStatus());
@@ -129,7 +129,7 @@ public class TagDAO {
     }
 
     public void update(Connection conn, Tag tag, int actorId) throws SQLException {
-        String sql = "UPDATE Tag SET name = ?, [status] = ?, updatedAt = GETDATE(), updatedBy = ? WHERE tagId = ?";
+        String sql = "UPDATE Tag SET name = ?, status = ?, updatedAt = NOW(), updatedBy = ? WHERE tagId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, tag.getName());
             ps.setString(2, tag.getStatus());
