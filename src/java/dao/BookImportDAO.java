@@ -15,7 +15,7 @@ public class BookImportDAO {
 
     public int insertBatch(Connection conn, BookImportBatch batch) throws SQLException {
         String sql = "INSERT INTO BookImportBatch (importedBy, fileName, totalRows, successRows, failedRows, "
-                + "[status], createdAt, expiresAt) VALUES (?, ?, ?, ?, ?, ?, GETDATE(), DATEADD(YEAR, 1, GETDATE()))";
+                + "status, createdAt, expiresAt) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW() + INTERVAL '1 year')";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, batch.getImportedBy());
             ps.setString(2, batch.getFileName());
@@ -38,7 +38,7 @@ public class BookImportDAO {
             return;
         }
         String sql = "INSERT INTO BookImportError (importBatchId, sheetName, rowNumber, columnName, "
-                + "errorMessage, createdAt) VALUES (?, ?, ?, ?, ?, GETDATE())";
+                + "errorMessage, createdAt) VALUES (?, ?, ?, ?, ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             for (BookImportError error : errors) {
                 ps.setInt(1, batchId);
@@ -54,12 +54,12 @@ public class BookImportDAO {
 
     public List<BookImportBatch> search(String keyword, String status, int offset, int pageSize)
             throws SQLException {
-        StringBuilder sql = new StringBuilder(baseSelect() + " WHERE b.expiresAt > GETDATE() ");
+        StringBuilder sql = new StringBuilder(baseSelect() + " WHERE b.expiresAt > NOW() ");
         List<Object> values = new ArrayList<>();
         appendFilters(sql, values, keyword, status);
-        sql.append("ORDER BY b.createdAt DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        values.add(offset);
+        sql.append("ORDER BY b.createdAt DESC LIMIT ? OFFSET ?");
         values.add(pageSize);
+        values.add(offset);
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bind(ps, values);
@@ -74,7 +74,7 @@ public class BookImportDAO {
     }
 
     public int count(String keyword, String status) throws SQLException {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM BookImportBatch b WHERE b.expiresAt > GETDATE() ");
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM BookImportBatch b WHERE b.expiresAt > NOW() ");
         List<Object> values = new ArrayList<>();
         appendFilters(sql, values, keyword, status);
         try (Connection conn = DatabaseConnection.getConnection();
@@ -126,19 +126,19 @@ public class BookImportDAO {
 
     private String baseSelect() {
         return "SELECT b.importBatchId, b.importedBy, COALESCE(mp.fullName, u.email) importedByName, "
-                + "b.fileName, b.totalRows, b.successRows, b.failedRows, b.[status], b.createdAt, b.expiresAt "
-                + "FROM BookImportBatch b JOIN [User] u ON u.userId = b.importedBy "
+                + "b.fileName, b.totalRows, b.successRows, b.failedRows, b.status, b.createdAt, b.expiresAt "
+                + "FROM BookImportBatch b JOIN \"User\" u ON u.userId = b.importedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId = b.importedBy";
     }
 
     private void appendFilters(StringBuilder sql, List<Object> values, String keyword, String status) {
         if (keyword != null) {
-            sql.append("AND (b.fileName LIKE ? OR CAST(b.importBatchId AS NVARCHAR(20)) LIKE ?) ");
+            sql.append("AND (b.fileName LIKE ? OR CAST(b.importBatchId AS VARCHAR(20)) LIKE ?) ");
             values.add("%" + keyword + "%");
             values.add("%" + keyword + "%");
         }
         if (status != null) {
-            sql.append("AND b.[status] = ? ");
+            sql.append("AND b.status = ? ");
             values.add(status);
         }
     }
