@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import model.Librarian;
 import util.DatabaseConnection;
 
+// Verified compatibility with PostgreSQL
 public class LibrarianDAO {
     private static final Logger LOGGER = Logger.getLogger(LibrarianDAO.class.getName());
 
