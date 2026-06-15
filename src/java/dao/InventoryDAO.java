@@ -27,8 +27,8 @@ public class InventoryDAO {
 
     public InventorySummaryDTO getSummary() throws SQLException {
         String sql = "SELECT COUNT(*) totalSessions, "
-                + "SUM(CASE WHEN [status] IN ('draft','counting') THEN 1 ELSE 0 END) activeSessions, "
-                + "SUM(CASE WHEN [status] = 'reviewing' THEN 1 ELSE 0 END) reviewingSessions, "
+                + "SUM(CASE WHEN status IN ('draft','counting') THEN 1 ELSE 0 END) activeSessions, "
+                + "SUM(CASE WHEN status = 'reviewing' THEN 1 ELSE 0 END) reviewingSessions, "
                 + "(SELECT COUNT(*) FROM InventoryItem WHERE result IN ('missing','misplaced') "
                 + "AND resolvedAt IS NULL) unresolvedItems FROM InventorySession";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -46,8 +46,7 @@ public class InventoryDAO {
     }
 
     public InventorySession findSession(Connection conn, int sessionId, boolean lock) throws SQLException {
-        String table = lock ? "InventorySession s WITH (UPDLOCK, ROWLOCK)" : "InventorySession s";
-        String sql = "SELECT s.inventorySessionId, s.[location], s.[status], s.startedBy, "
+        String sql = "SELECT s.inventorySessionId, s.location, s.status, s.startedBy, "
                 + "COALESCE(mp.fullName,u.email) startedByName, s.startedAt, s.completedBy, "
                 + "s.completedAt, s.note, "
                 + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId) expectedCount, "
@@ -55,8 +54,9 @@ public class InventoryDAO {
                 + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId AND i.result IN ('missing','misplaced')) discrepancyCount, "
                 + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId "
                 + "AND i.result IN ('missing','misplaced') AND i.resolvedAt IS NULL) unresolvedCount "
-                + "FROM " + table + " JOIN [User] u ON u.userId=s.startedBy "
-                + "LEFT JOIN MemberProfile mp ON mp.userId=s.startedBy WHERE s.inventorySessionId = ?";
+                + "FROM InventorySession s JOIN \"User\" u ON u.userId=s.startedBy "
+                + "LEFT JOIN MemberProfile mp ON mp.userId=s.startedBy WHERE s.inventorySessionId = ?"
+                + (lock ? " FOR UPDATE" : "");
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sessionId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -81,8 +81,8 @@ public class InventoryDAO {
     }
 
     public InventoryItem findItem(Connection conn, int itemId, boolean lock) throws SQLException {
-        String table = lock ? "InventoryItem i WITH (UPDLOCK, ROWLOCK)" : "InventoryItem i";
-        String sql = itemSelect(table) + " WHERE i.inventoryItemId = ?";
+        String sql = itemSelect("InventoryItem i") + " WHERE i.inventoryItemId = ?"
+                + (lock ? " FOR UPDATE" : "");
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, itemId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -92,8 +92,8 @@ public class InventoryDAO {
     }
 
     public int insertSession(Connection conn, String location, String note, int actorId) throws SQLException {
-        String sql = "INSERT INTO InventorySession ([location], [status], startedBy, startedAt, note) "
-                + "VALUES (?, 'draft', ?, GETDATE(), ?)";
+        String sql = "INSERT INTO InventorySession (location, status, startedBy, startedAt, note) "
+                + "VALUES (?, 'draft', ?, NOW(), ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, location);
             ps.setInt(2, actorId);
@@ -108,8 +108,8 @@ public class InventoryDAO {
 
     public int createExpectedItems(Connection conn, int sessionId, String location) throws SQLException {
         String sql = "INSERT INTO InventoryItem (inventorySessionId, bookCopyId, expectedLocation, result) "
-                + "SELECT ?, bookCopyId, [location], 'pending' FROM BookCopy "
-                + "WHERE [location] = ? AND condition = 'good'";
+                + "SELECT ?, bookCopyId, location, 'pending' FROM BookCopy "
+                + "WHERE location = ? AND condition = 'good'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sessionId);
             ps.setString(2, location);
@@ -120,9 +120,9 @@ public class InventoryDAO {
     public void updateSessionStatus(Connection conn, int sessionId, String fromStatus, String toStatus,
             Integer actorId) throws SQLException {
         String completed = "completed".equals(toStatus) || "cancelled".equals(toStatus)
-                ? ", completedBy = ?, completedAt = GETDATE()" : "";
-        String sql = "UPDATE InventorySession SET [status] = ?" + completed
-                + " WHERE inventorySessionId = ? AND [status] = ?";
+                ? ", completedBy = ?, completedAt = NOW()" : "";
+        String sql = "UPDATE InventorySession SET status = ?" + completed
+                + " WHERE inventorySessionId = ? AND status = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             int index = 1;
             ps.setString(index++, toStatus);
@@ -136,7 +136,7 @@ public class InventoryDAO {
     public void recordScan(Connection conn, int sessionId, int bookCopyId, String scannedLocation,
             String result, int actorId, String expectedLocation) throws SQLException {
         String update = "UPDATE InventoryItem SET scannedLocation = ?, result = ?, scannedBy = ?, "
-                + "scannedAt = GETDATE() WHERE inventorySessionId = ? AND bookCopyId = ?";
+                + "scannedAt = NOW() WHERE inventorySessionId = ? AND bookCopyId = ?";
         try (PreparedStatement ps = conn.prepareStatement(update)) {
             ps.setString(1, scannedLocation);
             ps.setString(2, result);
@@ -146,7 +146,7 @@ public class InventoryDAO {
             if (ps.executeUpdate() == 1) return;
         }
         String insert = "INSERT INTO InventoryItem (inventorySessionId, bookCopyId, expectedLocation, "
-                + "scannedLocation, result, scannedBy, scannedAt) VALUES (?, ?, ?, ?, ?, ?, GETDATE())";
+                + "scannedLocation, result, scannedBy, scannedAt) VALUES (?, ?, ?, ?, ?, ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(insert)) {
             ps.setInt(1, sessionId);
             ps.setInt(2, bookCopyId);
@@ -168,7 +168,7 @@ public class InventoryDAO {
     }
 
     public void resolveItem(Connection conn, int itemId, String resolution, int actorId) throws SQLException {
-        String sql = "UPDATE InventoryItem SET resolution = ?, resolvedBy = ?, resolvedAt = GETDATE() "
+        String sql = "UPDATE InventoryItem SET resolution = ?, resolvedBy = ?, resolvedAt = NOW() "
                 + "WHERE inventoryItemId = ? AND result IN ('missing','misplaced') AND resolvedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, resolution);
@@ -189,16 +189,16 @@ public class InventoryDAO {
 
     private String sessionSelect() { return sessionSelect("InventorySession s"); }
     private String sessionSelect(String table) {
-        return "SELECT s.inventorySessionId, s.[location], s.[status], s.startedBy, "
+        return "SELECT s.inventorySessionId, s.location, s.status, s.startedBy, "
                 + "COALESCE(mp.fullName,u.email) startedByName, s.startedAt, s.completedBy, "
                 + "s.completedAt, s.note, COUNT(i.inventoryItemId) expectedCount, "
                 + "SUM(CASE WHEN i.result='matched' THEN 1 ELSE 0 END) matchedCount, "
                 + "SUM(CASE WHEN i.result IN ('missing','misplaced') THEN 1 ELSE 0 END) discrepancyCount, "
                 + "SUM(CASE WHEN i.result IN ('missing','misplaced') AND i.resolvedAt IS NULL THEN 1 ELSE 0 END) unresolvedCount "
-                + "FROM " + table + " JOIN [User] u ON u.userId=s.startedBy "
+                + "FROM " + table + " JOIN \"User\" u ON u.userId=s.startedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId=s.startedBy "
                 + "LEFT JOIN InventoryItem i ON i.inventorySessionId=s.inventorySessionId "
-                + "GROUP BY s.inventorySessionId,s.[location],s.[status],s.startedBy,mp.fullName,u.email,"
+                + "GROUP BY s.inventorySessionId,s.location,s.status,s.startedBy,mp.fullName,u.email,"
                 + "s.startedAt,s.completedBy,s.completedAt,s.note";
     }
     private String itemSelect() { return itemSelect("InventoryItem i"); }
