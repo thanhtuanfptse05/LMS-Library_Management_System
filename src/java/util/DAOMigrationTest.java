@@ -15,7 +15,7 @@ import com.google.gson.GsonBuilder;
 
 public class DAOMigrationTest {
     private static final Logger LOGGER = Logger.getLogger(DAOMigrationTest.class.getName());
-    private static final String SNAPSHOT_FILE = "snapshot_before.json";
+    private static final String SNAPSHOT_FILE = "snapshot_after.json";
 
     public static void main(String[] args) {
         System.out.println("=== BAT DAU SNAPSHOT TEST ===");
@@ -28,6 +28,7 @@ public class DAOMigrationTest {
         } catch (Exception e) {
             results.put("connection", "FAILED: " + e.getMessage());
             System.out.println("Ket noi database that bai: " + e.getMessage());
+            e.printStackTrace(); // In ra stack trace chi tiet de debug
         }
 
         // Run DAO Tests
