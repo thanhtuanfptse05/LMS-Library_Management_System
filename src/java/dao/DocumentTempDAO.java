@@ -35,7 +35,7 @@ public class DocumentTempDAO {
      * @return Danh sách DocumentTemp, danh sách rỗng nếu không có dữ liệu
      */
     public List<DocumentTemp> getAll() {
-        String sql = "SELECT tempId, tempName, [subject], bodyContent, managerId, createdAt, updatedAt "
+        String sql = "SELECT tempId, tempName, subject, bodyContent, managerId, createdAt, updatedAt "
                 + "FROM DocumentTemp ORDER BY createdAt DESC";
 
         List<DocumentTemp> list = new ArrayList<>();
@@ -61,7 +61,7 @@ public class DocumentTempDAO {
      * @return DocumentTemp nếu tìm thấy, null nếu không tồn tại
      */
     public DocumentTemp findByTempName(String tempName) {
-        String sql = "SELECT tempId, tempName, [subject], bodyContent, managerId, createdAt, updatedAt "
+        String sql = "SELECT tempId, tempName, subject, bodyContent, managerId, createdAt, updatedAt "
                 + "FROM DocumentTemp WHERE tempName = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -87,7 +87,7 @@ public class DocumentTempDAO {
      * @return DocumentTemp nếu tìm thấy, null nếu không tồn tại
      */
     public DocumentTemp findById(int tempId) {
-        String sql = "SELECT tempId, tempName, [subject], bodyContent, managerId, createdAt, updatedAt "
+        String sql = "SELECT tempId, tempName, subject, bodyContent, managerId, createdAt, updatedAt "
                 + "FROM DocumentTemp WHERE tempId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -113,8 +113,8 @@ public class DocumentTempDAO {
      * @return ID tự động tăng vừa được tạo, -1 nếu thất bại
      */
     public int insert(DocumentTemp dt) {
-        String sql = "INSERT INTO DocumentTemp (tempName, [subject], bodyContent, managerId, createdAt) "
-                + "VALUES (?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO DocumentTemp (tempName, subject, bodyContent, managerId, createdAt) "
+                + "VALUES (?, ?, ?, ?, NOW())";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -146,7 +146,7 @@ public class DocumentTempDAO {
      * @return true nếu cập nhật thành công, false nếu thất bại
      */
     public boolean update(DocumentTemp dt) {
-        String sql = "UPDATE DocumentTemp SET [subject] = ?, bodyContent = ?, updatedAt = GETDATE() "
+        String sql = "UPDATE DocumentTemp SET subject = ?, bodyContent = ?, updatedAt = NOW() "
                 + "WHERE tempId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
