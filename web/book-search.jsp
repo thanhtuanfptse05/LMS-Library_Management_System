@@ -15,7 +15,7 @@
     }
     
     .book-img-wrapper {
-        height: 240px;
+        height: 220px;
         background-color: var(--surface-container-low);
         border-radius: 0.75rem 0.75rem 0 0;
         overflow: hidden;
@@ -92,7 +92,7 @@
 
     <!-- Breadcrumb & Tiêu đề chính (Hero Banner) -->
     <div class="py-5" style="background-color: var(--surface-container-low); border-bottom: 1px solid var(--surface-container-high);">
-        <div class="container-xxl px-4">
+        <div class="container-fluid px-md-5 px-4">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2" style="font-size: 14px;">
                     <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/" class="text-decoration-none" style="color: var(--primary-color);">Trang chủ</a></li>
@@ -114,7 +114,7 @@
     </div>
 
     <!-- Nội dung chính -->
-    <main class="container-xxl flex-grow-1 py-5 px-4">
+    <main class="container-fluid flex-grow-1 py-5 px-md-5 px-4">
         <div class="row g-4">
             
             <!-- Sidebar Lọc -->
@@ -223,7 +223,7 @@
                         </div>
 
                         <!-- Grid -->
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-5">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4 mb-5">
                             <c:forEach var="book" items="${books}">
                                 <div class="col">
                                     <div class="book-card d-flex flex-column">
@@ -248,7 +248,7 @@
                                             </c:choose>
                                         </div>
                                         
-                                        <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                                        <div class="card-body p-3 d-flex flex-column flex-grow-1">
                                             <div class="d-flex justify-content-between align-items-start mb-2">
                                                 <c:choose>
                                                     <c:when test="${book.availableQuantity > 0}">
