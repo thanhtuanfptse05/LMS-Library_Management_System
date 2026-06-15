@@ -20,20 +20,17 @@ public class DatabaseConnection {
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseConnection.class.getName());
 
-    private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private static final String URL = "jdbc:sqlserver://localhost:1433;"
-            + "databaseName=LMS_Library_Management_System;"
-            + "encrypt=true;"
-            + "trustServerCertificate=true;";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "123";
+    private static final String DRIVER = "org.postgresql.Driver";
+    private static final String URL = "jdbc:postgresql://db.ujqgffruabfuqhtsybus.supabase.co:5432/postgres";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "6wUw)Q6S/)LFeSE";
 
     static {
         try {
             Class.forName(DRIVER);
         } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "SQL Server JDBC Driver not found. "
-                    + "Ensure sqljdbc42.jar is in WEB-INF/lib.", e);
+            LOGGER.log(Level.SEVERE, "PostgreSQL JDBC Driver not found. "
+                    + "Ensure postgresql-42.7.x.jar is in WEB-INF/lib.", e);
         }
     }
 
