@@ -10,7 +10,7 @@
 ## 2. TECH STACK (STRICT — do not deviate)
 * **Backend:** Java JDK 17 + Java Servlet (Servlet 4.0/5.0)
 * **Frontend:** JSP (Java Server Pages) + HTML5 + CSS3 + Vanilla JavaScript
-* **Database:** Microsoft SQL Server
+* **Database:** PostgreSQL (Supabase)
 * **Database Access:** JDBC + DAO Pattern (Không dùng Spring JDBC, không ORM)
 * **ORM:** None (Tuyệt đối không dùng Hibernate, JPA, MyBatis)
 * **Auth:** Session-based (`HttpSession`) + `@WebFilter` + BCrypt (mã hóa mật khẩu)
@@ -42,6 +42,7 @@
 * **DATA-01 (An toàn dữ liệu):** KHÔNG Hard-delete (DELETE SQL) các giao dịch cốt lõi. Sử dụng Soft-delete bằng cách cập nhật cột `status`.
 * **ARCH-02 (Ghi nhật ký):** KHÔNG bỏ qua Audit Log cho các thao tác C/U/D (Create/Update/Delete) quan trọng.
 * **UI-01 (Ngôn ngữ giao diện):** KHÔNG viết giao diện người dùng bằng tiếng Anh hoặc ngôn ngữ khác. Bắt buộc sinh giao diện (JSP, HTML, thông báo lỗi, thông báo thành công, nhãn) hoàn toàn bằng **tiếng Việt (100% Vietnamese)**.
+* **DB-01 (Kiểm tra Schema CSDL):** Bắt buộc đọc và kiểm tra tệp schema CSDL mới tại [LMS_Schema_PostgreSQL.sql](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/database/supabase/LMS_Schema_PostgreSQL.sql) trước khi thao tác viết/sửa code Java Model và DAO để đảm bảo cấu trúc bảng và kiểu dữ liệu chính xác, tránh các giả định sai lệch nếu schema có sự thay đổi.
 
 ## 6. DEFINITION OF DONE (per task)
 - [ ] Logic Java biên dịch thành công, không có Warning hoặc Error nghiêm trọng.
