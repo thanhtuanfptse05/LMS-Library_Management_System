@@ -68,7 +68,7 @@ public class FineDAO {
     // THE LMS System SHALL UPDATE Fine.status = 'paid'
     // WHERE fineId matches [FR-F6-07, PLAN.md §3]
     public void updateStatusToPaid(Connection conn, int fineId) throws SQLException {
-        String sql = "UPDATE [Fine] SET [status] = 'paid' WHERE fineId = ?";
+        String sql = "UPDATE Fine SET status = 'paid' WHERE fineId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, fineId);
@@ -117,7 +117,7 @@ public class FineDAO {
     // WHERE borrowRecordId=?, userId=? [Node 6.17, FR-F6-04, BR-24]
     public int insertCompensationFine(Connection conn, int borrowRecordId, int userId,
                                       BigDecimal amount, String reason) throws SQLException {
-        String sql = "INSERT INTO [Fine] (borrowRecordId, userId, amount, reason, [status]) "
+        String sql = "INSERT INTO Fine (borrowRecordId, userId, amount, reason, status) "
                    + "VALUES (?, ?, ?, ?, 'unpaid')";
 
         try (PreparedStatement ps = conn.prepareStatement(sql,
@@ -158,8 +158,8 @@ public class FineDAO {
         List<Fine> list = new ArrayList<>();
         String sql = "SELECT f.fineId, f.borrowRecordId, f.userId, f.amount, f.reason, f.status, f.createdAt, "
                    + "       p.paymentId, p.status AS paymentStatus "
-                   + "FROM   [Fine] f "
-                   + "LEFT JOIN [Payment] p ON f.fineId = p.fineId AND p.status = 'pending' "
+                   + "FROM   Fine f "
+                   + "LEFT JOIN Payment p ON f.fineId = p.fineId AND p.status = 'pending' "
                    + "WHERE  f.userId = ? AND f.status = 'unpaid' "
                    + "ORDER BY f.createdAt DESC";
 
