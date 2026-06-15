@@ -21,7 +21,7 @@ public class DatabaseConnection {
     private static final Logger LOGGER = Logger.getLogger(DatabaseConnection.class.getName());
 
     private static final String DRIVER = "org.postgresql.Driver";
-    private static final String URL = "jdbc:postgresql://db.ujqgffruabfuqhtsybus.supabase.co:5432/postgres";
+    private static final String URL = "jdbc:postgresql://db.ujqgffruabfuqhtsybus.supabase.co:5432/postgres?sslmode=require";
     private static final String USER = "postgres";
     private static final String PASSWORD = "6wUw)Q6S/)LFeSE";
 
