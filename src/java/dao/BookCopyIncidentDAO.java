@@ -18,9 +18,9 @@ public class BookCopyIncidentDAO {
         StringBuilder sql = new StringBuilder(baseSelect() + " WHERE 1 = 1 ");
         List<Object> parameters = new ArrayList<>();
         appendFilters(sql, parameters, keyword, incidentType, status);
-        sql.append("ORDER BY i.reportedAt DESC, i.incidentId DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        parameters.add(offset);
+        sql.append("ORDER BY i.reportedAt DESC, i.incidentId DESC LIMIT ? OFFSET ?");
         parameters.add(pageSize);
+        parameters.add(offset);
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bind(ps, parameters);
@@ -51,11 +51,11 @@ public class BookCopyIncidentDAO {
 
     public BookCopyIncidentSummaryDTO getSummary() throws SQLException {
         String sql = "SELECT "
-                + "SUM(CASE WHEN [status] = 'pending' THEN 1 ELSE 0 END) pendingCount, "
-                + "SUM(CASE WHEN [status] = 'investigating' THEN 1 ELSE 0 END) investigatingCount, "
-                + "SUM(CASE WHEN [status] IN ('resolved', 'rejected') "
-                + "AND resolvedAt >= DATEFROMPARTS(YEAR(GETDATE()), "
-                + "MONTH(GETDATE()), 1) THEN 1 ELSE 0 END) resolvedThisMonthCount FROM BookCopyIncident";
+                + "SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) pendingCount, "
+                + "SUM(CASE WHEN status = 'investigating' THEN 1 ELSE 0 END) investigatingCount, "
+                + "SUM(CASE WHEN status IN ('resolved', 'rejected') "
+                + "AND resolvedAt >= MAKE_DATE(EXTRACT(YEAR FROM NOW())::INT, "
+                + "EXTRACT(MONTH FROM NOW())::INT, 1) THEN 1 ELSE 0 END) resolvedThisMonthCount FROM BookCopyIncident";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -74,18 +74,18 @@ public class BookCopyIncidentDAO {
     }
 
     public BookCopyIncident findByIdForUpdate(Connection conn, int incidentId) throws SQLException {
-        return find(conn, baseSelect("BookCopyIncident i WITH (UPDLOCK, ROWLOCK)")
-                + " WHERE i.incidentId = ?", incidentId);
+        return find(conn, baseSelect("BookCopyIncident i")
+                + " WHERE i.incidentId = ? FOR UPDATE", incidentId);
     }
 
     public BookCopyIncident findOpenByBookCopyId(Connection conn, int bookCopyId) throws SQLException {
         return find(conn, baseSelect() + " WHERE i.bookCopyId = ? "
-                + "AND i.[status] IN ('pending', 'investigating')", bookCopyId);
+                + "AND i.status IN ('pending', 'investigating')", bookCopyId);
     }
 
     public int insert(Connection conn, BookCopyIncident incident) throws SQLException {
-        String sql = "INSERT INTO BookCopyIncident (bookCopyId, incidentType, description, [status], "
-                + "reportedBy, reportedAt) VALUES (?, ?, ?, 'pending', ?, GETDATE())";
+        String sql = "INSERT INTO BookCopyIncident (bookCopyId, incidentType, description, status, "
+                + "reportedBy, reportedAt) VALUES (?, ?, ?, 'pending', ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, incident.getBookCopyId());
             ps.setString(2, incident.getIncidentType());
@@ -102,15 +102,15 @@ public class BookCopyIncidentDAO {
     }
 
     public void startInvestigating(Connection conn, int incidentId) throws SQLException {
-        String sql = "UPDATE BookCopyIncident SET [status] = 'investigating' "
-                + "WHERE incidentId = ? AND [status] = 'pending'";
+        String sql = "UPDATE BookCopyIncident SET status = 'investigating' "
+                + "WHERE incidentId = ? AND status = 'pending'";
         executeSingleUpdate(conn, sql, incidentId);
     }
 
     public void finish(Connection conn, int incidentId, String status, String resolution, int actorId)
             throws SQLException {
-        String sql = "UPDATE BookCopyIncident SET [status] = ?, resolution = ?, resolvedBy = ?, "
-                + "resolvedAt = GETDATE() WHERE incidentId = ? AND [status] IN ('pending', 'investigating')";
+        String sql = "UPDATE BookCopyIncident SET status = ?, resolution = ?, resolvedBy = ?, "
+                + "resolvedAt = NOW() WHERE incidentId = ? AND status IN ('pending', 'investigating')";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setString(2, resolution);
@@ -146,13 +146,13 @@ public class BookCopyIncidentDAO {
 
     private String baseSelect(String incidentTable) {
         return "SELECT i.incidentId, i.bookCopyId, bc.barcode, b.title AS bookTitle, i.incidentType, "
-                + "i.description, i.[status], i.resolution, i.reportedBy, "
+                + "i.description, i.status, i.resolution, i.reportedBy, "
                 + "COALESCE(reporter.fullName, ru.email) reportedByName, i.reportedAt, i.resolvedBy, "
                 + "COALESCE(resolver.fullName, xu.email) resolvedByName, i.resolvedAt FROM "
                 + incidentTable + " JOIN BookCopy bc ON bc.bookCopyId = i.bookCopyId "
-                + "JOIN Book b ON b.bookId = bc.bookId JOIN [User] ru ON ru.userId = i.reportedBy "
+                + "JOIN Book b ON b.bookId = bc.bookId JOIN \"User\" ru ON ru.userId = i.reportedBy "
                 + "LEFT JOIN MemberProfile reporter ON reporter.userId = i.reportedBy "
-                + "LEFT JOIN [User] xu ON xu.userId = i.resolvedBy "
+                + "LEFT JOIN \"User\" xu ON xu.userId = i.resolvedBy "
                 + "LEFT JOIN MemberProfile resolver ON resolver.userId = i.resolvedBy";
     }
 
@@ -169,7 +169,7 @@ public class BookCopyIncidentDAO {
             parameters.add(incidentType);
         }
         if (status != null) {
-            sql.append("AND i.[status] = ? ");
+            sql.append("AND i.status = ? ");
             parameters.add(status);
         }
     }
