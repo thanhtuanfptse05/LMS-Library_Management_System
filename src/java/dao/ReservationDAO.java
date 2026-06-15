@@ -84,11 +84,12 @@ public class ReservationDAO {
         // (2 sách trả cùng lúc không thể cùng đọc được 1 bản ghi chờ — SPEC §4)
         // ROWLOCK: Chỉ lock ở mức row, không lock toàn bộ page để tối ưu concurrency
         String sql = "SELECT reservationId, userId, bookId, bookCopyId, "
-                   + "       [status], queuePosition, startDate, endDate "
-                   + "FROM   [Reservation] WITH (UPDLOCK, ROWLOCK) "
+                   + "       status, queuePosition, startDate, endDate "
+                   + "FROM   \"Reservation\" "
                    + "WHERE  bookId        = ? "
                    + "  AND  queuePosition = 1 "
-                   + "  AND  [status]      = 'pending'";
+                   + "  AND  status      = 'pending' "
+                   + "FOR UPDATE";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -137,11 +138,11 @@ public class ReservationDAO {
     // WHERE reservationId = ? [FR-F6-06]
     public void updateToReadyPickup(Connection conn, int reservationId, int bookCopyId)
             throws SQLException {
-        String sql = "UPDATE [Reservation] "
+        String sql = "UPDATE \"Reservation\" "
                    + "SET    queuePosition = 0, "
-                   + "       [status]      = 'readypickup', "
+                   + "       status      = 'readypickup', "
                    + "       bookCopyId    = ?, "
-                   + "       endDate       = DATEADD(day, 3, GETDATE()) "
+                   + "       endDate       = NOW() + INTERVAL '3 days' "
                    + "WHERE  reservationId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -179,8 +180,8 @@ public class ReservationDAO {
     // THE LMS System SHALL UPDATE Reservation.status = 'fulfilled'
     // WHERE reservationId = ? [FR-F6-03]
     public void updateStatusToFulfilled(Connection conn, int reservationId) throws SQLException {
-        String sql = "UPDATE [Reservation] "
-                   + "SET    [status] = 'fulfilled' "
+        String sql = "UPDATE \"Reservation\" "
+                   + "SET    status = 'fulfilled' "
                    + "WHERE  reservationId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -222,7 +223,7 @@ public class ReservationDAO {
     // to normalize the allocation flow [FR-F6-02, CONTEXT.md §2]
     public int insertWalkIn(Connection conn, int userId, int bookId, int bookCopyId)
             throws SQLException {
-        String sql = "INSERT INTO [Reservation] (userId, bookId, bookCopyId, [status], queuePosition) "
+        String sql = "INSERT INTO \"Reservation\" (userId, bookId, bookCopyId, status, queuePosition) "
                    + "VALUES (?, ?, ?, 'pending', 0)";
 
         try (PreparedStatement ps = conn.prepareStatement(sql,
@@ -272,10 +273,10 @@ public class ReservationDAO {
     // to enforce BR-23 [FR-F6-02]
     public boolean hasQueuedReservation(Connection conn, int bookId) throws SQLException {
         String sql = "SELECT COUNT(*) "
-                   + "FROM   [Reservation] "
+                   + "FROM   \"Reservation\" "
                    + "WHERE  bookId        = ? "
                    + "  AND  queuePosition > 0 "
-                   + "  AND  [status]      = 'pending'";
+                   + "  AND  status      = 'pending'";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -334,12 +335,12 @@ public class ReservationDAO {
     public Reservation findReadyPickupByUserAndBook(Connection conn, int userId, int bookId)
             throws SQLException {
         String sql = "SELECT reservationId, userId, bookId, bookCopyId, "
-                   + "       [status], queuePosition, startDate, endDate "
-                   + "FROM   [Reservation] "
+                   + "       status, queuePosition, startDate, endDate "
+                   + "FROM   \"Reservation\" "
                    + "WHERE  userId        = ? "
                    + "  AND  bookId        = ? "
                    + "  AND  queuePosition = 0 "
-                   + "  AND  [status]      = 'readypickup'";
+                   + "  AND  status      = 'readypickup'";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -371,10 +372,10 @@ public class ReservationDAO {
     public List<Reservation> findReadyPickupByUserId(Connection conn, int userId) throws SQLException {
         List<Reservation> list = new ArrayList<>();
         String sql = "SELECT reservationId, userId, bookId, bookCopyId, "
-                   + "       [status], queuePosition, startDate, endDate "
-                   + "FROM   [Reservation] "
+                   + "       status, queuePosition, startDate, endDate "
+                   + "FROM   \"Reservation\" "
                    + "WHERE  userId   = ? "
-                   + "  AND  [status] = 'readypickup' "
+                   + "  AND  status = 'readypickup' "
                    + "ORDER BY startDate DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -439,11 +440,11 @@ public class ReservationDAO {
      * @throws SQLException nếu có lỗi thực thi câu lệnh SQL
      */
     public void decrementQueuePositions(Connection conn, int bookId) throws SQLException {
-        String sql = "UPDATE [Reservation] "
+        String sql = "UPDATE \"Reservation\" "
                    + "SET    queuePosition = queuePosition - 1 "
                    + "WHERE  bookId        = ? "
                    + "  AND  queuePosition > 1 "
-                   + "  AND  [status]      = 'pending'";
+                   + "  AND  status      = 'pending'";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -474,19 +475,20 @@ public class ReservationDAO {
     public void cancelExpiredReservations(Connection conn) throws SQLException {
         // Tìm các Reservation quá hạn
         String selectSql = "SELECT reservationId, bookCopyId, bookId "
-                         + "FROM   [Reservation] WITH (UPDLOCK, ROWLOCK) "
-                         + "WHERE  [status] = 'readypickup' "
-                         + "  AND  endDate  < GETDATE()";
+                         + "FROM   \"Reservation\" "
+                         + "WHERE  status = 'readypickup' "
+                         + "  AND  endDate  < NOW() "
+                         + "FOR UPDATE";
 
-        String updateResSql = "UPDATE [Reservation] "
-                            + "SET    [status] = 'cancelled' "
+        String updateResSql = "UPDATE \"Reservation\" "
+                            + "SET    status = 'cancelled' "
                             + "WHERE  reservationId = ?";
 
-        String updateCopySql = "UPDATE [BookCopy] "
-                             + "SET    [status] = 'available' "
+        String updateCopySql = "UPDATE \"BookCopy\" "
+                             + "SET    status = 'available' "
                              + "WHERE  bookCopyId = ?";
 
-        String updateBookSql = "UPDATE [Book] "
+        String updateBookSql = "UPDATE \"Book\" "
                              + "SET    availableQuantity = availableQuantity + 1 "
                              + "WHERE  bookId = ?";
 
