@@ -36,7 +36,7 @@ public class UserLookupDAO {
         }
 
         String sql = "SELECT u.userId "
-                   + "FROM   [User] u "
+                   + "FROM   \"User\" u "
                    + "LEFT JOIN Student s ON u.userId = s.userId "
                    + "LEFT JOIN Lecturer l ON u.userId = l.userId "
                    + "WHERE  s.studentCode = ? "
