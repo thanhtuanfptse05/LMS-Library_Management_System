@@ -19,9 +19,9 @@ public class BookCopyDAO {
         List<Object> parameters = new ArrayList<>();
         appendFilters(sql, parameters, keyword, location, status);
         sql.append("ORDER BY COALESCE(bc.updatedAt, bc.createdAt) DESC, bc.bookCopyId DESC "
-                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        parameters.add(offset);
+                + "LIMIT ? OFFSET ?");
         parameters.add(pageSize);
+        parameters.add(offset);
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bind(ps, parameters);
@@ -49,8 +49,8 @@ public class BookCopyDAO {
     }
 
     public List<String> findLocations() throws SQLException {
-        String sql = "SELECT DISTINCT [location] FROM BookCopy WHERE [location] IS NOT NULL "
-                + "AND LTRIM(RTRIM([location])) <> '' ORDER BY [location]";
+        String sql = "SELECT DISTINCT location FROM BookCopy WHERE location IS NOT NULL "
+                + "AND LTRIM(RTRIM(location)) <> '' ORDER BY location";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -64,8 +64,8 @@ public class BookCopyDAO {
 
     public BookCopySummaryDTO getSummary() throws SQLException {
         String sql = "SELECT COUNT(*) totalCopies, "
-                + "SUM(CASE WHEN [status] = 'available' THEN 1 ELSE 0 END) availableCopies, "
-                + "SUM(CASE WHEN [status] = 'borrowed' THEN 1 ELSE 0 END) borrowedCopies, "
+                + "SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) availableCopies, "
+                + "SUM(CASE WHEN status = 'borrowed' THEN 1 ELSE 0 END) borrowedCopies, "
                 + "SUM(CASE WHEN condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) incidentCopies FROM BookCopy";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -110,8 +110,8 @@ public class BookCopyDAO {
     }
 
     public int insert(Connection conn, BookCopy copy) throws SQLException {
-        String sql = "INSERT INTO BookCopy (bookId, [location], condition, [status], barcode, createdAt) "
-                + "VALUES (?, ?, 'good', 'available', ?, GETDATE())";
+        String sql = "INSERT INTO BookCopy (bookId, location, condition, status, barcode, createdAt) "
+                + "VALUES (?, ?, 'good', 'available', ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, copy.getBookId());
             ps.setString(2, copy.getLocation());
@@ -127,8 +127,8 @@ public class BookCopyDAO {
     }
 
     public void updateAvailableCopy(Connection conn, BookCopy copy) throws SQLException {
-        String sql = "UPDATE BookCopy SET [location] = ?, updatedAt = GETDATE() "
-                + "WHERE bookCopyId = ? AND [status] = 'available' AND condition = 'good'";
+        String sql = "UPDATE BookCopy SET location = ?, updatedAt = NOW() "
+                + "WHERE bookCopyId = ? AND status = 'available' AND condition = 'good'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, copy.getLocation());
             ps.setInt(2, copy.getBookCopyId());
@@ -139,7 +139,7 @@ public class BookCopyDAO {
     }
 
     public void updateLocation(Connection conn, int bookCopyId, String location) throws SQLException {
-        String sql = "UPDATE BookCopy SET [location] = ?, updatedAt = GETDATE() WHERE bookCopyId = ?";
+        String sql = "UPDATE BookCopy SET location = ?, updatedAt = NOW() WHERE bookCopyId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, location);
             ps.setInt(2, bookCopyId);
@@ -148,18 +148,18 @@ public class BookCopyDAO {
     }
 
     public void markUnavailable(Connection conn, int bookCopyId) throws SQLException {
-        updateIncidentState(conn, bookCopyId, "SET [status] = 'unavailable', updatedAt = GETDATE()",
-                "[status] = 'available' AND condition = 'good'");
+        updateIncidentState(conn, bookCopyId, "SET status = 'unavailable', updatedAt = NOW()",
+                "status = 'available' AND condition = 'good'");
     }
 
     public void restoreAvailable(Connection conn, int bookCopyId) throws SQLException {
-        updateIncidentState(conn, bookCopyId, "SET [status] = 'available', updatedAt = GETDATE()",
-                "[status] = 'unavailable' AND condition = 'good'");
+        updateIncidentState(conn, bookCopyId, "SET status = 'available', updatedAt = NOW()",
+                "status = 'unavailable' AND condition = 'good'");
     }
 
     public void resolveCondition(Connection conn, int bookCopyId, String condition) throws SQLException {
-        String sql = "UPDATE BookCopy SET condition = ?, updatedAt = GETDATE() "
-                + "WHERE bookCopyId = ? AND [status] = 'unavailable' AND condition = 'good'";
+        String sql = "UPDATE BookCopy SET condition = ?, updatedAt = NOW() "
+                + "WHERE bookCopyId = ? AND status = 'unavailable' AND condition = 'good'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, condition);
             ps.setInt(2, bookCopyId);
@@ -171,7 +171,7 @@ public class BookCopyDAO {
 
     public void updateStatusToBorrowed(Connection conn, int bookCopyId) throws SQLException {
         updateStatus(conn, bookCopyId, "borrowed", "available");
-        String sql = "UPDATE Book SET availableQuantity = availableQuantity - 1, updatedAt = GETDATE() "
+        String sql = "UPDATE Book SET availableQuantity = availableQuantity - 1, updatedAt = NOW() "
                 + "WHERE bookId = (SELECT bookId FROM BookCopy WHERE bookCopyId = ?) "
                 + "AND availableQuantity > 0";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -184,8 +184,8 @@ public class BookCopyDAO {
 
     public void updateStatusToUnavailable(Connection conn, int bookCopyId, String condition)
             throws SQLException {
-        String sql = "UPDATE BookCopy SET [status] = 'unavailable', condition = ?, updatedAt = GETDATE() "
-                + "WHERE bookCopyId = ? AND [status] = 'borrowed'";
+        String sql = "UPDATE BookCopy SET status = 'unavailable', condition = ?, updatedAt = NOW() "
+                + "WHERE bookCopyId = ? AND status = 'borrowed'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, condition);
             ps.setInt(2, bookCopyId);
@@ -196,8 +196,8 @@ public class BookCopyDAO {
     }
 
     public void updateStatusToAvailable(Connection conn, int bookCopyId) throws SQLException {
-        String sql = "UPDATE BookCopy SET [status] = 'available', condition = 'good', updatedAt = GETDATE() "
-                + "WHERE bookCopyId = ? AND [status] IN ('borrowed', 'reserved', 'unavailable')";
+        String sql = "UPDATE BookCopy SET status = 'available', condition = 'good', updatedAt = NOW() "
+                + "WHERE bookCopyId = ? AND status IN ('borrowed', 'reserved', 'unavailable')";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookCopyId);
             if (ps.executeUpdate() != 1) {
@@ -212,8 +212,8 @@ public class BookCopyDAO {
 
     private void updateStatus(Connection conn, int bookCopyId, String targetStatus, String expectedStatus)
             throws SQLException {
-        String sql = "UPDATE BookCopy SET [status] = ?, updatedAt = GETDATE() "
-                + "WHERE bookCopyId = ? AND [status] = ?";
+        String sql = "UPDATE BookCopy SET status = ?, updatedAt = NOW() "
+                + "WHERE bookCopyId = ? AND status = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, targetStatus);
             ps.setInt(2, bookCopyId);
@@ -225,9 +225,9 @@ public class BookCopyDAO {
     }
 
     private BookCopy findForUpdate(Connection conn, String predicate, Object value) throws SQLException {
-        String sql = "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.[location], "
-                + "bc.condition, bc.[status], bc.barcode, bc.createdAt, bc.updatedAt "
-                + "FROM BookCopy bc WITH (UPDLOCK, ROWLOCK) JOIN Book b ON b.bookId = bc.bookId WHERE " + predicate;
+        String sql = "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.location, "
+                + "bc.condition, bc.status, bc.barcode, bc.createdAt, bc.updatedAt "
+                + "FROM BookCopy bc JOIN Book b ON b.bookId = bc.bookId WHERE " + predicate + " FOR UPDATE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             if (value instanceof Integer) {
                 ps.setInt(1, (Integer) value);
@@ -252,8 +252,8 @@ public class BookCopyDAO {
     }
 
     private String baseSelect() {
-        return "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.[location], "
-                + "bc.condition, bc.[status], bc.barcode, bc.createdAt, bc.updatedAt "
+        return "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.location, "
+                + "bc.condition, bc.status, bc.barcode, bc.createdAt, bc.updatedAt "
                 + "FROM BookCopy bc JOIN Book b ON b.bookId = bc.bookId";
     }
 
@@ -266,13 +266,13 @@ public class BookCopyDAO {
             parameters.add(value);
         }
         if (location != null) {
-            sql.append("AND bc.[location] = ? ");
+            sql.append("AND bc.location = ? ");
             parameters.add(location);
         }
         if ("incident".equals(status)) {
             sql.append("AND bc.condition IN ('damaged', 'lost') ");
         } else if (status != null) {
-            sql.append("AND bc.[status] = ? ");
+            sql.append("AND bc.status = ? ");
             parameters.add(status);
         }
     }
