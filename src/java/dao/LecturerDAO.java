@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import model.Lecturer;
 import util.DatabaseConnection;
 
+// Verified compatibility with PostgreSQL
 public class LecturerDAO {
     private static final Logger LOGGER = Logger.getLogger(LecturerDAO.class.getName());
 
