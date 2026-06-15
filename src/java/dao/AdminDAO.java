@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import model.Admin;
 import util.DatabaseConnection;
 
+// Verified compatibility with PostgreSQL
 public class AdminDAO {
     private static final Logger LOGGER = Logger.getLogger(AdminDAO.class.getName());
 
