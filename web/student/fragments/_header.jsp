@@ -24,7 +24,7 @@
             <a class="text-primary-custom fw-semibold text-decoration-none border-bottom border-2 border-primary-custom pb-1"
                href="${pageContext.request.contextPath}/student/dashboard">Bảng điều khiển</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
-               href="${pageContext.request.contextPath}/book-search.jsp">Danh mục</a>
+               href="${pageContext.request.contextPath}/book-search">Danh mục</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
                href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
             <a class="text-on-surface-variant text-decoration-none fw-semibold small"
