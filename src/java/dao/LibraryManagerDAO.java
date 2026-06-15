@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import model.LibraryManager;
 import util.DatabaseConnection;
 
+// Verified compatibility with PostgreSQL
 public class LibraryManagerDAO {
     private static final Logger LOGGER = Logger.getLogger(LibraryManagerDAO.class.getName());
 
