@@ -58,6 +58,30 @@
         margin-bottom: 0.75rem;
     }
 
+    @media (min-width: 992px) {
+        .filter-sidebar-sticky {
+            position: sticky;
+            top: 24px;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--outline-variant) transparent;
+        }
+        
+        .filter-sidebar-sticky::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .filter-sidebar-sticky::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .filter-sidebar-sticky::-webkit-scrollbar-thumb {
+            background-color: var(--outline-variant);
+            border-radius: 3px;
+        }
+    }
+
     .pagination .page-item.active .page-link {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
@@ -119,7 +143,7 @@
             
             <!-- Sidebar Lọc -->
             <aside class="col-12 col-lg-3">
-                <div class="search-card p-4 sticky-top" style="top: 20px;">
+                <div class="search-card p-4 filter-sidebar-sticky">
                     <h5 class="fw-bold mb-4 d-flex align-items-center gap-2" style="color: var(--bs-body-color);">
                         <i class="bi bi-funnel"></i> Bộ lọc tìm kiếm
                     </h5>
