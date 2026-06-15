@@ -61,8 +61,8 @@
     @media (min-width: 992px) {
         .filter-sidebar-sticky {
             position: sticky;
-            top: 24px;
-            max-height: calc(100vh - 48px);
+            top: 130px;
+            max-height: calc(100vh - 150px);
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--outline-variant) transparent;
