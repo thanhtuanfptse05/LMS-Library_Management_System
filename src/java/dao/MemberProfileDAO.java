@@ -12,6 +12,7 @@ import util.DatabaseConnection;
 /**
  * MemberProfileDAO — Data Access Object for MemberProfile table.
  */
+// Verified compatibility with PostgreSQL
 public class MemberProfileDAO {
 
     private static final Logger LOGGER = Logger.getLogger(MemberProfileDAO.class.getName());
