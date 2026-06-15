@@ -8,8 +8,8 @@ public class AuditLogDAO {
 
     public void insert(Connection conn, Integer userId, String actionType, String entityName,
             Integer entityId, String oldValues, String newValues) throws SQLException {
-        String sql = "INSERT INTO AuditLogs (userId, actionType, [entityName], [entityId], oldValues, newValues, [timestamp]) "
-                + "VALUES (?, ?, ?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO AuditLogs (userId, actionType, entityName, entityId, oldValues, newValues, timestamp) "
+                + "VALUES (?, ?, ?, ?, ?, ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             if (userId == null) {
                 ps.setNull(1, java.sql.Types.INTEGER);
