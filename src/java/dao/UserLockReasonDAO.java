@@ -34,7 +34,7 @@ public class UserLockReasonDAO {
     private static final Logger LOGGER = Logger.getLogger(UserLockReasonDAO.class.getName());
 
     public boolean hasReason(int userId, String reason) {
-        String sql = "SELECT 1 FROM [UserLockReason] WHERE userId = ? AND reason = ?";
+        String sql = "SELECT 1 FROM UserLockReason WHERE userId = ? AND reason = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -74,7 +74,7 @@ public class UserLockReasonDAO {
     // THE LMS System SHALL COUNT remaining UserLockReason records
     // to evaluate auto-unlock condition [Node 6.27]
     public int countLockReasonsByUserId(Connection conn, int userId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM [UserLockReason] WHERE userId = ?";
+        String sql = "SELECT COUNT(*) FROM UserLockReason WHERE userId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -118,7 +118,7 @@ public class UserLockReasonDAO {
     // THE LMS System SHALL DELETE UserLockReason record WHERE reason = 'unpaid'
     // for the paying user [Node 5.26]
     public void deleteUnpaidReasonByUserId(Connection conn, int userId) throws SQLException {
-        String sql = "DELETE FROM [UserLockReason] WHERE userId = ? AND reason = 'unpaid'";
+        String sql = "DELETE FROM UserLockReason WHERE userId = ? AND reason = 'unpaid'";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -160,7 +160,7 @@ public class UserLockReasonDAO {
     // to enforce BR-22 [Node 6.6, FR-F6-01]
     public boolean hasUnpaidReason(Connection conn, int userId) throws SQLException {
         String sql = "SELECT COUNT(*) "
-                   + "FROM   [UserLockReason] "
+                   + "FROM   UserLockReason "
                    + "WHERE  userId = ? "
                    + "  AND  reason = 'unpaid'";
 
@@ -211,7 +211,7 @@ public class UserLockReasonDAO {
     // THE LMS System SHALL INSERT UserLockReason (reason='unpaid')
     // WHERE userId = ? [Node 6.17, FR-F6-04, BR-24]
     public void insertUnpaidReason(Connection conn, int userId) throws SQLException {
-        String sql = "INSERT INTO [UserLockReason] (userId, reason) "
+        String sql = "INSERT INTO UserLockReason (userId, reason) "
                    + "VALUES (?, 'unpaid')";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -234,7 +234,7 @@ public class UserLockReasonDAO {
      */
     public java.util.List<String> getReasonsByUserId(Connection conn, int userId) throws SQLException {
         java.util.List<String> reasons = new java.util.ArrayList<>();
-        String sql = "SELECT reason FROM [UserLockReason] WHERE userId = ? ORDER BY createdAt ASC";
+        String sql = "SELECT reason FROM UserLockReason WHERE userId = ? ORDER BY createdAt ASC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
