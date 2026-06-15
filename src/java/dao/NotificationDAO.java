@@ -86,9 +86,9 @@ public class NotificationDAO {
             params.add(typeFilter.trim());
         }
         sql.append("ORDER BY n.isPinned DESC, n.createdAt DESC ")
-           .append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        params.add((page - 1) * pageSize);
+           .append("LIMIT ? OFFSET ?");
         params.add(pageSize);
+        params.add((page - 1) * pageSize);
 
         List<Notification> list = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
@@ -178,9 +178,9 @@ public class NotificationDAO {
             params.add(typeFilter.trim());
         }
         sql.append("ORDER BY n.isPinned DESC, isRead ASC, n.createdAt DESC ")
-           .append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        params.add((page - 1) * pageSize);
+           .append("LIMIT ? OFFSET ?");
         params.add(pageSize);
+        params.add((page - 1) * pageSize);
 
         List<Notification> list = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
@@ -287,7 +287,7 @@ public class NotificationDAO {
      */
     public int insert(Notification notification) {
         String sql = "INSERT INTO Notification (title, content, type, isPinned, createdBy, createdAt) "
-                + "VALUES (?, ?, ?, ?, ?, GETDATE())";
+                + "VALUES (?, ?, ?, ?, ?, NOW())";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -320,7 +320,7 @@ public class NotificationDAO {
      */
     public boolean update(Notification notification) {
         String sql = "UPDATE Notification SET title = ?, content = ?, type = ?, isPinned = ?, "
-                + "updatedAt = GETDATE() WHERE notificationId = ?";
+                + "updatedAt = NOW() WHERE notificationId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -369,10 +369,10 @@ public class NotificationDAO {
      * @param notificationId ID thông báo đã đọc
      */
     public void markAsRead(int userId, int notificationId) {
-        String sql = "IF NOT EXISTS ("
+        String sql = "INSERT INTO UserNotificationStatus (userId, notificationId, readAt) "
+                + "SELECT ?, ?, NOW() WHERE NOT EXISTS ("
                 + "  SELECT 1 FROM UserNotificationStatus WHERE userId = ? AND notificationId = ?"
-                + ") "
-                + "INSERT INTO UserNotificationStatus (userId, notificationId, readAt) VALUES (?, ?, GETDATE())";
+                + ")";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -393,7 +393,7 @@ public class NotificationDAO {
      */
     public void markAllAsRead(int userId) {
         String sql = "INSERT INTO UserNotificationStatus (userId, notificationId, readAt) "
-                + "SELECT ?, n.notificationId, GETDATE() FROM Notification n "
+                + "SELECT ?, n.notificationId, NOW() FROM Notification n "
                 + "WHERE NOT EXISTS ("
                 + "  SELECT 1 FROM UserNotificationStatus uns "
                 + "  WHERE uns.userId = ? AND uns.notificationId = n.notificationId"
@@ -424,8 +424,8 @@ public class NotificationDAO {
      */
     public void insertAuditLog(Integer userId, String actionType, String entityName,
                                Integer entityId, String oldValues, String newValues) {
-        String sql = "INSERT INTO AuditLogs (userId, actionType, [entityName], [entityId], oldValues, newValues, [timestamp]) "
-                + "VALUES (?, ?, ?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO AuditLogs (userId, actionType, entityName, entityId, oldValues, newValues, timestamp) "
+                + "VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
