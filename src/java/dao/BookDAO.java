@@ -27,14 +27,14 @@ public class BookDAO {
             int offset, int pageSize) throws SQLException {
         StringBuilder sql = new StringBuilder(
                 "SELECT b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, b.price, b.imagePath, "
-                + "b.totalQuantity, b.availableQuantity, b.[status], b.createdAt, b.updatedAt "
+                + "b.totalQuantity, b.availableQuantity, b.status, b.createdAt, b.updatedAt "
                 + "FROM Book b WHERE 1=1 ");
         List<Object> parameters = new ArrayList<>();
         appendFilters(sql, parameters, keyword, categoryId, tagId, status);
         sql.append(" ORDER BY COALESCE(b.updatedAt, b.createdAt) DESC, b.bookId DESC "
-                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        parameters.add(offset);
+                + "LIMIT ? OFFSET ?");
         parameters.add(pageSize);
+        parameters.add(offset);
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -89,8 +89,8 @@ public class BookDAO {
 
     public List<Book> findAllForSelection() throws SQLException {
         String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, imagePath, "
-                + "totalQuantity, availableQuantity, [status], createdAt, updatedAt "
-                + "FROM Book WHERE [status] = 'available' ORDER BY title";
+                + "totalQuantity, availableQuantity, status, createdAt, updatedAt "
+                + "FROM Book WHERE status = 'available' ORDER BY title";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -104,7 +104,7 @@ public class BookDAO {
 
     public Book findById(Connection conn, int bookId) throws SQLException {
         String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, imagePath, "
-                + "totalQuantity, availableQuantity, [status], createdAt, updatedAt FROM Book WHERE bookId = ?";
+                + "totalQuantity, availableQuantity, status, createdAt, updatedAt FROM Book WHERE bookId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -120,7 +120,7 @@ public class BookDAO {
 
     public Book findByIsbn(Connection conn, String isbn) throws SQLException {
         String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, imagePath, "
-                + "totalQuantity, availableQuantity, [status], createdAt, updatedAt FROM Book WHERE isbn = ?";
+                + "totalQuantity, availableQuantity, status, createdAt, updatedAt FROM Book WHERE isbn = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, isbn);
             try (ResultSet rs = ps.executeQuery()) {
@@ -141,8 +141,8 @@ public class BookDAO {
 
     public int insert(Connection conn, Book book) throws SQLException {
         String sql = "INSERT INTO Book (isbn, title, author, publisher, publicationYear, price, imagePath, "
-                + "totalQuantity, availableQuantity, [status], createdAt) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 'available', GETDATE())";
+                + "totalQuantity, availableQuantity, status, createdAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 'available', NOW())";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             bindBookMetadata(ps, book, true);
             ps.executeUpdate();
@@ -157,7 +157,7 @@ public class BookDAO {
 
     public void update(Connection conn, Book book) throws SQLException {
         String sql = "UPDATE Book SET title = ?, author = ?, publisher = ?, publicationYear = ?, "
-                + "price = ?, imagePath = ?, [status] = ?, updatedAt = GETDATE() WHERE bookId = ?";
+                + "price = ?, imagePath = ?, status = ?, updatedAt = NOW() WHERE bookId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             bindBookMetadata(ps, book, false);
             ps.setInt(8, book.getBookId());
@@ -169,7 +169,7 @@ public class BookDAO {
 
     public void updateQuantities(Connection conn, int bookId, int totalDelta, int availableDelta) throws SQLException {
         String sql = "UPDATE Book SET totalQuantity = totalQuantity + ?, "
-                + "availableQuantity = availableQuantity + ?, updatedAt = GETDATE() "
+                + "availableQuantity = availableQuantity + ?, updatedAt = NOW() "
                 + "WHERE bookId = ? AND totalQuantity + ? >= 0 AND availableQuantity + ? >= 0 "
                 + "AND availableQuantity + ? <= totalQuantity + ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -187,7 +187,7 @@ public class BookDAO {
     }
 
     public void decrementTotalQuantity(Connection conn, int bookId) throws SQLException {
-        String sql = "UPDATE Book SET totalQuantity = totalQuantity - 1, updatedAt = GETDATE() "
+        String sql = "UPDATE Book SET totalQuantity = totalQuantity - 1, updatedAt = NOW() "
                 + "WHERE bookId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -198,7 +198,7 @@ public class BookDAO {
     }
 
     public void incrementAvailableQuantity(Connection conn, int bookId) throws SQLException {
-        String sql = "UPDATE Book SET availableQuantity = availableQuantity + 1, updatedAt = GETDATE() "
+        String sql = "UPDATE Book SET availableQuantity = availableQuantity + 1, updatedAt = NOW() "
                 + "WHERE bookId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -244,12 +244,12 @@ public class BookDAO {
     }
 
     public List<Book> getTopTrendingBooks(int limit) {
-        String sql = "SELECT TOP (?) b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, "
-                + "b.price, b.imagePath, b.totalQuantity, b.availableQuantity, b.[status], b.createdAt, b.updatedAt "
+        String sql = "SELECT b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, "
+                + "b.price, b.imagePath, b.totalQuantity, b.availableQuantity, b.status, b.createdAt, b.updatedAt "
                 + "FROM Book b LEFT JOIN BorrowRecord br ON br.bookId = b.bookId "
-                + "WHERE b.[status] = 'available' GROUP BY b.bookId, b.isbn, b.title, b.author, b.publisher, "
-                + "b.publicationYear, b.price, b.imagePath, b.totalQuantity, b.availableQuantity, b.[status], "
-                + "b.createdAt, b.updatedAt ORDER BY COUNT(br.borrowRecordId) DESC, b.createdAt DESC";
+                + "WHERE b.status = 'available' GROUP BY b.bookId, b.isbn, b.title, b.author, b.publisher, "
+                + "b.publicationYear, b.price, b.imagePath, b.totalQuantity, b.availableQuantity, b.status, "
+                + "b.createdAt, b.updatedAt ORDER BY COUNT(br.borrowRecordId) DESC, b.createdAt DESC LIMIT ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, limit);
@@ -292,15 +292,15 @@ public class BookDAO {
     }
 
     public List<BookSummaryDTO> getRecentBorrowedSummary(int userId, int limit) {
-        String sql = "SELECT TOP (?) br.bookId FROM BorrowRecord br WHERE br.userId = ? "
-                + "ORDER BY br.startDate DESC";
+        String sql = "SELECT br.bookId FROM BorrowRecord br WHERE br.userId = ? "
+                + "ORDER BY br.startDate DESC LIMIT ?";
         return loadSummaries(sql, limit, userId);
     }
 
     public List<BookSummaryDTO> getCandidatePoolWithTagsAndCategories(int userId, int limit) {
-        String sql = "SELECT TOP (?) b.bookId FROM Book b WHERE b.[status] = 'available' "
+        String sql = "SELECT b.bookId FROM Book b WHERE b.status = 'available' "
                 + "AND b.bookId NOT IN (SELECT br.bookId FROM BorrowRecord br WHERE br.userId = ?) "
-                + "ORDER BY b.availableQuantity DESC, b.bookId";
+                + "ORDER BY b.availableQuantity DESC, b.bookId LIMIT ?";
         return loadSummaries(sql, limit, userId);
     }
 
@@ -308,8 +308,8 @@ public class BookDAO {
         Map<Integer, BookSummaryDTO> summaries = new LinkedHashMap<>();
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, limit);
-            ps.setInt(2, userId);
+            ps.setInt(1, userId);
+            ps.setInt(2, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int bookId = rs.getInt("bookId");
@@ -337,7 +337,7 @@ public class BookDAO {
     }
 
     private List<Category> loadAllCategories() {
-        String sql = "SELECT categoryId, name, description, [status] FROM Category ORDER BY name";
+        String sql = "SELECT categoryId, name, description, status FROM Category ORDER BY name";
         List<Category> categories = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -354,7 +354,7 @@ public class BookDAO {
     }
 
     private List<Tag> loadAllTags() {
-        String sql = "SELECT tagId, name, [status] FROM Tag ORDER BY name";
+        String sql = "SELECT tagId, name, status FROM Tag ORDER BY name";
         List<Tag> tags = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -418,7 +418,7 @@ public class BookDAO {
         if ("noCopies".equals(status)) {
             sql.append("AND b.totalQuantity = 0 ");
         } else if ("available".equals(status) || "unavailable".equals(status)) {
-            sql.append("AND b.[status] = ? ");
+            sql.append("AND b.status = ? ");
             parameters.add(status);
         }
     }
@@ -437,7 +437,7 @@ public class BookDAO {
             booksById.put(book.getBookId(), book);
         }
         String placeholders = String.join(",", java.util.Collections.nCopies(books.size(), "?"));
-        String categorySql = "SELECT bc.bookId, c.categoryId, c.name, c.description, c.[status] FROM BookCategory bc "
+        String categorySql = "SELECT bc.bookId, c.categoryId, c.name, c.description, c.status FROM BookCategory bc "
                 + "JOIN Category c ON c.categoryId = bc.categoryId WHERE bc.bookId IN (" + placeholders + ") ORDER BY c.name";
         try (PreparedStatement ps = conn.prepareStatement(categorySql)) {
             bindBookIds(ps, books);
@@ -452,7 +452,7 @@ public class BookDAO {
                 }
             }
         }
-        String tagSql = "SELECT bt.bookId, t.tagId, t.name, t.[status] FROM BookTag bt "
+        String tagSql = "SELECT bt.bookId, t.tagId, t.name, t.status FROM BookTag bt "
                 + "JOIN Tag t ON t.tagId = bt.tagId WHERE bt.bookId IN (" + placeholders + ") ORDER BY t.name";
         try (PreparedStatement ps = conn.prepareStatement(tagSql)) {
             bindBookIds(ps, books);
@@ -475,7 +475,7 @@ public class BookDAO {
     }
 
     private List<Category> loadCategories(Connection conn, int bookId) throws SQLException {
-        String sql = "SELECT c.categoryId, c.name, c.description, c.[status] FROM Category c "
+        String sql = "SELECT c.categoryId, c.name, c.description, c.status FROM Category c "
                 + "JOIN BookCategory bc ON bc.categoryId = c.categoryId WHERE bc.bookId = ? ORDER BY c.name";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -495,7 +495,7 @@ public class BookDAO {
     }
 
     private List<Tag> loadTags(Connection conn, int bookId) throws SQLException {
-        String sql = "SELECT t.tagId, t.name, t.[status] FROM Tag t JOIN BookTag bt ON bt.tagId = t.tagId "
+        String sql = "SELECT t.tagId, t.name, t.status FROM Tag t JOIN BookTag bt ON bt.tagId = t.tagId "
                 + "WHERE bt.bookId = ? ORDER BY t.name";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
