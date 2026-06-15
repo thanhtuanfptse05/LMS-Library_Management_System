@@ -21,14 +21,34 @@ public class DAOMigrationTest {
         System.out.println("=== BAT DAU SNAPSHOT TEST ===");
         Map<String, Object> results = new LinkedHashMap<>();
 
+        boolean shouldInit = false;
+        for (String arg : args) {
+            if ("init".equalsIgnoreCase(arg) || "-init".equalsIgnoreCase(arg) || "--init".equalsIgnoreCase(arg)) {
+                shouldInit = true;
+                break;
+            }
+        }
+
         // Test Connection
         try (Connection conn = DatabaseConnection.getConnection()) {
             results.put("connection", "SUCCESS: Connected to database.");
             System.out.println("Ket noi database thanh cong.");
+
+            if (shouldInit) {
+                System.out.println("Nhan tham so 'init'. Dang khoi tao lai schema PostgreSQL...");
+                executeSqlFile(conn, "database/supabase/LMS_Schema_PostgreSQL.sql");
+                System.out.println("Khoi tao schema thanh cong. Dang nap seed data...");
+                executeSqlFile(conn, "database/supabase/LMS_Seed_Data_PostgreSQL.sql");
+                System.out.println("Nap seed data thanh cong.");
+            }
         } catch (Exception e) {
             results.put("connection", "FAILED: " + e.getMessage());
-            System.out.println("Ket noi database that bai: " + e.getMessage());
+            System.out.println("Ket noi hoac khoi tao database that bai: " + e.getMessage());
             e.printStackTrace(); // In ra stack trace chi tiet de debug
+            if (shouldInit) {
+                System.out.println("Dung qua trinh test do khoi tao database that bai.");
+                return;
+            }
         }
 
         // Run DAO Tests
@@ -43,6 +63,29 @@ public class DAOMigrationTest {
             LOGGER.log(Level.SEVERE, "Khong the ghi file snapshot", e);
         }
         System.out.println("=== KET THUC SNAPSHOT TEST ===");
+    }
+
+    private static void executeSqlFile(Connection conn, String filePath) throws IOException, SQLException {
+        java.nio.file.Path path = java.nio.file.Paths.get(filePath);
+        if (!java.nio.file.Files.exists(path)) {
+            path = java.nio.file.Paths.get("../" + filePath);
+        }
+        if (!java.nio.file.Files.exists(path)) {
+            path = java.nio.file.Paths.get("../../" + filePath);
+        }
+        if (!java.nio.file.Files.exists(path)) {
+            throw new IOException("Khong tim thay file SQL tai: " + filePath);
+        }
+        String sql = new String(java.nio.file.Files.readAllBytes(path), java.nio.charset.StandardCharsets.UTF_8);
+        
+        // Loai bo ky tu BOM (\uFEFF) neu co o dau file SQL
+        if (sql.startsWith("\uFEFF")) {
+            sql = sql.substring(1);
+        }
+        
+        try (java.sql.Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        }
     }
 
     private static void runTests(Map<String, Object> results) {
