@@ -59,7 +59,7 @@ public class PaymentDAO {
     // THE LMS System SHALL UPDATE Payment.status = 'completed'
     // WHERE paymentId matches [FR-F6-07, PLAN.md §3]
     public void updateStatusToCompleted(Connection conn, int paymentId) throws SQLException {
-        String sql = "UPDATE [Payment] SET [status] = 'completed' WHERE paymentId = ?";
+        String sql = "UPDATE Payment SET status = 'completed' WHERE paymentId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, paymentId);
@@ -101,7 +101,7 @@ public class PaymentDAO {
     // THE LMS System SHALL find fineId FROM [Payment] WHERE paymentId = ?
     // to bridge Payment → Fine update in same Transaction [FR-F6-07]
     public int findFineIdByPaymentId(Connection conn, int paymentId) throws SQLException {
-        String sql = "SELECT fineId FROM [Payment] WHERE paymentId = ?";
+        String sql = "SELECT fineId FROM Payment WHERE paymentId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, paymentId);
@@ -135,8 +135,8 @@ public class PaymentDAO {
      */
     public int insertPayment(Connection conn, int fineId, java.math.BigDecimal amount, String status)
             throws SQLException {
-        String sql = "INSERT INTO [Payment] (fineId, paidAmount, paymentMethod, [status], paidAt) "
-                   + "VALUES (?, ?, 'Cash', ?, GETDATE())";
+        String sql = "INSERT INTO Payment (fineId, paidAmount, paymentMethod, status, paidAt) "
+                   + "VALUES (?, ?, 'Cash', ?, NOW())";
 
         try (PreparedStatement ps = conn.prepareStatement(sql,
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
