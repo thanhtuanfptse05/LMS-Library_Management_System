@@ -43,9 +43,9 @@ public class UserDAO {
     // EARS[Event-driven]: WHEN Guest submits Login/Forgot Password Form,
     // THE LMS System SHALL Query User Data dựa trên Email [Node 5.6, 5.7]
     public User findByEmail(String email) {
-        String sql = "SELECT userId, email, passwordHash, [status], [role], "
+        String sql = "SELECT userId, email, passwordHash, status, role, "
                 + "failedLoginAttempts, lockedUntil "
-                + "FROM [User] WHERE email = ?";
+                + "FROM \"User\" WHERE email = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -68,9 +68,9 @@ public class UserDAO {
      * lockReason được lấy từ bảng UserLockReason (TOP 1, sắp xếp theo thời gian mới nhất).
      */
     public User findByUserId(int userId) {
-        String sql = "SELECT userId, email, passwordHash, [status], [role], "
+        String sql = "SELECT userId, email, passwordHash, status, role, "
                 + "failedLoginAttempts, lockedUntil "
-                + "FROM [User] WHERE userId = ?";
+                + "FROM \"User\" WHERE userId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -94,7 +94,7 @@ public class UserDAO {
     // EARS[Unwanted]: WHERE Password incorrect, THE LMS System SHALL
     // Increase failedLoginAttempts += 1 [Node 13.20]
     public void updateFailedAttempts(int userId, int attempts) {
-        String sql = "UPDATE [User] SET failedLoginAttempts = ? WHERE userId = ?";
+        String sql = "UPDATE \"User\" SET failedLoginAttempts = ? WHERE userId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -115,8 +115,8 @@ public class UserDAO {
     // Execute Temp Lock (status='locked', lockedUntil=NOW+30min,
     // reason='securitybreach' in UserLockReason, failedLoginAttempts=0) [Node 15.24]
     public void lockAccount(int userId) {
-        String sql = "UPDATE [User] SET [status] = 'locked', "
-                + "lockedUntil = DATEADD(minute, 30, GETDATE()), "
+        String sql = "UPDATE \"User\" SET status = 'locked', "
+                + "lockedUntil = NOW() + INTERVAL '30 minutes', "
                 + "failedLoginAttempts = 0 "
                 + "WHERE userId = ?";
         String sqlReason = "INSERT INTO UserLockReason (userId, reason) VALUES (?, 'securitybreach')";
@@ -146,7 +146,7 @@ public class UserDAO {
     // EARS[State-driven]: WHILE status='locked' AND lockedUntil <= NOW,
     // THE LMS System SHALL update status='active', failedLoginAttempts=0 [Node 10.17]
     public void unlockAccount(int userId) {
-        String sql = "UPDATE [User] SET [status] = 'active', "
+        String sql = "UPDATE \"User\" SET status = 'active', "
                 + "lockedUntil = NULL, "
                 + "failedLoginAttempts = 0 "
                 + "WHERE userId = ?";
@@ -167,7 +167,7 @@ public class UserDAO {
     // EARS[Event-driven]: WHERE Email tồn tại, THE LMS System SHALL
     // Generate New Password, mã hóa BCrypt VÀ update DB [Node 7.12]
     public void updatePasswordHash(int userId, String newHash) {
-        String sql = "UPDATE [User] SET passwordHash = ? WHERE userId = ?";
+        String sql = "UPDATE \"User\" SET passwordHash = ? WHERE userId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -186,7 +186,7 @@ public class UserDAO {
     // EARS[Event-driven]: WHERE Password is correct, THE LMS System SHALL
     // set failedLoginAttempts = 0 [Node 13.21]
     public void resetFailedAttempts(int userId) {
-        String sql = "UPDATE [User] SET failedLoginAttempts = 0 WHERE userId = ?";
+        String sql = "UPDATE \"User\" SET failedLoginAttempts = 0 WHERE userId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -202,8 +202,8 @@ public class UserDAO {
      * Ghi Audit Log vào bảng AuditLogs.
      */
     public void insertAuditLog(Integer userId, String actionType, String entityName, Integer entityId, String oldValues, String newValues) {
-        String sql = "INSERT INTO AuditLogs (userId, actionType, [entityName], [entityId], oldValues, newValues, [timestamp]) "
-                + "VALUES (?, ?, ?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO AuditLogs (userId, actionType, entityName, entityId, oldValues, newValues, timestamp) "
+                + "VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -247,10 +247,10 @@ public class UserDAO {
             placeholders.append("?");
         }
 
-        String sql = "SELECT u.email, COALESCE(mp.fullName, SUBSTRING(u.email, 1, CHARINDEX('@', u.email) - 1)) AS fullName "
-                + "FROM [User] u "
+        String sql = "SELECT u.email, COALESCE(mp.fullName, SUBSTRING(u.email FROM 1 FOR POSITION('@' IN u.email) - 1)) AS fullName "
+                + "FROM \"User\" u "
                 + "LEFT JOIN MemberProfile mp ON u.userId = mp.userId "
-                + "WHERE u.[status] = 'active' AND u.[role] IN (" + placeholders + ")";
+                + "WHERE u.status = 'active' AND u.role IN (" + placeholders + ")";
 
         List<UserContactDTO> result = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
@@ -301,7 +301,7 @@ public class UserDAO {
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
               + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
-              + "FROM [User] u "
+              + "FROM \"User\" u "
               + "LEFT JOIN MemberProfile p ON u.userId = p.userId "
               + "LEFT JOIN Student s ON u.userId = s.userId "
               + "LEFT JOIN Lecturer l ON u.userId = l.userId "
@@ -328,9 +328,9 @@ public class UserDAO {
             params.add(status.trim());
         }
 
-        sql.append("ORDER BY u.userId DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        params.add(offset);
+        sql.append("ORDER BY u.userId DESC LIMIT ? OFFSET ?");
         params.add(limit);
+        params.add(offset);
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -361,7 +361,7 @@ public class UserDAO {
     public int countAllUsers(String search, String role, String status) {
         StringBuilder sql = new StringBuilder(
                 "SELECT COUNT(*) "
-              + "FROM [User] u "
+              + "FROM \"User\" u "
               + "LEFT JOIN MemberProfile p ON u.userId = p.userId "
               + "LEFT JOIN Student s ON u.userId = s.userId "
               + "LEFT JOIN Lecturer l ON u.userId = l.userId "
@@ -413,7 +413,7 @@ public class UserDAO {
      * Kiểm tra Email đã tồn tại hay chưa.
      */
     public boolean existsByEmail(String email, Integer excludeUserId) {
-        String sql = "SELECT COUNT(*) FROM [User] WHERE email = ?";
+        String sql = "SELECT COUNT(*) FROM \"User\" WHERE email = ?";
         if (excludeUserId != null) {
             sql += " AND userId != ?";
         }
@@ -480,7 +480,7 @@ public class UserDAO {
      */
     public boolean createUserWithProfile(User user, MemberProfile profile, String code, String major, Integer enrollmentYear, String department) throws SQLException {
         Connection conn = null;
-        String sqlUser = "INSERT INTO [User] (email, passwordHash, [status], [role], failedLoginAttempts) VALUES (?, ?, ?, ?, 0)";
+        String sqlUser = "INSERT INTO \"User\" (email, passwordHash, status, role, failedLoginAttempts) VALUES (?, ?, ?, ?, 0)";
         String sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
@@ -582,7 +582,7 @@ public class UserDAO {
     public boolean updateUserWithProfile(User user, MemberProfile profile, String code, String major, Integer enrollmentYear, String department) throws SQLException {
         Connection conn = null;
         // Chỉ cập nhật [status] trên bảng [User] — không còn cột lockReason
-        String sqlUser = "UPDATE [User] SET [status] = ? WHERE userId = ?";
+        String sqlUser = "UPDATE \"User\" SET status = ? WHERE userId = ?";
 
         try {
             conn = DatabaseConnection.getConnection();
@@ -703,7 +703,7 @@ public class UserDAO {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false);
 
-            String sqlStatus = "UPDATE [User] SET [status] = ? WHERE userId = ?";
+            String sqlStatus = "UPDATE \"User\" SET status = ? WHERE userId = ?";
             try (PreparedStatement ps = conn.prepareStatement(sqlStatus)) {
                 ps.setString(1, status);
                 ps.setInt(2, userId);
@@ -746,7 +746,7 @@ public class UserDAO {
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
               + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
-              + "FROM [User] u "
+              + "FROM \"User\" u "
               + "LEFT JOIN MemberProfile p ON u.userId = p.userId "
               + "LEFT JOIN Student s ON u.userId = s.userId "
               + "LEFT JOIN Lecturer l ON u.userId = l.userId "
@@ -803,7 +803,7 @@ public class UserDAO {
      */
     public boolean importUsersBatch(List<UserDTO> users, String role) throws SQLException {
         Connection conn = null;
-        String sqlUser = "INSERT INTO [User] (email, passwordHash, [status], [role], failedLoginAttempts) VALUES (?, ?, 'active', ?, 0)";
+        String sqlUser = "INSERT INTO \"User\" (email, passwordHash, status, role, failedLoginAttempts) VALUES (?, ?, 'active', ?, 0)";
         String sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
@@ -924,8 +924,8 @@ public class UserDAO {
      *                      cho phép Service tầng trên thực hiện rollback
      */
     public void updateStatusToLocked(Connection conn, int userId) throws SQLException {
-        String sql = "UPDATE [User] "
-                   + "SET    [status] = 'locked' "
+        String sql = "UPDATE \"User\" "
+                   + "SET    status = 'locked' "
                    + "WHERE  userId  = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -941,8 +941,8 @@ public class UserDAO {
     // EARS[Condition-driven]: WHERE COUNT UserLockReason == 0 after payment,
     // THE LMS System SHALL UPDATE [User].status = 'active' [FR-F6-08, BR-25]
     public void updateStatusToActive(Connection conn, int userId) throws SQLException {
-        String sql = "UPDATE [User] "
-                   + "SET    [status] = 'active' "
+        String sql = "UPDATE \"User\" "
+                   + "SET    status = 'active' "
                    + "WHERE  userId  = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
