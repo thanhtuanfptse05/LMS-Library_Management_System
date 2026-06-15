@@ -19,24 +19,24 @@ public class CategoryDAO {
 
     public List<Category> search(String keyword, String status) throws SQLException {
         StringBuilder sql = new StringBuilder(
-                "SELECT c.categoryId, c.name, c.description, c.[status], c.updatedAt, c.updatedBy, "
-                + "COALESCE(mp.fullName, u.email, N'Chưa cập nhật') AS updatedByName, "
+                "SELECT c.categoryId, c.name, c.description, c.status, c.updatedAt, c.updatedBy, "
+                + "COALESCE(mp.fullName, u.email, 'Chưa cập nhật') AS updatedByName, "
                 + "COUNT(bc.bookId) AS bookCount FROM Category c "
                 + "LEFT JOIN BookCategory bc ON bc.categoryId = c.categoryId "
-                + "LEFT JOIN [User] u ON u.userId = c.updatedBy "
+                + "LEFT JOIN \"User\" u ON u.userId = c.updatedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId = c.updatedBy WHERE 1 = 1 ");
         List<String> values = new ArrayList<>();
         if (keyword != null) {
-            sql.append("AND (LOWER(c.name) LIKE ? OR LOWER(COALESCE(c.description, N'')) LIKE ?) ");
+            sql.append("AND (LOWER(c.name) LIKE ? OR LOWER(COALESCE(c.description, '')) LIKE ?) ");
             values.add("%" + keyword.toLowerCase() + "%");
             values.add("%" + keyword.toLowerCase() + "%");
         }
         if (status != null) {
-            sql.append("AND c.[status] = ? ");
+            sql.append("AND c.status = ? ");
             values.add(status);
         }
-        sql.append("GROUP BY c.categoryId, c.name, c.description, c.[status], c.updatedAt, c.updatedBy, "
-                + "mp.fullName, u.email ORDER BY CASE WHEN c.[status] = 'active' THEN 0 ELSE 1 END, c.name");
+        sql.append("GROUP BY c.categoryId, c.name, c.description, c.status, c.updatedAt, c.updatedBy, "
+                + "mp.fullName, u.email ORDER BY CASE WHEN c.status = 'active' THEN 0 ELSE 1 END, c.name");
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bindStrings(ps, values);
@@ -52,8 +52,8 @@ public class CategoryDAO {
 
     public ManagementSummaryDTO getSummary() throws SQLException {
         String sql = "SELECT COUNT(*) AS totalCount, "
-                + "SUM(CASE WHEN c.[status] = 'active' THEN 1 ELSE 0 END) AS activeCount, "
-                + "SUM(CASE WHEN c.[status] = 'hidden' THEN 1 ELSE 0 END) AS hiddenCount, "
+                + "SUM(CASE WHEN c.status = 'active' THEN 1 ELSE 0 END) AS activeCount, "
+                + "SUM(CASE WHEN c.status = 'hidden' THEN 1 ELSE 0 END) AS hiddenCount, "
                 + "SUM(CASE WHEN used.categoryId IS NULL THEN 1 ELSE 0 END) AS unusedCount "
                 + "FROM Category c LEFT JOIN (SELECT DISTINCT categoryId FROM BookCategory) used "
                 + "ON used.categoryId = c.categoryId";
@@ -72,10 +72,10 @@ public class CategoryDAO {
     }
 
     public Category findById(Connection conn, int categoryId) throws SQLException {
-        String sql = "SELECT c.categoryId, c.name, c.description, c.[status], c.updatedAt, c.updatedBy, "
-                + "COALESCE(mp.fullName, u.email, N'Chưa cập nhật') AS updatedByName, "
+        String sql = "SELECT c.categoryId, c.name, c.description, c.status, c.updatedAt, c.updatedBy, "
+                + "COALESCE(mp.fullName, u.email, 'Chưa cập nhật') AS updatedByName, "
                 + "(SELECT COUNT(*) FROM BookCategory bc WHERE bc.categoryId = c.categoryId) AS bookCount "
-                + "FROM Category c LEFT JOIN [User] u ON u.userId = c.updatedBy "
+                + "FROM Category c LEFT JOIN \"User\" u ON u.userId = c.updatedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId = c.updatedBy WHERE c.categoryId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, categoryId);
@@ -86,10 +86,10 @@ public class CategoryDAO {
     }
 
     public Category findByName(Connection conn, String name) throws SQLException {
-        String sql = "SELECT c.categoryId, c.name, c.description, c.[status], c.updatedAt, c.updatedBy, "
-                + "COALESCE(mp.fullName, u.email, N'Chưa cập nhật') AS updatedByName, "
+        String sql = "SELECT c.categoryId, c.name, c.description, c.status, c.updatedAt, c.updatedBy, "
+                + "COALESCE(mp.fullName, u.email, 'Chưa cập nhật') AS updatedByName, "
                 + "(SELECT COUNT(*) FROM BookCategory bc WHERE bc.categoryId = c.categoryId) AS bookCount "
-                + "FROM Category c LEFT JOIN [User] u ON u.userId = c.updatedBy "
+                + "FROM Category c LEFT JOIN \"User\" u ON u.userId = c.updatedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId = c.updatedBy WHERE LOWER(c.name) = LOWER(?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, name);
@@ -114,8 +114,8 @@ public class CategoryDAO {
     }
 
     public int insert(Connection conn, Category category, int actorId) throws SQLException {
-        String sql = "INSERT INTO Category (name, description, [status], updatedAt, updatedBy) "
-                + "VALUES (?, ?, ?, GETDATE(), ?)";
+        String sql = "INSERT INTO Category (name, description, status, updatedAt, updatedBy) "
+                + "VALUES (?, ?, ?, NOW(), ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, category.getName());
             ps.setString(2, category.getDescription());
@@ -132,8 +132,8 @@ public class CategoryDAO {
     }
 
     public void update(Connection conn, Category category, int actorId) throws SQLException {
-        String sql = "UPDATE Category SET name = ?, description = ?, [status] = ?, "
-                + "updatedAt = GETDATE(), updatedBy = ? WHERE categoryId = ?";
+        String sql = "UPDATE Category SET name = ?, description = ?, status = ?, "
+                + "updatedAt = NOW(), updatedBy = ? WHERE categoryId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, category.getName());
             ps.setString(2, category.getDescription());
