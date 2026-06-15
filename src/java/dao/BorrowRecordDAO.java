@@ -25,10 +25,10 @@ public class BorrowRecordDAO {
 
     public int insert(Connection conn, int userId, int bookCopyId, int bookId,
                       int createdBy, Timestamp endDate) throws SQLException {
-        String sql = "INSERT INTO [BorrowRecord] "
+        String sql = "INSERT INTO BorrowRecord "
                    + "    (userId, bookCopyId, bookId, startDate, endDate, "
-                   + "     [status], extensionCount, createdBy) "
-                   + "VALUES (?, ?, ?, GETDATE(), ?, 'borrowed', 0, ?)";
+                   + "     status, extensionCount, createdBy) "
+                   + "VALUES (?, ?, ?, NOW(), ?, 'borrowed', 0, ?)";
 
         try (PreparedStatement ps = conn.prepareStatement(sql,
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -104,9 +104,9 @@ public class BorrowRecordDAO {
     // WHERE borrowRecordId = ? [Node 6.14, FR-F6-04]
     public void updateStatusToReturned(Connection conn, int borrowRecordId)
             throws SQLException {
-        String sql = "UPDATE [BorrowRecord] "
-                   + "SET    [status]    = 'returned', "
-                   + "       returnedAt  = GETDATE() "
+        String sql = "UPDATE BorrowRecord "
+                   + "SET    status      = 'returned', "
+                   + "       returnedAt  = NOW() "
                    + "WHERE  borrowRecordId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -139,9 +139,9 @@ public class BorrowRecordDAO {
     // WHERE borrowRecordId = ? [Node 6.17, FR-F6-04]
     public void updateStatusToDamagedOrLost(Connection conn, int borrowRecordId, String newStatus)
             throws SQLException {
-        String sql = "UPDATE [BorrowRecord] "
-                   + "SET    [status]    = ?, "
-                   + "       returnedAt  = GETDATE() "
+        String sql = "UPDATE BorrowRecord "
+                   + "SET    status      = ?, "
+                   + "       returnedAt  = NOW() "
                    + "WHERE  borrowRecordId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -182,11 +182,11 @@ public class BorrowRecordDAO {
     public BorrowRecord findActiveBorrowRecord(Connection conn, int bookCopyId)
             throws SQLException {
         String sql = "SELECT borrowRecordId, userId, bookCopyId, bookId, "
-                   + "       startDate, endDate, returnedAt, [status], "
+                   + "       startDate, endDate, returnedAt, status, "
                    + "       extensionCount, createdBy, createdAt "
-                   + "FROM   [BorrowRecord] "
+                   + "FROM   BorrowRecord "
                    + "WHERE  bookCopyId = ? "
-                   + "  AND  [status]   = 'borrowed'";
+                   + "  AND  status     = 'borrowed'";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookCopyId);
@@ -232,11 +232,11 @@ public class BorrowRecordDAO {
     public List<BorrowRecord> findActiveBorrowRecordsByUserId(Connection conn, int userId) throws SQLException {
         List<BorrowRecord> list = new ArrayList<>();
         String sql = "SELECT borrowRecordId, userId, bookCopyId, bookId, "
-                   + "       startDate, endDate, returnedAt, [status], "
+                   + "       startDate, endDate, returnedAt, status, "
                    + "       extensionCount, createdBy, createdAt "
-                   + "FROM   [BorrowRecord] "
+                   + "FROM   BorrowRecord "
                    + "WHERE  userId   = ? "
-                   + "  AND  [status] = 'borrowed' "
+                   + "  AND  status   = 'borrowed' "
                    + "ORDER BY startDate DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
