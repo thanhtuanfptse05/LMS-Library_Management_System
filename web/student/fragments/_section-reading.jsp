@@ -21,7 +21,7 @@
                         <div class="raised-card p-4 d-flex flex-column flex-sm-row gap-4">
                             <!-- Book Cover -->
                             <img class="book-cover-img"
-                                 src="${not empty loan.book.coverImageUrl ? loan.book.coverImageUrl : 'https://via.placeholder.com/96x144?text=No+Cover'}"
+                                 src="${not empty loan.book.imagePath ? loan.book.imagePath : 'https://via.placeholder.com/96x144?text=No+Cover'}"
                                  alt="<c:out value='${loan.book.title}'/>"
                                  onerror="this.src='https://via.placeholder.com/96x144?text=Không+Cover'" />
 
@@ -128,7 +128,7 @@
                                     <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
                                         <img class="w-100 h-100"
                                              style="object-fit: cover;"
-                                             src="${not empty book.coverImageUrl ? book.coverImageUrl : 'https://via.placeholder.com/100x150?text=No+Cover'}"
+                                             src="${not empty book.imagePath ? book.imagePath : 'https://via.placeholder.com/100x150?text=No+Cover'}"
                                              alt="<c:out value='${book.title}'/>"
                                              onerror="this.src='https://via.placeholder.com/100x150?text=Không+Cover'" />
                                     </div>

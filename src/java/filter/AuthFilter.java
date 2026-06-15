@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import dao.UserDAO;
+import dao.UserLockReasonDAO;
 import model.User;
 
 /**
@@ -64,7 +65,8 @@ public class AuthFilter implements Filter {
                     isLoggedIn = false;
                     session = null;
                     
-                    String errorParam = "locked";
+                    String errorParam = user != null
+                            && new UserLockReasonDAO().hasReason(userId, "unpaid") ? "unpaid" : "locked";
                     httpResponse.sendRedirect(contextPath + "/login?error=" + errorParam);
                     return;
                 }
@@ -86,8 +88,20 @@ public class AuthFilter implements Filter {
         boolean isManagerRoute = path.startsWith("/manager/") || path.equals("/manager");
         boolean isStudentRoute = path.startsWith("/student/") || path.equals("/student");
         boolean isLecturerRoute = path.startsWith("/lecturer/") || path.equals("/lecturer");
+        boolean isBookManagementRoute = path.startsWith("/book-management/") || path.equals("/book-management");
 
-        if (isAdminRoute) {
+        if (isBookManagementRoute) {
+            if (!isLoggedIn) {
+                httpResponse.sendRedirect(contextPath + "/login");
+                return;
+            }
+            if (!"ADMIN".equalsIgnoreCase(role) && !"LIBRARIAN".equalsIgnoreCase(role)
+                    && !"MANAGER".equalsIgnoreCase(role)) {
+                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                        "Bạn không có quyền truy cập chức năng quản lý sách.");
+                return;
+            }
+        } else if (isAdminRoute) {
             if (!isLoggedIn) {
                 httpResponse.sendRedirect(contextPath + "/login");
                 return;

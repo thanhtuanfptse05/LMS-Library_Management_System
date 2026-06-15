@@ -4,243 +4,302 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import model.BookCopy;
+import dto.BookCopySummaryDTO;
+import util.DatabaseConnection;
 
-/**
- * BookCopyDAO — Data Access Object cho bảng [BookCopy].
- *
- * <p>Bảng {@code BookCopy} lưu thông tin từng bản sao vật lý của đầu sách.
- * Mỗi bản sao được định danh bằng {@code barcode} duy nhất dùng để quét
- * tại quầy thư viện trong các thao tác Check-out (giao sách) và Check-in
- * (nhận trả sách).</p>
- *
- * <p>Tuân thủ nghiêm ngặt:</p>
- * <ul>
- *   <li>SEC-03: 100% câu SQL dùng {@code PreparedStatement} với tham số {@code ?}.
- *       Không sử dụng phép cộng chuỗi (String Concatenation) để tạo SQL.</li>
- *   <li>ENG-01: Mọi tài nguyên JDBC (PreparedStatement, ResultSet)
- *       được đóng an toàn bằng try-with-resources.</li>
- *   <li>ARCH-01: JDBC thuần — không ORM, không Spring JDBC.</li>
- *   <li>TRANS-01: Mọi hàm nhận {@code Connection} từ tham số để hỗ trợ
- *       Atomic Transaction được kiểm soát từ tầng Service. Hàm KHÔNG tự commit.</li>
- * </ul>
- *
- * <p>Traceability: Mapping với Activity Diagram F6 — FR-F6-03 (Check-out),
- * FR-F6-04, FR-F6-05, FR-F6-06 (Check-in), PLAN.md §3.</p>
- */
 public class BookCopyDAO {
 
-    private static final Logger LOGGER = Logger.getLogger(BookCopyDAO.class.getName());
-
-    /**
-     * Tra cứu bản sao sách theo mã vạch (barcode).
-     *
-     * <p>Được gọi là bước đầu tiên trong cả luồng Check-out (Node 5.5) và
-     * Check-in (Node 4.15) để xác định BookCopy cụ thể mà Thủ thư đang thao tác.
-     * Nếu hàm trả về {@code null}, tầng Service ném {@code IllegalStateException}
-     * với thông báo "Mã vạch không hợp lệ" (SPEC §6 — Error Handling).</p>
-     *
-     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm nhận {@code Connection}
-     * từ tham số để đảm bảo việc đọc BookCopy xảy ra trong cùng Transaction
-     * với các thao tác ghi tiếp theo, tránh TOCTOU race condition.</p>
-     *
-     * @param conn    {@code Connection} được quản lý bởi tầng Service
-     *                (đã {@code setAutoCommit(false)})
-     * @param barcode Mã vạch cần tra cứu (nhập từ scanner)
-     * @return Đối tượng {@code BookCopy} nếu tìm thấy; {@code null} nếu không tồn tại
-     * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
-     *                      cho phép Service tầng trên thực hiện rollback
-     */
-    // EARS[Event-driven]: WHEN Librarian scans barcode,
-    // THE LMS System SHALL query BookCopy WHERE barcode = ?
-    // to validate physical copy existence [Node 5.5, FR-F6-03]
-    public BookCopy findByBarcode(Connection conn, String barcode) throws SQLException {
-        String sql = "SELECT bookCopyId, bookId, [location], condition, "
-                   + "       [status], barcode, createdAt, updatedAt "
-                   + "FROM   [BookCopy] "
-                   + "WHERE  barcode = ?";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, barcode);
-
+    public List<BookCopy> search(String keyword, String location, String status, int offset, int pageSize)
+            throws SQLException {
+        StringBuilder sql = new StringBuilder(baseSelect() + " WHERE 1 = 1 ");
+        List<Object> parameters = new ArrayList<>();
+        appendFilters(sql, parameters, keyword, location, status);
+        sql.append("ORDER BY COALESCE(bc.updatedAt, bc.createdAt) DESC, bc.bookCopyId DESC "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        parameters.add(offset);
+        parameters.add(pageSize);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            bind(ps, parameters);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToBookCopy(rs);
+                List<BookCopy> copies = new ArrayList<>();
+                while (rs.next()) {
+                    copies.add(map(rs));
                 }
+                return copies;
             }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Lỗi khi tra cứu BookCopy theo barcode=" + barcode, e);
-            throw e;
         }
-
-        return null;
     }
 
-    /**
-     * Cập nhật trạng thái bản sao sách thành 'borrowed' khi giao sách.
-     *
-     * <p>Được gọi là bước cuối trong Atomic Transaction của luồng Check-out
-     * (Node 11.13 — FR-F6-03), sau khi INSERT {@code BorrowRecord}
-     * và UPDATE {@code Reservation} thành 'fulfilled' đã thành công.
-     * Ba thao tác này PHẢI xảy ra trong cùng một DB Transaction để đảm bảo
-     * tính nhất quán giữa bản ghi mượn và trạng thái kho.</p>
-     *
-     * @param conn       {@code Connection} được quản lý bởi tầng Service
-     *                   (đã {@code setAutoCommit(false)})
-     * @param bookCopyId ID bản sao sách cần cập nhật trạng thái
-     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
-     *                      cho phép Service tầng trên thực hiện rollback
-     *
-     * @see dao.BorrowRecordDAO#insert(Connection, int, int, int, int, Timestamp)
-     * @see dao.ReservationDAO#updateStatusToFulfilled(Connection, int)
-     */
-    // EARS[Event-driven]: WHEN BorrowRecord is inserted AND Reservation is fulfilled,
-    // THE LMS System SHALL UPDATE BookCopy.status = 'borrowed'
-    // WHERE bookCopyId = ? [Node 11.13, FR-F6-03]
-    public void updateStatusToBorrowed(Connection conn, int bookCopyId) throws SQLException {
-        String sql = "UPDATE [BookCopy] "
-                   + "SET    [status]   = 'borrowed', "
-                   + "       updatedAt  = GETDATE() "
-                   + "WHERE  bookCopyId = ?";
+    public int count(String keyword, String location, String status) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM BookCopy bc JOIN Book b ON b.bookId = bc.bookId WHERE 1 = 1 ");
+        List<Object> parameters = new ArrayList<>();
+        appendFilters(sql, parameters, keyword, location, status);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            bind(ps, parameters);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
+    }
 
+    public List<String> findLocations() throws SQLException {
+        String sql = "SELECT DISTINCT [location] FROM BookCopy WHERE [location] IS NOT NULL "
+                + "AND LTRIM(RTRIM([location])) <> '' ORDER BY [location]";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            List<String> locations = new ArrayList<>();
+            while (rs.next()) {
+                locations.add(rs.getString(1));
+            }
+            return locations;
+        }
+    }
+
+    public BookCopySummaryDTO getSummary() throws SQLException {
+        String sql = "SELECT COUNT(*) totalCopies, "
+                + "SUM(CASE WHEN [status] = 'available' THEN 1 ELSE 0 END) availableCopies, "
+                + "SUM(CASE WHEN [status] = 'borrowed' THEN 1 ELSE 0 END) borrowedCopies, "
+                + "SUM(CASE WHEN condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) incidentCopies FROM BookCopy";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            BookCopySummaryDTO summary = new BookCopySummaryDTO();
+            if (rs.next()) {
+                summary.setTotalCopies(rs.getInt("totalCopies"));
+                summary.setAvailableCopies(rs.getInt("availableCopies"));
+                summary.setBorrowedCopies(rs.getInt("borrowedCopies"));
+                summary.setIncidentCopies(rs.getInt("incidentCopies"));
+            }
+            return summary;
+        }
+    }
+
+    public BookCopy findById(Connection conn, int bookCopyId) throws SQLException {
+        String sql = baseSelect() + " WHERE bc.bookCopyId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookCopyId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Lỗi khi cập nhật BookCopy thành 'borrowed' cho bookCopyId=" + bookCopyId, e);
-            throw e;
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
         }
     }
 
-    /**
-     * Cập nhật trạng thái và tình trạng vật lý của bản sao sách khi nhận trả.
-     *
-     * <p>Được gọi trong luồng Check-in sách hỏng/mất (FR-F6-04) để ghi nhận
-     * bản sao đã bị loại khỏi kho (status = 'unavailable') và cập nhật
-     * tình trạng vật lý thực tế ('damaged' hoặc 'lost').</p>
-     *
-     * @param conn       {@code Connection} được quản lý bởi tầng Service
-     *                   (đã {@code setAutoCommit(false)})
-     * @param bookCopyId ID bản sao sách cần cập nhật
-     * @param condition  Tình trạng vật lý mới ('damaged' hoặc 'lost')
-     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
-     *                      cho phép Service tầng trên thực hiện rollback
-     */
-    // EARS[Event-driven]: WHEN Check-in condition IN ('damaged', 'lost'),
-    // THE LMS System SHALL UPDATE BookCopy status='unavailable', condition=?
-    // WHERE bookCopyId = ? [FR-F6-04]
-    public void updateStatusToUnavailable(Connection conn, int bookCopyId, String condition)
-            throws SQLException {
-        String sql = "UPDATE [BookCopy] "
-                   + "SET    [status]   = 'unavailable', "
-                   + "       condition  = ?, "
-                   + "       updatedAt  = GETDATE() "
-                   + "WHERE  bookCopyId = ?";
+    public BookCopy findByIdForUpdate(Connection conn, int bookCopyId) throws SQLException {
+        return findForUpdate(conn, "bc.bookCopyId = ?", bookCopyId);
+    }
 
+    public BookCopy findByBarcodeForUpdate(Connection conn, String barcode) throws SQLException {
+        return findForUpdate(conn, "bc.barcode = ?", barcode);
+    }
+
+    public BookCopy findByBarcode(Connection conn, String barcode) throws SQLException {
+        String sql = baseSelect() + " WHERE bc.barcode = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, barcode);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
+        }
+    }
+
+    public int insert(Connection conn, BookCopy copy) throws SQLException {
+        String sql = "INSERT INTO BookCopy (bookId, [location], condition, [status], barcode, createdAt) "
+                + "VALUES (?, ?, 'good', 'available', ?, GETDATE())";
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, copy.getBookId());
+            ps.setString(2, copy.getLocation());
+            ps.setString(3, copy.getBarcode());
+            ps.executeUpdate();
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+        }
+        throw new SQLException("Không thể lấy mã bản sao vừa tạo.");
+    }
+
+    public void updateAvailableCopy(Connection conn, BookCopy copy) throws SQLException {
+        String sql = "UPDATE BookCopy SET [location] = ?, updatedAt = GETDATE() "
+                + "WHERE bookCopyId = ? AND [status] = 'available' AND condition = 'good'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, copy.getLocation());
+            ps.setInt(2, copy.getBookCopyId());
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không còn ở trạng thái sẵn sàng.");
+            }
+        }
+    }
+
+    public void updateLocation(Connection conn, int bookCopyId, String location) throws SQLException {
+        String sql = "UPDATE BookCopy SET [location] = ?, updatedAt = GETDATE() WHERE bookCopyId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, location);
+            ps.setInt(2, bookCopyId);
+            if (ps.executeUpdate() != 1) throw new SQLException("Bản sao không tồn tại.");
+        }
+    }
+
+    public void markUnavailable(Connection conn, int bookCopyId) throws SQLException {
+        updateIncidentState(conn, bookCopyId, "SET [status] = 'unavailable', updatedAt = GETDATE()",
+                "[status] = 'available' AND condition = 'good'");
+    }
+
+    public void restoreAvailable(Connection conn, int bookCopyId) throws SQLException {
+        updateIncidentState(conn, bookCopyId, "SET [status] = 'available', updatedAt = GETDATE()",
+                "[status] = 'unavailable' AND condition = 'good'");
+    }
+
+    public void resolveCondition(Connection conn, int bookCopyId, String condition) throws SQLException {
+        String sql = "UPDATE BookCopy SET condition = ?, updatedAt = GETDATE() "
+                + "WHERE bookCopyId = ? AND [status] = 'unavailable' AND condition = 'good'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, condition);
             ps.setInt(2, bookCopyId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Lỗi khi cập nhật BookCopy thành 'unavailable' cho bookCopyId=" + bookCopyId, e);
-            throw e;
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không còn ở trạng thái chờ kết luận sự cố.");
+            }
         }
     }
 
-    /**
-     * Cập nhật trạng thái bản sao sách thành 'available' khi không có người chờ.
-     *
-     * <p>Được gọi trong nhánh "Queue Empty" của luồng Check-in sách tốt (FR-F6-06)
-     * khi {@code ReservationDAO.findNextInQueue()} trả về {@code null}.
-     * Đồng thời phải cập nhật {@code Book.availableQuantity + 1} trong cùng
-     * Transaction (xem {@code BookDAO.incrementAvailableQuantity}).</p>
-     *
-     * @param conn       {@code Connection} được quản lý bởi tầng Service
-     *                   (đã {@code setAutoCommit(false)})
-     * @param bookCopyId ID bản sao sách cần trả lại kho
-     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
-     *                      cho phép Service tầng trên thực hiện rollback
-     */
-    // EARS[Condition-driven]: WHERE queue is empty after good return,
-    // THE LMS System SHALL UPDATE BookCopy.status = 'available'
-    // WHERE bookCopyId = ? [Node 9.22, FR-F6-06]
+    public void updateStatusToBorrowed(Connection conn, int bookCopyId) throws SQLException {
+        updateStatus(conn, bookCopyId, "borrowed", "available");
+        String sql = "UPDATE Book SET availableQuantity = availableQuantity - 1, updatedAt = GETDATE() "
+                + "WHERE bookId = (SELECT bookId FROM BookCopy WHERE bookCopyId = ?) "
+                + "AND availableQuantity > 0";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookCopyId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Không thể đồng bộ số lượng sách khả dụng.");
+            }
+        }
+    }
+
+    public void updateStatusToUnavailable(Connection conn, int bookCopyId, String condition)
+            throws SQLException {
+        String sql = "UPDATE BookCopy SET [status] = 'unavailable', condition = ?, updatedAt = GETDATE() "
+                + "WHERE bookCopyId = ? AND [status] = 'borrowed'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, condition);
+            ps.setInt(2, bookCopyId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không ở trạng thái đang mượn.");
+            }
+        }
+    }
+
     public void updateStatusToAvailable(Connection conn, int bookCopyId) throws SQLException {
-        String sql = "UPDATE [BookCopy] "
-                   + "SET    [status]   = 'available', "
-                   + "       condition  = 'good', "
-                   + "       updatedAt  = GETDATE() "
-                   + "WHERE  bookCopyId = ?";
-
+        String sql = "UPDATE BookCopy SET [status] = 'available', condition = 'good', updatedAt = GETDATE() "
+                + "WHERE bookCopyId = ? AND [status] IN ('borrowed', 'reserved', 'unavailable')";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookCopyId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Lỗi khi cập nhật BookCopy thành 'available' cho bookCopyId=" + bookCopyId, e);
-            throw e;
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không thể chuyển về trạng thái khả dụng.");
+            }
         }
     }
 
-    /**
-     * Cập nhật trạng thái bản sao sách thành 'reserved' khi đẩy hàng chờ.
-     *
-     * <p>Được gọi trong nhánh "Has Queue" của luồng Check-in sách tốt (FR-F6-06)
-     * khi tìm thấy người chờ tiếp theo. Bản sao được giữ cho người chờ đó
-     * và không trở lại kho chung.</p>
-     *
-     * @param conn       {@code Connection} được quản lý bởi tầng Service
-     *                   (đã {@code setAutoCommit(false)})
-     * @param bookCopyId ID bản sao sách cần đặt về 'reserved'
-     * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
-     *                      cho phép Service tầng trên thực hiện rollback
-     */
-    // EARS[Condition-driven]: WHERE next-in-queue found after good return,
-    // THE LMS System SHALL UPDATE BookCopy.status = 'reserved'
-    // WHERE bookCopyId = ? [Node 9.21, FR-F6-06]
     public void updateStatusToReserved(Connection conn, int bookCopyId) throws SQLException {
-        String sql = "UPDATE [BookCopy] "
-                   + "SET    [status]   = 'reserved', "
-                   + "       updatedAt  = GETDATE() "
-                   + "WHERE  bookCopyId = ?";
+        updateStatus(conn, bookCopyId, "reserved", "available");
+    }
 
+    private void updateStatus(Connection conn, int bookCopyId, String targetStatus, String expectedStatus)
+            throws SQLException {
+        String sql = "UPDATE BookCopy SET [status] = ?, updatedAt = GETDATE() "
+                + "WHERE bookCopyId = ? AND [status] = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, bookCopyId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Lỗi khi cập nhật BookCopy thành 'reserved' cho bookCopyId=" + bookCopyId, e);
-            throw e;
+            ps.setString(1, targetStatus);
+            ps.setInt(2, bookCopyId);
+            ps.setString(3, expectedStatus);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không còn ở trạng thái phù hợp.");
+            }
         }
     }
 
-    // ========================
-    // PRIVATE HELPER METHODS
-    // ========================
+    private BookCopy findForUpdate(Connection conn, String predicate, Object value) throws SQLException {
+        String sql = "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.[location], "
+                + "bc.condition, bc.[status], bc.barcode, bc.createdAt, bc.updatedAt "
+                + "FROM BookCopy bc WITH (UPDLOCK, ROWLOCK) JOIN Book b ON b.bookId = bc.bookId WHERE " + predicate;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (value instanceof Integer) {
+                ps.setInt(1, (Integer) value);
+            } else {
+                ps.setString(1, String.valueOf(value));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
+        }
+    }
 
-    /**
-     * Ánh xạ một hàng của {@code ResultSet} sang đối tượng {@code BookCopy}.
-     *
-     * @param rs {@code ResultSet} đang trỏ đến hàng cần ánh xạ
-     * @return Đối tượng {@code BookCopy} đã được điền đầy đủ dữ liệu
-     * @throws SQLException nếu tên cột không tồn tại hoặc có lỗi đọc dữ liệu
-     */
-    private BookCopy mapResultSetToBookCopy(ResultSet rs) throws SQLException {
-        BookCopy bc = new BookCopy();
-        bc.setBookCopyId(rs.getInt("bookCopyId"));
-        bc.setBookId(rs.getInt("bookId"));
-        bc.setLocation(rs.getString("location"));
-        bc.setCondition(rs.getString("condition"));
-        bc.setStatus(rs.getString("status"));
-        bc.setBarcode(rs.getString("barcode"));
-        bc.setCreatedAt(rs.getTimestamp("createdAt"));
-        bc.setUpdatedAt(rs.getTimestamp("updatedAt"));
-        return bc;
+    private void updateIncidentState(Connection conn, int bookCopyId, String update, String predicate)
+            throws SQLException {
+        String sql = "UPDATE BookCopy " + update + " WHERE bookCopyId = ? AND " + predicate;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookCopyId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không còn ở trạng thái phù hợp.");
+            }
+        }
+    }
+
+    private String baseSelect() {
+        return "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.[location], "
+                + "bc.condition, bc.[status], bc.barcode, bc.createdAt, bc.updatedAt "
+                + "FROM BookCopy bc JOIN Book b ON b.bookId = bc.bookId";
+    }
+
+    private void appendFilters(StringBuilder sql, List<Object> parameters, String keyword, String location, String status) {
+        if (keyword != null) {
+            sql.append("AND (bc.barcode LIKE ? OR b.title LIKE ? OR b.isbn LIKE ?) ");
+            String value = "%" + keyword + "%";
+            parameters.add(value);
+            parameters.add(value);
+            parameters.add(value);
+        }
+        if (location != null) {
+            sql.append("AND bc.[location] = ? ");
+            parameters.add(location);
+        }
+        if ("incident".equals(status)) {
+            sql.append("AND bc.condition IN ('damaged', 'lost') ");
+        } else if (status != null) {
+            sql.append("AND bc.[status] = ? ");
+            parameters.add(status);
+        }
+    }
+
+    private void bind(PreparedStatement ps, List<Object> values) throws SQLException {
+        for (int i = 0; i < values.size(); i++) {
+            Object value = values.get(i);
+            if (value instanceof Integer) {
+                ps.setInt(i + 1, (Integer) value);
+            } else {
+                ps.setString(i + 1, String.valueOf(value));
+            }
+        }
+    }
+
+    private BookCopy map(ResultSet rs) throws SQLException {
+        BookCopy copy = new BookCopy();
+        copy.setBookCopyId(rs.getInt("bookCopyId"));
+        copy.setBookId(rs.getInt("bookId"));
+        copy.setBookTitle(rs.getString("bookTitle"));
+        copy.setIsbn(rs.getString("isbn"));
+        copy.setLocation(rs.getString("location"));
+        copy.setCondition(rs.getString("condition"));
+        copy.setStatus(rs.getString("status"));
+        copy.setBarcode(rs.getString("barcode"));
+        copy.setCreatedAt(rs.getTimestamp("createdAt"));
+        copy.setUpdatedAt(rs.getTimestamp("updatedAt"));
+        return copy;
     }
 }

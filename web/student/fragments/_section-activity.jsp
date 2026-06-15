@@ -44,7 +44,7 @@
                                                 <img alt=""
                                                      class="w-100 h-100"
                                                      style="object-fit: cover;"
-                                                     src="${not empty loan.book.coverImageUrl ? loan.book.coverImageUrl : ''}"
+                                                     src="${not empty loan.book.imagePath ? loan.book.imagePath : ''}"
                                                      onerror="this.style.display='none'" />
                                             </div>
                                             <span class="fw-normal text-dark small">

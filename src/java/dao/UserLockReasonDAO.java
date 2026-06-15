@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import util.DatabaseConnection;
 
 /**
  * UserLockReasonDAO — Data Access Object cho bảng [UserLockReason].
@@ -31,6 +32,21 @@ import java.util.logging.Logger;
 public class UserLockReasonDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserLockReasonDAO.class.getName());
+
+    public boolean hasReason(int userId, String reason) {
+        String sql = "SELECT 1 FROM [UserLockReason] WHERE userId = ? AND reason = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setString(2, reason);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Không thể kiểm tra lý do khóa cho userId=" + userId, e);
+            return false;
+        }
+    }
 
     /**
      * Đếm tổng số lý do khóa hiện tại của một tài khoản người dùng.

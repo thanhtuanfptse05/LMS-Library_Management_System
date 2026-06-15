@@ -2,171 +2,271 @@
 Actor: System
 Loại: Initial Node
 Tên Action: Start Book Management Flow
-Nội dung Action: Điểm bắt đầu tiến trình quản lý danh mục sách và kho vật lý.
-Nối tới: Mũi tên đi tới [Manual Action 2.2].
+Nội dung Action: Điểm bắt đầu tiến trình quản lý danh mục sách, kho vật lý, import hàng loạt và giám sát tồn kho.
+Nối tới: Mũi tên đi tới [Decision Node 2.1].
 
-[Manual Action 2.2]
-Actor: Librarian
+[Decision Node 2.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Role
+Nội dung Action: Kiểm tra phân quyền người dùng bằng AuthFilter và HttpSession.
+Nối tới:
+Nhánh [ADMIN / LIBRARIAN]: rẽ tới [Manual Action 3.1].
+Nhánh [MANAGER]: rẽ tới [Manual Action 3.2].
+Nhánh [Other Role]: rẽ tới [System Action Box 20.1].
+
+[Manual Action 3.1]
+Actor: Admin / Librarian
 Loại: Manual Action
 Tên Action: Access Book Management
-Nội dung Action: Thủ thư truy cập vào phân hệ Quản lý Sách.
-Nối tới: Mũi tên đi tới [Decision Node 3.3].
+Nội dung Action: Admin hoặc Thủ thư truy cập phân hệ Quản lý Sách với quyền đọc và thay đổi dữ liệu.
+Nối tới: Mũi tên đi tới [Decision Node 4.1].
 
-[Decision Node 3.3]
-Actor: Librarian
+[Manual Action 3.2]
+Actor: Library Manager
+Loại: Manual Action
+Tên Action: Access Inventory Monitoring
+Nội dung Action: Library Manager truy cập màn hình giám sát chỉ đọc: danh mục, tồn kho, lịch sử import, báo cáo hỏng/mất và cảnh báo lệch kho.
+Nối tới: Mũi tên đi tới [System Action Box 16.1].
+
+[Decision Node 4.1]
+Actor: Admin / Librarian
 Loại: Decision Node
 Tên Action: Choose Main Operation
 Nội dung Action: Lựa chọn thao tác nghiệp vụ chính.
 Nối tới:
-Nhánh [Add]: rẽ tới [Decision Node 4.4].
-Nhánh [View]: rẽ tới [Manual Action 4.5].
+Nhánh [Add New Book]: rẽ tới [Manual Action 5.1].
+Nhánh [Add Book Copy]: rẽ tới [Manual Action 5.2].
+Nhánh [Bulk Import]: rẽ tới [Manual Action 5.3].
+Nhánh [View / Update]: rẽ tới [Manual Action 5.4].
 
-[Decision Node 4.4]
-Actor: Librarian
-Loại: Decision Node
-Tên Action: Choose Add Operation
-Nội dung Action: Lựa chọn thao tác thêm (thêm Đầu sách online - Book hoặc Bản vật lý - Book Copy).
-Nối tới:
-Nhánh [Add New Book]: rẽ tới [Manual Action 5.6].
-Nhánh [Import Book Copy]: rẽ tới [Manual Action 5.7].
-
-[Manual Action 4.5]
-Actor: Librarian
-Loại: Manual Action
-Tên Action: View Book
-Nội dung Action: Thủ thư xem danh sách các bản online của đầu sách và chọn một sách.(gộp cả xem danh sách và chi tiết).
-Nối tới: Mũi tên đi tới [Decision Node 5.8].
-
-[Manual Action 5.6]
-Actor: Librarian
+[Manual Action 5.1]
+Actor: Admin / Librarian
 Loại: Manual Action
 Tên Action: Submit New Book Form
-Nội dung Action: Nhập metadata (Title, Author, ISBN, Price...) và gửi yêu cầu tạo sách mới.
-Nối tới: Mũi tên đi tới [Decision Node 6.9].
+Nội dung Action: Nhập metadata Book (ISBN, tiêu đề, tác giả, nhà xuất bản, năm xuất bản, giá, danh mục, thẻ) và gửi yêu cầu tạo đầu sách mới.
+Nối tới: Mũi tên đi tới [Decision Node 6.1].
 
-[Manual Action 5.7]
-Actor: Librarian
+[Manual Action 5.2]
+Actor: Admin / Librarian
 Loại: Manual Action
-Tên Action: Scan Barcode And Input Data
-Nội dung Action: Quét Barcode và nhập metadata cho bản sao vật lý.
-Nối tới: Mũi tên đi tới [Decision Node 6.10].
+Tên Action: Submit New Book Copy Form
+Nội dung Action: Nhập ISBN/BookId, Barcode và vị trí để thêm bản sao vật lý mới.
+Nối tới: Mũi tên đi tới [Decision Node 6.2].
 
-[Decision Node 5.8]
-Actor: Librarian
-Loại: Decision Node
-Tên Action: Choose Manage Operation
-Nội dung Action: Thủ thư chọn cập nhật thông tin Đầu sách hoặc xem chi tiết các Bản sao vật lý.
-Nối tới:
-Nhánh [Update Book]: rẽ tới [Manual Action 6.11].
-Nhánh [View Book Copy]: rẽ tới [System Action Box 6.12].
+[Manual Action 5.3]
+Actor: Admin / Librarian
+Loại: Manual Action
+Tên Action: Upload Excel Import File
+Nội dung Action: Tải lên file Excel .xlsx gồm sheet Books và BookCopies để import hàng loạt.
+Nối tới: Mũi tên đi tới [Decision Node 10.1].
 
-[Decision Node 6.9]
+[Manual Action 5.4]
+Actor: Admin / Librarian
+Loại: Manual Action
+Tên Action: View Book
+Nội dung Action: Xem danh sách/chi tiết Book và BookCopy trước khi chọn thao tác cập nhật.
+Nối tới: Mũi tên đi tới [Decision Node 6.3].
+
+[Decision Node 6.1]
 Actor: LMS System
 Loại: Decision Node
 Tên Action: Validate New Book Data
-Nội dung Action: Kiểm tra tính hợp lệ dữ liệu và quét trùng lặp ISBN.
+Nội dung Action: Kiểm tra dữ liệu bắt buộc, giá không âm và tính duy nhất ISBN.
 Nối tới:
-Nhánh [Invalid / Duplicate ISBN]: rẽ tới [System Action Box 10.20].
-Nhánh [Valid]: rẽ tới [System Action Box 7.13].
+Nhánh [Invalid / Duplicate ISBN]: rẽ tới [System Action Box 20.2].
+Nhánh [Valid]: rẽ tới [System Action Box 7.1].
 
-[Decision Node 6.10]
+[Decision Node 6.2]
 Actor: LMS System
 Loại: Decision Node
-Tên Action: Validate Barcode Uniqueness
-Nội dung Action: Quét trùng lặp Barcode của Bản sao sách.
+Tên Action: Validate New Book Copy Data
+Nội dung Action: Kiểm tra Book tồn tại, Barcode không trùng trong Database và dữ liệu hợp lệ.
 Nối tới:
-Nhánh [Duplicate Barcode]: rẽ tới [System Action Box 10.21].
-Nhánh [Valid]: rẽ tới [System Action Box 7.14].
+Nhánh [Invalid / Duplicate Barcode]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 7.2].
 
-[Manual Action 6.11]
-Actor: Librarian
-Loại: Manual Action
-Tên Action: Update Book Data
-Nội dung Action: Thủ thư thay đổi dữ liệu cho Book (Giá, Tag, Danh mục...).
-Nối tới: Mũi tên đi tới [Decision Node 7.15].
+[Decision Node 6.3]
+Actor: Admin / Librarian
+Loại: Decision Node
+Tên Action: Choose Manage Operation
+Nội dung Action: Chọn cập nhật metadata Book hoặc cập nhật thông tin BookCopy.
+Nối tới:
+Nhánh [Update Book]: rẽ tới [Manual Action 7.3].
+Nhánh [Update Book Copy]: rẽ tới [Manual Action 7.4].
 
-[System Action Box 6.12]
-Actor: LMS System
-Loại: System Action Box
-Tên Action: View Book Copy
-Nội dung Action: Truy vấn và hiển thị thông tin bản sao vật lý (Book Copy).
-Nối tới: Mũi tên đi tới [Manual Action 7.16].
-
-[System Action Box 7.13]
+[System Action Box 7.1]
 Actor: LMS System
 Loại: System Action Box
 Tên Action: Execute Insert Book
-Nội dung Action: Lưu Đầu sách mới vào DB, thiết lập mặc định totalQuantity = 0, availableQuantity = 0.
-Nối tới: Mũi tên đi tới [System Action Box 11.22].
+Nội dung Action: Mở transaction, tạo Book mới với totalQuantity = 0, availableQuantity = 0, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
 
-[System Action Box 7.14]
+[System Action Box 7.2]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Execute Insert Copy
-Nội dung Action: Lưu Book Copy mới vào DB. Tự động cộng 1 vào totalQuantity và availableQuantity của Đầu sách.
-Nối tới: Mũi tên đi tới [System Action Box 11.22].
+Tên Action: Execute Insert Book Copy
+Nội dung Action: Mở transaction, tạo BookCopy với condition='good', status='available', cộng 1 vào totalQuantity và availableQuantity của Book, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
 
-[Decision Node 7.15]
-Actor: LMS System
-Loại: Decision Node
-Tên Action: Validate Book Data Update
-Nội dung Action: Hệ thống kiểm tra tính hợp lệ dữ liệu cập nhật Book (Không được thay đổi thông tin định danh và quan trọng khác).
-Nối tới:
-Nhánh [Invalid]: rẽ tới [System Action Box 10.20].
-Nhánh [Valid]: rẽ tới [System Action Box 8.17].
+[Manual Action 7.3]
+Actor: Admin / Librarian
+Loại: Manual Action
+Tên Action: Update Book Data
+Nội dung Action: Thay đổi metadata Book được phép sửa, không gửi sửa ISBN, totalQuantity hoặc availableQuantity.
+Nối tới: Mũi tên đi tới [Decision Node 8.1].
 
-[Manual Action 7.16]
-Actor: Librarian
+[Manual Action 7.4]
+Actor: Admin / Librarian
 Loại: Manual Action
 Tên Action: Update Book Copy Data
-Nội dung Action: Thủ thư cập nhật dữ liệu cho Book Copy (Đổi Condition, Location,..).
-Nối tới: Mũi tên đi tới [Decision Node 8.18].
+Nội dung Action: Cập nhật location hoặc condition của BookCopy, không gửi sửa Barcode.
+Nối tới: Mũi tên đi tới [Decision Node 8.2].
 
-[System Action Box 8.17]
+[Decision Node 8.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Book Update
+Nội dung Action: Chặn sửa ISBN, totalQuantity, availableQuantity và kiểm tra dữ liệu metadata hợp lệ.
+Nối tới:
+Nhánh [Invalid]: rẽ tới [System Action Box 20.2].
+Nhánh [Valid]: rẽ tới [System Action Box 9.1].
+
+[Decision Node 8.2]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Book Copy Update
+Nội dung Action: Chặn sửa Barcode; nếu đổi condition sang damaged/lost thì yêu cầu BookCopy.status='available'.
+Nối tới:
+Nhánh [Invalid / Borrowed / Reserved]: rẽ tới [System Action Box 20.2].
+Nhánh [Valid]: rẽ tới [System Action Box 9.2].
+
+[System Action Box 9.1]
 Actor: LMS System
 Loại: System Action Box
 Tên Action: Execute Book Update
-Nội dung Action: Lưu thay đổi metadata của Đầu sách vào DB.
-Nối tới: Mũi tên đi tới [System Action Box 11.22].
+Nội dung Action: Mở transaction, lưu metadata Book được phép sửa, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
 
-[Decision Node 8.18]
+[System Action Box 9.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Book Copy Update
+Nội dung Action: Mở transaction, lưu BookCopy; nếu condition chuyển good sang damaged/lost thì giảm availableQuantity và chuyển status='unavailable'; ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[Decision Node 10.1]
 Actor: LMS System
 Loại: Decision Node
-Tên Action: Validate Book Copy Data Update
-Nội dung Action: Hệ thống kiểm tra tính hợp lệ dữ liệu cập nhật Book Copy (Không được thay đổi thông tin định danh và quan trọng khác).
+Tên Action: Validate Import File Structure
+Nội dung Action: Kiểm tra file .xlsx, sheet Books/BookCopies, đúng cột, bỏ dòng trống và giới hạn tối đa 5.000 BookCopy.
 Nối tới:
-Nhánh [Invalid]: rẽ tới [System Action Box 10.20].
-Nhánh [Valid]: rẽ tới [System Action Box 9.19].
+Nhánh [Invalid Structure / Over Limit]: rẽ tới [System Action Box 20.4].
+Nhánh [Valid Structure]: rẽ tới [Decision Node 11.1].
 
-[System Action Box 9.19]
+[Decision Node 11.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Import Data
+Nội dung Action: Kiểm tra dữ liệu bắt buộc, ISBN/Barcode trùng nội bộ, Barcode trùng Database, liên kết BookCopy bằng ISBN, Category/Tag phân tách bằng dấu chấm phẩy.
+Nối tới:
+Nhánh [Has Validation Errors]: rẽ tới [System Action Box 12.1].
+Nhánh [All Rows Valid]: rẽ tới [Manual Action 12.2].
+
+[System Action Box 12.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Execute Book Copy Data Update
-Nội dung Action: Lưu thay đổi metadata của Book Copy vào DB. Kích hoạt trigger cập nhật đồng bộ số lượng tồn kho (availableQuantity) nếu Condition thay đổi.
-Nối tới: Mũi tên đi tới [System Action Box 11.22].
+Tên Action: Save Import Errors
+Nội dung Action: Lưu BookImportBatch và BookImportError theo sheet/dòng/cột; không tạo Book, BookCopy, Category hoặc Tag.
+Nối tới: Mũi tên đi tới [System Action Box 20.4].
 
-[System Action Box 10.20]
+[Manual Action 12.2]
+Actor: Admin / Librarian
+Loại: Manual Action
+Tên Action: Confirm Bulk Import
+Nội dung Action: Xem preview hợp lệ và xác nhận import all-or-nothing.
+Nối tới: Mũi tên đi tới [System Action Box 13.1].
+
+[System Action Box 13.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Return General Error
-Nội dung Action: Trả về thông báo lỗi chung (Dữ liệu không hợp lệ, trùng ISBN, không được sửa ISBN).
-Nối tới: Mũi tên đi tới [Final Node 12.23].
+Tên Action: Execute Bulk Import Transaction
+Nội dung Action: Mở transaction, tạo Book mới, tự tạo Category/Tag chưa tồn tại, tạo BookCopy mặc định good/available, cập nhật tồn kho, ghi Audit Log tổng hợp và chi tiết.
+Nối tới: Mũi tên đi tới [Decision Node 14.1].
 
-[System Action Box 10.21]
+[Decision Node 14.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Commit Or Rollback Import
+Nội dung Action: Kiểm tra kết quả lưu dữ liệu import.
+Nối tới:
+Nhánh [SQLException / Failure]: rẽ tới [System Action Box 20.5].
+Nhánh [Success]: rẽ tới [System Action Box 21.1].
+
+[System Action Box 16.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Load Manager Monitoring Data
+Nội dung Action: Truy vấn danh mục, tồn kho, lịch sử import, báo cáo BookCopy hỏng/mất.
+Nối tới: Mũi tên đi tới [System Action Box 16.2].
+
+[System Action Box 16.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Calculate Inventory Mismatch
+Nội dung Action: Tính lệch kho trực tiếp từ Database: totalQuantity so với tổng BookCopy và availableQuantity so với số BookCopy status='available'. Không tự sửa dữ liệu.
+Nối tới: Mũi tên đi tới [System Action Box 16.3].
+
+[System Action Box 16.3]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Display Read-only Monitoring
+Nội dung Action: Hiển thị dữ liệu giám sát chỉ đọc cho Library Manager, không có thao tác sửa hoặc import.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 20.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Forbidden
+Nội dung Action: Trả về HTTP 403 cho vai trò không được phép truy cập F4.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 20.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return General Validation Error
+Nội dung Action: Hiển thị lỗi dữ liệu không hợp lệ, không được sửa định danh hoặc không được sửa số lượng tồn kho trực tiếp.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 20.3]
 Actor: LMS System
 Loại: System Action Box
 Tên Action: Return Barcode Error
-Nội dung Action: Trả về thông báo lỗi: "Mã vạch [Barcode] đã tồn tại trên hệ thống thuộc tựa sách [Tên sách]".
-Nối tới: Mũi tên đi tới [Final Node 12.23].
+Nội dung Action: Hiển thị lỗi Barcode trùng hoặc Book không tồn tại.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
 
-[System Action Box 11.22]
+[System Action Box 20.4]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Import Validation Errors
+Nội dung Action: Hiển thị toàn bộ lỗi import theo sheet, dòng và cột; không lưu dữ liệu sách.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 20.5]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Rollback Transaction And Return Error
+Nội dung Action: Rollback toàn bộ transaction, ghi log lỗi server và hiển thị thông báo lỗi hệ thống thân thiện.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 21.1]
 Actor: LMS System
 Loại: System Action Box
 Tên Action: Return Success Message
 Nội dung Action: Hiển thị thông báo thao tác hoàn tất thành công.
-Nối tới: Mũi tên đi tới [Final Node 12.23].
+Nối tới: Mũi tên đi tới [Final Node 22.1].
 
-[Final Node 12.23]
+[Final Node 22.1]
 Actor: System
 Loại: Final Node
 Tên Action: Complete Book Management Flow

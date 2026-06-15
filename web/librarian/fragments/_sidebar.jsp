@@ -1,66 +1,34 @@
-<%-- Fragment: _sidebar.jsp — Left sidebar navigation for Librarian --%>
-<!-- ════════════════ SIDEBAR ════════════════ -->
-<aside class="d-none d-lg-flex flex-column sidebar-layout gap-4 p-4"
-       style="height: 100vh; position: fixed; left: 0; top: 0;
-              background-color: var(--surface-container-low);
-              border-right: 1px solid var(--outline-variant); overflow-y: auto; z-index: 60;">
-
-    <!-- Brand -->
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<aside class="d-none d-lg-flex flex-column sidebar-layout gap-4 p-4">
     <a href="${pageContext.request.contextPath}/" class="text-decoration-none d-block">
-        <p class="fw-bold mb-0 text-primary-custom" style="font-size: 18px; line-height: 1.2;">Cổng thông tin Thư viện</p>
-        <p class="text-on-surface-variant mb-0" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;">Quầy lưu thông</p>
+        <p class="fw-bold mb-0 text-primary-custom">Cổng thông tin Thư viện</p>
+        <p class="text-on-surface-variant mb-0 text-uppercase small">Nghiệp vụ thủ thư</p>
     </a>
 
-    <!-- Navigation -->
     <div class="flex-grow-1 d-flex flex-column gap-1">
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.15em;">Lưu thông</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/dashboard">
-            <span class="material-symbols-outlined">dashboard</span><span>Bảng điều khiển</span>
-        </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-dashboard">
-            <span class="material-symbols-outlined">room_service</span><span>Quầy lưu thông</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">bookmark_add</span><span>Đặt trước</span>
-        </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/cash-payment">
-            <span class="material-symbols-outlined">payments</span><span>Thu tiền phạt</span>
-        </a>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Catalog</p>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">auto_stories</span><span>Danh mục chính</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">inventory</span><span>Kho vật lý</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">category</span><span>Thể loại</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">sell</span><span>Thẻ</span>
-        </a>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Người dùng</p>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">group</span><span>Danh bạ thành viên</span>
-        </a>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Tài khoản</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/profile">
-            <span class="material-symbols-outlined">manage_accounts</span><span>Hồ sơ của tôi</span>
-        </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/#contact">
-            <span class="material-symbols-outlined">contact_support</span><span>Trợ giúp</span>
-        </a>
-    </div>
+        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 small">Lưu thông tại quầy</p>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/dashboard"><span class="material-symbols-outlined">dashboard</span><span>Bảng điều khiển</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-dashboard"><span class="material-symbols-outlined">room_service</span><span>Bảng điều khiển quầy</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-checkout"><span class="material-symbols-outlined">output</span><span>Mượn sách</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-checkin"><span class="material-symbols-outlined">assignment_return</span><span>Trả sách</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/cash-payment"><span class="material-symbols-outlined">payments</span><span>Thanh toán tiền phạt</span></a>
 
-    <!-- Assistance Box -->
-    <div class="mt-auto p-3 rounded-3"
-         style="background-color: rgba(249, 115, 22, 0.08); border: 1px solid rgba(249, 115, 22, 0.2);">
-        <p class="fw-bold text-primary-custom mb-1 small">Cảnh báo quá hạn</p>
-        <p class="text-on-surface-variant mb-2" style="font-size: 11px;">
-            3 khoản mượn quá hạn nghiêm trọng. Gửi thông báo phạt.
-        </p>
-        <a href="#" class="btn btn-primary-custom w-100 btn-sm text-decoration-none d-block text-center rounded-3">
-            Gửi thông báo
-        </a>
+        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3 small">Quản lý sách</p>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-overview.jsp"><span class="material-symbols-outlined">space_dashboard</span><span>Tổng quan</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/titles"><span class="material-symbols-outlined">menu_book</span><span>Đầu sách</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/categories"><span class="material-symbols-outlined">category</span><span>Thể loại</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/tags"><span class="material-symbols-outlined">sell</span><span>Tag sách</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/copies"><span class="material-symbols-outlined">inventory_2</span><span>Tất cả bản sao</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/incidents"><span class="material-symbols-outlined">report</span><span>Hỏng và mất</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/inventory"><span class="material-symbols-outlined">fact_check</span><span>Đối chiếu tồn kho</span></a>
+        <c:if test="${sessionScope.role == 'ADMIN' or sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'admin' or sessionScope.role == 'librarian'}">
+            <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import"><span class="material-symbols-outlined">upload_file</span><span>Import dữ liệu</span></a>
+        </c:if>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import-history"><span class="material-symbols-outlined">history</span><span>Lịch sử xử lý</span></a>
+
+        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3 small">Tài khoản</p>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/profile"><span class="material-symbols-outlined">manage_accounts</span><span>Hồ sơ của tôi</span></a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/#contact"><span class="material-symbols-outlined">contact_support</span><span>Trợ giúp</span></a>
     </div>
 </aside>

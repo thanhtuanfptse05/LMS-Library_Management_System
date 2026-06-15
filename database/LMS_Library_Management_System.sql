@@ -135,14 +135,24 @@ CREATE TABLE AuditLogs (
 CREATE TABLE Category (
     categoryId INT IDENTITY(1,1) PRIMARY KEY,
     name NVARCHAR(255) NOT NULL,
-    description NVARCHAR(MAX) NULL
+    description NVARCHAR(MAX) NULL,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'active',
+    updatedAt DATETIME NULL,
+    updatedBy INT NULL,
+    CONSTRAINT CK_Category_Status CHECK ([status] IN ('active', 'inactive')),
+    CONSTRAINT FK_Category_UpdatedBy FOREIGN KEY (updatedBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
 
 CREATE TABLE Tag (
     tagId INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL UNIQUE
+    name NVARCHAR(100) NOT NULL UNIQUE,
+    [status] NVARCHAR(50) NOT NULL DEFAULT 'active',
+    updatedAt DATETIME NULL,
+    updatedBy INT NULL,
+    CONSTRAINT CK_Tag_Status CHECK ([status] IN ('active', 'inactive')),
+    CONSTRAINT FK_Tag_UpdatedBy FOREIGN KEY (updatedBy) REFERENCES [User](userId)
 );
 
 -- ============================================================
@@ -154,13 +164,15 @@ CREATE TABLE Book (
     author NVARCHAR(500) NULL,
     publisher NVARCHAR(255) NULL,
     publicationYear INT NULL,
-    price DECIMAL(18,2) NULL,
-    coverImage NVARCHAR(255) NULL,          -- URL ảnh bìa sách (tính năng Book Discovery)
-    totalQuantity INT NOT NULL DEFAULT 0,
-    availableQuantity INT NOT NULL DEFAULT 0,
+    price DECIMAL(18,2) NULL CHECK (price IS NULL OR price >= 0),
+    imagePath NVARCHAR(255) NULL,
+    totalQuantity INT NOT NULL DEFAULT 0 CHECK (totalQuantity >= 0),
+    availableQuantity INT NOT NULL DEFAULT 0 CHECK (availableQuantity >= 0),
     [status] NVARCHAR(50) NOT NULL DEFAULT 'available',  -- unavailable, available
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
-    updatedAt DATETIME NULL 
+    updatedAt DATETIME NULL,
+    CONSTRAINT CK_Book_AvailableQuantity_Lte_TotalQuantity CHECK (availableQuantity <= totalQuantity),
+    CONSTRAINT CK_Book_Status CHECK ([status] IN ('available', 'unavailable'))
 );
 
 -- ============================================================
@@ -199,6 +211,8 @@ CREATE TABLE BookCopy (
     createdAt DATETIME NOT NULL DEFAULT GETDATE(),
     updatedAt DATETIME NULL,
 
+    CONSTRAINT CK_BookCopy_Condition CHECK (condition IN ('good', 'damaged', 'lost')),
+    CONSTRAINT CK_BookCopy_Status CHECK ([status] IN ('available', 'unavailable', 'borrowed', 'reserved')),
     FOREIGN KEY (bookId) REFERENCES Book(bookId)
 );
 

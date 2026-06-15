@@ -1,0 +1,25 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
+<html lang="vi">
+<jsp:include page="fragments/_head.jsp" />
+<body class="d-flex flex-column">
+<jsp:include page="fragments/_sidebar.jsp" />
+<div class="d-flex main-wrapper overflow-hidden"><main class="flex-grow-1 overflow-y-auto main-content-layout">
+<jsp:include page="fragments/_header.jsp" />
+<div class="container-fluid px-4 py-4 bm-page">
+    <c:if test="${not empty sessionScope.successMessage}"><div class="alert alert-success alert-dismissible fade show"><c:out value="${sessionScope.successMessage}" /><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button></div><c:remove var="successMessage" scope="session" /></c:if>
+    <section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4"><div><p class="bm-page__eyebrow mb-1">Import &amp; lịch sử</p><h2 class="bm-page__title mb-1">Lịch sử xử lý</h2><p class="bm-page__subtitle mb-0">Theo dõi kết quả, người thực hiện và lỗi của từng phiên import sách trong một năm.</p></div><c:if test="${sessionScope.role == 'ADMIN' or sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'admin' or sessionScope.role == 'librarian'}"><a class="btn btn-primary-custom" href="${pageContext.request.contextPath}/book-management/import"><span class="material-symbols-outlined">upload_file</span>Import mới</a></c:if></section>
+    <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/book-management/import-history"><div class="row g-2"><div class="col-lg-7 bm-search"><span class="material-symbols-outlined">search</span><input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Tìm mã phiên hoặc tên tệp"></div><div class="col-md-3"><select class="form-select" name="status"><option value="">Mọi kết quả</option><option value="success" ${selectedStatus == 'success' ? 'selected' : ''}>Thành công</option><option value="failed" ${selectedStatus == 'failed' ? 'selected' : ''}>Thất bại</option></select></div><div class="col-md-2"><div class="bm-filter-actions bm-filter-actions--compact"><button class="btn bm-filter-button" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc</span></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/import-history"><span class="material-symbols-outlined">refresh</span></a></div></div></div></form>
+    <section class="bm-table-card bm-table-card--primary bm-data-table"><div class="table-responsive"><table class="table table-lms"><thead><tr><th>Mã phiên</th><th>Tệp dữ liệu</th><th>Người thực hiện</th><th>Thời gian</th><th>Kết quả</th><th>Tổng / thành công / lỗi</th><th></th></tr></thead><tbody>
+        <c:forEach var="batch" items="${batches}"><tr><td><strong>IMP-${batch.importBatchId}</strong></td><td><c:out value="${batch.fileName}" /></td><td><c:out value="${batch.importedByName}" /></td><td><fmt:formatDate value="${batch.createdAt}" pattern="dd/MM/yyyy HH:mm" /></td><td><c:choose><c:when test="${batch.status == 'success'}"><span class="bm-badge bm-badge--success">Thành công</span></c:when><c:otherwise><span class="bm-badge bm-badge--danger">Thất bại</span></c:otherwise></c:choose></td><td>${batch.totalRows} / ${batch.successRows} / ${batch.failedRows}</td><td><a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/import-history?batchId=${batch.importBatchId}">${batch.status == 'failed' ? 'Xem lỗi' : 'Chi tiết'}</a></td></tr></c:forEach>
+        <c:if test="${empty batches}"><tr><td colspan="7"><div class="bm-empty-state"><span class="material-symbols-outlined">history</span><strong>Chưa có phiên import</strong><span>Lịch sử xử lý sẽ xuất hiện sau khi tệp đầu tiên được kiểm tra.</span></div></td></tr></c:if>
+    </tbody></table></div></section>
+    <c:if test="${totalPages > 1}"><nav class="d-flex justify-content-between align-items-center mt-3"><span class="bm-section-note">Trang ${currentPage}/${totalPages} · ${totalItems} kết quả</span><div class="bm-actions"><c:url var="previousUrl" value="/book-management/import-history"><c:param name="q" value="${q}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage - 1}" /></c:url><c:url var="nextUrl" value="/book-management/import-history"><c:param name="q" value="${q}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage + 1}" /></c:url><a class="btn bm-btn-secondary ${currentPage == 1 ? 'disabled' : ''}" href="${previousUrl}">Trang trước</a><a class="btn bm-btn-secondary ${currentPage == totalPages ? 'disabled' : ''}" href="${nextUrl}">Trang sau</a></div></nav></c:if>
+</div>
+<jsp:include page="fragments/_footer.jsp" />
+<script src="${pageContext.request.contextPath}/assets/js/book-copies.js?v=20260610-3"></script>
+</main></div>
+<jsp:include page="fragments/_book-import-history-modal.jsp" />
+</body></html>

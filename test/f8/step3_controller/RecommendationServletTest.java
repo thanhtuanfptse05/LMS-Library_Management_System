@@ -276,7 +276,7 @@ public class RecommendationServletTest {
             Book b = new Book();
             b.setBookId(bookId);
             b.setTitle("Book " + bookId);
-            b.setCoverImage("http://example.com/cover_" + bookId + ".jpg");
+            b.setImagePath("http://example.com/cover_" + bookId + ".jpg");
             return b;
         }
 
@@ -288,7 +288,7 @@ public class RecommendationServletTest {
                 Book b = new Book();
                 b.setBookId(i * 100);
                 b.setTitle("Trending " + i);
-                b.setCoverImage("http://example.com/trending_" + i + ".jpg");
+                b.setImagePath("http://example.com/trending_" + i + ".jpg");
                 trending.add(b);
             }
             return trending;

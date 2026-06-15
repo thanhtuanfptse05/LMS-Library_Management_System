@@ -1,6 +1,7 @@
 package controllers;
 
 import dao.UserDAO;
+import dao.UserLockReasonDAO;
 import model.User;
 import service.AuthService;
 import jakarta.servlet.ServletException;
@@ -24,6 +25,7 @@ public class LoginServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(LoginServlet.class.getName());
     private final AuthService authService = new AuthService();
     private final UserDAO userDAO = new UserDAO();
+    private final UserLockReasonDAO userLockReasonDAO = new UserLockReasonDAO();
 
     /**
      * doGet — Hiển thị trang đăng nhập.
@@ -95,7 +97,9 @@ public class LoginServlet extends HttpServlet {
                 }
             } else {
                 // Tài khoản bị khóa vĩnh viễn hoặc bởi Admin (lockedUntil = null)
-                String errorMsg = "Tài khoản của bạn đã bị khóa bởi quản trị viên.";
+                String errorMsg = userLockReasonDAO.hasReason(user.getUserId(), "unpaid")
+                        ? "Tài khoản của bạn đã bị khóa do nợ tiền phạt chưa thanh toán."
+                        : "Tài khoản của bạn đã bị khóa bởi quản trị viên.";
                 request.setAttribute("errorMessage", errorMsg);
                 request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
                 return;
@@ -120,7 +124,7 @@ public class LoginServlet extends HttpServlet {
             // Kiểm tra xem người dùng có truyền tham số redirect để quay lại trang cũ không (ví dụ: book-detail?id=1)
             String redirectParam = request.getParameter("redirect");
             String redirectUrl = getRedirectByRole(request.getContextPath(), user.getRole());
-            if (redirectParam != null && !redirectParam.trim().isEmpty()) {
+            if (isSafeInternalRedirect(redirectParam)) {
                 redirectUrl = request.getContextPath() + "/" + redirectParam;
             }
 
@@ -146,6 +150,32 @@ public class LoginServlet extends HttpServlet {
         if (role == null) {
             return contextPath + "/login";
         }
-        return contextPath + "/";
+        switch (role.toUpperCase()) {
+            case "ADMIN":
+                return contextPath + "/admin/dashboard";
+            case "LIBRARIAN":
+                return contextPath + "/librarian/dashboard";
+            case "MANAGER":
+                return contextPath + "/manager/dashboard";
+            case "STUDENT":
+                return contextPath + "/student/dashboard";
+            case "LECTURER":
+                return contextPath + "/lecturer/dashboard";
+            default:
+                return contextPath + "/";
+        }
+    }
+
+    private boolean isSafeInternalRedirect(String redirect) {
+        if (redirect == null || redirect.isBlank()) {
+            return false;
+        }
+        String value = redirect.trim();
+        return !value.startsWith("/")
+                && !value.startsWith("\\")
+                && !value.contains("://")
+                && !value.contains("..")
+                && !value.contains("\r")
+                && !value.contains("\n");
     }
 }

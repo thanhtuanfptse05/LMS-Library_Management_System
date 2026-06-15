@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <jsp:include page="/common/_head.jsp" />
 
@@ -92,8 +93,15 @@
                         <div class="col-12 col-lg-4 border-end" style="border-color: var(--surface-container-high) !important;">
                             <div class="cover-container h-100">
                                 <c:choose>
-                                    <c:when test="${not empty book.coverImage}">
-                                        <img src="<c:out value="${book.coverImage}"/>" alt="Bìa sách <c:out value="${book.title}"/>" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                    <c:when test="${not empty book.imagePath}">
+                                        <c:choose>
+                                            <c:when test="${fn:startsWith(book.imagePath, 'http://') or fn:startsWith(book.imagePath, 'https://')}">
+                                                <img src="<c:out value="${book.imagePath}"/>" alt="Bìa sách <c:out value="${book.title}"/>" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="${pageContext.request.contextPath}/book-images/<c:out value="${book.imagePath}"/>" alt="Bìa sách <c:out value="${book.title}"/>" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:when>
                                     <c:otherwise>
                                         <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100" style="color: var(--text-muted-custom);">

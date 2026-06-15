@@ -1,0 +1,38 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="formBook" value="${param.editing == 'true' ? editBook : null}" />
+<div class="row g-3">
+    <div class="col-12">
+        <label class="form-label">Ảnh bìa</label>
+        <div class="bm-cover-upload">
+            <div class="bm-cover-upload__preview">
+                <c:choose>
+                    <c:when test="${not empty formBook.imagePath}">
+                        <img data-cover-preview src="${pageContext.request.contextPath}/book-images/${formBook.imagePath}" alt="Ảnh bìa hiện tại">
+                    </c:when>
+                    <c:otherwise>
+                        <span data-cover-placeholder class="material-symbols-outlined">menu_book</span>
+                        <img data-cover-preview alt="Xem trước ảnh bìa" hidden>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+            <div class="flex-grow-1">
+                <input class="form-control" name="imageFile" type="file" accept="image/jpeg,image/png" data-cover-input>
+                <p class="bm-section-note mt-2 mb-0">Chấp nhận JPG hoặc PNG, tối đa 5 MB.<c:if test="${param.editing == 'true'}"> Không chọn ảnh mới để giữ ảnh hiện tại.</c:if></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12"><label class="form-label">Tên sách <span class="bm-required">*</span></label><input class="form-control" name="title" required maxlength="500" value="<c:out value="${formBook.title}" />"></div>
+    <div class="col-md-6"><label class="form-label">ISBN <span class="bm-required">*</span></label><input class="form-control" name="isbn" required maxlength="20" value="<c:out value="${formBook.isbn}" />" ${param.editing == 'true' ? 'readonly' : ''}></div>
+    <div class="col-md-6"><label class="form-label">Tác giả</label><input class="form-control" name="author" maxlength="500" value="<c:out value="${formBook.author}" />"></div>
+    <div class="col-md-6"><label class="form-label">Nhà xuất bản</label><input class="form-control" name="publisher" maxlength="255" value="<c:out value="${formBook.publisher}" />"></div>
+    <div class="col-md-3"><label class="form-label">Năm xuất bản</label><input class="form-control" name="publicationYear" type="number" min="1000" max="2100" value="${formBook.publicationYear}"></div>
+    <div class="col-md-3"><label class="form-label">Giá sách</label><input class="form-control" name="price" type="number" min="0" step="1000" value="${formBook.price}"></div>
+    <c:if test="${param.editing == 'true'}">
+        <div class="col-md-6"><label class="form-label">Trạng thái</label><select class="form-select" name="bookStatus"><option value="available" ${formBook.status == 'available' ? 'selected' : ''}>Đang sử dụng</option><option value="unavailable" ${formBook.status == 'unavailable' ? 'selected' : ''}>Ngừng sử dụng</option></select></div>
+        <div class="col-md-6"><label class="form-label">Số lượng kho</label><input class="form-control" readonly value="Tổng ${formBook.totalQuantity} · Sẵn sàng ${formBook.availableQuantity}"></div>
+    </c:if>
+    <c:if test="${param.editing != 'true'}"><input type="hidden" name="bookStatus" value="available"></c:if>
+    <div class="col-md-6"><label class="form-label">Thể loại</label><div class="bm-choice-grid"><c:forEach var="category" items="${categories}"><c:set var="categorySelected" value="${param.editing == 'true' and formBook.hasCategory(category.categoryId)}" /><c:if test="${category.status == 'active' or categorySelected}"><label class="bm-choice ${category.status == 'hidden' ? 'bm-choice--hidden' : ''}"><input type="checkbox" name="categoryIds" value="${category.categoryId}" ${categorySelected ? 'checked' : ''} ${category.status == 'hidden' ? 'disabled' : ''}><span><c:out value="${category.name}" /><c:if test="${category.status == 'hidden'}"> (Đã ẩn)</c:if></span></label><c:if test="${categorySelected and category.status == 'hidden'}"><input type="hidden" name="categoryIds" value="${category.categoryId}"></c:if></c:if></c:forEach><c:if test="${empty categories}"><span class="bm-empty-note">Chưa có thể loại.</span></c:if></div></div>
+    <div class="col-md-6"><label class="form-label">Tag sách</label><div class="bm-choice-grid"><c:forEach var="tag" items="${tags}"><c:set var="tagSelected" value="${param.editing == 'true' and formBook.hasTag(tag.tagId)}" /><c:if test="${tag.status == 'active' or tagSelected}"><label class="bm-choice ${tag.status == 'hidden' ? 'bm-choice--hidden' : ''}"><input type="checkbox" name="tagIds" value="${tag.tagId}" ${tagSelected ? 'checked' : ''} ${tag.status == 'hidden' ? 'disabled' : ''}><span><c:out value="${tag.name}" /><c:if test="${tag.status == 'hidden'}"> (Đã ẩn)</c:if></span></label><c:if test="${tagSelected and tag.status == 'hidden'}"><input type="hidden" name="tagIds" value="${tag.tagId}"></c:if></c:if></c:forEach><c:if test="${empty tags}"><span class="bm-empty-note">Chưa có tag sách.</span></c:if></div></div>
+</div>

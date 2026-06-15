@@ -35,4 +35,12 @@ public final class AppConfig {
 
     /** Tên hiển thị trên email người gửi */
     public static final String SMTP_SENDER_NAME = "LMS University Library";
+
+    /**
+     * Thư mục lưu ảnh bìa đầu sách bên ngoài WAR để ảnh không mất khi triển khai lại.
+     * Có thể cấu hình bằng biến môi trường LMS_BOOK_IMAGE_DIR.
+     */
+    public static final String BOOK_IMAGE_DIRECTORY = System.getenv("LMS_BOOK_IMAGE_DIR") != null
+            ? System.getenv("LMS_BOOK_IMAGE_DIR")
+            : System.getProperty("user.home") + "/.lms/book-images";
 }

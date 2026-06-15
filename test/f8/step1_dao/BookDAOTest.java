@@ -28,7 +28,7 @@ public class BookDAOTest {
         List<Book> result = mockBookDAO.searchBooks("Java", 0, null, false, 1, 10);
         assertNotNull("Danh sách trả về không được null", result);
         assertEquals("Phải có 2 cuốn sách giả lập chứa từ Java", 2, result.size());
-        assertEquals("http://example.com/java_prog.jpg", result.get(0).getCoverImage());
+        assertEquals("http://example.com/java_prog.jpg", result.get(0).getImagePath());
     }
 
     @Test
@@ -37,15 +37,15 @@ public class BookDAOTest {
         List<Book> topBooks = mockBookDAO.getTopTrendingBooks(limit);
         assertNotNull(topBooks);
         assertEquals("Hệ thống phải luôn đảm bảo đắp đủ sách mới vào (Left Join) cho đủ số lượng limit", limit, topBooks.size());
-        assertEquals("http://example.com/trending_0.jpg", topBooks.get(0).getCoverImage());
+        assertEquals("http://example.com/trending_0.jpg", topBooks.get(0).getImagePath());
     }
 
     @Test
-    public void testGetBookByIdHasCoverImage() {
+    public void testGetBookByIdHasImagePath() {
         int bookId = 1;
         Book book = mockBookDAO.getBookById(bookId);
         assertNotNull("Sách phải tồn tại", book);
-        assertEquals("Đường dẫn ảnh bìa phải khớp", "http://example.com/cover.jpg", book.getCoverImage());
+        assertEquals("Đường dẫn ảnh bìa phải khớp", "http://example.com/cover.jpg", book.getImagePath());
     }
 
     @Test
@@ -82,10 +82,10 @@ public class BookDAOTest {
             List<Book> fakeDb = new ArrayList<>();
             Book b1 = new Book();
             b1.setTitle("Java Programming");
-            b1.setCoverImage("http://example.com/java_prog.jpg");
+            b1.setImagePath("http://example.com/java_prog.jpg");
             Book b2 = new Book();
             b2.setTitle("Advanced Java");
-            b2.setCoverImage("http://example.com/adv_java.jpg");
+            b2.setImagePath("http://example.com/adv_java.jpg");
             Book b3 = new Book();
             b3.setTitle("Python Basics");
 
@@ -107,7 +107,7 @@ public class BookDAOTest {
             List<Book> fakeDb = new ArrayList<>();
             for (int i = 0; i < limit; i++) {
                 Book book = new Book();
-                book.setCoverImage("http://example.com/trending_" + i + ".jpg");
+                book.setImagePath("http://example.com/trending_" + i + ".jpg");
                 fakeDb.add(book);
             }
             return fakeDb;
@@ -118,7 +118,7 @@ public class BookDAOTest {
             Book book = new Book();
             book.setBookId(bookId);
             book.setTitle("Mock Book");
-            book.setCoverImage("http://example.com/cover.jpg");
+            book.setImagePath("http://example.com/cover.jpg");
             return book;
         }
 

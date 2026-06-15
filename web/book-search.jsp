@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <jsp:include page="/common/_head.jsp" />
 
@@ -228,8 +229,15 @@
                                     <div class="book-card d-flex flex-column">
                                         <div class="book-img-wrapper">
                                             <c:choose>
-                                                <c:when test="${not empty book.coverImage}">
-                                                    <img src="<c:out value="${book.coverImage}"/>" alt="Bìa sách <c:out value="${book.title}"/>" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                <c:when test="${not empty book.imagePath}">
+                                                    <c:choose>
+                                                        <c:when test="${fn:startsWith(book.imagePath, 'http://') or fn:startsWith(book.imagePath, 'https://')}">
+                                                            <img src="<c:out value="${book.imagePath}"/>" alt="Bìa sách <c:out value="${book.title}"/>" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <img src="${pageContext.request.contextPath}/book-images/<c:out value="${book.imagePath}"/>" alt="Bìa sách <c:out value="${book.title}"/>" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <!-- Hiển thị ảnh mặc định nếu không có cover -->
