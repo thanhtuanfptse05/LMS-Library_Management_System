@@ -96,11 +96,10 @@
 (function () {
     var curPath = window.location.pathname;
     document.querySelectorAll('aside .sidebar-link').forEach(function(link) {
-        // Dùng link.pathname để lấy path đúng (bỏ host, port, hash)
+        var hrefAttr = link.getAttribute('href');
+        if (!hrefAttr || hrefAttr.trim() === '' || hrefAttr.trim().startsWith('#')) return;
         var linkPath = link.pathname;
-        if (!linkPath || linkPath === '#' || link.getAttribute('href') === '#') return;
-        // Exact match hoặc child path (thêm trailing slash check)
-        if (curPath === linkPath || curPath.startsWith(linkPath + '/')) {
+        if (linkPath && (curPath === linkPath || curPath.startsWith(linkPath + '/'))) {
             link.classList.add('active');
         }
     });

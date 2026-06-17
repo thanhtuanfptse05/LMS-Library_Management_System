@@ -43,27 +43,7 @@
     <!-- Right: Notifications + User -->
     <div class="d-flex align-items-center gap-2 flex-shrink-0">
         <!-- Notification bell -->
-        <a href="${pageContext.request.contextPath}/notifications"
-           class="header-icon-btn"
-           aria-label="Thông báo" title="Thông báo">
-            <span class="material-symbols-outlined">notifications</span>
-            <c:choose>
-                <c:when test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
-                    <span id="headerUnreadBadge"
-                          style="position: absolute; top: 7px; right: 5px; background: var(--primary); color: white;
-                                 font-size: 9px; border-radius: 999px; padding: 1px 5px; min-width: 16px;
-                                 text-align: center; font-weight: 700; border: 2px solid white;">
-                        <c:choose>
-                            <c:when test="${sessionScope.unreadNotificationCount > 99}">99+</c:when>
-                            <c:otherwise>${sessionScope.unreadNotificationCount}</c:otherwise>
-                        </c:choose>
-                    </span>
-                </c:when>
-                <c:otherwise>
-                    <span class="notif-dot"></span>
-                </c:otherwise>
-            </c:choose>
-        </a>
+        <jsp:include page="../../common/fragments/_notification_bell.jsp" />
 
         <button class="header-icon-btn" aria-label="Trợ giúp" title="Trung tâm Trợ giúp">
             <span class="material-symbols-outlined">help</span>

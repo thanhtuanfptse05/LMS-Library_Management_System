@@ -95,7 +95,8 @@
 (function () {
     var curPath = window.location.pathname;
     document.querySelectorAll('aside .sidebar-link').forEach(function(link) {
-        if (link.getAttribute('href') === '#') return;
+        var hrefAttr = link.getAttribute('href');
+        if (!hrefAttr || hrefAttr.trim() === '' || hrefAttr.trim().startsWith('#')) return;
         var linkPath = link.pathname;
         if (linkPath && (curPath === linkPath || curPath.startsWith(linkPath + '/'))) {
             link.classList.add('active');

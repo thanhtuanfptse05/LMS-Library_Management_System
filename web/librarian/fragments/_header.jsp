@@ -20,10 +20,8 @@
             <input class="header-search-input" placeholder="Tìm kiếm thành viên hoặc sách..." type="text" aria-label="Tìm kiếm thành viên hoặc sách" />
         </div>
 
-        <button class="header-icon-btn" aria-label="Thông báo">
-            <span class="material-symbols-outlined">notifications</span>
-            <span class="notif-dot"></span>
-        </button>
+        <!-- Notification bell -->
+        <jsp:include page="../../common/fragments/_notification_bell.jsp" />
 
         <div style="width: 1px; height: 24px; background: var(--outline-variant);"></div>
 

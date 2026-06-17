@@ -32,27 +32,8 @@
             <input class="header-search-input" placeholder="Tìm kiếm sách, tạp chí..." type="text" aria-label="Tìm kiếm danh mục thư viện" />
         </div>
 
-        <a href="${pageContext.request.contextPath}/notifications"
-           class="header-icon-btn"
-           aria-label="Thông báo">
-            <span class="material-symbols-outlined">notifications</span>
-            <c:choose>
-                <c:when test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
-                    <span id="headerUnreadBadge"
-                          style="position: absolute; top: 7px; right: 5px; background: var(--primary); color: white;
-                                 font-size: 9px; border-radius: 999px; padding: 1px 5px; min-width: 16px;
-                                 text-align: center; font-weight: 700; border: 2px solid white;">
-                        <c:choose>
-                            <c:when test="${sessionScope.unreadNotificationCount > 99}">99+</c:when>
-                            <c:otherwise>${sessionScope.unreadNotificationCount}</c:otherwise>
-                        </c:choose>
-                    </span>
-                </c:when>
-                <c:otherwise>
-                    <span class="notif-dot"></span>
-                </c:otherwise>
-            </c:choose>
-        </a>
+        <!-- Notification bell -->
+        <jsp:include page="../../common/fragments/_notification_bell.jsp" />
 
         <div style="width: 1px; height: 24px; background: var(--outline-variant);"></div>
 
