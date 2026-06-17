@@ -35,7 +35,7 @@
         </div>
 
         <!-- Notification bell -->
-        <jsp:include page="../../common/fragments/_notification_bell.jsp" />
+        <jsp:include page="/components/notification-bell" />
 
         <div style="width: 1px; height: 24px; background: var(--outline-variant);"></div>
 

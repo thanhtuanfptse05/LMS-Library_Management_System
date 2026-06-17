@@ -22,4 +22,4 @@
 
         <!-- ════ NOTIFICATION BELL ════ -->
         <c:set var="notifLink" value="${pageContext.request.contextPath}/manager/notifications" scope="request" />
-        <jsp:include page="../../common/fragments/_notification_bell.jsp" />
+        <jsp:include page="/components/notification-bell" />

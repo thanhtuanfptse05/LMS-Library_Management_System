@@ -43,7 +43,7 @@
     <!-- Right: Notifications + User -->
     <div class="d-flex align-items-center gap-2 flex-shrink-0">
         <!-- Notification bell -->
-        <jsp:include page="../../common/fragments/_notification_bell.jsp" />
+        <jsp:include page="/components/notification-bell" />
 
         <button class="header-icon-btn" aria-label="Trợ giúp" title="Trung tâm Trợ giúp">
             <span class="material-symbols-outlined">help</span>

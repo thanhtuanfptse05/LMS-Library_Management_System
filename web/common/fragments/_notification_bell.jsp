@@ -19,11 +19,11 @@
         </span>
         <!-- Unread badge -->
         <c:choose>
-            <c:when test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
+            <c:when test="${not empty unreadNotificationCount and unreadNotificationCount > 0}">
                 <span class="notif-count-badge" id="headerUnreadBadge">
                     <c:choose>
-                        <c:when test="${sessionScope.unreadNotificationCount > 99}">99+</c:when>
-                        <c:otherwise><c:out value="${sessionScope.unreadNotificationCount}"/></c:otherwise>
+                        <c:when test="${unreadNotificationCount > 99}">99+</c:when>
+                        <c:otherwise><c:out value="${unreadNotificationCount}"/></c:otherwise>
                     </c:choose>
                 </span>
             </c:when>
@@ -44,9 +44,9 @@
                     notifications_active
                 </span>
                 <span class="fw-bold" style="font-size: 15px; color: var(--on-surface);">Thông báo</span>
-                <c:if test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
+                <c:if test="${not empty unreadNotificationCount and unreadNotificationCount > 0}">
                     <span class="notif-header-count">
-                        <c:out value="${sessionScope.unreadNotificationCount}"/> mới
+                        <c:out value="${unreadNotificationCount}"/> mới
                     </span>
                 </c:if>
             </div>
