@@ -1,61 +1,102 @@
-<%-- Fragment: _sidebar.jsp — Left sidebar for Library Manager --%>
+<%-- Fragment: _sidebar.jsp — Left sidebar navigation for Library Manager --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- ════════════════ SIDEBAR ════════════════ -->
-<aside class="d-none d-lg-flex flex-column sidebar-layout gap-4 p-4"
-       style="height: 100vh; position: fixed; left: 0; top: 0;
-              background-color: var(--surface-container-low);
-              border-right: 1px solid var(--outline-variant); overflow-y: auto; z-index: 60;">
+<aside class="d-none d-lg-flex flex-column lms-sidebar sidebar-layout">
 
-    <!-- Brand -->
-    <a href="${pageContext.request.contextPath}/" class="text-decoration-none d-block">
-        <p class="fw-bold mb-0 text-primary-custom" style="font-size: 18px; line-height: 1.2;">Cổng thông tin Thư viện</p>
-        <p class="text-on-surface-variant mb-0" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;">Quản lý Điều hành</p>
+    <!-- ── Brand ── -->
+    <a href="${pageContext.request.contextPath}/" class="sidebar-brand">
+        <div class="sidebar-brand-icon">
+            <span class="material-symbols-outlined">local_library</span>
+        </div>
+        <div class="sidebar-brand-text">
+            <p class="sidebar-brand-name">LMS Thư viện</p>
+            <p class="sidebar-brand-role">Quản lý Thư viện</p>
+        </div>
     </a>
 
-    <!-- Navigation -->
-    <div class="flex-grow-1 d-flex flex-column gap-1">
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.15em;">Tổng quan</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/dashboard">
-            <span class="material-symbols-outlined">dashboard</span><span>Bảng điều khiển</span>
+    <!-- ── Nav ── -->
+    <nav class="flex-grow-1 px-3 py-2 d-flex flex-column" aria-label="Manager navigation">
+
+        <!-- Tổng quan -->
+        <p class="sidebar-section-label">Tổng quan</p>
+        <a class="sidebar-link" id="mgr-nav-dashboard" href="${pageContext.request.contextPath}/manager/dashboard">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Bảng điều khiển</span>
         </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">bar_chart</span><span>Phân tích</span>
+
+        <!-- Quản lý Chính sách -->
+        <p class="sidebar-section-label">Chính sách &amp; Cấu hình</p>
+        <a class="sidebar-link" id="mgr-nav-policy" href="#">
+            <span class="material-symbols-outlined">gavel</span>
+            <span>Chính sách Hoạt động</span>
         </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">summarize</span><span>Báo cáo</span>
+        <a class="sidebar-link" id="mgr-nav-config" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Cấu hình Hệ thống</span>
         </a>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Vận hành</p>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">people</span><span>Quản lý Nhân viên</span>
+        <a class="sidebar-link" id="mgr-nav-documents" href="${pageContext.request.contextPath}/manager/document-templates">
+            <span class="material-symbols-outlined">description</span>
+            <span>Mẫu Văn bản</span>
         </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">policy</span><span>Chính sách Thư viện</span>
+
+        <!-- Thông báo & Báo cáo -->
+        <p class="sidebar-section-label">Thông báo &amp; Báo cáo</p>
+        <a class="sidebar-link" id="mgr-nav-notifications" href="${pageContext.request.contextPath}/manager/notifications">
+            <span class="material-symbols-outlined">campaign</span>
+            <span>Quản lý Thông báo</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/notifications">
-            <span class="material-symbols-outlined">campaign</span><span>Quản lý Bảng tin</span>
+        <a class="sidebar-link" id="mgr-nav-reports" href="#">
+            <span class="material-symbols-outlined">bar_chart</span>
+            <span>Báo cáo Thống kê</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/email-templates">
-            <span class="material-symbols-outlined">mail</span><span>Mẫu Email</span>
+
+        <!-- Nhân viên -->
+        <p class="sidebar-section-label">Nhân viên</p>
+        <a class="sidebar-link" id="mgr-nav-staff" href="#">
+            <span class="material-symbols-outlined">groups</span>
+            <span>Hiệu suất Nhân viên</span>
         </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">inventory_2</span><span>Nhập sách</span>
+
+        <!-- Tài khoản -->
+        <p class="sidebar-section-label">Tài khoản</p>
+        <a class="sidebar-link" id="mgr-nav-profile" href="${pageContext.request.contextPath}/manager/profile">
+            <span class="material-symbols-outlined">manage_accounts</span>
+            <span>Hồ sơ của tôi</span>
         </a>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-1 mt-3" style="font-size: 10px; letter-spacing: 0.15em;">Tài khoản</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/profile">
-            <span class="material-symbols-outlined">manage_accounts</span><span>Hồ sơ của tôi</span>
+
+    </nav>
+
+    <!-- ── Footer ── -->
+    <div class="px-3 pb-3">
+        <a class="sidebar-link mb-2" href="#">
+            <span class="material-symbols-outlined">help</span>
+            <span>Trung tâm Trợ giúp</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/#contact">
-            <span class="material-symbols-outlined">help</span><span>Trợ giúp</span>
-        </a>
+        <div class="sidebar-status-card">
+            <p class="fw-bold mb-2 text-primary-custom" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+                <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">insights</span>
+                KPI Tháng này
+            </p>
+            <div class="d-flex align-items-center gap-2">
+                <span class="animate-pulse rounded-circle d-inline-block flex-shrink-0"
+                      style="width: 8px; height: 8px; background: #10b981;"></span>
+                <span style="font-size: 12px; color: var(--on-surface-variant);">Đạt 78% mục tiêu</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Period selector -->
-    <div class="mt-auto p-3 rounded-3" style="background-color: var(--surface-container-high); border: 1px solid var(--outline-variant);">
-        <p class="fw-bold mb-2 text-on-surface-variant" style="font-size: 11px;">Kỳ Báo cáo</p>
-        <select class="form-select form-select-sm rounded-3" style="border: 1px solid var(--outline-variant); color: var(--on-surface);" aria-label="Chọn kỳ báo cáo">
-            <option selected>Tháng này</option>
-            <option>Tháng trước</option>
-            <option>Quý này</option>
-            <option>Năm nay</option>
-        </select>
-    </div>
 </aside>
+
+<script>
+/* Manager Sidebar: auto active state */
+(function () {
+    var path = window.location.pathname;
+    document.querySelectorAll('aside .sidebar-link').forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href && href !== '#' && path.indexOf(href.split('?')[0]) !== -1) {
+            link.classList.add('active');
+        }
+    });
+})();
+</script>

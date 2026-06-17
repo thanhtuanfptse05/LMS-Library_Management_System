@@ -17,110 +17,115 @@
 
             <jsp:include page="fragments/_header.jsp" />
 
-            <div class="container-fluid px-4 py-4" style="max-width: 1400px; margin: 0 auto;">
+            <div class="container-fluid px-4 py-4" style="max-width: 1440px; margin: 0 auto;">
 
                 <!-- ─── Alert Messages ─── -->
                 <c:if test="${not empty sessionScope.successMessage}">
-                    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <span class="material-symbols-outlined me-2">check_circle</span>
-                        <c:out value="${sessionScope.successMessage}" />
+                    <div class="lms-alert lms-alert-success mb-4 alert alert-dismissible fade show" role="alert">
+                        <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;">check_circle</span>
+                        <span class="flex-grow-1"><c:out value="${sessionScope.successMessage}" /></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
                 <c:if test="${not empty sessionScope.errorMessage}">
-                    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <span class="material-symbols-outlined me-2">error</span>
-                        <c:out value="${sessionScope.errorMessage}" />
+                    <div class="lms-alert lms-alert-error mb-4 alert alert-dismissible fade show" role="alert">
+                        <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;">error</span>
+                        <span class="flex-grow-1"><c:out value="${sessionScope.errorMessage}" /></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
 
-                <!-- ─── KPI Grid ─── -->
+                <!-- ─── KPI Section Header ─── -->
                 <section class="mb-4">
                     <div class="d-flex justify-content-between align-items-end mb-3">
                         <div>
-                            <h2 class="fw-semibold mb-0" style="font-size: 20px; color: var(--on-surface);">Hiệu suất Thư viện</h2>
-                            <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Tóm tắt KPI hàng tháng — <span id="current-month"></span></p>
+                            <h2 class="fw-bold mb-1" style="font-size: 22px; color: var(--on-surface);">Hiệu suất Thư viện</h2>
+                            <p class="text-on-surface-variant mb-0" style="font-size: 13px;">
+                                Tóm tắt KPI hàng tháng —
+                                <span id="current-month" class="fw-semibold"></span>
+                            </p>
                         </div>
-                        <a href="#" class="btn btn-sm rounded-3 fw-bold px-3 d-flex align-items-center gap-1"
-                           style="background-color: var(--surface-container-high); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Xuất
+                        <a href="#" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Xuất báo cáo
                         </a>
                     </div>
+
+                    <!-- KPI Cards -->
                     <div class="row g-3">
                         <!-- Total Borrowings -->
-                        <div class="col-12 col-sm-6 col-xl-3">
-                            <div class="raised-card p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: var(--primary); background-color: var(--primary-fixed);">library_books</span>
-                                    <span class="fw-bold kpi-trend-up" style="font-size: 12px;">
-                                        <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> +8.2%
+                        <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-1">
+                            <div class="stat-card h-100" style="--card-accent: var(--primary);">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--primary);">library_books</span>
+                                    </div>
+                                    <span class="fw-bold kpi-trend-up d-flex align-items-center gap-1" style="font-size: 12px;">
+                                        <span class="material-symbols-outlined" style="font-size: 15px;">trending_up</span> +8.2%
                                     </span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Tổng số Mượn</p>
-                                <h3 class="fw-semibold mb-2" style="font-size: 24px; color: var(--on-surface);">
-                                    <c:out value="${totalBorrowings != null ? totalBorrowings : '1,254'}" />
-                                </h3>
+                                <p class="stat-label">Tổng số Mượn</p>
+                                <p class="stat-value"><c:out value="${totalBorrowings != null ? totalBorrowings : '1,254'}" /></p>
                                 <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 78%; background-color: var(--primary);"></div>
+                                    <div class="mini-progress-bar" style="width: 78%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
                                 </div>
                             </div>
                         </div>
+
                         <!-- Active Members -->
-                        <div class="col-12 col-sm-6 col-xl-3">
-                            <div class="raised-card p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: var(--tertiary); background-color: var(--tertiary-fixed);">people</span>
-                                    <span class="fw-bold kpi-trend-up" style="font-size: 12px;">
-                                        <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> +3.5%
+                        <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-2">
+                            <div class="stat-card h-100" style="--card-accent: var(--tertiary);">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--tertiary-fixed) 0%, #a0d0f5 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--tertiary);">people</span>
+                                    </div>
+                                    <span class="fw-bold kpi-trend-up d-flex align-items-center gap-1" style="font-size: 12px;">
+                                        <span class="material-symbols-outlined" style="font-size: 15px;">trending_up</span> +3.5%
                                     </span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Thành viên hoạt động</p>
-                                <h3 class="fw-semibold mb-2" style="font-size: 24px; color: var(--on-surface);">
-                                    <c:out value="${activeMembers != null ? activeMembers : '3,401'}" />
-                                </h3>
+                                <p class="stat-label">Thành viên hoạt động</p>
+                                <p class="stat-value"><c:out value="${activeMembers != null ? activeMembers : '3,401'}" /></p>
                                 <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 65%; background-color: var(--tertiary);"></div>
+                                    <div class="mini-progress-bar" style="width: 65%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
                                 </div>
                             </div>
                         </div>
+
                         <!-- Fine Revenue -->
-                        <div class="col-12 col-sm-6 col-xl-3">
-                            <div class="raised-card p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: #d97706; background-color: #fef3c7;">payments</span>
-                                    <span class="fw-bold kpi-trend-up" style="font-size: 12px;">
-                                        <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> +12.1%
+                        <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-3">
+                            <div class="stat-card h-100" style="--card-accent: var(--warning);">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--warning);">payments</span>
+                                    </div>
+                                    <span class="fw-bold kpi-trend-up d-flex align-items-center gap-1" style="font-size: 12px;">
+                                        <span class="material-symbols-outlined" style="font-size: 15px;">trending_up</span> +12.1%
                                     </span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Doanh thu Tiền phạt (VND)</p>
-                                <h3 class="fw-semibold mb-2" style="font-size: 24px; color: var(--on-surface);">
-                                    <c:out value="${fineRevenue != null ? fineRevenue : '2.4M'}" />
-                                </h3>
+                                <p class="stat-label">Doanh thu Tiền phạt (VND)</p>
+                                <p class="stat-value"><c:out value="${fineRevenue != null ? fineRevenue : '2.4M'}" /></p>
                                 <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 55%; background-color: #d97706;"></div>
+                                    <div class="mini-progress-bar" style="width: 55%; background: linear-gradient(90deg, #fde68a, var(--warning));"></div>
                                 </div>
                             </div>
                         </div>
+
                         <!-- Overdue Rate -->
-                        <div class="col-12 col-sm-6 col-xl-3">
-                            <div class="raised-card p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: var(--error); background-color: var(--error-container);">event_busy</span>
-                                    <span class="fw-bold kpi-trend-down" style="font-size: 12px;">
-                                        <span class="material-symbols-outlined" style="font-size: 14px;">trending_down</span> -1.4%
+                        <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-4">
+                            <div class="stat-card h-100" style="--card-accent: var(--error);">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--error-container) 0%, #fca5a5 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--error);">event_busy</span>
+                                    </div>
+                                    <span class="fw-bold kpi-trend-down d-flex align-items-center gap-1" style="font-size: 12px;">
+                                        <span class="material-symbols-outlined" style="font-size: 15px;">trending_down</span> -1.4%
                                     </span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Tỷ lệ Trễ hạn</p>
-                                <h3 class="fw-semibold mb-2" style="font-size: 24px; color: var(--on-surface);">5.6%</h3>
+                                <p class="stat-label">Tỷ lệ Trễ hạn</p>
+                                <p class="stat-value">5.6%</p>
                                 <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 22%; background-color: var(--error);"></div>
+                                    <div class="mini-progress-bar" style="width: 22%; background: linear-gradient(90deg, #fca5a5, var(--error));"></div>
                                 </div>
                             </div>
                         </div>
@@ -133,16 +138,16 @@
                     <!-- Left 2/3: Borrowing Chart + Staff Table -->
                     <div class="col-12 col-lg-8 d-flex flex-column gap-4">
 
-                        <!-- Monthly Borrowing Chart (visual bars) -->
+                        <!-- Monthly Borrowing Trend Chart -->
                         <div class="raised-card p-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h3 class="fw-semibold mb-0" style="font-size: 18px; color: var(--on-surface);">Xu hướng Mượn hàng tháng</h3>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Số phiếu mượn mỗi tháng (8 tháng gần nhất)</p>
+                                    <h3 class="card-title">Xu hướng Mượn hàng tháng</h3>
+                                    <p class="card-subtitle">Số phiếu mượn mỗi tháng (8 tháng gần nhất)</p>
                                 </div>
-                                <span class="badge-pill" style="background-color: var(--primary-fixed); color: var(--primary);">2025</span>
+                                <span class="badge-pill badge-primary">2025</span>
                             </div>
-                            <div class="d-flex align-items-end gap-2 pt-2" style="height: 130px; border-bottom: 1px solid var(--outline-variant);">
+                            <div class="d-flex align-items-end gap-2 pt-2" style="height: 140px; border-bottom: 2px solid var(--outline-variant);">
                                 <div class="bar-chart-col flex-fill" title="Tháng 10: 820">
                                     <div class="bar-track" style="height: 65%; background-color: var(--surface-container-high);"></div>
                                     <span style="font-size: 10px; color: var(--on-surface-variant);">Th10</span>
@@ -172,22 +177,30 @@
                                     <span style="font-size: 10px; color: var(--on-surface-variant);">Th4</span>
                                 </div>
                                 <div class="bar-chart-col flex-fill" title="Tháng 5: 1254">
-                                    <div class="bar-track" style="height: 100%; background-color: var(--primary);"></div>
-                                    <span style="font-size: 10px; font-weight: 600; color: var(--primary);">Th5</span>
+                                    <div class="bar-track" style="height: 100%; background: linear-gradient(180deg, var(--primary-container) 0%, var(--primary) 100%);"></div>
+                                    <span style="font-size: 10px; font-weight: 700; color: var(--primary);">Th5</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-4 mt-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="rounded-1 d-inline-block" style="width: 14px; height: 10px; background: var(--primary);"></span>
+                                    <span style="font-size: 12px; color: var(--on-surface-variant);">Tháng hiện tại</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="rounded-1 d-inline-block" style="width: 14px; height: 10px; background: var(--surface-container-high);"></span>
+                                    <span style="font-size: 12px; color: var(--on-surface-variant);">Tháng trước</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Staff Performance Table -->
                         <div class="raised-card overflow-hidden">
-                            <div class="p-3 d-flex justify-content-between align-items-center bg-white"
-                                 style="border-bottom: 1px solid var(--outline-variant);">
+                            <div class="card-header-row">
                                 <div>
-                                    <h3 class="fw-semibold mb-0" style="font-size: 18px; color: var(--on-surface);">Hiệu suất Nhân viên</h3>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Hoạt động hàng tháng theo thủ thư</p>
+                                    <h3 class="card-title">Hiệu suất Nhân viên</h3>
+                                    <p class="card-subtitle">Hoạt động hàng tháng theo thủ thư</p>
                                 </div>
-                                <a href="#" class="btn btn-sm rounded-3 fw-bold px-3 text-decoration-none"
-                                   style="background-color: var(--surface-container-low); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
+                                <a href="#" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 text-decoration-none">
                                     Báo cáo Chi tiết
                                 </a>
                             </div>
@@ -209,40 +222,38 @@
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <div class="avatar" style="background-color: var(--primary-fixed); color: var(--on-primary-container);">LB</div>
+                                                                <div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--primary-fixed), var(--primary-fixed-dim)); color: var(--on-primary-container);">LB</div>
                                                                 <span style="font-size: 13px; font-weight: 600;"><c:out value="${staff.name}" /></span>
                                                             </div>
                                                         </td>
-                                                        <td style="font-size: 13px; font-weight: 600;"><c:out value="${staff.issues}" /></td>
-                                                        <td style="font-size: 13px; font-weight: 600;"><c:out value="${staff.returns}" /></td>
-                                                        <td style="font-size: 13px; color: #059669; font-weight: 600;"><c:out value="${staff.fineCollected}" /></td>
-                                                        <td>
-                                                            <span class="badge-pill" style="background-color: #d1fae5; color: #059669;">★ <c:out value="${staff.rating}" /></span>
-                                                        </td>
+                                                        <td class="fw-bold" style="font-size: 13px;"><c:out value="${staff.issues}" /></td>
+                                                        <td class="fw-bold" style="font-size: 13px;"><c:out value="${staff.returns}" /></td>
+                                                        <td class="fw-bold text-success" style="font-size: 13px;"><c:out value="${staff.fineCollected}" /></td>
+                                                        <td><span class="badge-pill badge-success">★ <c:out value="${staff.rating}" /></span></td>
                                                     </tr>
                                                 </c:forEach>
                                             </c:when>
                                             <c:otherwise>
                                                 <tr>
-                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar" style="background-color: var(--primary-fixed); color: var(--on-primary-container);">JS</div><span style="font-size: 13px; font-weight: 600;">John Stevens</span></div></td>
-                                                    <td style="font-size: 13px; font-weight: 600;">345</td>
-                                                    <td style="font-size: 13px; font-weight: 600;">312</td>
-                                                    <td style="font-size: 13px; color: #059669; font-weight: 600;">680,000đ</td>
-                                                    <td><span class="badge-pill" style="background-color: #d1fae5; color: #059669;">★ 4.9</span></td>
+                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--primary-fixed), var(--primary-fixed-dim)); color: var(--on-primary-container);">JS</div><span style="font-size: 13px; font-weight: 600;">John Stevens</span></div></td>
+                                                    <td class="fw-bold" style="font-size: 13px;">345</td>
+                                                    <td class="fw-bold" style="font-size: 13px;">312</td>
+                                                    <td class="fw-bold" style="font-size: 13px; color: var(--success);">680,000đ</td>
+                                                    <td><span class="badge-pill badge-success">★ 4.9</span></td>
                                                 </tr>
                                                 <tr>
-                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar" style="background-color: var(--secondary-fixed); color: var(--on-secondary-fixed-variant);">MH</div><span style="font-size: 13px; font-weight: 600;">Mai Huong</span></div></td>
-                                                    <td style="font-size: 13px; font-weight: 600;">298</td>
-                                                    <td style="font-size: 13px; font-weight: 600;">281</td>
-                                                    <td style="font-size: 13px; color: #059669; font-weight: 600;">540,000đ</td>
-                                                    <td><span class="badge-pill" style="background-color: #d1fae5; color: #059669;">★ 4.7</span></td>
+                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--secondary-fixed), var(--secondary-fixed-dim)); color: var(--on-secondary-fixed);">MH</div><span style="font-size: 13px; font-weight: 600;">Mai Huong</span></div></td>
+                                                    <td class="fw-bold" style="font-size: 13px;">298</td>
+                                                    <td class="fw-bold" style="font-size: 13px;">281</td>
+                                                    <td class="fw-bold" style="font-size: 13px; color: var(--success);">540,000đ</td>
+                                                    <td><span class="badge-pill badge-success">★ 4.7</span></td>
                                                 </tr>
                                                 <tr>
-                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar" style="background-color: var(--tertiary-fixed); color: var(--on-tertiary-fixed);">NQ</div><span style="font-size: 13px; font-weight: 600;">Nguyen Quang</span></div></td>
-                                                    <td style="font-size: 13px; font-weight: 600;">210</td>
-                                                    <td style="font-size: 13px; font-weight: 600;">195</td>
-                                                    <td style="font-size: 13px; color: #d97706; font-weight: 600;">380,000đ</td>
-                                                    <td><span class="badge-pill" style="background-color: #fef3c7; color: #d97706;">★ 4.2</span></td>
+                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--tertiary-fixed), #a0d0f5); color: var(--on-tertiary-fixed);">NQ</div><span style="font-size: 13px; font-weight: 600;">Nguyen Quang</span></div></td>
+                                                    <td class="fw-bold" style="font-size: 13px;">210</td>
+                                                    <td class="fw-bold" style="font-size: 13px;">195</td>
+                                                    <td class="fw-bold" style="font-size: 13px; color: var(--warning);">380,000đ</td>
+                                                    <td><span class="badge-pill badge-warning">★ 4.2</span></td>
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>
@@ -258,10 +269,9 @@
 
                         <!-- Library Policies -->
                         <div class="raised-card overflow-hidden">
-                            <div class="p-3 bg-white d-flex justify-content-between align-items-center"
-                                 style="border-bottom: 1px solid var(--outline-variant);">
-                                <h3 class="fw-semibold mb-0" style="font-size: 16px; color: var(--on-surface);">Chính sách Hoạt động</h3>
-                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2" style="font-size: 12px;">
+                            <div class="card-header-row">
+                                <h3 class="card-title mb-0">Chính sách Hoạt động</h3>
+                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1" style="font-size: 12px;">
                                     <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Thêm mới
                                 </button>
                             </div>
@@ -269,36 +279,38 @@
                                 <div class="policy-item">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <p class="fw-bold mb-0" style="font-size: 13px;">Chính sách Thời hạn Mượn</p>
-                                        <span class="badge-pill" style="background-color: #d1fae5; color: #059669;">Hoạt động</span>
+                                        <span class="badge-pill badge-success">Hoạt động</span>
                                     </div>
                                     <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Tối đa 21 ngày mỗi lần mượn. Gia hạn được 1 lần.</p>
                                 </div>
                                 <div class="policy-item">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <p class="fw-bold mb-0" style="font-size: 13px;">Chính sách Tiền phạt</p>
-                                        <span class="badge-pill" style="background-color: #d1fae5; color: #059669;">Hoạt động</span>
+                                        <span class="badge-pill badge-success">Hoạt động</span>
                                     </div>
                                     <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Phí 5.000 VND/ngày quá hạn.</p>
                                 </div>
-                                <div class="policy-item">
+                                <div class="policy-item" style="border-left-color: var(--warning-container);">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <p class="fw-bold mb-0" style="font-size: 13px;">Hết hạn Đặt trước</p>
-                                        <span class="badge-pill" style="background-color: #fef3c7; color: #d97706;">Xem xét</span>
+                                        <span class="badge-pill badge-warning">Xem xét</span>
                                     </div>
                                     <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Đặt trước tự động hủy sau 48 giờ.</p>
                                 </div>
                             </div>
-                            <div class="p-3 bg-surface-container-low" style="border-top: 1px solid var(--outline-variant);">
-                                <a href="#" class="text-primary-custom fw-bold text-decoration-none" style="font-size: 13px;">Quản lý Chính sách &rarr;</a>
+                            <div class="p-3" style="border-top: 1px solid var(--outline-variant); background: var(--surface-container-low);">
+                                <a href="#" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                                    Quản lý Chính sách
+                                    <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Announcements -->
+                        <!-- System Announcements -->
                         <div class="raised-card overflow-hidden">
-                            <div class="p-3 bg-white d-flex justify-content-between align-items-center"
-                                 style="border-bottom: 1px solid var(--outline-variant);">
-                                <h3 class="fw-semibold mb-0" style="font-size: 16px; color: var(--on-surface);">Thông báo hệ thống</h3>
-                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2" style="font-size: 12px;">
+                            <div class="card-header-row">
+                                <h3 class="card-title mb-0">Thông báo hệ thống</h3>
+                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1" style="font-size: 12px;">
                                     <span class="material-symbols-outlined" style="font-size: 15px;">campaign</span> Đăng
                                 </button>
                             </div>
@@ -309,7 +321,9 @@
                                             <div class="announcement-card">
                                                 <p class="fw-bold mb-1" style="font-size: 13px;"><c:out value="${ann.title}" /></p>
                                                 <p class="text-on-surface-variant mb-1" style="font-size: 12px;"><c:out value="${ann.body}" /></p>
-                                                <span class="text-on-surface-variant" style="font-size: 11px;"><fmt:formatDate value="${ann.postedAt}" pattern="dd/MM/yyyy" /></span>
+                                                <span class="text-on-surface-variant" style="font-size: 11px;">
+                                                    <fmt:formatDate value="${ann.postedAt}" pattern="dd/MM/yyyy" />
+                                                </span>
                                             </div>
                                         </c:forEach>
                                     </c:when>
@@ -340,9 +354,10 @@
         </main>
     </div><!-- /.main-wrapper -->
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('current-month').textContent = new Date().toLocaleString('vi-VN', { month: 'long', year: 'numeric' });
+        document.getElementById('current-month').textContent =
+            new Date().toLocaleString('vi-VN', { month: 'long', year: 'numeric' });
     </script>
-
 </body>
 </html>
