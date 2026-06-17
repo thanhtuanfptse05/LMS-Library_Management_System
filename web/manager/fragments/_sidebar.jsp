@@ -46,6 +46,10 @@
             <span class="material-symbols-outlined">campaign</span>
             <span>Quản lý Thông báo</span>
         </a>
+        <a class="sidebar-link" id="mgr-nav-email" href="${pageContext.request.contextPath}/manager/email-templates">
+            <span class="material-symbols-outlined">mail</span>
+            <span>Mẫu Email</span>
+        </a>
         <a class="sidebar-link" id="mgr-nav-reports" href="#">
             <span class="material-symbols-outlined">bar_chart</span>
             <span>Báo cáo Thống kê</span>
