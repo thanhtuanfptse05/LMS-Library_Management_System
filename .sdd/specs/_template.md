@@ -9,7 +9,11 @@
 * **[Tên Actor 1]:** [Quyền hạn chi tiết]
 * **[Tên Actor 2]:** [Quyền hạn chi tiết]
 
-## 3. Functional Requirements (Yêu cầu chức năng chi tiết)
+## 3. Business Rules (Quy tắc nghiệp vụ)
+<!-- Các quy tắc ràng buộc, chính sách bắt buộc (Ví dụ: Không được xóa mềm, Không được tự động tạo tài khoản SSO) -->
+* **[BR-XX-01]:** ...
+
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
 <!-- Biểu diễn dưới dạng EARS Notation: 
      - WHEN <trigger>, THE system SHALL <response>
      - WHILE <state>, THE system SHALL <response> 

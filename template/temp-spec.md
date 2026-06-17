@@ -8,7 +8,9 @@ SPEC.md — Template
 <!-- Ai interact? Quyền gì? -->
 - [Actor 1]: [quyền]
 - [Actor 2]: [quyền]
-## 3. Functional Requirements
+## 3. Business Rules
+<!-- Các quy tắc ràng buộc, chính sách (Ví dụ: Không tự động tạo tài khoản SSO) -->
+## 4. Functional Requirements
 <!-- EARS Notation: WHEN/WHILE/WHERE...THE system SHALL... -->
 ## 4. Non-functional Requirements
 <!-- Performance, Security, Scalability — có số đo cụ thể -->

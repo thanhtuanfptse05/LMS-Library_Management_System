@@ -20,6 +20,7 @@ Cung cấp công cụ CRUD và Bulk Import cho Admin để quản trị tài kho
 * WHEN Admin chọn Role và upload file Excel, THE system SHALL thực thi **Phase 1 (Pre-Validation)**: parse toàn bộ file, quét tính hợp lệ (format, regex, trùng lặp email/code) trên RAM — KHÔNG mở DB Transaction.
 * WHEN Phase 1 phát hiện BẤT KỲ lỗi nào, THE system SHALL CHẶN toàn bộ Import, KHÔNG ghi bất kỳ dòng nào vào DB, VÀ trả về HTTP 400 kèm JSON array danh sách lỗi chi tiết.
 * WHEN Phase 1 pass hoàn toàn (zero error), THE system SHALL thực thi **Phase 2 (DB Transaction)**: mở Transaction, Batch Insert toàn bộ list đã xác thực, sinh mật khẩu mặc định, VÀ Commit.
+* WHEN Admin yêu cầu xuất danh sách, THE system SHALL sinh file Excel (.xlsx) chứa toàn bộ bản ghi định danh và trả về stream cho trình duyệt (UC-30, FR-45).
 
 ### STATE-DRIVEN (Trạng thái)
 * WHILE tài khoản có `status = 'locked'`, THE system SHALL từ chối mọi yêu cầu xác thực đăng nhập từ tài khoản đó.
@@ -70,5 +71,4 @@ Cung cấp công cụ CRUD và Bulk Import cho Admin để quản trị tài kho
 ## 8. Out of Scope (Ngoài phạm vi)
 * THE system SHALL NOT ghi nhận Audit Logs cho module này (Override BR19).
 * THE system SHALL NOT cho phép thao tác "Xóa vĩnh viễn" (Hard Delete) bản ghi trong DB.
-* THE system SHALL NOT cung cấp tính năng Export Excel.
 * THE system SHALL NOT xử lý file Excel chứa nhiều Role lẫn lộn.

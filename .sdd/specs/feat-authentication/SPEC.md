@@ -26,6 +26,14 @@
 ### Luồng Đăng xuất (Logout)
 - WHEN User Requests Logout, THE LMS System SHALL Invalidate Session [Node 16.27] VÀ Redirect To Login [Node 17.28].
 
+### Luồng Đăng nhập bằng Google (Google SSO)
+- WHEN Guest chooses Google Login, THE System SHALL retrieve the Google Token.
+- WHERE Email không tồn tại trong DB, THE System SHALL chặn truy cập và báo lỗi.
+- WHERE Email tồn tại, THE System SHALL xử lý giống luồng Đăng nhập thông thường (kiểm tra status, reset failed attempts, tạo Session).
+
+## 3.5. Business Rules (Quy tắc nghiệp vụ)
+- [BR-26]: Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước.
+
 ## 4. Non-functional Requirements
 - [NFR-01] Security: Mật khẩu KHÔNG ĐƯỢC PHÉP log dưới dạng plaintext.
 - [NFR-02] Performance: Gửi email [Node 8.14] BẮT BUỘC thực hiện qua ExecutorService (Async) để không block luồng HTTP.
@@ -53,5 +61,5 @@ Table: `[User]`
 - [ ] AC4: Session bị invalidate hoàn toàn sau khi nhấn Logout.
 
 ## 8. Out of Scope
-- KHÔNG hỗ trợ xác thực JWT.
+- KHÔNG hỗ trợ xác thực JWT nội bộ hệ thống.
 - KHÔNG yêu cầu xác thực OTP hoặc ép đổi mật khẩu sau khi Reset (dựa trên giải quyết xung đột BR22).
