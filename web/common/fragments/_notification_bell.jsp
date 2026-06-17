@@ -62,7 +62,11 @@
                 <c:when test="${not empty recentNotifications}">
                     <c:forEach var="notif" items="${recentNotifications}" varStatus="vs">
                         <c:if test="${vs.index < 5}">
-                            <div class="notif-item ${notif.pinned ? 'notif-item-pinned' : ''}">
+                            <div class="notif-item ${notif.pinned ? 'notif-item-pinned' : ''} ${notif.read ? 'notif-read' : 'notif-unread'}">
+                                <!-- Unread indicator dot -->
+                                <c:if test="${!notif.read}">
+                                    <div class="notif-unread-dot"></div>
+                                </c:if>
                                 <!-- Type icon -->
                                 <div class="notif-item-icon
                                     ${notif.type == 'urgent'  ? 'notif-icon-urgent'  :
@@ -202,10 +206,21 @@
     .notif-item {
         display: flex; align-items: flex-start; gap: 12px; padding: 13px 18px;
         border-bottom: 1px solid rgba(0,0,0,0.04); cursor: pointer; transition: background 0.15s ease;
+        position: relative;
     }
     .notif-item:last-child { border-bottom: none; }
     .notif-item:hover { background: linear-gradient(90deg, rgba(157,67,0,0.03), transparent); }
     .notif-item-pinned { background: linear-gradient(90deg, rgba(157,67,0,0.04), transparent) !important; }
+    
+    /* Read / Unread styles */
+    .notif-read { opacity: 0.75; }
+    .notif-unread { background: rgba(157,67,0,0.02); }
+    .notif-unread .notif-item-title { font-weight: 800; color: var(--primary); }
+    .notif-unread-dot {
+        position: absolute; left: 6px; top: 22px; width: 6px; height: 6px;
+        background: var(--primary); border-radius: 50%;
+    }
+
     .notif-item-icon {
         width: 36px; height: 36px; border-radius: 10px; display: flex;
         align-items: center; justify-content: center; flex-shrink: 0;
