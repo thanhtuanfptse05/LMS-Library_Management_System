@@ -200,6 +200,12 @@ Mô tả: Sau khi thanh toán tiền phạt (xóa reason 'unpaid'), hệ thống
 BR-26 (Google SSO Registration Policy)
 Mô tả: Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước.
 
+BR-27 (Book Import Transaction)
+Mô tả: Tính năng Import khối lượng lớn Sách BẮT BUỘC tuân thủ chiến lược All-or-Nothing. Tệp dữ liệu chỉ được lưu vào DB khi toàn bộ thông tin Sách và Bản sao đều hợp lệ.
+
+BR-28 (Incident Resolution Sync)
+Mô tả: Khi ghi nhận báo cáo sự cố (Report Incident), hệ thống BẮT BUỘC phải tức thời vô hiệu hóa bản sao (status='unavailable') và trừ đi 1 availableQuantity của Đầu sách tương ứng. Khi bác bỏ (Reject Incident), phải cộng lại availableQuantity.
+
 // FR Specification
 
 FR-01 (Xác minh danh tính)
@@ -381,3 +387,31 @@ Mapping: UC-24, UC-25
 FR-45 (Bulk Excel Export)
 Mô tả: WHEN Admin yêu cầu xuất danh sách, THE system SHALL sinh file Excel (.xlsx) chứa toàn bộ bản ghi định danh và trả về stream cho trình duyệt.
 Mapping: UC-30
+
+FR-46 (Kiểm định tệp Excel Sách)
+Mô tả: WHEN Thủ thư tải lên tệp Import Sách, THE system SHALL đọc tệp và phân tích tính hợp lệ của ISBN và Barcode. WHERE phát hiện lỗi, hệ thống SHALL hủy bỏ toàn bộ và báo cáo vị trí lỗi chi tiết.
+Mapping: UC-27 / BR-27
+
+FR-47 (Lưu trữ hàng loạt Sách)
+Mô tả: WHERE tệp Import Sách hợp lệ toàn bộ, THE system SHALL thực thi lưu vào CSDL cho các bảng Book và BookCopy, đồng bộ totalQuantity và availableQuantity.
+Mapping: UC-27 / BR-17
+
+FR-48 (Ghi nhận sự cố Bản sao)
+Mô tả: WHEN Thủ thư báo cáo một Bản sao bị hỏng hoặc mất, THE system SHALL cập nhật trạng thái bản sao thành 'unavailable', trừ số lượng availableQuantity của Book, và lưu vào bảng BookCopyIncident.
+Mapping: UC-28 / BR-28
+
+FR-49 (Giải quyết sự cố Bản sao)
+Mô tả: WHEN sự cố Bản sao được kết luận (resolve) hoặc bác bỏ (reject), THE system SHALL cập nhật trạng thái vật lý của Bản sao và tự động phục hồi availableQuantity nếu sự cố bị bác bỏ.
+Mapping: UC-28 / BR-28
+
+FR-50 (Tạo phiên Kiểm kê Kho)
+Mô tả: WHEN Thủ thư bắt đầu phiên kiểm kê, THE system SHALL tạo InventorySession. Thủ thư quét Barcode để ghi nhận các mục InventoryItem và so sánh với expectedLocation trên hệ thống.
+Mapping: UC-29
+
+FR-51 (Kết luận Kiểm kê Kho)
+Mô tả: WHEN kết thúc phiên kiểm kê, THE system SHALL tự động đồng bộ lại vị trí (location) thực tế của các bản sao sách dựa trên kết quả quét (scannedLocation) và đánh dấu trạng thái bị mất (missing) nếu không tìm thấy.
+Mapping: UC-29
+
+FR-52 (Quản lý Mẫu văn bản)
+Mô tả: WHEN Manager thay đổi nội dung Mẫu văn bản (DocumentTemp), THE system SHALL lưu mẫu thiết kế mới dùng cho việc tự động hóa gửi email (như gửi OTP, báo phạt).
+Mapping: UC-26
