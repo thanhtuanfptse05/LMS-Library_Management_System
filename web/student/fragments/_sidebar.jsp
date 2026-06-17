@@ -1,84 +1,104 @@
-<%-- Fragment: _sidebar.jsp — Left sidebar navigation --%>
+<%-- Fragment: _sidebar.jsp — Left sidebar navigation for Student --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- ─── SIDEBAR ─── -->
-<aside class="d-none d-lg-flex flex-column bg-surface-container-low gap-4 p-4"
-       style="width: 280px; flex-shrink: 0; border-right: 1px solid var(--outline-variant); overflow-y: auto;">
+<aside class="d-none d-lg-flex flex-column lms-sidebar sidebar-layout">
 
-    <!-- Library Access -->
-    <div>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-3"
-           style="font-size: 10px; letter-spacing: 0.2em;">Truy cập Thư viện</p>
-        <div class="d-flex flex-column gap-1">
-            <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/student/dashboard">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
-                <span>Trang chủ</span>
-            </a>
-            <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/student/loans">
-                <span class="material-symbols-outlined">book</span>
-                <span>Sách tôi mượn</span>
-            </a>
-            <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/student/reservations">
-                <span class="material-symbols-outlined">bookmark</span>
-                <span>Đặt trước</span>
-            </a>
-            <a class="sidebar-link"
-               href="#">
-                <span class="material-symbols-outlined">payments</span>
-                <span>Lịch sử nộp phạt</span>
-            </a>
-            <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/notifications">
-                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">campaign</span>
-                 <span>Bảng tin</span>
-                 <c:if test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
-                     <span class="ms-auto badge rounded-pill"
-                           style="background-color: var(--primary); color: white; font-size: 10px; padding: 2px 7px; min-width: 20px; text-align: center;">
-                         <c:choose>
-                             <c:when test="${sessionScope.unreadNotificationCount > 99}">99+</c:when>
-                             <c:otherwise>${sessionScope.unreadNotificationCount}</c:otherwise>
-                         </c:choose>
-                     </span>
-                 </c:if>
-            </a>
+    <!-- ── Brand ── -->
+    <a href="${pageContext.request.contextPath}/" class="sidebar-brand">
+        <div class="sidebar-brand-icon">
+            <span class="material-symbols-outlined">local_library</span>
         </div>
-    </div>
-
-    <!-- Account -->
-    <div>
-        <p class="text-on-surface-variant fw-bold text-uppercase mb-3"
-           style="font-size: 10px; letter-spacing: 0.2em;">Tài khoản</p>
-        <div class="d-flex flex-column gap-1">
-            <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/student/profile">
-                <span class="material-symbols-outlined">manage_accounts</span>
-                <span>Hồ sơ của tôi</span>
-            </a>
-            <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/forgot-password">
-                <span class="material-symbols-outlined">security</span>
-                <span>Cài đặt Bảo mật</span>
-            </a>
-            <a class="sidebar-link"
-               href="${pageContext.request.contextPath}/#contact">
-                <span class="material-symbols-outlined">contact_support</span>
-                <span>Trung tâm Trợ giúp</span>
-            </a>
+        <div class="sidebar-brand-text">
+            <p class="sidebar-brand-name">LMS Thư viện</p>
+            <p class="sidebar-brand-role">Cổng Sinh viên</p>
         </div>
-    </div>
+    </a>
 
-    <!-- Assistance Box -->
-    <div class="mt-auto p-3 rounded-3"
-         style="background-color: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2);">
-        <p class="fw-bold text-primary-custom mb-1 small">Cần hỗ trợ?</p>
-        <p class="text-on-surface-variant mb-3" style="font-size: 11px;">
-            Liên hệ thủ thư để được trợ giúp nghiên cứu hoặc báo cáo sự cố.
-        </p>
-        <a href="${pageContext.request.contextPath}/#contact"
-           class="btn btn-primary-custom w-100 btn-sm text-decoration-none d-block text-center rounded-3">
-            Báo cáo sự cố
+    <!-- ── Nav ── -->
+    <nav class="flex-grow-1 px-3 py-2 d-flex flex-column" aria-label="Student navigation">
+
+        <!-- Truy cập Thư viện -->
+        <p class="sidebar-section-label">Truy cập Thư viện</p>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/student/dashboard">
+            <span class="material-symbols-outlined">home</span>
+            <span>Trang chủ</span>
         </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-search">
+            <span class="material-symbols-outlined">search</span>
+            <span>Tìm kiếm Sách</span>
+        </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/student/loans">
+            <span class="material-symbols-outlined">book</span>
+            <span>Sách tôi mượn</span>
+        </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/student/reservations">
+            <span class="material-symbols-outlined">bookmark</span>
+            <span>Đặt trước</span>
+        </a>
+        <a class="sidebar-link" href="#">
+            <span class="material-symbols-outlined">payments</span>
+            <span>Lịch sử nộp phạt</span>
+        </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/notifications">
+            <span class="material-symbols-outlined">campaign</span>
+            <span>Bảng tin</span>
+            <c:if test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
+                <span class="ms-auto badge rounded-pill"
+                      style="background: var(--primary); color: white; font-size: 10px; padding: 2px 7px; min-width: 20px; text-align: center;">
+                    <c:choose>
+                        <c:when test="${sessionScope.unreadNotificationCount > 99}">99+</c:when>
+                        <c:otherwise>${sessionScope.unreadNotificationCount}</c:otherwise>
+                    </c:choose>
+                </span>
+            </c:if>
+        </a>
+
+        <!-- Tài khoản -->
+        <p class="sidebar-section-label">Tài khoản</p>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/student/profile">
+            <span class="material-symbols-outlined">manage_accounts</span>
+            <span>Hồ sơ của tôi</span>
+        </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/forgot-password">
+            <span class="material-symbols-outlined">security</span>
+            <span>Cài đặt Bảo mật</span>
+        </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/#contact">
+            <span class="material-symbols-outlined">contact_support</span>
+            <span>Trung tâm Trợ giúp</span>
+        </a>
+
+    </nav>
+
+    <!-- ── Footer: Support Box ── -->
+    <div class="px-3 pb-3">
+        <div class="sidebar-status-card">
+            <p class="fw-bold mb-2 text-primary-custom" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+                <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">support_agent</span>
+                Cần hỗ trợ?
+            </p>
+            <p class="text-on-surface-variant mb-2" style="font-size: 11.5px; line-height: 1.5;">
+                Liên hệ thủ thư để được trợ giúp nghiên cứu hoặc báo cáo sự cố.
+            </p>
+            <a href="${pageContext.request.contextPath}/#contact"
+               class="btn btn-primary-custom w-100 btn-sm text-decoration-none d-block text-center rounded-3"
+               style="font-size: 12px; padding: 8px 12px;">
+                Báo cáo sự cố
+            </a>
+        </div>
     </div>
+
 </aside>
+
+<script>
+/* Student Sidebar: auto active state */
+(function () {
+    var path = window.location.pathname;
+    document.querySelectorAll('aside .sidebar-link').forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href && href !== '#' && path.indexOf(href.split('?')[0]) !== -1) {
+            link.classList.add('active');
+        }
+    });
+})();
+</script>

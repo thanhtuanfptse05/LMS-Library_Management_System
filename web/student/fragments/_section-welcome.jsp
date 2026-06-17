@@ -1,43 +1,53 @@
 <%-- Fragment: _section-welcome.jsp — Welcome banner with CTA buttons --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- ── Welcome Banner ── -->
-<section class="position-relative overflow-hidden rounded-4 bg-primary-custom text-white p-5 mb-5"
-         style="box-shadow: 0 8px 30px rgba(157, 67, 0, 0.25);">
-    <div class="position-relative" style="max-width: 640px; z-index: 2;">
-        <h1 class="fw-bold mb-2 fs-2">
-            Chào mừng trở lại,
-            <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Sinh viên'}" />!
-        </h1>
-        <p class="opacity-90 mb-4" style="font-size: 18px;">
-            <c:choose>
-                <c:when test="${not empty activeLoansCount and activeLoansCount gt 0}">
-                    Bạn có <strong>${activeLoansCount}</strong> sách đang mượn.
-                    <c:if test="${not empty dueSoonCount and dueSoonCount gt 0}">
-                        <strong>${dueSoonCount}</strong> sách sắp đến hạn!
-                    </c:if>
-                </c:when>
-                <c:otherwise>
-                    Hôm nay chúng ta học gì? Khám phá danh mục để tìm sách mới.
-                </c:otherwise>
-            </c:choose>
-        </p>
-        <div class="d-flex flex-wrap gap-3">
-            <a href="${pageContext.request.contextPath}/book-search"
-               class="btn btn-light rounded-pill px-4 fw-semibold btn-sm text-decoration-none"
-               style="color: var(--primary);">
-                Tra cứu Mục lục
-            </a>
-            <a href="${pageContext.request.contextPath}/student/loans"
-               class="btn btn-outline-light rounded-pill px-4 fw-semibold btn-sm text-decoration-none"
-               style="border-color: rgba(255,255,255,0.4);">
-                Phòng học của tôi
-            </a>
+<section class="welcome-banner mb-5">
+    <div class="row align-items-center g-0">
+        <div class="col-12 col-md-8" style="position: relative; z-index: 2;">
+            <p class="text-on-surface-variant fw-semibold mb-1" style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;">
+                Thư viện Đại học LMS
+            </p>
+            <h1 class="fw-bold mb-2" style="font-size: 26px; color: var(--on-primary-container);">
+                Chào mừng trở lại,
+                <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Sinh viên'}" />!
+            </h1>
+            <p class="mb-4" style="font-size: 16px; color: var(--on-secondary-fixed-variant);">
+                <c:choose>
+                    <c:when test="${not empty activeLoansCount and activeLoansCount gt 0}">
+                        Bạn có <strong><c:out value="${activeLoansCount}" /></strong> sách đang mượn.
+                        <c:if test="${not empty dueSoonCount and dueSoonCount gt 0}">
+                            <strong><c:out value="${dueSoonCount}" /></strong> sách sắp đến hạn!
+                        </c:if>
+                    </c:when>
+                    <c:otherwise>
+                        Hôm nay chúng ta học gì? Khám phá danh mục để tìm sách mới.
+                    </c:otherwise>
+                </c:choose>
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                <a href="${pageContext.request.contextPath}/book-search"
+                   class="btn btn-primary-custom rounded-pill px-5 fw-semibold btn-sm text-decoration-none"
+                   style="padding-top: 10px; padding-bottom: 10px; font-size: 14px;">
+                    <span class="material-symbols-outlined me-1" style="font-size: 16px; vertical-align: middle;">search</span>
+                    Tra cứu Mục lục
+                </a>
+                <a href="${pageContext.request.contextPath}/student/loans"
+                   class="btn rounded-pill px-5 fw-semibold btn-sm text-decoration-none"
+                   style="padding-top: 10px; padding-bottom: 10px; font-size: 14px;
+                          background: rgba(255,255,255,0.7); color: var(--on-primary-container);
+                          border: 1.5px solid var(--outline-variant); backdrop-filter: blur(4px);">
+                    <span class="material-symbols-outlined me-1" style="font-size: 16px; vertical-align: middle;">book</span>
+                    Phòng học của tôi
+                </a>
+            </div>
         </div>
-    </div>
-    <!-- Decorative icon -->
-    <div class="position-absolute end-0 top-0 h-100 d-flex align-items-center opacity-25 pointer-events-none"
-         style="width: 33%; user-select: none;" aria-hidden="true">
-        <span class="material-symbols-outlined"
-              style="font-size: 200px; transform: translate(40px, -20px);">auto_stories</span>
+        <div class="col-4 d-none d-md-flex justify-content-end align-items-center"
+             style="position: relative; z-index: 2;">
+            <span class="material-symbols-outlined" aria-hidden="true"
+                  style="font-size: 120px; color: var(--on-primary-container); opacity: 0.2;
+                         font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;">
+                auto_stories
+            </span>
+        </div>
     </div>
 </section>

@@ -2,77 +2,98 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!-- ── Quick Stats Grid ── -->
-<section class="row g-4 mb-5">
+<section class="row g-3 mb-5">
+
     <!-- Active Loans -->
-    <div class="col-12 col-md-6 col-lg-3">
-        <div class="raised-card p-4 d-flex align-items-center gap-3">
-            <div class="rounded-3 d-flex align-items-center justify-content-center"
-                 style="width: 48px; height: 48px; background-color: rgba(0, 99, 152, 0.1); color: var(--tertiary);">
-                <span class="material-symbols-outlined">book_online</span>
+    <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-1">
+        <div class="stat-card h-100" style="--card-accent: var(--tertiary);">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--tertiary-fixed) 0%, #a0d0f5 100%);">
+                    <span class="material-symbols-outlined" style="color: var(--tertiary);">book_online</span>
+                </div>
+                <span class="badge-pill badge-info">Đang mượn</span>
             </div>
-            <div>
-                <p class="text-on-surface-variant text-uppercase mb-0 fw-semibold"
-                   style="font-size: 11px; letter-spacing: 0.06em;">Đang mượn</p>
-                <p class="fs-4 fw-bold mb-0 text-dark">
-                    <c:out value="${not empty activeLoansCount ? activeLoansCount : '0'}"/>
-                </p>
+            <p class="stat-label">Sách đang mượn</p>
+            <p class="stat-value"><c:out value="${not empty activeLoansCount ? activeLoansCount : '0'}" /></p>
+            <div class="mini-progress">
+                <div class="mini-progress-bar" style="width: ${not empty activeLoansCount ? (activeLoansCount * 10 > 100 ? 100 : activeLoansCount * 10) : 0}%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
             </div>
         </div>
     </div>
 
     <!-- Due Soon -->
-    <div class="col-12 col-md-6 col-lg-3">
-        <div class="raised-card p-4 d-flex align-items-center gap-3">
-            <div class="rounded-3 d-flex align-items-center justify-content-center"
-                 style="width: 48px; height: 48px; background-color: var(--error-container); color: var(--error);">
-                <span class="material-symbols-outlined">schedule</span>
+    <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-2">
+        <div class="stat-card h-100" style="--card-accent: var(--error);">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--error-container) 0%, #fca5a5 100%);">
+                    <span class="material-symbols-outlined" style="color: var(--error);">schedule</span>
+                </div>
+                <c:choose>
+                    <c:when test="${not empty dueSoonCount and dueSoonCount gt 0}">
+                        <span class="badge-pill badge-error">Cần chú ý</span>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="badge-pill badge-success">Tốt</span>
+                    </c:otherwise>
+                </c:choose>
             </div>
-            <div>
-                <p class="text-on-surface-variant text-uppercase mb-0 fw-semibold"
-                   style="font-size: 11px; letter-spacing: 0.06em;">Sắp đến hạn</p>
-                <p class="fs-4 fw-bold mb-0 text-dark">
-                    <c:out value="${not empty dueSoonCount ? dueSoonCount : '0'}"/>
-                </p>
+            <p class="stat-label">Sắp đến hạn</p>
+            <p class="stat-value"><c:out value="${not empty dueSoonCount ? dueSoonCount : '0'}" /></p>
+            <div class="mini-progress">
+                <div class="mini-progress-bar" style="width: ${not empty dueSoonCount ? (dueSoonCount * 20 > 100 ? 100 : dueSoonCount * 20) : 0}%; background: linear-gradient(90deg, #fca5a5, var(--error));"></div>
             </div>
         </div>
     </div>
 
     <!-- Reserved -->
-    <div class="col-12 col-md-6 col-lg-3">
-        <div class="raised-card p-4 d-flex align-items-center gap-3">
-            <div class="rounded-3 d-flex align-items-center justify-content-center"
-                 style="width: 48px; height: 48px; background-color: rgba(249, 115, 22, 0.1); color: var(--primary-container);">
-                <span class="material-symbols-outlined">bookmarks</span>
+    <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-3">
+        <div class="stat-card h-100" style="--card-accent: var(--primary);">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">bookmarks</span>
+                </div>
+                <span class="badge-pill badge-primary">Đã đặt</span>
             </div>
-            <div>
-                <p class="text-on-surface-variant text-uppercase mb-0 fw-semibold"
-                   style="font-size: 11px; letter-spacing: 0.06em;">Đã đặt trước</p>
-                <p class="fs-4 fw-bold mb-0 text-dark">
-                    <c:out value="${not empty reservedCount ? reservedCount : '0'}"/>
-                </p>
+            <p class="stat-label">Đã đặt trước</p>
+            <p class="stat-value"><c:out value="${not empty reservedCount ? reservedCount : '0'}" /></p>
+            <div class="mini-progress">
+                <div class="mini-progress-bar" style="width: ${not empty reservedCount ? (reservedCount * 15 > 100 ? 100 : reservedCount * 15) : 0}%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
             </div>
         </div>
     </div>
 
     <!-- Overdue Fines -->
-    <div class="col-12 col-md-6 col-lg-3">
-        <div class="raised-card p-4 d-flex align-items-center gap-3">
-            <div class="rounded-3 d-flex align-items-center justify-content-center"
-                 style="width: 48px; height: 48px; background-color: var(--surface-container-high); color: var(--on-surface-variant);">
-                <span class="material-symbols-outlined">payments</span>
+    <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-4">
+        <div class="stat-card h-100" style="--card-accent: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="stat-icon"
+                     style="background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%)' : 'linear-gradient(135deg, var(--success-container) 0%, #a7f3d0 100%)'} ;">
+                    <span class="material-symbols-outlined"
+                          style="color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">payments</span>
+                </div>
+                <c:choose>
+                    <c:when test="${not empty totalFines and totalFines gt 0}">
+                        <span class="badge-pill badge-warning">Cần nộp</span>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="badge-pill badge-success">Sạch</span>
+                    </c:otherwise>
+                </c:choose>
             </div>
-            <div>
-                <p class="text-on-surface-variant text-uppercase mb-0 fw-semibold"
-                   style="font-size: 11px; letter-spacing: 0.06em;">Tiền phạt quá hạn</p>
-                <p class="fs-4 fw-bold mb-0 text-dark">
-                    <c:choose>
-                        <c:when test="${not empty totalFines}">
-                            <fmt:formatNumber value="${totalFines}" type="currency" currencySymbol="$" maxFractionDigits="2"/>
-                        </c:when>
-                        <c:otherwise>$0.00</c:otherwise>
-                    </c:choose>
-                </p>
+            <p class="stat-label">Tiền phạt quá hạn</p>
+            <p class="stat-value">
+                <c:choose>
+                    <c:when test="${not empty totalFines}">
+                        <fmt:formatNumber value="${totalFines}" type="currency" currencySymbol="$" maxFractionDigits="2"/>
+                    </c:when>
+                    <c:otherwise>$0.00</c:otherwise>
+                </c:choose>
+            </p>
+            <div class="mini-progress">
+                <div class="mini-progress-bar"
+                     style="width: ${not empty totalFines and totalFines gt 0 ? '45' : '0'}%; background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(90deg, #fde68a, var(--warning))' : 'linear-gradient(90deg, #a7f3d0, var(--success))'};"></div>
             </div>
         </div>
     </div>
+
 </section>
