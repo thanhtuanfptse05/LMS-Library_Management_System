@@ -34,9 +34,6 @@
             <input class="header-search-input" placeholder="Tìm kiếm hệ thống..." type="text" aria-label="Tìm kiếm hệ thống" />
         </div>
 
-        <!-- Notification bell -->
-        <jsp:include page="/components/notification-bell" />
-
         <div style="width: 1px; height: 24px; background: var(--outline-variant);"></div>
 
         <a href="${pageContext.request.contextPath}/admin/profile"

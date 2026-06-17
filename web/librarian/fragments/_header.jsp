@@ -20,9 +20,6 @@
             <input class="header-search-input" placeholder="Tìm kiếm thành viên hoặc sách..." type="text" aria-label="Tìm kiếm thành viên hoặc sách" />
         </div>
 
-        <!-- Notification bell -->
-        <jsp:include page="/components/notification-bell" />
-
         <div style="width: 1px; height: 24px; background: var(--outline-variant);"></div>
 
         <a href="${pageContext.request.contextPath}/${currentRolePath}/profile"

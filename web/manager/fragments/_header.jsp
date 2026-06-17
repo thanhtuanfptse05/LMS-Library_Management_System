@@ -20,6 +20,5 @@
             <input class="header-search-input" placeholder="Tìm kiếm báo cáo..." type="text" aria-label="Tìm kiếm báo cáo" />
         </div>
 
-        <!-- ════ NOTIFICATION BELL ════ -->
-        <c:set var="notifLink" value="${pageContext.request.contextPath}/manager/notifications" scope="request" />
-        <jsp:include page="/components/notification-bell" />
+        <!-- Right: User Profile Menu -->
+        <div class="user-profile-menu dropdown ms-2">
