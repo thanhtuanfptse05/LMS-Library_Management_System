@@ -92,12 +92,15 @@
 </aside>
 
 <script>
-/* Lecturer Sidebar: auto active state */
+/* Lecturer Sidebar: exact pathname match for active state */
 (function () {
-    var path = window.location.pathname;
+    var curPath = window.location.pathname;
     document.querySelectorAll('aside .sidebar-link').forEach(function(link) {
-        var href = link.getAttribute('href');
-        if (href && href !== '#' && path.indexOf(href.split('?')[0]) !== -1) {
+        // Dùng link.pathname để lấy path đúng (bỏ host, port, hash)
+        var linkPath = link.pathname;
+        if (!linkPath || linkPath === '#' || link.getAttribute('href') === '#') return;
+        // Exact match hoặc child path (thêm trailing slash check)
+        if (curPath === linkPath || curPath.startsWith(linkPath + '/')) {
             link.classList.add('active');
         }
     });

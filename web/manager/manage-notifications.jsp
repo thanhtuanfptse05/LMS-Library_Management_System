@@ -289,6 +289,7 @@
                                         <c:forEach var="notif" items="${notifications}">
                                             <div class="notif-row px-4 py-3 d-flex align-items-start gap-3
                             ${notif.pinned ? 'notif-pinned' : ''}"
+                            data-notif-id="${notif.notificationId}"
                             data-title="<c:out value='${notif.title}'/>"
                             data-author="<c:out value='${not empty notif.createdByName ? notif.createdByName : "Quản lý"}'/>"
                             data-time="<fmt:formatDate value='${notif.createdAt}' pattern='dd/MM/yyyy HH:mm' />"
@@ -519,12 +520,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Highlight sidebar active link
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-            if (link.href === window.location.href.split('?')[0]) {
-                link.classList.add('active');
-            }
-        });
+        // Fix sidebar active link — exact pathname match
+        (function() {
+            var curPath = window.location.pathname;
+            document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                if (link.getAttribute('href') === '#') return;
+                var linkPath = link.pathname;
+                if (linkPath && (curPath === linkPath || curPath.startsWith(linkPath + '/'))) {
+                    link.classList.add('active');
+                }
+            });
+        })();
 
         let pendingDeleteForm = null;
 
@@ -630,12 +636,13 @@ const typeIconMap = {
             const row = btn.closest('.notif-row');
             if (!row) return;
 
-            const title = row.getAttribute('data-title');
-            const author = row.getAttribute('data-author');
-            const time = row.getAttribute('data-time');
-            const type = row.getAttribute('data-type') || 'general';
+            const title    = row.getAttribute('data-title');
+            const author   = row.getAttribute('data-author');
+            const time     = row.getAttribute('data-time');
+            const type     = row.getAttribute('data-type') || 'general';
             const isPinned = row.getAttribute('data-pinned') === 'true';
-            const content = row.querySelector('.notif-full-content').textContent.trim();
+            const notifId  = row.getAttribute('data-notif-id');
+            const content  = row.querySelector('.notif-full-content').textContent.trim();
 
             const meta = typeIconMap[type] || typeIconMap.general;
 
@@ -656,6 +663,31 @@ const typeIconMap = {
             isPinned ? pinEl.classList.remove('d-none') : pinEl.classList.add('d-none');
 
             new bootstrap.Modal(document.getElementById('notifDetailModal')).show();
+
+            // ── Mark as read: gọi API nếu chưa đọc ──
+            if (notifId && !row.classList.contains('notif-read')) {
+                fetch('${pageContext.request.contextPath}/notification/read-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'notificationId=' + encodeURIComponent(notifId)
+                })
+                .then(function(res) {
+                    if (res.ok) {
+                        row.classList.add('notif-read');
+                        // Giảm badge unread trên header
+                        var badge = document.getElementById('headerUnreadBadge');
+                        if (badge) {
+                            var count = parseInt(badge.textContent, 10);
+                            if (!isNaN(count) && count > 1) {
+                                badge.textContent = count - 1;
+                            } else {
+                                badge.remove();
+                            }
+                        }
+                    }
+                })
+                .catch(function() { /* silent fail — không block UI */ });
+            }
         }
 
     </script>

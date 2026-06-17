@@ -114,12 +114,13 @@
 </aside>
 
 <script>
-/* Librarian Sidebar: auto active state */
+/* Librarian Sidebar: exact pathname match for active state */
 (function () {
-    var path = window.location.pathname;
+    var curPath = window.location.pathname;
     document.querySelectorAll('aside .sidebar-link').forEach(function(link) {
-        var href = link.getAttribute('href');
-        if (href && href !== '#' && path.indexOf(href.split('?')[0]) !== -1) {
+        if (link.getAttribute('href') === '#') return;
+        var linkPath = link.pathname;
+        if (linkPath && (curPath === linkPath || curPath.startsWith(linkPath + '/'))) {
             link.classList.add('active');
         }
     });
