@@ -80,6 +80,46 @@ UC-20 (Process Cash Payment)
 Actor: Librarian
 Mô tả: (Duyệt thanh toán tiền mặt): Thủ thư xác nhận đã thu tiền phạt bằng tiền mặt từ độc giả, đóng khoản phạt, gỡ cờ nợ phạt và tự động mở khóa tài khoản nếu đủ điều kiện.
 
+UC-21 (Login with Google)
+Actor: Guest
+Mô tả: (Đăng nhập bằng Google): Người dùng sử dụng tài khoản Google SSO để xác thực. Hệ thống chỉ cho phép đăng nhập nếu email đã được cấp tài khoản.
+
+UC-22 (Search & View Books)
+Actor: User
+Mô tả: (Tra cứu sách): Người dùng tìm kiếm đầu sách theo từ khóa, xem chi tiết tình trạng bản sao và gợi ý sách.
+
+UC-23 (Get AI Recommendation)
+Actor: User
+Mô tả: (Nhận gợi ý sách từ AI): Người dùng nhận danh sách các tựa sách được AI (Gemini) đề xuất.
+
+UC-24 (Manage Notifications)
+Actor: Manager
+Mô tả: (Quản lý thông báo): Quản lý thư viện soạn thảo, ghim, phát hành hoặc xóa các thông báo hệ thống.
+
+UC-25 (View Notifications)
+Actor: User
+Mô tả: (Xem thông báo): Người dùng theo dõi thông báo qua biểu tượng chuông và đánh dấu trạng thái đã đọc.
+
+UC-26 (Manage Document Templates)
+Actor: Manager
+Mô tả: (Quản lý mẫu văn bản): Cấu hình các mẫu nội dung email tự động.
+
+UC-27 (Import Bulk Books)
+Actor: Librarian
+Mô tả: (Nhập sách hàng loạt): Thủ thư tải lên tệp Excel để thêm mới số lượng lớn Đầu sách.
+
+UC-28 (Report Book Incident)
+Actor: Librarian
+Mô tả: (Báo cáo sự cố sách): Ghi nhận và xử lý các sự cố vật lý của bản sao sách (mất, rách, hỏng hóc).
+
+UC-29 (Inventory Reconciliation)
+Actor: Librarian
+Mô tả: (Kiểm kê kho): Rà soát, đối chiếu số lượng sách thực tế trên kệ so với dữ liệu hệ thống.
+
+UC-30 (Export User List)
+Actor: Admin
+Mô tả: (Xuất danh sách người dùng): Quản trị viên trích xuất danh sách tài khoản hiện tại ra tệp Excel.
+
 // BR Specification
 
 BR-01 (Authentication)
@@ -156,6 +196,9 @@ Mô tả: Khi nhận sách trả với tình trạng 'damaged' hoặc 'lost', h�
 
 BR-25 (Conditional Auto-Unlock - BR30)
 Mô tả: Sau khi thanh toán tiền phạt (xóa reason 'unpaid'), hệ thống BẮT BUỘC đếm số lượng lý do khóa còn lại trong UserLockReason. CHỈ KHỞI ĐỘNG quy trình mở khóa (Update User.status = 'active') NẾU COUNT == 0. Tuyệt đối không mở khóa nếu tài khoản đang bị 'adminban' hoặc 'securitybreach'.
+
+BR-26 (Google SSO Registration Policy)
+Mô tả: Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước.
 
 // FR Specification
 
@@ -322,3 +365,19 @@ Mapping: UC-20
 FR-41 (Kiểm định Mở khóa Tự động)
 Mô tả: WHILE hoàn tất duyệt thanh toán tiền mặt, THE system SHALL COUNT số lượng bản ghi trong UserLockReason của User. WHERE COUNT == 0, THE system SHALL thực thi UPDATE [User] (status='active'). WHERE COUNT > 0, THE system SHALL giữ nguyên trạng thái khóa và hiển thị cảnh báo cho Thủ thư.
 Mapping: UC-20 / BR-25
+
+FR-42 (Google SSO Verification)
+Mô tả: WHEN người dùng chọn đăng nhập bằng Google, THE system SHALL lấy Email từ Google Token. WHERE Email không tồn tại trong bảng [User], THE system SHALL chặn truy cập và báo lỗi. WHERE tồn tại, thực hiện kiểm tra trạng thái tương tự FR-02.
+Mapping: UC-21 / BR-26
+
+FR-43 (AI Recommendation Retrieval)
+Mô tả: WHEN người dùng xem chi tiết sách, THE system SHALL gọi API Gemini để lấy danh sách ISBN gợi ý và truy vấn bảng Book để hiển thị.
+Mapping: UC-23
+
+FR-44 (Notification Distribution)
+Mô tả: WHEN Manager tạo thông báo, THE system SHALL lưu vào DB và cấp phát biểu tượng chuông hiển thị thông báo chưa đọc cho các đối tượng áp dụng (Lecturer/Student).
+Mapping: UC-24, UC-25
+
+FR-45 (Bulk Excel Export)
+Mô tả: WHEN Admin yêu cầu xuất danh sách, THE system SHALL sinh file Excel (.xlsx) chứa toàn bộ bản ghi định danh và trả về stream cho trình duyệt.
+Mapping: UC-30
