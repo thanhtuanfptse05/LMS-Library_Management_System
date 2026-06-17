@@ -22,98 +22,109 @@
 
                 <!-- ─── Alert Messages ─── -->
                 <c:if test="${not empty sessionScope.successMessage}">
-                    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <span class="material-symbols-outlined me-2">check_circle</span>
-                        <c:out value="${sessionScope.successMessage}" />
+                    <div class="lms-alert lms-alert-success mb-4 alert alert-dismissible fade show" role="alert">
+                        <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;">check_circle</span>
+                        <span class="flex-grow-1"><c:out value="${sessionScope.successMessage}" /></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
                 <c:if test="${not empty sessionScope.errorMessage}">
-                    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <span class="material-symbols-outlined me-2">error</span>
-                        <c:out value="${sessionScope.errorMessage}" />
+                    <div class="lms-alert lms-alert-error mb-4 alert alert-dismissible fade show" role="alert">
+                        <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;">error</span>
+                        <span class="flex-grow-1"><c:out value="${sessionScope.errorMessage}" /></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
 
                 <!-- ─── Welcome Banner ─── -->
-                <div class="raised-card p-4 mb-4 d-flex justify-content-between align-items-center"
-                     style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--secondary-fixed) 100%); border-color: var(--outline-variant);">
-                    <div>
-                        <h2 class="fw-semibold mb-1" style="font-size: 22px; color: var(--on-primary-container);">
-                            Chào mừng trở lại, <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Giảng viên'}" />
-                        </h2>
-                        <p class="mb-0" style="font-size: 14px; color: var(--on-secondary-fixed-variant);">
-                            Quản lý danh sách tài liệu môn học, hoạt động mượn sách và tài liệu nghiên cứu của bạn.
-                        </p>
+                <section class="welcome-banner mb-4">
+                    <div class="row align-items-center g-0">
+                        <div class="col-12 col-md-8">
+                            <p class="text-on-surface-variant fw-semibold mb-1" style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;">Thư viện Đại học LMS</p>
+                            <h2 class="fw-bold mb-1" style="font-size: 24px; color: var(--on-primary-container);">
+                                Chào mừng trở lại, <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Giảng viên'}" />!
+                            </h2>
+                            <p class="mb-0" style="font-size: 14px; color: var(--on-secondary-fixed-variant);">
+                                Quản lý danh sách tài liệu môn học, hoạt động mượn sách và tài liệu nghiên cứu của bạn.
+                            </p>
+                        </div>
+                        <div class="col-4 d-none d-md-flex justify-content-end align-items-center">
+                            <span class="material-symbols-outlined" aria-hidden="true"
+                                  style="font-size: 100px; color: var(--on-primary-container); opacity: 0.18;
+                                         font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;">
+                                school
+                            </span>
+                        </div>
                     </div>
-                    <div class="d-none d-md-block">
-                        <span class="material-symbols-outlined" style="font-size: 72px; color: var(--primary); opacity: 0.25;">school</span>
-                    </div>
-                </div>
+                </section>
 
                 <!-- ─── Stats Cards ─── -->
                 <section class="mb-4">
                     <div class="row g-3">
                         <!-- Active Loans -->
-                        <div class="col-12 col-sm-6 col-xl-3">
-                            <div class="raised-card p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: var(--primary); background-color: var(--primary-fixed);">library_books</span>
-                                    <span class="badge-pill" style="color: var(--tertiary); background-color: var(--tertiary-fixed);">Đang mượn</span>
+                        <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-1">
+                            <div class="stat-card h-100" style="--card-accent: var(--primary);">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--primary);">library_books</span>
+                                    </div>
+                                    <span class="badge-pill badge-info">Đang mượn</span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Sách đang mượn</p>
-                                <h3 class="fw-semibold mb-1" style="font-size: 28px; color: var(--on-surface);">
-                                    <c:out value="${activeLoansCount != null ? activeLoansCount : '3'}" />
-                                </h3>
-                                <p class="text-on-surface-variant mb-0" style="font-size: 12px;">trong số 10 tối đa</p>
+                                <p class="stat-label">Sách đang mượn</p>
+                                <p class="stat-value"><c:out value="${activeLoansCount != null ? activeLoansCount : '3'}" /></p>
+                                <p class="text-on-surface-variant mb-1" style="font-size: 12px;">trong số 10 tối đa</p>
+                                <div class="mini-progress">
+                                    <div class="mini-progress-bar" style="width: 30%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
+                                </div>
                             </div>
                         </div>
                         <!-- Course Reading Lists -->
-                        <div class="col-12 col-sm-6 col-xl-3">
-                            <div class="raised-card p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: var(--tertiary); background-color: var(--tertiary-fixed);">article</span>
-                                    <span class="badge-pill" style="color: #059669; background-color: #d1fae5;">
-                                        <c:out value="${courseCount != null ? courseCount : '4'}" /> Môn học
-                                    </span>
+                        <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-2">
+                            <div class="stat-card h-100" style="--card-accent: var(--tertiary);">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--tertiary-fixed) 0%, #a0d0f5 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--tertiary);">article</span>
+                                    </div>
+                                    <span class="badge-pill badge-success"><c:out value="${courseCount != null ? courseCount : '4'}" /> Môn học</span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Danh sách tài liệu</p>
-                                <h3 class="fw-semibold mb-1" style="font-size: 28px; color: var(--on-surface);">
-                                    <c:out value="${readingListCount != null ? readingListCount : '12'}" />
-                                </h3>
-                                <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Tổng số đầu sách</p>
+                                <p class="stat-label">Danh sách tài liệu</p>
+                                <p class="stat-value"><c:out value="${readingListCount != null ? readingListCount : '12'}" /></p>
+                                <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Tổng số đầu sách</p>
+                                <div class="mini-progress">
+                                    <div class="mini-progress-bar" style="width: 60%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
+                                </div>
                             </div>
                         </div>
                         <!-- Pending Requests -->
-                        <div class="col-12 col-sm-6 col-xl-3">
-                            <div class="raised-card p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: #d97706; background-color: #fef3c7;">pending_actions</span>
-                                    <span class="badge-pill" style="color: #d97706; background-color: #fef3c7;">Chờ xử lý</span>
+                        <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-3">
+                            <div class="stat-card h-100" style="--card-accent: var(--warning);">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--warning);">pending_actions</span>
+                                    </div>
+                                    <span class="badge-pill badge-warning">Chờ xử lý</span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Yêu cầu chờ duyệt</p>
-                                <h3 class="fw-semibold mb-1" style="font-size: 28px; color: var(--on-surface);">
-                                    <c:out value="${pendingRequestsCount != null ? pendingRequestsCount : '2'}" />
-                                </h3>
-                                <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Yêu cầu bổ sung sách</p>
+                                <p class="stat-label">Yêu cầu chờ duyệt</p>
+                                <p class="stat-value"><c:out value="${pendingRequestsCount != null ? pendingRequestsCount : '2'}" /></p>
+                                <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Yêu cầu bổ sung sách</p>
+                                <div class="mini-progress">
+                                    <div class="mini-progress-bar" style="width: 25%; background: linear-gradient(90deg, #fde68a, var(--warning));"></div>
+                                </div>
                             </div>
                         </div>
                         <!-- Outstanding Fines -->
-                        <div class="col-12 col-sm-6 col-xl-3">
-                            <div class="raised-card p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: var(--success); background-color: #d1fae5;">payments</span>
-                                    <span class="badge-pill" style="color: var(--success); background-color: #d1fae5;">Sạch</span>
+                        <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-4">
+                            <div class="stat-card h-100" style="--card-accent: var(--success);">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--success);">payments</span>
+                                    </div>
+                                    <span class="badge-pill badge-success">Sạch</span>
                                 </div>
-                                <p class="mb-1 fw-semibold text-uppercase text-on-surface-variant" style="font-size: 10px; letter-spacing: 0.05em;">Tiền phạt chưa đóng</p>
-                                <h3 class="fw-semibold mb-1" style="font-size: 28px; color: var(--on-surface);">0đ</h3>
+                                <p class="stat-label">Tiền phạt chưa đóng</p>
+                                <p class="stat-value">0đ</p>
                                 <p style="font-size: 12px; color: var(--success); margin: 0; font-weight: 600;">Tài khoản ở trạng thái tốt</p>
                             </div>
                         </div>
@@ -128,10 +139,10 @@
 
                         <!-- Course Chips -->
                         <div class="raised-card p-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="card-header-row">
                                 <div>
-                                    <h3 class="fw-semibold mb-0" style="font-size: 18px; color: var(--on-surface);">Môn học của tôi</h3>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Học kỳ 1 — Năm học 2025</p>
+                                    <h3 class="card-title">Môn học của tôi</h3>
+                                    <p class="card-subtitle">Học kỳ 1 — Năm học 2025</p>
                                 </div>
                                 <button class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1">
                                     <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Yêu cầu Sách
@@ -203,13 +214,14 @@
 
                         <!-- Active Loans Table -->
                         <div class="raised-card overflow-hidden">
-                            <div class="p-3 d-flex justify-content-between align-items-center bg-white"
-                                 style="border-bottom: 1px solid var(--outline-variant);">
+                            <div class="card-header-row">
                                 <div>
-                                    <h3 class="fw-semibold mb-0" style="font-size: 18px; color: var(--on-surface);">Sách đang mượn</h3>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Sách tôi đã mượn</p>
+                                    <h3 class="card-title">Sách đang mượn</h3>
+                                    <p class="card-subtitle">Sách tôi đã mượn</p>
                                 </div>
-                                <a href="#" class="text-primary-custom fw-bold text-decoration-none" style="font-size: 13px;">Xem Lịch sử</a>
+                                <a href="#" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                                    Xem Lịch sử <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+                                </a>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-lms mb-0">
@@ -285,10 +297,9 @@
 
                         <!-- Book Acquisition Requests -->
                         <div class="raised-card overflow-hidden">
-                            <div class="p-3 bg-white d-flex justify-content-between align-items-center"
-                                 style="border-bottom: 1px solid var(--outline-variant);">
-                                <h3 class="fw-semibold mb-0" style="font-size: 16px; color: var(--on-surface);">Yêu cầu Sách của tôi</h3>
-                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2" style="font-size: 12px;">
+                            <div class="card-header-row">
+                                <h3 class="card-title mb-0">Yêu cầu Sách của tôi</h3>
+                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1" style="font-size: 12px;">
                                     <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Yêu cầu mới
                                 </button>
                             </div>

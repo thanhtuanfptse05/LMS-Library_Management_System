@@ -1,61 +1,88 @@
 <%-- Fragment: _header.jsp — Fixed top navigation bar for Lecturer --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!-- ════════════════ HEADER ════════════════ -->
-<header class="fixed-top bg-white shadow-sm" style="height: 64px; border-bottom: 1px solid var(--outline-variant);">
-    <div class="h-100 d-flex align-items-center justify-content-between px-4 header-layout">
+<header class="lms-header header-layout">
 
-        <!-- Left: Title + Nav -->
-        <div class="d-flex align-items-center gap-4 text-nowrap">
-            <h1 class="h5 fw-bold mb-0 text-primary-custom text-nowrap">Tài nguyên Học thuật</h1>
-            <div class="d-none d-md-flex gap-4 ms-2 text-nowrap">
-                <a href="${pageContext.request.contextPath}/lecturer/dashboard"
-                   style="font-size: 13px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 2px; text-decoration: none; font-weight: 600;">Bảng điều khiển</a>
-                <a href="${pageContext.request.contextPath}/book-search"
-                   style="font-size: 13px; color: var(--on-surface-variant); text-decoration: none; font-weight: 600;">Danh mục</a>
-            </div>
-        </div>
-
-        <!-- Right: Search + Notifications + User -->
-        <div class="d-flex align-items-center gap-3">
-            <div class="d-none d-md-block header-search-wrapper">
-                <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">search</span>
-                <input class="header-search-input" placeholder="Tìm kiếm sách, tạp chí..." type="text" aria-label="Tìm kiếm danh mục thư viện" />
-            </div>
-            <a href="${pageContext.request.contextPath}/notifications"
-               class="btn p-2 rounded-circle border-0 position-relative" style="background: transparent;" aria-label="Thông báo">
-                <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-                <c:choose>
-                    <c:when test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
-                        <span id="headerUnreadBadge"
-                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                              style="background-color: var(--primary); font-size: 10px; padding: 3px 6px; min-width: 18px;">
-                            <c:choose>
-                                <c:when test="${sessionScope.unreadNotificationCount > 99}">99+</c:when>
-                                <c:otherwise>${sessionScope.unreadNotificationCount}</c:otherwise>
-                            </c:choose>
-                        </span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="notif-dot"></span>
-                    </c:otherwise>
-                </c:choose>
+    <!-- Left: Title + Nav -->
+    <div class="d-flex align-items-center gap-3 flex-grow-1 text-nowrap overflow-hidden me-3">
+        <h1 class="mb-0 fw-bold text-primary-custom d-none d-md-block" style="font-size: 16px; white-space: nowrap;">
+            <span class="material-symbols-outlined me-1" style="font-size: 18px; font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;">school</span>
+            Tài nguyên Học thuật
+        </h1>
+        <div class="d-none d-lg-flex gap-1 align-items-center">
+            <span style="width: 1px; height: 20px; background: var(--outline-variant); display: inline-block;"></span>
+            <a href="${pageContext.request.contextPath}/lecturer/dashboard"
+               class="px-3 py-1 rounded-pill text-decoration-none fw-semibold"
+               style="font-size: 13px; color: var(--primary); background: rgba(157,67,0,0.08);">
+                Bảng điều khiển
             </a>
-            <a href="${pageContext.request.contextPath}/lecturer/profile" class="d-flex align-items-center gap-2 ps-3 text-decoration-none text-reset text-nowrap" style="border-left: 1px solid var(--outline-variant);" title="Xem Hồ sơ">
-                <div class="avatar" style="background-color: var(--tertiary-fixed); color: var(--on-tertiary-fixed-variant);">GV</div>
-                <div class="d-none d-sm-block text-start" style="max-width: 160px;">
-                    <p class="mb-0 fw-bold lh-sm text-truncate" style="font-size: 13px;" title="<c:out value="${sessionScope.email}"/>">
-                        <c:out value="${sessionScope.email}" default="Giảng viên"/>
-                    </p>
-                    <p class="mb-0 text-uppercase text-on-surface-variant text-truncate" style="font-size: 10px; letter-spacing: 0.1em;">
-                        <c:out value="${sessionScope.role}" default="LECTURER"/>
-                    </p>
-                </div>
-            </a>
-            <a href="${pageContext.request.contextPath}/logout"
-               class="btn p-2 rounded-circle border-0 ms-1"
-               style="background: transparent; color: var(--on-surface-variant);" title="Đăng xuất">
-                <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
+            <a href="${pageContext.request.contextPath}/book-search"
+               class="px-3 py-1 rounded-pill text-decoration-none fw-semibold text-on-surface-variant"
+               style="font-size: 13px;">
+                Danh mục
             </a>
         </div>
     </div>
+
+    <!-- Right: Search + Notifications + User -->
+    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+        <div class="d-none d-md-block header-search-wrapper">
+            <span class="material-symbols-outlined">search</span>
+            <input class="header-search-input" placeholder="Tìm kiếm sách, tạp chí..." type="text" aria-label="Tìm kiếm danh mục thư viện" />
+        </div>
+
+        <a href="${pageContext.request.contextPath}/notifications"
+           class="header-icon-btn"
+           aria-label="Thông báo">
+            <span class="material-symbols-outlined">notifications</span>
+            <c:choose>
+                <c:when test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
+                    <span id="headerUnreadBadge"
+                          style="position: absolute; top: 7px; right: 5px; background: var(--primary); color: white;
+                                 font-size: 9px; border-radius: 999px; padding: 1px 5px; min-width: 16px;
+                                 text-align: center; font-weight: 700; border: 2px solid white;">
+                        <c:choose>
+                            <c:when test="${sessionScope.unreadNotificationCount > 99}">99+</c:when>
+                            <c:otherwise>${sessionScope.unreadNotificationCount}</c:otherwise>
+                        </c:choose>
+                    </span>
+                </c:when>
+                <c:otherwise>
+                    <span class="notif-dot"></span>
+                </c:otherwise>
+            </c:choose>
+        </a>
+
+        <div style="width: 1px; height: 24px; background: var(--outline-variant);"></div>
+
+        <a href="${pageContext.request.contextPath}/lecturer/profile"
+           class="d-flex align-items-center gap-2 text-decoration-none"
+           title="Xem Hồ sơ">
+            <div class="header-avatar" style="background: linear-gradient(135deg, var(--tertiary-fixed) 0%, #a0d0f5 100%); color: var(--on-tertiary-fixed-variant);"
+                 title="${sessionScope.email}">
+                <c:choose>
+                    <c:when test="${not empty sessionScope.email}">
+                        <c:out value="${fn:toUpperCase(fn:substring(sessionScope.email,0,2))}" />
+                    </c:when>
+                    <c:otherwise>GV</c:otherwise>
+                </c:choose>
+            </div>
+            <div class="d-none d-sm-block" style="max-width: 140px;">
+                <p class="mb-0 fw-bold text-truncate" style="font-size: 13px; color: var(--on-surface);">
+                    <c:out value="${sessionScope.email}" default="Giảng viên"/>
+                </p>
+                <p class="mb-0 text-uppercase text-on-surface-variant text-truncate" style="font-size: 10px; letter-spacing: 0.1em;">
+                    <c:out value="${sessionScope.role}" default="LECTURER"/>
+                </p>
+            </div>
+        </a>
+
+        <a href="${pageContext.request.contextPath}/logout"
+           class="header-icon-btn"
+           title="Đăng xuất">
+            <span class="material-symbols-outlined">logout</span>
+        </a>
+    </div>
+
 </header>
