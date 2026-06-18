@@ -82,6 +82,8 @@ public class NotificationManagerServlet extends HttpServlet {
         request.setAttribute("currentPage",   page);
         request.setAttribute("totalPages",    totalPages);
         request.setAttribute("totalCount",    totalCount);
+        // Load danh sách mẫu email để JSP render dropdown chọn mẫu
+        request.setAttribute("emailTemplates", documentTempDAO.getAll());
 
         request.getRequestDispatcher("/manager/manage-notifications.jsp").forward(request, response);
     }
@@ -136,6 +138,8 @@ public class NotificationManagerServlet extends HttpServlet {
             request.setAttribute("totalCount",    notificationDAO.count());
             request.setAttribute("currentPage",   1);
             request.setAttribute("totalPages",    1);
+            // Load danh sách mẫu email để JSP render dropdown chọn mẫu
+            request.setAttribute("emailTemplates", documentTempDAO.getAll());
             request.getRequestDispatcher("/manager/manage-notifications.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             redirectWithError(request, response, "ID không hợp lệ");
@@ -152,6 +156,10 @@ public class NotificationManagerServlet extends HttpServlet {
         String content  = request.getParameter("content");
         String type     = request.getParameter("type");
         boolean isPinned = "on".equals(request.getParameter("isPinned"));
+        boolean isSendEmail = "on".equals(request.getParameter("isSendEmail"));
+        String targetRole   = request.getParameter("targetRole");
+        // Mẫu email do người dùng chủ động chọn từ dropdown
+        String selectedTemplateName = request.getParameter("templateName");
 
         if (title == null || title.trim().isEmpty()) {
             redirectWithError(request, response, "Tiêu đề không được để trống");
@@ -170,9 +178,9 @@ public class NotificationManagerServlet extends HttpServlet {
             notificationDAO.insertAuditLog(managerId, "CREATE_NOTIFICATION", "Notification", newId,
                     null, "title=" + title + "; type=" + type);
 
-            // ── Gửi Email Khẩn Cấp (Async) nếu loại là urgent ──
-            if ("urgent".equals(type)) {
-                sendUrgentEmailAsync(title, content);
+            // ── Gửi Email Thông Báo (Async) ──
+            if (isSendEmail && selectedTemplateName != null && !selectedTemplateName.trim().isEmpty()) {
+                sendNotificationEmailAsync(selectedTemplateName.trim(), targetRole, title, content);
             }
 
             redirectWithSuccess(request, response, "Đã đăng thông báo thành công");
@@ -192,6 +200,10 @@ public class NotificationManagerServlet extends HttpServlet {
         String content  = request.getParameter("content");
         String type     = request.getParameter("type");
         boolean isPinned = "on".equals(request.getParameter("isPinned"));
+        boolean isSendEmail = "on".equals(request.getParameter("isSendEmail"));
+        String targetRole   = request.getParameter("targetRole");
+        // Mẫu email do người dùng chủ động chọn từ dropdown
+        String selectedTemplateName = request.getParameter("templateName");
 
         if (idParam == null || idParam.trim().isEmpty() || title == null || title.trim().isEmpty()) {
             redirectWithError(request, response, "Dữ liệu không hợp lệ");
@@ -215,10 +227,9 @@ public class NotificationManagerServlet extends HttpServlet {
                 String newVal = "title=" + title + "; type=" + type + "; isPinned=" + isPinned;
                 notificationDAO.insertAuditLog(managerId, "UPDATE_NOTIFICATION", "Notification", notificationId, oldVal, newVal);
 
-                // ── Gửi Email Khẩn Cấp (Async) nếu loại là urgent sau khi cập nhật ──
-                // Chỉ gửi email nếu từ loại khác chuyển sang urgent
-                if ("urgent".equals(type) && (old == null || !"urgent".equals(old.getType()))) {
-                    sendUrgentEmailAsync(title, content);
+                // ── Gửi Email Thông Báo (Async) ──
+                if (isSendEmail && selectedTemplateName != null && !selectedTemplateName.trim().isEmpty()) {
+                    sendNotificationEmailAsync(selectedTemplateName.trim(), targetRole, title, content);
                 }
 
                 redirectWithSuccess(request, response, "Đã cập nhật thông báo thành công");
@@ -262,32 +273,41 @@ public class NotificationManagerServlet extends HttpServlet {
     // ─────────────────────────────────────────────────────────────
 
     /**
-     * Gửi Email Thông báo Khẩn cấp bất đồng bộ tới toàn bộ STUDENT và LECTURER đang active.
-     * Sử dụng mẫu email có tên định danh 'URGENT_NOTIFICATION' từ bảng DocumentTemp.
-     * Nội dung Markdown được chuyển đổi sang HTML trước khi gửi.
+     * Gửi Email Thông báo bất đồng bộ.
+     * Mẫu email được xác định qua {@code tempName} do người dùng chọn từ dropdown,
+     * không còn hardcode theo loại thông báo.
      *
-     * @param notifTitle   Tiêu đề thông báo (replace vào {{notificationTitle}})
-     * @param notifContent Nội dung thông báo dạng Markdown (replace vào {{notificationContent}})
+     * @param tempName      Tên định danh mẫu Email (tempName) trong bảng DocumentTemp
+     * @param targetRole    Đối tượng nhận: "STUDENT", "LECTURER" hoặc "ALL"
+     * @param notifTitle    Tiêu đề thông báo để thay thế placeholder {{notificationTitle}}
+     * @param notifContent  Nội dung thông báo để thay thế placeholder {{notificationContent}}
      */
-    private void sendUrgentEmailAsync(String notifTitle, String notifContent) {
-        DocumentTemp template = documentTempDAO.findByTempName("URGENT_NOTIFICATION");
+    private void sendNotificationEmailAsync(String tempName, String targetRole, String notifTitle, String notifContent) {
+        DocumentTemp template = documentTempDAO.findByTempName(tempName);
         if (template == null) {
-            LOGGER.warning("[URGENT EMAIL] Không tìm thấy mẫu email 'URGENT_NOTIFICATION' trong DocumentTemp. Bỏ qua gửi email.");
+            LOGGER.warning("[NOTIFICATION EMAIL] Không tìm thấy mẫu email '" + tempName + "' trong DocumentTemp. Bỏ qua gửi email.");
             return;
         }
 
-        List<UserContactDTO> contacts = userDAO.getActiveContactsByRoles("STUDENT", "LECTURER");
+        List<UserContactDTO> contacts;
+        if ("STUDENT".equals(targetRole)) {
+            contacts = userDAO.getActiveContactsByRoles("STUDENT");
+        } else if ("LECTURER".equals(targetRole)) {
+            contacts = userDAO.getActiveContactsByRoles("LECTURER");
+        } else {
+            contacts = userDAO.getActiveContactsByRoles("STUDENT", "LECTURER");
+        }
+
         if (contacts.isEmpty()) {
-            LOGGER.info("[URGENT EMAIL] Không có STUDENT hoặc LECTURER nào đang active để gửi.");
+            LOGGER.info("[NOTIFICATION EMAIL] Không có người dùng nào (role=" + targetRole + ") đang active để gửi.");
             return;
         }
 
         // Chuyển Markdown sang HTML một lần (dùng chung cho tất cả người nhận)
         String contentHtml = MarkdownUtil.toHtml(notifContent != null ? notifContent : "");
 
-        LOGGER.log(Level.INFO,
-                "[URGENT EMAIL] Bắt đầu gửi {0} email khẩn cấp cho STUDENT/LECTURER.",
-                contacts.size());
+        LOGGER.log(Level.INFO, "[NOTIFICATION EMAIL] Bắt đầu gửi {0} email bằng mẫu {1} cho {2}.",
+                new Object[]{contacts.size(), tempName, targetRole});
 
         for (UserContactDTO contact : contacts) {
             String displayName = (contact.getFullName() != null && !contact.getFullName().isBlank())
