@@ -87,7 +87,7 @@ public class BookImportDAOTest {
     }
 
     private int findUserId(Connection conn) throws Exception {
-        try (PreparedStatement ps = conn.prepareStatement("SELECT TOP 1 userId FROM [User] ORDER BY userId");
+        try (PreparedStatement ps = conn.prepareStatement("SELECT userId FROM \"User\" ORDER BY userId LIMIT 1");
              ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
             return rs.getInt(1);

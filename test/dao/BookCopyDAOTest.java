@@ -55,7 +55,7 @@ public class BookCopyDAOTest {
 
     private int findBookId() throws Exception {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement("SELECT TOP 1 bookId FROM Book ORDER BY bookId");
+             PreparedStatement ps = conn.prepareStatement("SELECT bookId FROM Book ORDER BY bookId LIMIT 1");
              ResultSet rs = ps.executeQuery()) {
             assertTrue("Database cần ít nhất một đầu sách để kiểm thử BookCopyDAO.", rs.next());
             return rs.getInt(1);
