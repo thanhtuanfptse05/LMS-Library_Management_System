@@ -374,6 +374,11 @@
                                                 <button type="submit" class="btn btn-primary-custom flex-grow-1 rounded-3 fw-bold py-2">
                                                     <span class="material-symbols-outlined me-1 align-middle">save</span>Lưu thay đổi
                                                 </button>
+                                                <button type="button" class="btn rounded-3 py-2 px-3 fw-semibold d-flex align-items-center gap-1"
+                                                        style="color: var(--error); border: 1px solid rgba(186,26,26,0.2);"
+                                                        onclick="confirmDeleteTemplate('${editTemplate.tempId}', '${editTemplate.tempName}')">
+                                                    <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>Xóa
+                                                </button>
                                                 <a href="${pageContext.request.contextPath}/manager/email-templates"
                                                    class="btn rounded-3 py-2 px-4"
                                                    style="background-color: var(--surface-container-high); color: var(--on-surface-variant);">Hủy</a>
@@ -433,6 +438,26 @@
         </main>
     </div><!-- /.main-wrapper -->
 
+    <!-- ════════════════ Confirm Delete Modal ════════════════ -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content border-0 rounded-4 shadow-lg text-center p-4">
+                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
+                     style="width: 64px; height: 64px; background-color: rgba(186,26,26,0.1);">
+                    <span class="material-symbols-outlined" style="font-size: 32px; color: var(--error);">warning</span>
+                </div>
+                <h5 class="fw-bold mb-2">Xác nhận xóa mẫu email</h5>
+                <p class="text-secondary small mb-4">Bạn có chắc chắn muốn xóa mẫu <code id="deleteTargetName"></code> không? Hành động này không thể hoàn tác.</p>
+                <form method="post" action="${pageContext.request.contextPath}/manager/email-templates" class="d-flex gap-2 w-100">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="tempId" id="deleteTargetId">
+                    <button type="button" class="btn btn-light flex-grow-1 rounded-3 fw-semibold" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger flex-grow-1 rounded-3 fw-semibold">Xóa ngay</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ─── Sidebar active link ───
@@ -450,6 +475,13 @@
             card.style.display = isHidden ? 'block' : 'none';
             guide.style.display = isHidden ? 'none' : 'block';
             if (isHidden) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ─── Xác nhận xóa ───
+        function confirmDeleteTemplate(tempId, tempName) {
+            document.getElementById('deleteTargetId').value = tempId;
+            document.getElementById('deleteTargetName').textContent = tempName;
+            new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
         }
 
         // ─── Tab Edit / Preview ───

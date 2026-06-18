@@ -164,6 +164,27 @@ public class DocumentTempDAO {
     }
 
     /**
+     * Xóa mẫu Email. Chỉ Manager mới được thực hiện.
+     *
+     * @param tempId ID của mẫu Email cần xóa
+     * @return true nếu xóa thành công, false nếu thất bại
+     */
+    public boolean delete(int tempId) {
+        String sql = "DELETE FROM DocumentTemp WHERE tempId = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, tempId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error deleting document template id=" + tempId, e);
+        }
+        return false;
+    }
+
+    /**
      * Ánh xạ một dòng ResultSet thành đối tượng DocumentTemp.
      *
      * @param rs ResultSet đang trỏ tới dòng dữ liệu hợp lệ

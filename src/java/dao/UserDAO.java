@@ -320,12 +320,12 @@ public class UserDAO {
             }
         }
         if (role != null && !role.trim().isEmpty() && !"ALL".equalsIgnoreCase(role)) {
-            sql.append("AND u.role = ? ");
-            params.add(role.trim());
+            sql.append("AND UPPER(u.role) = ? ");
+            params.add(role.trim().toUpperCase());
         }
         if (status != null && !status.trim().isEmpty() && !"ALL".equalsIgnoreCase(status)) {
-            sql.append("AND u.status = ? ");
-            params.add(status.trim());
+            sql.append("AND UPPER(u.status) = ? ");
+            params.add(status.trim().toUpperCase());
         }
 
         sql.append("ORDER BY u.userId DESC LIMIT ? OFFSET ?");
@@ -380,12 +380,12 @@ public class UserDAO {
             }
         }
         if (role != null && !role.trim().isEmpty() && !"ALL".equalsIgnoreCase(role)) {
-            sql.append("AND u.role = ? ");
-            params.add(role.trim());
+            sql.append("AND UPPER(u.role) = ? ");
+            params.add(role.trim().toUpperCase());
         }
         if (status != null && !status.trim().isEmpty() && !"ALL".equalsIgnoreCase(status)) {
-            sql.append("AND u.status = ? ");
-            params.add(status.trim());
+            sql.append("AND UPPER(u.status) = ? ");
+            params.add(status.trim().toUpperCase());
         }
 
         try (Connection conn = DatabaseConnection.getConnection();

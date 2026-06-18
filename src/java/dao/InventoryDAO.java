@@ -46,6 +46,9 @@ public class InventoryDAO {
     }
 
     public InventorySession findSession(Connection conn, int sessionId, boolean lock) throws SQLException {
+        if (lock) {
+            lockSession(conn, sessionId);
+        }
         String sql = "SELECT s.inventorySessionId, s.location, s.status, s.startedBy, "
                 + "COALESCE(mp.fullName,u.email) startedByName, s.startedAt, s.completedBy, "
                 + "s.completedAt, s.note, "
@@ -55,12 +58,23 @@ public class InventoryDAO {
                 + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId "
                 + "AND i.result IN ('missing','misplaced') AND i.resolvedAt IS NULL) unresolvedCount "
                 + "FROM InventorySession s JOIN \"User\" u ON u.userId=s.startedBy "
-                + "LEFT JOIN MemberProfile mp ON mp.userId=s.startedBy WHERE s.inventorySessionId = ?"
-                + (lock ? " FOR UPDATE" : "");
+                + "LEFT JOIN MemberProfile mp ON mp.userId=s.startedBy WHERE s.inventorySessionId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sessionId);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? mapSession(rs) : null;
+            }
+        }
+    }
+
+    private void lockSession(Connection conn, int sessionId) throws SQLException {
+        String sql = "SELECT inventorySessionId FROM InventorySession WHERE inventorySessionId = ? FOR UPDATE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, sessionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Phiên kiểm kê không tồn tại.");
+                }
             }
         }
     }

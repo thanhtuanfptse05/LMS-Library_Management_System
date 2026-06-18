@@ -58,7 +58,7 @@
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/tags">
             <span class="material-symbols-outlined">sell</span>
-            <span>Tag sách</span>
+            <span>Nhãn sách</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/copies">
             <span class="material-symbols-outlined">inventory_2</span>
@@ -75,7 +75,7 @@
         <c:if test="${sessionScope.role == 'ADMIN' or sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'admin' or sessionScope.role == 'librarian'}">
             <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import">
                 <span class="material-symbols-outlined">upload_file</span>
-                <span>Import dữ liệu</span>
+                <span>Nhập dữ liệu</span>
             </a>
         </c:if>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import-history">

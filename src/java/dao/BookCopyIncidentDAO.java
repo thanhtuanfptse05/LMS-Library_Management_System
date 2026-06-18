@@ -74,8 +74,8 @@ public class BookCopyIncidentDAO {
     }
 
     public BookCopyIncident findByIdForUpdate(Connection conn, int incidentId) throws SQLException {
-        return find(conn, baseSelect("BookCopyIncident i")
-                + " WHERE i.incidentId = ? FOR UPDATE", incidentId);
+        lockIncident(conn, incidentId);
+        return findById(conn, incidentId);
     }
 
     public BookCopyIncident findOpenByBookCopyId(Connection conn, int bookCopyId) throws SQLException {
@@ -136,6 +136,18 @@ public class BookCopyIncidentDAO {
             ps.setInt(1, incidentId);
             if (ps.executeUpdate() != 1) {
                 throw new SQLException("Sự cố không còn ở trạng thái phù hợp.");
+            }
+        }
+    }
+
+    private void lockIncident(Connection conn, int incidentId) throws SQLException {
+        String sql = "SELECT incidentId FROM BookCopyIncident WHERE incidentId = ? FOR UPDATE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, incidentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Sự cố không tồn tại.");
+                }
             }
         }
     }

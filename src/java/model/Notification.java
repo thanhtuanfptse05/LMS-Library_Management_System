@@ -44,6 +44,8 @@ public class Notification {
     private String createdByName;
     /** Trạng thái đã đọc của người dùng đang đăng nhập (từ UserNotificationStatus) */
     private boolean isRead;
+    /** Nhóm đối tượng (Lưu tạm trên UI, không có trong DB) */
+    private String targetRole;
 
     public Notification() {
     }
@@ -141,5 +143,13 @@ public class Notification {
 
     public void setRead(boolean isRead) {
         this.isRead = isRead;
+    }
+
+    public String getTargetRole() {
+        return targetRole;
+    }
+
+    public void setTargetRole(String targetRole) {
+        this.targetRole = targetRole;
     }
 }
