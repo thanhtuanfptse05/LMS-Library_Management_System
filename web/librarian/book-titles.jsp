@@ -113,7 +113,7 @@
                             <col class="bm-title-col-status">
                             <col class="bm-title-col-action">
                         </colgroup>
-                        <thead><tr><th>Đầu sách</th><th>ISBN</th><th>Thể loại &amp; tag</th><th>Xuất bản</th><th class="bm-number-cell">Tổng bản sao</th><th class="bm-number-cell">Sẵn sàng</th><th>Trạng thái</th><th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th></tr></thead>
+                        <thead><tr><th>Đầu sách</th><th>ISBN</th><th>Thể loại &amp; nhãn</th><th>Xuất bản</th><th class="bm-number-cell">Tổng bản sao</th><th class="bm-number-cell">Sẵn sàng</th><th>Trạng thái</th><th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th></tr></thead>
                         <tbody>
                             <c:forEach var="book" items="${books}">
                                 <tr>
@@ -160,7 +160,7 @@
                                             <c:if test="${labelCount > 2}">
                                                 <button class="bm-tag-overflow" type="button" data-bs-toggle="tooltip"
                                                         data-bs-placement="top" title="<c:out value="${allLabels}" />"
-                                                        aria-label="Xem đầy đủ thể loại và tag">+${labelCount - 2}</button>
+                                                        aria-label="Xem đầy đủ thể loại và nhãn">+${labelCount - 2}</button>
                                             </c:if>
                                             <c:if test="${empty book.categories and empty book.tags}"><span class="bm-empty-note">Chưa phân loại</span></c:if>
                                         </div>

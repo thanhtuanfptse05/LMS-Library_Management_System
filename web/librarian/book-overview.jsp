@@ -13,6 +13,7 @@
                 <h2 class="bm-page__title mb-1">Tổng quan</h2>
                 <p class="bm-page__subtitle mb-0">Theo dõi nhanh tình trạng danh mục, kho vật lý và các vấn đề cần xử lý.</p>
             </section>
+            <div class="bm-rule-note mb-4"><strong>Dữ liệu mẫu:</strong> các chỉ số và hoạt động trên màn Tổng quan hiện dùng để minh họa bố cục; số liệu động sẽ được kết nối sau khi hoàn thiện các nghiệp vụ liên quan.</div>
 
             <section class="row g-3 mb-4" aria-label="Chỉ số quản lý sách">
                 <div class="col-sm-6 col-xl-3">
@@ -86,7 +87,7 @@
                         <div class="bm-alert-item">
                             <span class="bm-alert-item__icon material-symbols-outlined">upload_file</span>
                             <div>
-                                <p class="bm-alert-item__title mb-1">1 phiên import có lỗi</p>
+                                <p class="bm-alert-item__title mb-1">1 phiên nhập dữ liệu có lỗi</p>
                                 <a class="bm-action-link" href="${pageContext.request.contextPath}/book-management/import-history">Xem lịch sử xử lý</a>
                             </div>
                         </div>
@@ -103,9 +104,9 @@
                     <table class="table table-lms">
                         <thead><tr><th>Thời gian</th><th>Hoạt động</th><th>Đối tượng</th><th>Người thực hiện</th><th>Kết quả</th></tr></thead>
                         <tbody>
-                            <tr><td>09/06/2026 09:12</td><td><strong>Import dữ liệu sách</strong></td><td>Phiên IMP-20260609-003</td><td>Nguyễn Thị Lan</td><td><span class="bm-badge bm-badge--success">Thành công</span></td></tr>
+                            <tr><td>09/06/2026 09:12</td><td><strong>Nhập dữ liệu sách</strong></td><td>Phiên nhập #20260609-003</td><td>Nguyễn Thị Lan</td><td><span class="bm-badge bm-badge--success">Thành công</span></td></tr>
                             <tr><td>09/06/2026 08:46</td><td><strong>Cập nhật tình trạng bản sao</strong></td><td>BC-00026312</td><td>Trần Hoàng Minh</td><td><span class="bm-badge bm-badge--warning">Chờ xác minh</span></td></tr>
-                            <tr><td>08/06/2026 15:30</td><td><strong>Import dữ liệu sách</strong></td><td>Phiên IMP-20260608-011</td><td>Trần Hoàng Minh</td><td><span class="bm-badge bm-badge--danger">Thất bại</span></td></tr>
+                            <tr><td>08/06/2026 15:30</td><td><strong>Nhập dữ liệu sách</strong></td><td>Phiên nhập #20260608-011</td><td>Trần Hoàng Minh</td><td><span class="bm-badge bm-badge--danger">Thất bại</span></td></tr>
                             <tr><td>08/06/2026 14:05</td><td><strong>Tạo đầu sách mới</strong></td><td>Kiến trúc phần mềm hiện đại</td><td>Nguyễn Thị Lan</td><td><span class="bm-badge bm-badge--success">Hoàn tất</span></td></tr>
                         </tbody>
                     </table>
