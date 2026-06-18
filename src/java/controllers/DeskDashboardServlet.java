@@ -7,6 +7,7 @@ import dao.ReservationDAO;
 import dao.BorrowRecordDAO;
 import dao.FineDAO;
 import dao.UserLockReasonDAO;
+import dao.BookCopyDAO;
 import model.User;
 import model.MemberProfile;
 import model.Reservation;
@@ -44,6 +45,7 @@ public class DeskDashboardServlet extends HttpServlet {
     private final BorrowRecordDAO borrowRecordDAO;
     private final FineDAO fineDAO;
     private final UserLockReasonDAO userLockReasonDAO;
+    private final BookCopyDAO bookCopyDAO;
 
     public DeskDashboardServlet() {
         this.userDAO = new UserDAO();
@@ -53,6 +55,7 @@ public class DeskDashboardServlet extends HttpServlet {
         this.borrowRecordDAO = new BorrowRecordDAO();
         this.fineDAO = new FineDAO();
         this.userLockReasonDAO = new UserLockReasonDAO();
+        this.bookCopyDAO = new BookCopyDAO();
     }
 
     @Override
@@ -95,12 +98,20 @@ public class DeskDashboardServlet extends HttpServlet {
                     List<BorrowRecord> activeBorrows = borrowRecordDAO.findActiveBorrowRecordsByUserId(conn, userId);
                     List<Fine> unpaidFines = fineDAO.findUnpaidFinesByUserId(conn, userId);
 
+                    // Ánh xạ bookCopyId -> barcode cho các sách đang mượn
+                    List<Integer> copyIds = new java.util.ArrayList<>();
+                    for (BorrowRecord br : activeBorrows) {
+                        copyIds.add(br.getBookCopyId());
+                    }
+                    java.util.Map<Integer, String> copyBarcodeMap = bookCopyDAO.findBarcodesForCopyIds(conn, copyIds);
+
                     // Bước 4: Đẩy dữ liệu ra Request Attributes
                     request.setAttribute("searchedUser", user);
                     request.setAttribute("searchedUserLockReasons", lockReasonsStr);
                     request.setAttribute("searchedProfile", profile);
                     request.setAttribute("readyReservations", readyReservations);
                     request.setAttribute("activeBorrows", activeBorrows);
+                    request.setAttribute("copyBarcodeMap", copyBarcodeMap);
                     request.setAttribute("unpaidFines", unpaidFines);
                 } else {
                     request.setAttribute("errorMessage", "Không tìm thấy độc giả có mã số: " + memberCode);
