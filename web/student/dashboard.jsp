@@ -25,28 +25,29 @@
 
 <body class="d-flex flex-column">
 
-    <jsp:include page="fragments/_header.jsp" />
+<jsp:include page="fragments/_sidebar.jsp" />
 
-    <!-- ════════════════ BODY WRAPPER ════════════════ -->
-    <div class="d-flex main-wrapper overflow-hidden">
+<!-- ════════════════ BODY WRAPPER ════════════════ -->
+<div class="d-flex main-wrapper overflow-hidden">
 
-        <jsp:include page="fragments/_sidebar.jsp" />
+    <!-- ════════════════ MAIN CONTENT ════════════════ -->
+    <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: #f7f9fb;">
+        
+        <jsp:include page="fragments/_header.jsp" />
 
-        <!-- ════════════════ MAIN CONTENT ════════════════ -->
-        <main class="flex-grow-1 overflow-y-auto" style="background-color: #f7f9fb;">
-            <div class="container-xl px-4 py-5">
+        <div class="container-xl px-4 py-5">
 
-                <jsp:include page="fragments/_section-welcome.jsp" />
-                <jsp:include page="fragments/_section-stats.jsp" />
-                <jsp:include page="fragments/_section-reading.jsp" />
-                <jsp:include page="fragments/_section-activity.jsp" />
-                <jsp:include page="fragments/_section-alert.jsp" />
+            <jsp:include page="fragments/_section-welcome.jsp" />
+            <jsp:include page="fragments/_section-stats.jsp" />
+            <jsp:include page="fragments/_section-reading.jsp" />
+            <jsp:include page="fragments/_section-activity.jsp" />
+            <jsp:include page="fragments/_section-alert.jsp" />
 
-            </div><!-- /.container-xl -->
+        </div><!-- /.container-xl -->
 
-            <jsp:include page="fragments/_footer.jsp" />
-        </main>
-    </div><!-- /.d-flex.main-wrapper -->
+        <jsp:include page="fragments/_footer.jsp" />
+    </main>
+</div><!-- /.d-flex.main-wrapper -->
 
     <!-- Floating Action Button (Mobile Search) -->
     <a href="${pageContext.request.contextPath}/book-search"

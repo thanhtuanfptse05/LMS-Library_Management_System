@@ -8,15 +8,16 @@
 
 <body class="d-flex flex-column">
 
-    <jsp:include page="fragments/_header.jsp" />
+    <jsp:include page="fragments/_sidebar.jsp" />
 
     <!-- ════════════════ BODY WRAPPER ════════════════ -->
     <div class="d-flex main-wrapper overflow-hidden">
 
-        <jsp:include page="fragments/_sidebar.jsp" />
-
         <!-- ════════════════ MAIN CONTENT ════════════════ -->
-        <main class="flex-grow-1 overflow-y-auto" style="background-color: #faf9f8;">
+        <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: #faf9f8;">
+            
+            <jsp:include page="fragments/_header.jsp" />
+
             <div class="container-xl px-4 py-5" style="max-width: 1200px; margin: 0 auto;">
 
                 <!-- ─── BREADCRUMB ─── -->

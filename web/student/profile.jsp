@@ -114,18 +114,18 @@
         transform: scale(1.05);
     }
 </style>
-
 <body class="d-flex flex-column">
 
-    <jsp:include page="fragments/_header.jsp" />
+    <jsp:include page="fragments/_sidebar.jsp" />
 
     <!-- ════════════════ BODY WRAPPER ════════════════ -->
     <div class="d-flex main-wrapper overflow-hidden">
 
-        <jsp:include page="fragments/_sidebar.jsp" />
-
         <!-- ════════════════ MAIN CONTENT ════════════════ -->
-        <main class="flex-grow-1 overflow-y-auto" style="background-color: #f7f9fb;">
+        <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: #f7f9fb;">
+            
+            <jsp:include page="fragments/_header.jsp" />
+
             <div class="container-xl px-4 py-5">
 
                 <!-- Alert Messages -->
