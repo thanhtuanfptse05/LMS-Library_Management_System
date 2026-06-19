@@ -139,4 +139,13 @@ public class Reservation {
     public void setEndDate(Timestamp endDate) {
         this.endDate = endDate;
     }
+
+    // Helper fields for view layer
+    private Book book;
+    private BookCopy bookCopy;
+
+    public Book getBook() { return book; }
+    public void setBook(Book book) { this.book = book; }
+    public BookCopy getBookCopy() { return bookCopy; }
+    public void setBookCopy(BookCopy bookCopy) { this.bookCopy = bookCopy; }
 }
