@@ -94,7 +94,7 @@ public class BookCopyIncidentDAOTest {
     }
 
     private int findBookId(Connection conn) throws Exception {
-        try (PreparedStatement ps = conn.prepareStatement("SELECT TOP 1 bookId FROM Book ORDER BY bookId");
+        try (PreparedStatement ps = conn.prepareStatement("SELECT bookId FROM Book ORDER BY bookId LIMIT 1");
              ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
             return rs.getInt(1);
@@ -114,7 +114,7 @@ public class BookCopyIncidentDAOTest {
 
     private int findUserId() throws Exception {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement("SELECT TOP 1 userId FROM [User] ORDER BY userId");
+             PreparedStatement ps = conn.prepareStatement("SELECT userId FROM \"User\" ORDER BY userId LIMIT 1");
              ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
             return rs.getInt(1);
