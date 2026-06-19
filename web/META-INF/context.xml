@@ -1,2 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/LMS-Library_Management_System"/>
+<Context path="/LMS-Library_Management_System">
+    <Resource name="jdbc/LMSDB"
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
+              username="postgres.wukwrfwdrbstyoqissjz"
+              password="6wUw)Q6S/)LFeSE"
+              maxTotal="20"
+              maxIdle="10"
+              maxWaitMillis="10000"
+              testOnBorrow="true"
+              validationQuery="SELECT 1"/>
+</Context>

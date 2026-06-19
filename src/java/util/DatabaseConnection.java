@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 
 /**
  * DatabaseConnection — Utility class cung cấp kết nối JDBC tới SQL Server.
@@ -25,12 +27,22 @@ public class DatabaseConnection {
     private static final String USER = "postgres.wukwrfwdrbstyoqissjz";
     private static final String PASSWORD = "6wUw)Q6S/)LFeSE";
 
+    private static DataSource dataSource;
+
     static {
         try {
             Class.forName(DRIVER);
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, "PostgreSQL JDBC Driver not found. "
                     + "Ensure postgresql-42.7.x.jar is in WEB-INF/lib.", e);
+        }
+
+        try {
+            InitialContext ctx = new InitialContext();
+            dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/LMSDB");
+            LOGGER.info("Da khoi tao JNDI DataSource jdbc/LMSDB thanh cong.");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Khong the lookup JNDI DataSource (co the dang chay ngoai Tomcat). Se fallback ve DriverManager: " + e.getMessage());
         }
     }
 
@@ -48,6 +60,13 @@ public class DatabaseConnection {
     public static Connection getConnection() throws SQLException {
         if (testConnection != null) {
             return testConnection;
+        }
+        if (dataSource != null) {
+            try {
+                return dataSource.getConnection();
+            } catch (SQLException e) {
+                LOGGER.log(Level.WARNING, "Loi khi lay ket noi tu DataSource JNDI. Fallback ve DriverManager...", e);
+            }
         }
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
