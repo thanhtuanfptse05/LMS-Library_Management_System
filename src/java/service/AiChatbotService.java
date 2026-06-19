@@ -8,11 +8,13 @@ import config.AiConfig;
 import dao.BookDAO;
 import dao.SystemConfigurationsDAO;
 import model.Book;
+import model.ChatMessage;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,26 +22,29 @@ import java.util.logging.Logger;
 
 /**
  * AiChatbotService — Xử lý logic nghiệp vụ cho chatbot hỗ trợ AI (F14).
- * Chứa bộ phân loại ý định và các phương thức trích xuất ngữ cảnh RAG (Nội quy/Sách).
+ * Bao gồm phân loại ý định, trích xuất ngữ cảnh RAG và giao tiếp với Google Gemini API.
  */
 public class AiChatbotService {
 
     private static final Logger LOGGER = Logger.getLogger(AiChatbotService.class.getName());
-    private static final int TIMEOUT_MS = 15000;
+    private static final int TIMEOUT_MS = 15000; // Timeout 15 giây theo quy định SPEC
 
     private final SystemConfigurationsDAO systemConfigDAO = new SystemConfigurationsDAO();
     private final BookDAO bookDAO = new BookDAO();
 
     /**
      * Phân loại mục đích câu hỏi của người dùng.
+     * Sử dụng mô hình Gemini với số lượng token nhỏ để đưa ra nhãn phân loại: "Rules", "Books", hoặc "Irrelevant".
      */
     public String classifyIntent(String userMessage) {
         if (userMessage == null || userMessage.trim().isEmpty()) {
             return "Irrelevant";
         }
 
+        // Tối ưu hoá trước bằng khoá từ khoá (Keyword check) để phản hồi nhanh
         String lowerMsg = userMessage.toLowerCase().trim();
         if (lowerMsg.matches(".*(xin chào|hi|hello|bạn là ai|chatbot là gì|khỏe không|tạm biệt|bye|cảm ơn|thanks).*")) {
+            // Các câu chào hỏi thông thường hoặc linh tinh
             if (!lowerMsg.contains("sách") && !lowerMsg.contains("quy định") && !lowerMsg.contains("mượn") && !lowerMsg.contains("trả")) {
                 return "Irrelevant";
             }
@@ -54,6 +59,7 @@ public class AiChatbotService {
                 + "Không trả về thêm bất kỳ từ nào khác.";
 
         try {
+            // Đóng gói JSON Payload cho cuộc gọi Gemini ngắn hạn
             JsonObject textPart = new JsonObject();
             textPart.addProperty("text", "Câu hỏi: \"" + userMessage + "\"");
 
@@ -84,16 +90,21 @@ public class AiChatbotService {
             JsonObject thinkingConfig = new JsonObject();
             thinkingConfig.addProperty("thinkingBudget", 0);
             generationConfig.add("thinkingConfig", thinkingConfig);
+            
             root.add("generationConfig", generationConfig);
 
             String jsonPayload = new Gson().toJson(root);
             String response = sendPostRequest(jsonPayload);
+            
             String label = parseTextResponse(response).trim();
+            LOGGER.log(Level.INFO, "[AI-SVC] Intent classified for \"{0}\" -> {1}", new Object[]{userMessage, label});
             
             if (label.contains("Rules")) return "Rules";
             if (label.contains("Books")) return "Books";
             return "Irrelevant";
         } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[AI-SVC] Lỗi phân loại intent bằng AI, fallback dựa trên từ khóa: " + e.getMessage());
+            // Fallback dựa trên từ khoá tiếng Việt thông thường
             if (lowerMsg.contains("sách") || lowerMsg.contains("tác giả") || lowerMsg.contains("cuốn") || lowerMsg.contains("truyện") || lowerMsg.contains("tìm")) {
                 return "Books";
             }
@@ -144,6 +155,57 @@ public class AiChatbotService {
     }
 
     /**
+     * Thực hiện cuộc gọi hội thoại nhiều lượt sang Gemini API.
+     */
+    public String callGeminiChat(List<ChatMessage> history, String systemInstructionText) {
+        try {
+            JsonObject root = new JsonObject();
+
+            // Set System Instruction
+            JsonObject systemInstruction = new JsonObject();
+            JsonArray systemParts = new JsonArray();
+            JsonObject systemText = new JsonObject();
+            systemText.addProperty("text", systemInstructionText);
+            systemParts.add(systemText);
+            systemInstruction.add("parts", systemParts);
+            root.add("systemInstruction", systemInstruction);
+
+            // Set Contents (Lịch sử hội thoại)
+            JsonArray contents = new JsonArray();
+            for (ChatMessage msg : history) {
+                JsonObject contentObj = new JsonObject();
+                // Map role sang định dạng Gemini ('user' và 'model')
+                contentObj.addProperty("role", "user".equals(msg.getRole()) ? "user" : "model");
+                
+                JsonArray parts = new JsonArray();
+                JsonObject textObj = new JsonObject();
+                textObj.addProperty("text", msg.getContent());
+                parts.add(textObj);
+                contentObj.add("parts", parts);
+                
+                contents.add(contentObj);
+            }
+            root.add("contents", contents);
+
+            // Generation config để tăng tính chính xác và loại bỏ thinking latency
+            JsonObject generationConfig = new JsonObject();
+            generationConfig.addProperty("temperature", 0.7);
+            
+            JsonObject thinkingConfig = new JsonObject();
+            thinkingConfig.addProperty("thinkingBudget", 0);
+            generationConfig.add("thinkingConfig", thinkingConfig);
+            root.add("generationConfig", generationConfig);
+
+            String jsonPayload = new Gson().toJson(root);
+            String rawResponse = sendPostRequest(jsonPayload);
+            return parseTextResponse(rawResponse);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "[AI-SVC] Lỗi kết nối hoặc xử lý API AI: " + e.getMessage(), e);
+            return null; // Kích hoạt fallback
+        }
+    }
+
+    /**
      * Tách từ khóa tìm kiếm chính từ câu hỏi tự nhiên của người dùng.
      */
     private String extractSearchKeyword(String message) {
@@ -166,6 +228,9 @@ public class AiChatbotService {
         return clean.isEmpty() ? message : clean;
     }
 
+    /**
+     * Gửi yêu cầu HTTP POST sang Gemini API.
+     */
     private String sendPostRequest(String payload) throws Exception {
         URL url = new URL(AiConfig.GEMINI_API_URL + AiConfig.GEMINI_CHATBOT_API_KEY);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -182,7 +247,17 @@ public class AiChatbotService {
 
         int statusCode = conn.getResponseCode();
         if (statusCode != HttpURLConnection.HTTP_OK) {
-            throw new Exception("Gemini API rejected request. Status code: " + statusCode);
+            StringBuilder errorDetails = new StringBuilder();
+            if (conn.getErrorStream() != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        errorDetails.append(line.trim());
+                    }
+                } catch (Exception ignored) {}
+            }
+            throw new Exception("Gemini API rejected request. Status code: " + statusCode +
+                    (errorDetails.length() > 0 ? ", Details: " + errorDetails : ""));
         }
 
         StringBuilder response = new StringBuilder();
@@ -195,12 +270,16 @@ public class AiChatbotService {
         return response.toString();
     }
 
+    /**
+     * Trích xuất văn bản trả lời từ JSON Response của Gemini API.
+     */
     private String parseTextResponse(String jsonResponse) throws Exception {
         JsonObject root = JsonParser.parseString(jsonResponse).getAsJsonObject();
         JsonArray candidates = root.getAsJsonArray("candidates");
         if (candidates == null || candidates.size() == 0) {
             throw new Exception("Gemini did not return any candidate response.");
         }
+
         JsonObject content = candidates.get(0).getAsJsonObject().getAsJsonObject("content");
         JsonArray parts = content.getAsJsonArray("parts");
         return parts.get(0).getAsJsonObject().get("text").getAsString();
