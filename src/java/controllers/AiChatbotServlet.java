@@ -68,6 +68,14 @@ public class AiChatbotServlet extends HttpServlet {
             String userMessage = reqBody.get("message").getAsString().trim();
             String intent = chatbotService.classifyIntent(userMessage);
             
+            // Lấy lịch sử hội thoại hiện tại từ Session
+            HttpSession session = request.getSession(true);
+            @SuppressWarnings("unchecked")
+            List<ChatMessage> chatHistory = (List<ChatMessage>) session.getAttribute("chatHistory");
+            if (chatHistory == null) {
+                chatHistory = new ArrayList<>();
+            }
+
             String aiResponse;
             if ("Irrelevant".equals(intent)) {
                 aiResponse = "Tôi chỉ có thể hỗ trợ các vấn đề liên quan đến nội quy thư viện và tìm kiếm sách.";
@@ -93,14 +101,6 @@ public class AiChatbotServlet extends HttpServlet {
                             + "Nếu không tìm thấy sách phù hợp, hãy trả lời lịch sự rằng thư viện hiện chưa có đầu sách này.";
                 }
 
-                // Lấy lịch sử ngắn hạn từ Session
-                HttpSession session = request.getSession(true);
-                @SuppressWarnings("unchecked")
-                List<ChatMessage> chatHistory = (List<ChatMessage>) session.getAttribute("chatHistory");
-                if (chatHistory == null) {
-                    chatHistory = new ArrayList<>();
-                }
-
                 // Giới hạn lịch sử đàm thoại tối đa 5 lượt (5 user + 5 model = 10 tin nhắn)
                 List<ChatMessage> recentHistory = new ArrayList<>();
                 if (chatHistory.size() > 10) {
@@ -118,6 +118,11 @@ public class AiChatbotServlet extends HttpServlet {
                     aiResponse = "Hệ thống AI hiện đang quá tải. Vui lòng thử lại sau ít phút.";
                 }
             }
+
+            // Lưu cả tin nhắn của người dùng và phản hồi vào Session
+            chatHistory.add(new ChatMessage("user", userMessage));
+            chatHistory.add(new ChatMessage("model", aiResponse));
+            session.setAttribute("chatHistory", chatHistory);
             
             jsonRes.addProperty("status", "success");
             jsonRes.addProperty("response", aiResponse);
