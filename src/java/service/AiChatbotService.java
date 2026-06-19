@@ -5,22 +5,30 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import config.AiConfig;
+import dao.BookDAO;
+import dao.SystemConfigurationsDAO;
+import model.Book;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * AiChatbotService — Xử lý logic nghiệp vụ cho chatbot hỗ trợ AI (F14).
- * Cụ thể chứa bộ phân loại ý định (Intent Classifier).
+ * Chứa bộ phân loại ý định và các phương thức trích xuất ngữ cảnh RAG (Nội quy/Sách).
  */
 public class AiChatbotService {
 
     private static final Logger LOGGER = Logger.getLogger(AiChatbotService.class.getName());
     private static final int TIMEOUT_MS = 15000;
+
+    private final SystemConfigurationsDAO systemConfigDAO = new SystemConfigurationsDAO();
+    private final BookDAO bookDAO = new BookDAO();
 
     /**
      * Phân loại mục đích câu hỏi của người dùng.
@@ -94,6 +102,68 @@ public class AiChatbotService {
             }
             return "Irrelevant";
         }
+    }
+
+    /**
+     * Truy xuất các quy định, nội quy của thư viện từ CSDL để nhúng vào Prompt.
+     */
+    public String retrieveRulesContext() {
+        Map<String, String> configs = systemConfigDAO.getLibraryConfigurations();
+        if (configs.isEmpty()) {
+            return "Không tìm thấy cấu hình quy định cụ thể trong cơ sở dữ liệu. Thư viện mở cửa từ 8:00 đến 20:00 các ngày từ thứ 2 đến thứ 7.";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Dưới đây là các chính sách và cấu hình vận hành thư viện chính thức:\n");
+        for (Map.Entry<String, String> entry : configs.entrySet()) {
+            sb.append("- ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Thực hiện RAG tìm kiếm sách từ CSDL dựa trên câu hỏi của người dùng.
+     */
+    public String retrieveBooksContext(String userMessage) {
+        String keyword = extractSearchKeyword(userMessage);
+        List<Book> books = bookDAO.searchBooks(keyword, 0, null, true, 1, 10);
+        if (books.isEmpty()) {
+            return "Không tìm thấy đầu sách nào phù hợp trực tiếp với từ khóa \"" + keyword + "\" trong cơ sở dữ liệu thư viện.";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Danh sách các sách liên quan có sẵn trong thư viện hiện tại:\n");
+        for (Book b : books) {
+            sb.append("- ID: ").append(b.getBookId())
+              .append(" | Tên sách: ").append(b.getTitle())
+              .append(" | Tác giả: ").append(b.getAuthor() != null ? b.getAuthor() : "Chưa rõ")
+              .append(" | Nhà xuất bản: ").append(b.getPublisher() != null ? b.getPublisher() : "Chưa rõ")
+              .append(" | Số lượng khả dụng: ").append(b.getAvailableQuantity())
+              .append(" | Trạng thái: ").append(b.getStatus()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Tách từ khóa tìm kiếm chính từ câu hỏi tự nhiên của người dùng.
+     */
+    private String extractSearchKeyword(String message) {
+        String clean = message.toLowerCase()
+                .replaceAll("tìm sách", "")
+                .replaceAll("tìm kiếm", "")
+                .replaceAll("tìm cuốn", "")
+                .replaceAll("đọc cuốn", "")
+                .replaceAll("có sách", "")
+                .replaceAll("sách về", "")
+                .replaceAll("sách của", "")
+                .replaceAll("tác giả", "")
+                .replaceAll("thể loại", "")
+                .replaceAll("cho tôi hỏi", "")
+                .replaceAll("nào không", "")
+                .replaceAll("không", "")
+                .replaceAll("nhỉ", "")
+                .replaceAll("[?.,!]", "")
+                .trim();
+        return clean.isEmpty() ? message : clean;
     }
 
     private String sendPostRequest(String payload) throws Exception {
