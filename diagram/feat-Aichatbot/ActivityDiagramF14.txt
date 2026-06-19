@@ -1,0 +1,109 @@
+[Initial Node 1.1]
+Actor: System
+Loại: Initial Node
+Tên Action: Start AI Chatbot Flow
+Nội dung Action: Điểm bắt đầu luồng giao tiếp giữa người dùng và trợ lý ảo AI.
+Nối tới: Mũi tên đi tới [Manual Action 2.2].
+
+[Manual Action 2.2]
+Actor: Guest, User
+Loại: Manual Action
+Tên Action: Access Chatbot Interface
+Nội dung Action: Người dùng mở Widget Chatbot nổi trên giao diện hệ thống thư viện.
+Nối tới: Mũi tên đi tới [System Action Box 3.3].
+
+[System Action Box 3.3]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Initialize Chat Session
+Nội dung Action: Khởi tạo mảng lịch sử chat rỗng lưu trong HttpSession và hiển thị câu chào mặc định.
+Nối tới: Mũi tên đi tới [Manual Action 4.4].
+
+[Manual Action 4.4]
+Actor: Guest, User
+Loại: Manual Action
+Tên Action: Submit Chat Message
+Nội dung Action: Người dùng nhập câu hỏi bằng ngôn ngữ tự nhiên và nhấn gửi.
+Nối tới: Mũi tên đi tới [System Action Box 5.5].
+
+[System Action Box 5.5]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Extract Chat History
+Nội dung Action: Trích xuất lịch sử hội thoại hiện tại (tối đa 5 lượt gần nhất) từ HttpSession.
+Nối tới: Mũi tên đi tới [Decision Node 6.6].
+
+[Decision Node 6.6]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Classify Question Intent
+Nội dung Action: Phân loại mục đích câu hỏi của người dùng vào 1 trong 3 nhóm: Nội quy, Sách, hoặc Vấn đề khác.
+Nối tới:
+Nhánh [Library Rules Intent]: rẽ tới [System Action Box 7.7].
+Nhánh [Book Search Intent]: rẽ tới [System Action Box 7.8].
+Nhánh [Other / Irrelevant Intent]: rẽ tới [System Action Box 7.9].
+
+[System Action Box 7.7]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Extract Rules Context
+Nội dung Action: Truy xuất các quy định, chính sách hoạt động của thư viện từ CSDL và nhúng vào Context Payload.
+Nối tới: Mũi tên đi tới [System Action Box 8.10].
+
+[System Action Box 7.8]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Book RAG Query
+Nội dung Action: Truy vấn CSDL lấy metadata của các sách phù hợp với truy vấn và nhúng vào Context Payload.
+Nối tới: Mũi tên đi tới [System Action Box 8.10].
+
+[System Action Box 7.9]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Out Of Scope Message
+Nội dung Action: Hệ thống KHÔNG gọi AI. Trả về thông báo từ chối trực tiếp: "Tôi chỉ có thể hỗ trợ các vấn đề liên quan đến nội quy thư viện và tìm kiếm sách."
+Nối tới: Mũi tên đi tới [System Action Box 11.14].
+
+[System Action Box 8.10]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Extract Context And Call AI
+Nội dung Action: Đóng gói Payload chứa System Prompt, Lịch sử chat, Context dữ liệu (Sách/Nội quy) và gửi HTTP Request bất đồng bộ sang AI Service với timeout tối đa 15 giây.
+Nối tới: Mũi tên đi tới [Decision Node 9.11].
+
+[Decision Node 9.11]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate AI Response
+Nội dung Action: Lắng nghe phản hồi từ AI Service, đánh giá HTTP Status và kiểm tra Timeout.
+Nối tới:
+Nhánh [Timeout OR HTTP 5xx]: rẽ tới [System Action Box 10.12].
+Nhánh [HTTP 200 Success]: rẽ tới [System Action Box 10.13].
+
+[System Action Box 10.12]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute AI Fallback
+Nội dung Action: Ghi log cảnh báo lỗi AI. Trả về UI thông báo: "Hệ thống AI hiện đang quá tải. Vui lòng thử lại sau ít phút".
+Nối tới: Mũi tên đi tới [System Action Box 11.14].
+
+[System Action Box 10.13]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Parse And Render Response
+Nội dung Action: Phân tích kết quả trả về từ AI Service và hiển thị nội dung Markdown lên giao diện người dùng.
+Nối tới: Mũi tên đi tới [System Action Box 11.14].
+
+[System Action Box 11.14]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Update Session History
+Nội dung Action: Cập nhật cặp câu hỏi và câu trả lời (hoặc lỗi) vừa diễn ra vào mảng lịch sử hội thoại trong HttpSession.
+Nối tới: Mũi tên đi tới [Final Node 12.15].
+
+[Final Node 12.15]
+Actor: System
+Loại: Final Node
+Tên Action: Complete Chatbot Request
+Nội dung Action: Kết thúc luồng xử lý cho một phiên hỏi đáp Chatbot.
+Nối tới: Không có.
