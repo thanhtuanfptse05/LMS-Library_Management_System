@@ -233,3 +233,6 @@
         if (targetPane) targetPane.classList.add('active');
     }
 </script>
+
+<!-- AI Chatbot Floating Widget -->
+<jsp:include page="/common/fragments/_chatbot.jsp" />
