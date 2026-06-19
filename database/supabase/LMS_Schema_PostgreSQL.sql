@@ -395,3 +395,20 @@ CREATE INDEX IX_BookImportBatch_CreatedAt ON BookImportBatch(createdAt);
 CREATE UNIQUE INDEX UX_InventoryItem_Session_Copy ON InventoryItem(inventorySessionId, bookCopyId);
 
 CREATE INDEX IX_InventorySession_StartedAt ON InventorySession(startedAt DESC);
+
+-- Core performance indexes added for transaction tables
+CREATE INDEX IF NOT EXISTS IX_BorrowRecord_User_Copy ON BorrowRecord(userId, bookCopyId);
+CREATE INDEX IF NOT EXISTS IX_BorrowRecord_Status ON BorrowRecord(status);
+CREATE INDEX IF NOT EXISTS IX_Reservation_User_Book ON Reservation(userId, bookId);
+CREATE INDEX IF NOT EXISTS IX_Reservation_Status ON Reservation(status);
+CREATE INDEX IF NOT EXISTS IX_BookCopy_BookId ON BookCopy(bookId);
+CREATE INDEX IF NOT EXISTS IX_BookCopy_Status ON BookCopy(status);
+CREATE INDEX IF NOT EXISTS IX_Fine_User_Borrow ON Fine(userId, borrowRecordId);
+CREATE INDEX IF NOT EXISTS IX_Fine_Status ON Fine(status);
+CREATE INDEX IF NOT EXISTS IX_Payment_FineId ON Payment(fineId);
+CREATE INDEX IF NOT EXISTS IX_Payment_ProcessedBy ON Payment(processedBy);
+CREATE INDEX IF NOT EXISTS IX_MemberProfile_FullName ON MemberProfile(fullName);
+CREATE INDEX IF NOT EXISTS IX_BookCategory_CategoryId ON BookCategory(categoryId);
+CREATE INDEX IF NOT EXISTS IX_BookTag_TagId ON BookTag(tagId);
+CREATE INDEX IF NOT EXISTS IX_UserNotificationStatus_NotificationId ON UserNotificationStatus(notificationId);
+

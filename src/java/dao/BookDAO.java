@@ -417,7 +417,7 @@ public class BookDAO {
     private void appendFilters(StringBuilder sql, List<Object> parameters, String keyword,
             Integer categoryId, Integer tagId, String status) {
         if (keyword != null && !keyword.isBlank()) {
-            sql.append("AND (b.title LIKE ? OR b.isbn LIKE ? OR b.author LIKE ?) ");
+            sql.append("AND (b.title ILIKE ? OR b.isbn ILIKE ? OR b.author ILIKE ?) ");
             String value = "%" + keyword.trim() + "%";
             parameters.add(value);
             parameters.add(value);
