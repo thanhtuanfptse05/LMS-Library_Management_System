@@ -57,9 +57,26 @@ public class AiChatbotServlet extends HttpServlet {
         JsonObject jsonRes = new JsonObject();
         
         try {
-            // Skeleton doPost
+            JsonObject reqBody = gson.fromJson(request.getReader(), JsonObject.class);
+            if (reqBody == null || !reqBody.has("message")) {
+                jsonRes.addProperty("status", "error");
+                jsonRes.addProperty("response", "Yêu cầu không hợp lệ.");
+                response.getWriter().write(gson.toJson(jsonRes));
+                return;
+            }
+            
+            String userMessage = reqBody.get("message").getAsString().trim();
+            String intent = chatbotService.classifyIntent(userMessage);
+            
+            String aiResponse;
+            if ("Irrelevant".equals(intent)) {
+                aiResponse = "Tôi chỉ có thể hỗ trợ các vấn đề liên quan đến nội quy thư viện và tìm kiếm sách.";
+            } else {
+                aiResponse = "Đang xử lý " + intent + "...";
+            }
+            
             jsonRes.addProperty("status", "success");
-            jsonRes.addProperty("response", "Đang xử lý...");
+            jsonRes.addProperty("response", aiResponse);
         } catch (Exception e) {
             jsonRes.addProperty("status", "error");
             jsonRes.addProperty("response", "Hệ thống AI hiện đang quá tải. Vui lòng thử lại sau ít phút.");
