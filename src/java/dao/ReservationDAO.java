@@ -393,11 +393,11 @@ public class ReservationDAO {
     }
 
     /**
-     * Tạo mới một đơn đặt trước trực tuyến.
+     * Tạo mới một đơn đặt trước trực tuyến (có gán bản sao).
      */
-    public int insertOnlineReservation(Connection conn, int userId, int bookId, int queuePosition) throws SQLException {
-        String sql = "INSERT INTO Reservation (userId, bookId, status, queuePosition, startDate, endDate) "
-                   + "VALUES (?, ?, ?, ?, NOW(), ?)";
+    public int insertOnlineReservation(Connection conn, int userId, int bookId, int queuePosition, Integer bookCopyId) throws SQLException {
+        String sql = "INSERT INTO Reservation (userId, bookId, bookCopyId, status, queuePosition, startDate, endDate) "
+                   + "VALUES (?, ?, ?, ?, ?, NOW(), ?)";
         String status = (queuePosition == 0) ? "readypickup" : "pending";
         Timestamp endTs = null;
         if (queuePosition == 0) {
@@ -408,12 +408,17 @@ public class ReservationDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, userId);
             ps.setInt(2, bookId);
-            ps.setString(3, status);
-            ps.setInt(4, queuePosition);
-            if (endTs != null) {
-                ps.setTimestamp(5, endTs);
+            if (bookCopyId != null) {
+                ps.setInt(3, bookCopyId);
             } else {
-                ps.setNull(5, java.sql.Types.TIMESTAMP);
+                ps.setNull(3, java.sql.Types.INTEGER);
+            }
+            ps.setString(4, status);
+            ps.setInt(5, queuePosition);
+            if (endTs != null) {
+                ps.setTimestamp(6, endTs);
+            } else {
+                ps.setNull(6, java.sql.Types.TIMESTAMP);
             }
 
             ps.executeUpdate();
@@ -428,6 +433,14 @@ public class ReservationDAO {
         }
         throw new SQLException("Tạo Reservation online thất bại: không lấy được generated key.");
     }
+
+    /**
+     * Tạo mới một đơn đặt trước trực tuyến (không gán bản sao).
+     */
+    public int insertOnlineReservation(Connection conn, int userId, int bookId, int queuePosition) throws SQLException {
+        return insertOnlineReservation(conn, userId, bookId, queuePosition, null);
+    }
+
 
     /**
      * Đếm số đơn đặt trước đang hoạt động (pending hoặc readypickup) của một người dùng.
