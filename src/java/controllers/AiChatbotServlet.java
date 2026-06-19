@@ -72,7 +72,51 @@ public class AiChatbotServlet extends HttpServlet {
             if ("Irrelevant".equals(intent)) {
                 aiResponse = "Tôi chỉ có thể hỗ trợ các vấn đề liên quan đến nội quy thư viện và tìm kiếm sách.";
             } else {
-                aiResponse = "Đang xử lý " + intent + "...";
+                // Lấy ngữ cảnh dựa trên Intent
+                String context;
+                String systemPrompt;
+                if ("Rules".equals(intent)) {
+                    context = chatbotService.retrieveRulesContext();
+                    systemPrompt = "Bạn là trợ lý ảo hỗ trợ đàm thoại của thư viện trường đại học (UniLib).\n"
+                            + "Hãy trả lời câu hỏi của người dùng một cách ngắn gọn, rõ ràng, lịch sự và bằng TIẾNG VIỆT.\n"
+                            + "Sử dụng thông tin cấu hình quy định chính thức dưới đây làm nguồn dữ liệu đáng tin cậy duy nhất:\n\n"
+                            + context + "\n\n"
+                            + "Lưu ý: Chỉ trả lời các quy định dựa trên dữ liệu trên. Nếu thông tin không có trong dữ liệu, hãy trả lời lịch sự rằng bạn chưa nắm rõ quy định cụ thể này và khuyên họ liên hệ trực tiếp thủ thư tại quầy.";
+                } else { // Books
+                    context = chatbotService.retrieveBooksContext(userMessage);
+                    systemPrompt = "Bạn là trợ lý ảo hỗ trợ đàm thoại của thư viện trường đại học (UniLib).\n"
+                            + "Hãy giới thiệu hoặc gợi ý sách cho người dùng bằng TIẾNG VIỆT một cách ngắn gọn, thân thiện.\n"
+                            + "Dưới đây là danh sách sách thực tế đang có trong thư viện (Candidate Pool):\n\n"
+                            + context + "\n\n"
+                            + "Quy tắc chống ảo giác: BẮT BUỘC chỉ giới thiệu những cuốn sách có trong danh sách trên. "
+                            + "Tuyệt đối không bịa đặt tên sách, tác giả hoặc ID sách không có trong danh sách. "
+                            + "Nếu không tìm thấy sách phù hợp, hãy trả lời lịch sự rằng thư viện hiện chưa có đầu sách này.";
+                }
+
+                // Lấy lịch sử ngắn hạn từ Session
+                HttpSession session = request.getSession(true);
+                @SuppressWarnings("unchecked")
+                List<ChatMessage> chatHistory = (List<ChatMessage>) session.getAttribute("chatHistory");
+                if (chatHistory == null) {
+                    chatHistory = new ArrayList<>();
+                }
+
+                // Giới hạn lịch sử đàm thoại tối đa 5 lượt (5 user + 5 model = 10 tin nhắn)
+                List<ChatMessage> recentHistory = new ArrayList<>();
+                if (chatHistory.size() > 10) {
+                    recentHistory.addAll(chatHistory.subList(chatHistory.size() - 10, chatHistory.size()));
+                } else {
+                    recentHistory.addAll(chatHistory);
+                }
+
+                // Thêm lượt chat hiện tại của người dùng vào context để gửi sang AI
+                recentHistory.add(new ChatMessage("user", userMessage));
+
+                // Gọi Gemini API
+                aiResponse = chatbotService.callGeminiChat(recentHistory, systemPrompt);
+                if (aiResponse == null || aiResponse.trim().isEmpty()) {
+                    aiResponse = "Hệ thống AI hiện đang quá tải. Vui lòng thử lại sau ít phút.";
+                }
             }
             
             jsonRes.addProperty("status", "success");
