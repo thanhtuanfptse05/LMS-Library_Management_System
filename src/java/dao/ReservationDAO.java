@@ -392,6 +392,128 @@ public class ReservationDAO {
         return list;
     }
 
+    /**
+     * Tạo mới một đơn đặt trước trực tuyến.
+     */
+    public int insertOnlineReservation(Connection conn, int userId, int bookId, int queuePosition) throws SQLException {
+        String sql = "INSERT INTO Reservation (userId, bookId, status, queuePosition, startDate, endDate) "
+                   + "VALUES (?, ?, ?, ?, NOW(), ?)";
+        String status = (queuePosition == 0) ? "readypickup" : "pending";
+        Timestamp endTs = null;
+        if (queuePosition == 0) {
+            // Hạn nhận sách mặc định là 3 ngày
+            endTs = new Timestamp(System.currentTimeMillis() + 3L * 24 * 60 * 60 * 1000);
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, bookId);
+            ps.setString(3, status);
+            ps.setInt(4, queuePosition);
+            if (endTs != null) {
+                ps.setTimestamp(5, endTs);
+            } else {
+                ps.setNull(5, java.sql.Types.TIMESTAMP);
+            }
+
+            ps.executeUpdate();
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tạo Reservation online cho userId=" + userId + ", bookId=" + bookId, e);
+            throw e;
+        }
+        throw new SQLException("Tạo Reservation online thất bại: không lấy được generated key.");
+    }
+
+    /**
+     * Đếm số đơn đặt trước đang hoạt động (pending hoặc readypickup) của một người dùng.
+     */
+    public int countActiveReservationsByUser(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Reservation WHERE userId = ? AND status IN ('pending', 'readypickup')";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số đơn đặt trước hoạt động của userId=" + userId, e);
+            throw e;
+        }
+        return 0;
+    }
+
+    /**
+     * Lấy danh sách đơn đặt trước đang hoạt động (pending hoặc readypickup) của một người dùng.
+     */
+    public List<Reservation> findActiveReservationsByUserId(Connection conn, int userId) throws SQLException {
+        List<Reservation> list = new ArrayList<>();
+        String sql = "SELECT reservationId, userId, bookId, bookCopyId, "
+                   + "       status, queuePosition, startDate, endDate "
+                   + "FROM   Reservation "
+                   + "WHERE  userId   = ? "
+                   + "  AND  status IN ('pending', 'readypickup') "
+                   + "ORDER BY startDate DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToReservation(rs));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tìm danh sách đặt trước hoạt động cho userId=" + userId, e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
+     * Lấy thông tin đơn đặt trước bằng ID.
+     */
+    public Reservation findReservationById(Connection conn, int reservationId) throws SQLException {
+        String sql = "SELECT reservationId, userId, bookId, bookCopyId, "
+                   + "       status, queuePosition, startDate, endDate "
+                   + "FROM   Reservation "
+                   + "WHERE  reservationId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, reservationId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToReservation(rs);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tìm Reservation bằng ID=" + reservationId, e);
+            throw e;
+        }
+        return null;
+    }
+
+    /**
+     * Hủy đơn đặt trước.
+     */
+    public void cancelReservation(Connection conn, int reservationId, int userId) throws SQLException {
+        String sql = "UPDATE Reservation "
+                   + "SET    status = 'cancelled', "
+                   + "       queuePosition = NULL, "
+                   + "       endDate = NOW() "
+                   + "WHERE  reservationId = ? AND userId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, reservationId);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi hủy Reservation cho reservationId=" + reservationId + ", userId=" + userId, e);
+            throw e;
+        }
+    }
+
     // ========================
     // PRIVATE HELPER METHODS
     // ========================
