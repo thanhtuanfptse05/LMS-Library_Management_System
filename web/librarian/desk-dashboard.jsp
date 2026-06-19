@@ -1,8 +1,8 @@
 <%-- desk-dashboard.jsp — Bảng điều khiển nghiệp vụ tại quầy của thủ thư (F6) --%>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+    <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+        <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+            <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+                <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
                     <!DOCTYPE html>
                     <html lang="vi">
                     <jsp:include page="fragments/_head.jsp" />
@@ -48,20 +48,37 @@
 
                         /* ════ STYLE HỖ TRỢ MÁY QUÉT BARCODE ════ */
                         .btn-scan-active {
-                            background-color: #d97706 !important; /* Cam đậm */
+                            background-color: #d97706 !important;
+                            /* Cam đậm */
                             border-color: #d97706 !important;
                             color: white !important;
                             animation: scan-pulse-animation 1.5s infinite ease-in-out;
                         }
+
                         @keyframes scan-pulse-animation {
-                            0% { opacity: 1; }
-                            50% { opacity: 0.6; }
-                            100% { opacity: 1; }
+                            0% {
+                                opacity: 1;
+                            }
+
+                            50% {
+                                opacity: 0.6;
+                            }
+
+                            100% {
+                                opacity: 1;
+                            }
                         }
+
                         @keyframes rotation {
-                            from { transform: rotate(0deg); }
-                            to { transform: rotate(359deg); }
+                            from {
+                                transform: rotate(0deg);
+                            }
+
+                            to {
+                                transform: rotate(359deg);
+                            }
                         }
+
                         .rotating-icon {
                             display: inline-block;
                             animation: rotation 2s infinite linear;
@@ -160,12 +177,18 @@
                                                                                     name="memberCode"
                                                                                     class="form-control"
                                                                                     placeholder="Ví dụ: SE170123, GD12345..."
-                                                                                    value="<c:out value="${requestScope.memberCode}" />"
-                                                                                    required
-                                                                                    autofocus
+                                                                                    value="<c:out value="
+                                                                                    ${requestScope.memberCode}" />"
+                                                                                required
+                                                                                autofocus
+                                                                                style="border-color:var(--outline-variant);">
+                                                                                <button type="button"
+                                                                                    class="btn btn-outline-secondary d-flex align-items-center gap-1 btn-scan"
+                                                                                    onclick="toggleScanner('memberCodeSearch', this)"
                                                                                     style="border-color:var(--outline-variant);">
-                                                                                <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-1 btn-scan" onclick="toggleScanner('memberCodeSearch', this)" style="border-color:var(--outline-variant);">
-                                                                                    <span class="material-symbols-outlined" style="font-size:18px;">barcode_scanner</span>
+                                                                                    <span
+                                                                                        class="material-symbols-outlined"
+                                                                                        style="font-size:18px;">barcode_scanner</span>
                                                                                     <span>Quét</span>
                                                                                 </button>
                                                                             </div>
@@ -338,7 +361,8 @@
                                                                                                                                 bản
                                                                                                                                 sao
                                                                                                                                 (Barcode)</label>
-                                                                                                                            <div class="input-group input-group-sm">
+                                                                                                                            <div
+                                                                                                                                class="input-group input-group-sm">
                                                                                                                                 <input
                                                                                                                                     type="text"
                                                                                                                                     id="checkoutBarcode"
@@ -346,8 +370,13 @@
                                                                                                                                     class="form-control form-control-sm"
                                                                                                                                     placeholder="Quét hoặc nhập barcode..."
                                                                                                                                     required>
-                                                                                                                                <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-1 btn-scan" onclick="toggleScanner('checkoutBarcode', this)">
-                                                                                                                                    <span class="material-symbols-outlined" style="font-size:16px;">barcode_scanner</span>
+                                                                                                                                <button
+                                                                                                                                    type="button"
+                                                                                                                                    class="btn btn-outline-primary d-flex align-items-center gap-1 btn-scan"
+                                                                                                                                    onclick="toggleScanner('checkoutBarcode', this)">
+                                                                                                                                    <span
+                                                                                                                                        class="material-symbols-outlined"
+                                                                                                                                        style="font-size:16px;">barcode_scanner</span>
                                                                                                                                     <span>Quét</span>
                                                                                                                                 </button>
                                                                                                                             </div>
@@ -415,7 +444,8 @@
                                                                                                                             bản
                                                                                                                             sao
                                                                                                                             (Barcode)</label>
-                                                                                                                        <div class="input-group input-group-sm">
+                                                                                                                        <div
+                                                                                                                            class="input-group input-group-sm">
                                                                                                                             <input
                                                                                                                                 type="text"
                                                                                                                                 id="checkinBarcode"
@@ -423,8 +453,13 @@
                                                                                                                                 class="form-control form-control-sm"
                                                                                                                                 placeholder="Quét hoặc nhập barcode..."
                                                                                                                                 required>
-                                                                                                                            <button type="button" class="btn btn-outline-success d-flex align-items-center gap-1 btn-scan" onclick="toggleScanner('checkinBarcode', this)">
-                                                                                                                                <span class="material-symbols-outlined" style="font-size:16px;">barcode_scanner</span>
+                                                                                                                            <button
+                                                                                                                                type="button"
+                                                                                                                                class="btn btn-outline-success d-flex align-items-center gap-1 btn-scan"
+                                                                                                                                onclick="toggleScanner('checkinBarcode', this)">
+                                                                                                                                <span
+                                                                                                                                    class="material-symbols-outlined"
+                                                                                                                                    style="font-size:16px;">barcode_scanner</span>
                                                                                                                                 <span>Quét</span>
                                                                                                                             </button>
                                                                                                                         </div>
@@ -631,12 +666,8 @@
                                                                                                                                     </div>
                                                                                                                                     <p
                                                                                                                                         class="mb-1 small">
-                                                                                                                                        Mã
-                                                                                                                                        bản
-                                                                                                                                        sao
-                                                                                                                                        (Copy
-                                                                                                                                        ID):
-                                                                                                                                        <strong>${borrow.bookCopyId}</strong>
+                                                                                                                                        Mã vạch bản sao (Barcode):
+                                                                                                                                        <strong>${copyBarcodeMap[borrow.bookCopyId]}</strong>
                                                                                                                                     </p>
                                                                                                                                     <p class="mb-2 text-on-surface-variant"
                                                                                                                                         style="font-size:11px;">
@@ -651,7 +682,7 @@
                                                                                                                                     <button
                                                                                                                                         class="btn btn-xs btn-outline-success w-100 py-1 fw-bold text-uppercase"
                                                                                                                                         style="font-size:10px;"
-                                                                                                                                        onclick="fillCheckin('${borrow.bookCopyId}')">
+                                                                                                                                        onclick="fillCheckin('${copyBarcodeMap[borrow.bookCopyId]}')">
                                                                                                                                         Chọn
                                                                                                                                         trả
                                                                                                                                         sách
@@ -798,81 +829,81 @@
 
                                 <script
                                     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-                                 <script>
-                                     // ════ QUẢN LÝ MÁY QUÉT BARCODE BẰNG ĐIỆN THOẠI ════
-                                     let activeScanInputId = null;
-                                     let activeScanButtonEl = null;
-                                     let originalBtnHtml = '';
+                                <script>
+                                    // ════ QUẢN LÝ MÁY QUÉT BARCODE BẰNG ĐIỆN THOẠI ════
+                                    let activeScanInputId = null;
+                                    let activeScanButtonEl = null;
+                                    let originalBtnHtml = '';
 
-                                     function toggleScanner(inputId, buttonEl) {
-                                         if (activeScanInputId === inputId) {
-                                             resetScanner();
-                                         } else {
-                                             if (activeScanInputId) {
-                                                 resetScanner();
-                                             }
-                                             activeScanInputId = inputId;
-                                             activeScanButtonEl = buttonEl;
-                                             originalBtnHtml = buttonEl.innerHTML;
+                                    function toggleScanner(inputId, buttonEl) {
+                                        if (activeScanInputId === inputId) {
+                                            resetScanner();
+                                        } else {
+                                            if (activeScanInputId) {
+                                                resetScanner();
+                                            }
+                                            activeScanInputId = inputId;
+                                            activeScanButtonEl = buttonEl;
+                                            originalBtnHtml = buttonEl.innerHTML;
 
-                                             buttonEl.classList.add('btn-scan-active');
-                                             buttonEl.innerHTML = `
-                                                 <span class="material-symbols-outlined rotating-icon" style="font-size:16px; vertical-align:middle;">sync</span>
-                                                 <span>Đang quét...</span>
-                                             `;
+                                            buttonEl.classList.add('btn-scan-active');
+                                            buttonEl.innerHTML = `
+                        <span class="material-symbols-outlined rotating-icon" style="font-size:16px; vertical-align:middle;">sync</span>
+                        <span>Đang quét...</span>
+                    `;
 
-                                             const inputEl = document.getElementById(inputId);
-                                             if (inputEl) {
-                                                 inputEl.value = '';
-                                                 inputEl.focus();
-                                             }
-                                         }
-                                     }
+                                            const inputEl = document.getElementById(inputId);
+                                            if (inputEl) {
+                                                inputEl.value = '';
+                                                inputEl.focus();
+                                            }
+                                        }
+                                    }
 
-                                     function resetScanner() {
-                                         if (activeScanButtonEl) {
-                                             activeScanButtonEl.classList.remove('btn-scan-active');
-                                             activeScanButtonEl.innerHTML = originalBtnHtml;
-                                         }
-                                         activeScanInputId = null;
-                                         activeScanButtonEl = null;
-                                         originalBtnHtml = '';
-                                     }
+                                    function resetScanner() {
+                                        if (activeScanButtonEl) {
+                                            activeScanButtonEl.classList.remove('btn-scan-active');
+                                            activeScanButtonEl.innerHTML = originalBtnHtml;
+                                        }
+                                        activeScanInputId = null;
+                                        activeScanButtonEl = null;
+                                        originalBtnHtml = '';
+                                    }
 
-                                     // Đăng ký sự kiện keydown toàn cục để bắt Enter và chặn submit
-                                     document.addEventListener('keydown', function(e) {
-                                         if (activeScanInputId) {
-                                             const target = e.target;
-                                             if (target && target.id === activeScanInputId) {
-                                                 if (e.key === 'Enter') {
-                                                     e.preventDefault();
-                                                     e.stopPropagation();
-                                                     resetScanner();
-                                                 } else if (e.key === 'Escape') {
-                                                     e.preventDefault();
-                                                     resetScanner();
-                                                 }
-                                             }
-                                         }
-                                     }, true); // Sử dụng capture để chặn sự kiện sớm nhất
+                                    // Đăng ký sự kiện keydown toàn cục để bắt Enter và chặn submit
+                                    document.addEventListener('keydown', function (e) {
+                                        if (activeScanInputId) {
+                                            const target = e.target;
+                                            if (target && target.id === activeScanInputId) {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    resetScanner();
+                                                } else if (e.key === 'Escape') {
+                                                    e.preventDefault();
+                                                    resetScanner();
+                                                }
+                                            }
+                                        }
+                                    }, true); // Sử dụng capture để chặn sự kiện sớm nhất
 
-                                     // JS helpers để tự điền nhanh barcode khi click hành động ở danh sách
-                                     function fillCheckout(barcode) {
-                                         const coInput = document.getElementById('checkoutBarcode');
-                                         if (coInput) {
-                                             coInput.value = barcode;
-                                             coInput.focus();
-                                         }
-                                     }
+                                    // JS helpers để tự điền nhanh barcode khi click hành động ở danh sách
+                                    function fillCheckout(barcode) {
+                                        const coInput = document.getElementById('checkoutBarcode');
+                                        if (coInput) {
+                                            coInput.value = barcode;
+                                            coInput.focus();
+                                        }
+                                    }
 
-                                     function fillCheckin(barcode) {
-                                         const ciInput = document.getElementById('checkinBarcode');
-                                         if (ciInput) {
-                                             ciInput.value = barcode;
-                                             ciInput.focus();
-                                         }
-                                     }
-                                 </script>
+                                    function fillCheckin(barcode) {
+                                        const ciInput = document.getElementById('checkinBarcode');
+                                        if (ciInput) {
+                                            ciInput.value = barcode;
+                                            ciInput.focus();
+                                        }
+                                    }
+                                </script>
                     </body>
 
                     </html>
