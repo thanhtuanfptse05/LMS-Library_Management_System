@@ -118,4 +118,13 @@ public class BorrowRecord {
 
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+
+    // Helper fields for view layer
+    private Book book;
+    private BookCopy bookCopy;
+
+    public Book getBook() { return book; }
+    public void setBook(Book book) { this.book = book; }
+    public BookCopy getBookCopy() { return bookCopy; }
+    public void setBookCopy(BookCopy bookCopy) { this.bookCopy = bookCopy; }
 }
