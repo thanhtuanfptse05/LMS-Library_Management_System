@@ -77,7 +77,7 @@
                                         <span class="badge rounded-pill bg-success bg-opacity-10 text-success ai-badge px-2 py-1">Sẵn sàng</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger ai-badge px-2 py-1">Đang mượn</span>
+                                        <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger ai-badge px-2 py-1">Hết sách</span>
                                     </c:otherwise>
                                 </c:choose>
                             </div>

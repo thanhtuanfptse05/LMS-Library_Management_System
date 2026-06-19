@@ -189,4 +189,29 @@ public class FineDAO {
         }
         return list;
     }
+
+    /**
+     * Lấy tổng số tiền phạt chưa thanh toán (unpaid) của một người dùng.
+     * Dùng cho Dashboard stats card "Tiền phạt quá hạn".
+     *
+     * @param conn   Connection đọc
+     * @param userId ID người dùng cần tra cứu
+     * @return Tổng tiền phạt unpaid (0 nếu không có khoản phạt nào)
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public BigDecimal getTotalUnpaidFinesByUser(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT COALESCE(SUM(amount), 0) FROM Fine WHERE userId = ? AND status = 'unpaid'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBigDecimal(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tính tổng Fine unpaid cho userId=" + userId, e);
+            throw e;
+        }
+        return BigDecimal.ZERO;
+    }
 }

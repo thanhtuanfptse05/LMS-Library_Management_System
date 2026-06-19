@@ -22,17 +22,13 @@
             <span class="material-symbols-outlined">dashboard</span>
             <span>Bảng điều khiển</span>
         </a>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/lecturer/my-borrowings">
             <span class="material-symbols-outlined">library_books</span>
-            <span>Sách tôi mượn</span>
+            <span>Hàng mượn & chờ sách</span>
         </a>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">payments</span>
             <span>Tiền phạt &amp; Thanh toán</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">bookmark</span>
-            <span>Danh sách đã lưu</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/notifications">
             <span class="material-symbols-outlined">campaign</span>

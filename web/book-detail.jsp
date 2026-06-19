@@ -148,7 +148,7 @@
                                         </c:when>
                                         <c:otherwise>
                                             <span class="badge rounded-pill badge-status-borrowed px-3 py-2 fw-bold" style="font-size: 13px;">
-                                                <i class="bi bi-x-circle me-1"></i> Đang cho mượn hết
+                                                <i class="bi bi-hourglass-split me-1"></i> Hết sách — Có thể xếp hàng chờ
                                             </span>
                                         </c:otherwise>
                                     </c:choose>

@@ -27,13 +27,9 @@
             <span class="material-symbols-outlined">search</span>
             <span>Tìm kiếm Sách</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/student/loans">
-            <span class="material-symbols-outlined">book</span>
-            <span>Sách tôi mượn</span>
-        </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/student/reservations">
-            <span class="material-symbols-outlined">bookmark</span>
-            <span>Đặt trước</span>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/student/my-borrowings">
+            <span class="material-symbols-outlined">library_books</span>
+            <span>Hàng mượn & chờ sách</span>
         </a>
         <a class="sidebar-link" href="#">
             <span class="material-symbols-outlined">payments</span>

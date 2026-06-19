@@ -362,5 +362,34 @@ public class BorrowRecordDAO {
             throw e;
         }
     }
+
+    /**
+     * Đếm số sách sắp đến hạn trả trong {@code withinDays} ngày tới.
+     * Dùng cho Dashboard stats card "Sắp đến hạn".
+     *
+     * @param conn       Connection đọc
+     * @param userId     ID người dùng
+     * @param withinDays Số ngày tới cần kiểm tra (VD: 3 = trong 3 ngày tới)
+     * @return Số sách sắp đến hạn
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public int countDueSoonByUser(Connection conn, int userId, int withinDays) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord "
+                   + "WHERE userId = ? AND status = 'borrowed' "
+                   + "AND endDate BETWEEN NOW() AND NOW() + CAST(? || ' days' AS INTERVAL)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setString(2, String.valueOf(withinDays));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm sách sắp đến hạn của userId=" + userId, e);
+            throw e;
+        }
+        return 0;
+    }
 }
 

@@ -228,6 +228,13 @@ public class DeskCirculationService {
 
             if (reservation == null) {
                 // Nhánh Walk-in: người dùng KHÔNG có đơn đặt trước sẵn sàng
+                // Bắt buộc BookCopy phải ở trạng thái 'available'
+                if (!"available".equals(bookCopy.getStatus())) {
+                    throw new IllegalStateException(
+                            "Bản sao sách này không sẵn sàng để mượn trực tiếp (Trạng thái: '" 
+                            + bookCopy.getStatus() + "').");
+                }
+
                 // ---------------------------------------------------------------
                 // [Node 8.9 / FR-F6-02] Kiểm tra hàng chờ của người khác — BR-23
                 // EARS[Condition-driven]: WHERE no pre-reservation found,
@@ -248,6 +255,19 @@ public class DeskCirculationService {
                 reservation.setUserId(userId);
                 reservation.setBookId(bookId);
                 reservation.setBookCopyId(bookCopyId);
+            } else {
+                // Nhánh Pre-reservation: người dùng đã có đơn đặt trước
+                // Bắt buộc BookCopy phải ở trạng thái 'reserved'
+                if (!"reserved".equals(bookCopy.getStatus())) {
+                    throw new IllegalStateException(
+                            "Bản sao sách này không ở trạng thái được giữ đặt trước (Trạng thái: '" 
+                            + bookCopy.getStatus() + "').");
+                }
+                // Nếu đơn đặt trước đã gắn sẵn bản sao khác
+                if (reservation.getBookCopyId() != null && reservation.getBookCopyId() != bookCopyId) {
+                    throw new IllegalStateException(
+                            "Bản sao này không khớp với bản sao được giữ riêng cho độc giả này.");
+                }
             }
 
             // ----------------------------------------------------------------
@@ -267,8 +287,14 @@ public class DeskCirculationService {
             // 4c. UPDATE Reservation → 'fulfilled'
             reservationDAO.updateStatusToFulfilled(conn, reservation.getReservationId());
 
-            // 4d. UPDATE BookCopy → 'borrowed'
-            bookCopyDAO.updateStatusToBorrowed(conn, bookCopyId);
+            // 4d. UPDATE BookCopy → 'borrowed' (phân nhánh theo trạng thái hiện tại)
+            if ("reserved".equals(bookCopy.getStatus())) {
+                // Pre-reservation: BookCopy đã ở 'reserved', availableQuantity đã giảm từ lúc đặt trước
+                bookCopyDAO.updateStatusToBorrowedFromReserved(conn, bookCopyId);
+            } else {
+                // Walk-in: BookCopy ở 'available', cần giảm availableQuantity
+                bookCopyDAO.updateStatusToBorrowedFromAvailable(conn, bookCopyId);
+            }
 
             // 4e. (MỚI) Ghi Audit Log cho hành động Check-out (ARCH-02)
             userDAO.insertAuditLog(librarianId, "CHECK_OUT", "BorrowRecord", null, null,

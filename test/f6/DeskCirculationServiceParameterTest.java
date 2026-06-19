@@ -166,6 +166,7 @@ public class DeskCirculationServiceParameterTest {
             copy.setBookCopyId(101);
             copy.setBookId(201);
             copy.setBarcode("barcode123");
+            copy.setStatus(hasPreRes ? "reserved" : "available");
         }
         mockBookCopyDAO.copyToReturn = copy;
 
@@ -368,6 +369,16 @@ public class DeskCirculationServiceParameterTest {
 
         @Override
         public void updateStatusToBorrowed(Connection conn, int bookCopyId) throws SQLException {
+            lastBorrowedCopyId = bookCopyId;
+        }
+
+        @Override
+        public void updateStatusToBorrowedFromAvailable(Connection conn, int bookCopyId) throws SQLException {
+            lastBorrowedCopyId = bookCopyId;
+        }
+
+        @Override
+        public void updateStatusToBorrowedFromReserved(Connection conn, int bookCopyId) throws SQLException {
             lastBorrowedCopyId = bookCopyId;
         }
 

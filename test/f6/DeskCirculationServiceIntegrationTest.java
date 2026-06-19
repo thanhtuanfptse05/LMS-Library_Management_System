@@ -254,7 +254,7 @@ public class DeskCirculationServiceIntegrationTest {
     // =========================================================================
 
     private int insertTestUser(Connection conn, String email, String role) throws SQLException {
-        String sql = "INSERT INTO [User] (email, passwordHash, [status], [role]) VALUES (?, 'hash', 'active', ?)";
+        String sql = "INSERT INTO \"User\" (email, passwordHash, status, role) VALUES (?, 'hash', 'active', ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, email);
             ps.setString(2, role);
@@ -304,7 +304,7 @@ public class DeskCirculationServiceIntegrationTest {
     }
 
     private int insertTestBook(Connection conn, String isbn, String title, BigDecimal price) throws SQLException {
-        String sql = "INSERT INTO Book (isbn, title, price, totalQuantity, availableQuantity, [status]) VALUES (?, ?, ?, 5, 5, 'available')";
+        String sql = "INSERT INTO Book (isbn, title, price, totalQuantity, availableQuantity, status) VALUES (?, ?, ?, 5, 5, 'available')";
         try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, isbn);
             ps.setString(2, title);
@@ -318,7 +318,7 @@ public class DeskCirculationServiceIntegrationTest {
     }
 
     private int insertTestBookCopy(Connection conn, int bookId, String barcode, String condition, String status) throws SQLException {
-        String sql = "INSERT INTO BookCopy (bookId, condition, [status], barcode) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO BookCopy (bookId, condition, status, barcode) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, bookId);
             ps.setString(2, condition);
@@ -342,7 +342,7 @@ public class DeskCirculationServiceIntegrationTest {
     }
 
     private void updateUserStatus(Connection conn, int userId, String status) throws SQLException {
-        String sql = "UPDATE [User] SET [status] = ? WHERE userId = ?";
+        String sql = "UPDATE \"User\" SET status = ? WHERE userId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, userId);
@@ -351,7 +351,7 @@ public class DeskCirculationServiceIntegrationTest {
     }
 
     private String getBookCopyStatus(Connection conn, int copyId) throws SQLException {
-        String sql = "SELECT [status] FROM BookCopy WHERE bookCopyId = ?";
+        String sql = "SELECT status FROM BookCopy WHERE bookCopyId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, copyId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -373,7 +373,7 @@ public class DeskCirculationServiceIntegrationTest {
     }
 
     private String getUserStatus(Connection conn, int userId) throws SQLException {
-        String sql = "SELECT [status] FROM [User] WHERE userId = ?";
+        String sql = "SELECT status FROM \"User\" WHERE userId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -384,7 +384,7 @@ public class DeskCirculationServiceIntegrationTest {
     }
 
     private String getFineStatus(Connection conn, int fineId) throws SQLException {
-        String sql = "SELECT [status] FROM Fine WHERE fineId = ?";
+        String sql = "SELECT status FROM Fine WHERE fineId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, fineId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -395,7 +395,7 @@ public class DeskCirculationServiceIntegrationTest {
     }
 
     private String getPaymentStatus(Connection conn, int payId) throws SQLException {
-        String sql = "SELECT [status] FROM Payment WHERE paymentId = ?";
+        String sql = "SELECT status FROM Payment WHERE paymentId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, payId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -406,7 +406,7 @@ public class DeskCirculationServiceIntegrationTest {
     }
 
     private boolean hasActiveBorrowRecord(Connection conn, int userId, int copyId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND bookCopyId = ? AND [status] = 'borrowed'";
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND bookCopyId = ? AND status = 'borrowed'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ps.setInt(2, copyId);
@@ -436,19 +436,19 @@ public class DeskCirculationServiceIntegrationTest {
     private void deleteTestRecords(Connection conn) throws SQLException {
         // Delete reverse order of dependencies
         String[] sqls = {
-            "DELETE FROM Payment WHERE fineId IN (SELECT fineId FROM Fine WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%'))",
-            "DELETE FROM Fine WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
-            "DELETE FROM BorrowRecord WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
-            "DELETE FROM Reservation WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
-            "DELETE FROM AuditLogs WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
+            "DELETE FROM Payment WHERE fineId IN (SELECT fineId FROM Fine WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%'))",
+            "DELETE FROM Fine WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
+            "DELETE FROM BorrowRecord WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
+            "DELETE FROM Reservation WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
+            "DELETE FROM AuditLogs WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
             "DELETE FROM BookCopy WHERE bookId IN (SELECT bookId FROM Book WHERE isbn LIKE 'F6%')",
             "DELETE FROM Book WHERE isbn LIKE 'F6%'",
-            "DELETE FROM Student WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
-            "DELETE FROM Lecturer WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
-            "DELETE FROM Librarian WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
-            "DELETE FROM MemberProfile WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
-            "DELETE FROM UserLockReason WHERE userId IN (SELECT userId FROM [User] WHERE email LIKE 'f6test_%')",
-            "DELETE FROM [User] WHERE email LIKE 'f6test_%'"
+            "DELETE FROM Student WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
+            "DELETE FROM Lecturer WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
+            "DELETE FROM Librarian WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
+            "DELETE FROM MemberProfile WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
+            "DELETE FROM UserLockReason WHERE userId IN (SELECT userId FROM \"User\" WHERE email LIKE 'f6test_%')",
+            "DELETE FROM \"User\" WHERE email LIKE 'f6test_%'"
         };
 
         for (String sql : sqls) {
