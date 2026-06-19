@@ -117,7 +117,7 @@ public class CheckInServlet extends HttpServlet {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi SQL trong CheckInServlet.doPost", e);
             session.setAttribute("errorMessage",
-                    "Đã xảy ra lỗi hệ thống khi xử lý nhận sách. Vui lòng thử lại hoặc liên hệ quản trị viên.");
+                    "Đã xảy ra lỗi hệ thống khi xử lý nhận sách. Chi tiết: " + e.getMessage());
         }
 
         response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard?memberCode=" + memberCode);

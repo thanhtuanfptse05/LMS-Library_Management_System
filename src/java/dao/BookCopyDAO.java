@@ -109,6 +109,29 @@ public class BookCopyDAO {
         }
     }
 
+    public java.util.Map<Integer, String> findBarcodesForCopyIds(Connection conn, List<Integer> copyIds) throws SQLException {
+        java.util.Map<Integer, String> map = new java.util.HashMap<>();
+        if (copyIds == null || copyIds.isEmpty()) {
+            return map;
+        }
+        StringBuilder sql = new StringBuilder("SELECT bookCopyId, barcode FROM BookCopy WHERE bookCopyId IN (");
+        for (int i = 0; i < copyIds.size(); i++) {
+            sql.append(i == 0 ? "?" : ", ?");
+        }
+        sql.append(")");
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < copyIds.size(); i++) {
+                ps.setInt(i + 1, copyIds.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getInt("bookCopyId"), rs.getString("barcode"));
+                }
+            }
+        }
+        return map;
+    }
+
     public int insert(Connection conn, BookCopy copy) throws SQLException {
         String sql = "INSERT INTO BookCopy (bookId, location, condition, status, barcode, createdAt) "
                 + "VALUES (?, ?, 'good', 'available', ?, NOW())";

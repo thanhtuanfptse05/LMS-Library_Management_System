@@ -15,19 +15,19 @@ import service.DeskCirculationService;
 import util.DatabaseConnection;
 
 /**
- * CashPaymentServlet ΓÇö Controller xß╗¡ l├╜ luß╗ông Duyß╗çt Thanh To├ín Tiß╗ün Mß║╖t.
+ * CashPaymentServlet — Controller xử lý luồng Duyệt Thanh Toán Tiền Mặt.
  *
- * <p>Tu├ón thß╗º Single Responsibility Principle: Servlet n├áy CHß╗ê xß╗¡ l├╜ luß╗ông
- * thanh to├ín tiß╗ün mß║╖t (Cash Payment). Mß╗ìi logic nghiß╗çp vß╗Ñ v├á SQL ─æ╞░ß╗úc ß╗ºy
- * quyß╗ün cho {@code DeskCirculationService.approveCashPayment()}.</p>
+ * <p>Tuân thủ Single Responsibility Principle: Servlet này CHỈ xử lý luồng
+ * thanh toán tiền mặt (Cash Payment). Mọi logic nghiệp vụ và SQL được ủy
+ * quyền cho {@code DeskCirculationService.approveCashPayment()}.</p>
  *
  * <p>Flow:
  * <ul>
- *   <li>{@code GET /librarian/cash-payment} ΓåÆ forward tß╗¢i {@code desk-payment.jsp}</li>
- *   <li>{@code POST /librarian/cash-payment} ΓåÆ gß╗ìi Service ΓåÆ flash message ΓåÆ redirect GET</li>
+ *   <li>{@code GET /librarian/cash-payment} → forward tới {@code desk-payment.jsp}</li>
+ *   <li>{@code POST /librarian/cash-payment} → gọi Service → flash message → redirect GET</li>
  * </ul></p>
  *
- * <p>Traceability: FR-F6-07, FR-F6-08, BR-25, PLAN.md ┬º2.</p>
+ * <p>Traceability: FR-F6-07, FR-F6-08, BR-25, PLAN.md §2.</p>
  */
 @WebServlet(name = "CashPaymentServlet", urlPatterns = {"/librarian/cash-payment"})
 public class CashPaymentServlet extends HttpServlet {
@@ -45,7 +45,7 @@ public class CashPaymentServlet extends HttpServlet {
     }
 
     /**
-     * GET /librarian/cash-payment ΓÇö Hiß╗ân thß╗ï form Duyß╗çt Thanh To├ín.
+     * GET /librarian/cash-payment — Hiển thị form Duyệt Thanh Toán.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -56,14 +56,17 @@ public class CashPaymentServlet extends HttpServlet {
     }
 
     /**
-     * POST /librarian/cash-payment ΓÇö Xß╗¡ l├╜ Duyß╗çt Thanh To├ín (PRG pattern).
+     * POST /librarian/cash-payment — Xử lý Duyệt Thanh Toán (PRG pattern).
      *
-     * <p>─Éß╗ìc {@code paymentId} v├á {@code userId} tß╗½ form. Service sß║╜ thß╗▒c thi
-     * to├án bß╗Ö 5 b╞░ß╗¢c BR-25 trong mß╗Öt DB Transaction nguy├¬n tß╗¡.</p>
+     * <p>Đọc {@code paymentId} và {@code userId} từ form. Service sẽ thực thi
+     * toàn bộ 5 bước BR-25 trong một DB Transaction nguyên tử.</p>
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8"); 
 
         if (!isAuthorized(request, response)) return;
 
@@ -75,56 +78,56 @@ public class CashPaymentServlet extends HttpServlet {
 
         try {
             // ----------------------------------------------------------------
-            // Validate ─æß║ºu v├áo
+            // Validate đầu vào
             // ----------------------------------------------------------------
             String paymentIdRaw = request.getParameter("paymentId");
 
             if (paymentIdRaw == null || paymentIdRaw.isBlank()) {
-                session.setAttribute("errorMessage", "Vui l├▓ng nhß║¡p m├ú phiß║┐u thanh to├ín.");
+                session.setAttribute("errorMessage", "Vui lòng nhập mã phiếu thanh toán.");
                 response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard?memberCode=" + memberCode);
                 return;
             }
             if (memberCode.isEmpty()) {
-                session.setAttribute("errorMessage", "Vui l├▓ng nhß║¡p m├ú sß╗æ ─æß╗Öc giß║ú.");
+                session.setAttribute("errorMessage", "Vui lòng nhập mã số độc giả.");
                 response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard?memberCode=" + memberCode);
                 return;
             }
 
             int paymentId = Integer.parseInt(paymentIdRaw.trim());
 
-            // ├ünh xß║í memberCode sang userId
+            // Ánh xạ memberCode sang userId
             Integer userId = null;
             try (Connection conn = DatabaseConnection.getConnection()) {
                 userId = new dao.UserLookupDAO().findUserIdByMemberCode(conn, memberCode);
             }
 
             if (userId == null) {
-                session.setAttribute("errorMessage", "M├ú sß╗æ ─æß╗Öc giß║ú '" + memberCode + "' kh├┤ng tß╗ôn tß║íi trong hß╗ç thß╗æng.");
+                session.setAttribute("errorMessage", "Mã số độc giả '" + memberCode + "' không tồn tại trong hệ thống.");
                 response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard?memberCode=" + memberCode);
                 return;
             }
 
             // ----------------------------------------------------------------
-            // Gß╗ìi Service ΓÇö BR-25 Auto-unlock
+            // Gọi Service — BR-25 Auto-unlock
             // ----------------------------------------------------------------
             service.approveCashPayment(librarianId, paymentId, userId);
 
             session.setAttribute("successMessage",
-                    "Duyß╗çt thanh to├ín th├ánh c├┤ng! Phiß║┐u #" + paymentId
-                    + " ΓÇö ─Éß╗Öc giß║ú: " + memberCode + ". Trß║íng th├íi t├ái khoß║ún ─æ├ú ─æ╞░ß╗úc cß║¡p nhß║¡t tß╗▒ ─æß╗Öng.");
+                    "Duyệt thanh toán thành công! Phiếu #" + paymentId
+                    + " — Độc giả: " + memberCode + ". Trạng thái tài khoản đã được cập nhật tự động.");
 
         } catch (NumberFormatException e) {
             session.setAttribute("errorMessage",
-                    "M├ú phiß║┐u thanh to├ín hoß║╖c m├ú ng╞░ß╗¥i d├╣ng kh├┤ng hß╗úp lß╗ç ΓÇö vui l├▓ng nhß║¡p sß╗æ nguy├¬n.");
+                    "Mã phiếu thanh toán hoặc mã người dùng không hợp lệ — vui lòng nhập số nguyên.");
 
         } catch (IllegalStateException e) {
-            // Lß╗ùi nghiß╗çp vß╗Ñ: paymentId kh├┤ng tß╗ôn tß║íi
+            // Lỗi nghiệp vụ: paymentId không tồn tại
             session.setAttribute("errorMessage", e.getMessage());
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lß╗ùi SQL trong CashPaymentServlet.doPost", e);
+            LOGGER.log(Level.SEVERE, "Lỗi SQL trong CashPaymentServlet.doPost", e);
             session.setAttribute("errorMessage",
-                    "─É├ú xß║úy ra lß╗ùi hß╗ç thß╗æng khi xß╗¡ l├╜ thanh to├ín. Vui l├▓ng thß╗¡ lß║íi hoß║╖c li├¬n hß╗ç quß║ún trß╗ï vi├¬n.");
+                    "Đã xảy ra lỗi hệ thống khi xử lý thanh toán. Vui lòng thử lại hoặc liên hệ quản trị viên.");
         }
 
         response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard?memberCode=" + memberCode);
