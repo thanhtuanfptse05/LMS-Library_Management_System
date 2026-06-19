@@ -171,7 +171,7 @@ public class BookCopyIncidentDAO {
     private void appendFilters(StringBuilder sql, List<Object> parameters, String keyword,
             String incidentType, String status) {
         if (keyword != null) {
-            sql.append("AND (bc.barcode ILIKE ? OR b.title ILIKE ?) ");
+            sql.append("AND (bc.barcode LIKE ? OR b.title LIKE ?) ");
             String value = "%" + keyword + "%";
             parameters.add(value);
             parameters.add(value);

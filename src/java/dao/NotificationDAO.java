@@ -78,7 +78,7 @@ public class NotificationDAO {
 
         List<Object> params = new ArrayList<>();
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append("AND n.title ILIKE ? ");
+            sql.append("AND n.title LIKE ? ");
             params.add("%" + keyword.trim() + "%");
         }
         if (typeFilter != null && !typeFilter.trim().isEmpty()) {
@@ -119,7 +119,7 @@ public class NotificationDAO {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Notification WHERE 1=1 ");
         List<Object> params = new ArrayList<>();
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append("AND title ILIKE ? ");
+            sql.append("AND title LIKE ? ");
             params.add("%" + keyword.trim() + "%");
         }
         if (typeFilter != null && !typeFilter.trim().isEmpty()) {
@@ -170,7 +170,7 @@ public class NotificationDAO {
         params.add(userId);
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append("AND n.title ILIKE ? ");
+            sql.append("AND n.title LIKE ? ");
             params.add("%" + keyword.trim() + "%");
         }
         if (typeFilter != null && !typeFilter.trim().isEmpty()) {

@@ -314,7 +314,7 @@ public class UserDAO {
         List<Object> params = new ArrayList<>();
         if (search != null && !search.trim().isEmpty()) {
             String likeSearch = "%" + search.trim() + "%";
-            sql.append("AND (u.email ILIKE ? OR p.fullName ILIKE ? OR s.studentCode ILIKE ? OR l.lecturerCode ILIKE ? OR lib.staffCode ILIKE ? OR mgr.staffCode ILIKE ? OR adm.staffCode ILIKE ?) ");
+            sql.append("AND (u.email LIKE ? OR p.fullName LIKE ? OR s.studentCode LIKE ? OR l.lecturerCode LIKE ? OR lib.staffCode LIKE ? OR mgr.staffCode LIKE ? OR adm.staffCode LIKE ?) ");
             for (int i = 0; i < 7; i++) {
                 params.add(likeSearch);
             }
@@ -374,7 +374,7 @@ public class UserDAO {
         List<Object> params = new ArrayList<>();
         if (search != null && !search.trim().isEmpty()) {
             String likeSearch = "%" + search.trim() + "%";
-            sql.append("AND (u.email ILIKE ? OR p.fullName ILIKE ? OR s.studentCode ILIKE ? OR l.lecturerCode ILIKE ? OR lib.staffCode ILIKE ? OR mgr.staffCode ILIKE ? OR adm.staffCode ILIKE ?) ");
+            sql.append("AND (u.email LIKE ? OR p.fullName LIKE ? OR s.studentCode LIKE ? OR l.lecturerCode LIKE ? OR lib.staffCode LIKE ? OR mgr.staffCode LIKE ? OR adm.staffCode LIKE ?) ");
             for (int i = 0; i < 7; i++) {
                 params.add(likeSearch);
             }

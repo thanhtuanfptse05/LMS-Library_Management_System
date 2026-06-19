@@ -133,7 +133,7 @@ public class BookImportDAO {
 
     private void appendFilters(StringBuilder sql, List<Object> values, String keyword, String status) {
         if (keyword != null) {
-            sql.append("AND (b.fileName ILIKE ? OR CAST(b.importBatchId AS VARCHAR(20)) ILIKE ?) ");
+            sql.append("AND (b.fileName LIKE ? OR CAST(b.importBatchId AS VARCHAR(20)) LIKE ?) ");
             values.add("%" + keyword + "%");
             values.add("%" + keyword + "%");
         }
