@@ -29,6 +29,14 @@ public class AiConfig {
     public static final String GEMINI_API_KEY = loadApiKey();
 
     /**
+     * Mã API Key riêng cho AI Chatbot (F14).
+     *
+     * Ưu tiên 1: Lấy từ bảng SystemConfigurations trong DB.
+     * Ưu tiên 2 (Fallback): Lấy từ System Property / Env Var.
+     */
+    public static final String GEMINI_CHATBOT_API_KEY = loadChatbotApiKey();
+
+    /**
      * Tải API Key: thử DB trước, nếu không có thì fallback sang JVM/Env.
      */
     private static String loadApiKey() {
@@ -37,6 +45,17 @@ public class AiConfig {
             return key;
         }
         return resolveApiKey();
+    }
+
+    /**
+     * Tải API Key riêng cho Chatbot.
+     */
+    private static String loadChatbotApiKey() {
+        String key = getChatbotApiKeyFromDb();
+        if (key != null && !key.equals("MISSING_API_KEY")) {
+            return key;
+        }
+        return resolveChatbotApiKey();
     }
 
     /**
@@ -65,6 +84,26 @@ public class AiConfig {
     }
 
     /**
+     * Giải quyết API Key cho Chatbot từ nhiều nguồn cấu hình.
+     */
+    public static String resolveChatbotApiKey() {
+        // Ưu tiên 1: System Property
+        String key = System.getProperty("GEMINI_CHATBOT_API_KEY");
+        if (key != null && !key.trim().isEmpty()) {
+            return key.trim();
+        }
+
+        // Ưu tiên 2: Environment Variable
+        key = System.getenv("GEMINI_CHATBOT_API_KEY");
+        if (key != null && !key.trim().isEmpty()) {
+            return key.trim();
+        }
+
+        // Fallback: Trả về giá trị mặc định
+        return "MISSING_API_KEY";
+    }
+
+    /**
      * Lấy API Key từ bảng SystemConfigurations trong cơ sở dữ liệu.
      * Dùng cho môi trường Production/Staging khi cấu hình được lưu trong DB.
      */
@@ -81,6 +120,26 @@ public class AiConfig {
             }
         } catch (Exception e) {
             // Không làm sập ứng dụng khi DB chưa sẵn sàng
+        }
+        return "MISSING_API_KEY";
+    }
+
+    /**
+     * Lấy API Key Chatbot từ bảng SystemConfigurations trong cơ sở dữ liệu.
+     */
+    public static String getChatbotApiKeyFromDb() {
+        String sql = "SELECT configValue FROM SystemConfigurations WHERE configKey = 'GEMINI_CHATBOT_API_KEY'";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                String val = rs.getString("configValue");
+                if (val != null && !val.trim().isEmpty()) {
+                    return val.trim();
+                }
+            }
+        } catch (Exception e) {
+            // Không làm sập ứng dụng
         }
         return "MISSING_API_KEY";
     }
