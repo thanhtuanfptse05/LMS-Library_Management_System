@@ -43,7 +43,12 @@ public class DatabaseConnection {
      * @return Connection tới database LMS_Library_Management_System
      * @throws SQLException nếu không thể thiết lập kết nối
      */
+    public static Connection testConnection = null;
+
     public static Connection getConnection() throws SQLException {
+        if (testConnection != null) {
+            return testConnection;
+        }
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
