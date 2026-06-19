@@ -95,6 +95,17 @@ public class BookCopyDAO {
         return findForUpdate(conn, "bc.bookCopyId = ?", bookCopyId);
     }
 
+    public BookCopy findAvailableCopyByBookId(Connection conn, int bookId) throws SQLException {
+        String sql = baseSelect() + " WHERE bc.bookId = ? AND bc.status = 'available' AND bc.condition = 'good' LIMIT 1 FOR UPDATE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
+        }
+    }
+
+
     public BookCopy findByBarcodeForUpdate(Connection conn, String barcode) throws SQLException {
         return findForUpdate(conn, "bc.barcode = ?", barcode);
     }
