@@ -47,17 +47,27 @@ public class OnlineCirculationService {
     private final DocumentTempDAO documentTempDAO;
 
     public OnlineCirculationService() {
-        this.bookDAO = new BookDAO();
-        this.bookCopyDAO = new BookCopyDAO();
-        this.reservationDAO = new ReservationDAO();
-        this.borrowRecordDAO = new BorrowRecordDAO();
-        this.systemConfigDAO = new SystemConfigDAO();
-        this.auditLogDAO = new AuditLogDAO();
-        this.userDAO = new UserDAO();
-        this.userLockReasonDAO = new UserLockReasonDAO();
-        this.memberProfileDAO = new MemberProfileDAO();
-        this.documentTempDAO = new DocumentTempDAO();
+        this(new BookDAO(), new BookCopyDAO(), new ReservationDAO(), new BorrowRecordDAO(),
+             new SystemConfigDAO(), new AuditLogDAO(), new UserDAO(), new UserLockReasonDAO(),
+             new MemberProfileDAO(), new DocumentTempDAO());
     }
+
+    public OnlineCirculationService(BookDAO bookDAO, BookCopyDAO bookCopyDAO, ReservationDAO reservationDAO,
+                                   BorrowRecordDAO borrowRecordDAO, SystemConfigDAO systemConfigDAO,
+                                   AuditLogDAO auditLogDAO, UserDAO userDAO, UserLockReasonDAO userLockReasonDAO,
+                                   MemberProfileDAO memberProfileDAO, DocumentTempDAO documentTempDAO) {
+        this.bookDAO = bookDAO;
+        this.bookCopyDAO = bookCopyDAO;
+        this.reservationDAO = reservationDAO;
+        this.borrowRecordDAO = borrowRecordDAO;
+        this.systemConfigDAO = systemConfigDAO;
+        this.auditLogDAO = auditLogDAO;
+        this.userDAO = userDAO;
+        this.userLockReasonDAO = userLockReasonDAO;
+        this.memberProfileDAO = memberProfileDAO;
+        this.documentTempDAO = documentTempDAO;
+    }
+
 
     /**
      * Đặt trước sách trực tuyến (UC09)
@@ -81,15 +91,8 @@ public class OnlineCirculationService {
                 }
 
                 // 3. Kiểm tra xem đã đặt trước cuốn này chưa
-                String checkResSql = "SELECT COUNT(*) FROM Reservation WHERE userId = ? AND bookId = ? AND status IN ('pending', 'readypickup')";
-                try (PreparedStatement ps = conn.prepareStatement(checkResSql)) {
-                    ps.setInt(1, userId);
-                    ps.setInt(2, bookId);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (rs.next() && rs.getInt(1) > 0) {
-                            throw new ValidationException("Bạn đã đặt trước cuốn sách này rồi.");
-                        }
-                    }
+                if (reservationDAO.hasActiveReservation(conn, userId, bookId)) {
+                    throw new ValidationException("Bạn đã đặt trước cuốn sách này rồi.");
                 }
 
                 // 4. Check Limit (BR-05)
@@ -236,16 +239,7 @@ public class OnlineCirculationService {
                 } else if (res.getQueuePosition() != null && res.getQueuePosition() > 0) {
                     // Nếu hủy một đơn đang nằm trong hàng chờ (queuePosition > 0)
                     // Dịch hàng đợi phía sau của cuốn sách đó
-                    String shiftSql = "UPDATE Reservation "
-                                    + "SET    queuePosition = queuePosition - 1 "
-                                    + "WHERE  bookId        = ? "
-                                    + "  AND  queuePosition > ? "
-                                    + "  AND  status      = 'pending'";
-                    try (PreparedStatement ps = conn.prepareStatement(shiftSql)) {
-                        ps.setInt(1, res.getBookId());
-                        ps.setInt(2, res.getQueuePosition());
-                        ps.executeUpdate();
-                    }
+                    reservationDAO.shiftQueuePositions(conn, res.getBookId(), res.getQueuePosition());
                 }
 
                 conn.commit();
@@ -355,16 +349,7 @@ public class OnlineCirculationService {
     // ==========================================
 
     private int insertIntoPendingQueue(Connection conn, int userId, int bookId) throws SQLException {
-        int maxQueue = 0;
-        String maxQueueSql = "SELECT COALESCE(MAX(queuePosition), 0) FROM Reservation WHERE bookId = ? AND status = 'pending'";
-        try (PreparedStatement ps = conn.prepareStatement(maxQueueSql)) {
-            ps.setInt(1, bookId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    maxQueue = rs.getInt(1);
-                }
-            }
-        }
+        int maxQueue = reservationDAO.getMaxQueuePosition(conn, bookId);
         int queuePos = maxQueue + 1;
         int resId = reservationDAO.insertOnlineReservation(conn, userId, bookId, queuePos, null);
         auditLogDAO.insert(conn, userId, "RESERVE_PENDING", "Reservation", resId, null,
