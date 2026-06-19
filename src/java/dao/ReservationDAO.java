@@ -668,4 +668,62 @@ public class ReservationDAO {
             throw e;
         }
     }
+
+    /**
+     * Kiểm tra xem người dùng đã có đơn đặt trước đang hoạt động (pending/readypickup) cho cuốn sách này chưa.
+     */
+    public boolean hasActiveReservation(Connection conn, int userId, int bookId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Reservation WHERE userId = ? AND bookId = ? AND status IN ('pending', 'readypickup')";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra đặt trước trùng lặp cho userId=" + userId + ", bookId=" + bookId, e);
+            throw e;
+        }
+        return false;
+    }
+
+    /**
+     * Dịch chuyển các vị trí tiếp sau trong hàng đợi của cùng một cuốn sách khi một đơn hàng chờ bị hủy.
+     */
+    public void shiftQueuePositions(Connection conn, int bookId, int queuePosition) throws SQLException {
+        String sql = "UPDATE Reservation "
+                   + "SET    queuePosition = queuePosition - 1 "
+                   + "WHERE  bookId        = ? "
+                   + "  AND  queuePosition > ? "
+                   + "  AND  status      = 'pending'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ps.setInt(2, queuePosition);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi dịch chuyển vị trí hàng đợi cho bookId=" + bookId + ", queuePosition=" + queuePosition, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Lấy vị trí hàng chờ lớn nhất hiện tại của một cuốn sách.
+     */
+    public int getMaxQueuePosition(Connection conn, int bookId) throws SQLException {
+        String sql = "SELECT COALESCE(MAX(queuePosition), 0) FROM Reservation WHERE bookId = ? AND status = 'pending'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy max queuePosition cho bookId=" + bookId, e);
+            throw e;
+        }
+        return 0;
+    }
 }
