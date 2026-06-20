@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#createCopyModal select[name="bookId"]').forEach(enhanceBookSelect);
     document.querySelectorAll('#createCopyModal input[name="location"], #editCopyModal input[name="location"]')
         .forEach(enhanceLocationInput);
+    initBookManagementPagination();
 });
 
 function enhanceBookSelect(select) {
@@ -349,4 +350,43 @@ function enhanceLocationInput(input) {
     });
 
     renderOptions(input.value);
+}
+
+function initBookManagementPagination() {
+    function buildPageUrl(page) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(page));
+        return url.toString();
+    }
+
+    document.querySelectorAll('.bm-page-link[data-page]').forEach((link) => {
+        const page = Number(link.dataset.page);
+
+        if (link.classList.contains('disabled') || !Number.isInteger(page) || page < 1) {
+            link.setAttribute('aria-disabled', 'true');
+            link.addEventListener('click', (event) => event.preventDefault());
+            return;
+        }
+
+        link.href = buildPageUrl(page);
+    });
+
+    document.querySelectorAll('[data-bm-page-jump]').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const input = form.querySelector('input[name="page"]');
+            const maxPage = Number(input && input.max);
+            let page = Number(input && input.value);
+
+            if (!Number.isInteger(page) || page < 1) {
+                page = 1;
+            }
+
+            if (Number.isInteger(maxPage) && maxPage > 0) {
+                page = Math.min(page, maxPage);
+            }
+
+            window.location.href = buildPageUrl(page);
+        });
+    });
 }

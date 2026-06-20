@@ -29,7 +29,7 @@
                     <div class="col-xl-4 col-lg-6 bm-search"><span class="material-symbols-outlined">barcode_scanner</span><input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Quét mã vạch hoặc tìm tên sách"></div>
                     <div class="col-xl-3 col-md-4"><select class="form-select" name="location"><option value="">Tất cả vị trí</option><c:forEach var="item" items="${locations}"><option value="<c:out value="${item}" />" ${selectedLocation == item ? 'selected' : ''}><c:out value="${item}" /></option></c:forEach></select></div>
                     <div class="col-xl-3 col-md-4"><select class="form-select" name="status"><option value="">Mọi trạng thái</option><option value="available" ${selectedStatus == 'available' ? 'selected' : ''}>Sẵn sàng</option><option value="borrowed" ${selectedStatus == 'borrowed' ? 'selected' : ''}>Đang mượn</option><option value="reserved" ${selectedStatus == 'reserved' ? 'selected' : ''}>Đặt trước</option><option value="incident" ${selectedStatus == 'incident' ? 'selected' : ''}>Hỏng hoặc mất</option><option value="unavailable" ${selectedStatus == 'unavailable' ? 'selected' : ''}>Ngừng lưu thông</option></select></div>
-                    <div class="col-xl-2 col-lg-6"><div class="bm-filter-actions bm-filter-actions--compact"><button class="btn bm-filter-button" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc</span></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/copies" title="Đặt lại bộ lọc" aria-label="Đặt lại bộ lọc"><span class="material-symbols-outlined">refresh</span></a></div></div>
+                    <div class="col-xl-2 col-lg-6"><div class="bm-filter-actions bm-filter-actions--compact"><button class="btn bm-filter-button ${not empty q or not empty selectedLocation or not empty selectedStatus ? 'bm-filter-button--active' : ''}" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc</span><c:if test="${not empty q or not empty selectedLocation or not empty selectedStatus}"><span class="bm-filter-badge">Đang áp dụng</span></c:if></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/copies" title="Đặt lại bộ lọc" aria-label="Đặt lại bộ lọc"><span class="material-symbols-outlined">refresh</span></a></div></div>
                 </div>
             </form>
 
@@ -71,10 +71,13 @@
                 </tbody>
             </table></div></section>
 
-            <c:if test="${totalPages > 1}"><nav class="d-flex justify-content-between align-items-center mt-3"><span class="bm-section-note">Trang ${currentPage}/${totalPages} · ${totalItems} kết quả</span><div class="bm-actions"><c:url var="previousUrl" value="/book-management/copies"><c:param name="q" value="${q}" /><c:param name="location" value="${selectedLocation}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage - 1}" /></c:url><c:url var="nextUrl" value="/book-management/copies"><c:param name="q" value="${q}" /><c:param name="location" value="${selectedLocation}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage + 1}" /></c:url><a class="btn bm-btn-secondary ${currentPage == 1 ? 'disabled' : ''}" href="${previousUrl}">Trang trước</a><a class="btn bm-btn-secondary ${currentPage == totalPages ? 'disabled' : ''}" href="${nextUrl}">Trang sau</a></div></nav></c:if>
+            <jsp:include page="fragments/_book-pagination.jsp">
+                <jsp:param name="label" value="Phân trang bản sao" />
+                <jsp:param name="inputId" value="bookCopyPageJump" />
+            </jsp:include>
         </div>
         <jsp:include page="fragments/_footer.jsp" />
-        <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260619-1"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
     </main>
 </div>
 

@@ -36,7 +36,7 @@
                     <div class="col-xl-5 col-lg-6 bm-search"><span class="material-symbols-outlined">search</span><input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Tìm mã vạch hoặc đầu sách"></div>
                     <div class="col-xl-3 col-md-4"><select class="form-select" name="type"><option value="">Tất cả loại sự cố</option><option value="damaged" ${selectedType == 'damaged' ? 'selected' : ''}>Hỏng</option><option value="lost" ${selectedType == 'lost' ? 'selected' : ''}>Mất</option></select></div>
                     <div class="col-xl-2 col-md-4"><select class="form-select" name="status"><option value="">Mọi trạng thái</option><option value="pending" ${selectedStatus == 'pending' ? 'selected' : ''}>Chờ xác minh</option><option value="investigating" ${selectedStatus == 'investigating' ? 'selected' : ''}>Đang xử lý</option><option value="resolved" ${selectedStatus == 'resolved' ? 'selected' : ''}>Đã xử lý</option><option value="rejected" ${selectedStatus == 'rejected' ? 'selected' : ''}>Báo sai</option></select></div>
-                    <div class="col-xl-2 col-lg-6"><div class="bm-filter-actions bm-filter-actions--compact"><button class="btn bm-filter-button" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc</span></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/incidents" title="Đặt lại bộ lọc"><span class="material-symbols-outlined">refresh</span></a></div></div>
+                    <div class="col-xl-2 col-lg-6"><div class="bm-filter-actions bm-filter-actions--compact"><button class="btn bm-filter-button ${not empty q or not empty selectedType or not empty selectedStatus ? 'bm-filter-button--active' : ''}" type="submit"><span class="material-symbols-outlined">filter_alt</span><span>Lọc</span><c:if test="${not empty q or not empty selectedType or not empty selectedStatus}"><span class="bm-filter-badge">Đang áp dụng</span></c:if></button><a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/incidents" title="Đặt lại bộ lọc"><span class="material-symbols-outlined">refresh</span></a></div></div>
                 </div>
             </form>
 
@@ -64,10 +64,13 @@
                 </tbody>
             </table></div></section>
 
-            <c:if test="${totalPages > 1}"><nav class="d-flex justify-content-between align-items-center mt-3"><span class="bm-section-note">Trang ${currentPage}/${totalPages} · ${totalItems} kết quả</span><div class="bm-actions"><c:url var="previousUrl" value="/book-management/incidents"><c:param name="q" value="${q}" /><c:param name="type" value="${selectedType}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage - 1}" /></c:url><c:url var="nextUrl" value="/book-management/incidents"><c:param name="q" value="${q}" /><c:param name="type" value="${selectedType}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage + 1}" /></c:url><a class="btn bm-btn-secondary ${currentPage == 1 ? 'disabled' : ''}" href="${previousUrl}">Trang trước</a><a class="btn bm-btn-secondary ${currentPage == totalPages ? 'disabled' : ''}" href="${nextUrl}">Trang sau</a></div></nav></c:if>
+            <jsp:include page="fragments/_book-pagination.jsp">
+                <jsp:param name="label" value="Phân trang sự cố" />
+                <jsp:param name="inputId" value="bookIncidentPageJump" />
+            </jsp:include>
         </div>
         <jsp:include page="fragments/_footer.jsp" />
-        <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260618-1"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
     </main>
 </div>
 

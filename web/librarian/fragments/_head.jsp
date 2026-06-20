@@ -11,7 +11,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/lms-dashboard.css" rel="stylesheet" />
-        <link href="${pageContext.request.contextPath}/assets/css/book-management.css?v=20260619-1" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/assets/css/book-management.css?v=20260620-1" rel="stylesheet" />
 
         <style>
             /* Librarian-specific token overrides */
