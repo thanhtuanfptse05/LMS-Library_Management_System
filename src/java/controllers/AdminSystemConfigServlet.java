@@ -29,7 +29,7 @@ public class AdminSystemConfigServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("role");
         
-        if (!"ADMIN".equalsIgnoreCase(role)) {
+        if (!"ADMIN".equals(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập.");
             return;
         }
@@ -38,10 +38,7 @@ public class AdminSystemConfigServlet extends HttpServlet {
 
         try {
             List<SystemConfiguration> configs = service.getAll(groupFilter, "ADMIN");
-            List<dto.SystemConfigLogDTO> configLogs = service.getConfigLogs(groupFilter, "ADMIN");
-            
             request.setAttribute("configs", configs);
-            request.setAttribute("configLogs", configLogs);
             request.setAttribute("actorRole", "ADMIN");
             request.setAttribute("groupFilter", groupFilter);
             request.getRequestDispatcher("/admin/system-config-list.jsp").forward(request, response);
@@ -57,7 +54,7 @@ public class AdminSystemConfigServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("role");
         
-        if (!"ADMIN".equalsIgnoreCase(role)) {
+        if (!"ADMIN".equals(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập.");
             return;
         }

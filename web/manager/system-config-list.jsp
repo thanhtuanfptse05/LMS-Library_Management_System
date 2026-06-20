@@ -8,99 +8,99 @@
             <jsp:param name="title" value="Cấu hình Hệ thống | Manager" />
         </jsp:include>
     </head>
-<body class="d-flex flex-column">
+    <body>
+        <!-- SIDEBAR -->
+        <jsp:include page="fragments/_sidebar.jsp" />
 
-    <jsp:include page="fragments/_sidebar.jsp" />
-
-    <div class="d-flex main-wrapper overflow-hidden">
-
-        <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: var(--background);">
-
+        <div class="main-wrapper">
+            <!-- HEADER -->
             <jsp:include page="fragments/_header.jsp" />
 
-            <div class="container-fluid px-4 py-4" style="max-width: 1440px; margin: 0 auto;">
+            <main class="content-area p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h4 class="fw-bold mb-1" style="color: var(--on-surface);">Cấu hình Hệ thống</h4>
-                        <p class="text-on-surface-variant mb-0" style="font-size: 14px;">Quản lý các thông số chính sách mượn trả của Thư viện</p>
+                        <h4 class="mb-1">Cấu hình Hệ thống</h4>
+                        <p class="text-muted mb-0">Quản lý các thông số chính sách mượn trả của Thư viện</p>
                     </div>
                 </div>
 
                 <!-- Flash Messages -->
                 <c:if test="${not empty sessionScope.successMessage}">
-                    <div class="lms-alert lms-alert-success mb-4 alert alert-dismissible fade show" role="alert">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">check_circle</span>
-                        <span class="flex-grow-1">${sessionScope.successMessage}</span>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="material-symbols-outlined align-middle me-2">check_circle</i>
+                        ${sessionScope.successMessage}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <c:remove var="successMessage" scope="session" />
                 </c:if>
 
                 <c:if test="${not empty sessionScope.errorMessage}">
-                    <div class="lms-alert lms-alert-error mb-4 alert alert-dismissible fade show" role="alert">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
-                        <span class="flex-grow-1">${sessionScope.errorMessage}</span>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="material-symbols-outlined align-middle me-2">error</i>
+                        ${sessionScope.errorMessage}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
 
                 <!-- Bảng danh sách cấu hình -->
-                <div class="raised-card overflow-hidden">
-                    <div class="table-responsive">
-                        <table class="table table-lms mb-0">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="ps-4">Tên Cấu Hình</th>
-                                    <th scope="col">Mô Tả</th>
-                                    <th scope="col" class="text-center">Giá Trị</th>
-                                    <th scope="col">Cập Nhật Bởi</th>
-                                    <th scope="col">Lần Cuối</th>
-                                    <th scope="col" class="pe-4 text-end">Thao Tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="cfg" items="${configs}">
+                <div class="card card-custom border-0 shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
                                     <tr>
-                                        <td class="ps-4 fw-bold" style="font-size: 13px;">
-                                            <c:out value="${cfg.configKey}"/>
-                                        </td>
-                                        <td style="font-size: 13px;">
-                                            <c:out value="${cfg.description}"/>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge-pill badge-primary">
-                                                <c:out value="${cfg.configValue}"/>
-                                            </span>
-                                        </td>
-                                        <td style="font-size: 13px;">
-                                            <c:out value="${cfg.updaterName}"/>
-                                        </td>
-                                        <td style="font-size: 13px;">
-                                            <fmt:formatDate value="${cfg.updatedAt}" pattern="dd/MM/yyyy HH:mm"/>
-                                        </td>
-                                        <td class="pe-4 text-end">
-                                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                                    data-bs-toggle="modal" data-bs-target="#editModal"
-                                                    onclick="prefillModal('<c:out value="${cfg.configKey}"/>', '<c:out value="${cfg.configValue}"/>', '<c:out value="${cfg.description}"/>')">
-                                                <i class="material-symbols-outlined fs-6 align-middle">edit</i> Sửa
-                                            </button>
-                                        </td>
+                                        <th scope="col" class="ps-4">Tên Cấu Hình</th>
+                                        <th scope="col">Mô Tả</th>
+                                        <th scope="col" class="text-center">Giá Trị</th>
+                                        <th scope="col">Cập Nhật Bởi</th>
+                                        <th scope="col">Lần Cuối</th>
+                                        <th scope="col" class="pe-4 text-end">Thao Tác</th>
                                     </tr>
-                                </c:forEach>
-                                <c:if test="${empty configs}">
-                                    <tr>
-                                        <td colspan="6" class="text-center py-4 text-muted">
-                                            Không có cấu hình nào.
-                                        </td>
-                                    </tr>
-                                </c:if>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="cfg" items="${configs}">
+                                        <tr>
+                                            <td class="ps-4 fw-bold">
+                                                <c:out value="${cfg.configKey}"/>
+                                            </td>
+                                            <td>
+                                                <c:out value="${cfg.description}"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-primary px-3 py-2 fs-6">
+                                                    <c:out value="${cfg.configValue}"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <c:out value="${cfg.updaterName}"/>
+                                            </td>
+                                            <td>
+                                                <fmt:formatDate value="${cfg.updatedAt}" pattern="dd/MM/yyyy HH:mm"/>
+                                            </td>
+                                            <td class="pe-4 text-end">
+                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                        data-bs-toggle="modal" data-bs-target="#editModal"
+                                                        onclick="prefillModal('<c:out value="${cfg.configKey}"/>', '<c:out value="${cfg.configValue}"/>', '<c:out value="${cfg.description}"/>')">
+                                                    <i class="material-symbols-outlined fs-6 align-middle">edit</i> Sửa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                    <c:if test="${empty configs}">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4 text-muted">
+                                                Không có cấu hình nào.
+                                            </td>
+                                        </tr>
+                                    </c:if>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div><!-- /container-fluid -->
-
+            </main>
+            
             <!-- Modal Cập Nhật Cấu Hình -->
             <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -131,18 +131,16 @@
                 </div>
             </div>
 
+            <!-- FOOTER -->
             <jsp:include page="fragments/_footer.jsp" />
+        </div>
 
-        </main>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function prefillModal(key, value, desc) {
-            document.getElementById('modalConfigKey').value = key;
-            document.getElementById('modalConfigValue').value = value;
-            document.getElementById('modalConfigDesc').textContent = desc;
-        }
-    </script>
-</body>
+        <script>
+            function prefillModal(key, value, desc) {
+                document.getElementById('modalConfigKey').value = key;
+                document.getElementById('modalConfigValue').value = value;
+                document.getElementById('modalConfigDesc').textContent = desc;
+            }
+        </script>
+    </body>
 </html>
