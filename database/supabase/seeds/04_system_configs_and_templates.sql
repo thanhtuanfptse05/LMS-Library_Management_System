@@ -45,3 +45,16 @@ INSERT INTO DocumentTemp (tempId, tempName, subject, bodyContent, managerId, cre
 ON CONFLICT (tempId) DO UPDATE 
 SET bodyContent = EXCLUDED.bodyContent, subject = EXCLUDED.subject, updatedAt = NOW();
 
+-- ------------------------------------------------------------
+-- 13. INSERT SYSTEM CONFIGURATIONS FOR NOTIFICATION & ADMIN
+-- ------------------------------------------------------------
+INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
+('STUDENT_MAX_BORROW_DAYS', '14', 'S? ngày mu?n t?i da cho sinh viên', 'library', 6, NOW()),
+('LECTURER_MAX_BORROW_DAYS', '30', 'S? ngày mu?n t?i da cho gi?ng viên', 'library', 6, NOW()),
+('RESERVATION_HOLD_DAYS', '3', 'S? ngày gi? sách d?t tru?c tru?c khi hu? t? d?ng', 'library', 6, NOW()),
+('EMAIL_OTP_EXPIRE_MINUTES', '10', 'Th?i gian h?t h?n OTP qua email (phút)', 'notification', 6, NOW()),
+('EMAIL_OVERDUE_NOTICE_DAYS', '1', 'S? ngày tru?c khi quá h?n d? g?i email nh?c', 'notification', 6, NOW()),
+('MAX_IMPORT_ROWS', '5000', 'S? BookCopy t?i da trong m?t file import', 'system', 6, NOW()),
+('IMPORT_EXPIRE_DAYS', '365', 'S? ngày luu l?ch s? import', 'system', 6, NOW())
+ON CONFLICT (configKey) DO UPDATE 
+SET configValue = EXCLUDED.configValue, updatedAt = NOW();
