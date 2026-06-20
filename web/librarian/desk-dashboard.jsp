@@ -177,8 +177,7 @@
                                                                                     name="memberCode"
                                                                                     class="form-control"
                                                                                     placeholder="Ví dụ: SE170123, GD12345..."
-                                                                                    value="<c:out value="
-                                                                                    ${requestScope.memberCode}" />"
+                                                                                    value="${fn:escapeXml(requestScope.memberCode)}"
                                                                                 required
                                                                                 autofocus
                                                                                 style="border-color:var(--outline-variant);">
@@ -350,8 +349,7 @@
                                                                                                                         <input
                                                                                                                             type="hidden"
                                                                                                                             name="memberCode"
-                                                                                                                            value="<c:out value="
-                                                                                                                            ${requestScope.memberCode}" />">
+                                                                                                                            value="${fn:escapeXml(requestScope.memberCode)}">
                                                                                                                         <div
                                                                                                                             class="mb-3">
                                                                                                                             <label
@@ -433,8 +431,7 @@
                                                                                                                     <input
                                                                                                                         type="hidden"
                                                                                                                         name="memberCode"
-                                                                                                                        value="<c:out value="
-                                                                                                                        ${requestScope.memberCode}" />">
+                                                                                                                        value="${fn:escapeXml(requestScope.memberCode)}">
                                                                                                                     <div
                                                                                                                         class="mb-2">
                                                                                                                         <label
@@ -775,8 +772,7 @@
                                                                                                                                                     <input
                                                                                                                                                         type="hidden"
                                                                                                                                                         name="memberCode"
-                                                                                                                                                        value="<c:out value="
-                                                                                                                                                        ${requestScope.memberCode}" />">
+                                                                                                                                                        value="${fn:escapeXml(requestScope.memberCode)}">
                                                                                                                                                     <input
                                                                                                                                                         type="hidden"
                                                                                                                                                         name="paymentId"
