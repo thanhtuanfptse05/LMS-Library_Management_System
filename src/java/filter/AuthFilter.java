@@ -38,6 +38,12 @@ public class AuthFilter implements Filter {
         String contextPath = httpRequest.getContextPath();
         String path = requestURI.substring(contextPath.length());
 
+        // 0. Cho phép SePay Webhook route bypass AuthFilter (tự xác thực bằng API Key riêng)
+        if ("/api/sepay-webhook".equals(path)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // 1. Kiểm tra trạng thái đăng nhập
         boolean isLoggedIn = (session != null && session.getAttribute("userId") != null
                 && session.getAttribute("role") != null);
