@@ -91,6 +91,8 @@ public class DocumentTempManagerServlet extends HttpServlet {
             handleUpdate(request, response, managerId);
         } else if ("create".equals(action)) {
             handleCreate(request, response, managerId);
+        } else if ("delete".equals(action)) {
+            handleDelete(request, response, managerId);
         } else {
             response.sendRedirect(request.getContextPath() + "/manager/email-templates");
         }
@@ -164,6 +166,39 @@ public class DocumentTempManagerServlet extends HttpServlet {
                 redirectTo(response, request, "success", "Đã cập nhật mẫu email thành công");
             } else {
                 redirectTo(response, request, "error", "Cập nhật thất bại");
+            }
+        } catch (NumberFormatException e) {
+            redirectTo(response, request, "error", "ID không hợp lệ");
+        }
+    }
+
+    /**
+     * Xử lý xóa mẫu Email.
+     * Ghi AuditLog sau khi DELETE thành công (ARCH-02).
+     */
+    private void handleDelete(HttpServletRequest request, HttpServletResponse response, int managerId)
+            throws IOException {
+        String idParam = request.getParameter("tempId");
+        if (idParam == null || idParam.trim().isEmpty()) {
+            redirectTo(response, request, "error", "ID không hợp lệ");
+            return;
+        }
+
+        try {
+            int tempId = Integer.parseInt(idParam.trim());
+            DocumentTemp old = documentTempDAO.findById(tempId);
+            if (old == null) {
+                redirectTo(response, request, "error", "Không tìm thấy mẫu email");
+                return;
+            }
+
+            boolean deleted = documentTempDAO.delete(tempId);
+            if (deleted) {
+                String oldVal = "tempName=" + old.getTempName() + "; subject=" + old.getSubject();
+                notificationDAO.insertAuditLog(managerId, "DELETE_EMAIL_TEMPLATE", "DocumentTemp", tempId, oldVal, null);
+                redirectTo(response, request, "success", "Đã xóa mẫu email thành công");
+            } else {
+                redirectTo(response, request, "error", "Xóa thất bại");
             }
         } catch (NumberFormatException e) {
             redirectTo(response, request, "error", "ID không hợp lệ");

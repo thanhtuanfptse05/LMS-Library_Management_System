@@ -65,20 +65,22 @@
                     <div class="row g-3">
                         <!-- Active Loans -->
                         <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-1">
-                            <div class="stat-card h-100" style="--card-accent: var(--primary);">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
-                                        <span class="material-symbols-outlined" style="color: var(--primary);">library_books</span>
+                            <a href="${pageContext.request.contextPath}/lecturer/my-borrowings" class="text-decoration-none text-reset d-block h-100">
+                                <div class="stat-card h-100" style="--card-accent: var(--primary);">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
+                                            <span class="material-symbols-outlined" style="color: var(--primary);">library_books</span>
+                                        </div>
+                                        <span class="badge-pill badge-info">Đang mượn</span>
                                     </div>
-                                    <span class="badge-pill badge-info">Đang mượn</span>
+                                    <p class="stat-label">Sách đang mượn</p>
+                                    <p class="stat-value"><c:out value="${activeLoansCount != null ? activeLoansCount : '0'}" /></p>
+                                    <p class="text-on-surface-variant mb-1" style="font-size: 12px;">trong số 10 tối đa</p>
+                                    <div class="mini-progress">
+                                        <div class="mini-progress-bar" style="width: ${activeLoansCount != null ? (activeLoansCount * 10 > 100 ? 100 : activeLoansCount * 10) : 0}%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
+                                    </div>
                                 </div>
-                                <p class="stat-label">Sách đang mượn</p>
-                                <p class="stat-value"><c:out value="${activeLoansCount != null ? activeLoansCount : '3'}" /></p>
-                                <p class="text-on-surface-variant mb-1" style="font-size: 12px;">trong số 10 tối đa</p>
-                                <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 30%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                         <!-- Course Reading Lists -->
                         <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-2">
@@ -116,16 +118,35 @@
                         </div>
                         <!-- Outstanding Fines -->
                         <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-4">
-                            <div class="stat-card h-100" style="--card-accent: var(--success);">
+                            <div class="stat-card h-100" style="--card-accent: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="stat-icon" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
-                                        <span class="material-symbols-outlined" style="color: var(--success);">payments</span>
+                                    <div class="stat-icon" style="background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%)' : 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)'};">
+                                        <span class="material-symbols-outlined" style="color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">payments</span>
                                     </div>
-                                    <span class="badge-pill badge-success">Sạch</span>
+                                    <c:choose>
+                                        <c:when test="${not empty totalFines and totalFines gt 0}">
+                                            <span class="badge-pill badge-warning">Cần nộp</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge-pill badge-success">Sạch</span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                                 <p class="stat-label">Tiền phạt chưa đóng</p>
-                                <p class="stat-value">0đ</p>
-                                <p style="font-size: 12px; color: var(--success); margin: 0; font-weight: 600;">Tài khoản ở trạng thái tốt</p>
+                                <p class="stat-value">
+                                    <c:choose>
+                                        <c:when test="${not empty totalFines}">
+                                            <fmt:formatNumber value="${totalFines}" type="currency" currencySymbol="$" maxFractionDigits="2"/>
+                                        </c:when>
+                                        <c:otherwise>$0.00</c:otherwise>
+                                    </c:choose>
+                                </p>
+                                <p style="font-size: 12px; color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'}; margin: 0; font-weight: 600;">
+                                    <c:choose>
+                                        <c:when test="${not empty totalFines and totalFines gt 0}">Bạn có khoản phạt chưa đóng</c:when>
+                                        <c:otherwise>Tài khoản ở trạng thái tốt</c:otherwise>
+                                    </c:choose>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -219,7 +240,7 @@
                                     <h3 class="card-title">Sách đang mượn</h3>
                                     <p class="card-subtitle">Sách tôi đã mượn</p>
                                 </div>
-                                <a href="#" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                                <a href="${pageContext.request.contextPath}/lecturer/my-borrowings" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
                                     Xem Lịch sử <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
                                 </a>
                             </div>

@@ -2,6 +2,9 @@ package controllers;
 
 import dao.BookDAO;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.logging.Level;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -47,10 +50,35 @@ public class BookDetailServlet extends HttpServlet {
                 return;
             }
 
+            int userId = (int) session.getAttribute("userId");
+            boolean hasActiveBorrow = false;
+            boolean hasActiveReservation = false;
+
+            try (Connection conn = util.DatabaseConnection.getConnection()) {
+                dao.BorrowRecordDAO borrowRecordDAO = new dao.BorrowRecordDAO();
+                hasActiveBorrow = borrowRecordDAO.hasActiveBorrowRecord(conn, userId, bookId);
+
+                String checkResSql = "SELECT COUNT(*) FROM Reservation WHERE userId = ? AND bookId = ? AND status IN ('pending', 'readypickup')";
+                try (java.sql.PreparedStatement ps = conn.prepareStatement(checkResSql)) {
+                    ps.setInt(1, userId);
+                    ps.setInt(2, bookId);
+                    try (java.sql.ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            hasActiveReservation = rs.getInt(1) > 0;
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                java.util.logging.Logger.getLogger(BookDetailServlet.class.getName()).log(Level.SEVERE, "Lỗi kiểm tra trạng thái mượn/đặt của người dùng", e);
+            }
+
             boolean isBorrowButtonEnabled = true;
 
             request.setAttribute("book", book);
             request.setAttribute("isBorrowButtonEnabled", isBorrowButtonEnabled);
+            request.setAttribute("hasActiveBorrow", hasActiveBorrow);
+            request.setAttribute("hasActiveReservation", hasActiveReservation);
+
             
             request.getRequestDispatcher("/book-detail.jsp").forward(request, response);
 

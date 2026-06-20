@@ -279,7 +279,7 @@
                                                         <span class="badge rounded-pill badge-status-available px-3 py-1">Trong thư viện</span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="badge rounded-pill badge-status-borrowed px-3 py-1">Đang mượn</span>
+                                                        <span class="badge rounded-pill badge-status-borrowed px-3 py-1">Hết sách</span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>

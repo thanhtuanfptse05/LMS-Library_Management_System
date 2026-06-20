@@ -95,6 +95,17 @@ public class BookCopyDAO {
         return findForUpdate(conn, "bc.bookCopyId = ?", bookCopyId);
     }
 
+    public BookCopy findAvailableCopyByBookId(Connection conn, int bookId) throws SQLException {
+        String sql = baseSelect() + " WHERE bc.bookId = ? AND bc.status = 'available' AND bc.condition = 'good' LIMIT 1 FOR UPDATE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
+        }
+    }
+
+
     public BookCopy findByBarcodeForUpdate(Connection conn, String barcode) throws SQLException {
         return findForUpdate(conn, "bc.barcode = ?", barcode);
     }
@@ -192,7 +203,25 @@ public class BookCopyDAO {
         }
     }
 
+    /**
+     * @deprecated Sử dụng {@link #updateStatusToBorrowedFromAvailable} hoặc
+     * {@link #updateStatusToBorrowedFromReserved} thay thế.
+     * Hàm cũ chỉ chấp nhận status='available' gây lỗi khi checkout pre-reservation.
+     */
+    @Deprecated
     public void updateStatusToBorrowed(Connection conn, int bookCopyId) throws SQLException {
+        updateStatusToBorrowedFromAvailable(conn, bookCopyId);
+    }
+
+    /**
+     * Walk-in checkout: chuyển BookCopy từ 'available' → 'borrowed'.
+     * <p>CÓ giảm {@code Book.availableQuantity -= 1} vì chưa giảm từ trước.</p>
+     *
+     * @param conn       Connection trong Transaction
+     * @param bookCopyId ID bản sao sách
+     * @throws SQLException nếu BookCopy không ở status='available' hoặc availableQuantity đã = 0
+     */
+    public void updateStatusToBorrowedFromAvailable(Connection conn, int bookCopyId) throws SQLException {
         updateStatus(conn, bookCopyId, "borrowed", "available");
         String sql = "UPDATE Book SET availableQuantity = availableQuantity - 1, updatedAt = NOW() "
                 + "WHERE bookId = (SELECT bookId FROM BookCopy WHERE bookCopyId = ?) "
@@ -203,6 +232,19 @@ public class BookCopyDAO {
                 throw new SQLException("Không thể đồng bộ số lượng sách khả dụng.");
             }
         }
+    }
+
+    /**
+     * Pre-reservation checkout: chuyển BookCopy từ 'reserved' → 'borrowed'.
+     * <p>KHÔNG giảm {@code Book.availableQuantity} vì đã giảm khi đặt trước
+     * trong {@code OnlineCirculationService.reserveBook()}.</p>
+     *
+     * @param conn       Connection trong Transaction
+     * @param bookCopyId ID bản sao sách
+     * @throws SQLException nếu BookCopy không ở status='reserved'
+     */
+    public void updateStatusToBorrowedFromReserved(Connection conn, int bookCopyId) throws SQLException {
+        updateStatus(conn, bookCopyId, "borrowed", "reserved");
     }
 
     public void updateStatusToUnavailable(Connection conn, int bookCopyId, String condition)

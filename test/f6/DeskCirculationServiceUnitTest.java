@@ -102,7 +102,7 @@ public class DeskCirculationServiceUnitTest {
         copy.setBookCopyId(101);
         copy.setBookId(201);
         copy.setBarcode("barcode123");
-        copy.setStatus("available");
+        copy.setStatus("reserved");
         mockBookCopyDAO.copyToReturn = copy;
 
         Reservation res = new Reservation();
@@ -131,6 +131,7 @@ public class DeskCirculationServiceUnitTest {
         copy.setBookCopyId(101);
         copy.setBookId(201);
         copy.setBarcode("barcode123");
+        copy.setStatus("available");
         mockBookCopyDAO.copyToReturn = copy;
 
         mockReservationDAO.readyReservationToReturn = null; // Walk-in
@@ -153,6 +154,7 @@ public class DeskCirculationServiceUnitTest {
         copy.setBookCopyId(101);
         copy.setBookId(201);
         copy.setBarcode("barcode123");
+        copy.setStatus("available");
         mockBookCopyDAO.copyToReturn = copy;
 
         mockReservationDAO.readyReservationToReturn = null; // Walk-in
@@ -191,6 +193,7 @@ public class DeskCirculationServiceUnitTest {
                 copy.setBookCopyId(1000 + i);
                 copy.setBookId(2000 + i);
                 copy.setBarcode("barcode_" + i);
+                copy.setStatus(hasPreRes ? "reserved" : "available");
             }
             mockBookCopyDAO.copyToReturn = copy;
 
@@ -609,6 +612,16 @@ public class DeskCirculationServiceUnitTest {
 
         @Override
         public void updateStatusToBorrowed(Connection conn, int bookCopyId) throws SQLException {
+            lastBorrowedCopyId = bookCopyId;
+        }
+
+        @Override
+        public void updateStatusToBorrowedFromAvailable(Connection conn, int bookCopyId) throws SQLException {
+            lastBorrowedCopyId = bookCopyId;
+        }
+
+        @Override
+        public void updateStatusToBorrowedFromReserved(Connection conn, int bookCopyId) throws SQLException {
             lastBorrowedCopyId = bookCopyId;
         }
 

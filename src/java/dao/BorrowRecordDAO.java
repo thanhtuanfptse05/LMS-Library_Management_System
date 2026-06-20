@@ -267,4 +267,129 @@ public class BorrowRecordDAO {
         }
         return list;
     }
+
+    /**
+     * Đếm số sách đang mượn (status = 'borrowed') của một người dùng.
+     */
+    public int countActiveBorrowsByUser(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status = 'borrowed'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số sách đang mượn của userId=" + userId, e);
+            throw e;
+        }
+        return 0;
+    }
+
+    /**
+     * Kiểm tra xem người dùng có đang mượn cuốn sách này hay không.
+     */
+    public boolean hasActiveBorrowRecord(Connection conn, int userId, int bookId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND bookId = ? AND status = 'borrowed'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra sách đang mượn của userId=" + userId + ", bookId=" + bookId, e);
+            throw e;
+        }
+        return false;
+    }
+
+    /**
+     * Tìm BorrowRecord bằng ID.
+     */
+    public BorrowRecord findBorrowRecordById(Connection conn, int borrowRecordId) throws SQLException {
+        String sql = "SELECT borrowRecordId, userId, bookCopyId, bookId, "
+                   + "       startDate, endDate, returnedAt, status, "
+                   + "       extensionCount, createdBy, createdAt "
+                   + "FROM   BorrowRecord "
+                   + "WHERE  borrowRecordId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, borrowRecordId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    BorrowRecord record = new BorrowRecord();
+                    record.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    record.setUserId(rs.getInt("userId"));
+                    record.setBookCopyId(rs.getInt("bookCopyId"));
+                    record.setBookId(rs.getInt("bookId"));
+                    record.setStartDate(rs.getTimestamp("startDate"));
+                    record.setEndDate(rs.getTimestamp("endDate"));
+                    record.setReturnedAt(rs.getTimestamp("returnedAt"));
+                    record.setStatus(rs.getString("status"));
+                    record.setExtensionCount(rs.getInt("extensionCount"));
+
+                    int rawCreatedBy = rs.getInt("createdBy");
+                    record.setCreatedBy(rs.wasNull() ? null : rawCreatedBy);
+
+                    record.setCreatedAt(rs.getTimestamp("createdAt"));
+                    return record;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tìm BorrowRecord bằng ID=" + borrowRecordId, e);
+            throw e;
+        }
+        return null;
+    }
+
+    /**
+     * Tăng số lần gia hạn và cộng thêm số ngày gia hạn vào endDate.
+     */
+    public void incrementExtension(Connection conn, int borrowRecordId, int extraDays) throws SQLException {
+        String sql = "UPDATE BorrowRecord "
+                   + "SET    extensionCount = extensionCount + 1, "
+                   + "       endDate = endDate + (? * INTERVAL '1 day') "
+                   + "WHERE  borrowRecordId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, extraDays);
+            ps.setInt(2, borrowRecordId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi gia hạn BorrowRecord ID=" + borrowRecordId, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Đếm số sách sắp đến hạn trả trong {@code withinDays} ngày tới.
+     * Dùng cho Dashboard stats card "Sắp đến hạn".
+     *
+     * @param conn       Connection đọc
+     * @param userId     ID người dùng
+     * @param withinDays Số ngày tới cần kiểm tra (VD: 3 = trong 3 ngày tới)
+     * @return Số sách sắp đến hạn
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public int countDueSoonByUser(Connection conn, int userId, int withinDays) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord "
+                   + "WHERE userId = ? AND status = 'borrowed' "
+                   + "AND endDate BETWEEN NOW() AND NOW() + CAST(? || ' days' AS INTERVAL)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setString(2, String.valueOf(withinDays));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm sách sắp đến hạn của userId=" + userId, e);
+            throw e;
+        }
+        return 0;
+    }
 }
+

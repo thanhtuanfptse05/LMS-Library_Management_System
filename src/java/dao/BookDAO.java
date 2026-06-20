@@ -118,6 +118,22 @@ public class BookDAO {
         }
     }
 
+    public Book findByIdForUpdate(Connection conn, int bookId) throws SQLException {
+        String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, imagePath, "
+                + "totalQuantity, availableQuantity, status, createdAt, updatedAt FROM Book WHERE bookId = ? FOR UPDATE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Book book = mapBook(rs);
+                    loadRelations(conn, book);
+                    return book;
+                }
+            }
+            return null;
+        }
+    }
+
     public Book findByIsbn(Connection conn, String isbn) throws SQLException {
         String sql = "SELECT bookId, isbn, title, author, publisher, publicationYear, price, imagePath, "
                 + "totalQuantity, availableQuantity, status, createdAt, updatedAt FROM Book WHERE isbn = ?";

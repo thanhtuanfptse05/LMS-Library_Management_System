@@ -6,60 +6,66 @@
 
     <!-- Active Loans -->
     <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-1">
-        <div class="stat-card h-100" style="--card-accent: var(--tertiary);">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="stat-icon" style="background: linear-gradient(135deg, var(--tertiary-fixed) 0%, #a0d0f5 100%);">
-                    <span class="material-symbols-outlined" style="color: var(--tertiary);">book_online</span>
+        <a href="${pageContext.request.contextPath}/student/my-borrowings" class="text-decoration-none text-reset d-block h-100">
+            <div class="stat-card h-100" style="--card-accent: var(--tertiary);">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--tertiary-fixed) 0%, #a0d0f5 100%);">
+                        <span class="material-symbols-outlined" style="color: var(--tertiary);">book_online</span>
+                    </div>
+                    <span class="badge-pill badge-info">Đang mượn</span>
                 </div>
-                <span class="badge-pill badge-info">Đang mượn</span>
+                <p class="stat-label">Sách đang mượn</p>
+                <p class="stat-value"><c:out value="${not empty activeLoansCount ? activeLoansCount : '0'}" /></p>
+                <div class="mini-progress">
+                    <div class="mini-progress-bar" style="width: ${not empty activeLoansCount ? (activeLoansCount * 10 > 100 ? 100 : activeLoansCount * 10) : 0}%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
+                </div>
             </div>
-            <p class="stat-label">Sách đang mượn</p>
-            <p class="stat-value"><c:out value="${not empty activeLoansCount ? activeLoansCount : '0'}" /></p>
-            <div class="mini-progress">
-                <div class="mini-progress-bar" style="width: ${not empty activeLoansCount ? (activeLoansCount * 10 > 100 ? 100 : activeLoansCount * 10) : 0}%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
-            </div>
-        </div>
+        </a>
     </div>
 
     <!-- Due Soon -->
     <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-2">
-        <div class="stat-card h-100" style="--card-accent: var(--error);">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="stat-icon" style="background: linear-gradient(135deg, var(--error-container) 0%, #fca5a5 100%);">
-                    <span class="material-symbols-outlined" style="color: var(--error);">schedule</span>
+        <a href="${pageContext.request.contextPath}/student/my-borrowings" class="text-decoration-none text-reset d-block h-100">
+            <div class="stat-card h-100" style="--card-accent: var(--error);">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--error-container) 0%, #fca5a5 100%);">
+                        <span class="material-symbols-outlined" style="color: var(--error);">schedule</span>
+                    </div>
+                    <c:choose>
+                        <c:when test="${not empty dueSoonCount and dueSoonCount gt 0}">
+                            <span class="badge-pill badge-error">Cần chú ý</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="badge-pill badge-success">Tốt</span>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
-                <c:choose>
-                    <c:when test="${not empty dueSoonCount and dueSoonCount gt 0}">
-                        <span class="badge-pill badge-error">Cần chú ý</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="badge-pill badge-success">Tốt</span>
-                    </c:otherwise>
-                </c:choose>
+                <p class="stat-label">Sắp đến hạn</p>
+                <p class="stat-value"><c:out value="${not empty dueSoonCount ? dueSoonCount : '0'}" /></p>
+                <div class="mini-progress">
+                    <div class="mini-progress-bar" style="width: ${not empty dueSoonCount ? (dueSoonCount * 20 > 100 ? 100 : dueSoonCount * 20) : 0}%; background: linear-gradient(90deg, #fca5a5, var(--error));"></div>
+                </div>
             </div>
-            <p class="stat-label">Sắp đến hạn</p>
-            <p class="stat-value"><c:out value="${not empty dueSoonCount ? dueSoonCount : '0'}" /></p>
-            <div class="mini-progress">
-                <div class="mini-progress-bar" style="width: ${not empty dueSoonCount ? (dueSoonCount * 20 > 100 ? 100 : dueSoonCount * 20) : 0}%; background: linear-gradient(90deg, #fca5a5, var(--error));"></div>
-            </div>
-        </div>
+        </a>
     </div>
 
     <!-- Reserved -->
     <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-3">
-        <div class="stat-card h-100" style="--card-accent: var(--primary);">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
-                    <span class="material-symbols-outlined" style="color: var(--primary);">bookmarks</span>
+        <a href="${pageContext.request.contextPath}/student/my-borrowings" class="text-decoration-none text-reset d-block h-100">
+            <div class="stat-card h-100" style="--card-accent: var(--primary);">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
+                        <span class="material-symbols-outlined" style="color: var(--primary);">bookmarks</span>
+                    </div>
+                    <span class="badge-pill badge-primary">Đã đặt</span>
                 </div>
-                <span class="badge-pill badge-primary">Đã đặt</span>
+                <p class="stat-label">Đã đặt trước</p>
+                <p class="stat-value"><c:out value="${not empty reservedCount ? reservedCount : '0'}" /></p>
+                <div class="mini-progress">
+                    <div class="mini-progress-bar" style="width: ${not empty reservedCount ? (reservedCount * 15 > 100 ? 100 : reservedCount * 15) : 0}%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
+                </div>
             </div>
-            <p class="stat-label">Đã đặt trước</p>
-            <p class="stat-value"><c:out value="${not empty reservedCount ? reservedCount : '0'}" /></p>
-            <div class="mini-progress">
-                <div class="mini-progress-bar" style="width: ${not empty reservedCount ? (reservedCount * 15 > 100 ? 100 : reservedCount * 15) : 0}%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
-            </div>
-        </div>
+        </a>
     </div>
 
     <!-- Overdue Fines -->

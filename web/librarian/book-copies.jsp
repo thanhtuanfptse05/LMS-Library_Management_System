@@ -74,7 +74,7 @@
             <c:if test="${totalPages > 1}"><nav class="d-flex justify-content-between align-items-center mt-3"><span class="bm-section-note">Trang ${currentPage}/${totalPages} · ${totalItems} kết quả</span><div class="bm-actions"><c:url var="previousUrl" value="/book-management/copies"><c:param name="q" value="${q}" /><c:param name="location" value="${selectedLocation}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage - 1}" /></c:url><c:url var="nextUrl" value="/book-management/copies"><c:param name="q" value="${q}" /><c:param name="location" value="${selectedLocation}" /><c:param name="status" value="${selectedStatus}" /><c:param name="page" value="${currentPage + 1}" /></c:url><a class="btn bm-btn-secondary ${currentPage == 1 ? 'disabled' : ''}" href="${previousUrl}">Trang trước</a><a class="btn bm-btn-secondary ${currentPage == totalPages ? 'disabled' : ''}" href="${nextUrl}">Trang sau</a></div></nav></c:if>
         </div>
         <jsp:include page="fragments/_footer.jsp" />
-        <script src="${pageContext.request.contextPath}/assets/js/book-copies.js?v=20260610-1"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260618-1"></script>
     </main>
 </div>
 

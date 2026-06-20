@@ -120,6 +120,10 @@ UC-30 (Export User List)
 Actor: Admin
 Mô tả: (Xuất danh sách người dùng): Quản trị viên trích xuất danh sách tài khoản hiện tại ra tệp Excel.
 
+UC-31 (View My Borrowings & Reservations)
+Actor: User (Student/Lecturer)
+Mô tả: (Xem Hàng mượn & Chờ sách): Độc giả xem danh sách các sách đang mượn, lịch sử mượn và các đơn đặt trước (đang chờ hoặc đã sẵn sàng nhận) tại trang "Hàng mượn & chờ sách".
+
 // BR Specification
 
 BR-01 (Authentication)
@@ -205,6 +209,9 @@ Mô tả: Tính năng Import khối lượng lớn Sách BẮT BUỘC tuân th�
 
 BR-28 (Incident Resolution Sync)
 Mô tả: Khi ghi nhận báo cáo sự cố (Report Incident), hệ thống BẮT BUỘC phải tức thời vô hiệu hóa bản sao (status='unavailable') và trừ đi 1 availableQuantity của Đầu sách tương ứng. Khi bác bỏ (Reject Incident), phải cộng lại availableQuantity.
+
+BR-29 (Walk-in vs Pre-reservation Checkout Policy)
+Mô tả: Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity (vì đã trừ khi đặt trước online).
 
 // FR Specification
 
@@ -341,16 +348,16 @@ Mô tả: WHERE yêu cầu gia hạn hợp lệ, THE system SHALL thực thi UPD
 Mapping: UC-17 / BR-21
 
 FR-34 (Kiểm tra điều kiện Giao sách)
-Mô tả: WHEN Thủ thư quét mã định danh để mượn sách, THE system SHALL truy vấn bảng UserLockReason. WHERE tồn tại bản ghi reason == 'unpaid', THE system SHALL chặn giao dịch và trả về thông báo lỗi: "Tài khoản đang nợ phạt".
-Mapping: UC-18 / BR-22
+Mô tả: WHEN Thủ thư quét mã định danh và mã vạch bản sao để mượn sách, THE system SHALL truy vấn bảng UserLockReason. WHERE tồn tại bản ghi reason == 'unpaid', THE system SHALL chặn giao dịch. Đồng thời, hệ thống SHALL kiểm soát trạng thái bản sao: Walk-in checkout yêu cầu trạng thái 'available', Pre-reservation checkout yêu cầu trạng thái 'reserved' và phải khớp với bản sao gán cho người dùng.
+Mapping: UC-18 / BR-22, BR-29
 
 FR-35 (Xử lý Mượn trực tiếp)
 Mô tả: WHERE người dùng chưa có đơn đặt trước (Mượn trực tiếp) VÀ không vi phạm nợ phạt, THE system SHALL kiểm tra hàng đợi trong bảng Reservation. WHERE queuePosition > 0, THE system SHALL từ chối. WHERE hàng đợi trống, THE system SHALL tự động CREATE Reservation tại chỗ (queuePosition = 0, status = 'readypickup').
 Mapping: UC-18 / BR-23
 
 FR-36 (Thực thi Giao sách)
-Mô tả: WHERE Reservation hợp lệ (queuePosition = 0, status = 'readypickup'), THE system SHALL thực thi một DB Transaction: INSERT BorrowRecord (status='borrowed'), UPDATE Reservation (status='fulfilled'), VÀ UPDATE BookCopy (status='borrowed').
-Mapping: UC-18
+Mô tả: WHERE Reservation hợp lệ (queuePosition = 0, status = 'readypickup'), THE system SHALL thực thi một DB Transaction: INSERT BorrowRecord (status='borrowed'), UPDATE Reservation (status='fulfilled'), VÀ UPDATE BookCopy (status='borrowed'). Trong đó, hệ thống phân nhánh: nếu BookCopy ở trạng thái 'available' (Walk-in), hệ thống SHALL giảm Book.availableQuantity đi 1; nếu BookCopy ở trạng thái 'reserved' (Pre-reservation), hệ thống SHALL KHÔNG giảm availableQuantity (vì đã giảm từ lúc đặt trước online).
+Mapping: UC-18 / BR-29
 
 FR-37 (Nhận sách Hỏng/Mất)
 Mô tả: WHEN Thủ thư trả sách với Condition IN ('damaged', 'lost'), THE system SHALL thực thi DB Transaction: UPDATE Book.totalQuantity = totalQuantity - 1, UPDATE BookCopy (status='unavailable', condition), INSERT Fine. ĐỒNG THỜI, THE system SHALL INSERT UserLockReason (reason='unpaid') VÀ UPDATE [User] (status='locked').
@@ -415,3 +422,11 @@ Mapping: UC-29
 FR-52 (Quản lý Mẫu văn bản)
 Mô tả: WHEN Manager thay đổi nội dung Mẫu văn bản (DocumentTemp), THE system SHALL lưu mẫu thiết kế mới dùng cho việc tự động hóa gửi email (như gửi OTP, báo phạt).
 Mapping: UC-26
+
+FR-53 (Hiển thị Hàng mượn & chờ sách)
+Mô tả: WHEN người dùng truy cập trang "Hàng mượn & chờ sách", THE system SHALL truy vấn dữ liệu từ BorrowRecord (active & history) và Reservation (active) của người dùng đó để hiển thị trên giao diện.
+Mapping: UC-31
+
+FR-54 (Liên kết chuyển hướng Dashboard)
+Mô tả: WHEN người dùng nhấp vào các Stats Cards trên Dashboard, THE system SHALL điều hướng người dùng trực tiếp đến trang "Hàng mượn & chờ sách" tương ứng.
+Mapping: UC-31

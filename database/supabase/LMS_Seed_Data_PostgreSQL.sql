@@ -1,4 +1,4 @@
-﻿
+
 
 -- ==========================================================================
 -- LMS SEED DATA SCRIPT
@@ -993,6 +993,22 @@ INSERT INTO BorrowRecord (borrowRecordId, userId, bookCopyId, bookId, startDate,
 (30, 88, 43, 22, NOW() + INTERVAL '-2 days', NOW() + INTERVAL '13 days', NULL, 'borrowed');
 
 
+-- ------------------------------------------------------------
+-- 9. INSERT SYSTEM CONFIGURATIONS FOR RESERVATION & RENEWAL (F5)
+-- ------------------------------------------------------------
+INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
+('STUDENT_MAX_BORROW_LIMIT', '5', 'Giới hạn tổng số sách được mượn và đặt trước cùng lúc của Sinh viên', 'library', 6, NOW()),
+('LECTURER_MAX_BORROW_LIMIT', '10', 'Giới hạn tổng số sách được mượn và đặt trước cùng lúc của Giảng viên', 'library', 6, NOW()),
+('RENEW_THRESHOLD_PERCENT', '50', 'Phần trăm thời gian mượn tối thiểu đã qua để được phép gia hạn (ví dụ: 50%)', 'library', 6, NOW()),
+('MAX_EXTENSION_COUNT', '3', 'Số lần gia hạn tối đa cho một lượt mượn sách', 'library', 6, NOW()),
+('RENEW_DURATION_DAYS', '14', 'Số ngày được gia hạn thêm cho một lượt mượn', 'library', 6, NOW());
+
+-- ------------------------------------------------------------
+-- 10. INSERT DOCUMENT TEMPLATES (F5)
+-- ------------------------------------------------------------
+INSERT INTO DocumentTemp (tempId, tempName, subject, bodyContent, managerId, createdAt) VALUES
+(1, 'RESERVATION_READY', 'Sách đặt trước đã sẵn sàng nhận - Thư viện LMS', 'Chào {{userName}},<br/><br/>Cuốn sách <b>{{bookTitle}}</b> mà bạn đặt trước hiện đã có sẵn bản sao tại thư viện.<br/>Vui lòng đến quầy thủ thư để nhận sách trong vòng 3 ngày kể từ ngày nhận được thư này.<br/>Sau thời gian này, yêu cầu đặt trước của bạn sẽ tự động bị hủy để nhường cho người tiếp theo.<br/><br/>Trân trọng,<br/>Ban quản lý Thư viện LMS.', 6, NOW());
+
 -- ============================================================
 -- UPDATE SEQUENCE GENERATORS AFTER EXPLICIT ID INSERTION
 -- ============================================================
@@ -1002,3 +1018,5 @@ SELECT setval(pg_get_serial_sequence('Tag', 'tagid'), COALESCE(MAX(tagId), 1)) F
 SELECT setval(pg_get_serial_sequence('Book', 'bookid'), COALESCE(MAX(bookId), 1)) FROM Book;
 SELECT setval(pg_get_serial_sequence('BookCopy', 'bookcopyid'), COALESCE(MAX(bookCopyId), 1)) FROM BookCopy;
 SELECT setval(pg_get_serial_sequence('BorrowRecord', 'borrowrecordid'), COALESCE(MAX(borrowRecordId), 1)) FROM BorrowRecord;
+SELECT setval(pg_get_serial_sequence('DocumentTemp', 'tempid'), COALESCE(MAX(tempId), 1)) FROM DocumentTemp;
+

@@ -127,7 +127,17 @@
                                                       placeholder="Mô tả chi tiết thông báo..."><c:out value="${editNotification.content}"/></textarea>
                                         </div>
 
-                                        <div class="form-check mb-4 d-flex align-items-center gap-2 p-0">
+                                        <div class="mb-3">
+                                            <label for="editTargetRole" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">Đối tượng nhận</label>
+                                            <select class="form-select rounded-3" id="editTargetRole" name="targetRole">
+                                                <option value="ALL" ${empty editNotification.targetRole or editNotification.targetRole == 'ALL' ? 'selected' : ''}>👥 Tất cả thành viên</option>
+                                                <option value="STUDENT"  ${editNotification.targetRole == 'STUDENT'  ? 'selected' : ''}>🎓 Chỉ Sinh viên</option>
+                                                <option value="LECTURER" ${editNotification.targetRole == 'LECTURER' ? 'selected' : ''}>👨‍🏫 Chỉ Giảng viên</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-check mb-3 d-flex align-items-center gap-2 p-0">
                                             <input class="form-check-input m-0" type="checkbox" id="editPinned"
                                                    name="isPinned" style="width: 18px; height: 18px;"
                                                    ${editNotification.pinned ? 'checked' : ''}>
@@ -137,6 +147,35 @@
                                                 Ghim thông báo lên đầu
                                             </label>
                                         </div>
+
+                                        <div class="mb-1" style="background: rgba(22,163,74,0.05); border: 1px solid rgba(22,163,74,0.2); border-radius: 8px; padding: 10px 12px;">
+                                            <div class="form-check d-flex align-items-center gap-2 p-0 mb-0">
+                                                <input class="form-check-input m-0" type="checkbox" id="editSendEmail"
+                                                       name="isSendEmail" style="width: 18px; height: 18px;"
+                                                       onchange="toggleTemplateDropdown('editTemplateWrapper', this)">
+                                                <label class="form-check-label small fw-semibold ms-2"
+                                                       for="editSendEmail" style="color: #15803d;">
+                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 16px; color: #16a34a;">email</span>
+                                                    Gửi kèm Email thông báo tới người dùng
+                                                </label>
+                                            </div>
+                                            <!-- Dropdown chọn mẫu email — chỉ hiển thị khi checkbox được tick -->
+                                            <div id="editTemplateWrapper" class="mt-2" style="display:none;">
+                                                <label for="editTemplateName" class="form-label small fw-semibold mb-1"
+                                                       style="color: var(--on-surface-variant);">Chọn mẫu Email <span class="text-danger">*</span></label>
+                                                <select class="form-select form-select-sm rounded-3" id="editTemplateName" name="templateName">
+                                                    <option value="">-- Chọn mẫu email --</option>
+                                                    <c:forEach var="tmpl" items="${emailTemplates}">
+                                                        <option value="${tmpl.tempName}"><c:out value="${tmpl.tempName}" /></option>
+                                                    </c:forEach>
+                                                </select>
+                                                <small class="text-muted" style="font-size:11px;">
+                                                    <span class="material-symbols-outlined" style="font-size:11px; vertical-align:middle;">info</span>
+                                                    Mẫu email sẽ được dùng để gửi tới người dùng. Quản lý mẫu tại <a href="${pageContext.request.contextPath}/manager/email-templates" target="_blank">Quản lý Mẫu Email</a>.
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="mb-4"></div>
 
                                         <div class="d-flex gap-2">
                                             <button type="submit" class="btn btn-primary-custom flex-grow-1 rounded-3 fw-bold py-2">
@@ -195,7 +234,17 @@
 <small class="text-secondary d-block mt-1" style="font-size:12px;"><i class="bi bi-markdown"></i> Hỗ trợ định dạng Markdown (**in đậm**, *in nghiêng*, - danh sách, # tiêu đề)</small>
                                         </div>
 
-                                        <div class="form-check mb-4 d-flex align-items-center gap-2 p-0">
+                                        <div class="mb-3">
+                                            <label for="notifTargetRole" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">Đối tượng nhận</label>
+                                            <select class="form-select rounded-3" id="notifTargetRole" name="targetRole">
+                                                <option value="ALL">👥 Tất cả thành viên</option>
+                                                <option value="STUDENT">🎓 Chỉ Sinh viên</option>
+                                                <option value="LECTURER">👨‍🏫 Chỉ Giảng viên</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-check mb-3 d-flex align-items-center gap-2 p-0">
                                             <input class="form-check-input m-0" type="checkbox" id="notifPinned"
                                                    name="isPinned" style="width: 18px; height: 18px;">
                                             <label class="form-check-label small fw-semibold ms-2"
@@ -204,6 +253,35 @@
                                                 Ghim thông báo lên đầu
                                             </label>
                                         </div>
+
+                                        <div class="mb-1" style="background: rgba(22,163,74,0.05); border: 1px solid rgba(22,163,74,0.2); border-radius: 8px; padding: 10px 12px;">
+                                            <div class="form-check d-flex align-items-center gap-2 p-0 mb-0">
+                                                <input class="form-check-input m-0" type="checkbox" id="notifSendEmail"
+                                                       name="isSendEmail" style="width: 18px; height: 18px;"
+                                                       onchange="toggleTemplateDropdown('notifTemplateWrapper', this)">
+                                                <label class="form-check-label small fw-semibold ms-2"
+                                                       for="notifSendEmail" style="color: #15803d;">
+                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 16px; color: #16a34a;">email</span>
+                                                    Gửi kèm Email thông báo tới người dùng
+                                                </label>
+                                            </div>
+                                            <!-- Dropdown chọn mẫu email — chỉ hiển thị khi checkbox được tick -->
+                                            <div id="notifTemplateWrapper" class="mt-2" style="display:none;">
+                                                <label for="notifTemplateName" class="form-label small fw-semibold mb-1"
+                                                       style="color: var(--on-surface-variant);">Chọn mẫu Email <span class="text-danger">*</span></label>
+                                                <select class="form-select form-select-sm rounded-3" id="notifTemplateName" name="templateName">
+                                                    <option value="">-- Chọn mẫu email --</option>
+                                                    <c:forEach var="tmpl" items="${emailTemplates}">
+                                                        <option value="${tmpl.tempName}"><c:out value="${tmpl.tempName}" /></option>
+                                                    </c:forEach>
+                                                </select>
+                                                <small class="text-muted" style="font-size:11px;">
+                                                    <span class="material-symbols-outlined" style="font-size:11px; vertical-align:middle;">info</span>
+                                                    Mẫu email sẽ được dùng để gửi tới người dùng. Quản lý mẫu tại <a href="${pageContext.request.contextPath}/manager/email-templates" target="_blank">Quản lý Mẫu Email</a>.
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="mb-4"></div>
 
                                         <button type="submit" class="btn btn-primary-custom w-100 rounded-3 fw-bold py-2">
                                             <span class="material-symbols-outlined me-1 align-middle">send</span>
@@ -354,6 +432,24 @@
                                                                 <fmt:formatDate value="${notif.updatedAt}" pattern="dd/MM HH:mm" />
                                                             </span>
                                                         </c:if>
+                                                        <%-- Badge đối tượng nhận --%>
+                                                        <c:choose>
+                                                            <c:when test="${notif.targetRole == 'STUDENT'}">
+                                                                <span class="target-badge target-student">
+                                                                    <span class="material-symbols-outlined" style="font-size: 11px;">school</span> Sinh viên
+                                                                </span>
+                                                            </c:when>
+                                                            <c:when test="${notif.targetRole == 'LECTURER'}">
+                                                                <span class="target-badge target-lecturer">
+                                                                    <span class="material-symbols-outlined" style="font-size: 11px;">cast_for_education</span> Giảng viên
+                                                                </span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="target-badge target-all">
+                                                                    <span class="material-symbols-outlined" style="font-size: 11px;">groups</span> Tất cả
+                                                                </span>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </div>
                                                 </div>
 
@@ -545,6 +641,22 @@
         document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
             if (pendingDeleteForm) pendingDeleteForm.submit();
         });
+
+        /**
+         * Ẩn/hiện dropdown chọn mẫu email dựa theo trạng thái checkbox isSendEmail.
+         * @param {string} wrapperId  - ID của div bao bọc dropdown
+         * @param {HTMLInputElement} checkbox - phần tử checkbox
+         */
+        function toggleTemplateDropdown(wrapperId, checkbox) {
+            var wrapper = document.getElementById(wrapperId);
+            if (!wrapper) return;
+            wrapper.style.display = checkbox.checked ? 'block' : 'none';
+            // Nếu bỏ tick thì reset giá trị dropdown về mặc định
+            if (!checkbox.checked) {
+                var sel = wrapper.querySelector('select[name="templateName"]');
+                if (sel) sel.value = '';
+            }
+        }
     </script>
 
     <style>
@@ -598,6 +710,16 @@
             color: white;
         }
         .page-link:hover { background-color: var(--surface-container-high); color: var(--primary); }
+
+        /* ─── Target Role Badges ─── */
+        .target-badge {
+            display: inline-flex; align-items: center; gap: 3px;
+            padding: 2px 8px; border-radius: 999px;
+            font-size: 11px; font-weight: 600; white-space: nowrap;
+        }
+        .target-all     { background: rgba(0,0,0,0.06);          color: #555; }
+        .target-student { background: rgba(59,130,246,0.10);      color: #1d4ed8; }
+        .target-lecturer { background: rgba(139,92,246,0.10);     color: #6d28d9; }
 
         /* ─── Modal Markdown Rendering ─── */
         #modalContent { color: #333; }
