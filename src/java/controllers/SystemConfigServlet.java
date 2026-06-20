@@ -28,19 +28,17 @@ public class SystemConfigServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("role");
-        
-        if (!"MANAGER".equals(role)) {
+
+        if (!"MANAGER".equalsIgnoreCase(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập.");
             return;
         }
 
-        String groupFilter = request.getParameter("group");
-
         try {
-            List<SystemConfiguration> configs = service.getAll(groupFilter, "MANAGER");
+            // Manager chỉ được xem và sửa nhóm "library"
+            List<SystemConfiguration> configs = service.getAll(null, "MANAGER");
             request.setAttribute("configs", configs);
             request.setAttribute("actorRole", "MANAGER");
-            request.setAttribute("groupFilter", groupFilter);
             request.getRequestDispatcher("/manager/system-config-list.jsp").forward(request, response);
         } catch (DatabaseException e) {
             session.setAttribute("errorMessage", "Lỗi hệ thống khi tải danh sách cấu hình.");
@@ -53,8 +51,8 @@ public class SystemConfigServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("role");
-        
-        if (!"MANAGER".equals(role)) {
+
+        if (!"MANAGER".equalsIgnoreCase(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập.");
             return;
         }
@@ -62,9 +60,9 @@ public class SystemConfigServlet extends HttpServlet {
         Integer managerId = (Integer) session.getAttribute("userId");
         String key = request.getParameter("configKey");
         String value = request.getParameter("configValue");
-        String currentGroup = request.getParameter("groupFilter");
 
         try {
+            // Service sẽ tự chặn nếu key không thuộc nhóm "library"
             service.update(key, value, managerId, "MANAGER", getServletContext());
             session.setAttribute("successMessage", "Cập nhật cấu hình thành công!");
         } catch (ValidationException e) {
@@ -73,10 +71,6 @@ public class SystemConfigServlet extends HttpServlet {
             session.setAttribute("errorMessage", "Lỗi hệ thống. Vui lòng thử lại sau.");
         }
 
-        String redirectUrl = request.getContextPath() + "/manager/system-config";
-        if (currentGroup != null && !currentGroup.isEmpty() && !"all".equals(currentGroup)) {
-            redirectUrl += "?group=" + currentGroup;
-        }
-        response.sendRedirect(redirectUrl);
+        response.sendRedirect(request.getContextPath() + "/manager/system-config");
     }
 }

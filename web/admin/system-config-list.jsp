@@ -60,11 +60,8 @@
                                    style="font-size: 10px; letter-spacing: 0.08em;">Lọc theo nhóm cấu hình</label>
                             <select class="form-select" id="groupFilter" name="group" style="border: 1.5px solid var(--outline-variant); border-radius: var(--radius-md);">
                                 <option value="all" ${empty groupFilter or groupFilter == 'all' ? 'selected' : ''}>Tất cả cấu hình</option>
-                                <option value="library" ${groupFilter == 'library' ? 'selected' : ''}>Chính sách Thư viện</option>
-                                <option value="fine" ${groupFilter == 'fine' ? 'selected' : ''}>Chính sách Phạt</option>
-                                <option value="notification" ${groupFilter == 'notification' ? 'selected' : ''}>Thông báo &amp; Email</option>
-                                <option value="system" ${groupFilter == 'system' ? 'selected' : ''}>Hệ thống</option>
-                                <option value="sepay" ${groupFilter == 'sepay' ? 'selected' : ''}>Tích hợp SePay</option>
+                                <option value="library" ${groupFilter == 'library' ? 'selected' : ''}>Chính sách Thư viện (Library)</option>
+                                <option value="system" ${groupFilter == 'system' ? 'selected' : ''}>Cấu hình Hệ thống (System)</option>
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary-custom rounded-3 fw-bold px-4 d-flex align-items-center gap-2">
@@ -108,10 +105,7 @@
                                         <td>
                                             <c:choose>
                                                 <c:when test="${cfg.configGroup == 'library'}"><span class="badge-pill badge-success"><span class="material-symbols-outlined" style="font-size: 12px;">menu_book</span> Library</span></c:when>
-                                                <c:when test="${cfg.configGroup == 'fine'}"><span class="badge-pill badge-warning"><span class="material-symbols-outlined" style="font-size: 12px;">payments</span> Fine</span></c:when>
-                                                <c:when test="${cfg.configGroup == 'notification'}"><span class="badge-pill badge-info"><span class="material-symbols-outlined" style="font-size: 12px;">notifications</span> Notification</span></c:when>
                                                 <c:when test="${cfg.configGroup == 'system'}"><span class="badge-pill badge-neutral"><span class="material-symbols-outlined" style="font-size: 12px;">computer</span> System</span></c:when>
-                                                <c:when test="${cfg.configGroup == 'sepay'}"><span class="badge-pill badge-primary"><span class="material-symbols-outlined" style="font-size: 12px;">payment</span> SePay</span></c:when>
                                                 <c:otherwise><span class="badge-pill badge-neutral"><c:out value="${cfg.configGroup}"/></span></c:otherwise>
                                             </c:choose>
                                         </td>

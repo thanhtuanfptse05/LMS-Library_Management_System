@@ -5,7 +5,7 @@
 <html lang="vi">
 
 <jsp:include page="fragments/_head.jsp">
-    <jsp:param name="title" value="Cấu hình Hệ thống | Quản lý Thư viện" />
+    <jsp:param name="title" value="Cấu hình Thư viện | Quản lý" />
 </jsp:include>
 
 <body class="d-flex flex-column">
@@ -28,9 +28,9 @@
                     <div>
                         <h2 class="mb-1" style="font-size: 22px; font-weight: 700; color: var(--on-surface);">
                             <span class="material-symbols-outlined align-middle me-2" style="font-size: 26px; color: var(--primary); font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;">settings</span>
-                            Cấu hình Hệ thống
+                            Cấu hình Chính sách Thư viện
                         </h2>
-                        <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Quản lý các thông số chính sách mượn trả của Thư viện</p>
+                        <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Quản lý các thông số mượn trả, gia hạn, đặt trước và tiền phạt</p>
                     </div>
                 </div>
 
@@ -52,38 +52,12 @@
                     <c:remove var="errorMessage" scope="session" />
                 </c:if>
 
-                <!-- ─── Bộ lọc ─── -->
-                <div class="raised-card mb-4 p-4">
-                    <form action="${pageContext.request.contextPath}/manager/system-config" method="GET" class="d-flex gap-3 align-items-end">
-                        <div class="flex-grow-1" style="max-width: 320px;">
-                            <label for="groupFilter" class="d-block mb-1 fw-bold text-on-surface-variant text-uppercase"
-                                   style="font-size: 10px; letter-spacing: 0.08em;">Lọc theo nhóm cấu hình</label>
-                            <select class="form-select" id="groupFilter" name="group" style="border: 1.5px solid var(--outline-variant); border-radius: var(--radius-md);">
-                                <option value="all" ${empty groupFilter or groupFilter == 'all' ? 'selected' : ''}>Tất cả cấu hình</option>
-                                <option value="library" ${groupFilter == 'library' ? 'selected' : ''}>Chính sách Thư viện</option>
-                                <option value="fine" ${groupFilter == 'fine' ? 'selected' : ''}>Chính sách Phạt</option>
-                                <option value="notification" ${groupFilter == 'notification' ? 'selected' : ''}>Thông báo &amp; Email</option>
-                                <option value="system" ${groupFilter == 'system' ? 'selected' : ''}>Hệ thống</option>
-                                <option value="sepay" ${groupFilter == 'sepay' ? 'selected' : ''}>Tích hợp SePay</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary-custom rounded-3 fw-bold px-4 d-flex align-items-center gap-2">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">filter_alt</span> Lọc
-                        </button>
-                    </form>
-                </div>
-
                 <!-- ─── Bảng danh sách cấu hình ─── -->
                 <div class="raised-card overflow-hidden">
                     <div class="card-header-row">
                         <div>
-                            <h3 class="card-title">Danh sách Cấu hình</h3>
-                            <p class="card-subtitle">
-                                <c:choose>
-                                    <c:when test="${empty groupFilter or groupFilter == 'all'}">Hiển thị tất cả cấu hình hệ thống</c:when>
-                                    <c:otherwise>Đang lọc theo nhóm: <strong>${groupFilter}</strong></c:otherwise>
-                                </c:choose>
-                            </p>
+                            <h3 class="card-title">Danh sách Cấu hình Chính sách</h3>
+                            <p class="card-subtitle">Chỉ hiển thị nhóm cấu hình bạn có quyền chỉnh sửa (<strong>library</strong>)</p>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -91,7 +65,6 @@
                             <thead>
                                 <tr>
                                     <th>Tên Cấu Hình</th>
-                                    <th>Nhóm</th>
                                     <th>Mô Tả</th>
                                     <th class="text-center">Giá Trị</th>
                                     <th>Cập Nhật Bởi</th>
@@ -105,17 +78,7 @@
                                         <td class="fw-bold" style="font-size: 13px; font-family: 'Courier New', monospace;">
                                             <c:out value="${cfg.configKey}"/>
                                         </td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${cfg.configGroup == 'library'}"><span class="badge-pill badge-success"><span class="material-symbols-outlined" style="font-size: 12px;">menu_book</span> Library</span></c:when>
-                                                <c:when test="${cfg.configGroup == 'fine'}"><span class="badge-pill badge-warning"><span class="material-symbols-outlined" style="font-size: 12px;">payments</span> Fine</span></c:when>
-                                                <c:when test="${cfg.configGroup == 'notification'}"><span class="badge-pill badge-info"><span class="material-symbols-outlined" style="font-size: 12px;">notifications</span> Notification</span></c:when>
-                                                <c:when test="${cfg.configGroup == 'system'}"><span class="badge-pill badge-neutral"><span class="material-symbols-outlined" style="font-size: 12px;">computer</span> System</span></c:when>
-                                                <c:when test="${cfg.configGroup == 'sepay'}"><span class="badge-pill badge-primary"><span class="material-symbols-outlined" style="font-size: 12px;">payment</span> SePay</span></c:when>
-                                                <c:otherwise><span class="badge-pill badge-neutral"><c:out value="${cfg.configGroup}"/></span></c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td style="font-size: 13px; color: var(--on-surface-variant); max-width: 240px;">
+                                        <td style="font-size: 13px; color: var(--on-surface-variant); max-width: 280px;">
                                             <c:out value="${cfg.description}"/>
                                         </td>
                                         <td class="text-center">
@@ -141,9 +104,9 @@
                                 </c:forEach>
                                 <c:if test="${empty configs}">
                                     <tr>
-                                        <td colspan="7" class="text-center py-5">
+                                        <td colspan="6" class="text-center py-5">
                                             <span class="material-symbols-outlined d-block mb-2" style="font-size: 40px; color: var(--outline);">inbox</span>
-                                            <span style="color: var(--on-surface-variant); font-size: 14px;">Không có cấu hình nào trong nhóm này.</span>
+                                            <span style="color: var(--on-surface-variant); font-size: 14px;">Không có cấu hình nào.</span>
                                         </td>
                                     </tr>
                                 </c:if>
@@ -172,7 +135,6 @@
                 </div>
                 <div class="modal-body p-4">
                     <input type="hidden" name="configKey" id="modalConfigKey">
-                    <input type="hidden" name="groupFilter" value="${groupFilter}">
 
                     <div class="mb-3">
                         <label class="d-block mb-1 fw-bold text-on-surface-variant text-uppercase"
