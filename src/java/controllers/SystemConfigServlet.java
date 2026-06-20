@@ -34,10 +34,13 @@ public class SystemConfigServlet extends HttpServlet {
             return;
         }
 
+        String groupFilter = request.getParameter("group");
+
         try {
-            List<SystemConfiguration> configs = service.getAll(null, "MANAGER");
+            List<SystemConfiguration> configs = service.getAll(groupFilter, "MANAGER");
             request.setAttribute("configs", configs);
             request.setAttribute("actorRole", "MANAGER");
+            request.setAttribute("groupFilter", groupFilter);
             request.getRequestDispatcher("/manager/system-config-list.jsp").forward(request, response);
         } catch (DatabaseException e) {
             session.setAttribute("errorMessage", "Lỗi hệ thống khi tải danh sách cấu hình.");
@@ -59,6 +62,7 @@ public class SystemConfigServlet extends HttpServlet {
         Integer managerId = (Integer) session.getAttribute("userId");
         String key = request.getParameter("configKey");
         String value = request.getParameter("configValue");
+        String currentGroup = request.getParameter("groupFilter");
 
         try {
             service.update(key, value, managerId, "MANAGER", getServletContext());
@@ -69,6 +73,10 @@ public class SystemConfigServlet extends HttpServlet {
             session.setAttribute("errorMessage", "Lỗi hệ thống. Vui lòng thử lại sau.");
         }
 
-        response.sendRedirect(request.getContextPath() + "/manager/system-config");
+        String redirectUrl = request.getContextPath() + "/manager/system-config";
+        if (currentGroup != null && !currentGroup.isEmpty() && !"all".equals(currentGroup)) {
+            redirectUrl += "?group=" + currentGroup;
+        }
+        response.sendRedirect(redirectUrl);
     }
 }
