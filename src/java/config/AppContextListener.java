@@ -18,6 +18,12 @@ public class AppContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         LOGGER.log(Level.INFO, "[AppListener] Application LMS Started.");
+        try {
+            SystemConfigCache.load(sce.getServletContext());
+            LOGGER.log(Level.INFO, "[AppListener] SystemConfigCache loaded successfully.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "[AppListener] Failed to load SystemConfigCache. Business defaults will be used.", e);
+        }
     }
 
     @Override
