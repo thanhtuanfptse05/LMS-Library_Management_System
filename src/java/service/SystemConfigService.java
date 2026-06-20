@@ -48,7 +48,7 @@ public class SystemConfigService {
 
     public List<SystemConfiguration> getAll(String groupFilter, String actorRole) throws DatabaseException {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            if ("MANAGER".equals(actorRole)) {
+            if ("MANAGER".equalsIgnoreCase(actorRole)) {
                 return dao.findByGroup(conn, "library");
             } else { // ADMIN
                 if (groupFilter != null && !groupFilter.trim().isEmpty() && !"all".equals(groupFilter)) {
@@ -62,7 +62,38 @@ public class SystemConfigService {
         }
     }
 
+    public List<dto.SystemConfigLogDTO> getConfigLogs(String groupFilter, String actorRole) throws DatabaseException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            List<dto.SystemConfigLogDTO> logs = auditLogDAO.getSystemConfigLogs(conn);
+            
+            List<SystemConfiguration> configs = dao.findAll(conn);
+            Map<String, String> keyGroupMap = new java.util.HashMap<>();
+            for (SystemConfiguration cfg : configs) {
+                keyGroupMap.put(cfg.getConfigKey(), cfg.getConfigGroup());
+            }
+
+            return logs.stream().filter(log -> {
+                String group = keyGroupMap.get(log.getConfigKey());
+                if (group == null) return false;
+                
+                if ("MANAGER".equalsIgnoreCase(actorRole)) {
+                    return "library".equalsIgnoreCase(group);
+                } else { // ADMIN
+                    if (groupFilter != null && !groupFilter.trim().isEmpty() && !"all".equals(groupFilter)) {
+                        return groupFilter.equalsIgnoreCase(group);
+                    }
+                    return true;
+                }
+            }).collect(java.util.stream.Collectors.toList());
+        } catch (SQLException e) {
+            throw new DatabaseException("Lỗi khi lấy lịch sử cấu hình", e);
+        }
+    }
+
     public void update(String key, String newValue, int actorId, String actorRole, ServletContext ctx) throws ValidationException, DatabaseException {
+        if (key != null) key = key.trim();
+        if (newValue != null) newValue = newValue.trim();
+
         if (!KEY_TYPES.containsKey(key)) {
             throw new ValidationException("Khóa cấu hình không tồn tại hoặc không được phép sửa.");
         }
@@ -79,7 +110,7 @@ public class SystemConfigService {
                 throw new ValidationException("Khóa cấu hình không tồn tại trong CSDL.");
             }
 
-            if ("MANAGER".equals(actorRole) && !"library".equals(current.getConfigGroup())) {
+            if ("MANAGER".equalsIgnoreCase(actorRole) && !"library".equalsIgnoreCase(current.getConfigGroup())) {
                 throw new ValidationException("Bạn không có quyền chỉnh sửa nhóm cấu hình này.");
             }
 
@@ -109,19 +140,20 @@ public class SystemConfigService {
         if (value == null || value.trim().isEmpty()) {
             throw new ValidationException("Giá trị không được để trống.");
         }
+        String trimmedValue = value.trim();
         String type = KEY_TYPES.get(key);
         try {
             switch (type) {
                 case "POSITIVE_INT":
-                    int pi = Integer.parseInt(value);
+                    int pi = Integer.parseInt(trimmedValue);
                     if (pi <= 0) throw new ValidationException("Giá trị phải là số nguyên dương.");
                     break;
                 case "NON_NEGATIVE_INT":
-                    int nni = Integer.parseInt(value);
+                    int nni = Integer.parseInt(trimmedValue);
                     if (nni < 0) throw new ValidationException("Giá trị phải là số nguyên không âm.");
                     break;
                 case "NON_NEGATIVE_DECIMAL":
-                    double nnd = Double.parseDouble(value);
+                    double nnd = Double.parseDouble(trimmedValue);
                     if (nnd < 0.0) throw new ValidationException("Giá trị phải là số thực không âm.");
                     break;
                 case "STRING":

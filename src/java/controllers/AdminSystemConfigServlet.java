@@ -38,7 +38,10 @@ public class AdminSystemConfigServlet extends HttpServlet {
 
         try {
             List<SystemConfiguration> configs = service.getAll(groupFilter, "ADMIN");
+            List<dto.SystemConfigLogDTO> configLogs = service.getConfigLogs(groupFilter, "ADMIN");
+            
             request.setAttribute("configs", configs);
+            request.setAttribute("configLogs", configLogs);
             request.setAttribute("actorRole", "ADMIN");
             request.setAttribute("groupFilter", groupFilter);
             request.getRequestDispatcher("/admin/system-config-list.jsp").forward(request, response);

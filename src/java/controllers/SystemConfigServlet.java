@@ -36,7 +36,10 @@ public class SystemConfigServlet extends HttpServlet {
 
         try {
             List<SystemConfiguration> configs = service.getAll(null, "MANAGER");
+            List<dto.SystemConfigLogDTO> configLogs = service.getConfigLogs(null, "MANAGER");
+            
             request.setAttribute("configs", configs);
+            request.setAttribute("configLogs", configLogs);
             request.setAttribute("actorRole", "MANAGER");
             request.getRequestDispatcher("/manager/system-config-list.jsp").forward(request, response);
         } catch (DatabaseException e) {
