@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.SystemConfiguration;
 import util.DatabaseConnection;
 
 /**
@@ -69,5 +72,97 @@ public class SystemConfigDAO {
             LOGGER.log(Level.SEVERE, "Lỗi khi lấy int configKey=" + key, e);
         }
         return defaultValue;
+    }
+
+    public List<SystemConfiguration> findAll(Connection conn) throws SQLException {
+        List<SystemConfiguration> list = new ArrayList<>();
+        String sql = "SELECT sc.configKey, sc.configValue, sc.description, sc.configGroup, "
+                + "sc.updatedBy, sc.updatedAt, "
+                + "COALESCE(mp.fullName, 'Hệ thống') AS updaterName "
+                + "FROM SystemConfigurations sc "
+                + "LEFT JOIN \"User\" u ON sc.updatedBy = u.userId "
+                + "LEFT JOIN MemberProfile mp ON u.userId = mp.userId "
+                + "ORDER BY sc.configGroup, sc.configKey";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
+    public List<SystemConfiguration> findByGroup(Connection conn, String group) throws SQLException {
+        List<SystemConfiguration> list = new ArrayList<>();
+        String sql = "SELECT sc.configKey, sc.configValue, sc.description, sc.configGroup, "
+                + "sc.updatedBy, sc.updatedAt, "
+                + "COALESCE(mp.fullName, 'Hệ thống') AS updaterName "
+                + "FROM SystemConfigurations sc "
+                + "LEFT JOIN \"User\" u ON sc.updatedBy = u.userId "
+                + "LEFT JOIN MemberProfile mp ON u.userId = mp.userId "
+                + "WHERE sc.configGroup = ? "
+                + "ORDER BY sc.configKey";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, group);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        }
+        return list;
+    }
+
+    public SystemConfiguration findByKey(Connection conn, String key) throws SQLException {
+        String sql = "SELECT sc.configKey, sc.configValue, sc.description, sc.configGroup, "
+                + "sc.updatedBy, sc.updatedAt, "
+                + "COALESCE(mp.fullName, 'Hệ thống') AS updaterName "
+                + "FROM SystemConfigurations sc "
+                + "LEFT JOIN \"User\" u ON sc.updatedBy = u.userId "
+                + "LEFT JOIN MemberProfile mp ON u.userId = mp.userId "
+                + "WHERE sc.configKey = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, key);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public void update(Connection conn, String key, String value, Integer updatedBy) throws SQLException {
+        String sql = "UPDATE SystemConfigurations "
+                + "SET configValue = ?, updatedBy = ?, updatedAt = NOW() "
+                + "WHERE configKey = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, value);
+            if (updatedBy != null) {
+                stmt.setInt(2, updatedBy);
+            } else {
+                stmt.setNull(2, java.sql.Types.INTEGER);
+            }
+            stmt.setString(3, key);
+            stmt.executeUpdate();
+        }
+    }
+
+    private SystemConfiguration mapRow(ResultSet rs) throws SQLException {
+        SystemConfiguration config = new SystemConfiguration();
+        config.setConfigKey(rs.getString("configKey"));
+        config.setConfigValue(rs.getString("configValue"));
+        config.setDescription(rs.getString("description"));
+        config.setConfigGroup(rs.getString("configGroup"));
+        int updatedBy = rs.getInt("updatedBy");
+        if (!rs.wasNull()) {
+            config.setUpdatedBy(updatedBy);
+        }
+        config.setUpdaterName(rs.getString("updaterName"));
+        config.setUpdatedAt(rs.getTimestamp("updatedAt"));
+        return config;
     }
 }
