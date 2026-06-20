@@ -29,7 +29,7 @@ public class AdminSystemConfigServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("role");
         
-        if (!"ADMIN".equals(role)) {
+        if (!"ADMIN".equalsIgnoreCase(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập.");
             return;
         }
@@ -54,7 +54,7 @@ public class AdminSystemConfigServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("role");
         
-        if (!"ADMIN".equals(role)) {
+        if (!"ADMIN".equalsIgnoreCase(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập.");
             return;
         }
