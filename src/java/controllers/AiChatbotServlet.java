@@ -112,11 +112,19 @@ public class AiChatbotServlet extends HttpServlet {
             } else {
                 // Truy xuất sách phù hợp
                 String booksContext = aiChatbotService.retrieveBooksContext(userMessage);
-                systemPrompt = "Bạn là trợ lý ảo của thư viện trường đại học (UniLib). "
-                        + "Hãy hỗ trợ người dùng tìm và gợi ý sách dựa trên danh sách các đầu sách có sẵn dưới đây. "
-                        + "Hãy đưa ra câu trả lời chi tiết bằng tiếng Việt dưới dạng Markdown (100% Vietnamese), có thông tin mô tả cơ bản của sách (nếu có) và khuyên người dùng đến thư viện mượn. "
-                        + "Chỉ đề xuất các sách có trong danh sách dưới đây, tuyệt đối không tự bịa ra sách khác.\n\n"
-                        + "Danh sách sách có sẵn:\n" + booksContext;
+                if (booksContext == null || booksContext.trim().isEmpty() || booksContext.contains("Không tìm thấy")) {
+                    systemPrompt = "Bạn là một thủ thư thân thiện của thư viện trường đại học (UniLib). "
+                            + "Người dùng đang tìm kiếm sách nhưng hệ thống không tìm thấy kết quả phù hợp trực tiếp cho từ khóa của họ. "
+                            + "Hãy đóng vai trò là một thủ thư thân thiện, hỏi mở lịch sự để làm rõ nhu cầu của người dùng (ví dụ: họ muốn tìm sách thuộc thể loại nào, tác giả nào, hoặc phục vụ cho môn học/đề tài gì). "
+                            + "Đồng thời, hãy gợi ý cho họ 3-4 danh mục sách phổ biến nhất tại thư viện (như Kỹ năng, Công nghệ, Kinh tế, Văn học...) dưới dạng danh sách Markdown để họ lựa chọn. "
+                            + "Hãy phản hồi bằng tiếng Việt thân thiện, ấm áp và chuyên nghiệp dưới dạng Markdown (100% Vietnamese), và tuyệt đối KHÔNG được báo là 'không tìm thấy sách' hay 'không có sách'.";
+                } else {
+                    systemPrompt = "Bạn là trợ lý ảo của thư viện trường đại học (UniLib). "
+                            + "Hãy hỗ trợ người dùng tìm và gợi ý sách dựa trên danh sách các đầu sách có sẵn dưới đây. "
+                            + "Hãy đưa ra câu trả lời chi tiết bằng tiếng Việt dưới dạng Markdown (100% Vietnamese), có thông tin mô tả cơ bản của sách (nếu có) và khuyên người dùng đến thư viện mượn. "
+                            + "Chỉ đề xuất các sách có trong danh sách dưới đây, tuyệt đối không tự bịa ra sách khác.\n\n"
+                            + "Danh sách sách có sẵn:\n" + booksContext;
+                }
             }
 
             // Gọi AI Service
