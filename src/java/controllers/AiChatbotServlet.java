@@ -110,14 +110,42 @@ public class AiChatbotServlet extends HttpServlet {
                         + "Nếu câu hỏi không tìm thấy thông tin trong nội quy, hãy trả lời lịch sự rằng bạn không có thông tin chính xác về vấn đề này và khuyên người dùng liên hệ thủ thư.\n\n"
                         + "Thông tin nội quy thực tế:\n" + rulesContext;
             } else {
-                // Truy xuất sách phù hợp
-                String booksContext = aiChatbotService.retrieveBooksContext(userMessage);
-                if (booksContext == null || booksContext.trim().isEmpty() || booksContext.contains("Không tìm thấy")) {
-                    systemPrompt = "Bạn là một thủ thư thân thiện của thư viện trường đại học (UniLib). "
-                            + "Người dùng đang tìm kiếm sách nhưng hệ thống không tìm thấy kết quả phù hợp trực tiếp cho từ khóa của họ. "
-                            + "Hãy đóng vai trò là một thủ thư thân thiện, hỏi mở lịch sự để làm rõ nhu cầu của người dùng (ví dụ: họ muốn tìm sách thuộc thể loại nào, tác giả nào, hoặc phục vụ cho môn học/đề tài gì). "
-                            + "Đồng thời, hãy gợi ý cho họ 3-4 danh mục sách phổ biến nhất tại thư viện (như Kỹ năng, Công nghệ, Kinh tế, Văn học...) dưới dạng danh sách Markdown để họ lựa chọn. "
-                            + "Hãy phản hồi bằng tiếng Việt thân thiện, ấm áp và chuyên nghiệp dưới dạng Markdown (100% Vietnamese), và tuyệt đối KHÔNG được báo là 'không tìm thấy sách' hay 'không có sách'.";
+                // Kiểm tra xem người dùng có hỏi gợi ý sách không
+                boolean isRecommend = userMessage.toLowerCase().matches(".*(gợi ý|đề xuất|khuyên đọc|phù hợp với tôi|nên đọc).*");
+                
+                String booksContext;
+                boolean useF8 = false;
+                
+                if (isRecommend) {
+                    // Nếu là yêu cầu gợi ý, sử dụng F8 để lấy sách cá nhân hóa/thịnh hành
+                    Integer userId = (Integer) session.getAttribute("userId");
+                    booksContext = aiChatbotService.retrievePersonalizedBooksContext(userId);
+                    useF8 = true;
+                } else {
+                    // Ngược lại, tìm kiếm sách theo từ khóa bình thường
+                    booksContext = aiChatbotService.retrieveBooksContext(userMessage);
+                    // Nếu tìm kiếm không thấy sách nào, fallback sang F8 để gợi ý sách
+                    if (booksContext == null || booksContext.trim().isEmpty() || booksContext.contains("Không tìm thấy")) {
+                        Integer userId = (Integer) session.getAttribute("userId");
+                        booksContext = aiChatbotService.retrievePersonalizedBooksContext(userId);
+                        useF8 = true;
+                    }
+                }
+
+                if (useF8) {
+                    if (booksContext == null || booksContext.trim().isEmpty() || booksContext.contains("Không tìm thấy")) {
+                        systemPrompt = "Bạn là một thủ thư thân thiện của thư viện trường đại học (UniLib). "
+                                + "Người dùng đang tìm kiếm sách nhưng hệ thống không tìm thấy kết quả phù hợp trực tiếp cho từ khóa của họ. "
+                                + "Hãy đóng vai trò là một thủ thư thân thiện, hỏi mở lịch sự để làm rõ nhu cầu của người dùng (ví dụ: họ muốn tìm sách thuộc thể loại nào, tác giả nào, hoặc phục vụ cho môn học/đề tài gì). "
+                                + "Đồng thời, hãy gợi ý cho họ 3-4 danh mục sách phổ biến nhất tại thư viện (như Kỹ năng, Công nghệ, Kinh tế, Văn học...) dưới dạng danh sách Markdown để họ lựa chọn. "
+                                + "Hãy phản hồi bằng tiếng Việt thân thiện, ấm áp và chuyên nghiệp dưới dạng Markdown (100% Vietnamese), và tuyệt đối KHÔNG được báo là 'không tìm thấy sách' hay 'không có sách'.";
+                    } else {
+                        systemPrompt = "Bạn là trợ lý ảo kiêm thủ thư thân thiện của thư viện trường đại học (UniLib). "
+                                + "Hãy đóng vai trò là một thủ thư thân thiện, giới thiệu và gợi ý cho người dùng danh sách các cuốn sách được tuyển chọn dưới đây. "
+                                + "Hãy đưa ra câu trả lời chi tiết bằng tiếng Việt dưới dạng Markdown (100% Vietnamese), giới thiệu sơ lược về các cuốn sách này và khuyên người dùng đến thư viện mượn. "
+                                + "Tuyệt đối không báo là 'không tìm thấy sách'.\n\n"
+                                + "Danh sách sách gợi ý:\n" + booksContext;
+                    }
                 } else {
                     systemPrompt = "Bạn là trợ lý ảo của thư viện trường đại học (UniLib). "
                             + "Hãy hỗ trợ người dùng tìm và gợi ý sách dựa trên danh sách các đầu sách có sẵn dưới đây. "

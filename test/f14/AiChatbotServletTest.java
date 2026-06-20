@@ -42,6 +42,7 @@ public class AiChatbotServletTest {
     private static class MockAiChatbotService extends AiChatbotService {
         String lastSystemPrompt;
         String mockBooksContext;
+        String mockPersonalizedBooksContext;
 
         @Override
         public String classifyIntent(String userMessage) {
@@ -51,6 +52,11 @@ public class AiChatbotServletTest {
         @Override
         public String retrieveBooksContext(String userMessage) {
             return mockBooksContext;
+        }
+
+        @Override
+        public String retrievePersonalizedBooksContext(Integer userId) {
+            return mockPersonalizedBooksContext;
         }
 
         @Override
@@ -133,8 +139,9 @@ public class AiChatbotServletTest {
 
     @Test
     public void testDoPostWithNoBooksFoundContext() throws Exception {
-        // Thiết lập sách không tìm thấy
+        // Thiết lập sách không tìm thấy ở cả 2 đầu tìm kiếm từ khóa và F8
         mockService.mockBooksContext = "Không tìm thấy đầu sách nào phù hợp trực tiếp với từ khóa \"xyz\"";
+        mockService.mockPersonalizedBooksContext = "Không tìm thấy đầu sách nào phù hợp";
         
         JsonObject reqObj = new JsonObject();
         reqObj.addProperty("message", "những quyển sách nào tốt cho tôi");
@@ -142,12 +149,12 @@ public class AiChatbotServletTest {
 
         servlet.service(requestProxy, responseProxy);
 
-        // Kiểm tra systemPrompt đã được thay đổi cho thủ thư thân thiện
+        // Kiểm tra systemPrompt đã được thay đổi cho thủ thư thân thiện khi hoàn toàn không có sách
         assertNotNull(mockService.lastSystemPrompt);
         assertTrue(mockService.lastSystemPrompt.contains("thủ thư thân thiện"));
         assertTrue(mockService.lastSystemPrompt.contains("hỏi mở lịch sự"));
         assertTrue(mockService.lastSystemPrompt.contains("Kỹ năng, Công nghệ, Kinh tế, Văn học"));
-        assertFalse(mockService.lastSystemPrompt.contains("Chỉ đề xuất các sách có trong danh sách"));
+        assertFalse(mockService.lastSystemPrompt.contains("giới thiệu và gợi ý cho người dùng danh sách các cuốn sách được tuyển chọn dưới đây"));
 
         // Kiểm tra JSON response trả về thành công
         JsonObject resObj = new Gson().fromJson(responseWriter.toString(), JsonObject.class);
@@ -156,8 +163,45 @@ public class AiChatbotServletTest {
     }
 
     @Test
+    public void testDoPostWithNoBooksFoundFallbackToF8() throws Exception {
+        // Thiết lập tìm kiếm từ khóa không thành công
+        mockService.mockBooksContext = "Không tìm thấy đầu sách nào phù hợp trực tiếp với từ khóa \"xyz\"";
+        // Nhưng F8 gợi ý thành công sách thịnh hành/cá nhân hóa
+        mockService.mockPersonalizedBooksContext = "Danh sách các sách gợi ý dành riêng cho bạn:\n- ID: 1 | Tên sách: Lập trình Java";
+        
+        JsonObject reqObj = new JsonObject();
+        reqObj.addProperty("message", "sách gì hay ho");
+        requestJson = new Gson().toJson(reqObj);
+
+        servlet.service(requestProxy, responseProxy);
+
+        // Kiểm tra systemPrompt sử dụng gợi ý F8
+        assertNotNull(mockService.lastSystemPrompt);
+        assertTrue(mockService.lastSystemPrompt.contains("giới thiệu và gợi ý cho người dùng danh sách các cuốn sách được tuyển chọn dưới đây"));
+        assertTrue(mockService.lastSystemPrompt.contains("Lập trình Java"));
+        assertFalse(mockService.lastSystemPrompt.contains("Kỹ năng, Công nghệ, Kinh tế, Văn học"));
+    }
+
+    @Test
+    public void testDoPostWithRecommendationIntent() throws Exception {
+        // Thiết lập F8 gợi ý sách cá nhân hóa thành công
+        mockService.mockPersonalizedBooksContext = "Danh sách các sách gợi ý dành riêng cho bạn:\n- ID: 2 | Tên sách: Tư duy thiết kế";
+        
+        JsonObject reqObj = new JsonObject();
+        reqObj.addProperty("message", "gợi ý sách hay cho mình");
+        requestJson = new Gson().toJson(reqObj);
+
+        servlet.service(requestProxy, responseProxy);
+
+        // Kiểm tra systemPrompt trực tiếp chọn gợi ý F8
+        assertNotNull(mockService.lastSystemPrompt);
+        assertTrue(mockService.lastSystemPrompt.contains("giới thiệu và gợi ý cho người dùng danh sách các cuốn sách được tuyển chọn dưới đây"));
+        assertTrue(mockService.lastSystemPrompt.contains("Tư duy thiết kế"));
+    }
+
+    @Test
     public void testDoPostWithValidBooksContext() throws Exception {
-        // Thiết lập sách hợp lệ
+        // Thiết lập sách hợp lệ tìm kiếm thông thường
         mockService.mockBooksContext = "Danh sách các sách liên quan có sẵn trong thư viện hiện tại:\n- ID: 1 | Tên sách: Lập trình Java | Tác giả: Nguyễn Nhật Ánh";
         
         JsonObject reqObj = new JsonObject();
@@ -171,6 +215,7 @@ public class AiChatbotServletTest {
         assertTrue(mockService.lastSystemPrompt.contains("trợ lý ảo"));
         assertTrue(mockService.lastSystemPrompt.contains("Chỉ đề xuất các sách có trong danh sách dưới đây, tuyệt đối không tự bịa ra sách khác"));
         assertFalse(mockService.lastSystemPrompt.contains("thủ thư thân thiện"));
+        assertFalse(mockService.lastSystemPrompt.contains("được tuyển chọn dưới đây"));
 
         // Kiểm tra JSON response trả về thành công
         JsonObject resObj = new Gson().fromJson(responseWriter.toString(), JsonObject.class);

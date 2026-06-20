@@ -155,6 +155,60 @@ public class AiChatbotService {
     }
 
     /**
+     * Truy xuất danh sách sách gợi ý cá nhân hóa sử dụng tính năng F8.
+     * Nếu không đủ lịch sử mượn hoặc chưa đăng nhập, sử dụng sách thịnh hành (Trending) làm fallback.
+     */
+    public String retrievePersonalizedBooksContext(Integer userId) {
+        List<Book> recommendedBooks = new java.util.ArrayList<>();
+        if (userId != null) {
+            try {
+                int borrowCount = new dao.BorrowRecordDAO().countUserBorrowHistory(userId);
+                if (borrowCount >= 3) {
+                    java.util.Map<String, java.util.Map<String, Integer>> freqProfile = bookDAO.getUserTagCategoryFrequency(userId);
+                    List<model.BookSummaryDTO> recentHistory = bookDAO.getRecentBorrowedSummary(userId, 3);
+                    List<model.BookSummaryDTO> candidatePool = bookDAO.getCandidatePoolWithTagsAndCategories(userId, 30);
+                    
+                    AiRecommendationService recommendationService = new AiRecommendationService();
+                    List<Integer> aiRecommendedIds = recommendationService.getRecommendations(freqProfile, recentHistory, candidatePool);
+                    
+                    if (aiRecommendedIds != null && !aiRecommendedIds.isEmpty()) {
+                        for (Integer id : aiRecommendedIds) {
+                            Book book = bookDAO.getBookById(id);
+                            if (book != null) {
+                                recommendedBooks.add(book);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "[AI-SVC] Lỗi lấy gợi ý sách cá nhân hóa F8: " + e.getMessage(), e);
+            }
+        }
+
+        // Fallback: Sách thịnh hành (Top Trending)
+        if (recommendedBooks.isEmpty()) {
+            try {
+                recommendedBooks = bookDAO.getTopTrendingBooks(5);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "[AI-SVC] Lỗi lấy sách thịnh hành: " + e.getMessage(), e);
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Danh sách các sách gợi ý dành riêng cho bạn:\n");
+        for (Book b : recommendedBooks) {
+            sb.append("- ID: ").append(b.getBookId())
+              .append(" | Tên sách: ").append(b.getTitle())
+              .append(" | Tác giả: ").append(b.getAuthor() != null ? b.getAuthor() : "Chưa rõ")
+              .append(" | Nhà xuất bản: ").append(b.getPublisher() != null ? b.getPublisher() : "Chưa rõ")
+              .append(" | Số lượng khả dụng: ").append(b.getAvailableQuantity())
+              .append(" | Trạng thái: ").append(b.getStatus()).append("\n");
+        }
+        return sb.toString();
+    }
+
+
+    /**
      * Thực hiện cuộc gọi hội thoại nhiều lượt sang Gemini API.
      */
     public String callGeminiChat(List<ChatMessage> history, String systemInstructionText) {
