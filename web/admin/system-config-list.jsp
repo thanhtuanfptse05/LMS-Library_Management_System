@@ -8,15 +8,16 @@
             <jsp:param name="title" value="Cấu hình Hệ thống | Admin" />
         </jsp:include>
     </head>
-    <body>
+    <body class="d-flex flex-column">
         <!-- SIDEBAR -->
         <jsp:include page="fragments/_sidebar.jsp" />
 
-        <div class="main-wrapper">
-            <!-- HEADER -->
-            <jsp:include page="fragments/_header.jsp" />
+        <div class="d-flex main-wrapper overflow-hidden">
+            <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: var(--background);">
+                <!-- HEADER -->
+                <jsp:include page="fragments/_header.jsp" />
 
-            <main class="content-area p-4">
+                <div class="container-fluid px-4 py-4" style="max-width: 1440px; margin: 0 auto;">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h4 class="mb-1">Cấu hình Hệ thống Toàn cầu</h4>
@@ -132,41 +133,43 @@
                         </div>
                     </div>
                 </div>
-            </main>
-            
-            <!-- Modal Cập Nhật Cấu Hình -->
-            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <form action="${pageContext.request.contextPath}/admin/system-config" method="POST" class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editModalLabel">Cập nhật cấu hình toàn cầu</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" name="configKey" id="modalConfigKey">
-                            <input type="hidden" name="groupFilter" value="${groupFilter}">
-                            
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Mô tả cấu hình</label>
-                                <p id="modalConfigDesc" class="text-muted"></p>
+                <!-- Modal Cập Nhật Cấu Hình -->
+                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <form action="${pageContext.request.contextPath}/admin/system-config" method="POST" class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">Cập nhật cấu hình toàn cầu</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="modalConfigValue" class="form-label fw-bold">Giá trị mới <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="modalConfigValue" name="configValue" required>
+                            <div class="modal-body">
+                                <input type="hidden" name="configKey" id="modalConfigKey">
+                                <input type="hidden" name="groupFilter" value="${groupFilter}">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Mô tả cấu hình</label>
+                                    <p id="modalConfigDesc" class="text-muted"></p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="modalConfigValue" class="form-label fw-bold">Giá trị mới <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="modalConfigValue" name="configValue" required>
+                                </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                            <button type="submit" class="btn btn-danger">Lưu Thay Đổi</button>
-                        </div>
-                    </form>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-danger">Lưu Thay Đổi</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
 
-            <!-- FOOTER -->
-            <jsp:include page="fragments/_footer.jsp" />
-        </div>
+                </div><!-- /container-fluid -->
+
+                <!-- FOOTER -->
+                <jsp:include page="fragments/_footer.jsp" />
+
+            </main>
+        </div><!-- /.d-flex.main-wrapper -->
 
         <script>
             function prefillModal(key, value, desc) {
