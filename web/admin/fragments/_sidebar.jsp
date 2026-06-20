@@ -40,7 +40,7 @@
 
         <!-- Cấu hình Hệ thống -->
         <p class="sidebar-section-label">Cấu hình Hệ thống</p>
-        <a class="sidebar-link" id="nav-config-list" href="#">
+        <a class="sidebar-link" id="nav-config-list" href="${pageContext.request.contextPath}/admin/system-config">
             <span class="material-symbols-outlined">settings</span>
             <span>Cấu hình</span>
         </a>
@@ -110,7 +110,7 @@
         'nav-user-management': '/admin/user',
         'nav-role-assignment': '/admin/role',
         'nav-security':        '/admin/security',
-        'nav-config-list':     'config-list',
+        'nav-config-list':     '/admin/system-config',
         'nav-config-edit':     'config-edit',
         'nav-audit-logs':      'audit-logs',
         'nav-audit-detail':    'audit-detail',
