@@ -38,6 +38,11 @@ public class BookCopyIncidentServiceTest {
         assertValidation(() -> service.validateResolution(" "), "Kết luận xử lý không được để trống.");
     }
 
+    @Test
+    public void validateRepairNoteRejectsBlankNote() throws Exception {
+        assertValidation(() -> service.validateRepairNote(" "), "Ghi chú sửa chữa không được để trống.");
+    }
+
     private void assertValidation(ValidationCall call, String expected) throws Exception {
         try {
             call.run();

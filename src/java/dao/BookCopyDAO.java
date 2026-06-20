@@ -191,6 +191,12 @@ public class BookCopyDAO {
                 "status = 'unavailable' AND condition = 'good'");
     }
 
+    public void restoreAfterRepair(Connection conn, int bookCopyId) throws SQLException {
+        updateIncidentState(conn, bookCopyId,
+                "SET status = 'available', condition = 'good', updatedAt = NOW()",
+                "status = 'unavailable' AND condition = 'damaged'");
+    }
+
     public void resolveCondition(Connection conn, int bookCopyId, String condition) throws SQLException {
         String sql = "UPDATE BookCopy SET condition = ?, updatedAt = NOW() "
                 + "WHERE bookCopyId = ? AND status = 'unavailable' AND condition = 'good'";

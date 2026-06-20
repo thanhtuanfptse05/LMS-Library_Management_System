@@ -122,6 +122,21 @@ public class BookCopyIncidentDAO {
         }
     }
 
+    public void appendResolutionNote(Connection conn, int incidentId, String note) throws SQLException {
+        String sql = "UPDATE BookCopyIncident SET resolution = CASE "
+                + "WHEN resolution IS NULL OR TRIM(resolution) = '' THEN ? "
+                + "ELSE resolution || E'\\n' || ? END "
+                + "WHERE incidentId = ? AND status = 'resolved'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, note);
+            ps.setString(2, note);
+            ps.setInt(3, incidentId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Sự cố không còn ở trạng thái có thể ghi nhận khôi phục.");
+            }
+        }
+    }
+
     private BookCopyIncident find(Connection conn, String sql, int id) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);

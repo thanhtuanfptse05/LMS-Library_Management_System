@@ -42,6 +42,15 @@ public class BookCopyIncidentDAOTest {
                 assertEquals("damaged", resolvedCopy.getCondition());
                 assertEquals("unavailable", resolvedCopy.getStatus());
                 assertEquals("resolved", incidentDAO.findById(conn, incidentId).getStatus());
+
+                copyDAO.restoreAfterRepair(conn, copy.getBookCopyId());
+                bookDAO.updateQuantities(conn, copy.getBookId(), 0, 1);
+                incidentDAO.appendResolutionNote(conn, incidentId, "Khôi phục lưu thông: Đã sửa gáy sách.");
+
+                BookCopy restoredCopy = copyDAO.findById(conn, copy.getBookCopyId());
+                assertEquals("good", restoredCopy.getCondition());
+                assertEquals("available", restoredCopy.getStatus());
+                assertEquals(availableBefore + 1, findAvailableQuantity(conn, copy.getBookId()));
             } finally {
                 conn.rollback();
                 conn.setAutoCommit(true);

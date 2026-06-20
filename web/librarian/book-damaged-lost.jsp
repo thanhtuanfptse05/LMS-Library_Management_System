@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <jsp:include page="fragments/_head.jsp" />
@@ -53,6 +54,9 @@
                         <td><c:choose><c:when test="${empty incident.resolution}">Chưa có kết luận</c:when><c:otherwise><c:out value="${incident.resolution}" /></c:otherwise></c:choose></td>
                         <td><div class="bm-actions">
                             <c:if test="${canEdit and incident.status == 'pending'}"><form method="post" action="${pageContext.request.contextPath}/book-management/incidents"><input type="hidden" name="action" value="investigate"><input type="hidden" name="incidentId" value="${incident.incidentId}"><button class="btn btn-sm btn-primary-custom" type="submit">Bắt đầu xác minh</button></form></c:if>
+                            <c:if test="${canEdit and incident.status == 'resolved' and incident.incidentType == 'damaged' and not fn:contains(incident.resolution, 'Khôi phục lưu thông:')}">
+                                <a class="btn btn-sm btn-primary-custom" href="${pageContext.request.contextPath}/book-management/incidents?incidentId=${incident.incidentId}">Khôi phục</a>
+                            </c:if>
                             <a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/incidents?incidentId=${incident.incidentId}">${canEdit and (incident.status == 'pending' or incident.status == 'investigating') ? 'Kết luận' : 'Chi tiết'}</a>
                         </div></td>
                     </tr></c:forEach>

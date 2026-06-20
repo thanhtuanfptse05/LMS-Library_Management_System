@@ -86,6 +86,57 @@ public class BookCopyIncidentService {
         executeIncidentAction(incidentId, actorId, "reject", resolution);
     }
 
+    public void restoreAfterRepair(int incidentId, String repairNote, int actorId)
+            throws ValidationException, DatabaseException {
+        validateRepairNote(repairNote);
+        if (incidentId <= 0) {
+            throw new ValidationException("Sự cố không hợp lệ.");
+        }
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                BookCopyIncident incident = incidentDAO.findByIdForUpdate(conn, incidentId);
+                if (incident == null) {
+                    throw new ValidationException("Sự cố không tồn tại.");
+                }
+                if (!"resolved".equals(incident.getStatus()) || !"damaged".equals(incident.getIncidentType())) {
+                    throw new ValidationException("Chỉ có thể khôi phục bản sao hỏng đã được xử lý.");
+                }
+                BookCopy copy = bookCopyDAO.findByIdForUpdate(conn, incident.getBookCopyId());
+                if (copy == null) {
+                    throw new ValidationException("Bản sao của sự cố không còn tồn tại.");
+                }
+                if (!"damaged".equals(copy.getCondition()) || !"unavailable".equals(copy.getStatus())) {
+                    throw new ValidationException("Bản sao không ở trạng thái hỏng cần khôi phục.");
+                }
+
+                bookCopyDAO.restoreAfterRepair(conn, copy.getBookCopyId());
+                bookDAO.updateQuantities(conn, copy.getBookId(), 0, 1);
+                String trimmedNote = repairNote.trim();
+                incidentDAO.appendResolutionNote(conn, incidentId, "Khôi phục lưu thông: " + trimmedNote);
+                auditLogDAO.insert(conn, actorId, "RESTORE_REPAIRED_BOOK_COPY", "BookCopy",
+                        copy.getBookCopyId(), copyAuditValue(copy, "unavailable"),
+                        "{\"barcode\":\"" + escape(copy.getBarcode())
+                        + "\",\"condition\":\"good\",\"status\":\"available\",\"note\":\""
+                        + escape(trimmedNote) + "\"}");
+                auditLogDAO.insert(conn, actorId, "UPDATE_BOOK_COPY_INCIDENT_RESOLUTION",
+                        "BookCopyIncident", incidentId, toAuditValue(incident, incident.getStatus()),
+                        "{\"restoreNote\":\"" + escape(trimmedNote) + "\"}");
+                conn.commit();
+            } catch (ValidationException | SQLException e) {
+                conn.rollback();
+                if (e instanceof ValidationException) {
+                    throw (ValidationException) e;
+                }
+                throw new DatabaseException("Không thể khôi phục bản sao sau sửa chữa.", e);
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
+        }
+    }
+
     public void validateReport(String barcode, String incidentType, String description)
             throws ValidationException {
         if (barcode == null || barcode.isBlank()) {
@@ -111,6 +162,15 @@ public class BookCopyIncidentService {
         }
         if (resolution.length() > 1000) {
             throw new ValidationException("Kết luận xử lý không được vượt quá 1000 ký tự.");
+        }
+    }
+
+    public void validateRepairNote(String repairNote) throws ValidationException {
+        if (repairNote == null || repairNote.isBlank()) {
+            throw new ValidationException("Ghi chú sửa chữa không được để trống.");
+        }
+        if (repairNote.length() > 1000) {
+            throw new ValidationException("Ghi chú sửa chữa không được vượt quá 1000 ký tự.");
         }
     }
 

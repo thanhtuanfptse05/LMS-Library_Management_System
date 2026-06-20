@@ -78,7 +78,11 @@ public class BookCopyIncidentServlet extends HttpServlet {
         try {
             int actorId = (Integer) session.getAttribute("userId");
             String action = request.getParameter("action");
-            if ("report".equals(action)) {
+            if ("restore".equals(action)) {
+                incidentService.restoreAfterRepair(parseRequiredInt(request.getParameter("incidentId")),
+                        trimToNull(request.getParameter("repairNote")), actorId);
+                session.setAttribute("successMessage", "Đã khôi phục bản sao về trạng thái sẵn sàng lưu thông.");
+            } else if ("report".equals(action)) {
                 incidentService.report(trimToNull(request.getParameter("barcode")),
                         request.getParameter("incidentType"), trimToNull(request.getParameter("description")),
                         actorId);
