@@ -10,8 +10,8 @@
 | CheckOutServlet | Xử lý Request POST giao sách, nhận Barcode và UserId. | `CheckOutServlet.java` |
 | CheckInServlet | Xử lý Request POST nhận sách và đánh giá Condition. | `CheckInServlet.java` |
 | CashPaymentServlet | Xử lý Request POST duyệt thanh toán tại quầy. | `CashPaymentServlet.java` |
-| DeskCirculationService| Điều phối logic Transaction cốt lõi: xử lý khóa/mở khóa tài khoản, đẩy hàng đợi và luân chuyển kho. | `DeskCirculationService.java` |
-| UserLockReasonDAO | Thêm, xóa và đếm (COUNT) số lý do khóa của User. | `UserLockReasonDAO.java` |
+| DeskCirculationService| Điều phối logic Transaction cốt lõi: xử lý hàng đợi và luân chuyển kho. | `DeskCirculationService.java` |
+| FineDAO | Truy vấn và cập nhật nợ phạt để chặn mượn sách. | `FineDAO.java` |
 | Various DAOs | Các truy vấn INSERT, UPDATE cho Reservation, BorrowRecord, Book, BookCopy, Payment, Fine. | (Tái sử dụng & bổ sung) |
 
 ## 3. DATA FLOW

@@ -195,11 +195,11 @@ public class DeskCirculationService {
 
             // ----------------------------------------------------------------
             // [Node 6.6 / FR-F6-01] BƯỚC 1: Xác thực nợ phạt — BR-22
-            // Kiểm tra UserLockReason trước khi làm bất cứ điều gì khác.
+            // Kiểm tra khoản phạt chưa thanh toán (unpaid fines) trước khi làm bất cứ điều gì khác.
             // ----------------------------------------------------------------
             // EARS[Condition-driven]: WHERE Check-out starts,
-            // THE LMS System SHALL FAIL FAST if reason='unpaid' exists [BR-22]
-            if (userLockReasonDAO.hasUnpaidReason(conn, userId)) {
+            // THE LMS System SHALL FAIL FAST if unpaid fine exists [BR-22]
+            if (fineDAO.hasUnpaidFines(conn, userId)) {
                 throw new IllegalStateException(
                         "Tài khoản đang nợ phạt, không thể mượn sách cho đến khi thanh toán xong.");
             }
@@ -504,18 +504,15 @@ public class DeskCirculationService {
         // Bước 4.1: (MỚI) Tự động sinh Payment ở trạng thái 'pending' liên kết với fineId
         paymentDAO.insertPayment(conn, fineId, fineAmount, "pending");
 
-        // Bước 5: INSERT UserLockReason (reason='unpaid') — đánh dấu nợ phạt
-        userLockReasonDAO.insertUnpaidReason(conn, userId);
+        // (Đã gỡ bỏ): Không còn khóa tài khoản và không ghi UserLockReason khi nợ phạt
+        // Việc chặn mượn sách sẽ được kiểm tra trực tiếp qua FineDAO.hasUnpaidFines()
 
-        // Bước 6: UPDATE [User].status = 'locked' — chặn mượn sách mới
-        userDAO.updateStatusToLocked(conn, userId);
-
-        // Bước 7: (MỚI) Ghi Audit Log cho Check-in hỏng/mất (ARCH-02)
+        // Bước 7: Ghi Audit Log cho Check-in hỏng/mất (ARCH-02)
         userDAO.insertAuditLog(librarianId, "CHECK_IN_" + condition.toUpperCase(), "BorrowRecord", borrowRecordId,
-                "status=borrowed", "status=" + condition + ", fineId=" + fineId + ", userLocked=true");
+                "status=borrowed", "status=" + condition + ", fineId=" + fineId);
 
         LOGGER.log(Level.WARNING,
-                "Check-in [BR-24]: Sách {0} — userId={1} bị khóa, bookId={2} trừ totalQuantity, đã tạo Payment pending",
+                "Check-in [BR-24]: Sách {0} — userId={1} bị phạt, bookId={2} trừ totalQuantity, đã tạo Payment pending",
                 new Object[]{condition, userId, bookId});
     }
 
@@ -656,33 +653,13 @@ public class DeskCirculationService {
             fineDAO.updateStatusToPaid(conn, fineId);
 
             // ----------------------------------------------------------------
-            // [Node 6.27 - Bước 4] DELETE UserLockReason WHERE reason='unpaid'
+            // (Đã gỡ bỏ) Bước 4 & 5: Xóa lý do khóa 'unpaid' và tự động mở khóa
+            // Tài khoản không còn bị khóa vì nợ phạt nữa nên không cần xử lý.
             // ----------------------------------------------------------------
-            userLockReasonDAO.deleteUnpaidReasonByUserId(conn, userId);
-
-            // ----------------------------------------------------------------
-            // [Node 7.28 - Bước 5] Auto-unlock gate — BR-25
-            // ----------------------------------------------------------------
-            int remainingReasons = userLockReasonDAO.countLockReasonsByUserId(conn, userId);
-
-            if (remainingReasons == 0) {
-                // Mọi lý do khóa đã được giải quyết — mở khóa tài khoản
-                userDAO.updateStatusToActive(conn, userId);
-                LOGGER.log(Level.INFO,
-                        "Cash Payment [BR-25 Auto-unlock]: userId={0} đã thanh toán xong, "
-                        + "tài khoản được kích hoạt trở lại (paymentId={1})",
-                        new Object[]{userId, paymentId});
-            } else {
-                // Còn lý do khóa khác — giữ nguyên trạng thái 'locked'
-                LOGGER.log(Level.INFO,
-                        "Cash Payment [BR-25 Keep-locked]: userId={0} thanh toán xong nhưng "
-                        + "còn {1} lý do khóa khác — tài khoản vẫn bị khóa (paymentId={2})",
-                        new Object[]{userId, remainingReasons, paymentId});
-            }
 
             // 5.1. (MỚI) Ghi Audit Log cho hành động duyệt thanh toán (ARCH-02)
             userDAO.insertAuditLog(librarianId, "CASH_PAYMENT", "Payment", paymentId,
-                    "status=pending", "status=completed, finePaid=true, userUnlocked=" + (remainingReasons == 0));
+                    "status=pending", "status=completed, finePaid=true");
 
             // ----------------------------------------------------------------
             // COMMIT: Toàn bộ 5 bước thành công

@@ -9,7 +9,7 @@ Số hóa trải nghiệm lưu thông tài nguyên. Đảm bảo luồng Self-se
 
 ## 3. Functional Requirements (EARS)
 **Luồng Đặt trước trực tuyến (Online Reservation)**
-- **FR-F5-01:** WHEN người dùng gửi yêu cầu đặt sách, THE system SHALL kiểm tra trạng thái bảng `[User]` và bảng `UserLockReason`. WHERE `status` != 'active' HOẶC tồn tại `reason` = 'unpaid', THE system SHALL từ chối và báo lỗi (BR-19).
+- **FR-F5-01:** WHEN người dùng gửi yêu cầu đặt sách, THE system SHALL kiểm tra trạng thái bảng `[User]` và bảng `Fine`. WHERE `status` != 'active' HOẶC tồn tại nợ phạt `status` = 'unpaid', THE system SHALL từ chối và báo lỗi (BR-19).
 - **FR-F5-02:** WHERE tài khoản hợp lệ, THE system SHALL đọc cấu hình và kiểm tra tổng số sách đang mượn/đặt có vượt giới hạn không. WHERE vượt giới hạn, THE system SHALL chặn giao dịch.
 - **FR-F5-03:** WHERE `Book.availableQuantity` > 0, THE system SHALL tạo `Reservation` (`queuePosition` = 0, `status` = 'readypickup'), UPDATE `Book.availableQuantity` = `availableQuantity` - 1, VÀ trigger Email "Sách sẵn sàng" (BR-20).
 - **FR-F5-04:** WHERE `Book.availableQuantity` == 0, THE system SHALL tạo `Reservation` (`queuePosition` = MAX + 1, `status` = 'pending'), VÀ thông báo vị trí hàng đợi cho người dùng (BR-20).
@@ -24,17 +24,17 @@ Số hóa trải nghiệm lưu thông tài nguyên. Đảm bảo luồng Self-se
 - **Audit:** Mọi thay đổi trạng thái đều phải truy vết được qua `updatedAt`.
 
 ## 5. Data Model
-- **[User] & UserLockReason:** Định danh và trạng thái khóa.
+- **[User] & Fine:** Định danh và trạng thái nợ phạt.
 - **Reservation:** `reservationId`, `userId`, `bookId`, `queuePosition`, `status`.
 - **BorrowRecord:** `borrowRecordId`, `endDate`, `extensionCount`, `status`.
 - **Book:** `bookId`, `availableQuantity`.
 
 ## 6. Error Handling
-- WHERE người dùng bị khóa do nợ phạt, THE system SHALL hiển thị lỗi rõ ràng thay vì lỗi 500: "Tính năng bị vô hiệu hóa. Bạn đang có khoản phạt chưa thanh toán."
+- WHERE người dùng nợ phạt, THE system SHALL hiển thị lỗi rõ ràng thay vì lỗi 500: "Tính năng bị vô hiệu hóa. Bạn đang có khoản phạt chưa thanh toán."
 - WHERE có 2 request đặt trước cùng lúc nhưng chỉ còn 1 sách, THE system SHALL cấp `queuePosition=0` cho request commit trước, request còn lại tự động fallback sang `queuePosition=1`.
 
 ## 7. Acceptance Criteria
-- [ ] User bị khóa (tồn tại `UserLockReason`='unpaid') không thể Đặt trước hay Gia hạn.
+- [ ] User nợ phạt (tồn tại khoản `Fine`='unpaid') không thể Đặt trước hay Gia hạn.
 - [ ] Sách còn tồn kho: Đặt trước thành công, sinh Reservation queue 0, kho trừ 1.
 - [ ] Sách hết tồn kho: Đặt trước thành công, sinh Reservation queue MAX + 1, kho không trừ.
 - [ ] Gia hạn sớm hơn thời gian quy định bị chặn.

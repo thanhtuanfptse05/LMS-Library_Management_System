@@ -67,28 +67,13 @@ public class AuthFilter implements Filter {
                 UserDAO userDAO = new UserDAO();
                 User user = userDAO.findByUserId(userId);
                 if (user == null || "locked".equals(user.getStatus())) {
-                    boolean isUnpaid = user != null && new UserLockReasonDAO().hasReason(userId, "unpaid");
+                    session.invalidate();
+                    isLoggedIn = false;
+                    session = null;
                     
-                    if (isUnpaid) {
-                        boolean isPaymentRoute = path.equals("/student/fines") 
-                                || path.equals("/lecturer/fines") 
-                                || path.equals("/logout") 
-                                || path.startsWith("/api/payment-status");
-
-                        if (!isPaymentRoute) {
-                            String roleToRedirect = (String) session.getAttribute("role");
-                            String redirectUrl = "STUDENT".equalsIgnoreCase(roleToRedirect) ? "/student/fines" : "/lecturer/fines";
-                            httpResponse.sendRedirect(contextPath + redirectUrl);
-                            return;
-                        }
-                    } else {
-                        session.invalidate();
-                        isLoggedIn = false;
-                        session = null;
-                        
-                        httpResponse.sendRedirect(contextPath + "/login?error=locked");
-                        return;
-                    }
+                    String errorParam = "locked";
+                    httpResponse.sendRedirect(contextPath + "/login?error=" + errorParam);
+                    return;
                 }
             }
         }

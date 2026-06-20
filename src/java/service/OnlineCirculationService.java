@@ -5,11 +5,11 @@ import dao.BookCopyDAO;
 import dao.BookDAO;
 import dao.BorrowRecordDAO;
 import dao.DocumentTempDAO;
+import dao.FineDAO;
 import dao.MemberProfileDAO;
 import dao.ReservationDAO;
 import dao.SystemConfigDAO;
 import dao.UserDAO;
-import dao.UserLockReasonDAO;
 import exception.DatabaseException;
 import exception.ValidationException;
 import java.sql.Connection;
@@ -42,20 +42,20 @@ public class OnlineCirculationService {
     private final SystemConfigDAO systemConfigDAO;
     private final AuditLogDAO auditLogDAO;
     private final UserDAO userDAO;
-    private final UserLockReasonDAO userLockReasonDAO;
     private final MemberProfileDAO memberProfileDAO;
     private final DocumentTempDAO documentTempDAO;
+    private final FineDAO fineDAO;
 
     public OnlineCirculationService() {
         this(new BookDAO(), new BookCopyDAO(), new ReservationDAO(), new BorrowRecordDAO(),
-             new SystemConfigDAO(), new AuditLogDAO(), new UserDAO(), new UserLockReasonDAO(),
-             new MemberProfileDAO(), new DocumentTempDAO());
+             new SystemConfigDAO(), new AuditLogDAO(), new UserDAO(),
+             new MemberProfileDAO(), new DocumentTempDAO(), new FineDAO());
     }
 
     public OnlineCirculationService(BookDAO bookDAO, BookCopyDAO bookCopyDAO, ReservationDAO reservationDAO,
                                    BorrowRecordDAO borrowRecordDAO, SystemConfigDAO systemConfigDAO,
-                                   AuditLogDAO auditLogDAO, UserDAO userDAO, UserLockReasonDAO userLockReasonDAO,
-                                   MemberProfileDAO memberProfileDAO, DocumentTempDAO documentTempDAO) {
+                                   AuditLogDAO auditLogDAO, UserDAO userDAO,
+                                   MemberProfileDAO memberProfileDAO, DocumentTempDAO documentTempDAO, FineDAO fineDAO) {
         this.bookDAO = bookDAO;
         this.bookCopyDAO = bookCopyDAO;
         this.reservationDAO = reservationDAO;
@@ -63,9 +63,9 @@ public class OnlineCirculationService {
         this.systemConfigDAO = systemConfigDAO;
         this.auditLogDAO = auditLogDAO;
         this.userDAO = userDAO;
-        this.userLockReasonDAO = userLockReasonDAO;
         this.memberProfileDAO = memberProfileDAO;
         this.documentTempDAO = documentTempDAO;
+        this.fineDAO = fineDAO;
     }
 
 
@@ -83,6 +83,11 @@ public class OnlineCirculationService {
                 }
                 if (!"active".equals(user.getStatus())) {
                     throw new ValidationException("Tài khoản của bạn hiện đang bị khóa hoặc ngưng hoạt động.");
+                }
+
+                // 1.1. Kiểm tra nợ phạt
+                if (fineDAO.hasUnpaidFines(conn, userId)) {
+                    throw new ValidationException("Tài khoản đang nợ phạt, không thể đặt trước sách cho đến khi thanh toán xong.");
                 }
 
                 // 2. Check BR-35: Đang mượn sách này không?
@@ -277,6 +282,11 @@ public class OnlineCirculationService {
                 }
                 if (!"active".equals(user.getStatus())) {
                     throw new ValidationException("Tài khoản của bạn hiện đang bị khóa hoặc ngưng hoạt động.");
+                }
+
+                // 1.1. Kiểm tra nợ phạt
+                if (fineDAO.hasUnpaidFines(conn, userId)) {
+                    throw new ValidationException("Tài khoản đang nợ phạt, không thể gia hạn sách cho đến khi thanh toán xong.");
                 }
 
                 // 2. Kiểm tra bản ghi mượn

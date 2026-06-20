@@ -32,8 +32,8 @@ Dưới đây là danh sách chính thức **35 Quy tắc Nghiệp vụ (Busines
 * **English:** Each user is provisioned with a pre-authorized account where the default password matches the username. Upon the first successful login, the system MUST redirect the user to the password change screen and block all other activities until a new password is set.
 
 ### BR30: Authentication & Security
-* **Mô tả:** Tiến trình tự động khóa tài khoản do nợ phạt không được phép ghi đè lên các lý do khóa nghiêm trọng hơn đang có hiệu lực (như admin ban hoặc security breach). Khi người dùng đóng hết tiền phạt, tài khoản chỉ được tự động mở khóa nếu lý do khóa hiện tại là unpaid và không còn bất kỳ điều kiện khóa nào khác. 
-* **English:** Automatic account locking due to unpaid fines must not overwrite existing severe lock reasons (such as adminban or securitybreach). Upon paying all fines, the account can only be unlocked if the lock reason is unpaid and no other active lock conditions (failed login attempts, admin ban) exist. 
+* **Mô tả:** Hệ thống KHÔNG tự động khóa tài khoản khi người dùng có nợ phạt. Nợ phạt chỉ ngăn chặn các chức năng mượn sách, gia hạn và đặt trước. Tài khoản chỉ bị khóa bởi các lý do nghiêm trọng (như admin ban, security breach, nhập sai mật khẩu).
+* **English:** The system DOES NOT automatically lock an account due to unpaid fines. Unpaid fines only block borrowing, renewing, and reserving functions. Accounts are only locked for severe reasons (such as admin ban, security breach, failed login attempts).
 
 ### BR31: Account Deactivation 
 * **Mô tả:** Tài khoản không hoạt động trong một khoảng thời gian cấu hình có thể bị tạm khóa tự động. 

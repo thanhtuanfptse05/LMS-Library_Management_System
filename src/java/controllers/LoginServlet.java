@@ -1,7 +1,6 @@
 package controllers;
 
 import dao.UserDAO;
-import dao.UserLockReasonDAO;
 import model.User;
 import service.AuthService;
 import jakarta.servlet.ServletException;
@@ -25,7 +24,6 @@ public class LoginServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(LoginServlet.class.getName());
     private final AuthService authService = new AuthService();
     private final UserDAO userDAO = new UserDAO();
-    private final UserLockReasonDAO userLockReasonDAO = new UserLockReasonDAO();
 
     /**
      * doGet — Hiển thị trang đăng nhập.
@@ -38,8 +36,6 @@ public class LoginServlet extends HttpServlet {
         if (errorParam != null) {
             if ("locked".equals(errorParam)) {
                 request.setAttribute("errorMessage", "Tài khoản của bạn đã bị khóa bởi quản trị viên.");
-            } else if ("unpaid".equals(errorParam)) {
-                request.setAttribute("errorMessage", "Tài khoản của bạn đã bị khóa do nợ tiền phạt chưa thanh toán.");
             }
         }
         request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
@@ -96,15 +92,10 @@ public class LoginServlet extends HttpServlet {
                     LOGGER.log(Level.INFO, "Auto-unlocked account for user email: {0}", email);
                 }
             } else {
-                // Kiểm tra xem có phải khóa do nợ phạt không
-                boolean isUnpaid = userLockReasonDAO.hasReason(user.getUserId(), "unpaid");
-                if (!isUnpaid) {
-                    // Tài khoản bị khóa vĩnh viễn hoặc bởi Admin (lockedUntil = null)
-                    request.setAttribute("errorMessage", "Tài khoản của bạn đã bị khóa bởi quản trị viên.");
-                    request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
-                    return;
-                }
-                // Nếu bị khóa do nợ phạt, cho phép tiếp tục luồng đăng nhập (không return)
+                // Tài khoản bị khóa vĩnh viễn hoặc bởi Admin (lockedUntil = null)
+                request.setAttribute("errorMessage", "Tài khoản của bạn đã bị khóa bởi quản trị viên.");
+                request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+                return;
             }
         }
 

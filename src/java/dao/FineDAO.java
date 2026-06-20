@@ -46,9 +46,8 @@ public class FineDAO {
      * cùng một DB Transaction để đảm bảo tính nhất quán dữ liệu — không có
      * trạng thái Payment='completed' mà Fine vẫn='unpaid' hoặc ngược lại.</p>
      *
-     * <p>Sau khi hàm này được gọi thành công, tầng Service sẽ tiếp tục gọi
-     * {@code UserLockReasonDAO#deleteUnpaidReasonByUserId} để gỡ cờ khóa tài
-     * khoản nếu khoản phạt được thanh toán (PLAN.md §3 — Atomic Block).</p>
+     * <p>Sau khi hàm này được gọi thành công, khoản phạt được đánh dấu là
+     * đã thanh toán.</p>
      *
      * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận
      * {@code Connection} từ tham số và KHÔNG tự commit. Việc commit/rollback
@@ -62,7 +61,6 @@ public class FineDAO {
      *                      cho phép Service tầng trên thực hiện rollback
      *
      * @see dao.PaymentDAO#updateStatusToCompleted(Connection, int)
-     * @see dao.UserLockReasonDAO#deleteUnpaidReasonByUserId(Connection, int)
      */
     // EARS[Event-driven]: WHEN Payment status is updated to 'completed',
     // THE LMS System SHALL UPDATE Fine.status = 'paid'
@@ -89,12 +87,8 @@ public class FineDAO {
      * (lấy từ {@code BookDAO.findById}). Bản ghi Fine được tạo với
      * {@code status = 'unpaid'} — trạng thái mặc định theo schema.</p>
      *
-     * <p>Sau khi INSERT Fine, tầng Service tiếp tục trong cùng Transaction:
-     * <ol>
-     *   <li>INSERT {@code UserLockReason(reason='unpaid')}</li>
-     *   <li>UPDATE {@code [User].status = 'locked'}</li>
-     * </ol>
-     * Ba bước này PHẢI trong cùng một DB Transaction (BR-24, CONTEXT.md §4).</p>
+     * <p>Sau khi INSERT Fine, tầng Service tiếp tục cập nhật audit log.
+     * Transaction sẽ do Service kiểm soát (BR-24, CONTEXT.md §4).</p>
      *
      * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận
      * {@code Connection} từ tham số và KHÔNG tự commit.</p>
@@ -109,8 +103,7 @@ public class FineDAO {
      * @throws SQLException nếu có lỗi thực thi câu lệnh INSERT,
      *                      cho phép Service tầng trên thực hiện rollback
      *
-     * @see dao.UserLockReasonDAO#insertUnpaidReason(Connection, int)
-     * @see dao.UserDAO#updateStatusToLocked(Connection, int)
+     *
      */
     // EARS[Event-driven]: WHEN Check-in condition IN ('damaged', 'lost'),
     // THE LMS System SHALL INSERT Fine with status='unpaid'

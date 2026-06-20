@@ -12,8 +12,8 @@ import util.DatabaseConnection;
  * UserLockReasonDAO — Data Access Object cho bảng [UserLockReason].
  *
  * <p>Bảng {@code UserLockReason} lưu các lý do khóa tài khoản của người dùng.
- * Một tài khoản có thể bị khóa bởi nhiều lý do đồng thời (ví dụ: 'unpaid', 'adminban',
- * 'securitybreach'). Việc giải quyết một lý do (ví dụ: đóng tiền phạt) chỉ xóa
+ * Một tài khoản có thể bị khóa bởi nhiều lý do đồng thời (ví dụ: 'adminban',
+ * 'securitybreach'). Việc giải quyết một lý do chỉ xóa
  * đúng bản ghi lý do đó, KHÔNG tự động mở khóa tài khoản nếu còn lý do khác.</p>
  *
  * <p>Tuân thủ nghiêm ngặt:</p>
@@ -67,8 +67,6 @@ public class UserLockReasonDAO {
      *         nếu không còn lý do nào hoặc xảy ra lỗi đọc ResultSet
      * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
      *                      cho phép Service tầng trên thực hiện rollback
-     *
-     * @see #deleteUnpaidReasonByUserId(Connection, int)
      */
     // EARS[Event-driven]: WHEN Payment is processed,
     // THE LMS System SHALL COUNT remaining UserLockReason records
@@ -93,136 +91,7 @@ public class UserLockReasonDAO {
         return 0;
     }
 
-    /**
-     * Xóa bản ghi lý do khóa 'unpaid' của một tài khoản người dùng.
-     *
-     * <p>Được gọi trong luồng Duyệt Thanh Toán Tiền Mặt (Node 5.26) sau khi
-     * cập nhật {@code Payment} và {@code Fine} thành công. Chỉ xóa đúng bản ghi
-     * có {@code reason = 'unpaid'} — KHÔNG ảnh hưởng đến các lý do khóa khác
-     * như 'adminban' hay 'securitybreach'.</p>
-     *
-     * <p><strong>Lưu ý Transaction:</strong> Hàm này nhận {@code Connection} từ
-     * tham số và KHÔNG tự commit. Việc commit/rollback được kiểm soát hoàn toàn
-     * bởi {@code DeskCirculationService} để đảm bảo tính nguyên tử của toàn bộ
-     * luồng thanh toán (BR-25).</p>
-     *
-     * @param conn   {@code Connection} được quản lý bởi tầng Service
-     *               (đã {@code setAutoCommit(false)})
-     * @param userId ID tài khoản cần gỡ lý do khóa 'unpaid'
-     * @throws SQLException nếu có lỗi thực thi câu lệnh DELETE,
-     *                      cho phép Service tầng trên thực hiện rollback
-     *
-     * @see #countLockReasonsByUserId(Connection, int)
-     */
-    // EARS[Event-driven]: WHEN Cash Payment is approved,
-    // THE LMS System SHALL DELETE UserLockReason record WHERE reason = 'unpaid'
-    // for the paying user [Node 5.26]
-    public void deleteUnpaidReasonByUserId(Connection conn, int userId) throws SQLException {
-        String sql = "DELETE FROM UserLockReason WHERE userId = ? AND reason = 'unpaid'";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Lỗi khi xóa lý do khóa 'unpaid' cho userId=" + userId, e);
-            throw e;
-        }
-    }
-
-    /**
-     * Kiểm tra nhanh xem tài khoản có đang có lý do khóa 'unpaid' hay không.
-     *
-     * <p>Được gọi là bước đầu tiên trong luồng Check-out (Node 6.6) để
-     * thực thi BR-22: nếu tài khoản đang nợ phạt, từ chối giao dịch ngay lập tức
-     * mà không cần thực thi bất kỳ thao tác ghi nào.</p>
-     *
-     * <p>Khác biệt so với {@link #countLockReasonsByUserId(Connection, int)}:
-     * hàm này chỉ kiểm tra sự tồn tại của lý do 'unpaid', không đếm tổng.
-     * Phù hợp cho gate-check nghiệp vụ cần kết quả boolean rõ ràng.</p>
-     *
-     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận
-     * {@code Connection} từ tham số để đảm bảo việc kiểm tra nằm trong cùng
-     * Transaction với các thao tác ghi tiếp theo, tránh TOCTOU race condition.</p>
-     *
-     * @param conn   {@code Connection} được quản lý bởi tầng Service
-     *               (đã {@code setAutoCommit(false)})
-     * @param userId ID tài khoản cần kiểm tra
-     * @return {@code true} nếu tồn tại bản ghi với {@code reason = 'unpaid'};
-     *         {@code false} nếu không có nợ phạt
-     * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
-     *                      cho phép Service tầng trên thực hiện rollback
-     *
-     * @see #deleteUnpaidReasonByUserId(Connection, int)
-     */
-    // EARS[Condition-driven]: WHERE Check-out request arrives,
-    // THE LMS System SHALL check IF UserLockReason WHERE userId=? AND reason='unpaid' EXISTS
-    // to enforce BR-22 [Node 6.6, FR-F6-01]
-    public boolean hasUnpaidReason(Connection conn, int userId) throws SQLException {
-        String sql = "SELECT COUNT(*) "
-                   + "FROM   UserLockReason "
-                   + "WHERE  userId = ? "
-                   + "  AND  reason = 'unpaid'";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Lỗi khi kiểm tra lý do khóa 'unpaid' cho userId=" + userId, e);
-            throw e;
-        }
-
-        return false;
-    }
-
-    /**
-     * Thêm mới bản ghi lý do khóa 'unpaid' cho một tài khoản người dùng.
-     *
-     * <p>Được gọi trong luồng Check-in sách hỏng/mất (FR-F6-04 — Node 6.17)
-     * sau khi INSERT {@code Fine} thành công. Việc INSERT lý do khóa NÀY là bằng chứng
-     * rõ ràng cho hệ thống biết tài khoản có nợ phạt chưa thanh toán (BR-24).
-     * Sau đó thủ thư gọi {@code UserDAO.updateStatusToLocked} để khóa tài khoản
-     * trong cùng Transaction.</p>
-     *
-     * <p><strong>Khác biệt so với deleteUnpaidReasonByUserId:</strong>
-     * Hàm này thêm mới lý do khóa (tạo ra nợ phạt mới),
-     * ngược lại {@link #deleteUnpaidReasonByUserId(Connection, int)}
-     * xóa lý do khóa (giải quyết nợ phạt).</p>
-     *
-     * <p><strong>Lưu ý Transaction (TRANS-01):</strong> Hàm này nhận
-     * {@code Connection} từ tham số và KHÔNG tự commit.</p>
-     *
-     * @param conn   {@code Connection} được quản lý bởi tầng Service
-     *               (đã {@code setAutoCommit(false)})
-     * @param userId ID tài khoản cần thêm lý do khóa 'unpaid'
-     * @throws SQLException nếu có lỗi thực thi câu lệnh INSERT,
-     *                      cho phép Service tầng trên thực hiện rollback
-     *
-     * @see dao.FineDAO#insertCompensationFine(Connection, int, int, java.math.BigDecimal, String)
-     * @see dao.UserDAO#updateStatusToLocked(Connection, int)
-     */
-    // EARS[Event-driven]: WHEN Fine is inserted for damaged/lost book,
-    // THE LMS System SHALL INSERT UserLockReason (reason='unpaid')
-    // WHERE userId = ? [Node 6.17, FR-F6-04, BR-24]
-    public void insertUnpaidReason(Connection conn, int userId) throws SQLException {
-        String sql = "INSERT INTO UserLockReason (userId, reason) "
-                   + "VALUES (?, 'unpaid')";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Lỗi khi INSERT lý do khóa 'unpaid' cho userId=" + userId, e);
-            throw e;
-        }
-    }
 
     /**
      * Lấy danh sách các lý do khóa của người dùng dưới dạng danh sách các chuỗi.
