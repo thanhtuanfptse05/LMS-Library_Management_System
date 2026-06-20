@@ -15,7 +15,7 @@
 * **ORM:** None (Tuyệt đối không dùng Hibernate, JPA, MyBatis)
 * **Auth:** Session-based (`HttpSession`) + `@WebFilter` + BCrypt (mã hóa mật khẩu)
 * **Testing:** JUnit 5
-* **Integrations:** SendGrid/SMTP (Email), VNPAY (Payment API), OpenAI/Gemini API (AI Service)
+* **Integrations:** SendGrid/SMTP (Email), SePay (Payment API), OpenAI/Gemini API (AI Service)
 
 ## 3. ARCHITECTURE PRINCIPLES
 * **Model-View-Controller (MVC) Pattern:**

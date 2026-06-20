@@ -21,7 +21,7 @@ User (Browser) ──[HTTP Request]──> WebFilter (Auth Check) ──> Servle
 ```
 
 ### Các phân hệ người dùng (Actors & Roles)
-1. **Student (Sinh viên):** Đăng nhập, tra cứu sách, nhận gợi ý AI, yêu cầu đặt trước/gia hạn sách, thanh toán phạt qua VNPAY.
+1. **Student (Sinh viên):** Đăng nhập, tra cứu sách, nhận gợi ý AI, yêu cầu đặt trước/gia hạn sách, thanh toán phạt qua SePay.
 2. **Lecturer (Giảng viên):** Vai trò tương tự sinh viên nhưng có hạn mức mượn và hạn trả sách cao hơn theo cấu hình.
 3. **Librarian (Thủ thư):** Thêm/sửa thông tin sách, khai báo bản sao sách và mã vạch (barcode), cập nhật tình trạng hao mòn, quét mã mượn/trả sách tại quầy.
 4. **Library Manager (Quản lý thư viện):** Cấu hình các quy tắc, chính sách thư viện (mức phạt, hạn mức mượn, số lần gia hạn tối đa), đăng thông báo hệ thống.

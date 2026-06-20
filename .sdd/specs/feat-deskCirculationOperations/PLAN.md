@@ -19,12 +19,12 @@
 `Client` -> `CheckInServlet` -> `Service.processCheckIn()` -> `conn.setAutoCommit(false)` -> UPDATE `BorrowRecord` (returned) -> UPDATE `BookCopy` (good) -> `ReservationDAO.findNextInQueue()` -> Nếu có: UPDATE `Reservation` (0, readypickup) -> Nếu không: UPDATE `Book.availableQuantity + 1`, UPDATE `BookCopy` (available) -> `conn.commit()`.
 
 **Luồng Duyệt Thanh Toán (Atomic Block):**
-`Client` -> `CashPaymentServlet` -> `Service.approveCashPayment()` -> `conn.setAutoCommit(false)` -> UPDATE `Payment` (completed) -> UPDATE `Fine` (paid) -> DELETE `UserLockReason` (unpaid) -> SELECT COUNT `UserLockReason` -> Nếu = 0: UPDATE `User` (active) -> `conn.commit()`.
+`Client` -> `CashPaymentServlet` -> `Service.approveCashPayment()` -> `conn.setAutoCommit(false)` -> UPDATE `Payment` (completed) -> UPDATE `Fine` (paid) -> `conn.commit()`.
 
 ## 4. DEPENDENCIES
 - Cần có `EmailService` để trigger bất đồng bộ thông báo cho người dùng tiếp theo trong hàng đợi khi sách có sẵn.
 - AuthFilter cấu hình chỉ cấp quyền truy cập route `/desk/*` cho role `LIBRARIAN` và `MANAGER`.
 
 ## 5. RISKS & MITIGATIONS
-- **Risk:** Cập nhật khóa/mở khóa sai trạng thái (User đang bị cấm vì bảo mật lại được mở khóa khi đóng phạt).
-- **Mitigation:** Logic mở khóa kiểm tra chặt chẽ đếm COUNT bảng `UserLockReason` trong Database Transaction (FR-F6-08 / BR-25).
+- **Risk:** Gỡ khóa nhầm tài khoản đang bị vi phạm kỷ luật hoặc bảo mật khi đóng tiền phạt.
+- **Mitigation:** Loại bỏ hoàn toàn liên kết giữa tiền phạt và trạng thái khóa tài khoản của User. Độc giả nợ phạt vẫn ở trạng thái tài khoản active nhưng bị chặn mượn sách bằng cách truy vấn trực tiếp bảng `Fine` (status='unpaid'). Việc cấm/khóa tài khoản chỉ áp dụng độc lập cho các lý do kỷ luật/bảo mật.
