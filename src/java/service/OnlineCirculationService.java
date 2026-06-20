@@ -165,13 +165,21 @@ public class OnlineCirculationService {
                 return reservationId;
 
             } catch (ValidationException | SQLException e) {
-                conn.rollback();
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    // ignore
+                }
                 if (e instanceof ValidationException) {
                     throw (ValidationException) e;
                 }
                 throw new DatabaseException("Không thể đặt trước sách do lỗi hệ thống.", e);
             } finally {
-                conn.setAutoCommit(true);
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException ex) {
+                    // ignore
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
@@ -255,13 +263,21 @@ public class OnlineCirculationService {
                 }
 
             } catch (ValidationException | SQLException e) {
-                conn.rollback();
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    // ignore
+                }
                 if (e instanceof ValidationException) {
                     throw (ValidationException) e;
                 }
                 throw new DatabaseException("Không thể hủy đơn đặt trước do lỗi hệ thống.", e);
             } finally {
-                conn.setAutoCommit(true);
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException ex) {
+                    // ignore
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
@@ -341,13 +357,21 @@ public class OnlineCirculationService {
                 conn.commit();
 
             } catch (ValidationException | SQLException e) {
-                conn.rollback();
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    // ignore
+                }
                 if (e instanceof ValidationException) {
                     throw (ValidationException) e;
                 }
                 throw new DatabaseException("Không thể gia hạn sách do lỗi hệ thống.", e);
             } finally {
-                conn.setAutoCommit(true);
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException ex) {
+                    // ignore
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
