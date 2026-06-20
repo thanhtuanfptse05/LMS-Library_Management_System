@@ -158,4 +158,62 @@ public class PaymentDAO {
 
         throw new SQLException("INSERT Payment thất bại: không lấy được generated key.");
     }
+
+    /**
+     * Cập nhật trạng thái thanh toán trực tuyến thành công (SePay Webhook).
+     *
+     * <p>Cập nhật Payment thành 'completed', ghi nhận mã giao dịch ngân hàng,
+     * phương thức thanh toán, và số tiền thực trả.</p>
+     *
+     * @param conn             Connection trong Transaction
+     * @param paymentId        ID Payment cần cập nhật
+     * @param transactionRef   Mã giao dịch ngân hàng (từ SePay webhook)
+     * @param method           Phương thức thanh toán (ví dụ: 'BankTransfer')
+     * @param paidAmount       Số tiền thực chuyển khoản
+     * @throws SQLException nếu có lỗi UPDATE
+     */
+    public void updatePaymentOnlineSuccess(Connection conn, int paymentId,
+                                           String transactionRef, String method,
+                                           java.math.BigDecimal paidAmount) throws SQLException {
+        String sql = "UPDATE Payment SET status = 'completed', transactionReference = ?, "
+                   + "paymentMethod = ?, paidAmount = ?, paidAt = NOW() "
+                   + "WHERE paymentId = ? AND status = 'pending'";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, transactionRef);
+            ps.setString(2, method);
+            ps.setBigDecimal(3, paidAmount);
+            ps.setInt(4, paymentId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật Payment online success cho paymentId=" + paymentId, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Lấy trạng thái hiện tại của một Payment (phục vụ AJAX Polling).
+     *
+     * @param conn      Connection đọc
+     * @param paymentId ID Payment cần tra cứu
+     * @return Trạng thái Payment ('pending', 'completed', 'canceled'), hoặc null nếu không tìm thấy
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public String getPaymentStatus(Connection conn, int paymentId) throws SQLException {
+        String sql = "SELECT status FROM Payment WHERE paymentId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, paymentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("status");
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi lấy trạng thái Payment cho paymentId=" + paymentId, e);
+            throw e;
+        }
+        return null;
+    }
 }
