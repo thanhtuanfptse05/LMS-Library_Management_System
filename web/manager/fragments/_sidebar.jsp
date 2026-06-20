@@ -31,7 +31,7 @@
             <span class="material-symbols-outlined">gavel</span>
             <span>Chính sách Hoạt động</span>
         </a>
-        <a class="sidebar-link" id="mgr-nav-config" href="#">
+        <a class="sidebar-link" id="mgr-nav-config" href="${pageContext.request.contextPath}/manager/system-config">
             <span class="material-symbols-outlined">settings</span>
             <span>Cấu hình Hệ thống</span>
         </a>
