@@ -1,7 +1,5 @@
 package controllers;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import dao.AuditLogDAO;
 import dao.FineDAO;
 import dao.PaymentDAO;
@@ -30,14 +28,13 @@ import util.DatabaseConnection;
  * <p>Luồng xử lý:</p>
  * <ol>
  *   <li>Xác thực Header {@code Authorization: Apikey <token>} so khớp với cấu hình DB.</li>
- *   <li>Parse JSON body: lấy {@code content} (nội dung chuyển khoản) và {@code transferAmount}.</li>
+ *   <li>Parse JSON body thủ công (không dùng Gson): lấy {@code content} và {@code transferAmount}.</li>
  *   <li>Trích xuất mã hóa đơn {@code LMSPF<paymentId>} từ {@code content} bằng Regex.</li>
- *   <li>Đối chiếu số tiền chuyển khoản với số tiền cần thanh toán.</li>
  *   <li>Nếu hợp lệ: cập nhật Payment thành 'completed', Fine thành 'paid', ghi Audit Log.</li>
  *   <li>Trả HTTP 200 OK kèm JSON xác nhận.</li>
  * </ol>
  *
- * <p>Tuân thủ: SEC-03 (PreparedStatement), TRANS-01 (Connection truyền từ Service).</p>
+ * <p>Tuân thủ: SEC-03 (PreparedStatement), TRANS-01 (Atomic Transaction).</p>
  */
 @WebServlet(name = "SePayWebhookServlet", urlPatterns = {"/api/sepay-webhook"})
 public class SePayWebhookServlet extends HttpServlet {
@@ -90,29 +87,26 @@ public class SePayWebhookServlet extends HttpServlet {
         String jsonBody = sb.toString();
         LOGGER.info("SePay Webhook body received: " + jsonBody);
 
-        JsonObject json;
-        try {
-            json = JsonParser.parseString(jsonBody).getAsJsonObject();
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "SePay Webhook: JSON body không hợp lệ", e);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"success\":false,\"message\":\"Invalid JSON\"}");
-            return;
-        }
+        // 3. Parse JSON thủ công (không dùng Gson vì không có trong allowed libs)
+        String content = extractJsonStringValue(jsonBody, "content");
+        String transferAmountStr = extractJsonNumberValue(jsonBody, "transferAmount");
+        String transactionRef = extractJsonStringValue(jsonBody, "referenceCode");
 
-        // 3. Trích xuất thông tin từ JSON SePay
-        String content = json.has("content") ? json.get("content").getAsString() : "";
         BigDecimal transferAmount = BigDecimal.ZERO;
-        if (json.has("transferAmount")) {
+        if (transferAmountStr != null && !transferAmountStr.isEmpty()) {
             try {
-                transferAmount = json.get("transferAmount").getAsBigDecimal();
-            } catch (Exception e) {
-                LOGGER.warning("SePay Webhook: transferAmount không hợp lệ");
+                transferAmount = new BigDecimal(transferAmountStr);
+            } catch (NumberFormatException e) {
+                LOGGER.warning("SePay Webhook: transferAmount không hợp lệ: " + transferAmountStr);
             }
         }
 
-        String transactionRef = json.has("referenceCode")
-                ? json.get("referenceCode").getAsString() : "";
+        if (content == null) {
+            content = "";
+        }
+        if (transactionRef == null) {
+            transactionRef = "";
+        }
 
         // 4. Tìm paymentId từ nội dung chuyển khoản
         Matcher matcher = PAYMENT_CODE_PATTERN.matcher(content);
@@ -193,5 +187,39 @@ public class SePayWebhookServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print("{\"success\":false,\"message\":\"Database connection error\"}");
         }
+    }
+
+    /**
+     * Trích xuất giá trị chuỗi (String) từ JSON body bằng regex đơn giản.
+     * Áp dụng cho JSON phẳng (flat) từ SePay webhook.
+     *
+     * @param json JSON string
+     * @param key  Key cần trích xuất
+     * @return Giá trị chuỗi hoặc null nếu không tìm thấy
+     */
+    private String extractJsonStringValue(String json, String key) {
+        Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*\"([^\"]*?)\"");
+        Matcher matcher = pattern.matcher(json);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    /**
+     * Trích xuất giá trị số (Number) từ JSON body bằng regex đơn giản.
+     * Hỗ trợ cả số nguyên và số thập phân.
+     *
+     * @param json JSON string
+     * @param key  Key cần trích xuất
+     * @return Chuỗi số hoặc null nếu không tìm thấy
+     */
+    private String extractJsonNumberValue(String json, String key) {
+        Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*([0-9.]+)");
+        Matcher matcher = pattern.matcher(json);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
     }
 }
