@@ -19,6 +19,9 @@ public class Fine {
     private Integer paymentId;
     private String paymentStatus;
 
+    // Trường bổ sung (JOIN từ BorrowRecord + Book) để hiển thị tên sách trên giao diện phạt
+    private String bookTitle;
+
     // Getters and Setters
     public int getFineId() {
         return fineId;
@@ -90,5 +93,13 @@ public class Fine {
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
     }
 }
