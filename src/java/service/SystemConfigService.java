@@ -49,10 +49,17 @@ public class SystemConfigService {
             Map.entry("GEMINI_CHATBOT_API_KEY", "STRING")
     );
 
+    /** Danh sách nhóm Manager được phép xem và sửa */
+    private static final java.util.Set<String> MANAGER_GROUPS = java.util.Set.of("library", "fine");
+
     public List<SystemConfiguration> getAll(String groupFilter, String actorRole) throws DatabaseException {
         try (Connection conn = DatabaseConnection.getConnection()) {
             if ("MANAGER".equals(actorRole)) {
-                return dao.findByGroup(conn, "library");
+                // Manager được xem nhóm library (chính sách mượn) và fine (tiền phạt)
+                List<SystemConfiguration> result = new java.util.ArrayList<>();
+                result.addAll(dao.findByGroup(conn, "library"));
+                result.addAll(dao.findByGroup(conn, "fine"));
+                return result;
             } else { // ADMIN
                 if (groupFilter != null && !groupFilter.trim().isEmpty() && !"all".equals(groupFilter)) {
                     return dao.findByGroup(conn, groupFilter);
@@ -82,7 +89,8 @@ public class SystemConfigService {
                 throw new ValidationException("Khóa cấu hình không tồn tại trong CSDL.");
             }
 
-            if ("MANAGER".equals(actorRole) && !"library".equals(current.getConfigGroup())) {
+            // Manager chỉ được sửa các nhóm thuộc MANAGER_GROUPS
+            if ("MANAGER".equals(actorRole) && !MANAGER_GROUPS.contains(current.getConfigGroup())) {
                 throw new ValidationException("Bạn không có quyền chỉnh sửa nhóm cấu hình này.");
             }
 
