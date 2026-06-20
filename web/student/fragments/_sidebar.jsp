@@ -31,7 +31,7 @@
             <span class="material-symbols-outlined">library_books</span>
             <span>Hàng mượn & chờ sách</span>
         </a>
-        <a class="sidebar-link" href="#">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/student/fines">
             <span class="material-symbols-outlined">payments</span>
             <span>Lịch sử nộp phạt</span>
         </a>
