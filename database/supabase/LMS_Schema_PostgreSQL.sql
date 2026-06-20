@@ -106,12 +106,12 @@ CREATE TABLE Admin (
 
 -- 9. Bảng SystemConfigurations
 CREATE TABLE SystemConfigurations (
-    configKey VARCHAR(255) PRIMARY KEY,
+    configKey VARCHAR(100) PRIMARY KEY,
     configValue TEXT NULL,
     description TEXT NULL,
-    configGroup VARCHAR(50) NOT NULL DEFAULT 'library',
+    configGroup VARCHAR(50) NOT NULL DEFAULT 'system',
     updatedBy INT NULL,
-    updatedAt TIMESTAMP NULL DEFAULT NOW(),
+    updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
     CONSTRAINT FK_SystemConfigurations_User FOREIGN KEY (updatedBy) REFERENCES "User"(userId)
 );
 

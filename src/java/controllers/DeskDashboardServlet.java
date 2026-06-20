@@ -97,6 +97,15 @@ public class DeskDashboardServlet extends HttpServlet {
                     List<Reservation> readyReservations = reservationDAO.findReadyPickupByUserId(conn, userId);
                     List<BorrowRecord> activeBorrows = borrowRecordDAO.findActiveBorrowRecordsByUserId(conn, userId);
                     List<Fine> unpaidFines = fineDAO.findUnpaidFinesByUserId(conn, userId);
+                    
+                    // Fetch paid fines (status = 'paid')
+                    List<Fine> allFines = fineDAO.findFinesByUserId(conn, userId);
+                    List<Fine> paidFines = new java.util.ArrayList<>();
+                    for (Fine f : allFines) {
+                        if ("paid".equals(f.getStatus())) {
+                            paidFines.add(f);
+                        }
+                    }
 
                     // Ánh xạ bookCopyId -> barcode cho các sách đang mượn
                     List<Integer> copyIds = new java.util.ArrayList<>();
@@ -113,6 +122,7 @@ public class DeskDashboardServlet extends HttpServlet {
                     request.setAttribute("activeBorrows", activeBorrows);
                     request.setAttribute("copyBarcodeMap", copyBarcodeMap);
                     request.setAttribute("unpaidFines", unpaidFines);
+                    request.setAttribute("paidFines", paidFines);
                 } else {
                     request.setAttribute("errorMessage", "Không tìm thấy độc giả có mã số: " + memberCode);
                 }

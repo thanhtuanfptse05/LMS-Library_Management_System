@@ -41,7 +41,6 @@ public class AdminSystemConfigServlet extends HttpServlet {
             request.setAttribute("configs", configs);
             request.setAttribute("actorRole", "ADMIN");
             request.setAttribute("groupFilter", groupFilter);
-            request.setAttribute("service", service);
             request.getRequestDispatcher("/admin/system-config-list.jsp").forward(request, response);
         } catch (DatabaseException e) {
             session.setAttribute("errorMessage", "Lỗi hệ thống khi tải danh sách cấu hình.");
@@ -61,34 +60,13 @@ public class AdminSystemConfigServlet extends HttpServlet {
         }
 
         Integer adminId = (Integer) session.getAttribute("userId");
-        String action = request.getParameter("action");
+        String key = request.getParameter("configKey");
+        String value = request.getParameter("configValue");
         String currentGroup = request.getParameter("groupFilter");
 
         try {
-            switch (action == null ? "update" : action) {
-                case "create": {
-                    String key = request.getParameter("configKey");
-                    String value = request.getParameter("configValue");
-                    String group = request.getParameter("configGroup");
-                    String description = request.getParameter("description");
-                    service.create(key, value, group, description, adminId, getServletContext());
-                    session.setAttribute("successMessage", "Tạo cấu hình mới thành công!");
-                    break;
-                }
-                case "delete": {
-                    String key = request.getParameter("configKey");
-                    service.delete(key, adminId, getServletContext());
-                    session.setAttribute("successMessage", "Đã xóa cấu hình '" + key + "' thành công.");
-                    break;
-                }
-                default: { // update
-                    String key = request.getParameter("configKey");
-                    String value = request.getParameter("configValue");
-                    service.update(key, value, adminId, "ADMIN", getServletContext());
-                    session.setAttribute("successMessage", "Cập nhật cấu hình thành công!");
-                    break;
-                }
-            }
+            service.update(key, value, adminId, "ADMIN", getServletContext());
+            session.setAttribute("successMessage", "Cập nhật cấu hình thành công!");
         } catch (ValidationException e) {
             session.setAttribute("errorMessage", e.getMessage());
         } catch (DatabaseException e) {

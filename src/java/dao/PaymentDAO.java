@@ -135,8 +135,10 @@ public class PaymentDAO {
      */
     public int insertPayment(Connection conn, int fineId, java.math.BigDecimal amount, String status)
             throws SQLException {
+        // paymentMethod để NULL — sẽ được cập nhật khi SePay webhook xác nhận (BankTransfer)
+        // hoặc khi thủ thư duyệt tiền mặt (Cash) thông qua approveCashPayment()
         String sql = "INSERT INTO Payment (fineId, paidAmount, paymentMethod, status, paidAt) "
-                   + "VALUES (?, ?, 'Cash', ?, NOW())";
+                   + "VALUES (?, ?, NULL, ?, NOW())";
 
         try (PreparedStatement ps = conn.prepareStatement(sql,
                 PreparedStatement.RETURN_GENERATED_KEYS)) {

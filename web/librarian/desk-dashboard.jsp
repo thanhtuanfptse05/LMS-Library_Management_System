@@ -527,8 +527,8 @@
                                                                                                 class="raised-card p-4">
                                                                                                 <h3 class="fw-bold mb-4"
                                                                                                     style="font-size:18px;color:var(--on-surface);">
-                                                                                                    Dashboard 3 Danh
-                                                                                                    Sách Giao Dịch</h3>
+                                                                                                    Dashboard Danh Sách Giao Dịch
+                                                                                                </h3>
 
                                                                                                 <div class="row g-4">
 
@@ -537,7 +537,7 @@
                                                                                                         Reservations
                                                                                                         --%>
                                                                                                         <div
-                                                                                                            class="col-12 col-md-4">
+                                                                                                            class="col-12 col-xl-3 col-md-6">
                                                                                                             <div
                                                                                                                 class="list-section-header">
                                                                                                                 <span>1.
@@ -621,7 +621,7 @@
                                                                                                             Active
                                                                                                             Borrows --%>
                                                                                                             <div
-                                                                                                                class="col-12 col-md-4">
+                                                                                                                class="col-12 col-xl-3 col-md-6">
                                                                                                                 <div
                                                                                                                     class="list-section-header">
                                                                                                                     <span>2.
@@ -699,7 +699,7 @@
                                                                                                                 Fines
                                                                                                                 --%>
                                                                                                                 <div
-                                                                                                                    class="col-12 col-md-4">
+                                                                                                                    class="col-12 col-xl-3 col-md-6">
                                                                                                                     <div
                                                                                                                         class="list-section-header">
                                                                                                                         <span>3.
@@ -810,6 +810,45 @@
                                                                                                                                                     tạo)</span>
                                                                                                                                             </c:otherwise>
                                                                                                                                         </c:choose>
+                                                                                                                                    </div>
+                                                                                                                                </c:forEach>
+                                                                                                                            </div>
+                                                                                                                        </c:otherwise>
+                                                                                                                    </c:choose>
+                                                                                                                </div>
+
+                                                                                                                <%-- LIST 4: Paid Fines --%>
+                                                                                                                <div class="col-12 col-xl-3 col-md-6">
+                                                                                                                    <div class="list-section-header">
+                                                                                                                        <span>4. Khoản phạt đã trả</span>
+                                                                                                                        <span class="badge bg-secondary rounded-pill">${fn:length(requestScope.paidFines)}</span>
+                                                                                                                    </div>
+                                                                                                                    <c:choose>
+                                                                                                                        <c:when test="${empty requestScope.paidFines}">
+                                                                                                                            <p class="text-on-surface-variant small text-center py-4">
+                                                                                                                                Chưa có khoản phạt nào đã trả.
+                                                                                                                            </p>
+                                                                                                                        </c:when>
+                                                                                                                        <c:otherwise>
+                                                                                                                            <div class="d-flex flex-column gap-2">
+                                                                                                                                <c:forEach var="fine" items="${requestScope.paidFines}">
+                                                                                                                                    <div class="p-3 border rounded-3 bg-light">
+                                                                                                                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                                                                                                                            <span class="fw-bold text-success small">Mã phạt: #${fine.fineId}</span>
+                                                                                                                                            <span class="badge bg-success" style="font-size:10px;">Đã thanh toán</span>
+                                                                                                                                        </div>
+                                                                                                                                        <p class="mb-1 small">
+                                                                                                                                            Số tiền:
+                                                                                                                                            <strong class="text-success">
+                                                                                                                                                <fmt:formatNumber value="${fine.amount}" type="currency" currencySymbol="đ" />
+                                                                                                                                            </strong>
+                                                                                                                                        </p>
+                                                                                                                                        <p class="mb-2 small">
+                                                                                                                                            Lý do: <em><c:out value="${fine.reason}" /></em>
+                                                                                                                                        </p>
+                                                                                                                                        <c:if test="${not empty fine.paymentId}">
+                                                                                                                                            <p class="mb-0 text-muted" style="font-size:11px;">Mã TT: #${fine.paymentId}</p>
+                                                                                                                                        </c:if>
                                                                                                                                     </div>
                                                                                                                                 </c:forEach>
                                                                                                                             </div>

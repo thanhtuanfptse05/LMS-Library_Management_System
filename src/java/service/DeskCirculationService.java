@@ -6,6 +6,7 @@ import dao.BorrowRecordDAO;
 import dao.FineDAO;
 import dao.PaymentDAO;
 import dao.ReservationDAO;
+import dao.SystemConfigDAO;
 import dao.UserDAO;
 import dao.UserLockReasonDAO;
 import dao.UserLookupDAO;
@@ -20,6 +21,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,8 +59,11 @@ public class DeskCirculationService {
 
     private static final Logger LOGGER = Logger.getLogger(DeskCirculationService.class.getName());
 
-    /** Số ngày mượn mặc định — nên đọc từ SystemConfigurations trong phiên bản sau */
+    /** Số ngày mượn mặc định — đọc từ SystemConfigurations nếu không có giá trị DB */
     private static final int DEFAULT_BORROW_DAYS = 14;
+
+    /** Mức phạt mặc định mỗi ngày trễ (VND) — dùng khi không đọc được từ DB */
+    private static final BigDecimal DEFAULT_FINE_RATE_PER_DAY = BigDecimal.valueOf(5_000);
 
     // =========================================================================
     // DAO Dependencies
@@ -73,6 +78,7 @@ public class DeskCirculationService {
     private final UserDAO           userDAO;
     private final PaymentDAO        paymentDAO;
     private final UserLookupDAO     userLookupDAO;
+    private final SystemConfigDAO   systemConfigDAO;
 
     /**
      * Constructor mặc định — khởi tạo tất cả DAO dependencies.
@@ -89,6 +95,7 @@ public class DeskCirculationService {
         this.userDAO           = new UserDAO();
         this.paymentDAO        = new PaymentDAO();
         this.userLookupDAO     = new UserLookupDAO();
+        this.systemConfigDAO   = new SystemConfigDAO();
     }
 
     /**
@@ -115,6 +122,7 @@ public class DeskCirculationService {
         this.userDAO           = userDAO;
         this.paymentDAO        = paymentDAO;
         this.userLookupDAO     = userLookupDAO;
+        this.systemConfigDAO   = new SystemConfigDAO();
     }
 
     // =========================================================================
@@ -432,8 +440,9 @@ public class DeskCirculationService {
                 processCheckInDamagedOrLost(conn, borrowRecordId, bookCopyId, bookId,
                                              userId, condition, librarianId);
             } else {
-                // condition == "good"
-                processCheckInGood(conn, borrowRecordId, bookCopyId, bookId, librarianId);
+                // condition == "good" — truyền endDate để tính phạt quá hạn
+                processCheckInGood(conn, borrowRecordId, bookCopyId, bookId,
+                                   userId, activeBorrowRecord.getEndDate(), librarianId);
             }
 
             // ----------------------------------------------------------------
@@ -517,27 +526,68 @@ public class DeskCirculationService {
     }
 
     /**
-     * Xử lý nhánh Check-in sách tốt — cập nhật kho và đẩy hàng chờ nếu có.
+     * Xử lý nhánh Check-in sách tốt — tính phạt quá hạn (nếu có), cập nhật kho và đẩy hàng chờ.
      *
      * <p>Tất cả các bước được thực thi trong cùng Transaction mở bởi
      * {@link #processCheckIn(int, String, String)}. Hàm này không commit.</p>
+     *
+     * <p><strong>Phạt quá hạn (FR-F6-05):</strong> Nếu thời điểm trả (NOW) sau
+     * {@code endDate} → tính số ngày trễ, tạo Fine + Payment 'pending' để độc giả
+     * thanh toán qua QR hoặc tiền mặt sau đó.</p>
      *
      * @param conn           Connection trong Transaction
      * @param borrowRecordId ID bản ghi mượn đang active
      * @param bookCopyId     ID bản sao sách vừa được trả
      * @param bookId         ID đầu sách để kiểm tra hàng chờ và cập nhật availableQuantity
+     * @param userId         ID người mượn (dùng để gán Fine nếu quá hạn)
+     * @param endDate        Hạn trả sách gốc để tính số ngày trễ
      * @param librarianId    ID Thủ thư đang thực hiện
      * @throws SQLException nếu bất kỳ bước nào thất bại (Service sẽ rollback)
      */
     private void processCheckInGood(Connection conn, int borrowRecordId,
-                                    int bookCopyId, int bookId, int librarianId) throws SQLException {
+                                    int bookCopyId, int bookId,
+                                    int userId, Timestamp endDate, int librarianId) throws SQLException {
         // Bước 1: UPDATE BorrowRecord → 'returned'
         borrowRecordDAO.updateStatusToReturned(conn, borrowRecordId);
 
-        // Bước 2: UPDATE BookCopy.condition = 'good' (ghi nhận tình trạng vật lý OK)
-        bookCopyDAO.updateStatusToAvailable(conn, bookCopyId); // tạm set 'available', sẽ override nếu có queue
+        // ----------------------------------------------------------------
+        // Bước 2: Tính phạt quá hạn (FR-F6-05)
+        // Nếu returnedAt (NOW) > endDate → tạo Fine + Payment pending
+        // ----------------------------------------------------------------
+        long overdueMillis = System.currentTimeMillis() - endDate.getTime();
+        long overdueDays   = TimeUnit.MILLISECONDS.toDays(overdueMillis);
 
-        // Bước 3: Kiểm tra hàng chờ — tìm người kế tiếp (queuePosition=1, status='pending')
+        if (overdueDays > 0) {
+            // Đọc mức phạt từ SystemConfigurations (VND/ngày)
+            BigDecimal fineRatePerDay;
+            try {
+                String rateStr = systemConfigDAO.getValue(conn, "FINE_RATE_PER_DAY", null);
+                fineRatePerDay = (rateStr != null)
+                        ? new BigDecimal(rateStr)
+                        : DEFAULT_FINE_RATE_PER_DAY;
+            } catch (Exception ex) {
+                LOGGER.log(Level.WARNING, "Không đọc được FINE_RATE_PER_DAY — dùng mặc định", ex);
+                fineRatePerDay = DEFAULT_FINE_RATE_PER_DAY;
+            }
+
+            BigDecimal fineAmount = fineRatePerDay.multiply(BigDecimal.valueOf(overdueDays));
+            String fineReason = "Trả sách trễ " + overdueDays + " ngày";
+
+            // INSERT Fine (unpaid)
+            int fineId = fineDAO.insertOverdueFine(conn, borrowRecordId, userId, fineAmount, fineReason);
+
+            // INSERT Payment (pending) — để độc giả thanh toán QR hoặc tiền mặt
+            paymentDAO.insertPayment(conn, fineId, fineAmount, "pending");
+
+            LOGGER.log(Level.WARNING,
+                    "Check-in [Overdue]: borrowRecordId={0}, userId={1} trễ {2} ngày, phạt {3} VND, fineId={4}",
+                    new Object[]{borrowRecordId, userId, overdueDays, fineAmount, fineId});
+        }
+
+        // Bước 3: UPDATE BookCopy → 'available' (tạm, sẽ override nếu có queue)
+        bookCopyDAO.updateStatusToAvailable(conn, bookCopyId);
+
+        // Bước 4: Kiểm tra hàng chờ — tìm người kế tiếp (queuePosition=1, status='pending')
         Reservation nextInQueue = reservationDAO.findNextInQueue(conn, bookId);
 
         if (nextInQueue != null) {
@@ -547,12 +597,14 @@ public class DeskCirculationService {
             reservationDAO.updateToReadyPickup(conn, nextInQueue.getReservationId(), bookCopyId);
             bookCopyDAO.updateStatusToReserved(conn, bookCopyId);
 
-            // (MỚI) Dịch chuyển các vị trí hàng đợi phía sau (2->1, 3->2...)
+            // Dịch chuyển các vị trí hàng đợi phía sau (2->1, 3->2...)
             reservationDAO.decrementQueuePositions(conn, bookId);
 
             // Ghi Audit Log cho hành động Check-in tốt có hàng chờ (ARCH-02)
             userDAO.insertAuditLog(librarianId, "CHECK_IN_GOOD_QUEUE", "BorrowRecord", borrowRecordId,
-                    "status=borrowed", "status=returned, bookCopyId=" + bookCopyId + " assigned to userId=" + nextInQueue.getUserId());
+                    "status=borrowed", "status=returned, bookCopyId=" + bookCopyId
+                    + " assigned to userId=" + nextInQueue.getUserId()
+                    + (overdueDays > 0 ? ", overdueDays=" + overdueDays : ""));
 
             // Email bất đồng bộ
             final int waitingUserId = nextInQueue.getUserId();
@@ -570,7 +622,8 @@ public class DeskCirculationService {
 
             // Ghi Audit Log cho hành động Check-in tốt không có hàng chờ (ARCH-02)
             userDAO.insertAuditLog(librarianId, "CHECK_IN_GOOD", "BorrowRecord", borrowRecordId,
-                    "status=borrowed", "status=returned, bookCopyId=" + bookCopyId + " returned to inventory");
+                    "status=borrowed", "status=returned, bookCopyId=" + bookCopyId
+                    + " returned to inventory" + (overdueDays > 0 ? ", overdueDays=" + overdueDays : ""));
 
             LOGGER.log(Level.INFO,
                     "Check-in [Good+NoQueue]: bookCopyId={0} trả về kho (available), bookId={1} +1",

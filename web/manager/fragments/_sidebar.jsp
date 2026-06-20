@@ -35,6 +35,10 @@
             <span class="material-symbols-outlined">settings</span>
             <span>Cấu hình Hệ thống</span>
         </a>
+        <a class="sidebar-link" id="mgr-nav-payment-config" href="${pageContext.request.contextPath}/manager/payment-config">
+            <span class="material-symbols-outlined">qr_code_scanner</span>
+            <span>Cấu hình Thanh toán</span>
+        </a>
         <a class="sidebar-link" id="mgr-nav-documents" href="${pageContext.request.contextPath}/manager/document-templates">
             <span class="material-symbols-outlined">description</span>
             <span>Mẫu Văn bản</span>

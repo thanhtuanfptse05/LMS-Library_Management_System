@@ -1,0 +1,9 @@
+# Không trigger build tự động trên Render khi sửa những file không liên quan đến ứng dụng
+.agents/
+.specify/
+diagram/
+.github/
+README.md
+*.md
+nbproject/
+test/

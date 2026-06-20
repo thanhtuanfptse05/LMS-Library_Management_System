@@ -202,15 +202,27 @@
             <div class="modal-body px-4 py-3">
                 <!-- QR Code Image -->
                 <div class="text-center mb-3">
-                    <div class="d-inline-block p-3 rounded-4" style="background: white; border: 2px solid var(--outline-variant); box-shadow: var(--shadow-md);">
-                        <img id="qrCodeImage" src="" alt="Mã QR thanh toán"
-                             style="width: 220px; height: 220px; border-radius: var(--radius-md);"
-                             onerror="this.style.display='none'; document.getElementById('qrError').style.display='block';">
-                        <div id="qrError" style="display:none; width:220px; height:220px;" class="d-flex align-items-center justify-content-center">
-                            <span class="text-muted">Không thể tải mã QR</span>
+                    <div class="d-inline-block p-3 rounded-4" style="background: white; border: 2px solid var(--primary-container); box-shadow: 0 12px 32px rgba(11, 87, 208, 0.15); position: relative; overflow: hidden;">
+                        <!-- Premium Glow Effect -->
+                        <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent, rgba(11, 87, 208, 0.2), transparent 40%); animation: rotateGlow 4s linear infinite; z-index: 0;"></div>
+                        
+                        <div style="position: relative; z-index: 1; background: white; padding: 8px; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);">
+                            <img id="qrCodeImage" src="" alt="Mã QR thanh toán"
+                                 style="width: 220px; height: 220px; border-radius: var(--radius-md); transition: opacity 0.3s;"
+                                 onerror="this.style.opacity='0'; document.getElementById('qrError').classList.remove('d-none'); document.getElementById('qrError').classList.add('d-flex');">
+                            <div id="qrError" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); border-radius: var(--radius-md);" class="d-none flex-column align-items-center justify-content-center">
+                                <span class="material-symbols-outlined mb-2" style="font-size: 32px; color: var(--error);">broken_image</span>
+                                <span class="text-muted fw-medium" style="font-size: 14px;">Không thể tải mã QR</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <style>
+                    @keyframes rotateGlow {
+                        100% { transform: rotate(1turn); }
+                    }
+                </style>
+
 
                 <!-- Thông tin chuyển khoản -->
                 <div class="rounded-4 p-3 mb-3" style="background: var(--surface-container-low); border: 1px solid var(--outline-variant);">
@@ -304,9 +316,11 @@ function openQrModal(btn) {
               + '&amount=' + Math.round(amount)
               + '&des=' + encodeURIComponent(transferContent);
 
+    /* Cập nhật Modal */
     document.getElementById('qrCodeImage').src = qrUrl;
-    document.getElementById('qrCodeImage').style.display = 'block';
-    document.getElementById('qrError').style.display = 'none';
+    document.getElementById('qrCodeImage').style.opacity = '1';
+    document.getElementById('qrError').classList.remove('d-flex');
+    document.getElementById('qrError').classList.add('d-none');
     document.getElementById('modalAmount').textContent =
         Number(amount).toLocaleString('vi-VN') + ' đ';
     document.getElementById('modalTransferContent').textContent = transferContent;

@@ -151,54 +151,6 @@ public class SystemConfigDAO {
         }
     }
 
-    /**
-     * Tạo mới một cấu hình. Chỉ Admin mới được gọi hàm này.
-     */
-    public void insert(Connection conn, String key, String value, String group,
-                       String description, Integer createdBy) throws SQLException {
-        String sql = "INSERT INTO SystemConfigurations "
-                + "(configKey, configValue, configGroup, description, updatedBy, updatedAt) "
-                + "VALUES (?, ?, ?, ?, ?, NOW())";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, key);
-            stmt.setString(2, value != null ? value : "");
-            stmt.setString(3, group != null ? group : "system");
-            stmt.setString(4, description);
-            if (createdBy != null) {
-                stmt.setInt(5, createdBy);
-            } else {
-                stmt.setNull(5, java.sql.Types.INTEGER);
-            }
-            stmt.executeUpdate();
-        }
-    }
-
-    /**
-     * Kiểm tra một configKey có tồn tại không.
-     */
-    public boolean exists(Connection conn, String key) throws SQLException {
-        String sql = "SELECT 1 FROM SystemConfigurations WHERE configKey = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, key);
-            try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-
-    /**
-     * Xóa một cấu hình theo key. Chỉ Admin được gọi, và chỉ xóa config không phải hệ thống cứng.
-     *
-     * @return true nếu xóa thành công, false nếu không tìm thấy row
-     */
-    public boolean delete(Connection conn, String key) throws SQLException {
-        String sql = "DELETE FROM SystemConfigurations WHERE configKey = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, key);
-            return stmt.executeUpdate() > 0;
-        }
-    }
-
     private SystemConfiguration mapRow(ResultSet rs) throws SQLException {
         SystemConfiguration config = new SystemConfiguration();
         config.setConfigKey(rs.getString("configKey"));
