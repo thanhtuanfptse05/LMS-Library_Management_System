@@ -58,3 +58,10 @@ INSERT INTO SystemConfigurations (configKey, configValue, description, configGro
 ('IMPORT_EXPIRE_DAYS', '365', 'S? ngày luu l?ch s? import', 'system', 6, NOW())
 ON CONFLICT (configKey) DO UPDATE 
 SET configValue = EXCLUDED.configValue, updatedAt = NOW();
+
+-- ------------------------------------------------------------
+-- 14. THEM CONFIG SEPAY_QR_URL
+-- ------------------------------------------------------------
+INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
+('SEPAY_QR_URL', '', 'URL anh QR chuyen khoan SePay (de trong neu chua co)', 'sepay', 6, NOW())
+ON CONFLICT (configKey) DO NOTHING;
