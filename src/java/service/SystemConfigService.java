@@ -43,7 +43,10 @@ public class SystemConfigService {
             Map.entry("SEPAY_API_KEY", "STRING"),
             Map.entry("SEPAY_ACCOUNT_NUMBER", "STRING"),
             Map.entry("SEPAY_BANK_CODE", "STRING"),
-            Map.entry("SEPAY_ACCOUNT_NAME", "STRING")
+            Map.entry("SEPAY_ACCOUNT_NAME", "STRING"),
+            Map.entry("SEPAY_QR_URL", "STRING"),
+            Map.entry("GEMINI_API_KEY", "STRING"),
+            Map.entry("GEMINI_CHATBOT_API_KEY", "STRING")
     );
 
     public List<SystemConfiguration> getAll(String groupFilter, String actorRole) throws DatabaseException {
@@ -103,6 +106,93 @@ public class SystemConfigService {
         } finally {
             closeQuietly(conn);
         }
+    }
+
+    /**
+     * Tạo mới một cấu hình. Chỉ Admin mới được gọi.
+     */
+    public void create(String key, String value, String group, String description,
+                       int actorId, ServletContext ctx) throws ValidationException, DatabaseException {
+        // Validate key format: chỉ chấp nhận chữ hoa, số, gạch dưới
+        if (key == null || !key.matches("[A-Z0-9_]+")) {
+            throw new ValidationException("Mã cấu hình chỉ được chứa chữ in hoa, số và gạch dưới (ví dụ: MY_CONFIG_KEY).");
+        }
+        if (key.length() > 100) {
+            throw new ValidationException("Mã cấu hình không được vượt quá 100 ký tự.");
+        }
+        if (group == null || group.trim().isEmpty()) {
+            throw new ValidationException("Nhóm cấu hình không được để trống.");
+        }
+
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            if (dao.exists(conn, key)) {
+                throw new ValidationException("Mã cấu hình '" + key + "' đã tồn tại trong hệ thống.");
+            }
+
+            dao.insert(conn, key, value, group.trim(), description, actorId);
+            auditLogDAO.insert(conn, actorId, "CREATE_SYSTEM_CONFIG", "SystemConfigurations", null,
+                    null, buildJson(key, value));
+
+            conn.commit();
+            SystemConfigCache.reload(ctx);
+
+        } catch (ValidationException e) {
+            rollbackQuietly(conn);
+            throw e;
+        } catch (Exception e) {
+            rollbackQuietly(conn);
+            throw new DatabaseException("Lỗi hệ thống khi tạo cấu hình mới", e);
+        } finally {
+            closeQuietly(conn);
+        }
+    }
+
+    /**
+     * Xóa cấu hình. Chỉ Admin được gọi. Cấu hình cứng (có trong KEY_TYPES) không được xóa.
+     */
+    public void delete(String key, int actorId, ServletContext ctx) throws ValidationException, DatabaseException {
+        if (KEY_TYPES.containsKey(key)) {
+            throw new ValidationException("Cấu hình '" + key + "' là cấu hình hệ thống cố định, không được phép xóa.");
+        }
+
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            SystemConfiguration current = dao.findByKey(conn, key);
+            if (current == null) {
+                throw new ValidationException("Không tìm thấy cấu hình cần xóa.");
+            }
+
+            String oldJson = buildJson(key, current.getConfigValue());
+            dao.delete(conn, key);
+            auditLogDAO.insert(conn, actorId, "DELETE_SYSTEM_CONFIG", "SystemConfigurations", null, oldJson, null);
+
+            conn.commit();
+            SystemConfigCache.reload(ctx);
+
+        } catch (ValidationException e) {
+            rollbackQuietly(conn);
+            throw e;
+        } catch (Exception e) {
+            rollbackQuietly(conn);
+            throw new DatabaseException("Lỗi hệ thống khi xóa cấu hình", e);
+        } finally {
+            closeQuietly(conn);
+        }
+    }
+
+    /**
+     * Kiểm tra một key có phải config cứng không (không được xóa).
+     * Dùng ở JSP để ẩn/hiện nút Xóa.
+     */
+    public boolean isHardConfig(String key) {
+        return KEY_TYPES.containsKey(key);
     }
 
     public void validateValue(String key, String value) throws ValidationException {
