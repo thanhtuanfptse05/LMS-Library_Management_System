@@ -214,4 +214,127 @@ public class FineDAO {
         }
         return BigDecimal.ZERO;
     }
+
+    /**
+     * Kiểm tra xem người dùng có bất kỳ khoản phạt chưa thanh toán nào không.
+     *
+     * <p>Sử dụng trong luồng Check-out (BR-22) và Đặt trước sách (Reservation)
+     * để chặn độc giả nợ phạt thực hiện giao dịch mới. Thay thế hoàn toàn
+     * cơ chế kiểm tra qua bảng {@code UserLockReason}.</p>
+     *
+     * @param conn   Connection trong Transaction
+     * @param userId ID người dùng cần kiểm tra
+     * @return {@code true} nếu tồn tại ít nhất một Fine có status='unpaid'
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public boolean hasUnpaidFines(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT 1 FROM Fine WHERE userId = ? AND status = 'unpaid' LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra Fine unpaid cho userId=" + userId, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Lấy toàn bộ danh sách khoản phạt của một người dùng (cả paid và unpaid),
+     * kèm theo tên sách và thông tin Payment pending (nếu có).
+     *
+     * <p>Kết quả JOIN qua BorrowRecord -> Book để lấy bookTitle hiển thị trên
+     * giao diện quản lý phạt của độc giả (student/fines.jsp, lecturer/fines.jsp).</p>
+     *
+     * @param conn   Connection đọc
+     * @param userId ID người dùng
+     * @return Danh sách Fine kèm bookTitle và paymentId/paymentStatus
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public List<Fine> findFinesByUserId(Connection conn, int userId) throws SQLException {
+        List<Fine> list = new ArrayList<>();
+        String sql = "SELECT f.fineId, f.borrowRecordId, f.userId, f.amount, f.reason, "
+                   + "       f.status, f.createdAt, "
+                   + "       b.title AS bookTitle, "
+                   + "       p.paymentId, p.status AS paymentStatus "
+                   + "FROM   Fine f "
+                   + "JOIN   BorrowRecord br ON f.borrowRecordId = br.borrowRecordId "
+                   + "JOIN   Book b ON br.bookId = b.bookId "
+                   + "LEFT JOIN Payment p ON f.fineId = p.fineId AND p.status = 'pending' "
+                   + "WHERE  f.userId = ? "
+                   + "ORDER BY f.createdAt DESC";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Fine fine = new Fine();
+                    fine.setFineId(rs.getInt("fineId"));
+                    fine.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    fine.setUserId(rs.getInt("userId"));
+                    fine.setAmount(rs.getBigDecimal("amount"));
+                    fine.setReason(rs.getString("reason"));
+                    fine.setStatus(rs.getString("status"));
+                    fine.setCreatedAt(rs.getTimestamp("createdAt"));
+                    fine.setBookTitle(rs.getString("bookTitle"));
+
+                    int rawPaymentId = rs.getInt("paymentId");
+                    fine.setPaymentId(rs.wasNull() ? null : rawPaymentId);
+                    fine.setPaymentStatus(rs.getString("paymentStatus"));
+
+                    list.add(fine);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách Fine cho userId=" + userId, e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
+     * Tạo mới bản ghi tiền phạt quá hạn (overdue).
+     *
+     * <p>Được gọi trong luồng Check-in khi sách được trả muộn. Số tiền phạt
+     * được tính bởi Service dựa trên số ngày trễ hạn nhân với mức phạt/ngày
+     * từ cấu hình {@code FINE_RATE_PER_DAY}.</p>
+     *
+     * @param conn           Connection trong Transaction
+     * @param borrowRecordId ID bản ghi mượn liên kết
+     * @param userId         ID người mượn phải chịu phạt
+     * @param amount         Số tiền phạt quá hạn
+     * @param reason         Mô tả lý do (ví dụ: "Trả trễ 5 ngày")
+     * @return ID của Fine vừa tạo
+     * @throws SQLException nếu có lỗi INSERT
+     */
+    public int insertOverdueFine(Connection conn, int borrowRecordId, int userId,
+                                 BigDecimal amount, String reason) throws SQLException {
+        String sql = "INSERT INTO Fine (borrowRecordId, userId, amount, reason, status) "
+                   + "VALUES (?, ?, ?, ?, 'unpaid')";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql,
+                PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, borrowRecordId);
+            ps.setInt(2, userId);
+            ps.setBigDecimal(3, amount);
+            ps.setString(4, reason);
+            ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi INSERT Fine quá hạn cho borrowRecordId=" + borrowRecordId
+                    + ", userId=" + userId, e);
+            throw e;
+        }
+
+        throw new SQLException(
+                "INSERT Fine quá hạn thất bại: không lấy được generated key. "
+                + "borrowRecordId=" + borrowRecordId + ", userId=" + userId);
+    }
 }
