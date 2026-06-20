@@ -96,13 +96,15 @@ public class LoginServlet extends HttpServlet {
                     LOGGER.log(Level.INFO, "Auto-unlocked account for user email: {0}", email);
                 }
             } else {
-                // Tài khoản bị khóa vĩnh viễn hoặc bởi Admin (lockedUntil = null)
-                String errorMsg = userLockReasonDAO.hasReason(user.getUserId(), "unpaid")
-                        ? "Tài khoản của bạn đã bị khóa do nợ tiền phạt chưa thanh toán."
-                        : "Tài khoản của bạn đã bị khóa bởi quản trị viên.";
-                request.setAttribute("errorMessage", errorMsg);
-                request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
-                return;
+                // Kiểm tra xem có phải khóa do nợ phạt không
+                boolean isUnpaid = userLockReasonDAO.hasReason(user.getUserId(), "unpaid");
+                if (!isUnpaid) {
+                    // Tài khoản bị khóa vĩnh viễn hoặc bởi Admin (lockedUntil = null)
+                    request.setAttribute("errorMessage", "Tài khoản của bạn đã bị khóa bởi quản trị viên.");
+                    request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+                    return;
+                }
+                // Nếu bị khóa do nợ phạt, cho phép tiếp tục luồng đăng nhập (không return)
             }
         }
 
