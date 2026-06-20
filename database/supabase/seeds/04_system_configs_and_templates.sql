@@ -14,7 +14,25 @@ INSERT INTO SystemConfigurations (configKey, configValue, description, configGro
 ('RENEW_DURATION_DAYS', '14', 'Số ngày được gia hạn thêm cho một lượt mượn', 'library', 6, NOW());
 
 -- ------------------------------------------------------------
--- 10. INSERT DOCUMENT TEMPLATES (F5)
+-- 10. INSERT FINE & PAYMENT CONFIGURATIONS
+-- ------------------------------------------------------------
+INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
+('FINE_RATE_PER_DAY', '5000', 'Mức phạt mỗi ngày trả sách trễ hạn (VND)', 'fine', 6, NOW()),
+('DAMAGED_FINE_MULTIPLIER', '1.5', 'Hệ số nhân giá sách để tính phạt đền bù khi sách bị hỏng', 'fine', 6, NOW()),
+('LOST_FINE_MULTIPLIER', '2.0', 'Hệ số nhân giá sách để tính phạt đền bù khi mất sách', 'fine', 6, NOW()),
+('DEFAULT_BOOK_PRICE', '500000', 'Giá mặc định của sách khi không có giá gốc (VND)', 'fine', 6, NOW());
+
+-- ------------------------------------------------------------
+-- 11. INSERT SEPAY INTEGRATION CONFIGURATIONS
+-- ------------------------------------------------------------
+INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
+('SEPAY_API_KEY', 'mock_apikey_sepay_12345', 'API Key xác thực Webhook từ SePay', 'sepay', 6, NOW()),
+('SEPAY_ACCOUNT_NUMBER', '1234567890', 'Số tài khoản ngân hàng nhận tiền phạt', 'sepay', 6, NOW()),
+('SEPAY_BANK_CODE', 'MBBank', 'Mã ngân hàng nhận tiền phạt (dùng cho VietQR)', 'sepay', 6, NOW()),
+('SEPAY_ACCOUNT_NAME', 'THU VIEN TRUONG DAI HOC', 'Tên chủ tài khoản ngân hàng nhận tiền', 'sepay', 6, NOW());
+
+-- ------------------------------------------------------------
+-- 12. INSERT DOCUMENT TEMPLATES (F5)
 -- ------------------------------------------------------------
 INSERT INTO DocumentTemp (tempId, tempName, subject, bodyContent, managerId, createdAt) VALUES
 (1, 'RESERVATION_READY', 'Sách đặt trước đã sẵn sàng nhận - Thư viện LMS', 'Chào {{userName}},<br/><br/>Cuốn sách <b>{{bookTitle}}</b> mà bạn đặt trước hiện đã có sẵn bản sao tại thư viện.<br/>Vui lòng đến quầy thủ thư để nhận sách trong vòng 3 ngày kể từ ngày nhận được thư này.<br/>Sau thời gian này, yêu cầu đặt trước của bạn sẽ tự động bị hủy để nhường cho người tiếp theo.<br/><br/>Trân trọng,<br/>Ban quản lý Thư viện LMS.', 6, NOW());
