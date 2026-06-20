@@ -26,7 +26,7 @@ INSERT INTO SystemConfigurations (configKey, configValue, description, configGro
 -- 11. INSERT SEPAY INTEGRATION CONFIGURATIONS
 -- ------------------------------------------------------------
 INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
-('SEPAY_API_KEY', 'spsk_live_DXEB1eDLNX5VM7inLYKRDLzAL3KQQL2f', 'API Key xác thực Webhook từ SePay', 'sepay', 6, NOW()),
+('SEPAY_API_KEY', 'mock_apikey_sepay_12345', 'API Key xác thực Webhook từ SePay', 'sepay', 6, NOW()),
 ('SEPAY_ACCOUNT_NUMBER', '1234567890', 'Số tài khoản ngân hàng nhận tiền phạt', 'sepay', 6, NOW()),
 ('SEPAY_BANK_CODE', 'MBBank', 'Mã ngân hàng nhận tiền phạt (dùng cho VietQR)', 'sepay', 6, NOW()),
 ('SEPAY_ACCOUNT_NAME', 'THU VIEN TRUONG DAI HOC', 'Tên chủ tài khoản ngân hàng nhận tiền', 'sepay', 6, NOW());
