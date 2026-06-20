@@ -109,7 +109,10 @@
                                                         <td class="pe-4 text-end">
                                                             <button class="btn-icon" title="Chỉnh sửa"
                                                                     data-bs-toggle="modal" data-bs-target="#editModal"
-                                                                    onclick="prefillModal('<c:out value="${cfg.configKey}"/>', '<c:out value="${cfg.configValue}"/>', '<c:out value="${cfg.description}"/>')">
+                                                                    data-key="<c:out value='${cfg.configKey}'/>"
+                                                                    data-val="<c:out value='${cfg.configValue}'/>"
+                                                                    data-desc="<c:out value='${cfg.description}'/>"
+                                                                    onclick="prefillModal(this)">
                                                                 <span class="material-symbols-outlined text-primary-custom" style="font-size: 19px;">edit</span>
                                                             </button>
                                                         </td>
@@ -211,7 +214,10 @@
         </div><!-- /.d-flex.main-wrapper -->
 
         <script>
-            function prefillModal(key, value, desc) {
+            function prefillModal(btn) {
+                var key = btn.getAttribute('data-key');
+                var value = btn.getAttribute('data-val');
+                var desc = btn.getAttribute('data-desc');
                 document.getElementById('modalConfigKey').value = key;
                 document.getElementById('modalConfigValue').value = value;
                 document.getElementById('modalConfigDesc').textContent = desc;
