@@ -323,7 +323,10 @@ function openQrModal(btn) {
               + '&bank=' + bank
               + '&amount=' + Math.round(amount)
               + '&des=' + encodeURIComponent(transferContent)
-              + '&template=compact';
+              + '&template=compact'
+              + '&showinfo=true'
+              + '&fullacc=true'
+              + '&holder=' + encodeURIComponent('${sepayAccountName}');
 
     /* Cập nhật Modal */
     document.getElementById('qrCodeImage').src = qrUrl;
