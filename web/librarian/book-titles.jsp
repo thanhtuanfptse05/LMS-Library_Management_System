@@ -43,7 +43,7 @@
             <form class="bm-filter-card bm-title-filter mb-4" method="get" action="${pageContext.request.contextPath}/book-management/titles">
                 <c:if test="${not empty selectedTagId}"><input type="hidden" name="tagId" value="${selectedTagId}"></c:if>
                 <div class="row g-2">
-                    <div class="col-xl-5 col-lg-6 bm-search">
+                    <div class="col-xl-4 col-lg-6 bm-search">
                         <span class="material-symbols-outlined">search</span>
                         <input class="form-control" name="q" value="<c:out value="${q}" />"
                                placeholder="Tìm theo tên sách, ISBN hoặc tác giả">
@@ -66,12 +66,23 @@
                             <option value="unavailable" ${selectedStatus == 'unavailable' ? 'selected' : ''}>Ngừng sử dụng</option>
                         </select>
                     </div>
-                    <div class="col-xl-3 col-lg-6">
+                    <div class="col-xl-2 col-md-4">
+                        <select class="form-select" name="sort" aria-label="Sắp xếp đầu sách">
+                            <option value="updated_desc" ${selectedSort == 'updated_desc' ? 'selected' : ''}>Mới cập nhật</option>
+                            <option value="title_asc" ${selectedSort == 'title_asc' ? 'selected' : ''}>Tên sách A-Z</option>
+                            <option value="title_desc" ${selectedSort == 'title_desc' ? 'selected' : ''}>Tên sách Z-A</option>
+                            <option value="available_desc" ${selectedSort == 'available_desc' ? 'selected' : ''}>Sẵn sàng nhiều nhất</option>
+                            <option value="available_asc" ${selectedSort == 'available_asc' ? 'selected' : ''}>Sẵn sàng ít nhất</option>
+                            <option value="published_desc" ${selectedSort == 'published_desc' ? 'selected' : ''}>Xuất bản mới nhất</option>
+                            <option value="published_asc" ${selectedSort == 'published_asc' ? 'selected' : ''}>Xuất bản cũ nhất</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-2 col-lg-6">
                         <div class="bm-filter-actions bm-filter-actions--compact">
-                            <button class="btn bm-filter-button ${not empty q or not empty selectedCategoryId or not empty selectedTagId or not empty selectedStatus ? 'bm-filter-button--active' : ''}" type="submit">
+                            <button class="btn bm-filter-button ${not empty q or not empty selectedCategoryId or not empty selectedTagId or not empty selectedStatus or selectedSort != 'updated_desc' ? 'bm-filter-button--active' : ''}" type="submit">
                                 <span class="material-symbols-outlined">filter_alt</span>
                                 Lọc
-                                <c:if test="${not empty q or not empty selectedCategoryId or not empty selectedTagId or not empty selectedStatus}">
+                                <c:if test="${not empty q or not empty selectedCategoryId or not empty selectedTagId or not empty selectedStatus or selectedSort != 'updated_desc'}">
                                     <span class="bm-filter-badge">Đang áp dụng</span>
                                 </c:if>
                             </button>

@@ -25,14 +25,18 @@ public class BookDAO {
 
     public List<Book> search(String keyword, Integer categoryId, Integer tagId, String status,
             int offset, int pageSize) throws SQLException {
+        return search(keyword, categoryId, tagId, status, "updated_desc", offset, pageSize);
+    }
+
+    public List<Book> search(String keyword, Integer categoryId, Integer tagId, String status,
+            String sort, int offset, int pageSize) throws SQLException {
         StringBuilder sql = new StringBuilder(
                 "SELECT b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, b.price, b.imagePath, "
                 + "b.totalQuantity, b.availableQuantity, b.status, b.createdAt, b.updatedAt "
                 + "FROM Book b WHERE 1=1 ");
         List<Object> parameters = new ArrayList<>();
         appendFilters(sql, parameters, keyword, categoryId, tagId, status);
-        sql.append(" ORDER BY COALESCE(b.updatedAt, b.createdAt) DESC, b.bookId DESC "
-                + "LIMIT ? OFFSET ?");
+        sql.append(" ORDER BY ").append(resolveSortClause(sort)).append(" LIMIT ? OFFSET ?");
         parameters.add(pageSize);
         parameters.add(offset);
 
@@ -47,6 +51,26 @@ public class BookDAO {
             }
             loadRelations(conn, books);
             return books;
+        }
+    }
+
+    private String resolveSortClause(String sort) {
+        switch (sort == null ? "" : sort) {
+            case "title_asc":
+                return "LOWER(b.title) ASC, b.bookId DESC";
+            case "title_desc":
+                return "LOWER(b.title) DESC, b.bookId DESC";
+            case "available_desc":
+                return "b.availableQuantity DESC, LOWER(b.title) ASC, b.bookId DESC";
+            case "available_asc":
+                return "b.availableQuantity ASC, LOWER(b.title) ASC, b.bookId DESC";
+            case "published_desc":
+                return "b.publicationYear DESC NULLS LAST, LOWER(b.title) ASC, b.bookId DESC";
+            case "published_asc":
+                return "b.publicationYear ASC NULLS LAST, LOWER(b.title) ASC, b.bookId DESC";
+            case "updated_desc":
+            default:
+                return "COALESCE(b.updatedAt, b.createdAt) DESC, b.bookId DESC";
         }
     }
 

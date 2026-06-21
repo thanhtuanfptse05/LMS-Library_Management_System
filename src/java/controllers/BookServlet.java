@@ -49,6 +49,7 @@ public class BookServlet extends HttpServlet {
         Integer categoryId = parseOptionalInt(request.getParameter("categoryId"));
         Integer tagId = parseOptionalInt(request.getParameter("tagId"));
         String status = normalizeStatus(request.getParameter("status"));
+        String sort = normalizeSort(request.getParameter("sort"));
         int page = Math.max(1, parseInt(request.getParameter("page"), 1));
 
         try {
@@ -56,7 +57,7 @@ public class BookServlet extends HttpServlet {
             int totalPages = Math.max(1, (int) Math.ceil(totalItems / (double) PAGE_SIZE));
             page = Math.min(page, totalPages);
 
-            request.setAttribute("books", bookDAO.search(keyword, categoryId, tagId, status,
+            request.setAttribute("books", bookDAO.search(keyword, categoryId, tagId, status, sort,
                     (page - 1) * PAGE_SIZE, PAGE_SIZE));
             request.setAttribute("summary", bookDAO.getSummary());
             request.setAttribute("categories", categoryDAO.findAll());
@@ -66,6 +67,7 @@ public class BookServlet extends HttpServlet {
             request.setAttribute("selectedCategoryId", categoryId);
             request.setAttribute("selectedTagId", tagId);
             request.setAttribute("selectedStatus", status);
+            request.setAttribute("selectedSort", sort);
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalItems", totalItems);
@@ -171,6 +173,13 @@ public class BookServlet extends HttpServlet {
     private String normalizeStatus(String status) {
         return "available".equals(status) || "unavailable".equals(status) || "noCopies".equals(status)
                 ? status : "";
+    }
+
+    private String normalizeSort(String sort) {
+        return "title_asc".equals(sort) || "title_desc".equals(sort)
+                || "available_desc".equals(sort) || "available_asc".equals(sort)
+                || "published_desc".equals(sort) || "published_asc".equals(sort)
+                ? sort : "updated_desc";
     }
 
     private String normalizeBookStatus(String status) {
