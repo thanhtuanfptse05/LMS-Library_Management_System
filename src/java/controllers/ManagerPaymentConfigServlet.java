@@ -58,8 +58,11 @@ public class ManagerPaymentConfigServlet extends HttpServlet {
         }
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Lấy toàn bộ cấu hình nhóm 'sepay'
-            List<SystemConfiguration> sepayConfigs = configDAO.findByGroup(conn, "sepay");
+            // Lấy các cấu hình SEPAY từ nhóm 'library' (hoặc system nếu admin đã chuyển)
+            List<SystemConfiguration> allConfigs = configDAO.findAll(conn);
+            List<SystemConfiguration> sepayConfigs = allConfigs.stream()
+                    .filter(c -> c.getConfigKey().startsWith("SEPAY_"))
+                    .toList();
             request.setAttribute("sepayConfigs", sepayConfigs);
 
             // Tiện ích: lấy từng key thường dùng để hiển thị preview

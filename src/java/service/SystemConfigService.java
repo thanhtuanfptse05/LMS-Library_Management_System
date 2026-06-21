@@ -124,7 +124,7 @@ public class SystemConfigService {
                 throw new ValidationException("Khóa cấu hình không tồn tại trong CSDL.");
             }
 
-            if ("MANAGER".equals(actorRole) && !"library".equals(current.getConfigGroup())) {
+            if ("MANAGER".equals(actorRole) && !"library".equals(current.getConfigGroup()) && !key.startsWith("SEPAY_")) {
                 throw new ValidationException("Bạn không có quyền chỉnh sửa nhóm cấu hình này.");
             }
 
