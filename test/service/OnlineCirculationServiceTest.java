@@ -9,7 +9,7 @@ import dao.MemberProfileDAO;
 import dao.ReservationDAO;
 import dao.SystemConfigDAO;
 import dao.UserDAO;
-import dao.UserLockReasonDAO;
+import dao.FineDAO;
 import exception.ValidationException;
 import exception.DatabaseException;
 import java.sql.Connection;
@@ -46,7 +46,7 @@ public class OnlineCirculationServiceTest {
     private MockAuditLogDAO mockAuditLogDAO;
     private MockMemberProfileDAO mockMemberProfileDAO;
     private MockDocumentTempDAO mockDocumentTempDAO;
-    private MockUserLockReasonDAO mockUserLockReasonDAO;
+    private MockFineDAO mockFineDAO;
 
     @Before
     public void setUp() {
@@ -59,12 +59,12 @@ public class OnlineCirculationServiceTest {
         mockAuditLogDAO = new MockAuditLogDAO();
         mockMemberProfileDAO = new MockMemberProfileDAO();
         mockDocumentTempDAO = new MockDocumentTempDAO();
-        mockUserLockReasonDAO = new MockUserLockReasonDAO();
+        mockFineDAO = new MockFineDAO();
 
         service = new OnlineCirculationService(
                 mockBookDAO, mockBookCopyDAO, mockReservationDAO, mockBorrowRecordDAO,
-                mockSystemConfigDAO, mockAuditLogDAO, mockUserDAO, mockUserLockReasonDAO,
-                mockMemberProfileDAO, mockDocumentTempDAO
+                mockSystemConfigDAO, mockAuditLogDAO, mockUserDAO,
+                mockMemberProfileDAO, mockDocumentTempDAO, mockFineDAO
         );
 
         // Tạo Mock Connection bằng Proxy để tránh kết nối đến database Supabase thật
@@ -891,7 +891,7 @@ public class OnlineCirculationServiceTest {
         }
     }
 
-    private static class MockUserLockReasonDAO extends UserLockReasonDAO {
+    private static class MockFineDAO extends FineDAO {
         // Trống vì không được gọi trong OnlineCirculationService
     }
 }

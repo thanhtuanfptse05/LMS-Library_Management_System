@@ -52,8 +52,8 @@ public class AiChatbotService {
 
         String systemPrompt = "Bạn là bộ phân loại ý định (Intent Classifier) cho trợ lý ảo thư viện.\n"
                 + "Hãy phân loại câu hỏi của người dùng vào một trong 3 nhóm duy nhất:\n"
-                + "- Rules: Nếu hỏi về nội quy, giờ mở cửa, quy tắc phạt, mượn trả, gia hạn sách.\n"
-                + "- Books: Nếu hỏi về tìm sách, tra cứu sách, tìm tác giả, gợi ý đọc sách, cuốn sách cụ thể.\n"
+                + "- Rules: Nếu hỏi về mức phạt (tiền phạt, trễ hạn, quá hạn), nội quy, giờ mở cửa, chính sách mượn/trả/gia hạn sách.\n"
+                + "- Books: CHỈ KHI người dùng muốn TÌM SÁCH để đọc, tra cứu sách, tìm tác giả, hoặc xin gợi ý sách.\n"
                 + "- Irrelevant: Nếu là chào hỏi xã giao, đùa giỡn hoặc các câu hỏi linh tinh không liên quan đến thư viện/sách.\n\n"
                 + "Quy tắc: BẮT BUỘC chỉ trả về đúng 1 từ tiếng Anh duy nhất: 'Rules', 'Books', hoặc 'Irrelevant'. "
                 + "Không trả về thêm bất kỳ từ nào khác.";
@@ -87,9 +87,7 @@ public class AiChatbotService {
             generationConfig.addProperty("maxOutputTokens", 10);
             generationConfig.addProperty("temperature", 0.1);
             
-            JsonObject thinkingConfig = new JsonObject();
-            thinkingConfig.addProperty("thinkingBudget", 0);
-            generationConfig.add("thinkingConfig", thinkingConfig);
+
             
             root.add("generationConfig", generationConfig);
 
@@ -105,11 +103,11 @@ public class AiChatbotService {
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "[AI-SVC] Lỗi phân loại intent bằng AI, fallback dựa trên từ khóa: " + e.getMessage());
             // Fallback dựa trên từ khoá tiếng Việt thông thường
-            if (lowerMsg.contains("sách") || lowerMsg.contains("tác giả") || lowerMsg.contains("cuốn") || lowerMsg.contains("truyện") || lowerMsg.contains("tìm")) {
-                return "Books";
-            }
-            if (lowerMsg.contains("nội quy") || lowerMsg.contains("quy định") || lowerMsg.contains("phạt") || lowerMsg.contains("mượn") || lowerMsg.contains("trả") || lowerMsg.contains("giờ")) {
+            if (lowerMsg.contains("phạt") || lowerMsg.contains("nội quy") || lowerMsg.contains("quy định") || lowerMsg.contains("giờ") || lowerMsg.contains("bao nhiêu tiền") || lowerMsg.contains("quá hạn") || lowerMsg.contains("gia hạn")) {
                 return "Rules";
+            }
+            if (lowerMsg.contains("sách") || lowerMsg.contains("tác giả") || lowerMsg.contains("cuốn") || lowerMsg.contains("truyện") || lowerMsg.contains("tìm") || lowerMsg.contains("mượn") || lowerMsg.contains("trả")) {
+                return "Books";
             }
             return "Irrelevant";
         }
@@ -245,9 +243,7 @@ public class AiChatbotService {
             JsonObject generationConfig = new JsonObject();
             generationConfig.addProperty("temperature", 0.7);
             
-            JsonObject thinkingConfig = new JsonObject();
-            thinkingConfig.addProperty("thinkingBudget", 0);
-            generationConfig.add("thinkingConfig", thinkingConfig);
+
             root.add("generationConfig", generationConfig);
 
             String jsonPayload = new Gson().toJson(root);

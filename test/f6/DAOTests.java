@@ -178,15 +178,11 @@ public class DAOTests {
         UserLockReasonDAO dao = new UserLockReasonDAO();
         if (expectNullOrError) {
             int uid = "invalidInput".equals(methodToCall) ? -1 : 0;
-            assertFalse(dao.hasUnpaidReason(conn, uid));
+            assertFalse(dao.hasReason(uid, "unpaid"));
             assertEquals(0, dao.countLockReasonsByUserId(conn, uid));
         } else {
-            assertFalse(dao.hasUnpaidReason(conn, testUserId));
-            dao.insertUnpaidReason(conn, testUserId);
-            assertTrue(dao.hasUnpaidReason(conn, testUserId));
-            assertEquals(1, dao.countLockReasonsByUserId(conn, testUserId));
-            dao.deleteUnpaidReasonByUserId(conn, testUserId);
-            assertFalse(dao.hasUnpaidReason(conn, testUserId));
+            assertFalse(dao.hasReason(testUserId, "unpaid"));
+            assertEquals(0, dao.countLockReasonsByUserId(conn, testUserId));
         }
     }
 

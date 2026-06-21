@@ -19,10 +19,10 @@ SET configValue = EXCLUDED.configValue, updatedAt = NOW();
 -- 10. INSERT FINE & PAYMENT CONFIGURATIONS
 -- ------------------------------------------------------------
 INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
-('FINE_RATE_PER_DAY', '5000', 'Mức phạt mỗi ngày trả sách trễ hạn (VND)', 'fine', 6, NOW()),
-('DAMAGED_FINE_MULTIPLIER', '1.5', 'Hệ số nhân giá sách để tính phạt đền bù khi sách bị hỏng', 'fine', 6, NOW()),
-('LOST_FINE_MULTIPLIER', '2.0', 'Hệ số nhân giá sách để tính phạt đền bù khi mất sách', 'fine', 6, NOW()),
-('DEFAULT_BOOK_PRICE', '500000', 'Giá mặc định của sách khi không có giá gốc (VND)', 'fine', 6, NOW())
+('FINE_RATE_PER_DAY', '5000', 'Mức phạt mỗi ngày trả sách trễ hạn (VND)', 'library', 6, NOW()),
+('DAMAGED_FINE_MULTIPLIER', '1.5', 'Hệ số nhân giá sách để tính phạt đền bù khi sách bị hỏng', 'library', 6, NOW()),
+('LOST_FINE_MULTIPLIER', '2.0', 'Hệ số nhân giá sách để tính phạt đền bù khi mất sách', 'library', 6, NOW()),
+('DEFAULT_BOOK_PRICE', '500000', 'Giá mặc định của sách khi không có giá gốc (VND)', 'library', 6, NOW())
 ON CONFLICT (configKey) DO UPDATE 
 SET configValue = EXCLUDED.configValue, updatedAt = NOW();
 
@@ -30,10 +30,10 @@ SET configValue = EXCLUDED.configValue, updatedAt = NOW();
 -- 11. INSERT SEPAY INTEGRATION CONFIGURATIONS
 -- ------------------------------------------------------------
 INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
-('SEPAY_API_KEY', 'spsk_live_DXEB1eDLNX5VM7inLYKRDLzAL3KQQL2f', 'API Key xác thực Webhook từ SePay', 'sepay', 6, NOW()),
-('SEPAY_ACCOUNT_NUMBER', '1234567890', 'Số tài khoản ngân hàng nhận tiền phạt', 'sepay', 6, NOW()),
-('SEPAY_BANK_CODE', 'MBBank', 'Mã ngân hàng nhận tiền phạt (dùng cho VietQR)', 'sepay', 6, NOW()),
-('SEPAY_ACCOUNT_NAME', 'THU VIEN TRUONG DAI HOC', 'Tên chủ tài khoản ngân hàng nhận tiền', 'sepay', 6, NOW())
+('SEPAY_API_KEY', 'spsk_live_DXEB1eDLNX5VM7inLYKRDLzAL3KQQL2f', 'API Key xác thực Webhook từ SePay', 'system', 6, NOW()),
+('SEPAY_ACCOUNT_NUMBER', '1234567890', 'Số tài khoản ngân hàng nhận tiền phạt', 'system', 6, NOW()),
+('SEPAY_BANK_CODE', 'MBBank', 'Mã ngân hàng nhận tiền phạt (dùng cho VietQR)', 'system', 6, NOW()),
+('SEPAY_ACCOUNT_NAME', 'THU VIEN TRUONG DAI HOC', 'Tên chủ tài khoản ngân hàng nhận tiền', 'system', 6, NOW())
 ON CONFLICT (configKey) DO UPDATE 
 SET configValue = EXCLUDED.configValue, updatedAt = NOW();
 
@@ -49,13 +49,13 @@ SET bodyContent = EXCLUDED.bodyContent, subject = EXCLUDED.subject, updatedAt = 
 -- 13. INSERT SYSTEM CONFIGURATIONS FOR NOTIFICATION & ADMIN
 -- ------------------------------------------------------------
 INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
-('STUDENT_MAX_BORROW_DAYS', '14', 'S? ng�y mu?n t?i da cho sinh vi�n', 'library', 6, NOW()),
-('LECTURER_MAX_BORROW_DAYS', '30', 'S? ng�y mu?n t?i da cho gi?ng vi�n', 'library', 6, NOW()),
-('RESERVATION_HOLD_DAYS', '3', 'S? ng�y gi? s�ch d?t tru?c tru?c khi hu? t? d?ng', 'library', 6, NOW()),
-('EMAIL_OTP_EXPIRE_MINUTES', '10', 'Th?i gian h?t h?n OTP qua email (ph�t)', 'notification', 6, NOW()),
-('EMAIL_OVERDUE_NOTICE_DAYS', '1', 'S? ng�y tru?c khi qu� h?n d? g?i email nh?c', 'notification', 6, NOW()),
-('MAX_IMPORT_ROWS', '5000', 'S? BookCopy t?i da trong m?t file import', 'system', 6, NOW()),
-('IMPORT_EXPIRE_DAYS', '365', 'S? ng�y luu l?ch s? import', 'system', 6, NOW())
+('STUDENT_MAX_BORROW_DAYS', '14', 'Số ngày mượn tối đa cho sinh viên', 'library', 6, NOW()),
+('LECTURER_MAX_BORROW_DAYS', '30', 'Số ngày mượn tối đa cho giảng viên', 'library', 6, NOW()),
+('RESERVATION_HOLD_DAYS', '3', 'Số ngày giữ sách đặt trước trước khi hủy tự động', 'library', 6, NOW()),
+('EMAIL_OTP_EXPIRE_MINUTES', '10', 'Thời gian hết hạn OTP qua email (phút)', 'system', 6, NOW()),
+('EMAIL_OVERDUE_NOTICE_DAYS', '1', 'Số ngày trước khi quá hạn để gửi email nhắc', 'system', 6, NOW()),
+('MAX_IMPORT_ROWS', '5000', 'Số BookCopy tối đa trong một file import', 'system', 6, NOW()),
+('IMPORT_EXPIRE_DAYS', '365', 'Số ngày lưu lịch sử import', 'system', 6, NOW())
 ON CONFLICT (configKey) DO UPDATE 
 SET configValue = EXCLUDED.configValue, updatedAt = NOW();
 
@@ -63,5 +63,6 @@ SET configValue = EXCLUDED.configValue, updatedAt = NOW();
 -- 14. THEM CONFIG SEPAY_QR_URL
 -- ------------------------------------------------------------
 INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
-('SEPAY_QR_URL', '', 'URL anh QR chuyen khoan SePay (de trong neu chua co)', 'sepay', 6, NOW())
-ON CONFLICT (configKey) DO NOTHING;
+('SEPAY_QR_URL', '', 'URL ảnh QR chuyển khoản SePay (để trống nếu chưa có)', 'system', 6, NOW())
+ON CONFLICT (configKey) DO UPDATE
+SET configGroup = EXCLUDED.configGroup, description = EXCLUDED.description;

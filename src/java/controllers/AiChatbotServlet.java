@@ -105,10 +105,10 @@ public class AiChatbotServlet extends HttpServlet {
                 // Truy xuất nội quy
                 String rulesContext = aiChatbotService.retrieveRulesContext();
                 systemPrompt = "Bạn là trợ lý ảo hỗ trợ đàm thoại của thư viện trường đại học (UniLib). "
-                        + "Hãy trả lời câu hỏi của người dùng dựa vào thông tin nội quy thực tế dưới đây. "
-                        + "Trả lời ngắn gọn, rõ ràng và mạch lạc dưới dạng định dạng Markdown tiếng Việt (100% Vietnamese). "
-                        + "Nếu câu hỏi không tìm thấy thông tin trong nội quy, hãy trả lời lịch sự rằng bạn không có thông tin chính xác về vấn đề này và khuyên người dùng liên hệ thủ thư.\n\n"
-                        + "Thông tin nội quy thực tế:\n" + rulesContext;
+                        + "Nhiệm vụ của bạn là trả lời câu hỏi dựa TRÊN ĐÚNG thông tin cấu hình và nội quy được cung cấp bên dưới, TUYỆT ĐỐI KHÔNG tự bịa ra con số (ví dụ: tiền phạt, số ngày). "
+                        + "Hãy trả lời THẬT NGẮN GỌN, đúng trọng tâm, KHÔNG dông dài. KHÔNG DÙNG công thức toán học phức tạp (như $$...$$), chỉ dùng văn bản Markdown đơn giản, thân thiện, dễ đọc. "
+                        + "Nếu câu hỏi không có trong nội dung cấu hình dưới đây, hãy trả lời: 'Tôi không có thông tin về vấn đề này. Vui lòng liên hệ thủ thư.'\n\n"
+                        + "Thông tin cấu hình/nội quy THỰC TẾ:\n" + rulesContext;
             } else {
                 // Kiểm tra xem người dùng có hỏi gợi ý sách không
                 boolean isRecommend = userMessage.toLowerCase().matches(".*(gợi ý|đề xuất|khuyên đọc|phù hợp với tôi|nên đọc).*");

@@ -158,7 +158,7 @@ public class DeskCirculationServiceParameterTest {
 
     private void runCheckoutTest() throws Exception {
         mockUserLookupDAO.userIdToReturn = "ST001".equals(memberCode) ? 10 : null;
-        mockUserLockReasonDAO.hasUnpaid = unpaid;
+        mockFineDAO.hasUnpaid = unpaid;
         
         BookCopy copy = null;
         if ("barcode123".equals(barcode)) {
@@ -267,28 +267,7 @@ public class DeskCirculationServiceParameterTest {
     // =========================================================================
 
     private static class MockUserLockReasonDAO extends UserLockReasonDAO {
-        boolean hasUnpaid = false;
-        boolean insertUnpaidCalled = false;
-        boolean deleteCalled = false;
-        int lastUserId = 0;
         int remainingReasons = 0;
-
-        @Override
-        public boolean hasUnpaidReason(Connection conn, int userId) throws SQLException {
-            return hasUnpaid;
-        }
-
-        @Override
-        public void insertUnpaidReason(Connection conn, int userId) throws SQLException {
-            insertUnpaidCalled = true;
-            lastUserId = userId;
-        }
-
-        @Override
-        public void deleteUnpaidReasonByUserId(Connection conn, int userId) throws SQLException {
-            deleteCalled = true;
-            lastUserId = userId;
-        }
 
         @Override
         public int countLockReasonsByUserId(Connection conn, int userId) throws SQLException {
@@ -462,6 +441,12 @@ public class DeskCirculationServiceParameterTest {
         BigDecimal lastAmount = null;
         boolean paidCalled = false;
         int lastFineId = 0;
+        boolean hasUnpaid = false;
+
+        @Override
+        public boolean hasUnpaidFines(Connection conn, int userId) throws SQLException {
+            return hasUnpaid;
+        }
 
         @Override
         public int insertCompensationFine(Connection conn, int borrowRecordId, int userId, BigDecimal amount, String reason) throws SQLException {

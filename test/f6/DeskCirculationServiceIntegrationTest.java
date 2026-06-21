@@ -208,7 +208,7 @@ public class DeskCirculationServiceIntegrationTest {
                 assertEquals("unavailable", getBookCopyStatus(conn, bookCopyId));
                 assertEquals(checkInCondition, getBookCopyCondition(conn, bookCopyId));
                 // Lock reason must exist
-                assertTrue(new UserLockReasonDAO().hasUnpaidReason(conn, userId));
+                assertTrue(new FineDAO().hasUnpaidFines(conn, userId));
                 assertEquals("locked", getUserStatus(conn, userId));
             }
         }
@@ -225,8 +225,6 @@ public class DeskCirculationServiceIntegrationTest {
             fineId = new FineDAO().insertCompensationFine(conn, borrowId, userId, BigDecimal.valueOf(300_000), "damaged");
             paymentId = new PaymentDAO().insertPayment(conn, fineId, BigDecimal.valueOf(300_000), "pending");
             
-            // Insert unpaid lock reason
-            new UserLockReasonDAO().insertUnpaidReason(conn, userId);
             new UserDAO().updateStatusToLocked(conn, userId);
         }
 
@@ -238,13 +236,13 @@ public class DeskCirculationServiceIntegrationTest {
             assertEquals("paid", getFineStatus(conn, fineId));
             // Payment status should be completed
             assertEquals("completed", getPaymentStatus(conn, paymentId));
-            // Unpaid lock reason deleted
-            assertFalse(new UserLockReasonDAO().hasUnpaidReason(conn, userId));
+            // Unpaid fine removed
+            assertFalse(new FineDAO().hasUnpaidFines(conn, userId));
             
             if (hasOtherLockReason) {
                 assertEquals("locked", getUserStatus(conn, userId)); // stays locked due to adminban
             } else {
-                assertEquals("active", getUserStatus(conn, userId)); // auto unlocked
+                assertEquals("active", getUserStatus(conn, userId)); // should be auto-unlocked
             }
         }
     }

@@ -71,7 +71,7 @@ public class DeskCirculationServiceUnitTest {
     @Test
     public void testCheckOut_UserHasUnpaidFines() throws Exception {
         mockUserLookupDAO.userIdToReturn = 10;
-        mockUserLockReasonDAO.hasUnpaid = true;
+        mockFineDAO.hasUnpaid = true;
         try {
             service.processCheckOut(1, "ST001", "barcode123");
             fail("Phải ném IllegalStateException do nợ phạt");
@@ -83,7 +83,7 @@ public class DeskCirculationServiceUnitTest {
     @Test
     public void testCheckOut_BarcodeNotFound() throws Exception {
         mockUserLookupDAO.userIdToReturn = 10;
-        mockUserLockReasonDAO.hasUnpaid = false;
+        mockFineDAO.hasUnpaid = false;
         mockBookCopyDAO.copyToReturn = null;
         try {
             service.processCheckOut(1, "ST001", "invalid_barcode");
@@ -96,7 +96,7 @@ public class DeskCirculationServiceUnitTest {
     @Test
     public void testCheckOut_SuccessWithPreReservation() throws Exception {
         mockUserLookupDAO.userIdToReturn = 10;
-        mockUserLockReasonDAO.hasUnpaid = false;
+        mockFineDAO.hasUnpaid = false;
 
         BookCopy copy = new BookCopy();
         copy.setBookCopyId(101);
@@ -125,7 +125,7 @@ public class DeskCirculationServiceUnitTest {
     @Test
     public void testCheckOut_DirectBorrow_QueueNotEmpty() throws Exception {
         mockUserLookupDAO.userIdToReturn = 10;
-        mockUserLockReasonDAO.hasUnpaid = false;
+        mockFineDAO.hasUnpaid = false;
 
         BookCopy copy = new BookCopy();
         copy.setBookCopyId(101);
@@ -148,7 +148,7 @@ public class DeskCirculationServiceUnitTest {
     @Test
     public void testCheckOut_DirectBorrow_Success() throws Exception {
         mockUserLookupDAO.userIdToReturn = 10;
-        mockUserLockReasonDAO.hasUnpaid = false;
+        mockFineDAO.hasUnpaid = false;
 
         BookCopy copy = new BookCopy();
         copy.setBookCopyId(101);
@@ -185,7 +185,7 @@ public class DeskCirculationServiceUnitTest {
             setUp(); // reset mocks
 
             mockUserLookupDAO.userIdToReturn = 50 + i;
-            mockUserLockReasonDAO.hasUnpaid = unpaid;
+            mockFineDAO.hasUnpaid = unpaid;
             
             BookCopy copy = null;
             if (barcodeExists) {
@@ -315,7 +315,7 @@ public class DeskCirculationServiceUnitTest {
         assertEquals(BigDecimal.valueOf(150000.0), mockFineDAO.lastAmount); // Price 100k * 1.5 multiplier
         assertTrue(mockPaymentDAO.insertPaymentCalled);
         assertEquals(888, mockPaymentDAO.lastFineId);
-        assertTrue(mockUserLockReasonDAO.insertUnpaidCalled);
+
         assertTrue(mockUserDAO.lockedUserIdCalled);
     }
 
@@ -453,8 +453,8 @@ public class DeskCirculationServiceUnitTest {
         assertEquals(100, mockPaymentDAO.lastPaymentId);
         assertTrue(mockFineDAO.paidCalled);
         assertEquals(50, mockFineDAO.lastFineId);
-        assertTrue(mockUserLockReasonDAO.deleteCalled);
-        assertEquals(10, mockUserLockReasonDAO.lastUserId);
+
+
         assertTrue(mockUserDAO.activeUserIdCalled);
         assertEquals(10, mockUserDAO.lastActiveUserId);
     }
@@ -469,7 +469,7 @@ public class DeskCirculationServiceUnitTest {
         // Asserts
         assertTrue(mockPaymentDAO.completedCalled);
         assertTrue(mockFineDAO.paidCalled);
-        assertTrue(mockUserLockReasonDAO.deleteCalled);
+
         assertFalse(mockUserDAO.activeUserIdCalled); // Không được unlock
     }
 
@@ -510,28 +510,7 @@ public class DeskCirculationServiceUnitTest {
     // =========================================================================
 
     private static class MockUserLockReasonDAO extends UserLockReasonDAO {
-        boolean hasUnpaid = false;
-        boolean insertUnpaidCalled = false;
-        boolean deleteCalled = false;
-        int lastUserId = 0;
         int remainingReasons = 0;
-
-        @Override
-        public boolean hasUnpaidReason(Connection conn, int userId) throws SQLException {
-            return hasUnpaid;
-        }
-
-        @Override
-        public void insertUnpaidReason(Connection conn, int userId) throws SQLException {
-            insertUnpaidCalled = true;
-            lastUserId = userId;
-        }
-
-        @Override
-        public void deleteUnpaidReasonByUserId(Connection conn, int userId) throws SQLException {
-            deleteCalled = true;
-            lastUserId = userId;
-        }
 
         @Override
         public int countLockReasonsByUserId(Connection conn, int userId) throws SQLException {
@@ -705,6 +684,12 @@ public class DeskCirculationServiceUnitTest {
         BigDecimal lastAmount = null;
         boolean paidCalled = false;
         int lastFineId = 0;
+        boolean hasUnpaid = false;
+
+        @Override
+        public boolean hasUnpaidFines(Connection conn, int userId) throws SQLException {
+            return hasUnpaid;
+        }
 
         @Override
         public int insertCompensationFine(Connection conn, int borrowRecordId, int userId, BigDecimal amount, String reason) throws SQLException {
