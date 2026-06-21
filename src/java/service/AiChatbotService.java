@@ -87,10 +87,6 @@ public class AiChatbotService {
             generationConfig.addProperty("maxOutputTokens", 10);
             generationConfig.addProperty("temperature", 0.1);
             
-            JsonObject thinkingConfig = new JsonObject();
-            thinkingConfig.addProperty("thinkingBudget", 0);
-            generationConfig.add("thinkingConfig", thinkingConfig);
-            
             root.add("generationConfig", generationConfig);
 
             String jsonPayload = new Gson().toJson(root);
@@ -241,13 +237,10 @@ public class AiChatbotService {
             }
             root.add("contents", contents);
 
-            // Generation config để tăng tính chính xác và loại bỏ thinking latency
+            // Generation config để tăng tính chính xác
             JsonObject generationConfig = new JsonObject();
             generationConfig.addProperty("temperature", 0.7);
             
-            JsonObject thinkingConfig = new JsonObject();
-            thinkingConfig.addProperty("thinkingBudget", 0);
-            generationConfig.add("thinkingConfig", thinkingConfig);
             root.add("generationConfig", generationConfig);
 
             String jsonPayload = new Gson().toJson(root);
