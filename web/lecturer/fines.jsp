@@ -314,7 +314,8 @@ function openQrModal(btn) {
     var qrUrl = 'https://qr.sepay.vn/img?acc=' + acc
               + '&bank=' + bank
               + '&amount=' + Math.round(amount)
-              + '&des=' + encodeURIComponent(transferContent);
+              + '&des=' + encodeURIComponent(transferContent)
+              + '&template=compact';
 
     /* Cập nhật Modal */
     document.getElementById('qrCodeImage').src = qrUrl;
