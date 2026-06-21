@@ -322,7 +322,11 @@ function openQrModal(btn) {
     var qrUrl = 'https://qr.sepay.vn/img?acc=' + acc
               + '&bank=' + bank
               + '&amount=' + Math.round(amount)
-              + '&des=' + encodeURIComponent(transferContent);
+              + '&des=' + encodeURIComponent(transferContent)
+              + '&template=compact'
+              + '&showinfo=true'
+              + '&fullacc=true'
+              + '&holder=' + encodeURIComponent('${sepayAccountName}');
 
     /* Cập nhật Modal */
     document.getElementById('qrCodeImage').src = qrUrl;
@@ -356,12 +360,21 @@ function openQrModal(btn) {
 function startPolling(paymentId) {
     stopPolling();
     pollingInterval = setInterval(function() {
-        fetch('${pageContext.request.contextPath}/api/payment-status?paymentId=' + paymentId)
-            .then(function(res) { return res.json(); })
+        fetch('${pageContext.request.contextPath}/api/payment-status?paymentId=' + paymentId, {
+            credentials: 'same-origin'
+        })
+            .then(function(res) { 
+                if (!res.ok) {
+                    console.error('Network response was not ok, status:', res.status);
+                }
+                return res.json(); 
+            })
             .then(function(data) {
                 if (data.status === 'completed') {
                     stopPolling();
                     showPaymentSuccess();
+                } else if (data.error) {
+                    console.error('API returned error:', data.error);
                 }
             })
             .catch(function(err) {
