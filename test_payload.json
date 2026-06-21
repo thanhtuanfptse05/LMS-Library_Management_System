@@ -1,0 +1,13 @@
+{
+  "id": 99999,
+  "gateway": "MBBank",
+  "transactionDate": "2026-06-21 00:00:00",
+  "accountNumber": "96247PAY05",
+  "code": "LMSPF5",
+  "content": "LMSPF5",
+  "transferType": "in",
+  "transferAmount": 10000,
+  "accumulated": 100000,
+  "channel": "MB",
+  "referenceCode": "SIMULATED123"
+}

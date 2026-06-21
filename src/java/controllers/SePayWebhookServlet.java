@@ -67,8 +67,7 @@ public class SePayWebhookServlet extends HttpServlet {
             return;
         }
 
-        String expectedAuthValue = "Apikey " + configuredApiKey;
-        if (authHeader == null || !authHeader.equals(expectedAuthValue)) {
+        if (authHeader == null || !authHeader.contains(configuredApiKey)) {
             LOGGER.warning("SePay Webhook: Xác thực API Key thất bại. Header nhận được: " + authHeader);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.print("{\"success\":false,\"message\":\"Unauthorized\"}");
