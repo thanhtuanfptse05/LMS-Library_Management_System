@@ -151,6 +151,31 @@ public class SystemConfigDAO {
         }
     }
 
+    public void insert(Connection conn, SystemConfiguration config) throws SQLException {
+        String sql = "INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy) "
+                + "VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, config.getConfigKey());
+            stmt.setString(2, config.getConfigValue());
+            stmt.setString(3, config.getDescription());
+            stmt.setString(4, config.getConfigGroup());
+            if (config.getUpdatedBy() != null) {
+                stmt.setInt(5, config.getUpdatedBy());
+            } else {
+                stmt.setNull(5, java.sql.Types.INTEGER);
+            }
+            stmt.executeUpdate();
+        }
+    }
+
+    public void delete(Connection conn, String key) throws SQLException {
+        String sql = "DELETE FROM SystemConfigurations WHERE configKey = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, key);
+            stmt.executeUpdate();
+        }
+    }
+
     private SystemConfiguration mapRow(ResultSet rs) throws SQLException {
         SystemConfiguration config = new SystemConfiguration();
         config.setConfigKey(rs.getString("configKey"));
