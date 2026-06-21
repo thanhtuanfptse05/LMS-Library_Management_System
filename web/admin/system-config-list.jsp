@@ -32,6 +32,11 @@
                         </h2>
                         <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Quản lý toàn bộ thông số hoạt động của Thư viện (Chỉ dành cho Admin)</p>
                     </div>
+                    <div>
+                        <button type="button" class="btn btn-primary-custom rounded-3 fw-bold px-4 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createModal">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Thêm Cấu Hình
+                        </button>
+                    </div>
                 </div>
 
                 <!-- ─── Alert Messages ─── -->
@@ -129,13 +134,21 @@
                                         <td style="font-size: 12px; color: var(--on-surface-variant);">
                                             <fmt:formatDate value="${cfg.updatedAt}" pattern="dd/MM/yyyy HH:mm"/>
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" style="white-space: nowrap;">
                                             <button type="button"
                                                     class="btn btn-sm btn-primary-custom rounded-2 d-inline-flex align-items-center gap-1"
                                                     data-bs-toggle="modal" data-bs-target="#editModal"
                                                     onclick="prefillModal('<c:out value="${cfg.configKey}"/>', '<c:out value="${cfg.configValue}"/>', '<c:out value="${cfg.description}"/>')">
                                                 <span class="material-symbols-outlined" style="font-size: 15px;">edit</span> Sửa
                                             </button>
+                                            <form action="${pageContext.request.contextPath}/admin/system-config" method="POST" class="d-inline-block m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa cấu hình này không?');">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="configKey" value="<c:out value="${cfg.configKey}"/>">
+                                                <input type="hidden" name="groupFilter" value="${groupFilter}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center gap-1 ms-1">
+                                                    <span class="material-symbols-outlined" style="font-size: 15px;">delete</span> Xóa
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -158,6 +171,55 @@
 
         </main>
     </div><!-- /.d-flex.main-wrapper -->
+
+    <!-- Modal Thêm Mới Cấu Hình -->
+    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="${pageContext.request.contextPath}/admin/system-config" method="POST" class="modal-content" style="border-radius: var(--radius-lg);">
+                <input type="hidden" name="action" value="create">
+                <input type="hidden" name="groupFilter" value="${groupFilter}">
+                <div class="modal-header" style="border-bottom: 1px solid var(--outline-variant);">
+                    <h5 class="modal-title fw-bold" id="createModalLabel">
+                        <span class="material-symbols-outlined align-middle me-2" style="color: var(--primary); font-size: 20px;">add_circle</span>
+                        Thêm Cấu Hình Mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="createConfigKey" class="form-label fw-bold">Khóa Cấu Hình (Key) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="createConfigKey" name="configKey" required
+                               style="border: 1.5px solid var(--outline-variant); border-radius: var(--radius-md);">
+                        <div class="form-text">Ví dụ: MAX_RETRY_COUNT (Viết hoa, ngăn cách bằng dấu gạch dưới). Key phải nằm trong whitelist.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createConfigGroup" class="form-label fw-bold">Nhóm Cấu Hình <span class="text-danger">*</span></label>
+                        <select class="form-select" id="createConfigGroup" name="configGroup" required style="border: 1.5px solid var(--outline-variant); border-radius: var(--radius-md);">
+                            <option value="library">Library (Chính sách Thư viện)</option>
+                            <option value="system">System (Hệ thống toàn cầu)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createDescription" class="form-label fw-bold">Mô tả chi tiết</label>
+                        <input type="text" class="form-control" id="createDescription" name="description"
+                               style="border: 1.5px solid var(--outline-variant); border-radius: var(--radius-md);">
+                    </div>
+                    <div class="mb-3">
+                        <label for="createConfigValue" class="form-label fw-bold">Giá Trị <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="createConfigValue" name="configValue" required
+                               style="border: 1.5px solid var(--outline-variant); border-radius: var(--radius-md);">
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--outline-variant);">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary-custom rounded-2 d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
+                        Tạo Cấu Hình
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal Cập Nhật Cấu Hình -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
