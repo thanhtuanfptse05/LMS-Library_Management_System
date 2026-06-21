@@ -322,11 +322,7 @@ function openQrModal(btn) {
     var qrUrl = 'https://qr.sepay.vn/img?acc=' + acc
               + '&bank=' + bank
               + '&amount=' + Math.round(amount)
-              + '&des=' + encodeURIComponent(transferContent)
-              + '&template=compact'
-              + '&showinfo=true'
-              + '&fullacc=true'
-              + '&holder=' + encodeURIComponent('${sepayAccountName}');
+              + '&des=' + encodeURIComponent(transferContent);
 
     /* Cập nhật Modal */
     document.getElementById('qrCodeImage').src = qrUrl;
