@@ -15,8 +15,8 @@ public class SupabaseStorageClient {
     private final String bucket;
 
     public SupabaseStorageClient() {
-        this(HttpClient.newHttpClient(), AppConfig.SUPABASE_URL,
-                AppConfig.SUPABASE_SERVICE_ROLE_KEY, AppConfig.SUPABASE_BOOK_COVER_BUCKET);
+        this(HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build(), AppConfig.getSupabaseUrl(),
+                AppConfig.getSupabaseServiceRoleKey(), AppConfig.getSupabaseBookCoverBucket());
     }
 
     SupabaseStorageClient(HttpClient httpClient, String supabaseUrl, String serviceRoleKey, String bucket) {

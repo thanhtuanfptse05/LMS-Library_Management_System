@@ -51,9 +51,17 @@ public final class AppConfig {
     public static final String BOOK_IMAGE_DIRECTORY = readConfig("LMS_BOOK_IMAGE_DIR",
             System.getProperty("user.home") + "/.lms/book-images");
 
-    public static final String SUPABASE_URL = readConfig("SUPABASE_URL");
-    public static final String SUPABASE_SERVICE_ROLE_KEY = readConfig("SUPABASE_SERVICE_ROLE_KEY");
-    public static final String SUPABASE_BOOK_COVER_BUCKET = readConfig("SUPABASE_BOOK_COVER_BUCKET", "book-covers");
+    public static String getSupabaseUrl() {
+        return readConfig("SUPABASE_URL");
+    }
+
+    public static String getSupabaseServiceRoleKey() {
+        return readConfig("SUPABASE_SERVICE_ROLE_KEY");
+    }
+
+    public static String getSupabaseBookCoverBucket() {
+        return readConfig("SUPABASE_BOOK_COVER_BUCKET", "book-covers");
+    }
 
     private static String readConfig(String key) {
         String value = System.getenv(key);
@@ -61,7 +69,7 @@ public final class AppConfig {
             value = System.getProperty(key);
         }
         if (value == null || value.trim().isEmpty()) {
-            value = LOCAL_PROPERTIES.getProperty(key);
+            value = loadLocalProperties().getProperty(key);
         }
         return value == null || value.trim().isEmpty() ? null : value.trim();
     }
@@ -74,6 +82,10 @@ public final class AppConfig {
     private static Properties loadLocalProperties() {
         Properties properties = new Properties();
         Path configFile = Path.of(System.getProperty("user.home"), ".lms", "app.properties");
+        if (!Files.isRegularFile(configFile)) {
+            // Fallback for Windows if user.home is system profile
+            configFile = Path.of("C:\\Users\\lethe\\.lms\\app.properties");
+        }
         if (!Files.isRegularFile(configFile)) {
             return properties;
         }
