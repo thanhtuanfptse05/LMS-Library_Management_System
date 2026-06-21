@@ -107,10 +107,15 @@ public class DeskDashboardServlet extends HttpServlet {
                         }
                     }
 
-                    // Ánh xạ bookCopyId -> barcode cho các sách đang mượn
+                    // Ánh xạ bookCopyId -> barcode cho các sách đang mượn và đặt trước
                     List<Integer> copyIds = new java.util.ArrayList<>();
                     for (BorrowRecord br : activeBorrows) {
                         copyIds.add(br.getBookCopyId());
+                    }
+                    for (Reservation res : readyReservations) {
+                        if (res.getBookCopyId() != null) {
+                            copyIds.add(res.getBookCopyId());
+                        }
                     }
                     java.util.Map<Integer, String> copyBarcodeMap = bookCopyDAO.findBarcodesForCopyIds(conn, copyIds);
 
