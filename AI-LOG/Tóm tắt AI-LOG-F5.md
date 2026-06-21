@@ -4,7 +4,7 @@
 
 *   **Sinh viên thực hiện:** Lê Thế Bảo
 *   **Môn học:** SWP391 - Dự án Phần mềm Đại học
-*   **Đầu mục công việc:** Bản vá lỗi F5-PATCH (Tính nhất quán Kho sách, Đồng bộ UI & Kiểm thử CSDL)
+*   **Đầu mục công việc:** F5 - Đặt trước & Gia hạn sách
 *   **Thời gian kết xuất:** 21/06/2026 12:12:10
 
 ---
