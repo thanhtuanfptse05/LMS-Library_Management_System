@@ -27,7 +27,7 @@ import util.DatabaseConnection;
  *
  * <p>Luồng xử lý:</p>
  * <ol>
- *   <li>Xác thực API Key (tuỳ chọn — bỏ qua nếu SePay cấu hình "Không xác thực").</li>
+ *   <li>Xac thuc API Key (tuy chon - bo qua neu SePay cau hinh "Khong xac thuc").</li>
  *   <li>Parse JSON body thủ công: lấy {@code content}, {@code code} và {@code transferAmount}.</li>
  *   <li>Trích xuất mã hóa đơn {@code LMSPF<paymentId>} từ {@code content} hoặc {@code code}.</li>
  *   <li>Nếu hợp lệ: cập nhật Payment thành 'completed', Fine thành 'paid', ghi Audit Log.</li>
@@ -60,7 +60,7 @@ public class SePayWebhookServlet extends HttpServlet {
 
         // 1. Xác thực API Key (TUỲ CHỌN)
         // Nếu SEPAY_API_KEY được cấu hình trong DB → kiểm tra Header Authorization.
-        // Nếu KHÔNG cấu hình (rỗng) → bỏ qua bước xác thực (chế độ "Không xác thực" trên SePay).
+        // Neu KHONG cau hinh (rong) -> bo qua buoc xac thuc (che do "Khong xac thuc" tren SePay).
         String configuredApiKey = systemConfigDAO.getValue("SEPAY_API_KEY", "");
 
         if (!configuredApiKey.isEmpty()) {
@@ -73,10 +73,10 @@ public class SePayWebhookServlet extends HttpServlet {
             }
             LOGGER.info("SePay Webhook: Xác thực API Key thành công.");
         } else {
-            LOGGER.info("SePay Webhook: SEPAY_API_KEY chưa cấu hình — bỏ qua xác thực (chế độ Không xác thực).");
+            LOGGER.info("SePay Webhook: SEPAY_API_KEY chua cau hinh - bo qua xac thuc (che do Khong xac thuc).");
         }
 
-        // 2. Đọc JSON body
+        // 2. Doc JSON body
         StringBuilder sb = new StringBuilder();
         try (BufferedReader reader = request.getReader()) {
             String line;
@@ -98,7 +98,7 @@ public class SePayWebhookServlet extends HttpServlet {
         //   "code": "LMSPF5",                       <-- Mã thanh toán (SePay tự tách)
         //   "content": "LMSPF5 chuyen tien",         <-- Nội dung chuyển khoản gốc
         //   "transferType": "in",
-        //   "transferAmount": 10000,                  <-- Số tiền
+        //   "transferAmount": 10000,                  <-- So tien
         //   "referenceCode": "FT24012345678"          <-- Mã tham chiếu ngân hàng
         // }
 
@@ -171,7 +171,7 @@ public class SePayWebhookServlet extends HttpServlet {
 
                 if ("completed".equals(currentStatus)) {
                     conn.rollback();
-                    LOGGER.info("SePay Webhook: paymentId=" + paymentId + " đã thanh toán trước đó — bỏ qua.");
+                    LOGGER.info("SePay Webhook: paymentId=" + paymentId + " da thanh toan truoc do - bo qua.");
                     out.print("{\"success\":true,\"message\":\"Payment already completed\"}");
                     return;
                 }
@@ -222,7 +222,7 @@ public class SePayWebhookServlet extends HttpServlet {
 
     /**
      * Trích xuất giá trị chuỗi (String) từ JSON body bằng regex đơn giản.
-     * Áp dụng cho JSON phẳng (flat) từ SePay webhook.
+     * Ap dung cho JSON phang (flat) tu SePay webhook.
      *
      * @param json JSON string
      * @param key  Key cần trích xuất
