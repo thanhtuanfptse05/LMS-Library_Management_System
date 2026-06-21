@@ -27,9 +27,9 @@ import util.DatabaseConnection;
  *
  * <p>Luồng xử lý:</p>
  * <ol>
- *   <li>Xác thực Header {@code Authorization: Apikey <token>} so khớp với cấu hình DB.</li>
- *   <li>Parse JSON body thủ công (không dùng Gson): lấy {@code content} và {@code transferAmount}.</li>
- *   <li>Trích xuất mã hóa đơn {@code LMSPF<paymentId>} từ {@code content} bằng Regex.</li>
+ *   <li>Xác thực API Key (tuỳ chọn — bỏ qua nếu SePay cấu hình "Không xác thực").</li>
+ *   <li>Parse JSON body thủ công: lấy {@code content}, {@code code} và {@code transferAmount}.</li>
+ *   <li>Trích xuất mã hóa đơn {@code LMSPF<paymentId>} từ {@code content} hoặc {@code code}.</li>
  *   <li>Nếu hợp lệ: cập nhật Payment thành 'completed', Fine thành 'paid', ghi Audit Log.</li>
  *   <li>Trả HTTP 200 OK kèm JSON xác nhận.</li>
  * </ol>
@@ -56,22 +56,24 @@ public class SePayWebhookServlet extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
-        // 1. Xác thực API Key từ SePay
-        String authHeader = request.getHeader("Authorization");
+        LOGGER.info("=== SePay Webhook: Nhận request mới ===");
+
+        // 1. Xác thực API Key (TUỲ CHỌN)
+        // Nếu SEPAY_API_KEY được cấu hình trong DB → kiểm tra Header Authorization.
+        // Nếu KHÔNG cấu hình (rỗng) → bỏ qua bước xác thực (chế độ "Không xác thực" trên SePay).
         String configuredApiKey = systemConfigDAO.getValue("SEPAY_API_KEY", "");
 
-        if (configuredApiKey.isEmpty()) {
-            LOGGER.warning("SEPAY_API_KEY chưa được cấu hình trong SystemConfigurations.");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"success\":false,\"message\":\"Server configuration error\"}");
-            return;
-        }
-
-        if (authHeader == null || !authHeader.contains(configuredApiKey)) {
-            LOGGER.warning("SePay Webhook: Xác thực API Key thất bại. Header nhận được: " + authHeader);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.print("{\"success\":false,\"message\":\"Unauthorized\"}");
-            return;
+        if (!configuredApiKey.isEmpty()) {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.contains(configuredApiKey)) {
+                LOGGER.warning("SePay Webhook: Xác thực API Key thất bại. Header: " + authHeader);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print("{\"success\":false,\"message\":\"Unauthorized\"}");
+                return;
+            }
+            LOGGER.info("SePay Webhook: Xác thực API Key thành công.");
+        } else {
+            LOGGER.info("SePay Webhook: SEPAY_API_KEY chưa cấu hình — bỏ qua xác thực (chế độ Không xác thực).");
         }
 
         // 2. Đọc JSON body
@@ -84,12 +86,31 @@ public class SePayWebhookServlet extends HttpServlet {
         }
 
         String jsonBody = sb.toString();
-        LOGGER.info("SePay Webhook body received: " + jsonBody);
+        LOGGER.info("SePay Webhook body: " + jsonBody);
 
         // 3. Parse JSON thủ công (không dùng Gson vì không có trong allowed libs)
+        // SePay gửi JSON format chuẩn:
+        // {
+        //   "id": 92704,
+        //   "gateway": "Vietcombank",
+        //   "transactionDate": "2024-07-02 11:08:33",
+        //   "accountNumber": "1017588888",
+        //   "code": "LMSPF5",                       <-- Mã thanh toán (SePay tự tách)
+        //   "content": "LMSPF5 chuyen tien",         <-- Nội dung chuyển khoản gốc
+        //   "transferType": "in",
+        //   "transferAmount": 10000,                  <-- Số tiền
+        //   "referenceCode": "FT24012345678"          <-- Mã tham chiếu ngân hàng
+        // }
+
         String content = extractJsonStringValue(jsonBody, "content");
+        String code = extractJsonStringValue(jsonBody, "code");
         String transferAmountStr = extractJsonNumberValue(jsonBody, "transferAmount");
         String transactionRef = extractJsonStringValue(jsonBody, "referenceCode");
+
+        LOGGER.info("SePay Webhook parsed — content: [" + content
+                + "], code: [" + code
+                + "], transferAmount: [" + transferAmountStr
+                + "], referenceCode: [" + transactionRef + "]");
 
         BigDecimal transferAmount = BigDecimal.ZERO;
         if (transferAmountStr != null && !transferAmountStr.isEmpty()) {
@@ -103,14 +124,22 @@ public class SePayWebhookServlet extends HttpServlet {
         if (content == null) {
             content = "";
         }
+        if (code == null) {
+            code = "";
+        }
         if (transactionRef == null) {
             transactionRef = "";
         }
 
         // 4. Tìm paymentId từ nội dung chuyển khoản
-        Matcher matcher = PAYMENT_CODE_PATTERN.matcher(content);
+        // Ưu tiên tìm trong "content" trước (nội dung chuyển khoản gốc),
+        // sau đó tìm trong "code" (mã thanh toán SePay tự tách).
+        // Cuối cùng ghép cả 2 để thử lần cuối.
+        String combinedText = content + " " + code;
+        Matcher matcher = PAYMENT_CODE_PATTERN.matcher(combinedText);
+
         if (!matcher.find()) {
-            LOGGER.info("SePay Webhook: Không tìm thấy mã LMSPF trong nội dung: " + content);
+            LOGGER.info("SePay Webhook: Không tìm thấy mã LMSPF. content=[" + content + "], code=[" + code + "]");
             response.setStatus(HttpServletResponse.SC_OK);
             out.print("{\"success\":true,\"message\":\"No matching payment code found\"}");
             return;
@@ -125,6 +154,8 @@ public class SePayWebhookServlet extends HttpServlet {
             return;
         }
 
+        LOGGER.info("SePay Webhook: Tìm thấy paymentId=" + paymentId);
+
         // 5. Xử lý cập nhật DB trong Transaction
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
@@ -133,14 +164,14 @@ public class SePayWebhookServlet extends HttpServlet {
                 String currentStatus = paymentDAO.getPaymentStatus(conn, paymentId);
                 if (currentStatus == null) {
                     conn.rollback();
-                    LOGGER.warning("SePay Webhook: paymentId=" + paymentId + " không tồn tại.");
+                    LOGGER.warning("SePay Webhook: paymentId=" + paymentId + " không tồn tại trong DB.");
                     out.print("{\"success\":false,\"message\":\"Payment not found\"}");
                     return;
                 }
 
                 if ("completed".equals(currentStatus)) {
                     conn.rollback();
-                    LOGGER.info("SePay Webhook: paymentId=" + paymentId + " đã được thanh toán trước đó.");
+                    LOGGER.info("SePay Webhook: paymentId=" + paymentId + " đã thanh toán trước đó — bỏ qua.");
                     out.print("{\"success\":true,\"message\":\"Payment already completed\"}");
                     return;
                 }
@@ -168,8 +199,9 @@ public class SePayWebhookServlet extends HttpServlet {
                         + "\",\"amount\":" + transferAmount + "}");
 
                 conn.commit();
-                LOGGER.info("SePay Webhook: Thanh toán thành công paymentId="
-                        + paymentId + ", fineId=" + fineId);
+                LOGGER.info("SePay Webhook: THÀNH CÔNG — paymentId="
+                        + paymentId + ", fineId=" + fineId
+                        + ", amount=" + transferAmount);
 
                 out.print("{\"success\":true,\"message\":\"Payment processed successfully\"}");
 
