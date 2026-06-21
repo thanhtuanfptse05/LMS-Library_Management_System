@@ -21,20 +21,24 @@ public class AiConfig {
     }
 
     /**
-     * Mã API Key của Google Gemini.
+     * Lấy Mã API Key của Google Gemini.
      *
      * Ưu tiên 1: Lấy từ bảng SystemConfigurations trong DB.
      * Ưu tiên 2 (Fallback): Lấy từ System Property / Env Var.
      */
-    public static final String GEMINI_API_KEY = loadApiKey();
+    public static String getGeminiApiKey() {
+        return loadApiKey();
+    }
 
     /**
-     * Mã API Key riêng cho AI Chatbot (F14).
+     * Lấy Mã API Key riêng cho AI Chatbot (F14).
      *
      * Ưu tiên 1: Lấy từ bảng SystemConfigurations trong DB.
      * Ưu tiên 2 (Fallback): Lấy từ System Property / Env Var.
      */
-    public static final String GEMINI_CHATBOT_API_KEY = loadChatbotApiKey();
+    public static String getGeminiChatbotApiKey() {
+        return loadChatbotApiKey();
+    }
 
     /**
      * Tải API Key: thử DB trước, nếu không có thì fallback sang JVM/Env.
@@ -61,7 +65,7 @@ public class AiConfig {
     /**
      * Endpoint URL của mô hình Gemini 3.5 Flash (Mô hình tiêu chuẩn hiện tại năm 2026).
      */
-    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
+    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=";
 
     /**
      * Giải quyết API Key từ nhiều nguồn cấu hình theo thứ tự ưu tiên.

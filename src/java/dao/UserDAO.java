@@ -89,6 +89,22 @@ public class UserDAO {
     }
 
     /**
+     * Tìm kiếm vai trò người dùng (dùng trong cùng một connection transaction).
+     */
+    public String findRoleByUserId(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT role FROM \"User\" WHERE userId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("role");
+                }
+            }
+        }
+        return "STUDENT"; // Mặc định
+    }
+
+    /**
      * Cập nhật số lần đăng nhập sai liên tiếp.
      */
     // EARS[Unwanted]: WHERE Password incorrect, THE LMS System SHALL

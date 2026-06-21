@@ -87,6 +87,10 @@ public class AiChatbotService {
             generationConfig.addProperty("maxOutputTokens", 10);
             generationConfig.addProperty("temperature", 0.1);
             
+            JsonObject thinkingConfig = new JsonObject();
+            thinkingConfig.addProperty("thinkingBudget", 0);
+            generationConfig.add("thinkingConfig", thinkingConfig);
+            
             root.add("generationConfig", generationConfig);
 
             String jsonPayload = new Gson().toJson(root);
@@ -237,10 +241,13 @@ public class AiChatbotService {
             }
             root.add("contents", contents);
 
-            // Generation config để tăng tính chính xác
+            // Generation config để tăng tính chính xác và loại bỏ thinking latency
             JsonObject generationConfig = new JsonObject();
             generationConfig.addProperty("temperature", 0.7);
             
+            JsonObject thinkingConfig = new JsonObject();
+            thinkingConfig.addProperty("thinkingBudget", 0);
+            generationConfig.add("thinkingConfig", thinkingConfig);
             root.add("generationConfig", generationConfig);
 
             String jsonPayload = new Gson().toJson(root);
@@ -279,7 +286,7 @@ public class AiChatbotService {
      * Gửi yêu cầu HTTP POST sang Gemini API.
      */
     private String sendPostRequest(String payload) throws Exception {
-        URL url = new URL(AiConfig.GEMINI_API_URL + AiConfig.GEMINI_CHATBOT_API_KEY);
+        URL url = new URL(AiConfig.GEMINI_API_URL + AiConfig.getGeminiChatbotApiKey());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");

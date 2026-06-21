@@ -49,11 +49,10 @@ public class AiRecommendationService {
             return null;
         }
 
-        LOGGER.log(Level.FINE, "[AI-SVC] Calling Gemini API. CandidatePool size={0}, API Key prefix={1}",
-                new Object[] { candidatePool.size(),
-                        AiConfig.GEMINI_API_KEY.length() > 8
-                                ? AiConfig.GEMINI_API_KEY.substring(0, 8) + "..."
-                                : AiConfig.GEMINI_API_KEY });
+        LOGGER.log(Level.INFO, "API Key (masked): {0}", new Object[]{
+                        AiConfig.getGeminiApiKey().length() > 8
+                                ? AiConfig.getGeminiApiKey().substring(0, 8) + "..."
+                                : AiConfig.getGeminiApiKey() });
 
         String prompt = buildPrompt(frequencyProfile, recentHistory, candidatePool);
         String jsonPayload = buildJsonPayload(prompt);
@@ -162,7 +161,7 @@ public class AiRecommendationService {
      * Thực hiện gửi HTTP POST lên Google.
      */
     private String sendPostRequest(String payload) throws Exception {
-        URL url = new URL(AiConfig.GEMINI_API_URL + AiConfig.GEMINI_API_KEY);
+        URL url = new URL(AiConfig.GEMINI_API_URL + AiConfig.getGeminiApiKey());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");

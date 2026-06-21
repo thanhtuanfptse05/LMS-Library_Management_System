@@ -287,7 +287,20 @@ public class DeskCirculationService {
             // [Node 11.13, FR-F6-03]
 
             // 4a. Tính hạn trả sách
-            Timestamp endDate = calculateEndDate(DEFAULT_BORROW_DAYS);
+            String role = userDAO.findRoleByUserId(conn, userId);
+            int borrowDays = DEFAULT_BORROW_DAYS;
+            try {
+                if ("LECTURER".equalsIgnoreCase(role)) {
+                    String daysStr = systemConfigDAO.getValue(conn, "LECTURER_MAX_BORROW_DAYS", null);
+                    if (daysStr != null) borrowDays = Integer.parseInt(daysStr);
+                } else {
+                    String daysStr = systemConfigDAO.getValue(conn, "STUDENT_MAX_BORROW_DAYS", null);
+                    if (daysStr != null) borrowDays = Integer.parseInt(daysStr);
+                }
+            } catch (Exception ex) {
+                LOGGER.log(Level.WARNING, "Không đọc được cấu hình số ngày mượn — dùng mặc định", ex);
+            }
+            Timestamp endDate = calculateEndDate(borrowDays);
 
             // 4b. INSERT BorrowRecord
             borrowRecordDAO.insert(conn, userId, bookCopyId, bookId, librarianId, endDate);
@@ -822,19 +835,32 @@ public class DeskCirculationService {
     private BigDecimal calculateCompensationAmount(Connection conn, int bookId, String condition)
             throws SQLException {
         // Mức phạt mặc định khi chưa nhập giá sách: 500,000 VND
-        final BigDecimal DEFAULT_FINE = BigDecimal.valueOf(500_000);
-        final double DAMAGED_MULTIPLIER = 1.5;
-        final double LOST_MULTIPLIER    = 2.0;
+        BigDecimal defaultFine = BigDecimal.valueOf(500_000);
+        double damagedMultiplier = 1.5;
+        double lostMultiplier = 2.0;
+
+        try {
+            String defPriceStr = systemConfigDAO.getValue(conn, "DEFAULT_BOOK_PRICE", null);
+            if (defPriceStr != null) defaultFine = new BigDecimal(defPriceStr);
+
+            String damMultStr = systemConfigDAO.getValue(conn, "DAMAGED_FINE_MULTIPLIER", null);
+            if (damMultStr != null) damagedMultiplier = Double.parseDouble(damMultStr);
+
+            String lostMultStr = systemConfigDAO.getValue(conn, "LOST_FINE_MULTIPLIER", null);
+            if (lostMultStr != null) lostMultiplier = Double.parseDouble(lostMultStr);
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "[FINE CALC] Không đọc được cấu hình phạt đền bù — dùng mặc định", ex);
+        }
 
         Book book = bookDAO.findById(conn, bookId);
         if (book == null || book.getPrice() == null) {
             LOGGER.log(Level.WARNING,
-                    "[FINE CALC] Không tìm thấy giá sách cho bookId={0} — dùng mầc định {1}",
-                    new Object[]{bookId, DEFAULT_FINE});
-            return DEFAULT_FINE;
+                    "[FINE CALC] Không tìm thấy giá sách cho bookId={0} — dùng mặc định {1}",
+                    new Object[]{bookId, defaultFine});
+            return defaultFine;
         }
 
-        double multiplier = "lost".equals(condition) ? LOST_MULTIPLIER : DAMAGED_MULTIPLIER;
+        double multiplier = "lost".equals(condition) ? lostMultiplier : damagedMultiplier;
         return book.getPrice().multiply(BigDecimal.valueOf(multiplier));
     }
 
