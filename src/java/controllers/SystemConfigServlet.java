@@ -57,14 +57,33 @@ public class SystemConfigServlet extends HttpServlet {
             return;
         }
 
+        String action = request.getParameter("action");
+        if (action == null || action.trim().isEmpty()) {
+            action = "update"; // default
+        }
+
         Integer managerId = (Integer) session.getAttribute("userId");
         String key = request.getParameter("configKey");
         String value = request.getParameter("configValue");
 
         try {
-            // Service sẽ tự chặn nếu key không thuộc nhóm "library"
-            service.update(key, value, managerId, "MANAGER", getServletContext());
-            session.setAttribute("successMessage", "Cập nhật cấu hình thành công!");
+            if ("create".equalsIgnoreCase(action)) {
+                String description = request.getParameter("description");
+                SystemConfiguration newConfig = new SystemConfiguration();
+                newConfig.setConfigKey(key);
+                newConfig.setConfigValue(value);
+                newConfig.setDescription(description);
+                newConfig.setConfigGroup("library"); // Manager luôn tạo trong nhóm library
+                
+                service.create(newConfig, managerId, "MANAGER", getServletContext());
+                session.setAttribute("successMessage", "Thêm cấu hình thành công!");
+            } else if ("delete".equalsIgnoreCase(action)) {
+                service.delete(key, managerId, "MANAGER", getServletContext());
+                session.setAttribute("successMessage", "Xóa cấu hình thành công!");
+            } else {
+                service.update(key, value, managerId, "MANAGER", getServletContext());
+                session.setAttribute("successMessage", "Cập nhật cấu hình thành công!");
+            }
         } catch (ValidationException e) {
             session.setAttribute("errorMessage", e.getMessage());
         } catch (DatabaseException e) {
