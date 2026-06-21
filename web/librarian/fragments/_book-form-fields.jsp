@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="formBook" value="${param.editing == 'true' ? editBook : null}" />
 <div class="row g-3">
     <div class="col-12">
@@ -8,7 +9,14 @@
             <div class="bm-cover-upload__preview">
                 <c:choose>
                     <c:when test="${not empty formBook.imagePath}">
-                        <img data-cover-preview src="${pageContext.request.contextPath}/book-images/${formBook.imagePath}" alt="Ảnh bìa hiện tại">
+                        <c:choose>
+                            <c:when test="${fn:startsWith(formBook.imagePath, 'http://') or fn:startsWith(formBook.imagePath, 'https://')}">
+                                <img data-cover-preview src="${formBook.imagePath}" alt="Ảnh bìa hiện tại">
+                            </c:when>
+                            <c:otherwise>
+                                <img data-cover-preview src="${pageContext.request.contextPath}/book-images/${formBook.imagePath}" alt="Ảnh bìa hiện tại">
+                            </c:otherwise>
+                        </c:choose>
                     </c:when>
                     <c:otherwise>
                         <span data-cover-placeholder class="material-symbols-outlined">menu_book</span>

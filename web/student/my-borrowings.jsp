@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -123,7 +124,14 @@
                                                                 <div class="book-cover-mini me-3 rounded bg-light border d-flex align-items-center justify-content-center" style="width: 45px; height: 60px; overflow:hidden;">
                                                                     <c:choose>
                                                                         <c:when test="${not empty br.book.imagePath}">
-                                                                            <img src="${pageContext.request.contextPath}/book-images/${br.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                            <c:choose>
+                                                                                <c:when test="${fn:startsWith(br.book.imagePath, 'http://') or fn:startsWith(br.book.imagePath, 'https://')}">
+                                                                                    <img src="${br.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                                </c:when>
+                                                                                <c:otherwise>
+                                                                                    <img src="${pageContext.request.contextPath}/book-images/${br.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                                </c:otherwise>
+                                                                            </c:choose>
                                                                         </c:when>
                                                                         <c:otherwise>
                                                                             <i class="bi bi-book text-muted"></i>
@@ -210,7 +218,14 @@
                                                                 <div class="book-cover-mini me-3 rounded bg-light border d-flex align-items-center justify-content-center" style="width: 45px; height: 60px; overflow:hidden;">
                                                                     <c:choose>
                                                                         <c:when test="${not empty res.book.imagePath}">
-                                                                            <img src="${pageContext.request.contextPath}/book-images/${res.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                            <c:choose>
+                                                                                <c:when test="${fn:startsWith(res.book.imagePath, 'http://') or fn:startsWith(res.book.imagePath, 'https://')}">
+                                                                                    <img src="${res.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                                </c:when>
+                                                                                <c:otherwise>
+                                                                                    <img src="${pageContext.request.contextPath}/book-images/${res.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                                </c:otherwise>
+                                                                            </c:choose>
                                                                         </c:when>
                                                                         <c:otherwise>
                                                                             <i class="bi bi-book text-muted"></i>

@@ -135,7 +135,14 @@
                                         <div class="bm-book">
                                             <c:choose>
                                                 <c:when test="${not empty book.imagePath}">
-                                                    <img class="bm-book__cover" src="${pageContext.request.contextPath}/book-images/${book.imagePath}" alt="Ảnh bìa đầu sách" loading="lazy">
+                                                    <c:choose>
+                                                        <c:when test="${fn:startsWith(book.imagePath, 'http://') or fn:startsWith(book.imagePath, 'https://')}">
+                                                            <img class="bm-book__cover" src="${book.imagePath}" alt="Ảnh bìa đầu sách" loading="lazy">
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <img class="bm-book__cover" src="${pageContext.request.contextPath}/book-images/${book.imagePath}" alt="Ảnh bìa đầu sách" loading="lazy">
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <span class="bm-book__cover material-symbols-outlined">menu_book</span>

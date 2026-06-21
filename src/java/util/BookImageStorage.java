@@ -4,6 +4,7 @@ import config.AppConfig;
 import exception.ValidationException;
 import jakarta.servlet.http.Part;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -22,13 +23,19 @@ public class BookImageStorage {
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of("image/jpeg", "image/png");
     private static final Logger LOGGER = Logger.getLogger(BookImageStorage.class.getName());
     private final Path storageDirectory;
+    private final SupabaseStorageClient supabaseStorageClient;
 
     public BookImageStorage() {
-        this(Path.of(AppConfig.BOOK_IMAGE_DIRECTORY));
+        this(Path.of(AppConfig.BOOK_IMAGE_DIRECTORY), new SupabaseStorageClient());
     }
 
     public BookImageStorage(Path storageDirectory) {
+        this(storageDirectory, new SupabaseStorageClient());
+    }
+
+    BookImageStorage(Path storageDirectory, SupabaseStorageClient supabaseStorageClient) {
         this.storageDirectory = storageDirectory.toAbsolutePath().normalize();
+        this.supabaseStorageClient = supabaseStorageClient;
     }
 
     public String save(Part imagePart) throws IOException, ValidationException {
@@ -41,7 +48,11 @@ public class BookImageStorage {
         if (!ALLOWED_CONTENT_TYPES.contains(imagePart.getContentType())) {
             throw new ValidationException("Ảnh bìa chỉ chấp nhận định dạng JPG hoặc PNG.");
         }
+        byte[] imageBytes;
         try (InputStream input = imagePart.getInputStream()) {
+            imageBytes = input.readAllBytes();
+        }
+        try (InputStream input = new ByteArrayInputStream(imageBytes)) {
             BufferedImage image = ImageIO.read(input);
             if (image == null || image.getWidth() < 1 || image.getHeight() < 1) {
                 throw new ValidationException("Tệp ảnh bìa không hợp lệ.");
@@ -51,11 +62,25 @@ public class BookImageStorage {
             }
         }
 
-        Files.createDirectories(storageDirectory);
         String extension = "image/png".equals(imagePart.getContentType()) ? ".png" : ".jpg";
         String fileName = UUID.randomUUID() + extension;
+        if (supabaseStorageClient.isConfigured()) {
+            try {
+                String publicUrl = supabaseStorageClient.uploadPublicObject(
+                        fileName, imageBytes, imagePart.getContentType());
+                LOGGER.log(Level.INFO, "Đã upload ảnh bìa lên Supabase Storage: {0}", fileName);
+                return publicUrl;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Upload ảnh bìa bị gián đoạn.", e);
+            }
+        }
+
+        LOGGER.log(Level.WARNING, "Supabase Storage chưa được cấu hình, lưu ảnh bìa local. {0}",
+                supabaseStorageClient.getConfigurationStatus());
+        Files.createDirectories(storageDirectory);
         Path destination = resolve(fileName);
-        try (InputStream input = imagePart.getInputStream()) {
+        try (InputStream input = new ByteArrayInputStream(imageBytes)) {
             Files.copy(input, destination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             Files.deleteIfExists(destination);
@@ -77,6 +102,9 @@ public class BookImageStorage {
 
     public void deleteQuietly(String fileName) {
         if (fileName == null || fileName.isBlank()) {
+            return;
+        }
+        if (fileName.startsWith("http://") || fileName.startsWith("https://")) {
             return;
         }
         try {
