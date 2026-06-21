@@ -604,7 +604,7 @@
                                                                                                                                     <button
                                                                                                                                         class="btn btn-xs btn-outline-primary w-100 py-1 fw-bold text-uppercase"
                                                                                                                                         style="font-size:10px;"
-                                                                                                                                        onclick="fillCheckout('${res.bookCopyId}')">
+                                                                                                                                        onclick="fillCheckout('')">
                                                                                                                                         Chọn
                                                                                                                                         giao
                                                                                                                                         sách
