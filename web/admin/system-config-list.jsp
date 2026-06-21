@@ -65,11 +65,8 @@
                                    style="font-size: 10px; letter-spacing: 0.08em;">Lọc theo nhóm cấu hình</label>
                             <select class="form-select" id="groupFilter" name="group" style="border: 1.5px solid var(--outline-variant); border-radius: var(--radius-md);">
                                 <option value="all" ${empty groupFilter or groupFilter == 'all' ? 'selected' : ''}>Tất cả cấu hình</option>
-                                <option value="library" ${groupFilter == 'library' ? 'selected' : ''}>Chính sách Thư viện (library)</option>
-                                <option value="fine" ${groupFilter == 'fine' ? 'selected' : ''}>Phạt &amp; Thanh toán (fine)</option>
-                                <option value="sepay" ${groupFilter == 'sepay' ? 'selected' : ''}>Tích hợp SePay QR (sepay)</option>
-                                <option value="system" ${groupFilter == 'system' ? 'selected' : ''}>Hệ thống (system)</option>
-                                <option value="notification" ${groupFilter == 'notification' ? 'selected' : ''}>Thông báo (notification)</option>
+                                <option value="library" ${groupFilter == 'library' ? 'selected' : ''}>Nhóm Thư viện (library)</option>
+                                <option value="system" ${groupFilter == 'system' ? 'selected' : ''}>Nhóm Hệ thống (system)</option>
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary-custom rounded-3 fw-bold px-4 d-flex align-items-center gap-2">
