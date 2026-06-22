@@ -294,6 +294,20 @@
         radios.forEach(r => r.addEventListener('change', updateUI));
         document.addEventListener('DOMContentLoaded', function() {
             updateUI();
+            // Tự động xóa khoảng trắng khỏi ô barcode
+            const autoTrimInputs = ['barcode'];
+            autoTrimInputs.forEach(id => {
+                const inputEl = document.getElementById(id);
+                if (inputEl) {
+                    const cleanInput = function () {
+                        inputEl.value = inputEl.value.replace(/\s+/g, '');
+                    };
+                    inputEl.addEventListener('input', cleanInput);
+                    inputEl.addEventListener('change', cleanInput);
+                    inputEl.addEventListener('blur', cleanInput);
+                }
+            });
+
             const barcodeInput = document.getElementById('barcode');
             if (barcodeInput) barcodeInput.focus();
         });
