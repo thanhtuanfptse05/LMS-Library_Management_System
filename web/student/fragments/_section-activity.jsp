@@ -6,7 +6,7 @@
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h2 class="fs-4 fw-bold mb-0 text-dark">Hoạt động gần đây</h2>
         <div class="d-flex gap-2">
-            <a href="${pageContext.request.contextPath}/student/loans"
+            <a href="${pageContext.request.contextPath}/student/borrow-history"
                class="btn btn-light bg-surface-container border-0 p-2 d-flex align-items-center justify-content-center text-decoration-none"
                style="border-radius: 0.5rem;"
                title="Xem tất cả sách mượn">
@@ -119,7 +119,7 @@
         </div>
         <div class="p-3 bg-surface-container-low text-center"
              style="border-top: 1px solid var(--outline-variant);">
-            <a href="${pageContext.request.contextPath}/student/loans"
+            <a href="${pageContext.request.contextPath}/student/borrow-history"
                class="btn btn-link text-primary-custom text-decoration-none fw-semibold p-0 small">
                 Xem toàn bộ lịch sử mượn sách
             </a>
