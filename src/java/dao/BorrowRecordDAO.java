@@ -391,5 +391,52 @@ public class BorrowRecordDAO {
         }
         return 0;
     }
+
+    /**
+     * Lấy toàn bộ danh sách BorrowRecord (cả active và đã trả/mất/hỏng) của một người dùng.
+     * Sắp xếp theo ngày mượn giảm dần (mới nhất lên đầu).
+     *
+     * @param conn   Connection trong Transaction
+     * @param userId ID người dùng cần tra cứu
+     * @return Danh sách toàn bộ các bản ghi mượn
+     * @throws SQLException nếu có lỗi truy vấn cơ sở dữ liệu
+     */
+    public List<BorrowRecord> findAllBorrowRecordsByUserId(Connection conn, int userId) throws SQLException {
+        List<BorrowRecord> list = new ArrayList<>();
+        String sql = "SELECT borrowRecordId, userId, bookCopyId, bookId, "
+                   + "       startDate, endDate, returnedAt, status, "
+                   + "       extensionCount, createdBy, createdAt "
+                   + "FROM   BorrowRecord "
+                   + "WHERE  userId   = ? "
+                   + "ORDER BY startDate DESC";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    BorrowRecord record = new BorrowRecord();
+                    record.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    record.setUserId(rs.getInt("userId"));
+                    record.setBookCopyId(rs.getInt("bookCopyId"));
+                    record.setBookId(rs.getInt("bookId"));
+                    record.setStartDate(rs.getTimestamp("startDate"));
+                    record.setEndDate(rs.getTimestamp("endDate"));
+                    record.setReturnedAt(rs.getTimestamp("returnedAt"));
+                    record.setStatus(rs.getString("status"));
+                    record.setExtensionCount(rs.getInt("extensionCount"));
+
+                    int rawCreatedBy = rs.getInt("createdBy");
+                    record.setCreatedBy(rs.wasNull() ? null : rawCreatedBy);
+
+                    record.setCreatedAt(rs.getTimestamp("createdAt"));
+                    list.add(record);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy toàn bộ danh sách BorrowRecord cho userId=" + userId, e);
+            throw e;
+        }
+        return list;
+    }
 }
 
