@@ -54,13 +54,7 @@
                             <span class="material-symbols-outlined" aria-hidden="true"
                                   style="font-size: 100px; color: var(--on-primary-container); opacity: 0.18;
                                          font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;">
-                                school
-                            </span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ─── Stats Cards ─── -->
+                                           <!-- ─── Stats Cards ─── -->
                 <section class="mb-4">
                     <div class="row g-3">
                         <!-- Active Loans -->
@@ -82,39 +76,41 @@
                                 </div>
                             </a>
                         </div>
-                        <!-- Course Reading Lists -->
+                        <!-- Due Soon -->
                         <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-2">
-                            <div class="stat-card h-100" style="--card-accent: var(--tertiary);">
+                            <div class="stat-card h-100" style="--card-accent: var(--warning);">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--tertiary-fixed) 0%, #a0d0f5 100%);">
-                                        <span class="material-symbols-outlined" style="color: var(--tertiary);">article</span>
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
+                                        <span class="material-symbols-outlined" style="color: var(--warning);">running_with_errors</span>
                                     </div>
-                                    <span class="badge-pill badge-success"><c:out value="${courseCount != null ? courseCount : '4'}" /> Môn học</span>
+                                    <span class="badge-pill badge-warning">Sắp đến hạn</span>
                                 </div>
-                                <p class="stat-label">Danh sách tài liệu</p>
-                                <p class="stat-value"><c:out value="${readingListCount != null ? readingListCount : '12'}" /></p>
-                                <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Tổng số đầu sách</p>
+                                <p class="stat-label">Sách sắp đến hạn</p>
+                                <p class="stat-value"><c:out value="${dueSoonCount != null ? dueSoonCount : '0'}" /></p>
+                                <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Trong 3 ngày tới</p>
                                 <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 60%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
+                                    <div class="mini-progress-bar" style="width: ${dueSoonCount != null ? (dueSoonCount * 25 > 100 ? 100 : dueSoonCount * 25) : 0}%; background: linear-gradient(90deg, #fde68a, var(--warning));"></div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Pending Requests -->
+                        <!-- Reservations -->
                         <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-3">
-                            <div class="stat-card h-100" style="--card-accent: var(--warning);">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%);">
-                                        <span class="material-symbols-outlined" style="color: var(--warning);">pending_actions</span>
+                            <a href="${pageContext.request.contextPath}/lecturer/my-borrowings" class="text-decoration-none text-reset d-block h-100">
+                                <div class="stat-card h-100" style="--card-accent: var(--tertiary);">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--tertiary-fixed) 0%, #a0d0f5 100%);">
+                                            <span class="material-symbols-outlined" style="color: var(--tertiary);">event_available</span>
+                                        </div>
+                                        <span class="badge-pill badge-success">Đặt trước</span>
                                     </div>
-                                    <span class="badge-pill badge-warning">Chờ xử lý</span>
+                                    <p class="stat-label">Yêu cầu đặt sách</p>
+                                    <p class="stat-value"><c:out value="${reservedCount != null ? reservedCount : '0'}" /></p>
+                                    <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Đang hoạt động</p>
+                                    <div class="mini-progress">
+                                        <div class="mini-progress-bar" style="width: ${reservedCount != null ? (reservedCount * 25 > 100 ? 100 : reservedCount * 25) : 0}%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
+                                    </div>
                                 </div>
-                                <p class="stat-label">Yêu cầu chờ duyệt</p>
-                                <p class="stat-value"><c:out value="${pendingRequestsCount != null ? pendingRequestsCount : '2'}" /></p>
-                                <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Yêu cầu bổ sung sách</p>
-                                <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 25%; background: linear-gradient(90deg, #fde68a, var(--warning));"></div>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                         <!-- Outstanding Fines -->
                         <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-4">
@@ -157,154 +153,155 @@
                 <!-- ─── Main Layout ─── -->
                 <div class="row g-4">
 
-                    <!-- Left 2/3: Course Reading Lists + My Current Loans -->
+                    <!-- Left 2/3: Active Loans + My Reservations -->
                     <div class="col-12 col-lg-8 d-flex flex-column gap-4">
-
-                        <!-- Course Chips -->
-                        <div class="raised-card p-4">
-                            <div class="card-header-row">
-                                <div>
-                                    <h3 class="card-title">Môn học của tôi</h3>
-                                    <p class="card-subtitle">Học kỳ 1 — Năm học 2025</p>
-                                </div>
-                                <button class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1">
-                                    <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Yêu cầu Sách
-                                </button>
-                            </div>
-                            <div class="d-flex flex-wrap gap-2 mb-4">
-                                <c:choose>
-                                    <c:when test="${not empty courses}">
-                                        <c:forEach var="course" items="${courses}">
-                                            <a href="#" class="course-chip">
-                                                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">school</span>
-                                                <c:out value="${course.code}" /> — <c:out value="${course.name}" />
-                                            </a>
-                                        </c:forEach>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <a href="#" class="course-chip active">
-                                            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">school</span>
-                                            SWP391 — Software Project
-                                        </a>
-                                        <a href="#" class="course-chip">
-                                            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--on-surface-variant);">school</span>
-                                            PRJ301 — Java Web App
-                                        </a>
-                                        <a href="#" class="course-chip">
-                                            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--on-surface-variant);">school</span>
-                                            DBI202 — Database Systems
-                                        </a>
-                                        <a href="#" class="course-chip">
-                                            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--on-surface-variant);">school</span>
-                                            SWT301 — Software Testing
-                                        </a>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-
-                            <!-- Resources for selected course -->
-                            <p class="fw-semibold text-on-surface-variant text-uppercase mb-2" style="font-size: 10px; letter-spacing: 0.1em;">Danh sách tài liệu môn học — SWP391</p>
-                            <div class="d-flex flex-column gap-2">
-                                <div class="resource-card">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: var(--primary); background-color: var(--primary-fixed); flex-shrink: 0;">book</span>
-                                    <div class="flex-grow-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Software Engineering: A Practitioner's Approach</p>
-                                        <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Roger S. Pressman — 8th Edition</p>
-                                    </div>
-                                    <span class="badge-pill" style="background-color: #d1fae5; color: #059669; flex-shrink: 0;">Sẵn có</span>
-                                </div>
-                                <div class="resource-card">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: var(--tertiary); background-color: var(--tertiary-fixed); flex-shrink: 0;">book</span>
-                                    <div class="flex-grow-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Agile Estimating and Planning</p>
-                                        <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Mike Cohn — Prentice Hall</p>
-                                    </div>
-                                    <span class="badge-pill" style="background-color: var(--primary-fixed); color: var(--primary); flex-shrink: 0;">Đang mượn</span>
-                                </div>
-                                <div class="resource-card">
-                                    <span class="material-symbols-outlined p-2 rounded-2"
-                                          style="color: #d97706; background-color: #fef3c7; flex-shrink: 0;">book</span>
-                                    <div class="flex-grow-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">The Mythical Man-Month</p>
-                                        <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Frederick P. Brooks Jr. — Addison-Wesley</p>
-                                    </div>
-                                    <span class="badge-pill" style="background-color: #d1fae5; color: #059669; flex-shrink: 0;">Sẵn có</span>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Active Loans Table -->
                         <div class="raised-card overflow-hidden">
-                            <div class="card-header-row">
+                            <div class="card-header-row p-4 pb-3" style="border-bottom: 1px solid var(--outline-variant);">
                                 <div>
-                                    <h3 class="card-title">Sách đang mượn</h3>
-                                    <p class="card-subtitle">Sách tôi đã mượn</p>
+                                    <h3 class="card-title text-dark fw-bold mb-1">Sách đang mượn</h3>
+                                    <p class="card-subtitle text-muted mb-0">Danh sách các đầu sách bạn đang mượn từ thư viện</p>
                                 </div>
                                 <a href="${pageContext.request.contextPath}/lecturer/borrow-history" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
                                     Xem Lịch sử <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
                                 </a>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-lms mb-0">
-                                    <thead>
+                                <table class="table table-hover align-middle mb-0 text-start">
+                                    <thead class="bg-surface-container-low">
                                         <tr>
-                                            <th>Sách</th>
-                                            <th>Ngày mượn</th>
-                                            <th>Hạn trả</th>
-                                            <th>Trạng thái</th>
-                                            <th class="text-end">Hành động</th>
+                                            <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold" style="font-size: 11px;">Sách</th>
+                                            <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold" style="font-size: 11px;">Ngày mượn</th>
+                                            <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold" style="font-size: 11px;">Hạn trả</th>
+                                            <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold text-center" style="font-size: 11px;">Trạng thái</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <c:choose>
-                                            <c:when test="${not empty myLoans}">
-                                                <c:forEach var="loan" items="${myLoans}">
+                                            <c:when test="${not empty activeLoans}">
+                                                <c:forEach var="loan" items="${activeLoans}">
                                                     <tr>
-                                                        <td>
-                                                            <p class="fw-bold mb-0" style="font-size: 13px;"><c:out value="${loan.bookTitle}" /></p>
-                                                            <p class="text-on-surface-variant mb-0" style="font-size: 12px;"><c:out value="${loan.isbn}" /></p>
+                                                        <td class="px-4 py-3">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="overflow-hidden rounded flex-shrink-0" style="width: 32px; height: 40px; background: var(--surface-container-high);">
+                                                                    <img alt="" class="w-100 h-100" style="object-fit: cover;"
+                                                                         src="${not empty loan.book.imagePath ? loan.book.imagePath : ''}"
+                                                                         onerror="this.style.display='none'" />
+                                                                </div>
+                                                                <div>
+                                                                    <p class="fw-bold mb-0 text-dark" style="font-size: 13px;"><c:out value="${loan.book.title}" /></p>
+                                                                    <p class="text-muted mb-0" style="font-size: 11px;"><c:out value="${loan.book.author}" /> &bull; ISBN: <c:out value="${loan.book.isbn}" /></p>
+                                                                </div>
+                                                            </div>
                                                         </td>
-                                                        <td class="text-on-surface-variant" style="font-size: 13px;"><fmt:formatDate value="${loan.issueDate}" pattern="dd/MM/yyyy" /></td>
-                                                        <td style="font-size: 13px;"><fmt:formatDate value="${loan.dueDate}" pattern="dd/MM/yyyy" /></td>
-                                                        <td><span class="badge-pill" style="color: var(--tertiary); background-color: var(--tertiary-fixed);">Hoạt động</span></td>
-                                                        <td class="text-end">
-                                                            <button class="btn-icon" title="Gia hạn"><span class="material-symbols-outlined" style="font-size: 18px;">autorenew</span></button>
+                                                        <td class="px-4 py-3 text-on-surface-variant" style="font-size: 13px;">
+                                                            <fmt:formatDate value="${loan.startDate}" pattern="dd/MM/yyyy" />
+                                                        </td>
+                                                        <td class="px-4 py-3" style="font-size: 13px;">
+                                                            <fmt:formatDate value="${loan.endDate}" pattern="dd/MM/yyyy" />
+                                                        </td>
+                                                        <td class="px-4 py-3 text-center">
+                                                            <c:choose>
+                                                                <c:when test="${loan.status eq 'overdue'}">
+                                                                    <span class="badge-pill badge-warning">Quá hạn</span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <span class="badge-pill badge-info">Đang mượn</span>
+                                                                </c:otherwise>
+                                                            </c:choose>
                                                         </td>
                                                     </tr>
                                                 </c:forEach>
                                             </c:when>
                                             <c:otherwise>
                                                 <tr>
-                                                    <td>
-                                                        <p class="fw-bold mb-0" style="font-size: 13px;">Clean Code</p>
-                                                        <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Robert C. Martin · ISBN 978-0132350884</p>
+                                                    <td colspan="4" class="px-4 py-5 text-center text-muted">
+                                                        <span class="material-symbols-outlined d-block mb-2" style="font-size: 40px;">menu_book</span>
+                                                        Hiện tại bạn không mượn cuốn sách nào.
+                                                        <div class="mt-3">
+                                                            <a href="${pageContext.request.contextPath}/book-search" class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3">
+                                                                Tìm kiếm sách
+                                                            </a>
+                                                        </div>
                                                     </td>
-                                                    <td class="text-on-surface-variant" style="font-size: 13px;">15/05/2025</td>
-                                                    <td style="font-size: 13px;">05/06/2025</td>
-                                                    <td><span class="badge-pill" style="color: var(--tertiary); background-color: var(--tertiary-fixed);">Hoạt động</span></td>
-                                                    <td class="text-end"><button class="btn-icon" title="Gia hạn"><span class="material-symbols-outlined" style="font-size: 18px;">autorenew</span></button></td>
                                                 </tr>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Active Reservations Table -->
+                        <div class="raised-card overflow-hidden">
+                            <div class="card-header-row p-4 pb-3" style="border-bottom: 1px solid var(--outline-variant);">
+                                <div>
+                                    <h3 class="card-title text-dark fw-bold mb-1">Yêu cầu đặt trước</h3>
+                                    <p class="card-subtitle text-muted mb-0">Danh sách các cuốn sách bạn đã đăng ký đặt trước</p>
+                                </div>
+                                <a href="${pageContext.request.contextPath}/lecturer/my-borrowings" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                                    Xem Chi tiết <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0 text-start">
+                                    <thead class="bg-surface-container-low">
+                                        <tr>
+                                            <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold" style="font-size: 11px;">Sách</th>
+                                            <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold" style="font-size: 11px;">Ngày đăng ký</th>
+                                            <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold text-center" style="font-size: 11px;">Vị trí chờ</th>
+                                            <th class="px-4 py-3 text-on-surface-variant text-uppercase fw-semibold text-center" style="font-size: 11px;">Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:choose>
+                                            <c:when test="${not empty activeReservations}">
+                                                <c:forEach var="res" items="${activeReservations}">
+                                                    <tr>
+                                                        <td class="px-4 py-3">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="overflow-hidden rounded flex-shrink-0" style="width: 32px; height: 40px; background: var(--surface-container-high);">
+                                                                    <img alt="" class="w-100 h-100" style="object-fit: cover;"
+                                                                         src="${not empty res.book.imagePath ? res.book.imagePath : ''}"
+                                                                         onerror="this.style.display='none'" />
+                                                                </div>
+                                                                <div>
+                                                                    <p class="fw-bold mb-0 text-dark" style="font-size: 13px;"><c:out value="${res.book.title}" /></p>
+                                                                    <p class="text-muted mb-0" style="font-size: 11px;"><c:out value="${res.book.author}" /></p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-4 py-3 text-on-surface-variant" style="font-size: 13px;">
+                                                            <fmt:formatDate value="${res.startDate}" pattern="dd/MM/yyyy" />
+                                                        </td>
+                                                        <td class="px-4 py-3 text-center fw-bold" style="font-size: 13px;">
+                                                            <c:choose>
+                                                                <c:when test="${not empty res.queuePosition}">
+                                                                    #${res.queuePosition}
+                                                                </c:when>
+                                                                <c:otherwise>-</c:otherwise>
+                                                            </c:choose>
+                                                        </td>
+                                                        <td class="px-4 py-3 text-center">
+                                                            <c:choose>
+                                                                <c:when test="${res.status eq 'readypickup'}">
+                                                                    <span class="badge-pill badge-success">Sẵn sàng nhận</span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <span class="badge-pill badge-info">Đang chờ</span>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </c:when>
+                                            <c:otherwise>
                                                 <tr>
-                                                    <td>
-                                                        <p class="fw-bold mb-0" style="font-size: 13px;">Design Patterns</p>
-                                                        <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Gang of Four · ISBN 978-0201633610</p>
+                                                    <td colspan="4" class="px-4 py-5 text-center text-muted">
+                                                        <span class="material-symbols-outlined d-block mb-2" style="font-size: 40px;">event_busy</span>
+                                                        Bạn không có yêu cầu đặt trước nào đang hoạt động.
                                                     </td>
-                                                    <td class="text-on-surface-variant" style="font-size: 13px;">20/05/2025</td>
-                                                    <td style="font-size: 13px;">10/06/2025</td>
-                                                    <td><span class="badge-pill" style="color: var(--tertiary); background-color: var(--tertiary-fixed);">Hoạt động</span></td>
-                                                    <td class="text-end"><button class="btn-icon" title="Gia hạn"><span class="material-symbols-outlined" style="font-size: 18px;">autorenew</span></button></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <p class="fw-bold mb-0" style="font-size: 13px;">The Pragmatic Programmer</p>
-                                                        <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Hunt &amp; Thomas · ISBN 978-0135957059</p>
-                                                    </td>
-                                                    <td class="text-on-surface-variant" style="font-size: 13px;">25/05/2025</td>
-                                                    <td style="font-size: 13px; color: #d97706; font-weight: 600;">15/06/2025</td>
-                                                    <td><span class="badge-pill" style="color: #d97706; background-color: #fef3c7;">Sắp đến hạn</span></td>
-                                                    <td class="text-end"><button class="btn-icon" style="color: var(--primary);" title="Gia hạn"><span class="material-symbols-outlined" style="font-size: 18px;">autorenew</span></button></td>
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>
@@ -315,34 +312,52 @@
 
                     </div><!-- /col-lg-8 -->
 
-                    <!-- Right 1/3: Book Requests + Recent Library News -->
+                    <!-- Right 1/3: Recent Activity + Profile Card -->
                     <div class="col-12 col-lg-4 d-flex flex-column gap-4">
 
-                        <!-- Book Acquisition Requests -->
+                        <!-- Recent Activity -->
                         <div class="raised-card overflow-hidden">
-                            <div class="card-header-row">
-                                <h3 class="card-title mb-0">Yêu cầu Sách của tôi</h3>
-                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1" style="font-size: 12px;">
-                                    <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Yêu cầu mới
-                                </button>
+                            <div class="card-header-row p-4 pb-3" style="border-bottom: 1px solid var(--outline-variant);">
+                                <h3 class="card-title text-dark fw-bold mb-0">Hoạt động gần đây</h3>
+                                <a href="${pageContext.request.contextPath}/lecturer/borrow-history" class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1" style="font-size: 12px;">
+                                    <span class="material-symbols-outlined" style="font-size: 15px;">open_in_new</span> Xem tất cả
+                                </a>
                             </div>
                             <div class="p-3 d-flex flex-column gap-2">
-                                <div class="p-3 rounded-3" style="background-color: var(--surface-container-low); border: 1px solid var(--outline-variant);">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Continuous Delivery</p>
-                                        <span class="badge-pill" style="background-color: #fef3c7; color: #d97706;">Đang xét duyệt</span>
-                                    </div>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Jez Humble, David Farley</p>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 11px;">Đã yêu cầu: 28/05/2025</p>
-                                </div>
-                                <div class="p-3 rounded-3" style="background-color: rgba(209,250,229,0.3); border: 1px solid #a7f3d0;">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Release It!</p>
-                                        <span class="badge-pill" style="background-color: #d1fae5; color: #059669;">Đã phê duyệt</span>
-                                    </div>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Michael T. Nygard</p>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 11px;">Dự kiến: 10/06/2025</p>
-                                </div>
+                                <c:choose>
+                                    <c:when test="${not empty recentLoans}">
+                                        <c:forEach var="loan" items="${recentLoans}">
+                                            <div class="p-3 rounded-3" style="background-color: var(--surface-container-low); border: 1px solid var(--outline-variant);">
+                                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                                    <p class="fw-bold mb-0 text-dark text-truncate" style="max-width: 170px; font-size: 13px;" title="<c:out value='${loan.book.title}'/>">
+                                                        <c:out value="${loan.book.title}" />
+                                                    </p>
+                                                    <c:choose>
+                                                        <c:when test="${loan.status eq 'returned'}">
+                                                            <span class="badge-pill badge-success" style="font-size: 10px;">Đã trả</span>
+                                                        </c:when>
+                                                        <c:when test="${loan.status eq 'overdue'}">
+                                                            <span class="badge-pill badge-warning" style="font-size: 10px;">Quá hạn</span>
+                                                        </c:when>
+                                                        <c:when test="${loan.status eq 'borrowed'}">
+                                                            <span class="badge-pill badge-info" style="font-size: 10px;">Đang mượn</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="badge-pill badge-danger" style="font-size: 10px;"><c:out value="${loan.status}" /></span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </div>
+                                                <p class="text-muted mb-1" style="font-size: 12px;"><c:out value="${loan.book.author}" /></p>
+                                                <p class="text-muted mb-0" style="font-size: 11px;">Ngày mượn: <fmt:formatDate value="${loan.startDate}" pattern="dd/MM/yyyy" /></p>
+                                            </div>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="p-3 text-center text-muted">
+                                            Không có hoạt động nào gần đây.
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </div>
 
@@ -358,33 +373,43 @@
                                     </c:choose>
                                 </div>
                                 <div>
-                                    <p class="fw-bold mb-0" style="font-size: 15px;"><c:out value="${not empty sessionScope.email ? sessionScope.email : 'Giảng viên'}" /></p>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Giảng viên · Đại học FPT</p>
+                                    <p class="fw-bold mb-0 text-dark" style="font-size: 15px;"><c:out value="${not empty sessionScope.email ? sessionScope.email : 'Giảng viên'}" /></p>
+                                    <p class="text-muted mb-0" style="font-size: 12px;">Giảng viên · Đại học FPT</p>
                                 </div>
                             </div>
                             <div class="d-flex flex-column gap-2">
                                 <div class="d-flex justify-content-between p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <span style="font-size: 13px; color: var(--on-surface-variant);">Hạn mức mượn đã dùng</span>
                                     <span style="font-size: 13px; font-weight: 700; color: var(--primary);">
-                                        <c:out value="${activeLoansCount != null ? activeLoansCount : '3'}" /> / 10
+                                        <c:out value="${activeLoansCount != null ? activeLoansCount : '0'}" /> / 10
                                     </span>
                                 </div>
                                 <div class="d-flex justify-content-between p-2 rounded-2" style="background-color: var(--surface-container-low);">
-                                    <span style="font-size: 13px; color: var(--on-surface-variant);">Trạng thái thư viện</span>
-                                    <span style="font-size: 13px; font-weight: 700; color: var(--success);">Tốt</span>
+                                    <span style="font-size: 13px; color: var(--on-surface-variant);">Tình trạng phạt</span>
+                                    <c:choose>
+                                        <c:when test="${not empty totalFines and totalFines gt 0}">
+                                            <span style="font-size: 13px; font-weight: 700; color: var(--warning);">
+                                                <fmt:formatNumber value="${totalFines}" type="number" maxFractionDigits="0"/> VNĐ
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span style="font-size: 13px; font-weight: 700; color: var(--success);">Tốt</span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                                 <div class="d-flex justify-content-between p-2 rounded-2" style="background-color: var(--surface-container-low);">
                                     <span style="font-size: 13px; color: var(--on-surface-variant);">Cấp độ truy cập</span>
-                                    <span style="font-size: 13px; font-weight: 700; color: var(--tertiary);">Nhân viên học thuật</span>
+                                    <span style="font-size: 13px; font-weight: 700; color: var(--tertiary);">Giảng viên</span>
                                 </div>
                             </div>
-                            <a href="#" class="btn btn-sm w-100 mt-3 rounded-3 fw-bold"
+                            <a href="${pageContext.request.contextPath}/lecturer/profile" class="btn btn-sm w-100 mt-3 rounded-3 fw-bold"
                                style="background-color: var(--surface-container-high); color: var(--on-surface-variant); border: 1px solid var(--outline-variant);">
                                 Xem toàn bộ Hồ sơ
                             </a>
                         </div>
 
                     </div><!-- /col-lg-4 -->
+
 
                 </div><!-- /row -->
 
