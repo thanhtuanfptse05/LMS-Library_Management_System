@@ -26,14 +26,20 @@ public final class AppConfig {
     // SMTP / Gmail Configuration
     // =========================================================================
 
-    /** Địa chỉ Gmail dùng để gửi email hệ thống */
-    public static final String SMTP_USERNAME = "ngochuyen2k2lx@gmail.com";
+    /**
+     * Địa chỉ Gmail dùng để gửi email hệ thống.
+     * Production: đọc từ env var SMTP_USERNAME (cấu hình trên Render).
+     * Local dev: fallback về giá trị hardcode.
+     */
+    public static final String SMTP_USERNAME = readConfig("SMTP_USERNAME", "ngochuyen2k2lx@gmail.com");
 
     /**
-     * Gmail App Password (Mật khẩu ứng dụng) của ngochuyen2k2lx@gmail.com.
-     * Được tạo tại: Google Account > Security > App Passwords
+     * Gmail App Password (Mật khẩu ứng dụng).
+     * Production: đọc từ env var SMTP_PASSWORD (cấu hình trên Render).
+     * Local dev: fallback về giá trị hardcode.
+     * Tạo tại: Google Account > Security > App Passwords
      */
-    public static final String SMTP_PASSWORD = "gvwonzsvublgxtht";
+    public static final String SMTP_PASSWORD = readConfig("SMTP_PASSWORD", "gvwonzsvublgxtht");
 
     /** SMTP Host - Gmail */
     public static final String SMTP_HOST = "smtp.gmail.com";
