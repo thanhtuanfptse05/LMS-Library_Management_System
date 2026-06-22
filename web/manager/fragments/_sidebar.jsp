@@ -54,7 +54,7 @@
             <span class="material-symbols-outlined">mail</span>
             <span>Mẫu Email</span>
         </a>
-        <a class="sidebar-link" id="mgr-nav-reports" href="#">
+        <a class="sidebar-link" id="mgr-nav-reports" href="${pageContext.request.contextPath}/manager/reports/dashboard">
             <span class="material-symbols-outlined">bar_chart</span>
             <span>Báo cáo Thống kê</span>
         </a>
