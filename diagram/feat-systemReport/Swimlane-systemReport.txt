@@ -1,0 +1,46 @@
+@startuml Swimlane-systemReport
+title Luồng hoạt động: Xem và Xuất Báo Cáo Hệ Thống
+
+|Library Manager|
+start
+:Truy cập module "Báo cáo Hệ thống";
+:Chọn loại báo cáo \n(Mượn trả, Tài chính, Kho sách...);
+:Nhập tham số bộ lọc \n(Từ ngày, Đến ngày);
+:Bấm "Tạo báo cáo / Xem thống kê";
+
+|System|
+:Filter: Kiểm tra quyền hạn (Role = LibraryManager);
+if (Quyền hợp lệ?) then (Có)
+  :Controller: Nhận request và tham số bộ lọc;
+  :DAO: Truy vấn CSDL \n(Dùng PreparedStatement với các hàm COUNT, SUM, GROUP BY);
+  :Tổng hợp và tính toán số liệu (DTOs);
+  :Trả dữ liệu cho View (JSP);
+  
+  |Library Manager|
+  :Xem biểu đồ và bảng dữ liệu thống kê trên UI;
+  
+  if (Muốn lưu trữ báo cáo?) then (Xuất Excel)
+    :Bấm nút "Xuất Excel";
+    
+    |System|
+    :Controller nhận request xuất file;
+    :Lấy lại dữ liệu theo bộ lọc;
+    :Sử dụng Apache POI tạo Workbook và các Sheet;
+    :Thiết lập Header Content-Type là application/vnd.ms-excel;
+    :Ghi dữ liệu luồng byte ra HttpServletResponse;
+    
+    |Library Manager|
+    :Tải file báo cáo (.xlsx) về máy;
+  else (Chỉ xem)
+  endif
+
+else (Không)
+  |System|
+  :Từ chối truy cập (Redirect to Error / 403);
+  
+  |Library Manager|
+  :Hiển thị thông báo "Không có quyền truy cập";
+endif
+
+stop
+@enduml
