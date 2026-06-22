@@ -31,14 +31,7 @@
                     <span class="material-symbols-outlined me-1" style="font-size: 16px; vertical-align: middle;">search</span>
                     Tra cứu Mục lục
                 </a>
-                <a href="${pageContext.request.contextPath}/student/loans"
-                   class="btn rounded-pill px-5 fw-semibold btn-sm text-decoration-none"
-                   style="padding-top: 10px; padding-bottom: 10px; font-size: 14px;
-                          background: rgba(255,255,255,0.7); color: var(--on-primary-container);
-                          border: 1.5px solid var(--outline-variant); backdrop-filter: blur(4px);">
-                    <span class="material-symbols-outlined me-1" style="font-size: 16px; vertical-align: middle;">book</span>
-                    Phòng học của tôi
-                </a>
+
             </div>
         </div>
         <div class="col-4 d-none d-md-flex justify-content-end align-items-center"

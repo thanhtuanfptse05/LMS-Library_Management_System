@@ -55,10 +55,7 @@
             <span class="material-symbols-outlined">manage_accounts</span>
             <span>Hồ sơ của tôi</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/forgot-password">
-            <span class="material-symbols-outlined">security</span>
-            <span>Cài đặt Bảo mật</span>
-        </a>
+
         <a class="sidebar-link" href="${pageContext.request.contextPath}/#contact">
             <span class="material-symbols-outlined">contact_support</span>
             <span>Trung tâm Trợ giúp</span>

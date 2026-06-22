@@ -51,7 +51,7 @@
 
     <!-- Reserved -->
     <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-3">
-        <a href="${pageContext.request.contextPath}/student/my-borrowings" class="text-decoration-none text-reset d-block h-100">
+        <a href="${pageContext.request.contextPath}/student/my-borrowings#reserved" class="text-decoration-none text-reset d-block h-100">
             <div class="stat-card h-100" style="--card-accent: var(--primary);">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
@@ -90,9 +90,9 @@
             <p class="stat-value">
                 <c:choose>
                     <c:when test="${not empty totalFines}">
-                        <fmt:formatNumber value="${totalFines}" type="currency" currencySymbol="$" maxFractionDigits="2"/>
+                        <fmt:formatNumber value="${totalFines}" type="number" maxFractionDigits="0"/> VNĐ
                     </c:when>
-                    <c:otherwise>$0.00</c:otherwise>
+                    <c:otherwise>0 VNĐ</c:otherwise>
                 </c:choose>
             </p>
             <div class="mini-progress">
