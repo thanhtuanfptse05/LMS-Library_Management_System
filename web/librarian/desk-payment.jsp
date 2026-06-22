@@ -252,6 +252,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Tự động xóa khoảng trắng khỏi các ô nhập mã độc giả
+        const autoTrimInputs = ['memberCode'];
+        autoTrimInputs.forEach(id => {
+            const inputEl = document.getElementById(id);
+            if (inputEl) {
+                const cleanInput = function () {
+                    inputEl.value = inputEl.value.replace(/\s+/g, '');
+                };
+                inputEl.addEventListener('input', cleanInput);
+                inputEl.addEventListener('change', cleanInput);
+                inputEl.addEventListener('blur', cleanInput);
+            }
+        });
+
         // Nút Duyệt chỉ enable khi tick xác nhận đã thu tiền
         const confirmCheckbox = document.getElementById('confirmReceived');
         const btnPayment = document.getElementById('btnPayment');
