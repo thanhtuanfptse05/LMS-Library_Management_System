@@ -14,24 +14,37 @@
         <link href="${pageContext.request.contextPath}/assets/css/book-management.css?v=20260621-1" rel="stylesheet" />
 
         <style>
-            /* Librarian-specific token overrides */
+            /* Librarian-specific token overrides matching ui_rule.md */
             :root {
-                --background: #fff8f6;
-                --on-background: #251913;
-                --on-surface: #251913;
-                --on-surface-variant: #584237;
-                --secondary-fixed: #ffddb7;
-                --secondary-fixed-dim: #e6c095;
-                --on-secondary-fixed: #2a1800;
-                --on-secondary-fixed-variant: #5b4220;
+                --primary: #d97706;
+                --primary-hover: #b45309;
+                --primary-container: #fef3c7;
+                --primary-fixed: #fde68a;
+                --primary-fixed-dim: #fcd34d;
+                --on-primary-container: #78350f;
+                --background: #faf9f8;
+                --on-background: #262626;
+                --surface: #ffffff;
+                --on-surface: #262626;
+                --on-surface-variant: #737373;
+                --secondary-fixed: #e5e5e5;
+                --secondary-fixed-dim: #d4d4d4;
+                --on-secondary-fixed: #171717;
+                --on-secondary-fixed-variant: #404040;
                 --surface-container-lowest: #ffffff;
-                --surface-container-low: #fff1eb;
-                --surface-container: #ffeae0;
-                --surface-container-high: #efe3d9;
-                --surface-container-highest: #e9dcd4;
-                --surface-variant: #f5e0d2;
-                --outline: #8c7164;
-                --outline-variant: #e0c0b1;
+                --surface-container-low: #f5f5f5;
+                --surface-container: #e5e5e5;
+                --surface-container-high: #d4d4d4;
+                --surface-container-highest: #a3a3a3;
+                --surface-variant: #f5f5f5;
+                --outline: #737373;
+                --outline-variant: #e5e5e5;
+                --error: #ef4444;
+                --error-container: #fee2e2;
+                --success: #10b981;
+                --success-container: #d1fae5;
+                --warning: #f59e0b;
+                --warning-container: #fef3c7;
             }
         </style>
     </head>
