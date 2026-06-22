@@ -31,8 +31,8 @@ SET configValue = EXCLUDED.configValue, updatedAt = NOW();
 -- ------------------------------------------------------------
 INSERT INTO SystemConfigurations (configKey, configValue, description, configGroup, updatedBy, updatedAt) VALUES
 ('SEPAY_API_KEY', 'spsk_live_DXEB1eDLNX5VM7inLYKRDLzAL3KQQL2f', 'API Key xác thực Webhook từ SePay', 'system', 6, NOW()),
-('SEPAY_ACCOUNT_NUMBER', '1234567890', 'Số tài khoản ngân hàng nhận tiền phạt', 'system', 6, NOW()),
-('SEPAY_BANK_CODE', 'MBBank', 'Mã ngân hàng nhận tiền phạt (dùng cho VietQR)', 'system', 6, NOW()),
+('SEPAY_ACCOUNT_NUMBER', '96247LMS06', 'Số tài khoản ngân hàng nhận tiền phạt', 'system', 6, NOW()),
+('SEPAY_BANK_CODE', 'BIDV', 'Mã ngân hàng nhận tiền phạt (dùng cho VietQR)', 'system', 6, NOW()),
 ('SEPAY_ACCOUNT_NAME', 'THU VIEN TRUONG DAI HOC', 'Tên chủ tài khoản ngân hàng nhận tiền', 'system', 6, NOW())
 ON CONFLICT (configKey) DO UPDATE 
 SET configValue = EXCLUDED.configValue, updatedAt = NOW();

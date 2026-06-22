@@ -64,7 +64,7 @@ public class MemberFinesServlet extends HttpServlet {
 
             // 4. Lấy cấu hình SePay để sinh VietQR
             String sepayAccountNumber = systemConfigDAO.getValue(conn, "SEPAY_ACCOUNT_NUMBER", "");
-            String sepayBankCode = systemConfigDAO.getValue(conn, "SEPAY_BANK_CODE", "MBBank");
+            String sepayBankCode = systemConfigDAO.getValue(conn, "SEPAY_BANK_CODE", "BIDV");
             String sepayAccountName = systemConfigDAO.getValue(conn, "SEPAY_ACCOUNT_NAME", "");
 
             request.setAttribute("sepayAccountNumber", sepayAccountNumber);
