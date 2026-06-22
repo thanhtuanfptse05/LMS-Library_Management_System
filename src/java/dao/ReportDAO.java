@@ -25,22 +25,20 @@ public class ReportDAO {
             dateFormat = "YYYY";
         }
 
-        String sql = "SELECT to_char(startDate, ?) AS periodLabel, " +
+        String sql = "SELECT to_char(startDate, '" + dateFormat + "') AS periodLabel, " +
                      "COUNT(*) AS totalBorrowed, " +
                      "SUM(CASE WHEN returnedAt IS NOT NULL AND returnedAt <= endDate THEN 1 ELSE 0 END) AS totalReturnedOnTime, " +
                      "SUM(CASE WHEN status = 'overdue' OR (returnedAt IS NULL AND CURRENT_TIMESTAMP > endDate) THEN 1 ELSE 0 END) AS totalOverdue " +
                      "FROM BorrowRecord " +
                      "WHERE startDate >= CAST(? AS TIMESTAMP) AND startDate <= CAST(? AS TIMESTAMP) " +
-                     "GROUP BY to_char(startDate, ?) " +
+                     "GROUP BY to_char(startDate, '" + dateFormat + "') " +
                      "ORDER BY periodLabel ASC";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
              
-            ps.setString(1, dateFormat);
-            ps.setString(2, startDateStr + " 00:00:00");
-            ps.setString(3, endDateStr + " 23:59:59");
-            ps.setString(4, dateFormat);
+            ps.setString(1, startDateStr + " 00:00:00");
+            ps.setString(2, endDateStr + " 23:59:59");
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -69,22 +67,20 @@ public class ReportDAO {
             dateFormat = "YYYY";
         }
 
-        String sql = "SELECT to_char(f.createdAt, ?) AS periodLabel, " +
+        String sql = "SELECT to_char(f.createdAt, '" + dateFormat + "') AS periodLabel, " +
                      "SUM(CASE WHEN p.status = 'paid' THEN p.paidAmount ELSE 0 END) AS totalPaid, " +
                      "SUM(CASE WHEN f.status = 'unpaid' THEN f.amount ELSE 0 END) AS totalUnpaid " +
                      "FROM Fine f " +
                      "LEFT JOIN Payment p ON f.fineId = p.fineId " +
                      "WHERE f.createdAt >= CAST(? AS TIMESTAMP) AND f.createdAt <= CAST(? AS TIMESTAMP) " +
-                     "GROUP BY to_char(f.createdAt, ?) " +
+                     "GROUP BY to_char(f.createdAt, '" + dateFormat + "') " +
                      "ORDER BY periodLabel ASC";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
              
-            ps.setString(1, dateFormat);
-            ps.setString(2, startDateStr + " 00:00:00");
-            ps.setString(3, endDateStr + " 23:59:59");
-            ps.setString(4, dateFormat);
+            ps.setString(1, startDateStr + " 00:00:00");
+            ps.setString(2, endDateStr + " 23:59:59");
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
