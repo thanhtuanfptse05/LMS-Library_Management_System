@@ -869,7 +869,23 @@
                                 <script
                                     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
                                 <script>
-                                    // ════ QUẢN LÝ MÁY QUÉT BARCODE BẰNG ĐIỆN THOẠI ════
+                                    // Tự động xóa khoảng trắng khỏi các ô nhập mã độc giả và barcode
+                                     document.addEventListener('DOMContentLoaded', function () {
+                                         const autoTrimInputs = ['memberCodeSearch', 'checkoutBarcode', 'checkinBarcode'];
+                                         autoTrimInputs.forEach(id => {
+                                             const inputEl = document.getElementById(id);
+                                             if (inputEl) {
+                                                 const cleanInput = function () {
+                                                     inputEl.value = inputEl.value.replace(/\s+/g, '');
+                                                 };
+                                                 inputEl.addEventListener('input', cleanInput);
+                                                 inputEl.addEventListener('change', cleanInput);
+                                                 inputEl.addEventListener('blur', cleanInput);
+                                             }
+                                         });
+                                     });
+
+                                     // ════ QUẢN LÝ MÁY QUÉT BARCODE BẰNG ĐIỆN THOẠI ════
                                     let activeScanInputId = null;
                                     let activeScanButtonEl = null;
                                     let originalBtnHtml = '';
