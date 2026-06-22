@@ -61,6 +61,9 @@ public class StudentDashboardServlet extends HttpServlet {
 
             // ── 2. Active Loans (Sách đang đọc) ──
             loadActiveLoans(conn, userId, request);
+            
+            // ── 2.5. Recent Activity (Hoạt động gần đây) ──
+            loadRecentLoans(conn, userId, request);
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING,
                     "Lỗi khi tải thống kê Dashboard cho Student userId=" + userId, e);
@@ -86,6 +89,23 @@ public class StudentDashboardServlet extends HttpServlet {
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING,
                     "Lỗi khi tải danh sách sách đang mượn cho userId=" + userId, e);
+        }
+    }
+
+    /**
+     * Tải danh sách hoạt động gần đây (recent loans) kèm thông tin Book đầy đủ.
+     */
+    private void loadRecentLoans(Connection conn, int userId, HttpServletRequest request) {
+        try {
+            List<BorrowRecord> recentLoans = borrowRecordDAO.findRecentBorrowRecordsByUserId(conn, userId, 5);
+            for (BorrowRecord record : recentLoans) {
+                Book book = bookDAO.getBookById(record.getBookId());
+                record.setBook(book);
+            }
+            request.setAttribute("recentLoans", recentLoans);
+        } catch (SQLException e) {
+            LOGGER.log(Level.WARNING,
+                    "Lỗi khi tải danh sách hoạt động gần đây cho userId=" + userId, e);
         }
     }
 
