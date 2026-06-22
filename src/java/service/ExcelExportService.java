@@ -1,0 +1,105 @@
+package service;
+
+import dto.BorrowTrendDTO;
+import dto.FinancialTrendDTO;
+import dto.InventoryResultDTO;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+public class ExcelExportService {
+    
+    @SuppressWarnings("unchecked")
+    public void exportSystemReportToExcel(Map<String, Object> data, OutputStream out) throws Exception {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            
+            // Cấu hình style Header
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            Font font = workbook.createFont();
+            font.setBold(true);
+            headerStyle.setFont(font);
+
+            // Sheet 1: Borrow Trends
+            Sheet borrowSheet = workbook.createSheet("Xu Hướng Mượn Trả");
+            List<BorrowTrendDTO> borrowTrends = (List<BorrowTrendDTO>) data.get("borrowTrends");
+            if (borrowTrends != null) {
+                Row headerRow = borrowSheet.createRow(0);
+                createCell(headerRow, 0, "Thời Gian", headerStyle);
+                createCell(headerRow, 1, "Tổng Lượt Mượn", headerStyle);
+                createCell(headerRow, 2, "Trả Đúng Hạn", headerStyle);
+                createCell(headerRow, 3, "Quá Hạn", headerStyle);
+                
+                int rowNum = 1;
+                for (BorrowTrendDTO dto : borrowTrends) {
+                    Row row = borrowSheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(dto.getPeriodLabel());
+                    row.createCell(1).setCellValue(dto.getTotalBorrowed());
+                    row.createCell(2).setCellValue(dto.getTotalReturnedOnTime());
+                    row.createCell(3).setCellValue(dto.getTotalOverdue());
+                }
+                for(int i=0; i<=3; i++) borrowSheet.autoSizeColumn(i);
+            }
+            
+            // Sheet 2: Financial Trends
+            Sheet financialSheet = workbook.createSheet("Đối Chiếu Tài Chính");
+            List<FinancialTrendDTO> financialTrends = (List<FinancialTrendDTO>) data.get("financialTrends");
+            if (financialTrends != null) {
+                Row headerRow = financialSheet.createRow(0);
+                createCell(headerRow, 0, "Thời Gian", headerStyle);
+                createCell(headerRow, 1, "Tiền Đã Thu", headerStyle);
+                createCell(headerRow, 2, "Tiền Chưa Thu", headerStyle);
+                
+                int rowNum = 1;
+                for (FinancialTrendDTO dto : financialTrends) {
+                    Row row = financialSheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(dto.getPeriodLabel());
+                    row.createCell(1).setCellValue(dto.getTotalPaid());
+                    row.createCell(2).setCellValue(dto.getTotalUnpaid());
+                }
+                for(int i=0; i<=2; i++) financialSheet.autoSizeColumn(i);
+            }
+
+            // Sheet 3: Inventory
+            Sheet inventorySheet = workbook.createSheet("Báo Cáo Kiểm Kê");
+            InventoryResultDTO inventoryStats = (InventoryResultDTO) data.get("inventoryStats");
+            if (inventoryStats != null) {
+                Row headerRow = inventorySheet.createRow(0);
+                createCell(headerRow, 0, "Mã Đợt", headerStyle);
+                createCell(headerRow, 1, "Ngày Hoàn Thành", headerStyle);
+                createCell(headerRow, 2, "Vị Trí", headerStyle);
+                createCell(headerRow, 3, "Sách Khớp", headerStyle);
+                createCell(headerRow, 4, "Sách Thiếu", headerStyle);
+                createCell(headerRow, 5, "Sai Vị Trí", headerStyle);
+
+                Row row = inventorySheet.createRow(1);
+                row.createCell(0).setCellValue(inventoryStats.getSessionId());
+                row.createCell(1).setCellValue(inventoryStats.getCompletedAt() != null ? inventoryStats.getCompletedAt().toString() : "");
+                row.createCell(2).setCellValue(inventoryStats.getLocation());
+                row.createCell(3).setCellValue(inventoryStats.getTotalMatched());
+                row.createCell(4).setCellValue(inventoryStats.getTotalMissing());
+                row.createCell(5).setCellValue(inventoryStats.getTotalMisplaced());
+                
+                for(int i=0; i<=5; i++) inventorySheet.autoSizeColumn(i);
+            }
+
+            workbook.write(out);
+        }
+    }
+    
+    private void createCell(Row row, int column, String value, CellStyle style) {
+        Cell cell = row.createCell(column);
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+    }
+}
