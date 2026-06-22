@@ -53,9 +53,9 @@
                            class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
                             <span class="material-symbols-outlined" style="font-size: 16px;">auto_stories</span> Quản lý sách
                         </a>
-                        <a href="${pageContext.request.contextPath}/librarian/catalog.jsp"
+                        <a href="${pageContext.request.contextPath}/librarian/desk-dashboard"
                            class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Mượn sách
+                            <span class="material-symbols-outlined" style="font-size: 16px;">room_service</span> Quầy lưu thông
                         </a>
                     </div>
                 </div>
@@ -131,6 +131,18 @@
                     </div>
                 </div>
 
+                <!-- ─── Scoped Custom styles ─── -->
+                <style>
+                    .border-hover {
+                        transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+                    }
+                    .border-hover:hover {
+                        border-color: var(--primary) !important;
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08);
+                    }
+                </style>
+
                 <!-- ─── Main Split Layout ─── -->
                 <div class="row g-4">
 
@@ -142,15 +154,13 @@
                             <div class="card-header-row">
                                 <div>
                                     <h3 class="card-title">Khoản mượn hoạt động</h3>
-                                    <p class="card-subtitle">Sách đang được mượn</p>
+                                    <p class="card-subtitle">Các bản sách đang lưu hành bên ngoài</p>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1">
-                                        <span class="material-symbols-outlined" style="font-size: 15px;">filter_list</span> Bộ lọc
-                                    </button>
-                                    <button class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1">
-                                        <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Mượn mới
-                                    </button>
+                                    <a href="${pageContext.request.contextPath}/librarian/desk-dashboard"
+                                       class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
+                                        <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Cho mượn sách
+                                    </a>
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -210,9 +220,12 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <tr>
-                                                    <td colspan="6" class="text-center text-muted py-4">
-                                                        <span class="material-symbols-outlined d-block fs-2 mb-2">inbox</span>
-                                                        Không có khoản mượn nào đang hoạt động.
+                                                    <td colspan="6" class="text-center text-muted py-5">
+                                                        <span class="material-symbols-outlined d-block fs-2 mb-2 text-secondary" style="font-variation-settings: 'FILL' 0;">inbox</span>
+                                                        <p class="mb-3 text-secondary" style="font-size: 14px;">Không có khoản mượn nào đang hoạt động.</p>
+                                                        <a href="${pageContext.request.contextPath}/librarian/desk-dashboard" class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 text-decoration-none">
+                                                            Đến quầy lưu thông
+                                                        </a>
                                                     </td>
                                                 </tr>
                                             </c:otherwise>
@@ -255,7 +268,7 @@
 
                     </div><!-- /col-lg-8 -->
 
-                    <!-- Right 1/3: Pending Reservations + Fine Alerts -->
+                    <!-- Right 1/3: Pending Reservations + Fine Alerts + Quick Actions -->
                     <div class="col-12 col-lg-4 d-flex flex-column gap-4">
 
                         <!-- Pending Reservations -->
@@ -294,7 +307,11 @@
                                     </c:when>
                                     <c:otherwise>
                                         <div class="text-center text-muted py-4">
-                                            Không có đơn đặt trước nào đang chờ.
+                                            <span class="material-symbols-outlined d-block fs-2 mb-2 text-secondary" style="font-variation-settings: 'FILL' 0;">bookmark_border</span>
+                                            <p class="mb-2 text-secondary" style="font-size: 13px;">Không có yêu cầu đặt trước nào đang chờ.</p>
+                                            <a href="${pageContext.request.contextPath}/librarian/desk-dashboard" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 text-decoration-none" style="font-size: 12px;">
+                                                Đến quầy lưu thông
+                                            </a>
                                         </div>
                                     </c:otherwise>
                                 </c:choose>
@@ -341,10 +358,64 @@
                                     </c:when>
                                     <c:otherwise>
                                         <div class="text-center text-muted py-4">
-                                            Không có khoản phạt chưa thanh toán nào.
+                                            <span class="material-symbols-outlined d-block fs-2 mb-2 text-secondary" style="font-variation-settings: 'FILL' 0;">payments</span>
+                                            <p class="mb-2 text-secondary" style="font-size: 13px;">Không có khoản phạt chưa thanh toán nào.</p>
+                                            <a href="${pageContext.request.contextPath}/librarian/desk-dashboard" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 text-decoration-none" style="font-size: 12px;">
+                                                Đến quầy thanh toán
+                                            </a>
                                         </div>
                                     </c:otherwise>
                                 </c:choose>
+                            </div>
+                        </div>
+
+                        <!-- Phím tắt Nghiệp vụ -->
+                        <div class="raised-card overflow-hidden">
+                            <div class="card-header-row">
+                                <div>
+                                    <h3 class="card-title mb-0">Nghiệp vụ nhanh</h3>
+                                    <p class="card-subtitle mb-0">Các phím tắt quản lý & vận hành thư viện</p>
+                                </div>
+                            </div>
+                            <div class="p-3 d-flex flex-column gap-2">
+                                <a href="${pageContext.request.contextPath}/book-management/titles" 
+                                   class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
+                                   style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
+                                    <span class="material-symbols-outlined text-primary-custom" style="font-size: 24px;">menu_book</span>
+                                    <div>
+                                        <span class="fw-bold d-block" style="font-size: 13px;">Quản lý Đầu sách</span>
+                                        <span class="text-muted" style="font-size: 11px;">Thêm mới và cập nhật danh mục đầu sách</span>
+                                    </div>
+                                </a>
+                                <a href="${pageContext.request.contextPath}/book-management/incidents" 
+                                   class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
+                                   style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
+                                    <span class="material-symbols-outlined text-primary-custom" style="font-size: 24px;">report</span>
+                                    <div>
+                                        <span class="fw-bold d-block" style="font-size: 13px;">Báo cáo Hỏng & Mất</span>
+                                        <span class="text-muted" style="font-size: 11px;">Cập nhật tình trạng hao mòn và đền bù sách</span>
+                                    </div>
+                                </a>
+                                <a href="${pageContext.request.contextPath}/book-management/inventory" 
+                                   class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
+                                   style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
+                                    <span class="material-symbols-outlined text-primary-custom" style="font-size: 24px;">fact_check</span>
+                                    <div>
+                                        <span class="fw-bold d-block" style="font-size: 13px;">Đối chiếu tồn kho</span>
+                                        <span class="text-muted" style="font-size: 11px;">Mở phiên kiểm kê sách thực tế tại quầy</span>
+                                    </div>
+                                </a>
+                                <c:if test="${sessionScope.role == 'ADMIN' or sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'admin' or sessionScope.role == 'librarian'}">
+                                    <a href="${pageContext.request.contextPath}/book-management/import" 
+                                       class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
+                                       style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
+                                        <span class="material-symbols-outlined text-primary-custom" style="font-size: 24px;">upload_file</span>
+                                        <div>
+                                            <span class="fw-bold d-block" style="font-size: 13px;">Nhập dữ liệu hàng loạt</span>
+                                            <span class="text-muted" style="font-size: 11px;">Nhập thông tin sách từ file mẫu Excel</span>
+                                        </div>
+                                    </a>
+                                </c:if>
                             </div>
                         </div>
 
