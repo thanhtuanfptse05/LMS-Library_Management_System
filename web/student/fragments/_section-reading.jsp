@@ -123,7 +123,7 @@
                     <c:when test="${not empty recommendedBooks}">
                         <c:forEach var="book" items="${recommendedBooks}" end="3">
                             <div class="col-6">
-                                <a href="${pageContext.request.contextPath}/book-search?bookId=${book.bookId}"
+                                <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}"
                                    class="text-decoration-none d-block h-100">
                                     <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
                                         <img class="w-100 h-100"
