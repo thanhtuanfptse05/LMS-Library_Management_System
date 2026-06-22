@@ -3,6 +3,8 @@ package controllers;
 import dao.BookDAO;
 import dao.BorrowRecordDAO;
 import dao.FineDAO;
+import dao.LecturerDAO;
+import dao.MemberProfileDAO;
 import dao.ReservationDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,7 +20,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Book;
 import model.BorrowRecord;
-import model.Reservation;
+import model.Lecturer;
+import model.MemberProfile;
 import util.DatabaseConnection;
 
 /**
@@ -33,6 +36,8 @@ public class LecturerDashboardServlet extends HttpServlet {
     private final BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
     private final ReservationDAO reservationDAO = new ReservationDAO();
     private final FineDAO fineDAO = new FineDAO();
+    private final MemberProfileDAO memberProfileDAO = new MemberProfileDAO();
+    private final LecturerDAO lecturerDAO = new LecturerDAO();
     private final BookDAO bookDAO = new BookDAO();
 
     @Override
@@ -47,8 +52,9 @@ public class LecturerDashboardServlet extends HttpServlet {
 
         int userId = (int) session.getAttribute("userId");
 
-        // Truy vấn 4 metric thống kê cho Stats Cards trên Dashboard
+        // Truy vấn các thông tin thống kê và dữ liệu giao dịch từ CSDL
         try (Connection conn = DatabaseConnection.getConnection()) {
+            // Stats
             request.setAttribute("activeLoansCount",
                     borrowRecordDAO.countActiveBorrowsByUser(conn, userId));
             request.setAttribute("dueSoonCount",
@@ -58,10 +64,28 @@ public class LecturerDashboardServlet extends HttpServlet {
             request.setAttribute("totalFines",
                     fineDAO.getTotalUnpaidFinesByUser(conn, userId));
 
-            // Nạp dữ liệu thực tế cho các danh sách của Giảng viên
-            loadActiveLoans(conn, userId, request);
-            loadRecentLoans(conn, userId, request);
-            loadActiveReservations(conn, userId, request);
+            // Sách đang mượn (myLoans)
+            List<BorrowRecord> myLoans = borrowRecordDAO.findActiveBorrowRecordsByUserId(conn, userId);
+            for (BorrowRecord record : myLoans) {
+                Book book = bookDAO.getBookById(record.getBookId());
+                record.setBook(book);
+            }
+            request.setAttribute("myLoans", myLoans);
+
+            // Hoạt động gần đây (recentLoans) - Tối đa 5 hoạt động
+            List<BorrowRecord> recentLoans = borrowRecordDAO.findRecentBorrowRecordsByUserId(conn, userId, 5);
+            for (BorrowRecord record : recentLoans) {
+                Book book = bookDAO.getBookById(record.getBookId());
+                record.setBook(book);
+            }
+            request.setAttribute("recentLoans", recentLoans);
+
+            // Thông tin cá nhân của giảng viên
+            Lecturer lecturerInfo = lecturerDAO.findByUserId(userId);
+            request.setAttribute("lecturerInfo", lecturerInfo);
+
+            MemberProfile profile = memberProfileDAO.findByUserId(userId);
+            request.setAttribute("profile", profile);
 
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING,
@@ -69,53 +93,5 @@ public class LecturerDashboardServlet extends HttpServlet {
         }
 
         request.getRequestDispatcher("/lecturer/dashboard.jsp").forward(request, response);
-    }
-
-    /**
-     * Tải danh sách sách đang mượn (active loans) kèm thông tin Book đầy đủ.
-     */
-    private void loadActiveLoans(Connection conn, int userId, HttpServletRequest request) {
-        try {
-            List<BorrowRecord> activeLoans = borrowRecordDAO.findActiveBorrowRecordsByUserId(conn, userId);
-            for (BorrowRecord record : activeLoans) {
-                Book book = bookDAO.getBookById(record.getBookId());
-                record.setBook(book);
-            }
-            request.setAttribute("activeLoans", activeLoans);
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, "Lỗi khi tải danh sách sách đang mượn cho lecturer userId=" + userId, e);
-        }
-    }
-
-    /**
-     * Tải danh sách hoạt động gần đây (recent activity) kèm thông tin Book đầy đủ.
-     */
-    private void loadRecentLoans(Connection conn, int userId, HttpServletRequest request) {
-        try {
-            List<BorrowRecord> recentLoans = borrowRecordDAO.findRecentBorrowRecordsByUserId(conn, userId, 5);
-            for (BorrowRecord record : recentLoans) {
-                Book book = bookDAO.getBookById(record.getBookId());
-                record.setBook(book);
-            }
-            request.setAttribute("recentLoans", recentLoans);
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, "Lỗi khi tải danh sách hoạt động gần đây cho lecturer userId=" + userId, e);
-        }
-    }
-
-    /**
-     * Tải danh sách đặt trước đang hoạt động kèm thông tin Book đầy đủ.
-     */
-    private void loadActiveReservations(Connection conn, int userId, HttpServletRequest request) {
-        try {
-            List<Reservation> activeReservations = reservationDAO.findActiveReservationsByUserId(conn, userId);
-            for (Reservation record : activeReservations) {
-                Book book = bookDAO.getBookById(record.getBookId());
-                record.setBook(book);
-            }
-            request.setAttribute("activeReservations", activeReservations);
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, "Lỗi khi tải danh sách đặt trước hoạt động cho lecturer userId=" + userId, e);
-        }
     }
 }
