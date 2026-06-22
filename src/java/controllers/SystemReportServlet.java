@@ -37,7 +37,7 @@ public class SystemReportServlet extends HttpServlet {
             request.setAttribute("financialTrends", data.get("financialTrends"));
             request.setAttribute("inventoryStats", data.get("inventoryStats"));
             
-            request.getRequestDispatcher("/views/report/dashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/system-report.jsp").forward(request, response);
             
         } catch (Exception ex) {
             ex.printStackTrace();
