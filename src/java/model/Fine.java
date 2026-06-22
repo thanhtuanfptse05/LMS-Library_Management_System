@@ -22,7 +22,26 @@ public class Fine {
     // Trường bổ sung (JOIN từ BorrowRecord + Book) để hiển thị tên sách trên giao diện phạt
     private String bookTitle;
 
+    private String memberName;
+    private String memberCode;
+
     // Getters and Setters
+    public String getMemberName() {
+        return memberName;
+    }
+
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
+    }
+
+    public String getMemberCode() {
+        return memberCode;
+    }
+
+    public void setMemberCode(String memberCode) {
+        this.memberCode = memberCode;
+    }
+
     public int getFineId() {
         return fineId;
     }
