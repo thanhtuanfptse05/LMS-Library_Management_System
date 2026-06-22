@@ -316,210 +316,52 @@
                                                                                     </div>
                                                                                 </div>
 
-                                                                                <%-- TRANSACTION OPERATIONS (QUICK
-                                                                                    FORMS) --%>
-                                                                                    <div class="col-12 col-lg-8">
-                                                                                        <div
-                                                                                            class="raised-card p-4 h-100">
-                                                                                            <h4 class="fw-bold mb-4"
-                                                                                                style="font-size:16px;color:var(--on-surface);">
-                                                                                                Thao tác nhanh tại quầy
-                                                                                            </h4>
-
-                                                                                            <div class="row g-4">
-                                                                                                <%-- Check-out Form --%>
-                                                                                                    <div
-                                                                                                        class="col-12 col-md-6">
-                                                                                                        <div class="p-3 rounded-3"
-                                                                                                            style="background-color:rgba(157,67,0,0.04);border:1px solid rgba(157,67,0,0.1);">
-                                                                                                            <h5
-                                                                                                                class="fw-bold small mb-2 d-flex align-items-center gap-2 text-primary-custom">
-                                                                                                                <span
-                                                                                                                    class="material-symbols-outlined"
-                                                                                                                    style="font-size:18px;">published_with_changes</span>
-                                                                                                                Giao
-                                                                                                                sách
-                                                                                                                (Check-out)
-                                                                                                            </h5>
-                                                                                                            <c:choose>
-                                                                                                                <c:when
-                                                                                                                    test="${requestScope.searchedUser.status == 'active'}">
-                                                                                                                    <form
-                                                                                                                        action="${pageContext.request.contextPath}/librarian/checkout"
-                                                                                                                        method="POST"
-                                                                                                                        class="needs-validation"
-                                                                                                                        novalidate>
-                                                                                                                        <input
-                                                                                                                            type="hidden"
-                                                                                                                            name="memberCode"
-                                                                                                                            value="${fn:escapeXml(requestScope.memberCode)}">
-                                                                                                                        <div
-                                                                                                                            class="mb-3">
-                                                                                                                            <label
-                                                                                                                                for="checkoutBarcode"
-                                                                                                                                class="form-label small mb-1">Mã
-                                                                                                                                vạch
-                                                                                                                                bản
-                                                                                                                                sao
-                                                                                                                                (Barcode)</label>
-                                                                                                                            <div
-                                                                                                                                class="input-group input-group-sm">
-                                                                                                                                <input
-                                                                                                                                    type="text"
-                                                                                                                                    id="checkoutBarcode"
-                                                                                                                                    name="barcode"
-                                                                                                                                    class="form-control form-control-sm"
-                                                                                                                                    placeholder="Quét hoặc nhập barcode..."
-                                                                                                                                    required>
-                                                                                                                                <button
-                                                                                                                                    type="button"
-                                                                                                                                    class="btn btn-outline-primary d-flex align-items-center gap-1 btn-scan"
-                                                                                                                                    onclick="toggleScanner('checkoutBarcode', this)">
-                                                                                                                                    <span
-                                                                                                                                        class="material-symbols-outlined"
-                                                                                                                                        style="font-size:16px;">barcode_scanner</span>
-                                                                                                                                    <span>Quét</span>
-                                                                                                                                </button>
-                                                                                                                            </div>
-                                                                                                                        </div>
-                                                                                                                        <button
-                                                                                                                            type="submit"
-                                                                                                                            class="btn btn-sm btn-primary-custom w-100 rounded-3 fw-bold">Xác
-                                                                                                                            nhận
-                                                                                                                            giao
-                                                                                                                            sách</button>
-                                                                                                                    </form>
-                                                                                                                </c:when>
-                                                                                                                <c:otherwise>
-                                                                                                                    <div
-                                                                                                                        class="text-danger small py-3 text-center">
-                                                                                                                        <span
-                                                                                                                            class="material-symbols-outlined"
-                                                                                                                            style="font-size:24px;vertical-align:middle;">block</span>
-                                                                                                                        Tài
-                                                                                                                        khoản
-                                                                                                                        bị
-                                                                                                                        khóa,
-                                                                                                                        không
-                                                                                                                        thể
-                                                                                                                        giao
-                                                                                                                        sách.
-                                                                                                                    </div>
-                                                                                                                </c:otherwise>
-                                                                                                            </c:choose>
-                                                                                                        </div>
-                                                                                                    </div>
-
-                                                                                                    <%-- Check-in Form
-                                                                                                        --%>
-                                                                                                        <div
-                                                                                                            class="col-12 col-md-6">
-                                                                                                            <div class="p-3 rounded-3"
-                                                                                                                style="background-color:rgba(5,150,105,0.04);border:1px solid rgba(5,150,105,0.1);">
-                                                                                                                <h5
-                                                                                                                    class="fw-bold small mb-2 d-flex align-items-center gap-2 text-success">
-                                                                                                                    <span
-                                                                                                                        class="material-symbols-outlined"
-                                                                                                                        style="font-size:18px;">assignment_return</span>
-                                                                                                                    Nhận
-                                                                                                                    trả
-                                                                                                                    sách
-                                                                                                                    (Check-in)
-                                                                                                                </h5>
-                                                                                                                <form
-                                                                                                                    action="${pageContext.request.contextPath}/librarian/checkin"
-                                                                                                                    method="POST"
-                                                                                                                    class="needs-validation"
-                                                                                                                    novalidate>
-                                                                                                                    <input
-                                                                                                                        type="hidden"
-                                                                                                                        name="memberCode"
-                                                                                                                        value="${fn:escapeXml(requestScope.memberCode)}">
-                                                                                                                    <div
-                                                                                                                        class="mb-2">
-                                                                                                                        <label
-                                                                                                                            for="checkinBarcode"
-                                                                                                                            class="form-label small mb-1">Mã
-                                                                                                                            vạch
-                                                                                                                            bản
-                                                                                                                            sao
-                                                                                                                            (Barcode)</label>
-                                                                                                                        <div
-                                                                                                                            class="input-group input-group-sm">
-                                                                                                                            <input
-                                                                                                                                type="text"
-                                                                                                                                id="checkinBarcode"
-                                                                                                                                name="barcode"
-                                                                                                                                class="form-control form-control-sm"
-                                                                                                                                placeholder="Quét hoặc nhập barcode..."
-                                                                                                                                required>
-                                                                                                                            <button
-                                                                                                                                type="button"
-                                                                                                                                class="btn btn-outline-success d-flex align-items-center gap-1 btn-scan"
-                                                                                                                                onclick="toggleScanner('checkinBarcode', this)">
-                                                                                                                                <span
-                                                                                                                                    class="material-symbols-outlined"
-                                                                                                                                    style="font-size:16px;">barcode_scanner</span>
-                                                                                                                                <span>Quét</span>
-                                                                                                                            </button>
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    <div
-                                                                                                                        class="mb-3">
-                                                                                                                        <label
-                                                                                                                            for="checkinCondition"
-                                                                                                                            class="form-label small mb-1">Tình
-                                                                                                                            trạng
-                                                                                                                            sách
-                                                                                                                            trả</label>
-                                                                                                                        <select
-                                                                                                                            id="checkinCondition"
-                                                                                                                            name="condition"
-                                                                                                                            class="form-select form-select-sm"
-                                                                                                                            required>
-                                                                                                                            <option
-                                                                                                                                value="good">
-                                                                                                                                Tốt
-                                                                                                                                (Có
-                                                                                                                                hàng
-                                                                                                                                chờ
-                                                                                                                                tự
-                                                                                                                                động
-                                                                                                                                đẩy)
-                                                                                                                            </option>
-                                                                                                                            <option
-                                                                                                                                value="damaged">
-                                                                                                                                Hỏng
-                                                                                                                                (Tự
-                                                                                                                                động
-                                                                                                                                phạt
-                                                                                                                                &
-                                                                                                                                khóa)
-                                                                                                                            </option>
-                                                                                                                            <option
-                                                                                                                                value="lost">
-                                                                                                                                Mất
-                                                                                                                                (Tự
-                                                                                                                                động
-                                                                                                                                phạt
-                                                                                                                                &
-                                                                                                                                khóa)
-                                                                                                                            </option>
-                                                                                                                        </select>
-                                                                                                                    </div>
-                                                                                                                    <button
-                                                                                                                        type="submit"
-                                                                                                                        class="btn btn-sm btn-success w-100 rounded-3 fw-bold text-white"
-                                                                                                                        style="border:none;">Xác
-                                                                                                                        nhận
-                                                                                                                        nhận
-                                                                                                                        sách</button>
-                                                                                                                </form>
-                                                                                                            </div>
-                                                                                                        </div>
+                                                                                <%-- SUMMARY STATS CARDS --%>
+                                                                                <div class="col-12 col-lg-8">
+                                                                                    <div class="raised-card p-4 h-100">
+                                                                                        <h4 class="fw-bold mb-4" style="font-size:16px;color:var(--on-surface);">
+                                                                                            Thống kê hoạt động độc giả
+                                                                                        </h4>
+                                                                                        <div class="row g-3">
+                                                                                            <!-- Đang mượn -->
+                                                                                            <div class="col-6 col-md-3">
+                                                                                                <div class="p-3 rounded-4 d-flex flex-column align-items-center text-center h-100" 
+                                                                                                     style="background-color: rgba(13, 110, 253, 0.05); border: 1px solid rgba(13, 110, 253, 0.15);">
+                                                                                                    <span class="material-symbols-outlined text-primary mb-2" style="font-size: 32px;">book</span>
+                                                                                                    <span class="text-secondary small fw-medium mb-1">Đang mượn</span>
+                                                                                                    <h3 class="fw-bold text-primary m-0">${fn:length(requestScope.activeBorrows)}</h3>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <!-- Chờ nhận sách -->
+                                                                                            <div class="col-6 col-md-3">
+                                                                                                <div class="p-3 rounded-4 d-flex flex-column align-items-center text-center h-100" 
+                                                                                                     style="background-color: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.15);">
+                                                                                                    <span class="material-symbols-outlined text-warning mb-2" style="font-size: 32px;">pending_actions</span>
+                                                                                                    <span class="text-secondary small fw-medium mb-1">Chờ nhận</span>
+                                                                                                    <h3 class="fw-bold text-warning m-0">${fn:length(requestScope.readyReservations)}</h3>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <!-- Nợ phạt chưa trả -->
+                                                                                            <div class="col-6 col-md-3">
+                                                                                                <div class="p-3 rounded-4 d-flex flex-column align-items-center text-center h-100" 
+                                                                                                     style="background-color: rgba(220, 53, 69, 0.05); border: 1px solid rgba(220, 53, 69, 0.15);">
+                                                                                                    <span class="material-symbols-outlined text-danger mb-2" style="font-size: 32px;">gavel</span>
+                                                                                                    <span class="text-secondary small fw-medium mb-1">Nợ phạt</span>
+                                                                                                    <h3 class="fw-bold text-danger m-0">${fn:length(requestScope.unpaidFines)}</h3>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <!-- Phạt đã trả -->
+                                                                                            <div class="col-6 col-md-3">
+                                                                                                <div class="p-3 rounded-4 d-flex flex-column align-items-center text-center h-100" 
+                                                                                                     style="background-color: rgba(40, 167, 69, 0.05); border: 1px solid rgba(40, 167, 69, 0.15);">
+                                                                                                    <span class="material-symbols-outlined text-success mb-2" style="font-size: 32px;">payments</span>
+                                                                                                    <span class="text-secondary small fw-medium mb-1">Phạt đã trả</span>
+                                                                                                    <h3 class="fw-bold text-success m-0">${fn:length(requestScope.paidFines)}</h3>
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
+                                                                                </div>
 
                                                                                     <%-- 3 LISTS SECTION --%>
                                                                                         <div class="col-12">
