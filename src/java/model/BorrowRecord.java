@@ -122,9 +122,19 @@ public class BorrowRecord {
     // Helper fields for view layer
     private Book book;
     private BookCopy bookCopy;
+    private String memberName;
+    private String memberCode;
+    private String bookTitle;
 
     public Book getBook() { return book; }
     public void setBook(Book book) { this.book = book; }
     public BookCopy getBookCopy() { return bookCopy; }
     public void setBookCopy(BookCopy bookCopy) { this.bookCopy = bookCopy; }
+
+    public String getMemberName() { return memberName; }
+    public void setMemberName(String memberName) { this.memberName = memberName; }
+    public String getMemberCode() { return memberCode; }
+    public void setMemberCode(String memberCode) { this.memberCode = memberCode; }
+    public String getBookTitle() { return bookTitle; }
+    public void setBookTitle(String bookTitle) { this.bookTitle = bookTitle; }
 }
