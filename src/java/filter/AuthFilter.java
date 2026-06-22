@@ -44,6 +44,12 @@ public class AuthFilter implements Filter {
             return;
         }
 
+        // 0b. Health check endpoint — dùng cho UptimeRobot để giữ Render không sleep
+        if ("/health".equals(path)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // 1. Kiểm tra trạng thái đăng nhập
         boolean isLoggedIn = (session != null && session.getAttribute("userId") != null
                 && session.getAttribute("role") != null);
