@@ -215,6 +215,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Tự động xóa khoảng trắng khỏi các ô nhập mã độc giả và barcode
+        const autoTrimInputs = ['memberCode', 'barcode'];
+        autoTrimInputs.forEach(id => {
+            const inputEl = document.getElementById(id);
+            if (inputEl) {
+                const cleanInput = function () {
+                    inputEl.value = inputEl.value.replace(/\s+/g, '');
+                };
+                inputEl.addEventListener('input', cleanInput);
+                inputEl.addEventListener('change', cleanInput);
+                inputEl.addEventListener('blur', cleanInput);
+            }
+        });
+
         // Tự động focus vào ô barcode sau khi submit thành công
         document.addEventListener('DOMContentLoaded', function () {
             const barcodeInput = document.getElementById('barcode');
