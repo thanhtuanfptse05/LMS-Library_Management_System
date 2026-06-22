@@ -118,36 +118,38 @@
                         </div>
                         <!-- Outstanding Fines -->
                         <div class="col-12 col-sm-6 col-xl-3 fade-in-up fade-in-up-4">
-                            <div class="stat-card h-100" style="--card-accent: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="stat-icon" style="background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%)' : 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)'};">
-                                        <span class="material-symbols-outlined" style="color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">payments</span>
+                            <a href="${pageContext.request.contextPath}/lecturer/fines" class="text-decoration-none text-reset d-block h-100">
+                                <div class="stat-card h-100" style="--card-accent: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="stat-icon" style="background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%)' : 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)'};">
+                                            <span class="material-symbols-outlined" style="color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">payments</span>
+                                        </div>
+                                        <c:choose>
+                                            <c:when test="${not empty totalFines and totalFines gt 0}">
+                                                <span class="badge-pill badge-warning">Cần nộp</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge-pill badge-success">Sạch</span>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
-                                    <c:choose>
-                                        <c:when test="${not empty totalFines and totalFines gt 0}">
-                                            <span class="badge-pill badge-warning">Cần nộp</span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="badge-pill badge-success">Sạch</span>
-                                        </c:otherwise>
-                                    </c:choose>
+                                    <p class="stat-label">Tiền phạt chưa đóng</p>
+                                    <p class="stat-value">
+                                        <c:choose>
+                                            <c:when test="${not empty totalFines}">
+                                                <fmt:formatNumber value="${totalFines}" type="number" maxFractionDigits="0"/> VNĐ
+                                            </c:when>
+                                            <c:otherwise>0 VNĐ</c:otherwise>
+                                        </c:choose>
+                                    </p>
+                                    <p style="font-size: 12px; color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'}; margin: 0; font-weight: 600;">
+                                        <c:choose>
+                                            <c:when test="${not empty totalFines and totalFines gt 0}">Bạn có khoản phạt chưa đóng</c:when>
+                                            <c:otherwise>Tài khoản ở trạng thái tốt</c:otherwise>
+                                        </c:choose>
+                                    </p>
                                 </div>
-                                <p class="stat-label">Tiền phạt chưa đóng</p>
-                                <p class="stat-value">
-                                    <c:choose>
-                                        <c:when test="${not empty totalFines}">
-                                            <fmt:formatNumber value="${totalFines}" type="currency" currencySymbol="$" maxFractionDigits="2"/>
-                                        </c:when>
-                                        <c:otherwise>$0.00</c:otherwise>
-                                    </c:choose>
-                                </p>
-                                <p style="font-size: 12px; color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'}; margin: 0; font-weight: 600;">
-                                    <c:choose>
-                                        <c:when test="${not empty totalFines and totalFines gt 0}">Bạn có khoản phạt chưa đóng</c:when>
-                                        <c:otherwise>Tài khoản ở trạng thái tốt</c:otherwise>
-                                    </c:choose>
-                                </p>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </section>
@@ -240,7 +242,7 @@
                                     <h3 class="card-title">Sách đang mượn</h3>
                                     <p class="card-subtitle">Sách tôi đã mượn</p>
                                 </div>
-                                <a href="${pageContext.request.contextPath}/lecturer/my-borrowings" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                                <a href="${pageContext.request.contextPath}/lecturer/borrow-history" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
                                     Xem Lịch sử <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
                                 </a>
                             </div>
