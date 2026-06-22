@@ -285,6 +285,92 @@ public class OnlineCirculationService {
     }
 
     /**
+     * Hủy đơn đặt trước bởi Thủ thư
+     */
+    public void cancelReservationByLibrarian(int librarianId, int reservationId) throws ValidationException, DatabaseException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                // 1. Kiểm tra đơn đặt trước
+                Reservation res = reservationDAO.findReservationById(conn, reservationId);
+                if (res == null) {
+                    throw new ValidationException("Đơn đặt trước không tồn tại.");
+                }
+                if (!"pending".equals(res.getStatus()) && !"readypickup".equals(res.getStatus())) {
+                    throw new ValidationException("Đơn đặt trước không còn ở trạng thái hoạt động để hủy.");
+                }
+
+                // 2. Thực hiện hủy
+                reservationDAO.cancelReservation(conn, reservationId, res.getUserId());
+                auditLogDAO.insert(conn, librarianId, "CANCEL_RESERVATION_BY_LIBRARIAN", "Reservation", reservationId,
+                        "{\"status\":\"" + res.getStatus() + "\",\"userId\":" + res.getUserId() + "}", "{\"status\":\"cancelled\"}");
+
+                String nextUserEmail = null;
+                String nextUserFullName = null;
+                String bookTitle = null;
+
+                // 3. Cascade logic nếu hủy một đơn đã có sẵn sách (queuePosition = 0)
+                if (res.getQueuePosition() != null && res.getQueuePosition() == 0) {
+                    Integer copyId = res.getBookCopyId();
+                    
+                    // Tìm người kế tiếp (queuePosition = 1)
+                    Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
+                    if (nextRes != null && copyId != null) {
+                        // Đôn người kế tiếp lên nhận sách
+                        reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId);
+                        // Dịch hàng đợi
+                        reservationDAO.decrementQueuePositions(conn, res.getBookId());
+                        
+                        // Lấy thông tin gửi email thông báo
+                        User nextUser = userDAO.findByUserId(nextRes.getUserId());
+                        if (nextUser != null) {
+                            nextUserEmail = nextUser.getEmail();
+                            MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
+                            nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
+                            Book b = bookDAO.findById(conn, res.getBookId());
+                            bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                        }
+                    } else if (copyId != null) {
+                        // Không có ai chờ -> trả bản sao về available, tăng availableQuantity của Book
+                        bookCopyDAO.updateStatusToAvailable(conn, copyId);
+                        bookDAO.updateQuantities(conn, res.getBookId(), 0, 1);
+                    }
+                } else if (res.getQueuePosition() != null && res.getQueuePosition() > 0) {
+                    // Nếu hủy một đơn đang nằm trong hàng chờ (queuePosition > 0)
+                    // Dịch hàng đợi phía sau của cuốn sách đó
+                    reservationDAO.shiftQueuePositions(conn, res.getBookId(), res.getQueuePosition());
+                }
+
+                conn.commit();
+
+                // Gửi email thông báo cho người kế tiếp ngoài transaction
+                if (nextUserEmail != null && bookTitle != null) {
+                    sendReadyPickupEmail(nextUserEmail, nextUserFullName, bookTitle);
+                }
+
+            } catch (ValidationException | SQLException e) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+                if (e instanceof ValidationException) {
+                    throw (ValidationException) e;
+                }
+                throw new DatabaseException("Không thể hủy đơn đặt trước do lỗi hệ thống.", e);
+            } finally {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
+        }
+    }
+
+    /**
      * Gia hạn sách trực tuyến (UC11)
      */
     public void renewBook(int userId, int borrowRecordId) throws ValidationException, DatabaseException {
