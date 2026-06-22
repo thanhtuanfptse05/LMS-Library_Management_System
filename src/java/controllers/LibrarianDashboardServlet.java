@@ -51,6 +51,7 @@ public class LibrarianDashboardServlet extends HttpServlet {
             request.setAttribute("returnedToday", returnedToday);
             request.setAttribute("overdueCount", overdueCount);
             request.setAttribute("pendingReservations", pendingReservations);
+            request.setAttribute("now", new java.util.Date());
 
             // 2. Active Loans (Top 10)
             List<BorrowRecord> activeLoans = borrowRecordDAO.findActiveLoans(conn, 10);
