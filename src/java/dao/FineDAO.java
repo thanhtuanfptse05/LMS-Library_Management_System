@@ -330,4 +330,43 @@ public class FineDAO {
                 "INSERT Fine quá hạn thất bại: không lấy được generated key. "
                 + "borrowRecordId=" + borrowRecordId + ", userId=" + userId);
     }
+
+    /**
+     * Lấy danh sách các khoản phạt chưa thanh toán trong hệ thống kèm thông tin độc giả.
+     */
+    public List<Fine> findUnpaidFines(Connection conn, int limit) throws SQLException {
+        List<Fine> list = new ArrayList<>();
+        String sql = "SELECT f.fineId, f.borrowRecordId, f.userId, f.amount, f.reason, f.status, f.createdAt, "
+                   + "       mp.fullName AS memberName, "
+                   + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode "
+                   + "FROM Fine f "
+                   + "JOIN MemberProfile mp ON f.userId = mp.userId "
+                   + "LEFT JOIN Student s ON f.userId = s.userId "
+                   + "LEFT JOIN Lecturer l ON f.userId = l.userId "
+                   + "WHERE f.status = 'unpaid' "
+                   + "ORDER BY f.createdAt DESC "
+                   + "LIMIT ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Fine fine = new Fine();
+                    fine.setFineId(rs.getInt("fineId"));
+                    fine.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    fine.setUserId(rs.getInt("userId"));
+                    fine.setAmount(rs.getBigDecimal("amount"));
+                    fine.setReason(rs.getString("reason"));
+                    fine.setStatus(rs.getString("status"));
+                    fine.setCreatedAt(rs.getTimestamp("createdAt"));
+                    fine.setMemberName(rs.getString("memberName"));
+                    fine.setMemberCode(rs.getString("memberCode"));
+                    list.add(fine);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách Fine unpaid", e);
+            throw e;
+        }
+        return list;
+    }
 }
