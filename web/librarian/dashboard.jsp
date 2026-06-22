@@ -201,7 +201,7 @@
                                                                 <c:when test="${loan.endDate.time < now.time}">
                                                                     <span class="badge-pill badge-error">Quá hạn</span>
                                                                 </c:when>
-                                                                <c:when test="${(loan.endDate.time - now.time) < 3L * 24 * 60 * 60 * 1000}">
+                                                                <c:when test="${(loan.endDate.time - now.time) < 3 * 24 * 60 * 60 * 1000}">
                                                                     <span class="badge-pill badge-warning">Sắp đến hạn</span>
                                                                 </c:when>
                                                                 <c:otherwise>
