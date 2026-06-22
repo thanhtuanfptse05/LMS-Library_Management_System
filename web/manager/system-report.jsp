@@ -60,10 +60,23 @@
                             </div>
                             <div class="col-md-3 d-flex gap-2">
                                 <button type="submit" class="btn btn-sm btn-primary-custom w-100 fw-bold">Lọc dữ liệu</button>
-                                <a href="${pageContext.request.contextPath}/manager/reports/export?startDate=${startDate}&endDate=${endDate}&groupBy=${groupBy}" 
-                                   class="btn btn-sm btn-secondary-custom w-100 fw-bold d-flex align-items-center justify-content-center gap-1">
-                                    <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Xuất Excel
-                                </a>
+                                <div class="dropdown w-100">
+                                    <button class="btn btn-sm btn-secondary-custom w-100 fw-bold d-flex align-items-center justify-content-center gap-1 dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Xuất Excel
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="exportDropdown" style="font-size: 14px;">
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/manager/reports/export?exportType=summary&startDate=${startDate}&endDate=${endDate}&groupBy=${groupBy}">
+                                            <span class="material-symbols-outlined text-primary" style="font-size: 18px;">analytics</span> Báo cáo Tổng hợp
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/manager/reports/export?exportType=borrow_detail&startDate=${startDate}&endDate=${endDate}">
+                                            <span class="material-symbols-outlined text-success" style="font-size: 18px;">menu_book</span> Chi tiết Mượn/Trả sách
+                                        </a></li>
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/manager/reports/export?exportType=finance_detail&startDate=${startDate}&endDate=${endDate}">
+                                            <span class="material-symbols-outlined text-danger" style="font-size: 18px;">payments</span> Chi tiết Tài chính
+                                        </a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </form>
                     </div>

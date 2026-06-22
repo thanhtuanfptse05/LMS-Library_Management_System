@@ -9,17 +9,26 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import service.ExcelExportService;
 import service.ReportService;
+import dao.ReportDAO;
+import dto.BorrowDetailDTO;
+import dto.FinancialDetailDTO;
+import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @WebServlet(name = "ExportReportServlet", urlPatterns = {"/manager/reports/export"})
 public class ExportReportServlet extends HttpServlet {
 
     private ReportService reportService;
     private ExcelExportService excelExportService;
+    private ReportDAO reportDAO;
 
     @Override
     public void init() throws ServletException {
         reportService = new ReportService();
         excelExportService = new ExcelExportService();
+        reportDAO = new ReportDAO();
     }
 
     @Override
@@ -29,14 +38,39 @@ public class ExportReportServlet extends HttpServlet {
         String startDate = request.getParameter("startDate");
         String endDate = request.getParameter("endDate");
         String groupBy = request.getParameter("groupBy");
+        String exportType = request.getParameter("exportType");
+        if (exportType == null || exportType.isEmpty()) {
+            exportType = "summary";
+        }
+        
+        if (startDate == null || startDate.isEmpty()) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            startDate = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
+        }
+        if (endDate == null || endDate.isEmpty()) {
+            endDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        }
         
         try {
-            Map<String, Object> data = reportService.getDashboardData(startDate, endDate, groupBy);
-            
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setHeader("Content-Disposition", "attachment; filename=\"LMS_System_Report.xlsx\"");
             
-            excelExportService.exportSystemReportToExcel(data, response.getOutputStream());
+            if ("borrow_detail".equals(exportType)) {
+                response.setHeader("Content-Disposition", "attachment; filename=\"LMS_Chi_Tiet_Muon_Tra.xlsx\"");
+                List<BorrowDetailDTO> borrowData = reportDAO.getDetailedBorrowRecords(startDate, endDate);
+                excelExportService.exportDetailedBorrowExcel(borrowData, response.getOutputStream());
+                
+            } else if ("finance_detail".equals(exportType)) {
+                response.setHeader("Content-Disposition", "attachment; filename=\"LMS_Chi_Tiet_Tai_Chinh.xlsx\"");
+                List<FinancialDetailDTO> financeData = reportDAO.getDetailedFinancialRecords(startDate, endDate);
+                excelExportService.exportDetailedFinancialExcel(financeData, response.getOutputStream());
+                
+            } else {
+                // Mặc định xuất báo cáo tổng hợp
+                response.setHeader("Content-Disposition", "attachment; filename=\"LMS_System_Report.xlsx\"");
+                Map<String, Object> data = reportService.getDashboardData(startDate, endDate, groupBy);
+                excelExportService.exportSystemReportToExcel(data, response.getOutputStream());
+            }
             
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -2,6 +2,8 @@ package dao;
 
 import dto.BorrowTrendDTO;
 import dto.FinancialTrendDTO;
+import dto.BorrowDetailDTO;
+import dto.FinancialDetailDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -88,6 +90,97 @@ public class ReportDAO {
                     dto.setPeriodLabel(rs.getString("periodLabel"));
                     dto.setTotalPaid(rs.getDouble("totalPaid"));
                     dto.setTotalUnpaid(rs.getDouble("totalUnpaid"));
+                    list.add(dto);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Lấy danh sách chi tiết mượn trả sách
+     */
+    public List<BorrowDetailDTO> getDetailedBorrowRecords(String startDateStr, String endDateStr) throws Exception {
+        List<BorrowDetailDTO> list = new ArrayList<>();
+        
+        String sql = "SELECT COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, m.staffCode, a.staffCode) AS memberCode, " +
+                     "p.fullName, b.title, bc.barcode, " +
+                     "br.startDate, br.endDate, br.returnedAt, br.status " +
+                     "FROM BorrowRecord br " +
+                     "JOIN \"User\" u ON br.userId = u.userId " +
+                     "LEFT JOIN MemberProfile p ON u.userId = p.userId " +
+                     "LEFT JOIN Student s ON u.userId = s.userId " +
+                     "LEFT JOIN Lecturer l ON u.userId = l.userId " +
+                     "LEFT JOIN Librarian lib ON u.userId = lib.userId " +
+                     "LEFT JOIN LibraryManager m ON u.userId = m.userId " +
+                     "LEFT JOIN Admin a ON u.userId = a.userId " +
+                     "JOIN BookCopy bc ON br.bookCopyId = bc.bookCopyId " +
+                     "JOIN Book b ON br.bookId = b.bookId " +
+                     "WHERE br.startDate >= CAST(? AS TIMESTAMP) AND br.startDate <= CAST(? AS TIMESTAMP) " +
+                     "ORDER BY br.startDate DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+             
+            ps.setString(1, startDateStr + " 00:00:00");
+            ps.setString(2, endDateStr + " 23:59:59");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    BorrowDetailDTO dto = new BorrowDetailDTO();
+                    dto.setMemberCode(rs.getString("memberCode"));
+                    dto.setFullName(rs.getString("fullName"));
+                    dto.setBookTitle(rs.getString("title"));
+                    dto.setBarcode(rs.getString("barcode"));
+                    dto.setStartDate(rs.getTimestamp("startDate"));
+                    dto.setEndDate(rs.getTimestamp("endDate"));
+                    dto.setReturnedAt(rs.getTimestamp("returnedAt"));
+                    dto.setStatus(rs.getString("status"));
+                    list.add(dto);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Lấy danh sách chi tiết tài chính
+     */
+    public List<FinancialDetailDTO> getDetailedFinancialRecords(String startDateStr, String endDateStr) throws Exception {
+        List<FinancialDetailDTO> list = new ArrayList<>();
+        
+        String sql = "SELECT COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, m.staffCode, a.staffCode) AS memberCode, " +
+                     "p.fullName, f.reason, f.amount, f.status AS fineStatus, " +
+                     "pay.paidAmount, pay.paymentMethod, pay.paidAt " +
+                     "FROM Fine f " +
+                     "JOIN \"User\" u ON f.userId = u.userId " +
+                     "LEFT JOIN MemberProfile p ON u.userId = p.userId " +
+                     "LEFT JOIN Student s ON u.userId = s.userId " +
+                     "LEFT JOIN Lecturer l ON u.userId = l.userId " +
+                     "LEFT JOIN Librarian lib ON u.userId = lib.userId " +
+                     "LEFT JOIN LibraryManager m ON u.userId = m.userId " +
+                     "LEFT JOIN Admin a ON u.userId = a.userId " +
+                     "LEFT JOIN Payment pay ON f.fineId = pay.fineId " +
+                     "WHERE f.createdAt >= CAST(? AS TIMESTAMP) AND f.createdAt <= CAST(? AS TIMESTAMP) " +
+                     "ORDER BY f.createdAt DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+             
+            ps.setString(1, startDateStr + " 00:00:00");
+            ps.setString(2, endDateStr + " 23:59:59");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    FinancialDetailDTO dto = new FinancialDetailDTO();
+                    dto.setMemberCode(rs.getString("memberCode"));
+                    dto.setFullName(rs.getString("fullName"));
+                    dto.setReason(rs.getString("reason"));
+                    dto.setAmount(rs.getDouble("amount"));
+                    dto.setFineStatus(rs.getString("fineStatus"));
+                    dto.setPaidAmount(rs.getDouble("paidAmount"));
+                    dto.setPaymentMethod(rs.getString("paymentMethod"));
+                    dto.setPaidAt(rs.getTimestamp("paidAt"));
                     list.add(dto);
                 }
             }

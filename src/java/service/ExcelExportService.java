@@ -1,5 +1,7 @@
 package service;
 
+import dto.BorrowDetailDTO;
+import dto.FinancialDetailDTO;
 import dto.BorrowTrendDTO;
 import dto.FinancialTrendDTO;
 import dto.InventoryResultDTO;
@@ -101,5 +103,87 @@ public class ExcelExportService {
         Cell cell = row.createCell(column);
         cell.setCellValue(value);
         cell.setCellStyle(style);
+    }
+
+    public void exportDetailedBorrowExcel(List<BorrowDetailDTO> data, OutputStream out) throws Exception {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            Font font = workbook.createFont();
+            font.setBold(true);
+            headerStyle.setFont(font);
+
+            Sheet sheet = workbook.createSheet("Chi Tiết Mượn Sách");
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"Mã Thẻ", "Họ và Tên", "Tên Sách", "Mã Vạch", "Ngày Mượn", "Hạn Trả", "Ngày Trả Thực Tế", "Trạng Thái"};
+            for (int i = 0; i < columns.length; i++) {
+                createCell(headerRow, i, columns[i], headerStyle);
+            }
+
+            int rowNum = 1;
+            for (BorrowDetailDTO dto : data) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(dto.getMemberCode() != null ? dto.getMemberCode() : "");
+                row.createCell(1).setCellValue(dto.getFullName() != null ? dto.getFullName() : "");
+                row.createCell(2).setCellValue(dto.getBookTitle() != null ? dto.getBookTitle() : "");
+                row.createCell(3).setCellValue(dto.getBarcode() != null ? dto.getBarcode() : "");
+                row.createCell(4).setCellValue(dto.getStartDate() != null ? dto.getStartDate().toString() : "");
+                row.createCell(5).setCellValue(dto.getEndDate() != null ? dto.getEndDate().toString() : "");
+                row.createCell(6).setCellValue(dto.getReturnedAt() != null ? dto.getReturnedAt().toString() : "");
+                
+                String statusVn = dto.getStatus();
+                if ("borrowed".equals(statusVn)) statusVn = "Đang mượn";
+                else if ("returned_good".equals(statusVn)) statusVn = "Đã trả (Tốt)";
+                else if ("returned_damaged".equals(statusVn)) statusVn = "Đã trả (Hỏng)";
+                else if ("overdue".equals(statusVn)) statusVn = "Quá hạn";
+                row.createCell(7).setCellValue(statusVn != null ? statusVn : "");
+            }
+            
+            for(int i=0; i<columns.length; i++) sheet.autoSizeColumn(i);
+
+            workbook.write(out);
+        }
+    }
+
+    public void exportDetailedFinancialExcel(List<FinancialDetailDTO> data, OutputStream out) throws Exception {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            Font font = workbook.createFont();
+            font.setBold(true);
+            headerStyle.setFont(font);
+
+            Sheet sheet = workbook.createSheet("Chi Tiết Tài Chính");
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"Mã Thẻ", "Họ và Tên", "Lý Do Phạt", "Số Tiền Phạt", "Trạng Thái Phạt", "Số Tiền Đã Thu", "Phương Thức Thanh Toán", "Ngày Thu Tiền"};
+            for (int i = 0; i < columns.length; i++) {
+                createCell(headerRow, i, columns[i], headerStyle);
+            }
+
+            int rowNum = 1;
+            for (FinancialDetailDTO dto : data) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(dto.getMemberCode() != null ? dto.getMemberCode() : "");
+                row.createCell(1).setCellValue(dto.getFullName() != null ? dto.getFullName() : "");
+                row.createCell(2).setCellValue(dto.getReason() != null ? dto.getReason() : "");
+                row.createCell(3).setCellValue(dto.getAmount());
+                
+                String statusVn = dto.getFineStatus();
+                if ("paid".equals(statusVn)) statusVn = "Đã thu";
+                else if ("unpaid".equals(statusVn)) statusVn = "Chưa thu";
+                else if ("partially_paid".equals(statusVn)) statusVn = "Thu một phần";
+                row.createCell(4).setCellValue(statusVn != null ? statusVn : "");
+                
+                row.createCell(5).setCellValue(dto.getPaidAmount());
+                row.createCell(6).setCellValue(dto.getPaymentMethod() != null ? dto.getPaymentMethod() : "");
+                row.createCell(7).setCellValue(dto.getPaidAt() != null ? dto.getPaidAt().toString() : "");
+            }
+            
+            for(int i=0; i<columns.length; i++) sheet.autoSizeColumn(i);
+
+            workbook.write(out);
+        }
     }
 }
