@@ -61,11 +61,17 @@ public class SePayWebhookServlet extends HttpServlet {
         // 1. Xác thực API Key (TUỲ CHỌN)
         // Nếu SEPAY_API_KEY được cấu hình trong DB → kiểm tra Header Authorization.
         // Neu KHONG cau hinh (rong) -> bo qua buoc xac thuc (che do "Khong xac thuc" tren SePay).
-        String configuredApiKey = systemConfigDAO.getValue("SEPAY_API_KEY", "");
+        // Trim để loại bỏ khoảng trắng thừa có thể bị copy-paste vào DB
+        String configuredApiKey = systemConfigDAO.getValue("SEPAY_API_KEY", "").trim();
 
         if (!configuredApiKey.isEmpty()) {
             String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.contains(configuredApiKey)) {
+            // SePay gửi header dạng: "Apikey <API_KEY_CUA_BAN"
+            // Kiểm tra authHeader chứa API key (cả dạng bare và dạng "Apikey ...").
+            boolean apiKeyValid = authHeader != null
+                    && (authHeader.contains(configuredApiKey)
+                        || authHeader.equalsIgnoreCase("Apikey " + configuredApiKey));
+            if (!apiKeyValid) {
                 LOGGER.warning("SePay Webhook: Xác thực API Key thất bại. Header: " + authHeader);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 out.print("{\"success\":false,\"message\":\"Unauthorized\"}");
@@ -127,8 +133,11 @@ public class SePayWebhookServlet extends HttpServlet {
         if (code == null) {
             code = "";
         }
-        if (transactionRef == null) {
-            transactionRef = "";
+        if (transactionRef == null || transactionRef.trim().isEmpty()) {
+            // VA (Virtual Account) thường không có referenceCode riêng.
+            // Sinh fallback unique reference để tránh lỗi UNIQUE constraint trên cột transactionReference.
+            transactionRef = "SEPAY-VA-" + System.currentTimeMillis();
+            LOGGER.info("SePay Webhook: referenceCode rỗng, dùng fallback: " + transactionRef);
         }
 
         // 4. Tìm paymentId từ nội dung chuyển khoản
