@@ -9,14 +9,17 @@
     <%-- ════ SIDEBAR ════ --%>
     <jsp:include page="fragments/_sidebar.jsp" />
 
-    <%-- ════ MAIN WRAPPER ════ --%>
-    <div class="main-content-layout d-flex flex-column">
+    <%-- ════ BODY WRAPPER ════ --%>
+    <div class="d-flex main-wrapper overflow-hidden">
 
-        <%-- ════ HEADER ════ --%>
-        <jsp:include page="fragments/_header.jsp" />
+        <%-- ════ MAIN CONTENT ════ --%>
+        <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: var(--background);">
 
-        <%-- ════ CONTENT ════ --%>
-        <main class="main-wrapper container-fluid px-4 py-4">
+            <%-- ════ HEADER ════ --%>
+            <jsp:include page="fragments/_header.jsp" />
+
+            <%-- ════ CONTENT ════ --%>
+            <div class="container-fluid px-4 py-4">
 
             <%-- Breadcrumb --%>
             <nav aria-label="breadcrumb" class="mb-3">
@@ -242,6 +245,7 @@
                 </div>
             </div>
 
+            </div>
         </main>
     </div>
 

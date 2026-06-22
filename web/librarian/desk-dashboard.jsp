@@ -90,14 +90,17 @@
                         <%-- ════ SIDEBAR ════ --%>
                             <jsp:include page="fragments/_sidebar.jsp" />
 
-                            <%-- ════ MAIN WRAPPER ════ --%>
-                                <div class="main-content-layout d-flex flex-column">
+                            <%-- ════ BODY WRAPPER ════ --%>
+                            <div class="d-flex main-wrapper overflow-hidden">
 
-                                    <%-- ════ HEADER ════ --%>
+                                    <%-- ════ MAIN CONTENT ════ --%>
+                                    <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: var(--background);">
+
+                                        <%-- ════ HEADER ════ --%>
                                         <jsp:include page="fragments/_header.jsp" />
 
                                         <%-- ════ CONTENT ════ --%>
-                                            <main class="main-wrapper container-fluid px-4 py-4">
+                                        <div class="container-fluid px-4 py-4">
 
                                                 <%-- Breadcrumb --%>
                                                     <nav aria-label="breadcrumb" class="mb-3">
@@ -859,8 +862,9 @@
                                                                         </div>
                                                                     </c:if>
 
-                                            </main>
-                                </div>
+                                        </div>
+                                    </main>
+                            </div>
 
                                 <script
                                     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
