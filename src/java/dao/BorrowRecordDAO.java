@@ -488,5 +488,100 @@ public class BorrowRecordDAO {
         }
         return list;
     }
+
+    /**
+     * Đếm số sách được mượn hôm nay.
+     */
+    public int countIssuedToday(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE startDate >= date_trunc('day', now())";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số sách mượn hôm nay", e);
+            throw e;
+        }
+        return 0;
+    }
+
+    /**
+     * Đếm số sách được trả hôm nay.
+     */
+    public int countReturnedToday(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE returnedAt >= date_trunc('day', now())";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số sách trả hôm nay", e);
+            throw e;
+        }
+        return 0;
+    }
+
+    /**
+     * Đếm số khoản mượn quá hạn trong toàn hệ thống.
+     */
+    public int countOverdueAll(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE status = 'borrowed' AND endDate < now()";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số khoản mượn quá hạn toàn hệ thống", e);
+            throw e;
+        }
+        return 0;
+    }
+
+    /**
+     * Lấy danh sách các khoản mượn đang hoạt động kèm thông tin độc giả và tiêu đề sách.
+     */
+    public List<BorrowRecord> findActiveLoans(Connection conn, int limit) throws SQLException {
+        List<BorrowRecord> list = new ArrayList<>();
+        String sql = "SELECT br.borrowRecordId, br.userId, br.bookCopyId, br.bookId, br.startDate, br.endDate, br.returnedAt, br.status, br.extensionCount, "
+                   + "       mp.fullName AS memberName, "
+                   + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode, "
+                   + "       b.title AS bookTitle "
+                   + "FROM BorrowRecord br "
+                   + "JOIN MemberProfile mp ON br.userId = mp.userId "
+                   + "JOIN Book b ON br.bookId = b.bookId "
+                   + "LEFT JOIN Student s ON br.userId = s.userId "
+                   + "LEFT JOIN Lecturer l ON br.userId = l.userId "
+                   + "WHERE br.status = 'borrowed' "
+                   + "ORDER BY br.startDate DESC "
+                   + "LIMIT ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    BorrowRecord record = new BorrowRecord();
+                    record.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    record.setUserId(rs.getInt("userId"));
+                    record.setBookCopyId(rs.getInt("bookCopyId"));
+                    record.setBookId(rs.getInt("bookId"));
+                    record.setStartDate(rs.getTimestamp("startDate"));
+                    record.setEndDate(rs.getTimestamp("endDate"));
+                    record.setReturnedAt(rs.getTimestamp("returnedAt"));
+                    record.setStatus(rs.getString("status"));
+                    record.setExtensionCount(rs.getInt("extensionCount"));
+                    record.setMemberName(rs.getString("memberName"));
+                    record.setMemberCode(rs.getString("memberCode"));
+                    record.setBookTitle(rs.getString("bookTitle"));
+                    list.add(record);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách khoản mượn hoạt động", e);
+            throw e;
+        }
+        return list;
+    }
 }
 
