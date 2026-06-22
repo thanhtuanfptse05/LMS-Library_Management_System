@@ -726,4 +726,70 @@ public class ReservationDAO {
         }
         return 0;
     }
+
+    /**
+     * Đếm số yêu cầu đặt trước sách đang ở trạng thái 'pending'.
+     */
+    public int countPendingReservations(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Reservation WHERE status = 'pending'";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số đơn đặt trước pending", e);
+            throw e;
+        }
+        return 0;
+    }
+
+    /**
+     * Lấy danh sách các yêu cầu đặt trước đang ở trạng thái 'pending' kèm thông tin độc giả và sách.
+     */
+    public List<Reservation> findPendingReservations(Connection conn, int limit) throws SQLException {
+        List<Reservation> list = new ArrayList<>();
+        String sql = "SELECT r.reservationId, r.userId, r.bookId, r.bookCopyId, r.status, r.queuePosition, r.startDate, r.endDate, "
+                   + "       mp.fullName AS memberName, "
+                   + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode, "
+                   + "       b.title AS bookTitle "
+                   + "FROM Reservation r "
+                   + "JOIN MemberProfile mp ON r.userId = mp.userId "
+                   + "JOIN Book b ON r.bookId = b.bookId "
+                   + "LEFT JOIN Student s ON r.userId = s.userId "
+                   + "LEFT JOIN Lecturer l ON r.userId = l.userId "
+                   + "WHERE r.status = 'pending' "
+                   + "ORDER BY r.startDate DESC "
+                   + "LIMIT ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Reservation r = new Reservation();
+                    r.setReservationId(rs.getInt("reservationId"));
+                    r.setUserId(rs.getInt("userId"));
+                    r.setBookId(rs.getInt("bookId"));
+                    
+                    int rawBookCopyId = rs.getInt("bookCopyId");
+                    r.setBookCopyId(rs.wasNull() ? null : rawBookCopyId);
+                    
+                    r.setStatus(rs.getString("status"));
+                    
+                    int rawQueuePosition = rs.getInt("queuePosition");
+                    r.setQueuePosition(rs.wasNull() ? null : rawQueuePosition);
+                    
+                    r.setStartDate(rs.getTimestamp("startDate"));
+                    r.setEndDate(rs.getTimestamp("endDate"));
+                    r.setMemberName(rs.getString("memberName"));
+                    r.setMemberCode(rs.getString("memberCode"));
+                    r.setBookTitle(rs.getString("bookTitle"));
+                    list.add(r);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách đặt trước pending", e);
+            throw e;
+        }
+        return list;
+    }
 }
