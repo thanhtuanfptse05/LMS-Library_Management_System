@@ -227,6 +227,7 @@ public class DAOTests {
             int brId = dao.insert(conn, testUserId, testBookCopyId, testBookId, testUserId, end);
             assertNotNull(dao.findActiveBorrowRecord(conn, testBookCopyId));
             assertEquals(1, dao.findActiveBorrowRecordsByUserId(conn, testUserId).size());
+            assertEquals(1, dao.findAllBorrowRecordsByUserId(conn, testUserId).size());
             dao.updateStatusToDamagedOrLost(conn, brId, "damaged");
             dao.updateStatusToReturned(conn, brId);
         }
