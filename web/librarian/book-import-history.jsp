@@ -67,6 +67,23 @@
                     </div>
                 </div>
             </form>
+
+            <c:choose>
+                <c:when test="${selectedStatus == 'success'}"><c:set var="selectedStatusLabel" value="Thành công" /></c:when>
+                <c:when test="${selectedStatus == 'failed'}"><c:set var="selectedStatusLabel" value="Thất bại" /></c:when>
+            </c:choose>
+            <c:if test="${not empty q or not empty selectedStatus}">
+                <div class="bm-active-filters mb-3" aria-label="Bộ lọc đang áp dụng">
+                    <span class="bm-active-filters__label">Đang lọc:</span>
+                    <c:if test="${not empty q}">
+                        <span class="bm-active-filter-chip">Từ khóa: <strong><c:out value="${q}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedStatus}">
+                        <span class="bm-active-filter-chip">Kết quả: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
+                    </c:if>
+                    <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/import-history">Xóa bộ lọc</a>
+                </div>
+            </c:if>
             
             <%-- Bảng danh sách lịch sử các đợt nhập Excel --%>
             <section class="bm-table-card bm-table-card--primary bm-data-table">

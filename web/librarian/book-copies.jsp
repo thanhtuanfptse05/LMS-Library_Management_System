@@ -90,10 +90,33 @@
                 </div>
             </form>
 
+            <c:choose>
+                <c:when test="${selectedStatus == 'available'}"><c:set var="selectedStatusLabel" value="Sẵn sàng" /></c:when>
+                <c:when test="${selectedStatus == 'borrowed'}"><c:set var="selectedStatusLabel" value="Đang mượn" /></c:when>
+                <c:when test="${selectedStatus == 'reserved'}"><c:set var="selectedStatusLabel" value="Đặt trước" /></c:when>
+                <c:when test="${selectedStatus == 'incident'}"><c:set var="selectedStatusLabel" value="Hỏng hoặc mất" /></c:when>
+                <c:when test="${selectedStatus == 'unavailable'}"><c:set var="selectedStatusLabel" value="Ngừng lưu thông" /></c:when>
+            </c:choose>
+            <c:if test="${not empty q or not empty selectedLocation or not empty selectedStatus}">
+                <div class="bm-active-filters mb-3" aria-label="Bộ lọc đang áp dụng">
+                    <span class="bm-active-filters__label">Đang lọc:</span>
+                    <c:if test="${not empty q}">
+                        <span class="bm-active-filter-chip">Từ khóa: <strong><c:out value="${q}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedLocation}">
+                        <span class="bm-active-filter-chip">Vị trí: <strong><c:out value="${selectedLocation}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedStatus}">
+                        <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
+                    </c:if>
+                    <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/copies">Xóa bộ lọc</a>
+                </div>
+            </c:if>
+
             <div class="bm-rule-note bm-rule-note--compact mb-3"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đã đặt trước hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
             
             <%-- Thống kê tổng quan về các bản sao (Tổng, Sẵn sàng, Đang mượn, Hỏng/Mất) --%>
-            <div class="bm-list-stats bm-list-stats--four mb-3">
+            <div class="bm-list-stats bm-list-stats--five mb-3">
                 <article class="bm-list-stat">
                     <span class="material-symbols-outlined">inventory_2</span>
                     <div>
@@ -113,6 +136,13 @@
                     <div>
                         <p class="bm-stat-card__label mb-1">Đang mượn</p>
                         <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.borrowedCopies}" /></p>
+                    </div>
+                </article>
+                <article class="bm-list-stat bm-list-stat--warning">
+                    <span class="material-symbols-outlined">event_available</span>
+                    <div>
+                        <p class="bm-stat-card__label mb-1">Đặt trước</p>
+                        <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.reservedCopies}" /></p>
                     </div>
                 </article>
                 <article class="bm-list-stat bm-list-stat--danger">

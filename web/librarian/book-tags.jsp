@@ -70,6 +70,23 @@
                 </div>
             </form>
 
+            <c:choose>
+                <c:when test="${selectedStatus == 'active'}"><c:set var="selectedStatusLabel" value="Đang dùng" /></c:when>
+                <c:when test="${selectedStatus == 'hidden'}"><c:set var="selectedStatusLabel" value="Đã ẩn" /></c:when>
+            </c:choose>
+            <c:if test="${not empty q or not empty selectedStatus}">
+                <div class="bm-active-filters mb-3" aria-label="Bộ lọc đang áp dụng">
+                    <span class="bm-active-filters__label">Đang lọc:</span>
+                    <c:if test="${not empty q}">
+                        <span class="bm-active-filter-chip">Từ khóa: <strong><c:out value="${q}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedStatus}">
+                        <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
+                    </c:if>
+                    <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/tags">Xóa bộ lọc</a>
+                </div>
+            </c:if>
+
             <%-- Khối thống kê nhanh nhãn sách --%>
             <div class="bm-list-stats bm-list-stats--four mb-3">
                 <article class="bm-list-stat">

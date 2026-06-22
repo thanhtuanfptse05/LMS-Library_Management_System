@@ -40,6 +40,30 @@
                 </c:if>
             </section>
 
+            <c:forEach var="category" items="${categories}">
+                <c:if test="${selectedCategoryId == category.categoryId}">
+                    <c:set var="selectedCategoryName" value="${category.name}" />
+                </c:if>
+            </c:forEach>
+            <c:forEach var="tag" items="${tags}">
+                <c:if test="${selectedTagId == tag.tagId}">
+                    <c:set var="selectedTagName" value="${tag.name}" />
+                </c:if>
+            </c:forEach>
+            <c:choose>
+                <c:when test="${selectedStatus == 'available'}"><c:set var="selectedStatusLabel" value="Đang sử dụng" /></c:when>
+                <c:when test="${selectedStatus == 'noCopies'}"><c:set var="selectedStatusLabel" value="Chưa có bản sao" /></c:when>
+                <c:when test="${selectedStatus == 'unavailable'}"><c:set var="selectedStatusLabel" value="Ngừng sử dụng" /></c:when>
+            </c:choose>
+            <c:choose>
+                <c:when test="${selectedSort == 'title_asc'}"><c:set var="selectedSortLabel" value="Tên sách A-Z" /></c:when>
+                <c:when test="${selectedSort == 'title_desc'}"><c:set var="selectedSortLabel" value="Tên sách Z-A" /></c:when>
+                <c:when test="${selectedSort == 'available_desc'}"><c:set var="selectedSortLabel" value="Sẵn sàng nhiều nhất" /></c:when>
+                <c:when test="${selectedSort == 'available_asc'}"><c:set var="selectedSortLabel" value="Sẵn sàng ít nhất" /></c:when>
+                <c:when test="${selectedSort == 'published_desc'}"><c:set var="selectedSortLabel" value="Xuất bản mới nhất" /></c:when>
+                <c:when test="${selectedSort == 'published_asc'}"><c:set var="selectedSortLabel" value="Xuất bản cũ nhất" /></c:when>
+            </c:choose>
+
             <form class="bm-filter-card bm-title-filter mb-4" method="get" action="${pageContext.request.contextPath}/book-management/titles">
                 <c:if test="${not empty selectedTagId}"><input type="hidden" name="tagId" value="${selectedTagId}"></c:if>
                 <div class="row g-2">
@@ -94,6 +118,28 @@
                     </div>
                 </div>
             </form>
+
+            <c:if test="${not empty q or not empty selectedCategoryId or not empty selectedTagId or not empty selectedStatus or selectedSort != 'updated_desc'}">
+                <div class="bm-active-filters mb-3" aria-label="Bộ lọc đang áp dụng">
+                    <span class="bm-active-filters__label">Đang lọc:</span>
+                    <c:if test="${not empty q}">
+                        <span class="bm-active-filter-chip">Từ khóa: <strong><c:out value="${q}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedCategoryId}">
+                        <span class="bm-active-filter-chip">Thể loại: <strong><c:out value="${selectedCategoryName}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedTagId}">
+                        <span class="bm-active-filter-chip">Nhãn: <strong><c:out value="${selectedTagName}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedStatus}">
+                        <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
+                    </c:if>
+                    <c:if test="${selectedSort != 'updated_desc'}">
+                        <span class="bm-active-filter-chip">Sắp xếp: <strong><c:out value="${selectedSortLabel}" /></strong></span>
+                    </c:if>
+                    <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/titles">Xóa bộ lọc</a>
+                </div>
+            </c:if>
 
             <div class="bm-title-stats mb-3">
                 <div class="bm-title-stat">

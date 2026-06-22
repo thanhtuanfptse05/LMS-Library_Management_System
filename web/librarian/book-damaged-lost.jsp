@@ -110,6 +110,32 @@
                 </div>
             </form>
 
+            <c:choose>
+                <c:when test="${selectedType == 'damaged'}"><c:set var="selectedTypeLabel" value="Hỏng" /></c:when>
+                <c:when test="${selectedType == 'lost'}"><c:set var="selectedTypeLabel" value="Mất" /></c:when>
+            </c:choose>
+            <c:choose>
+                <c:when test="${selectedStatus == 'pending'}"><c:set var="selectedStatusLabel" value="Chờ xác minh" /></c:when>
+                <c:when test="${selectedStatus == 'investigating'}"><c:set var="selectedStatusLabel" value="Đang xử lý" /></c:when>
+                <c:when test="${selectedStatus == 'resolved'}"><c:set var="selectedStatusLabel" value="Đã xử lý" /></c:when>
+                <c:when test="${selectedStatus == 'rejected'}"><c:set var="selectedStatusLabel" value="Báo sai" /></c:when>
+            </c:choose>
+            <c:if test="${not empty q or not empty selectedType or not empty selectedStatus}">
+                <div class="bm-active-filters mb-3" aria-label="Bộ lọc đang áp dụng">
+                    <span class="bm-active-filters__label">Đang lọc:</span>
+                    <c:if test="${not empty q}">
+                        <span class="bm-active-filter-chip">Từ khóa: <strong><c:out value="${q}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedType}">
+                        <span class="bm-active-filter-chip">Loại sự cố: <strong><c:out value="${selectedTypeLabel}" /></strong></span>
+                    </c:if>
+                    <c:if test="${not empty selectedStatus}">
+                        <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
+                    </c:if>
+                    <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/incidents">Xóa bộ lọc</a>
+                </div>
+            </c:if>
+
             <div class="bm-rule-note mb-3"><strong>Quy tắc:</strong> Ghi nhận sự cố sẽ tạm ngừng lưu thông bản sao. Tình trạng Hỏng/Mất chỉ được cập nhật sau khi có kết luận.</div>
 
             <%-- Bảng danh sách các sự cố --%>
