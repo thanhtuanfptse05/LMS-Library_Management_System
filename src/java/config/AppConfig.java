@@ -1,11 +1,5 @@
 package config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Properties;
-
 /**
  * AppConfig — Trung tâm cấu hình toàn cục cho ứng dụng LMS.
  *
@@ -15,8 +9,6 @@ import java.util.Properties;
  * Đã được thêm vào .gitignore. Thay thế bằng biến môi trường khi deploy production.</p>
  */
 public final class AppConfig {
-
-    private static final Properties LOCAL_PROPERTIES = loadLocalProperties();
 
     private AppConfig() {
         // Utility class - không cho phép khởi tạo
@@ -69,13 +61,14 @@ public final class AppConfig {
         return readConfig("SUPABASE_BOOK_COVER_BUCKET", "book-covers");
     }
 
+    /**
+     * Đọc cấu hình runtime từ biến môi trường trước, sau đó tới VM Options -D.
+     * Không đọc file local để tránh lệ thuộc cấu hình ẩn theo từng máy.
+     */
     private static String readConfig(String key) {
         String value = System.getenv(key);
         if (value == null || value.trim().isEmpty()) {
             value = System.getProperty(key);
-        }
-        if (value == null || value.trim().isEmpty()) {
-            value = loadLocalProperties().getProperty(key);
         }
         return value == null || value.trim().isEmpty() ? null : value.trim();
     }
@@ -83,23 +76,5 @@ public final class AppConfig {
     private static String readConfig(String key, String defaultValue) {
         String value = readConfig(key);
         return value == null ? defaultValue : value;
-    }
-
-    private static Properties loadLocalProperties() {
-        Properties properties = new Properties();
-        Path configFile = Path.of(System.getProperty("user.home"), ".lms", "app.properties");
-        if (!Files.isRegularFile(configFile)) {
-            // Fallback for Windows if user.home is system profile
-            configFile = Path.of("C:\\Users\\lethe\\.lms\\app.properties");
-        }
-        if (!Files.isRegularFile(configFile)) {
-            return properties;
-        }
-        try (InputStream input = Files.newInputStream(configFile)) {
-            properties.load(input);
-        } catch (IOException ignored) {
-            // Nếu file cấu hình local lỗi, ứng dụng vẫn dùng env/system properties.
-        }
-        return properties;
     }
 }
