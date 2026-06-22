@@ -228,6 +228,8 @@ public class DAOTests {
             assertNotNull(dao.findActiveBorrowRecord(conn, testBookCopyId));
             assertEquals(1, dao.findActiveBorrowRecordsByUserId(conn, testUserId).size());
             assertEquals(1, dao.findAllBorrowRecordsByUserId(conn, testUserId).size());
+            assertEquals(1, dao.findRecentBorrowRecordsByUserId(conn, testUserId, 5).size());
+            assertEquals(0, dao.findRecentBorrowRecordsByUserId(conn, testUserId, 0).size());
             dao.updateStatusToDamagedOrLost(conn, brId, "damaged");
             dao.updateStatusToReturned(conn, brId);
         }
