@@ -165,6 +165,11 @@ public class NotificationManagerServlet extends HttpServlet {
             redirectWithError(request, response, "Tiêu đề không được để trống");
             return;
         }
+        
+        if (isSendEmail && (selectedTemplateName == null || selectedTemplateName.trim().isEmpty())) {
+            redirectWithError(request, response, "Vui lòng chọn mẫu email khi bật chức năng gửi mail");
+            return;
+        }
 
         Notification notification = new Notification();
         notification.setTitle(title.trim());
@@ -207,6 +212,11 @@ public class NotificationManagerServlet extends HttpServlet {
 
         if (idParam == null || idParam.trim().isEmpty() || title == null || title.trim().isEmpty()) {
             redirectWithError(request, response, "Dữ liệu không hợp lệ");
+            return;
+        }
+
+        if (isSendEmail && (selectedTemplateName == null || selectedTemplateName.trim().isEmpty())) {
+            redirectWithError(request, response, "Vui lòng chọn mẫu email khi bật chức năng gửi mail");
             return;
         }
 
@@ -291,11 +301,11 @@ public class NotificationManagerServlet extends HttpServlet {
 
         List<UserContactDTO> contacts;
         if ("STUDENT".equals(targetRole)) {
-            contacts = userDAO.getActiveContactsByRoles("STUDENT");
+            contacts = userDAO.getActiveContactsByRoles("student");
         } else if ("LECTURER".equals(targetRole)) {
-            contacts = userDAO.getActiveContactsByRoles("LECTURER");
+            contacts = userDAO.getActiveContactsByRoles("lecturer");
         } else {
-            contacts = userDAO.getActiveContactsByRoles("STUDENT", "LECTURER");
+            contacts = userDAO.getActiveContactsByRoles("student", "lecturer");
         }
 
         if (contacts.isEmpty()) {
@@ -310,6 +320,7 @@ public class NotificationManagerServlet extends HttpServlet {
                 new Object[]{contacts.size(), tempName, targetRole});
 
         for (UserContactDTO contact : contacts) {
+            if (contact.getEmail().endsWith("@lms.com")) continue;
             String displayName = (contact.getFullName() != null && !contact.getFullName().isBlank())
                     ? contact.getFullName() : "Bạn";
 
