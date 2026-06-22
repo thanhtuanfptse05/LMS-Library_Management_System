@@ -29,18 +29,7 @@
             <span class="material-symbols-outlined">room_service</span>
             <span>Bảng điều khiển quầy</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-checkout">
-            <span class="material-symbols-outlined">output</span>
-            <span>Mượn sách</span>
-        </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-checkin">
-            <span class="material-symbols-outlined">assignment_return</span>
-            <span>Trả sách</span>
-        </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/cash-payment">
-            <span class="material-symbols-outlined">payments</span>
-            <span>Thanh toán tiền phạt</span>
-        </a>
+
 
         <!-- Quản lý sách -->
         <p class="sidebar-section-label">Quản lý sách</p>
