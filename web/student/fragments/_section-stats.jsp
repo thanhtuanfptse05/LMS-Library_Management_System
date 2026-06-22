@@ -70,36 +70,38 @@
 
     <!-- Overdue Fines -->
     <div class="col-12 col-md-6 col-lg-3 fade-in-up fade-in-up-4">
-        <div class="stat-card h-100" style="--card-accent: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="stat-icon"
-                     style="background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%)' : 'linear-gradient(135deg, var(--success-container) 0%, #a7f3d0 100%)'} ;">
-                    <span class="material-symbols-outlined"
-                          style="color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">payments</span>
+        <a href="${pageContext.request.contextPath}/student/fines" class="text-decoration-none text-reset d-block h-100">
+            <div class="stat-card h-100" style="--card-accent: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon"
+                         style="background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(135deg, var(--warning-container) 0%, #fde68a 100%)' : 'linear-gradient(135deg, var(--success-container) 0%, #a7f3d0 100%)'} ;">
+                        <span class="material-symbols-outlined"
+                              style="color: ${not empty totalFines and totalFines gt 0 ? 'var(--warning)' : 'var(--success)'};">payments</span>
+                    </div>
+                    <c:choose>
+                        <c:when test="${not empty totalFines and totalFines gt 0}">
+                            <span class="badge-pill badge-warning">Cần nộp</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="badge-pill badge-success">Sạch</span>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
-                <c:choose>
-                    <c:when test="${not empty totalFines and totalFines gt 0}">
-                        <span class="badge-pill badge-warning">Cần nộp</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="badge-pill badge-success">Sạch</span>
-                    </c:otherwise>
-                </c:choose>
+                <p class="stat-label">Tiền phạt quá hạn</p>
+                <p class="stat-value">
+                    <c:choose>
+                        <c:when test="${not empty totalFines}">
+                            <fmt:formatNumber value="${totalFines}" type="number" maxFractionDigits="0"/> VNĐ
+                        </c:when>
+                        <c:otherwise>0 VNĐ</c:otherwise>
+                    </c:choose>
+                </p>
+                <div class="mini-progress">
+                    <div class="mini-progress-bar"
+                         style="width: ${not empty totalFines and totalFines gt 0 ? '45' : '0'}%; background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(90deg, #fde68a, var(--warning))' : 'linear-gradient(90deg, #a7f3d0, var(--success))'};"></div>
+                </div>
             </div>
-            <p class="stat-label">Tiền phạt quá hạn</p>
-            <p class="stat-value">
-                <c:choose>
-                    <c:when test="${not empty totalFines}">
-                        <fmt:formatNumber value="${totalFines}" type="number" maxFractionDigits="0"/> VNĐ
-                    </c:when>
-                    <c:otherwise>0 VNĐ</c:otherwise>
-                </c:choose>
-            </p>
-            <div class="mini-progress">
-                <div class="mini-progress-bar"
-                     style="width: ${not empty totalFines and totalFines gt 0 ? '45' : '0'}%; background: ${not empty totalFines and totalFines gt 0 ? 'linear-gradient(90deg, #fde68a, var(--warning))' : 'linear-gradient(90deg, #a7f3d0, var(--success))'};"></div>
-            </div>
-        </div>
+        </a>
     </div>
 
 </section>
