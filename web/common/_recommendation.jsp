@@ -44,6 +44,8 @@
 </style>
 
 <!-- Unified Recommendation UI -->
+<div id="ai-recommendation-metadata" data-is-ai-powered="${isAiPowered}" style="display: none;"></div>
+
 <c:choose>
     <c:when test="${not empty recommendedBooks}">
         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4">
@@ -103,6 +105,16 @@
                                     </span>
                                 </c:forEach>
                             </div>
+
+                            <!-- Recommendation Reason -->
+                            <c:if test="${not empty recommendationReasons[book.bookId]}">
+                                <div class="mt-1 mb-2 p-2 rounded-2" style="background-color: rgba(217, 119, 6, 0.05); border: 1px solid rgba(217, 119, 6, 0.12);">
+                                    <p class="mb-0 text-wrap" style="font-size: 11px; line-height: 1.4; color: #d97706; font-style: italic;">
+                                        <i class="bi bi-lightbulb-fill me-1"></i>
+                                        <c:out value="${recommendationReasons[book.bookId]}"/>
+                                    </p>
+                                </div>
+                            </c:if>
                             
                             <div class="mt-auto pt-2" style="border-top: 1px solid var(--surface-container-high);">
                                 <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="btn btn-sm btn-outline-secondary w-100 fw-bold" style="font-size: 12px;">
