@@ -25,17 +25,29 @@ public class BookDAO {
 
     public List<Book> search(String keyword, Integer categoryId, Integer tagId, String status,
             int offset, int pageSize) throws SQLException {
-        return search(keyword, categoryId, tagId, status, "updated_desc", offset, pageSize);
+        int[] tagIds = tagId != null ? new int[]{tagId} : null;
+        return search(keyword, categoryId, tagIds, status, "updated_desc", offset, pageSize);
     }
 
     public List<Book> search(String keyword, Integer categoryId, Integer tagId, String status,
+            String sort, int offset, int pageSize) throws SQLException {
+        int[] tagIds = tagId != null ? new int[]{tagId} : null;
+        return search(keyword, categoryId, tagIds, status, sort, offset, pageSize);
+    }
+
+    public List<Book> search(String keyword, Integer categoryId, int[] tagIds, String status,
+            int offset, int pageSize) throws SQLException {
+        return search(keyword, categoryId, tagIds, status, "updated_desc", offset, pageSize);
+    }
+
+    public List<Book> search(String keyword, Integer categoryId, int[] tagIds, String status,
             String sort, int offset, int pageSize) throws SQLException {
         StringBuilder sql = new StringBuilder(
                 "SELECT b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, b.price, b.imagePath, "
                 + "b.totalQuantity, b.availableQuantity, b.status, b.createdAt, b.updatedAt "
                 + "FROM Book b WHERE 1=1 ");
         List<Object> parameters = new ArrayList<>();
-        appendFilters(sql, parameters, keyword, categoryId, tagId, status);
+        appendFilters(sql, parameters, keyword, categoryId, tagIds, status);
         sql.append(" ORDER BY ").append(resolveSortClause(sort)).append(" LIMIT ? OFFSET ?");
         parameters.add(pageSize);
         parameters.add(offset);
@@ -75,9 +87,14 @@ public class BookDAO {
     }
 
     public int count(String keyword, Integer categoryId, Integer tagId, String status) throws SQLException {
+        int[] tagIds = tagId != null ? new int[]{tagId} : null;
+        return count(keyword, categoryId, tagIds, status);
+    }
+
+    public int count(String keyword, Integer categoryId, int[] tagIds, String status) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Book b WHERE 1=1 ");
         List<Object> parameters = new ArrayList<>();
-        appendFilters(sql, parameters, keyword, categoryId, tagId, status);
+        appendFilters(sql, parameters, keyword, categoryId, tagIds, status);
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bind(ps, parameters);
@@ -252,19 +269,8 @@ public class BookDAO {
             int page, int pageSize) {
         int offset = Math.max(0, page - 1) * pageSize;
         Integer category = categoryId > 0 ? categoryId : null;
-        Integer tag = tagIds != null && tagIds.length > 0 ? tagIds[0] : null;
         try {
-            List<Book> books = search(keyword, category, tag, availableOnly ? "available" : null, offset, pageSize);
-            if (tagIds == null || tagIds.length < 2) {
-                return books;
-            }
-            books.removeIf(book -> {
-                for (int tagId : tagIds) {
-                    if (!book.hasTag(tagId)) return true;
-                }
-                return false;
-            });
-            return books;
+            return search(keyword, category, tagIds, availableOnly ? "available" : null, offset, pageSize);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Không thể tìm kiếm sách cho Book Discovery", e);
             return new ArrayList<>();
@@ -272,7 +278,13 @@ public class BookDAO {
     }
 
     public int countSearchBooks(String keyword, int categoryId, int[] tagIds, boolean availableOnly) {
-        return searchBooks(keyword, categoryId, tagIds, availableOnly, 1, Integer.MAX_VALUE).size();
+        Integer category = categoryId > 0 ? categoryId : null;
+        try {
+            return count(keyword, category, tagIds, availableOnly ? "available" : null);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Không thể đếm số lượng sách cho Book Discovery", e);
+            return 0;
+        }
     }
 
     public Book getBookById(int bookId) {
@@ -491,9 +503,9 @@ public class BookDAO {
     }
 
     private void appendFilters(StringBuilder sql, List<Object> parameters, String keyword,
-            Integer categoryId, Integer tagId, String status) {
+            Integer categoryId, int[] tagIds, String status) {
         if (keyword != null && !keyword.isBlank()) {
-            sql.append("AND (b.title LIKE ? OR b.isbn LIKE ? OR b.author LIKE ?) ");
+            sql.append("AND (b.title ILIKE ? OR b.isbn ILIKE ? OR b.author ILIKE ?) ");
             String value = "%" + keyword.trim() + "%";
             parameters.add(value);
             parameters.add(value);
@@ -503,9 +515,13 @@ public class BookDAO {
             sql.append("AND EXISTS (SELECT 1 FROM BookCategory bc WHERE bc.bookId = b.bookId AND bc.categoryId = ?) ");
             parameters.add(categoryId);
         }
-        if (tagId != null) {
-            sql.append("AND EXISTS (SELECT 1 FROM BookTag bt WHERE bt.bookId = b.bookId AND bt.tagId = ?) ");
-            parameters.add(tagId);
+        if (tagIds != null && tagIds.length > 0) {
+            for (int tagId : tagIds) {
+                if (tagId > 0) {
+                    sql.append("AND EXISTS (SELECT 1 FROM BookTag bt WHERE bt.bookId = b.bookId AND bt.tagId = ?) ");
+                    parameters.add(tagId);
+                }
+            }
         }
         if ("noCopies".equals(status)) {
             sql.append("AND b.totalQuantity = 0 ");
