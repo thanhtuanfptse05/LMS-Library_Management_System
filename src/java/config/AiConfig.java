@@ -71,14 +71,20 @@ public class AiConfig {
      * Giải quyết API Key từ nhiều nguồn cấu hình theo thứ tự ưu tiên.
      */
     public static String resolveApiKey() {
-        // Ưu tiên 1: System Property (JVM argument -DGEMINI_API_KEY=xxx)
-        String key = System.getProperty("GEMINI_API_KEY");
+        // Ưu tiên 1: System Property (JVM argument -DGEMINI_RECOMMEN_API_KEY=xxx or -DGEMINI_API_KEY=xxx)
+        String key = System.getProperty("GEMINI_RECOMMEN_API_KEY");
+        if (key == null || key.trim().isEmpty()) {
+            key = System.getProperty("GEMINI_API_KEY");
+        }
         if (key != null && !key.trim().isEmpty()) {
             return key.trim();
         }
 
         // Ưu tiên 2: Environment Variable
-        key = System.getenv("GEMINI_API_KEY");
+        key = System.getenv("GEMINI_RECOMMEN_API_KEY");
+        if (key == null || key.trim().isEmpty()) {
+            key = System.getenv("GEMINI_API_KEY");
+        }
         if (key != null && !key.trim().isEmpty()) {
             return key.trim();
         }
@@ -112,7 +118,7 @@ public class AiConfig {
      * Dùng cho môi trường Production/Staging khi cấu hình được lưu trong DB.
      */
     public static String getApiKeyFromDb() {
-        String sql = "SELECT configValue FROM SystemConfigurations WHERE configKey = 'GEMINI_API_KEY'";
+        String sql = "SELECT configValue FROM SystemConfigurations WHERE configKey = 'GEMINI_RECOMMEN_API_KEY'";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()) {
