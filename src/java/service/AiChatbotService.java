@@ -158,6 +158,7 @@ public class AiChatbotService {
      */
     public String retrievePersonalizedBooksContext(Integer userId) {
         List<Book> recommendedBooks = new java.util.ArrayList<>();
+        java.util.Map<Integer, String> recommendedReasons = new java.util.HashMap<>();
         if (userId != null) {
             try {
                 int borrowCount = new dao.BorrowRecordDAO().countUserBorrowHistory(userId);
@@ -167,13 +168,15 @@ public class AiChatbotService {
                     List<model.BookSummaryDTO> candidatePool = bookDAO.getCandidatePoolWithTagsAndCategories(userId, 30);
                     
                     AiRecommendationService recommendationService = new AiRecommendationService();
-                    List<Integer> aiRecommendedIds = recommendationService.getRecommendations(freqProfile, recentHistory, candidatePool);
+                    java.util.Map<Integer, String> aiRecommendations = recommendationService.getRecommendationsWithReasons(freqProfile, recentHistory, candidatePool);
                     
-                    if (aiRecommendedIds != null && !aiRecommendedIds.isEmpty()) {
-                        for (Integer id : aiRecommendedIds) {
+                    if (aiRecommendations != null && !aiRecommendations.isEmpty()) {
+                        for (java.util.Map.Entry<Integer, String> entry : aiRecommendations.entrySet()) {
+                            int id = entry.getKey();
                             Book book = bookDAO.getBookById(id);
                             if (book != null) {
                                 recommendedBooks.add(book);
+                                recommendedReasons.put(id, entry.getValue());
                             }
                         }
                     }
@@ -184,6 +187,7 @@ public class AiChatbotService {
         }
 
         // Fallback: Sách thịnh hành (Top Trending)
+        boolean isAiPowered = !recommendedReasons.isEmpty();
         if (recommendedBooks.isEmpty()) {
             try {
                 recommendedBooks = bookDAO.getTopTrendingBooks(5);
@@ -193,14 +197,28 @@ public class AiChatbotService {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Danh sách các sách gợi ý dành riêng cho bạn:\n");
-        for (Book b : recommendedBooks) {
-            sb.append("- ID: ").append(b.getBookId())
-              .append(" | Tên sách: ").append(b.getTitle())
-              .append(" | Tác giả: ").append(b.getAuthor() != null ? b.getAuthor() : "Chưa rõ")
-              .append(" | Nhà xuất bản: ").append(b.getPublisher() != null ? b.getPublisher() : "Chưa rõ")
-              .append(" | Số lượng khả dụng: ").append(b.getAvailableQuantity())
-              .append(" | Trạng thái: ").append(b.getStatus()).append("\n");
+        if (isAiPowered) {
+            sb.append("Danh sách các sách gợi ý cá nhân hóa dành riêng cho bạn (kèm lý do gợi ý):\n");
+            for (Book b : recommendedBooks) {
+                sb.append("- ID: ").append(b.getBookId())
+                  .append(" | Tên sách: ").append(b.getTitle())
+                  .append(" | Tác giả: ").append(b.getAuthor() != null ? b.getAuthor() : "Chưa rõ")
+                  .append(" | Nhà xuất bản: ").append(b.getPublisher() != null ? b.getPublisher() : "Chưa rõ")
+                  .append(" | Số lượng khả dụng: ").append(b.getAvailableQuantity())
+                  .append(" | Trạng thái: ").append(b.getStatus())
+                  .append(" | Lý do gợi ý: ").append(recommendedReasons.getOrDefault(b.getBookId(), "Cuốn sách phù hợp với sở thích của bạn."))
+                  .append("\n");
+            }
+        } else {
+            sb.append("Danh sách các sách phổ biến, thịnh hành tại thư viện:\n");
+            for (Book b : recommendedBooks) {
+                sb.append("- ID: ").append(b.getBookId())
+                  .append(" | Tên sách: ").append(b.getTitle())
+                  .append(" | Tác giả: ").append(b.getAuthor() != null ? b.getAuthor() : "Chưa rõ")
+                  .append(" | Nhà xuất bản: ").append(b.getPublisher() != null ? b.getPublisher() : "Chưa rõ")
+                  .append(" | Số lượng khả dụng: ").append(b.getAvailableQuantity())
+                  .append(" | Trạng thái: ").append(b.getStatus()).append("\n");
+            }
         }
         return sb.toString();
     }
