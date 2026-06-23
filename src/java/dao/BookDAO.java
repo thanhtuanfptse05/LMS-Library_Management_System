@@ -338,10 +338,62 @@ public class BookDAO {
     }
 
     public List<BookSummaryDTO> getCandidatePoolWithTagsAndCategories(int userId, int limit) {
-        String sql = "SELECT b.bookId FROM Book b WHERE b.status = 'available' "
-                + "AND b.bookId NOT IN (SELECT br.bookId FROM BorrowRecord br WHERE br.userId = ?) "
-                + "ORDER BY b.availableQuantity DESC, b.bookId LIMIT ?";
-        return loadSummaries(sql, limit, userId);
+        String sql = "SELECT b.bookId, "
+                + "  ( "
+                + "    COALESCE(pop.borrowCount, 0) * 0.5 "
+                + "    + COALESCE(cat.matchCount, 0) * 0.3 "
+                + "    + COALESCE(tag.matchCount, 0) * 0.2 "
+                + "  ) AS recommendationScore "
+                + "FROM Book b "
+                + "LEFT JOIN ( "
+                + "    SELECT bookId, COUNT(*) AS borrowCount "
+                + "    FROM BorrowRecord GROUP BY bookId "
+                + ") pop ON pop.bookId = b.bookId "
+                + "LEFT JOIN ( "
+                + "    SELECT bc2.bookId, COUNT(DISTINCT bc1.categoryId) AS matchCount "
+                + "    FROM BookCategory bc1 "
+                + "    JOIN BorrowRecord br ON br.bookId = bc1.bookId AND br.userId = ? "
+                + "    JOIN BookCategory bc2 ON bc2.categoryId = bc1.categoryId "
+                + "    GROUP BY bc2.bookId "
+                + ") cat ON cat.bookId = b.bookId "
+                + "LEFT JOIN ( "
+                + "    SELECT bt2.bookId, COUNT(DISTINCT bt1.tagId) AS matchCount "
+                + "    FROM BookTag bt1 "
+                + "    JOIN BorrowRecord br ON br.bookId = bt1.bookId AND br.userId = ? "
+                + "    JOIN BookTag bt2 ON bt2.tagId = bt1.tagId "
+                + "    GROUP BY bt2.bookId "
+                + ") tag ON tag.bookId = b.bookId "
+                + "WHERE b.status = 'available' "
+                + "  AND b.bookId NOT IN (SELECT br2.bookId FROM BorrowRecord br2 WHERE br2.userId = ?) "
+                + "ORDER BY recommendationScore DESC, b.bookId "
+                + "LIMIT ?";
+        return loadScoredSummaries(sql, limit, userId);
+    }
+
+    private List<BookSummaryDTO> loadScoredSummaries(String sql, int limit, int userId) {
+        Map<Integer, BookSummaryDTO> summaries = new LinkedHashMap<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, userId);
+            ps.setInt(3, userId);
+            ps.setInt(4, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int bookId = rs.getInt("bookId");
+                    Book book = findById(conn, bookId);
+                    if (book == null) continue;
+                    List<String> categories = new ArrayList<>();
+                    for (Category category : book.getCategories()) categories.add(category.getName());
+                    List<String> tags = new ArrayList<>();
+                    for (Tag tag : book.getTags()) tags.add(tag.getName());
+                    summaries.put(bookId, new BookSummaryDTO(bookId, book.getTitle(), categories, tags));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.WARNING, "Không thể tải dữ liệu tóm tắt cho gợi ý sách", e);
+        }
+        return new ArrayList<>(summaries.values());
     }
 
     private List<BookSummaryDTO> loadSummaries(String sql, int limit, int userId) {
@@ -359,7 +411,7 @@ public class BookDAO {
                     for (Category category : book.getCategories()) categories.add(category.getName());
                     List<String> tags = new ArrayList<>();
                     for (Tag tag : book.getTags()) tags.add(tag.getName());
-                    summaries.put(bookId, new BookSummaryDTO(bookId, categories, tags));
+                    summaries.put(bookId, new BookSummaryDTO(bookId, book.getTitle(), categories, tags));
                 }
             }
         } catch (SQLException e) {
