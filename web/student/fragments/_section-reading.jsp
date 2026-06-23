@@ -106,7 +106,12 @@
     <!-- Recommended Books (4 cols) -->
     <div class="col-12 col-lg-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <h2 class="fs-4 fw-bold mb-0 text-dark">Gợi ý cho bạn</h2>
+            <h2 class="fs-4 fw-bold mb-0 text-dark">
+                <c:choose>
+                    <c:when test="${isAiPowered}">✨ Bạn có thể sẽ thích</c:when>
+                    <c:otherwise>🔥 Sách phổ biến</c:otherwise>
+                </c:choose>
+            </h2>
             <a href="${pageContext.request.contextPath}/book-search"
                class="d-flex align-items-center text-decoration-none text-primary-custom">
                 <span class="material-symbols-outlined">arrow_forward</span>
@@ -115,7 +120,14 @@
 
         <div class="raised-card p-4 d-flex flex-column">
             <p class="text-on-surface-variant small mb-4">
-                Lựa chọn dựa trên lịch sử mượn sách gần đây của bạn.
+                <c:choose>
+                    <c:when test="${isAiPowered}">
+                        Lựa chọn cá nhân hóa dựa trên lịch sử mượn sách gần đây của bạn.
+                    </c:when>
+                    <c:otherwise>
+                        Top những sách được mượn nhiều nhất tại thư viện.
+                    </c:otherwise>
+                </c:choose>
             </p>
 
             <div class="row g-3 flex-grow-1">
@@ -135,9 +147,14 @@
                                     <p class="fw-semibold text-dark mb-0 text-truncate small">
                                         <c:out value="${book.title}"/>
                                     </p>
-                                    <p class="text-on-surface-variant text-uppercase mb-0" style="font-size: 10px;">
+                                    <p class="text-on-surface-variant text-uppercase mb-1 text-truncate" style="font-size: 10px;">
                                         <c:out value="${book.author}"/>
                                     </p>
+                                    <c:if test="${not empty recommendationReasons[book.bookId]}">
+                                        <div class="mt-1 p-1.5 rounded-2" style="background-color: rgba(217, 119, 6, 0.05); border: 1px solid rgba(217, 119, 6, 0.12); font-size: 9px; line-height: 1.3; color: #d97706; font-style: italic;">
+                                            <i class="bi bi-lightbulb-fill"></i> <c:out value="${recommendationReasons[book.bookId]}"/>
+                                        </div>
+                                    </c:if>
                                 </a>
                             </div>
                         </c:forEach>
