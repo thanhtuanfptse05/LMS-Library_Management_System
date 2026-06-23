@@ -46,6 +46,7 @@ public class SystemConfigService {
             Map.entry("SEPAY_ACCOUNT_NAME", "STRING"),
             Map.entry("SEPAY_QR_URL", "STRING"),
             Map.entry("GEMINI_API_KEY", "STRING"),
+            Map.entry("GEMINI_RECOMMEN_API_KEY", "STRING"),
             Map.entry("GEMINI_CHATBOT_API_KEY", "STRING")
     );
 
