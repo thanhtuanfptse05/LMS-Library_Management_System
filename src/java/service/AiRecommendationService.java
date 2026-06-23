@@ -43,6 +43,20 @@ public class AiRecommendationService {
             java.util.Map<String, java.util.Map<String, Integer>> frequencyProfile,
             List<model.BookSummaryDTO> recentHistory,
             List<model.BookSummaryDTO> candidatePool) {
+        java.util.Map<Integer, String> recs = getRecommendationsWithReasons(frequencyProfile, recentHistory, candidatePool);
+        if (recs == null) {
+            return null;
+        }
+        return new ArrayList<>(recs.keySet());
+    }
+
+    /**
+     * Gọi Gemini API lấy danh sách ID sách kèm lý do đề xuất.
+     */
+    public java.util.Map<Integer, String> getRecommendationsWithReasons(
+            java.util.Map<String, java.util.Map<String, Integer>> frequencyProfile,
+            List<model.BookSummaryDTO> recentHistory,
+            List<model.BookSummaryDTO> candidatePool) {
             
         if (candidatePool == null || candidatePool.isEmpty()) {
             LOGGER.log(Level.WARNING, "[AI-SVC] CandidatePool is empty or null, skipping AI call.");
@@ -54,14 +68,14 @@ public class AiRecommendationService {
                                 ? AiConfig.getGeminiApiKey().substring(0, 8) + "..."
                                 : AiConfig.getGeminiApiKey() });
 
-        String prompt = buildPrompt(frequencyProfile, recentHistory, candidatePool);
+        String prompt = buildPromptWithReasons(frequencyProfile, recentHistory, candidatePool);
         String jsonPayload = buildJsonPayload(prompt);
 
         try {
             String jsonResponse = sendPostRequest(jsonPayload);
             LOGGER.log(Level.FINE, "[AI-SVC] Gemini API returned successfully ({0} characters).", jsonResponse.length());
-            List<Integer> aiRecommendedIds = parseResponse(jsonResponse);
-            return filterHallucination(aiRecommendedIds, candidatePool);
+            java.util.Map<Integer, String> aiRecommended = parseResponseWithReasons(jsonResponse);
+            return filterHallucinationWithReasons(aiRecommended, candidatePool);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "[AI-SVC] AI error occurred (network/timeout/invalid JSON), triggering fallback: {0}", e.getMessage());
             return null;
@@ -69,9 +83,9 @@ public class AiRecommendationService {
     }
 
     /**
-     * Tạo câu lệnh yêu cầu AI phong phú (3 phần).
+     * Tạo câu lệnh yêu cầu AI phong phú (3 phần) kèm yêu cầu lý do tiếng Việt.
      */
-    private String buildPrompt(
+    private String buildPromptWithReasons(
             java.util.Map<String, java.util.Map<String, Integer>> frequencyProfile,
             List<model.BookSummaryDTO> recentHistory,
             List<model.BookSummaryDTO> candidatePool) {
@@ -113,8 +127,14 @@ public class AiRecommendationService {
         prompt.append("=== INSTRUCTIONS ===\n");
         prompt.append("Based on the user's interest profile and recently borrowed books above, ");
         prompt.append("pick EXACTLY 5 diverse book IDs from the CANDIDATE BOOKS list that the user would most likely want to read next.\n");
-        prompt.append("CRITICAL INSTRUCTION: You MUST return ONLY a JSON array of integers like [1, 2, 3]. ");
-        prompt.append("Do NOT return any markdown formatting (no ```json), no code blocks, no text explanations. Just the raw array.");
+        prompt.append("For each picked book, write a short, friendly, personalized recommendation reason (1 sentence) in Vietnamese, explaining why this book was chosen for them based on their profile (e.g., 'Phù hợp vì bạn thường đọc thể loại Khoa học viễn tưởng').\n");
+        prompt.append("CRITICAL INSTRUCTION: You MUST return a JSON array of objects. Each object must have EXACTLY two keys: 'id' (integer) and 'reason' (string, in Vietnamese).\n");
+        prompt.append("Example format:\n");
+        prompt.append("[\n");
+        prompt.append("  {\"id\": 12, \"reason\": \"Cuốn sách này phù hợp với sở thích đọc truyện trinh thám của bạn.\"},\n");
+        prompt.append("  {\"id\": 45, \"reason\": \"Gợi ý cho bạn vì bạn gần đây đã đọc tác phẩm của cùng tác giả này.\"}\n");
+        prompt.append("]\n");
+        prompt.append("Do NOT return any markdown formatting (no ```json), no code blocks, no text explanations. Just the raw JSON array.");
         
         return prompt.toString();
     }
@@ -204,9 +224,9 @@ public class AiRecommendationService {
     }
 
     /**
-     * Phân tích cục JSON khổng lồ trả về để lấy đoạn Text do AI trả lời.
+     * Phân tích JSON phản hồi để lấy thông tin gợi ý kèm lý do.
      */
-    private List<Integer> parseResponse(String jsonResponse) throws Exception {
+    private java.util.Map<Integer, String> parseResponseWithReasons(String jsonResponse) throws Exception {
         JsonObject root = JsonParser.parseString(jsonResponse).getAsJsonObject();
         JsonArray candidates = root.getAsJsonArray("candidates");
         if (candidates == null || candidates.size() == 0) {
@@ -220,30 +240,33 @@ public class AiRecommendationService {
         // Dọn dẹp phòng trường hợp AI vẫn ngoan cố xuất ra markdown ```json
         textResponse = textResponse.replace("```json", "").replace("```", "").trim();
 
-        // Parse mảng JSON [1, 2, 3]
-        JsonArray idsArray = JsonParser.parseString(textResponse).getAsJsonArray();
-        List<Integer> list = new ArrayList<>();
-        for (JsonElement element : idsArray) {
-            list.add(element.getAsInt());
+        // Parse mảng JSON [{"id": 12, "reason": "..."}]
+        JsonArray arr = JsonParser.parseString(textResponse).getAsJsonArray();
+        java.util.Map<Integer, String> map = new java.util.LinkedHashMap<>();
+        for (JsonElement element : arr) {
+            JsonObject obj = element.getAsJsonObject();
+            int id = obj.get("id").getAsInt();
+            String reason = obj.get("reason").getAsString();
+            map.put(id, reason);
         }
-        return list;
+        return map;
     }
 
     /**
-     * FR-46: Anti-Hallucination
-     * Gạch bỏ bất kỳ ID nào AI gửi về mà không nằm trong kho ứng viên.
+     * Lọc ảo giác trên bản đồ gợi ý.
      */
-    private List<Integer> filterHallucination(List<Integer> aiIds, List<model.BookSummaryDTO> pool) {
-        List<Integer> safeList = new ArrayList<>();
+    private java.util.Map<Integer, String> filterHallucinationWithReasons(java.util.Map<Integer, String> aiRecommended, List<model.BookSummaryDTO> pool) {
+        java.util.Map<Integer, String> safeMap = new java.util.LinkedHashMap<>();
         java.util.Set<Integer> validIds = pool.stream().map(model.BookSummaryDTO::getBookId).collect(java.util.stream.Collectors.toSet());
         
-        for (Integer id : aiIds) {
+        for (java.util.Map.Entry<Integer, String> entry : aiRecommended.entrySet()) {
+            int id = entry.getKey();
             if (validIds.contains(id)) {
-                safeList.add(id);
+                safeMap.put(id, entry.getValue());
             } else {
                 LOGGER.warning("ANTI-HALLUCINATION: Blocked AI-hallucinated book ID = " + id);
             }
         }
-        return safeList;
+        return safeMap;
     }
 }
