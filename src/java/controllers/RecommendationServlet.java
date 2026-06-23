@@ -36,21 +36,31 @@ public class RecommendationServlet extends HttpServlet {
     private final AiRecommendationService aiService = new AiRecommendationService();
 
     private static final String CACHE_KEY = "cachedRecommendations";
+    private static final String REASONS_CACHE_KEY = "cachedRecommendationReasons";
+    private static final String IS_AI_CACHE_KEY = "cachedIsAiPowered";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         List<Book> recommendedBooks = new ArrayList<>();
+        java.util.Map<Integer, String> recommendationReasons = new java.util.HashMap<>();
+        boolean isAiPowered = false;
         HttpSession session = request.getSession(false);
 
         // --- Bước 1: Kiểm tra Session Cache (Task #5) ---
         if (session != null) {
             @SuppressWarnings("unchecked")
             List<Book> cached = (List<Book>) session.getAttribute(CACHE_KEY);
+            @SuppressWarnings("unchecked")
+            java.util.Map<Integer, String> cachedReasons = (java.util.Map<Integer, String>) session.getAttribute(REASONS_CACHE_KEY);
+            Boolean cachedIsAi = (Boolean) session.getAttribute(IS_AI_CACHE_KEY);
+            
             if (cached != null && !cached.isEmpty()) {
                 LOGGER.log(Level.FINE, "[AI-REC] Cache HIT - Returning cached recommendations ({0} books).", cached.size());
                 request.setAttribute("recommendedBooks", cached);
+                request.setAttribute("recommendationReasons", cachedReasons != null ? cachedReasons : new java.util.HashMap<>());
+                request.setAttribute("isAiPowered", cachedIsAi != null ? cachedIsAi : false);
                 request.getRequestDispatcher("/common/_recommendation.jsp").forward(request, response);
                 return;
             }
@@ -75,21 +85,24 @@ public class RecommendationServlet extends HttpServlet {
                 
                 LOGGER.log(Level.FINE, "[AI-REC] Preparing context... CandidatePool size={0}", candidatePool.size());
 
-                List<Integer> aiRecommendedIds = aiService.getRecommendations(freqProfile, recentHistory, candidatePool);
-                LOGGER.log(Level.FINE, "[AI-REC] AI returned: {0}",
-                        aiRecommendedIds != null ? aiRecommendedIds.toString() : "NULL (API error)");
+                java.util.Map<Integer, String> aiRecommendations = aiService.getRecommendationsWithReasons(freqProfile, recentHistory, candidatePool);
+                LOGGER.log(Level.FINE, "[AI-REC] AI returned recommendations count: {0}",
+                        aiRecommendations != null ? aiRecommendations.size() : "NULL (API error)");
 
-                if (aiRecommendedIds != null && !aiRecommendedIds.isEmpty()) {
-                    for (Integer id : aiRecommendedIds) {
+                if (aiRecommendations != null && !aiRecommendations.isEmpty()) {
+                    for (java.util.Map.Entry<Integer, String> entry : aiRecommendations.entrySet()) {
+                        int id = entry.getKey();
                         Book book = bookDAO.getBookById(id);
                         if (book != null) {
                             recommendedBooks.add(book);
+                            recommendationReasons.put(id, entry.getValue());
                         }
                     }
+                    isAiPowered = true;
                 }
 
                 // --- Task #2: Log cảnh báo nếu AI trả về kết quả rỗng (100% ảo giác bị lọc) ---
-                if (aiRecommendedIds != null && aiRecommendedIds.isEmpty()) {
+                if (aiRecommendations != null && aiRecommendations.isEmpty()) {
                     LOGGER.log(Level.WARNING,
                             "[AI-REC] AI returned empty list after Anti-Hallucination filter (userId={0}). "
                                     + "Wasted 1 API call. Fallback to Top Trending.",
@@ -99,6 +112,8 @@ public class RecommendationServlet extends HttpServlet {
                 // --- Bước 3: Lưu kết quả AI vào Session Cache (Task #5) ---
                 if (!recommendedBooks.isEmpty() && session != null) {
                     session.setAttribute(CACHE_KEY, recommendedBooks);
+                    session.setAttribute(REASONS_CACHE_KEY, recommendationReasons);
+                    session.setAttribute(IS_AI_CACHE_KEY, isAiPowered);
                     LOGGER.log(Level.FINE, "[AI-REC] Cached {0} AI recommendations for userId={1}.",
                             new Object[] { recommendedBooks.size(), userId });
                 }
@@ -109,10 +124,13 @@ public class RecommendationServlet extends HttpServlet {
         if (recommendedBooks.isEmpty()) {
             LOGGER.log(Level.FINE, "[AI-REC] FALLBACK -> Top Trending (userId={0})", userId);
             recommendedBooks = bookDAO.getTopTrendingBooks(5); // Top 5
+            isAiPowered = false;
         }
 
         // Đẩy sang view fragment
         request.setAttribute("recommendedBooks", recommendedBooks);
+        request.setAttribute("recommendationReasons", recommendationReasons);
+        request.setAttribute("isAiPowered", isAiPowered);
         request.getRequestDispatcher("/common/_recommendation.jsp").forward(request, response);
     }
 }
