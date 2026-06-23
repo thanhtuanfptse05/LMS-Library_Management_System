@@ -31,6 +31,27 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(html => {
             // Nhúng thẳng HTML JSP fragment vào container
             container.innerHTML = html;
+
+            // Đọc trạng thái AI từ metadata và cập nhật tiêu đề/icon
+            const metadata = container.querySelector('#ai-recommendation-metadata');
+            if (metadata) {
+                const isAiPowered = metadata.dataset.isAiPowered === 'true';
+                const sectionTitle = document.getElementById('recommendation-section-title');
+                const sectionIcon = document.getElementById('recommendation-section-icon');
+                if (sectionTitle) {
+                    if (isAiPowered) {
+                        sectionTitle.textContent = '✨ Bạn có thể sẽ thích';
+                        if (sectionIcon) {
+                            sectionIcon.className = 'bi bi-stars text-warning fs-4';
+                        }
+                    } else {
+                        sectionTitle.textContent = '🔥 Top sách hot tại thư viện';
+                        if (sectionIcon) {
+                            sectionIcon.className = 'bi bi-fire text-danger fs-4';
+                        }
+                    }
+                }
+            }
         })
         .catch(error => {
             console.error('Error fetching recommendations:', error);
