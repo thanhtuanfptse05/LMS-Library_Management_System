@@ -4,10 +4,11 @@ import java.util.List;
 
 /**
  * BookSummaryDTO — Data Transfer Object gọn nhẹ để truyền dữ liệu cho AI.
- * Chỉ chứa các trường cần thiết để build prompt: ID, categories, và tags.
+ * Chỉ chứa các trường cần thiết để build prompt: ID, title, categories, và tags.
  */
 public class BookSummaryDTO {
     private int bookId;
+    private String title;
     private List<String> categories;
     private List<String> tags;
 
@@ -20,12 +21,27 @@ public class BookSummaryDTO {
         this.tags = tags;
     }
 
+    public BookSummaryDTO(int bookId, String title, List<String> categories, List<String> tags) {
+        this.bookId = bookId;
+        this.title = title;
+        this.categories = categories;
+        this.tags = tags;
+    }
+
     public int getBookId() {
         return bookId;
     }
 
     public void setBookId(int bookId) {
         this.bookId = bookId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public List<String> getCategories() {
@@ -47,7 +63,9 @@ public class BookSummaryDTO {
     @Override
     public String toString() {
         return "bookId=" + bookId + 
+               " | title: " + (title != null ? title : "") +
                " | categories: " + (categories != null ? String.join(", ", categories) : "") + 
                " | tags: " + (tags != null ? String.join(", ", tags) : "");
     }
 }
+
