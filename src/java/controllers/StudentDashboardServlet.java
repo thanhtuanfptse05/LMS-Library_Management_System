@@ -109,21 +109,31 @@ public class StudentDashboardServlet extends HttpServlet {
         }
     }
 
+    private static final String REASONS_CACHE_KEY = "cachedRecommendationReasons";
+    private static final String IS_AI_CACHE_KEY = "cachedIsAiPowered";
+
     /**
      * Tải danh sách sách gợi ý: Session Cache → AI → Fallback Top Trending.
-     * Logic tái sử dụng từ RecommendationServlet để đồng bộ nhất quán.
+     * Logic tương tự từ RecommendationServlet để đồng bộ nhất quán.
      */
     @SuppressWarnings("unchecked")
     private void loadRecommendedBooks(HttpSession session, int userId, HttpServletRequest request) {
         List<Book> recommendedBooks = new ArrayList<>();
+        java.util.Map<Integer, String> recommendationReasons = new java.util.HashMap<>();
+        boolean isAiPowered = false;
 
         try {
             // Bước 1: Kiểm tra Session Cache
             List<Book> cached = (List<Book>) session.getAttribute(CACHE_KEY);
+            java.util.Map<Integer, String> cachedReasons = (java.util.Map<Integer, String>) session.getAttribute(REASONS_CACHE_KEY);
+            Boolean cachedIsAi = (Boolean) session.getAttribute(IS_AI_CACHE_KEY);
+            
             if (cached != null && !cached.isEmpty()) {
                 LOGGER.log(Level.FINE,
                         "[Dashboard-REC] Cache HIT - Trả về gợi ý đã cache ({0} sách).", cached.size());
                 request.setAttribute("recommendedBooks", cached);
+                request.setAttribute("recommendationReasons", cachedReasons != null ? cachedReasons : new java.util.HashMap<>());
+                request.setAttribute("isAiPowered", cachedIsAi != null ? cachedIsAi : false);
                 return;
             }
 
@@ -140,21 +150,26 @@ public class StudentDashboardServlet extends HttpServlet {
                 List<BookSummaryDTO> candidatePool
                         = bookDAO.getCandidatePoolWithTagsAndCategories(userId, 30);
 
-                List<Integer> aiRecommendedIds
-                        = aiService.getRecommendations(freqProfile, recentHistory, candidatePool);
+                java.util.Map<Integer, String> aiRecommendations
+                        = aiService.getRecommendationsWithReasons(freqProfile, recentHistory, candidatePool);
 
-                if (aiRecommendedIds != null && !aiRecommendedIds.isEmpty()) {
-                    for (Integer id : aiRecommendedIds) {
+                if (aiRecommendations != null && !aiRecommendations.isEmpty()) {
+                    for (java.util.Map.Entry<Integer, String> entry : aiRecommendations.entrySet()) {
+                        int id = entry.getKey();
                         Book book = bookDAO.getBookById(id);
                         if (book != null) {
                             recommendedBooks.add(book);
+                            recommendationReasons.put(id, entry.getValue());
                         }
                     }
+                    isAiPowered = true;
                 }
 
                 // Lưu cache nếu AI trả về kết quả
                 if (!recommendedBooks.isEmpty()) {
                     session.setAttribute(CACHE_KEY, recommendedBooks);
+                    session.setAttribute(REASONS_CACHE_KEY, recommendationReasons);
+                    session.setAttribute(IS_AI_CACHE_KEY, isAiPowered);
                     LOGGER.log(Level.FINE,
                             "[Dashboard-REC] Cached {0} sách gợi ý AI cho userId={1}.",
                             new Object[]{recommendedBooks.size(), userId});
@@ -166,13 +181,21 @@ public class StudentDashboardServlet extends HttpServlet {
                 LOGGER.log(Level.FINE,
                         "[Dashboard-REC] FALLBACK -> Top Trending (userId={0})", userId);
                 recommendedBooks = bookDAO.getTopTrendingBooks(4);
+                isAiPowered = false;
             }
         } catch (Exception e) {
             LOGGER.log(Level.WARNING,
                     "Lỗi khi tải sách gợi ý cho userId=" + userId + ". Fallback Top Trending.", e);
-            recommendedBooks = bookDAO.getTopTrendingBooks(4);
+            try {
+                recommendedBooks = bookDAO.getTopTrendingBooks(4);
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Lỗi nghiêm trọng khi tải fallback books", ex);
+            }
+            isAiPowered = false;
         }
 
         request.setAttribute("recommendedBooks", recommendedBooks);
+        request.setAttribute("recommendationReasons", recommendationReasons);
+        request.setAttribute("isAiPowered", isAiPowered);
     }
 }
