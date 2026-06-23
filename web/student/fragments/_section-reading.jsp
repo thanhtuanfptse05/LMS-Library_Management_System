@@ -130,80 +130,85 @@
                 </c:choose>
             </p>
 
-            <div class="row g-3 flex-grow-1">
+            <div class="d-flex flex-column gap-3 flex-grow-1">
                 <c:choose>
                     <c:when test="${not empty recommendedBooks}">
-                        <c:forEach var="book" items="${recommendedBooks}" end="3">
-                            <div class="col-6">
-                                <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}"
-                                   class="text-decoration-none d-block h-100">
-                                    <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
-                                        <img class="w-100 h-100"
-                                             style="object-fit: cover;"
-                                             src="${not empty book.imagePath ? book.imagePath : 'https://via.placeholder.com/100x150?text=No+Cover'}"
-                                             alt="<c:out value='${book.title}'/>"
-                                             onerror="this.src='https://via.placeholder.com/100x150?text=Không+Cover'" />
-                                    </div>
-                                    <p class="fw-semibold text-dark mb-0 text-truncate small">
-                                        <c:out value="${book.title}"/>
-                                    </p>
-                                    <p class="text-on-surface-variant text-uppercase mb-1 text-truncate" style="font-size: 10px;">
-                                        <c:out value="${book.author}"/>
+                        <c:forEach var="book" items="${recommendedBooks}" varStatus="status" end="3">
+                            <div class="d-flex gap-3 align-items-start pb-2" style="border-bottom: 1px dashed var(--outline-variant); <c:if test='${status.last}'>border-bottom: none;</c:if>">
+                                <!-- Book Cover (Left) -->
+                                <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="flex-shrink-0" style="width: 70px; aspect-ratio: 2/3; overflow: hidden; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                                    <img class="w-100 h-100"
+                                         style="object-fit: cover;"
+                                         src="${not empty book.imagePath ? book.imagePath : 'https://via.placeholder.com/70x105?text=No+Cover'}"
+                                         alt="<c:out value='${book.title}'/>"
+                                         onerror="this.src='https://via.placeholder.com/70x105?text=Không+Cover'" />
+                                </a>
+                                <!-- Book Details (Right) -->
+                                <div class="flex-grow-1" style="min-width: 0;">
+                                    <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="text-decoration-none">
+                                        <h4 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 13px; line-height: 1.4;" title="<c:out value="${book.title}"/>">
+                                            <c:out value="${book.title}"/>
+                                        </h4>
+                                    </a>
+                                    <p class="text-on-surface-variant mb-1 text-truncate" style="font-size: 11px;">
+                                        bởi <c:out value="${book.author}"/>
                                     </p>
                                     <c:if test="${not empty recommendationReasons[book.bookId]}">
-                                        <div class="mt-1 p-1.5 rounded-2" style="background-color: rgba(217, 119, 6, 0.05); border: 1px solid rgba(217, 119, 6, 0.12); font-size: 9px; line-height: 1.3; color: #d97706; font-style: italic;">
-                                            <i class="bi bi-lightbulb-fill"></i> <c:out value="${recommendationReasons[book.bookId]}"/>
+                                        <div class="mt-1 p-2 rounded-2" style="background-color: rgba(217, 119, 6, 0.05); border: 1px solid rgba(217, 119, 6, 0.12);">
+                                            <p class="mb-0 text-wrap" style="font-size: 10px; line-height: 1.3; color: #d97706; font-style: italic;">
+                                                <i class="bi bi-lightbulb-fill"></i> <c:out value="${recommendationReasons[book.bookId]}"/>
+                                            </p>
                                         </div>
                                     </c:if>
-                                </a>
+                                </div>
                             </div>
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
                         <!-- Static demo books when no data from backend -->
-                        <div class="col-6">
-                            <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
-                                <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
-                                    <img class="w-100 h-100" style="object-fit: cover;"
-                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMFaVW8gTn8EGwb-vQRwM3JIZyEnvL4u-pKdL9yAZI-65Sq20ui2J-YMxpmEQOIOItZ86Bb6qOy6ZHcJqxaBjOR7EiGfP3wN6f34O9qupHmW6PAzhLDZm55ZWdHpAA3eI2LIgqt14BulT3mmBjFMT4L_m5P9IpdHI7_wdObtdNoxFA2EwEkKHAluhqx1igHxiCyM9nziAdt0p4kaDI-fi8LcMROKQu8cZOdqK24sSvC2AV1vBng6cYyCapNf6EWmoY_hwUZXOxIYtS"
-                                         alt="Thinking with Type" />
-                                </div>
-                                <p class="fw-semibold text-dark mb-0 text-truncate small">Thinking with Type</p>
-                                <p class="text-on-surface-variant text-uppercase mb-0" style="font-size: 10px;">E. Lupton</p>
-                            </a>
+                        <div class="d-flex gap-3 align-items-start pb-2" style="border-bottom: 1px dashed var(--outline-variant);">
+                            <div class="flex-shrink-0" style="width: 70px; aspect-ratio: 2/3; overflow: hidden; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                                <img class="w-100 h-100" style="object-fit: cover;"
+                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMFaVW8gTn8EGwb-vQRwM3JIZyEnvL4u-pKdL9yAZI-65Sq20ui2J-YMxpmEQOIOItZ86Bb6qOy6ZHcJqxaBjOR7EiGfP3wN6f34O9qupHmW6PAzhLDZm55ZWdHpAA3eI2LIgqt14BulT3mmBjFMT4L_m5P9IpdHI7_wdObtdNoxFA2EwEkKHAluhqx1igHxiCyM9nziAdt0p4kaDI-fi8LcMROKQu8cZOdqK24sSvC2AV1vBng6cYyCapNf6EWmoY_hwUZXOxIYtS"
+                                     alt="Thinking with Type" />
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <h4 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 13px; line-height: 1.4;">Thinking with Type</h4>
+                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">bởi E. Lupton</p>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
-                                <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
-                                    <img class="w-100 h-100" style="object-fit: cover;"
-                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvmHj56MbiSMwWUZ3XWu4-2rqNDuhPvt4Y6oCnTn7lGqCTOiE5BvqH0bZQS9LY0io_T8ayyDjfQXVaVnnFW-YANKwbZ329jVi3DrMxvwV7sHIl3d4YUEHVssxUE8e5VWDpyWSjWScrecfslefdeYXYEhz_RxXGddoqaCQqSevroSqz8wwifuS8PatY0uE7Xovp-hK7wxTPDxL_zul_KymBk0awiT2rBmB1SptJPZB2rlyEwzZj5jqvpdfUiHbJTCskRE_l4k3RgDIx"
-                                         alt="Universal Principles" />
-                                </div>
-                                <p class="fw-semibold text-dark mb-0 text-truncate small">Universal Principles</p>
-                                <p class="text-on-surface-variant text-uppercase mb-0" style="font-size: 10px;">W. Lidwell</p>
-                            </a>
+                        <div class="d-flex gap-3 align-items-start pb-2" style="border-bottom: 1px dashed var(--outline-variant);">
+                            <div class="flex-shrink-0" style="width: 70px; aspect-ratio: 2/3; overflow: hidden; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                                <img class="w-100 h-100" style="object-fit: cover;"
+                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvmHj56MbiSMwWUZ3XWu4-2rqNDuhPvt4Y6oCnTn7lGqCTOiE5BvqH0bZQS9LY0io_T8ayyDjfQXVaVnnFW-YANKwbZ329jVi3DrMxvwV7sHIl3d4YUEHVssxUE8e5VWDpyWSjWScrecfslefdeYXYEhz_RxXGddoqaCQqSevroSqz8wwifuS8PatY0uE7Xovp-hK7wxTPDxL_zul_KymBk0awiT2rBmB1SptJPZB2rlyEwzZj5jqvpdfUiHbJTCskRE_l4k3RgDIx"
+                                     alt="Universal Principles" />
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <h4 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 13px; line-height: 1.4;">Universal Principles</h4>
+                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">bởi W. Lidwell</p>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
-                                <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
-                                    <img class="w-100 h-100" style="object-fit: cover;"
-                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJpYUg7vrYH3geQVG1-5zncrdHXnCIjw5Qd-Ai0B-Lr_uWQHrlzaX3UFdvsg2jHA1rZs7z45MV-3movSZYXhxDHaRLCmJl1xEdtNKLPgEw36TOL9sL_mfTetQR3ejrzv4brXtwvE9N4DCzlsfNroao1nalEA_wE9S7Z9poDtnxdRB9aJ2DnJp2IhoPkw55gAmKATBTLkapLhzvLAEyIREEk252tap1yiv6mziSVxv5fUnD8lddLsv4u4VB-cKxe8wSP-J79gOjJ_X_"
-                                         alt="Interaction Design" />
-                                </div>
-                                <p class="fw-semibold text-dark mb-0 text-truncate small">Interaction Design</p>
-                                <p class="text-on-surface-variant text-uppercase mb-0" style="font-size: 10px;">J. Preece</p>
-                            </a>
+                        <div class="d-flex gap-3 align-items-start pb-2" style="border-bottom: 1px dashed var(--outline-variant);">
+                            <div class="flex-shrink-0" style="width: 70px; aspect-ratio: 2/3; overflow: hidden; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                                <img class="w-100 h-100" style="object-fit: cover;"
+                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJpYUg7vrYH3geQVG1-5zncrdHXnCIjw5Qd-Ai0B-Lr_uWQHrlzaX3UFdvsg2jHA1rZs7z45MV-3movSZYXhxDHaRLCmJl1xEdtNKLPgEw36TOL9sL_mfTetQR3ejrzv4brXtwvE9N4DCzlsfNroao1nalEA_wE9S7Z9poDtnxdRB9aJ2DnJp2IhoPkw55gAmKATBTLkapLhzvLAEyIREEk252tap1yiv6mziSVxv5fUnD8lddLsv4u4VB-cKxe8wSP-J79gOjJ_X_"
+                                     alt="Interaction Design" />
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <h4 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 13px; line-height: 1.4;">Interaction Design</h4>
+                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">bởi J. Preece</p>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <a href="${pageContext.request.contextPath}/book-search" class="text-decoration-none d-block h-100">
-                                <div class="overflow-hidden rounded-3 mb-2 shadow-sm" style="aspect-ratio: 2/3;">
-                                    <img class="w-100 h-100" style="object-fit: cover;"
-                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzcoyrJvKjZ8-93QWy-1N0tVZQ_A543LikcO7FZ9PFjB185C7t6xtUi7-5uN812BfCa4m1IUqWXoRYimsivBtM3PLeDrjlYOEUSILcuYpL_MMncRmV1gdn3n2jCJohPu69tgP4ubaYwPm1ENfBAGV8qgWoPJPnzRbR0RZXx7zTTN82YM8OmmCZd9Y2PRWjv7ad8UtLcItP-2HlCt3SzYqj2xf6DdYan0u85Z7SAND8S_sqYY7PsCkhNSi7EjuIFHzBoullSfkq2GJL"
-                                         alt="AI in Practice" />
-                                </div>
-                                <p class="fw-semibold text-dark mb-0 text-truncate small">AI in Practice</p>
-                                <p class="text-on-surface-variant text-uppercase mb-0" style="font-size: 10px;">M. Nielsen</p>
-                            </a>
+                        <div class="d-flex gap-3 align-items-start pb-2">
+                            <div class="flex-shrink-0" style="width: 70px; aspect-ratio: 2/3; overflow: hidden; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                                <img class="w-100 h-100" style="object-fit: cover;"
+                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzcoyrJvKjZ8-93QWy-1N0tVZQ_A543LikcO7FZ9PFjB185C7t6xtUi7-5uN812BfCa4m1IUqWXoRYimsivBtM3PLeDrjlYOEUSILcuYpL_MMncRmV1gdn3n2jCJohPu69tgP4ubaYwPm1ENfBAGV8qgWoPJPnzRbR0RZXx7zTTN82YM8OmmCZd9Y2PRWjv7ad8UtLcItP-2HlCt3SzYqj2xf6DdYan0u85Z7SAND8S_sqYY7PsCkhNSi7EjuIFHzBoullSfkq2GJL"
+                                     alt="AI in Practice" />
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <h4 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 13px; line-height: 1.4;">AI in Practice</h4>
+                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;">bởi M. Nielsen</p>
+                            </div>
                         </div>
                     </c:otherwise>
                 </c:choose>
