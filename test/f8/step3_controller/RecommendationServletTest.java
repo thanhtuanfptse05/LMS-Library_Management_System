@@ -349,5 +349,20 @@ public class RecommendationServletTest {
             getRecommendationsCalls++;
             return recommendationsToReturn;
         }
+
+        @Override
+        public java.util.Map<Integer, String> getRecommendationsWithReasons(
+                Map<String, Map<String, Integer>> frequencyProfile,
+                List<model.BookSummaryDTO> recentHistory,
+                List<model.BookSummaryDTO> candidatePool) {
+            getRecommendationsCalls++;
+            java.util.Map<Integer, String> result = new java.util.LinkedHashMap<>();
+            if (recommendationsToReturn != null) {
+                for (Integer id : recommendationsToReturn) {
+                    result.put(id, "Lý do gợi ý cho sách " + id);
+                }
+            }
+            return result;
+        }
     }
 }
