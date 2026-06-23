@@ -12,8 +12,8 @@
         <!-- Khối AI Gợi Ý Sách Cá Nhân Hóa (Render by AJAX từ RecommendationServlet) -->
         <section class="container-xl py-5">
             <div class="d-flex align-items-center gap-2 mb-4">
-                <i class="bi bi-stars text-warning fs-4"></i>
-                <h2 class="fw-bold m-0" style="color: var(--bs-body-color);">Gợi ý tài liệu cho bạn</h2>
+                <i id="recommendation-section-icon" class="bi bi-stars text-warning fs-4"></i>
+                <h2 id="recommendation-section-title" class="fw-bold m-0" style="color: var(--bs-body-color);">Gợi ý tài liệu cho bạn</h2>
             </div>
             <div id="ai-recommendation-container" data-context="${pageContext.request.contextPath}"></div>
         </section>
