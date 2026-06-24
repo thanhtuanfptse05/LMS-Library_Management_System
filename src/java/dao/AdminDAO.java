@@ -9,10 +9,19 @@ import java.util.logging.Logger;
 import model.Admin;
 import util.DatabaseConnection;
 
-// Verified compatibility with PostgreSQL
+/**
+ * AdminDAO — Đối tượng truy cập dữ liệu (DAO) cho bảng Admin.
+ */
+// Đã xác minh tính tương thích với PostgreSQL
 public class AdminDAO {
     private static final Logger LOGGER = Logger.getLogger(AdminDAO.class.getName());
 
+    /**
+     * Tìm kiếm thông tin Quản trị viên (Admin) theo ID người dùng (userId).
+     * 
+     * @param userId ID người dùng cần tìm
+     * @return Đối tượng Admin nếu tìm thấy, ngược lại trả về null
+     */
     public Admin findByUserId(int userId) {
         String sql = "SELECT userId, staffCode FROM Admin WHERE userId = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -24,7 +33,7 @@ public class AdminDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error querying Admin by userId=" + userId, e);
+            LOGGER.log(Level.SEVERE, "Lỗi truy vấn Admin theo userId=" + userId, e);
         }
         return null;
     }
