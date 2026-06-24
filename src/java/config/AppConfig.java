@@ -23,7 +23,7 @@ public final class AppConfig {
      * Production: đọc từ env var SMTP_USERNAME (cấu hình trên Render).
      * Local dev: fallback về giá trị hardcode.
      */
-    public static final String SMTP_USERNAME = readConfig("SMTP_USERNAME", "ngochuyen2k2lx@gmail.com");
+    public static final String SMTP_USERNAME = readConfig("SMTP_USERNAME", "caotuan2k50112@gmail.com");
 
     /**
      * Gmail App Password (Mật khẩu ứng dụng).
@@ -31,7 +31,7 @@ public final class AppConfig {
      * Local dev: fallback về giá trị hardcode.
      * Tạo tại: Google Account > Security > App Passwords
      */
-    public static final String SMTP_PASSWORD = readConfig("SMTP_PASSWORD", "gvwonzsvublgxtht");
+    public static final String SMTP_PASSWORD = readConfig("SMTP_PASSWORD", "dxsmtjqarnioued");
 
     /** SMTP Host - Gmail */
     public static final String SMTP_HOST = "smtp.gmail.com";
