@@ -165,9 +165,9 @@ public class NotificationManagerServlet extends HttpServlet {
             redirectWithError(request, response, "Tiêu đề không được để trống");
             return;
         }
-        
+
         if (isSendEmail && (selectedTemplateName == null || selectedTemplateName.trim().isEmpty())) {
-            redirectWithError(request, response, "Vui lòng chọn mẫu email khi bật chức năng gửi mail");
+            redirectWithError(request, response, "Vui lòng chọn mẫu Email để gửi kèm");
             return;
         }
 
@@ -216,7 +216,7 @@ public class NotificationManagerServlet extends HttpServlet {
         }
 
         if (isSendEmail && (selectedTemplateName == null || selectedTemplateName.trim().isEmpty())) {
-            redirectWithError(request, response, "Vui lòng chọn mẫu email khi bật chức năng gửi mail");
+            redirectWithError(request, response, "Vui lòng chọn mẫu Email để gửi kèm");
             return;
         }
 
@@ -320,7 +320,6 @@ public class NotificationManagerServlet extends HttpServlet {
                 new Object[]{contacts.size(), tempName, targetRole});
 
         for (UserContactDTO contact : contacts) {
-            if (contact.getEmail().endsWith("@lms.com")) continue;
             String displayName = (contact.getFullName() != null && !contact.getFullName().isBlank())
                     ? contact.getFullName() : "Bạn";
 
