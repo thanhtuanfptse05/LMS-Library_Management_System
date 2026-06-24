@@ -299,7 +299,7 @@ public class BookDAO {
         String sql = "SELECT b.bookId, b.isbn, b.title, b.author, b.publisher, b.publicationYear, "
                 + "b.price, b.imagePath, b.totalQuantity, b.availableQuantity, b.status, b.createdAt, b.updatedAt "
                 + "FROM Book b LEFT JOIN BorrowRecord br ON br.bookId = b.bookId "
-                + "WHERE b.status = 'available' GROUP BY b.bookId, b.isbn, b.title, b.author, b.publisher, "
+                + "WHERE b.status = 'available' AND b.availableQuantity > 0 GROUP BY b.bookId, b.isbn, b.title, b.author, b.publisher, "
                 + "b.publicationYear, b.price, b.imagePath, b.totalQuantity, b.availableQuantity, b.status, "
                 + "b.createdAt, b.updatedAt ORDER BY COUNT(br.borrowRecordId) DESC, b.createdAt DESC LIMIT ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -375,7 +375,7 @@ public class BookDAO {
                 + "    JOIN BookTag bt2 ON bt2.tagId = bt1.tagId "
                 + "    GROUP BY bt2.bookId "
                 + ") tag ON tag.bookId = b.bookId "
-                + "WHERE b.status = 'available' "
+                + "WHERE b.status = 'available' AND b.availableQuantity > 0 "
                 + "  AND b.bookId NOT IN (SELECT br2.bookId FROM BorrowRecord br2 WHERE br2.userId = ?) "
                 + "ORDER BY recommendationScore DESC, b.bookId "
                 + "LIMIT ?";
