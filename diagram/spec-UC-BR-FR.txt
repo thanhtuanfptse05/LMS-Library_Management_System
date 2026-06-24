@@ -1,4 +1,202 @@
-// UC Specification
+// =============================================================================
+// LMS UC-BR-FR SPECIFICATION
+// Version: 2.0.0 | Date: 2026-06-23 | Project: Library Management System
+// =============================================================================
+
+// =============================================================================
+// 🤖 HƯỚNG DẪN CHO AI AGENT KHI TẠO TÍNH NĂNG MỚI
+// =============================================================================
+// 
+// QUAN TRỌNG: Khi bạn là AI Agent được yêu cầu tạo tính năng mới, hãy tuân thủ:
+//
+// 1. PHÂN TÍCH YÊU CẦU
+//    - Đọc kỹ user requirement
+//    - Xác định feature thuộc module nào (F1-F14) hoặc tạo F15+ mới
+//    - Kiểm tra xem có UC/BR liên quan đã tồn tại không
+//
+// 2. QUY TẮC ĐẶT TÊN VÀ ĐÁNH SỐ
+//    UC (Use Case):
+//    - Format: UC-XX (Tên UC tiếng Việt)
+//    - Tìm UC-XX lớn nhất hiện có → increment +1
+//    - VÍ DỤ: UC hiện tại cao nhất là UC-39 → UC mới là UC-40
+//    - KHÔNG ĐƯỢC skip number hoặc tạo số trùng
+//    - UC phải trừu tượng, KHÔNG đề cập code/tech/bảng DB
+//
+//    BR (Business Rule):
+//    - Format: BR-XX (Category)
+//    - Tìm BR-XX lớn nhất hiện có → increment +1
+//    - VÍ DỤ: BR hiện tại cao nhất là BR-31 → BR mới là BR-32
+//    - KHÔNG ĐƯỢC skip number hoặc tạo số trùng
+//    - BR phải độc lập với implementation, dùng SHALL/MUST NOT
+//
+//    FR (Functional Requirement):
+//    - Format: FR-XX (Tên ngắn gọn)
+//    - Tìm FR-XX lớn nhất hiện có → increment +1
+//    - VÍ DỤ: FR hiện tại cao nhất là FR-54 → FR mới là FR-55
+//    - KHÔNG ĐƯỢC skip number hoặc tạo số trùng
+//    - FR phải dùng EARS pattern (WHEN/WHERE/WHILE/IF + THE system SHALL)
+//    - FR BẮT BUỘC có Mapping tới UC hoặc BR
+//
+// 3. QUY TRÌNH TẠO SPEC MỚI
+//    Bước 1: Tạo UC (Use Case) - Mô tả người dùng làm gì
+//    Bước 2: Tạo BR (Business Rule) - Constraint/Policy hệ thống
+//    Bước 3: Tạo FR (Functional Requirement) - Chi tiết technical flow
+//    Bước 4: Cập nhật SECTION 1 (Feature Mapping Table)
+//    Bước 5: Thêm UC vào SECTION 2
+//    Bước 6: Thêm BR vào SECTION 3
+//    Bước 7: Thêm FR vào SECTION 4 (kèm Mapping)
+//
+// 4. VÍ DỤ: TẠO FEATURE "ONLINE PAYMENT"
+//
+//    // Bước 1: Tạo UC-40
+//    UC-40 (Pay Fine Online)
+//    Actor: User (Student/Lecturer)
+//    Mô tả: (Thanh toán phạt trực tuyến): Người dùng quét mã QR để thanh toán 
+//    tiền phạt qua cổng thanh toán SePay mà không cần đến quầy.
+//
+//    // Bước 2: Tạo BR-32
+//    BR-32 (Payment Verification)
+//    Mô tả: Hệ thống SHALL xác minh webhook từ SePay trước khi đánh dấu 
+//    khoản phạt là đã thanh toán.
+//
+//    // Bước 3: Tạo FR-55, FR-56
+//    FR-55 (Tạo QR thanh toán)
+//    Mô tả: WHEN người dùng chọn thanh toán online, THE system SHALL gọi 
+//    SePay API để tạo mã QR chứa thông tin khoản phạt và userId.
+//    Mapping: UC-40 / BR-32
+//
+//    FR-56 (Xử lý webhook)
+//    Mô tả: WHEN nhận webhook từ SePay, THE system SHALL xác minh chữ ký, 
+//    WHERE hợp lệ, THE system SHALL UPDATE Fine.status='paid' và DELETE 
+//    UserLockReason có reason='unpaid'.
+//    Mapping: UC-40 / BR-32, BR-25
+//
+//    // Bước 4: Cập nhật Feature Mapping Table
+//    F9 (Fine & Payment Management)
+//    - Owner: Tuan
+//    - Spec Folder: feat-finePayment (tạo mới)
+//    - UC: UC-31, UC-38, UC-39, UC-40  ← THÊM UC-40
+//    - BR: BR-32                        ← THÊM BR-32
+//    - FR: FR-53, FR-54, FR-55, FR-56   ← THÊM FR-55, FR-56
+//
+// 5. CHECKLIST TRƯỚC KHI COMMIT
+//    [ ] UC có số thứ tự hợp lệ (không trùng, không skip)
+//    [ ] BR có số thứ tự hợp lệ (không trùng, không skip)
+//    [ ] FR có số thứ tự hợp lệ (không trùng, không skip)
+//    [ ] FR có dùng EARS pattern (WHEN/WHERE/WHILE/IF)
+//    [ ] FR có Mapping tới UC hoặc BR
+//    [ ] Feature Mapping Table đã được cập nhật
+//    [ ] UC/BR/FR mới đã được thêm vào đúng section
+//
+// 6. LƯU Ý QUAN TRỌNG
+//    ⚠️ KHÔNG ĐƯỢC xóa UC/BR/FR cũ (mark deprecated nếu cần)
+//    ⚠️ KHÔNG ĐƯỢC thay đổi số của UC/BR/FR đã tồn tại
+//    ⚠️ LUÔN tìm số lớn nhất hiện có và +1
+//    ⚠️ UC phải abstract (không technical)
+//    ⚠️ BR phải dùng SHALL/MUST NOT
+//    ⚠️ FR phải có EARS pattern + Mapping
+//
+// =============================================================================
+
+// =============================================================================
+// SECTION 1: FEATURE MAPPING TABLE
+// =============================================================================
+// Bảng này cho biết mỗi Feature (F1, F2, ...) có những UC, BR, FR nào
+
+F1 (Authentication)
+- Owner: Tuan
+- Spec Folder: feat-authentication
+- UC: UC-01, UC-02, UC-03, UC-21
+- BR: BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-09, BR-26
+- FR: FR-01, FR-02, FR-03, FR-04, FR-05, FR-06, FR-07, FR-08, FR-42
+
+F2 (Profile Management)
+- Owner: Tuan
+- Spec Folder: feat-profileManagement
+- UC: UC-04, UC-05, UC-06
+- BR: BR-08, BR-09, BR-15
+- FR: FR-09, FR-10, FR-11, FR-16
+
+F3 (User Account Management)
+- Owner: Quyet
+- Spec Folder: feat-userAccountManagement
+- UC: UC-07, UC-08, UC-09, UC-10, UC-11, UC-30
+- BR: BR-10, BR-11, BR-12, BR-13, BR-14
+- FR: FR-12, FR-13, FR-14, FR-15, FR-17, FR-18, FR-19, FR-20, FR-21, FR-45
+
+F4 (Book Management)
+- Owner: Team
+- Spec Folder: feat-bookManagement
+- UC: UC-12, UC-13, UC-14, UC-15, UC-27
+- BR: BR-16, BR-17, BR-18, BR-27
+- FR: FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47
+
+F5 (Online Reservation & Renewal)
+- Owner: Team
+- Spec Folder: feat-Reservation&Renewal
+- UC: UC-16, UC-17
+- BR: BR-19, BR-20, BR-21
+- FR: FR-29, FR-30, FR-31, FR-32, FR-33
+
+F6 (Desk Circulation Operations)
+- Owner: Team
+- Spec Folder: feat-deskCirculationOperations
+- UC: UC-18, UC-19, UC-20
+- BR: BR-22, BR-23, BR-24, BR-25, BR-29
+- FR: FR-34, FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41
+
+F7 (Notification Management)
+- Owner: Tuan
+- Spec Folder: feat-notification-management
+- UC: UC-24, UC-25, UC-26
+- BR: (none)
+- FR: FR-44, FR-52
+
+F8 (Book Discovery)
+- Owner: Bao
+- Spec Folder: feat-bookDiscovery
+- UC: UC-22, UC-23
+- BR: (none)
+- FR: FR-43
+
+F9 (Fine & Payment Management)
+- Owner: Tuan
+- Spec Folder: (to be created)
+- UC: UC-31, UC-38, UC-39
+- BR: (none)
+- FR: FR-53, FR-54
+
+F10 (System Configuration)
+- Owner: Quyet
+- Spec Folder: feat-systemConfiguration
+- UC: UC-32, UC-33
+- BR: BR-30, BR-31
+- FR: (see spec file)
+
+F11 (System Reports)
+- Owner: Quyet
+- Spec Folder: feat-systemReport
+- UC: UC-34, UC-35
+- BR: (none)
+- FR: (see spec file)
+
+F13 (Book Maintenance)
+- Owner: Chuong
+- Spec Folder: (to be created)
+- UC: UC-28, UC-29
+- BR: BR-28
+- FR: FR-48, FR-49, FR-50, FR-51
+
+F14 (AI Chatbot)
+- Owner: Thai
+- Spec Folder: feat-ai-chatbot
+- UC: UC-36, UC-37
+- BR: (none)
+- FR: (see spec file)
+
+// =============================================================================
+// SECTION 2: USE CASE SPECIFICATIONS (UC)
+// =============================================================================
 
 UC-01 (Login)
 Actor: Guest, User
@@ -124,7 +322,41 @@ UC-31 (View My Borrowings & Reservations)
 Actor: User (Student/Lecturer)
 Mô tả: (Xem Hàng mượn & Chờ sách): Độc giả xem danh sách các sách đang mượn, lịch sử mượn và các đơn đặt trước (đang chờ hoặc đã sẵn sàng nhận) tại trang "Hàng mượn & chờ sách".
 
-// BR Specification
+UC-32 (View System Configuration)
+Actor: Library Manager, Admin
+Mô tả: (Xem cấu hình hệ thống): Quản lý thư viện hoặc quản trị viên xem các thông số vận hành của hệ thống như chính sách mượn sách, tiền phạt, giới hạn.
+
+UC-33 (Update System Configuration)
+Actor: Library Manager, Admin
+Mô tả: (Cập nhật cấu hình hệ thống): Thay đổi các thông số vận hành thông qua giao diện quản trị mà không cần can thiệp mã nguồn.
+
+UC-34 (View System Reports)
+Actor: Library Manager, Admin
+Mô tả: (Xem báo cáo hệ thống): Quản lý thư viện xem các báo cáo thống kê về mượn/trả, tài chính, kho sách với biểu đồ xu hướng.
+
+UC-35 (Export Reports)
+Actor: Library Manager, Admin
+Mô tả: (Xuất báo cáo): Xuất dữ liệu thống kê ra file Excel để lưu trữ hoặc phân tích offline.
+
+UC-36 (Ask Chatbot)
+Actor: Guest, User
+Mô tả: (Hỏi chatbot): Người dùng gửi câu hỏi bằng ngôn ngữ tự nhiên về nội quy thư viện hoặc tìm kiếm sách thông qua giao diện chatbot.
+
+UC-37 (View Chat History)
+Actor: User
+Mô tả: (Xem lịch sử chat): Người dùng xem lại các câu hỏi và câu trả lời trong phiên làm việc hiện tại.
+
+UC-38 (View Fine History)
+Actor: User
+Mô tả: (Xem lịch sử phạt): Người dùng xem danh sách các khoản phạt đã thanh toán và chưa thanh toán.
+
+UC-39 (Pay Fine Online)
+Actor: User
+Mô tả: (Thanh toán phạt trực tuyến): Người dùng quét mã QR để thanh toán tiền phạt qua cổng thanh toán điện tử.
+
+// =============================================================================
+// SECTION 3: BUSINESS RULES (BR)
+// =============================================================================
 
 BR-01 (Authentication)
 Mô tả: Hệ thống SHALL tạm đình chỉ quyền truy cập nếu người dùng cung cấp thông tin xác thực sai 5 lần liên tiếp.
@@ -181,7 +413,7 @@ BR-18 (Immutable Core Identifiers)
 Mô tả: KHÔNG ĐƯỢC PHÉP thay đổi thông tin định danh hệ thống (ISBN, Barcode) sau khi bản ghi sách hoặc bản sao đã được lưu thành công.
 
 BR-19 (Reservation Eligibility)
-Mô tả: Độc giả BẮT BUỘC chỉ được phép thực hiện Đặt trước hoặc Gia hạn trực tuyến nếu tài khoản đang ở trạng thái hoạt động (status = 'active') VÀ không bị khóa vì bất kỳ lý do nợ phạt nào. 
+Mô tả: Độc giả BẮT BUỘC chỉ được phép thực hiện Đặt trước hoặc Gia hạn trực tuyến nếu tài khoản đang ở trạng thái hoạt động (status = 'active') VÀ không bị khóa vì bất kỳ lý do nợ phạt nào.
 
 BR-20 (Queue Positioning Strategy)
 Mô tả: Vị trí hàng đợi queuePosition = 0 DÀNH RIÊNG cho việc giữ sách đã sẵn sàng lấy (status = 'readypickup'). Mọi yêu cầu chờ sách (khi availableQuantity = 0) BẮT BUỘC phải có queuePosition > 0 và trạng thái 'pending'.
@@ -198,7 +430,7 @@ Mô tả: Độc giả mượn sách trực tiếp tại quầy KHÔNG ĐƯỢC 
 BR-24 (Damaged/Lost Inventory Deduction)
 Mô tả: Khi nhận sách trả với tình trạng 'damaged' hoặc 'lost', hệ thống BẮT BUỘC trừ 1 đơn vị vào Book.totalQuantity (vì sách không còn khả năng lưu thông). ĐỒNG THỜI, BẮT BUỘC phải insert tức thời bản ghi 'unpaid' vào UserLockReason và đổi status User thành 'locked' mà không chờ Background Job chạy ngầm, tránh lỗ hổng bảo mật.
 
-BR-25 (Conditional Auto-Unlock - BR30)
+BR-25 (Conditional Auto-Unlock)
 Mô tả: Sau khi thanh toán tiền phạt (xóa reason 'unpaid'), hệ thống BẮT BUỘC đếm số lượng lý do khóa còn lại trong UserLockReason. CHỈ KHỞI ĐỘNG quy trình mở khóa (Update User.status = 'active') NẾU COUNT == 0. Tuyệt đối không mở khóa nếu tài khoản đang bị 'adminban' hoặc 'securitybreach'.
 
 BR-26 (Google SSO Registration Policy)
@@ -213,7 +445,16 @@ Mô tả: Khi ghi nhận báo cáo sự cố (Report Incident), hệ thống B�
 BR-29 (Walk-in vs Pre-reservation Checkout Policy)
 Mô tả: Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity (vì đã trừ khi đặt trước online).
 
-// FR Specification
+BR-30 (System Config Immutability)
+Mô tả: Không được phép thêm mới hoặc xóa configKey thông qua UI. Chỉ cho phép UPDATE giá trị configValue của các key đã tồn tại.
+
+BR-31 (System Config Authorization)
+Mô tả: Library Manager chỉ được phép xem và cập nhật các config thuộc nhóm 'library'. Admin có toàn quyền với mọi nhóm config.
+
+
+// =============================================================================
+// SECTION 4: FUNCTIONAL REQUIREMENTS (FR)
+// =============================================================================
 
 FR-01 (Xác minh danh tính)
 Mô tả: WHEN người dùng gửi thông tin đăng nhập, THE system SHALL mã hóa mật khẩu bằng BCrypt và đối chiếu với dữ liệu bảo mật đã lưu trữ.
@@ -253,7 +494,7 @@ Mapping: UC-04, UC-08
 
 FR-10 (Cơ chế UPSERT hồ sơ)
 Mô tả: WHEN người dùng lưu thay đổi hồ sơ, THE system SHALL kiểm tra; WHERE bản ghi MemberProfile chưa tồn tại, hệ thống SHALL thực thi lệnh INSERT thay vì UPDATE.
-Mapping: UC-05 / BR-08
+Mapping: UC-05 / BR-15
 
 FR-11 (Bảo mật sau đổi pass)
 Mô tả: WHEN thay đổi mật khẩu thành công, THE system SHALL ghi nhật ký Audit Log, đồng thời vô hiệu hóa session hiện tại và buộc người dùng đăng nhập lại.
@@ -281,7 +522,7 @@ Mapping: UC-06 / BR-09
 
 FR-17 (Ghi nhận Audit Log Quản trị)
 Mô tả: WHEN Quản trị viên thực hiện tạo mới, cập nhật thông tin, thay đổi trạng thái (Khóa/Mở khóa), hoặc Import hàng loạt tài khoản thành công, THE system SHALL tự động ghi nhận bản ghi vào bảng AuditLogs chứa thông tin actor, actionType, và dữ liệu thay đổi.
-Mapping: UC-09, UC-10, UC-11
+Mapping: UC-09, UC-10, UC-11 / BR-14
 
 FR-18 (Truy xuất danh sách và chi tiết)
 Mô tả: WHEN Quản trị viên yêu cầu xem danh sách hoặc chi tiết một tài khoản, THE system SHALL thực hiện truy vấn gộp (JOIN) dữ liệu từ bảng [User], MemberProfile và bảng phân quyền tương ứng (Student/Lecturer/Librarian) để hiển thị.
@@ -430,3 +671,11 @@ Mapping: UC-31
 FR-54 (Liên kết chuyển hướng Dashboard)
 Mô tả: WHEN người dùng nhấp vào các Stats Cards trên Dashboard, THE system SHALL điều hướng người dùng trực tiếp đến trang "Hàng mượn & chờ sách" tương ứng.
 Mapping: UC-31
+
+// =============================================================================
+// END OF SPECIFICATION
+// =============================================================================
+// Total UC: 39 | Total BR: 31 | Total FR: 54+
+// Version: 2.0.0 | Date: 2026-06-23
+// Project: Library Management System (LMS) - SWP391
+// =============================================================================

@@ -7,14 +7,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
+import java.io.OutputStream;
 import java.util.List;
 import model.UserDTO;
 import service.UserService;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
- * ExportUserServlet — Controller xử lý xuất danh sách người dùng ra file CSV (tương thích Excel).
+ * ExportUserServlet — Controller xử lý xuất danh sách người dùng ra file Excel (.xlsx).
  */
 @WebServlet(name = "ExportUserServlet", urlPatterns = {"/admin/user/export"})
 public class ExportUserServlet extends HttpServlet {
@@ -44,67 +48,64 @@ public class ExportUserServlet extends HttpServlet {
 
         // Chuẩn bị tên file xuất ra tương ứng vai trò
         String roleClean = (role != null && !role.trim().isEmpty() && !"ALL".equalsIgnoreCase(role)) ? role.trim().toUpperCase() : "ALL";
-        String filename = "danh_sach_nguoi_dung_" + roleClean + ".csv";
+        String filename = "danh_sach_nguoi_dung_" + roleClean + ".xlsx";
 
         // Thiết lập header phản hồi
-        response.setContentType("text/csv; charset=UTF-8");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-        // Ghi dữ liệu ra response stream
-        try (PrintWriter writer = new PrintWriter(response.getOutputStream(), true, StandardCharsets.UTF_8)) {
-            // Ghi UTF-8 BOM để Excel mở trực tiếp nhận diện được tiếng Việt
-            writer.write('\uFEFF');
+        // Tạo file Excel
+        try (Workbook workbook = new XSSFWorkbook(); OutputStream out = response.getOutputStream()) {
+            Sheet sheet = workbook.createSheet("Danh sách người dùng");
 
-            // Ghi Header dòng tiêu đề cột
-            writer.println("Email,Họ và tên,Số điện thoại,Giới tính,Ngày sinh,Mã định danh,Vai trò,Trạng thái,Chuyên ngành hoặc Bộ môn,Năm nhập học");
+            // Tạo Header dòng tiêu đề cột
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"Email", "Họ và tên", "Số điện thoại", "Giới tính", "Ngày sinh", "Mã định danh", "Vai trò", "Trạng thái", "Chuyên ngành hoặc Bộ môn", "Năm nhập học"};
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+            }
 
             // Ghi từng dòng dữ liệu
+            int rowNum = 1;
             for (UserDTO u : users) {
-                StringBuilder row = new StringBuilder();
-                row.append(escapeCsv(u.getEmail())).append(",");
-                row.append(escapeCsv(u.getFullName())).append(",");
-                row.append(escapeCsv(u.getPhoneNumber())).append(",");
-                row.append(escapeCsv(u.getGender())).append(",");
-                row.append(u.getDateOfBirth() != null ? u.getDateOfBirth().toString() : "").append(",");
-                row.append(escapeCsv(u.getCode())).append(",");
-                row.append(u.getRole() != null ? u.getRole().toUpperCase() : "").append(",");
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(u.getEmail() != null ? u.getEmail() : "");
+                row.createCell(1).setCellValue(u.getFullName() != null ? u.getFullName() : "");
+                row.createCell(2).setCellValue(u.getPhoneNumber() != null ? u.getPhoneNumber() : "");
+                row.createCell(3).setCellValue(u.getGender() != null ? u.getGender() : "");
+                row.createCell(4).setCellValue(u.getDateOfBirth() != null ? u.getDateOfBirth().toString() : "");
+                row.createCell(5).setCellValue(u.getCode() != null ? u.getCode() : "");
+                row.createCell(6).setCellValue(u.getRole() != null ? u.getRole().toUpperCase() : "");
                 
                 String statusText = "active".equalsIgnoreCase(u.getStatus()) ? "Hoạt động" : "Đã khóa";
-                row.append(statusText).append(",");
+                row.createCell(7).setCellValue(statusText);
 
                 // Chuyên ngành / Bộ môn tùy theo vai trò
                 String extraInfo1 = "";
                 if ("STUDENT".equalsIgnoreCase(u.getRole())) {
-                    extraInfo1 = u.getMajor();
+                    extraInfo1 = u.getMajor() != null ? u.getMajor() : "";
                 } else if ("LECTURER".equalsIgnoreCase(u.getRole())) {
-                    extraInfo1 = u.getDepartment();
+                    extraInfo1 = u.getDepartment() != null ? u.getDepartment() : "";
                 }
-                row.append(escapeCsv(extraInfo1)).append(",");
+                row.createCell(8).setCellValue(extraInfo1);
 
                 // Năm nhập học (chỉ cho Student)
                 String extraInfo2 = "";
                 if ("STUDENT".equalsIgnoreCase(u.getRole()) && u.getEnrollmentYear() != null) {
                     extraInfo2 = String.valueOf(u.getEnrollmentYear());
                 }
-                row.append(extraInfo2);
-
-                writer.println(row.toString());
+                row.createCell(9).setCellValue(extraInfo2);
             }
-        }
-    }
+            
+            // Tự động điều chỉnh kích thước cột
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
 
-    /**
-     * Hàm tiện ích escape ký tự đặc biệt trong CSV.
-     */
-    private String escapeCsv(String val) {
-        if (val == null) {
-            return "";
+            workbook.write(out);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        String cleaned = val.trim();
-        if (cleaned.contains(",") || cleaned.contains("\"") || cleaned.contains("\n") || cleaned.contains("\r")) {
-            cleaned = cleaned.replace("\"", "\"\"");
-            return "\"" + cleaned + "\"";
-        }
-        return cleaned;
     }
 }

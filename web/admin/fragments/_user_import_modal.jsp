@@ -48,21 +48,21 @@
                                 <option value="MANAGER">Quản lý Thư viện (MANAGER)</option>
                                 <option value="ADMIN">Quản trị viên (ADMIN)</option>
                             </select>
-                            <div class="form-text" style="font-size: 11px;">Tệp Excel/CSV không được định nghĩa vai trò; Admin bắt buộc chọn vai trò chung tại đây (BR-13).</div>
+                            <div class="form-text" style="font-size: 11px;">Tệp Excel không được định nghĩa vai trò; Admin bắt buộc chọn vai trò chung tại đây (BR-13).</div>
                         </div>
 
-                        <!-- Chọn file CSV -->
+                        <!-- Chọn file Excel -->
                         <div class="col-12 col-md-6">
-                            <label for="importFile" class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px;">Chọn tệp Excel CSV (.csv) <span class="text-danger">*</span></label>
-                            <input class="form-control config-input w-100" type="file" id="importFile" name="file" accept=".csv" required>
-                            <div class="form-text" style="font-size: 11px;">Hỗ trợ tệp CSV mã hóa UTF-8 phân tách bằng dấu phẩy hoặc chấm phẩy.</div>
+                            <label for="importFile" class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px;">Chọn tệp Excel (.xlsx) <span class="text-danger">*</span></label>
+                            <input class="form-control config-input w-100" type="file" id="importFile" name="file" accept=".xlsx" required>
+                            <div class="form-text" style="font-size: 11px;">Hỗ trợ tệp Excel chuẩn (.xlsx).</div>
                         </div>
                     </div>
 
                     <!-- Hướng dẫn cấu trúc cột -->
                     <div class="mt-4 p-3 rounded-3" style="background-color: var(--surface-container-low); border: 1px solid var(--outline-variant);">
                         <h6 class="fw-semibold text-primary-custom mb-2 d-flex align-items-center gap-1" style="font-size: 14px;">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">article</span> Hướng dẫn định dạng tệp CSV
+                            <span class="material-symbols-outlined" style="font-size: 18px;">article</span> Hướng dẫn định dạng tệp Excel
                         </h6>
                         <p class="mb-2 text-on-surface-variant" style="font-size: 12px; line-height: 1.5;">
                             Tệp dữ liệu của bạn phải có các cột theo đúng thứ tự sau đây (dòng đầu tiên là dòng tiêu đề):
@@ -110,7 +110,7 @@
                             <a href="${pageContext.request.contextPath}/admin/user/import/template" 
                                class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 text-decoration-none fw-bold" 
                                style="font-size: 12px; border-radius: 6px;">
-                                <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Tải tệp mẫu (.csv)
+                                <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Tải tệp mẫu (.xlsx)
                             </a>
                         </div>
                     </div>
