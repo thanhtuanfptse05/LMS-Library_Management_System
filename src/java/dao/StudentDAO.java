@@ -10,15 +10,18 @@ import model.Student;
 import util.DatabaseConnection;
 
 /**
- * StudentDAO — Data Access Object for Student table.
+ * StudentDAO — Đối tượng truy cập dữ liệu (DAO) cho bảng Student.
  */
-// Verified compatibility with PostgreSQL
+// Đã xác minh tính tương thích với PostgreSQL
 public class StudentDAO {
 
     private static final Logger LOGGER = Logger.getLogger(StudentDAO.class.getName());
 
     /**
-     * Find student by userId.
+     * Tìm kiếm sinh viên theo ID người dùng (userId).
+     * 
+     * @param userId ID người dùng cần tìm
+     * @return Đối tượng Student nếu tìm thấy, ngược lại trả về null
      */
     public Student findByUserId(int userId) {
         String sql = "SELECT userId, studentCode, major, enrollmentYear FROM Student WHERE userId = ?";
@@ -36,7 +39,7 @@ public class StudentDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error querying student by userId=" + userId, e);
+            LOGGER.log(Level.SEVERE, "Lỗi truy vấn sinh viên theo userId=" + userId, e);
         }
         return null;
     }
