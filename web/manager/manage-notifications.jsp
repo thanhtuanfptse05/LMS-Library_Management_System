@@ -121,10 +121,10 @@
 
                                         <div class="mb-3">
                                             <label for="editContent" class="form-label small fw-semibold"
-                                                   style="color: var(--on-surface-variant);">Nội dung</label>
+                                                   style="color: var(--on-surface-variant);">Nội dung <span class="text-danger">*</span></label>
                                             <textarea class="form-control rounded-3" id="editContent" name="content"
                                                       rows="6"
-                                                      placeholder="Mô tả chi tiết thông báo..."><c:out value="${editNotification.content}"/></textarea>
+                                                      placeholder="Mô tả chi tiết thông báo..." required><c:out value="${editNotification.content}"/></textarea>
                                         </div>
 
                                         <div class="mb-3">
@@ -228,9 +228,9 @@
 
                                         <div class="mb-3">
                                             <label for="notifContent" class="form-label small fw-semibold"
-                                                   style="color: var(--on-surface-variant);">Nội dung</label>
+                                                   style="color: var(--on-surface-variant);">Nội dung <span class="text-danger">*</span></label>
                                             <textarea class="form-control rounded-3" id="notifContent" name="content"
-                                                      rows="6" placeholder="Mô tả chi tiết nội dung thông báo..."></textarea>
+                                                      rows="6" placeholder="Mô tả chi tiết nội dung thông báo..." required></textarea>
 <small class="text-secondary d-block mt-1" style="font-size:12px;"><i class="bi bi-markdown"></i> Hỗ trợ định dạng Markdown (**in đậm**, *in nghiêng*, - danh sách, # tiêu đề)</small>
                                         </div>
 

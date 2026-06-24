@@ -166,6 +166,11 @@ public class NotificationManagerServlet extends HttpServlet {
             return;
         }
 
+        if (content == null || content.trim().isEmpty()) {
+            redirectWithError(request, response, "Nội dung không được để trống");
+            return;
+        }
+
         if (isSendEmail && (selectedTemplateName == null || selectedTemplateName.trim().isEmpty())) {
             redirectWithError(request, response, "Vui lòng chọn mẫu Email để gửi kèm");
             return;
@@ -212,6 +217,11 @@ public class NotificationManagerServlet extends HttpServlet {
 
         if (idParam == null || idParam.trim().isEmpty() || title == null || title.trim().isEmpty()) {
             redirectWithError(request, response, "Dữ liệu không hợp lệ");
+            return;
+        }
+
+        if (content == null || content.trim().isEmpty()) {
+            redirectWithError(request, response, "Nội dung không được để trống");
             return;
         }
 
