@@ -9,10 +9,19 @@ import java.util.logging.Logger;
 import model.Librarian;
 import util.DatabaseConnection;
 
-// Verified compatibility with PostgreSQL
+/**
+ * LibrarianDAO — Đối tượng truy cập dữ liệu (DAO) cho bảng Librarian.
+ */
+// Đã xác minh tính tương thích với PostgreSQL
 public class LibrarianDAO {
     private static final Logger LOGGER = Logger.getLogger(LibrarianDAO.class.getName());
 
+    /**
+     * Tìm kiếm thông tin Thủ thư (Librarian) theo ID người dùng (userId).
+     * 
+     * @param userId ID người dùng cần tìm
+     * @return Đối tượng Librarian nếu tìm thấy, ngược lại trả về null
+     */
     public Librarian findByUserId(int userId) {
         String sql = "SELECT userId, staffCode FROM Librarian WHERE userId = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -24,7 +33,7 @@ public class LibrarianDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error querying Librarian by userId=" + userId, e);
+            LOGGER.log(Level.SEVERE, "Lỗi truy vấn Librarian theo userId=" + userId, e);
         }
         return null;
     }
