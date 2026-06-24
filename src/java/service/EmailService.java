@@ -81,6 +81,10 @@ public class EmailService {
      * @param tempPassword Mật khẩu tạm thời (plaintext) - KHÔNG log ra console
      */
     public static void sendAsyncPasswordReset(String toEmail, String tempPassword) {
+        if (toEmail == null || toEmail.trim().isEmpty() || toEmail.trim().endsWith("@lms.com")) {
+            LOGGER.log(Level.INFO, "[ASYNC MAIL] Bỏ qua gửi email khôi phục mật khẩu tới địa chỉ rỗng hoặc địa chỉ ảo: {0}", toEmail);
+            return;
+        }
         EXECUTOR.submit(() -> {
             try {
                 LOGGER.log(Level.INFO, "[ASYNC MAIL] Đang gửi email khôi phục mật khẩu tới: {0}", toEmail);
@@ -113,8 +117,8 @@ public class EmailService {
      * @param finalHtmlBody Nội dung HTML hoàn chỉnh, sẵn sàng để gửi
      */
     public static void sendAsyncHtmlEmail(String toEmail, String subject, String finalHtmlBody) {
-        if (toEmail == null || toEmail.trim().isEmpty()) {
-            LOGGER.log(Level.WARNING, "[ASYNC MAIL] Bỏ qua gửi email — địa chỉ rỗng.");
+        if (toEmail == null || toEmail.trim().isEmpty() || toEmail.trim().endsWith("@lms.com")) {
+            LOGGER.log(Level.WARNING, "[ASYNC MAIL] Bỏ qua gửi email tới địa chỉ rỗng hoặc địa chỉ ảo: {0}", toEmail);
             return;
         }
         EXECUTOR.submit(() -> {
