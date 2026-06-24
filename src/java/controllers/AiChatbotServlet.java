@@ -102,7 +102,7 @@ public class AiChatbotServlet extends HttpServlet {
             chatHistory.add(new ChatMessage("user", userMessage));
         }
         session.setAttribute("lastChatIntent", intent);
-        String responseText;
+        String responseText = "";
 
         if ("Irrelevant".equalsIgnoreCase(intent)) {
             // Trường hợp ngoài phạm vi: Phản hồi tĩnh trực tiếp, không tốn token gọi AI
