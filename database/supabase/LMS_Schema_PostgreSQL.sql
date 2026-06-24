@@ -270,6 +270,7 @@ CREATE TABLE Notification (
     title VARCHAR(500) NOT NULL,
     content TEXT NULL,
     type VARCHAR(50) NOT NULL DEFAULT 'general',
+    targetRole VARCHAR(50) DEFAULT 'ALL',
     isPinned BOOLEAN NOT NULL DEFAULT FALSE,
     createdBy INT NOT NULL,
     createdAt TIMESTAMP NOT NULL DEFAULT NOW(),

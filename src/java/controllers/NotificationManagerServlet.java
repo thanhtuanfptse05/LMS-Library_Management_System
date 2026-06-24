@@ -158,6 +158,7 @@ public class NotificationManagerServlet extends HttpServlet {
         boolean isPinned = "on".equals(request.getParameter("isPinned"));
         boolean isSendEmail = "on".equals(request.getParameter("isSendEmail"));
         String targetRole   = request.getParameter("targetRole");
+        if (targetRole != null) targetRole = targetRole.trim().toUpperCase();
         // Mẫu email do người dùng chủ động chọn từ dropdown
         String selectedTemplateName = request.getParameter("templateName");
 
@@ -180,6 +181,7 @@ public class NotificationManagerServlet extends HttpServlet {
         notification.setTitle(title.trim());
         notification.setContent(content != null ? content.trim() : "");
         notification.setType(isValidType(type) ? type : "general");
+        notification.setTargetRole(targetRole);
         notification.setPinned(isPinned);
         notification.setCreatedBy(managerId);
 
@@ -234,11 +236,14 @@ public class NotificationManagerServlet extends HttpServlet {
             int notificationId = Integer.parseInt(idParam.trim());
             Notification old   = notificationDAO.findById(notificationId);
 
+            if (targetRole != null) targetRole = targetRole.trim().toUpperCase();
+
             Notification updated = new Notification();
             updated.setNotificationId(notificationId);
             updated.setTitle(title.trim());
             updated.setContent(content != null ? content.trim() : "");
             updated.setType(isValidType(type) ? type : "general");
+            updated.setTargetRole(targetRole);
             updated.setPinned(isPinned);
 
             boolean success = notificationDAO.update(updated);
@@ -311,11 +316,11 @@ public class NotificationManagerServlet extends HttpServlet {
 
         List<UserContactDTO> contacts;
         if ("STUDENT".equals(targetRole)) {
-            contacts = userDAO.getActiveContactsByRoles("student");
+            contacts = userDAO.getActiveContactsByRoles("STUDENT");
         } else if ("LECTURER".equals(targetRole)) {
-            contacts = userDAO.getActiveContactsByRoles("lecturer");
+            contacts = userDAO.getActiveContactsByRoles("LECTURER");
         } else {
-            contacts = userDAO.getActiveContactsByRoles("student", "lecturer");
+            contacts = userDAO.getActiveContactsByRoles("STUDENT", "LECTURER");
         }
 
         if (contacts.isEmpty()) {

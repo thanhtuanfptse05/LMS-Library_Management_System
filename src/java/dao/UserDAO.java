@@ -266,14 +266,14 @@ public class UserDAO {
         String sql = "SELECT u.email, COALESCE(mp.fullName, SUBSTRING(u.email FROM 1 FOR POSITION('@' IN u.email) - 1)) AS fullName "
                 + "FROM \"User\" u "
                 + "LEFT JOIN MemberProfile mp ON u.userId = mp.userId "
-                + "WHERE u.status = 'active' AND u.role IN (" + placeholders + ")";
+                + "WHERE u.status = 'active' AND UPPER(u.role) IN (" + placeholders + ")";
 
         List<UserContactDTO> result = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             for (int i = 0; i < roles.length; i++) {
-                ps.setString(i + 1, roles[i]);
+                ps.setString(i + 1, roles[i].toUpperCase());
             }
 
             try (ResultSet rs = ps.executeQuery()) {

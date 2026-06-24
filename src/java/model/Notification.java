@@ -44,7 +44,8 @@ public class Notification {
     private String createdByName;
     /** Trạng thái đã đọc của người dùng đang đăng nhập (từ UserNotificationStatus) */
     private boolean isRead;
-    /** Nhóm đối tượng (Lưu tạm trên UI, không có trong DB) */
+    
+    /** Nhóm đối tượng (Tất cả / Sinh viên / Giảng viên) */
     private String targetRole;
 
     public Notification() {

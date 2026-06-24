@@ -37,7 +37,7 @@ public class NotificationDAO {
      * @return Danh sách Notification, danh sách rỗng nếu không có dữ liệu
      */
     public List<Notification> getAll() {
-        String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.isPinned, "
+        String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
                 + "n.createdBy, n.createdAt, n.updatedAt, "
                 + "mp.fullName AS createdByName "
                 + "FROM Notification n "
@@ -69,7 +69,7 @@ public class NotificationDAO {
      */
     public List<Notification> getAllPaged(String keyword, String typeFilter, int page, int pageSize) {
         StringBuilder sql = new StringBuilder(
-                "SELECT n.notificationId, n.title, n.content, n.type, n.isPinned, "
+                "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
                 + "n.createdBy, n.createdAt, n.updatedAt, "
                 + "mp.fullName AS createdByName "
                 + "FROM Notification n "
@@ -156,7 +156,7 @@ public class NotificationDAO {
      */
     public List<Notification> getAllForUser(int userId, String keyword, String typeFilter, int page, int pageSize) {
         StringBuilder sql = new StringBuilder(
-                "SELECT n.notificationId, n.title, n.content, n.type, n.isPinned, "
+                "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
                 + "n.createdBy, n.createdAt, n.updatedAt, "
                 + "mp.fullName AS createdByName, "
                 + "CASE WHEN uns.userId IS NOT NULL THEN 1 ELSE 0 END AS isRead "
@@ -164,9 +164,10 @@ public class NotificationDAO {
                 + "LEFT JOIN MemberProfile mp ON n.createdBy = mp.userId "
                 + "LEFT JOIN UserNotificationStatus uns "
                 + "    ON uns.notificationId = n.notificationId AND uns.userId = ? "
-                + "WHERE 1=1 ");
+                + "WHERE (n.targetRole = 'ALL' OR n.targetRole = (SELECT UPPER(role) FROM \"User\" WHERE userId = ?)) ");
 
         List<Object> params = new ArrayList<>();
+        params.add(userId);
         params.add(userId);
 
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -234,7 +235,7 @@ public class NotificationDAO {
      * @return Notification nếu tìm thấy, null nếu không tồn tại
      */
     public Notification findById(int notificationId) {
-        String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.isPinned, "
+        String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
                 + "n.createdBy, n.createdAt, n.updatedAt, "
                 + "mp.fullName AS createdByName "
                 + "FROM Notification n "
@@ -286,8 +287,8 @@ public class NotificationDAO {
      * @return ID tự động tăng vừa được tạo, -1 nếu thất bại
      */
     public int insert(Notification notification) {
-        String sql = "INSERT INTO Notification (title, content, type, isPinned, createdBy, createdAt) "
-                + "VALUES (?, ?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO Notification (title, content, type, targetRole, isPinned, createdBy, createdAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -295,8 +296,9 @@ public class NotificationDAO {
             ps.setString(1, notification.getTitle());
             ps.setString(2, notification.getContent());
             ps.setString(3, notification.getType() != null ? notification.getType() : "general");
-            ps.setBoolean(4, notification.isPinned());
-            ps.setInt(5, notification.getCreatedBy());
+            ps.setString(4, notification.getTargetRole() != null ? notification.getTargetRole() : "ALL");
+            ps.setBoolean(5, notification.isPinned());
+            ps.setInt(6, notification.getCreatedBy());
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
@@ -319,7 +321,7 @@ public class NotificationDAO {
      * @return true nếu cập nhật thành công, false nếu thất bại
      */
     public boolean update(Notification notification) {
-        String sql = "UPDATE Notification SET title = ?, content = ?, type = ?, isPinned = ?, "
+        String sql = "UPDATE Notification SET title = ?, content = ?, type = ?, targetRole = ?, isPinned = ?, "
                 + "updatedAt = NOW() WHERE notificationId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -328,8 +330,9 @@ public class NotificationDAO {
             ps.setString(1, notification.getTitle());
             ps.setString(2, notification.getContent());
             ps.setString(3, notification.getType() != null ? notification.getType() : "general");
-            ps.setBoolean(4, notification.isPinned());
-            ps.setInt(5, notification.getNotificationId());
+            ps.setString(4, notification.getTargetRole() != null ? notification.getTargetRole() : "ALL");
+            ps.setBoolean(5, notification.isPinned());
+            ps.setInt(6, notification.getNotificationId());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -467,6 +470,7 @@ public class NotificationDAO {
         n.setTitle(rs.getString("title"));
         n.setContent(rs.getString("content"));
         n.setType(rs.getString("type"));
+        n.setTargetRole(rs.getString("targetRole"));
         n.setPinned(rs.getBoolean("isPinned"));
         n.setCreatedBy(rs.getInt("createdBy"));
         n.setCreatedAt(rs.getTimestamp("createdAt"));
