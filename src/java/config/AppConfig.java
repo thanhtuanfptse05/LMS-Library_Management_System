@@ -31,7 +31,7 @@ public final class AppConfig {
      * Local dev: fallback về giá trị hardcode.
      * Tạo tại: Google Account > Security > App Passwords
      */
-    public static final String SMTP_PASSWORD = readConfig("SMTP_PASSWORD", "dxsmtjqarnioued");
+    public static final String SMTP_PASSWORD = readConfig("SMTP_PASSWORD", "dxsmtjqtarnioued");
 
     /** SMTP Host - Gmail */
     public static final String SMTP_HOST = "smtp.gmail.com";
