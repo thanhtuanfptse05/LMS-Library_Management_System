@@ -63,9 +63,9 @@ public class AiConfig {
     }
 
     /**
-     * Endpoint URL của mô hình Gemini 3.5 Flash (Mô hình tiêu chuẩn hiện tại năm 2026).
+     * Endpoint URL của mô hình Gemini 2.5 Flash (Tránh lỗi 503 của Gemini 3.5 Flash).
      */
-    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=";
+    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
 
     /**
      * Giải quyết API Key từ nhiều nguồn cấu hình theo thứ tự ưu tiên.
