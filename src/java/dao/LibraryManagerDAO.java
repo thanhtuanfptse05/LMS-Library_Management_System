@@ -9,10 +9,16 @@ import java.util.logging.Logger;
 import model.LibraryManager;
 import util.DatabaseConnection;
 
-// Verified compatibility with PostgreSQL
+// Đã xác minh tương thích với PostgreSQL
 public class LibraryManagerDAO {
     private static final Logger LOGGER = Logger.getLogger(LibraryManagerDAO.class.getName());
 
+    /**
+     * Tìm kiếm thông tin Quản lý thư viện (LibraryManager) theo ID người dùng.
+     * 
+     * @param userId ID người dùng cần tìm
+     * @return Đối tượng LibraryManager nếu tìm thấy, ngược lại trả về null
+     */
     public LibraryManager findByUserId(int userId) {
         String sql = "SELECT userId, staffCode FROM LibraryManager WHERE userId = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -24,7 +30,7 @@ public class LibraryManagerDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error querying LibraryManager by userId=" + userId, e);
+            LOGGER.log(Level.SEVERE, "Lỗi truy vấn LibraryManager theo userId=" + userId, e);
         }
         return null;
     }
