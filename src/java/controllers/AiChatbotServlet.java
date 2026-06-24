@@ -89,11 +89,19 @@ public class AiChatbotServlet extends HttpServlet {
         // 1. Thêm câu hỏi của user vào lịch sử hội thoại
         chatHistory.add(new ChatMessage("user", userMessage));
         
-        // Cắt bớt lịch sử trước khi gọi AI để tránh tràn token (Tối đa 5 lượt = 10 tin nhắn gồm cả tin nhắn user vừa nhập)
-        pruneHistory(chatHistory, 9); // Giữ tối đa 9 tin nhắn cũ để thêm tin model thành 10 tin nhắn
+        // Cắt bớt lịch sử trước khi gọi AI để tránh tràn token (Tối đa 3 lượt = 6 tin nhắn gồm cả tin nhắn user vừa nhập)
+        pruneHistory(chatHistory, 5); // Giữ tối đa 5 tin nhắn cũ để thêm tin model thành 6 tin nhắn (3 lượt)
 
         // 2. Phân loại ý định của người dùng
         String intent = aiChatbotService.classifyIntent(userMessage);
+
+        // Reset lịch sử hội thoại nếu chuyển hướng ý định (Intent-based reset)
+        String lastIntent = (String) session.getAttribute("lastChatIntent");
+        if (lastIntent != null && !lastIntent.equals(intent)) {
+            chatHistory.clear();
+            chatHistory.add(new ChatMessage("user", userMessage));
+        }
+        session.setAttribute("lastChatIntent", intent);
         String responseText;
 
         if ("Irrelevant".equalsIgnoreCase(intent)) {
@@ -178,8 +186,8 @@ public class AiChatbotServlet extends HttpServlet {
         // 3. Lưu câu trả lời vào lịch sử hội thoại
         chatHistory.add(new ChatMessage("model", responseText));
         
-        // Prune lần cuối để đảm bảo tối đa 10 tin nhắn trong Session
-        pruneHistory(chatHistory, 10);
+        // Prune lần cuối để đảm bảo tối đa 6 tin nhắn trong Session (3 lượt)
+        pruneHistory(chatHistory, 6);
         session.setAttribute("chatHistory", chatHistory);
 
         jsonRes.addProperty("status", "success");
