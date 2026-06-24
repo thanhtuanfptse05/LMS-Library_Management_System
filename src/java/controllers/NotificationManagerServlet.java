@@ -320,6 +320,9 @@ public class NotificationManagerServlet extends HttpServlet {
                 new Object[]{contacts.size(), tempName, targetRole});
 
         for (UserContactDTO contact : contacts) {
+            if (contact.getEmail() != null && contact.getEmail().endsWith("@lms.com")) {
+                continue; // Bỏ qua gửi email cho tài khoản seed ảo của hệ thống
+            }
             String displayName = (contact.getFullName() != null && !contact.getFullName().isBlank())
                     ? contact.getFullName() : "Bạn";
 
