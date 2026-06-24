@@ -41,15 +41,28 @@ public class AiChatbotService {
             return "Irrelevant";
         }
 
-        // Tối ưu hoá trước bằng khoá từ khoá (Keyword check) để phản hồi nhanh
-        String lowerMsg = userMessage.toLowerCase().trim();
-        if (lowerMsg.matches(".*(xin chào|hi|hello|bạn là ai|chatbot là gì|khỏe không|tạm biệt|bye|cảm ơn|thanks).*")) {
-            // Các câu chào hỏi thông thường hoặc linh tinh
-            if (!lowerMsg.contains("sách") && !lowerMsg.contains("quy định") && !lowerMsg.contains("mượn") && !lowerMsg.contains("trả")) {
-                return "Irrelevant";
-            }
+        String m = userMessage.toLowerCase().trim();
+
+        // Lớp 1: Keyword rõ ràng → return ngay (0ms)
+        if (m.matches(".*(phạt|nội quy|quy định|giờ mở cửa|quá hạn|gia hạn|bao nhiêu tiền|mấy ngày|mấy cuốn).*")) {
+            return "Rules";
+        }
+        if (m.matches(".*(tìm sách|sách về|cuốn sách|tác giả|gợi ý sách|đề xuất sách|tìm cuốn).*")) {
+            return "Books";
+        }
+        if (m.matches(".*(xin chào|hello|bạn là ai|cảm ơn|tạm biệt|bye).*")) {
+            return "Irrelevant";
         }
 
+        // Lớp 2: Mơ hồ → gọi Gemini classify
+        return classifyIntentByAI(userMessage);
+    }
+
+    /**
+     * Gọi Gemini API để phân loại ý định khi câu hỏi mơ hồ.
+     */
+    private String classifyIntentByAI(String userMessage) {
+        String lowerMsg = userMessage.toLowerCase().trim();
         String systemPrompt = "Bạn là bộ phân loại ý định (Intent Classifier) cho trợ lý ảo thư viện.\n"
                 + "Hãy phân loại câu hỏi của người dùng vào một trong 3 nhóm duy nhất:\n"
                 + "- Rules: Nếu hỏi về mức phạt (tiền phạt, trễ hạn, quá hạn), nội quy, giờ mở cửa, chính sách mượn/trả/gia hạn sách.\n"
@@ -86,17 +99,15 @@ public class AiChatbotService {
             JsonObject generationConfig = new JsonObject();
             generationConfig.addProperty("maxOutputTokens", 10);
             generationConfig.addProperty("temperature", 0.1);
-            
 
-            
             root.add("generationConfig", generationConfig);
 
             String jsonPayload = new Gson().toJson(root);
             String response = sendPostRequest(jsonPayload);
-            
+
             String label = parseTextResponse(response).trim();
             LOGGER.log(Level.INFO, "[AI-SVC] Intent classified for \"{0}\" -> {1}", new Object[]{userMessage, label});
-            
+
             if (label.contains("Rules")) return "Rules";
             if (label.contains("Books")) return "Books";
             return "Irrelevant";
