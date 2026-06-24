@@ -100,15 +100,24 @@ public class AiChatbotServlet extends HttpServlet {
             // Trường hợp ngoài phạm vi: Phản hồi tĩnh trực tiếp, không tốn token gọi AI
             responseText = "Tôi chỉ có thể hỗ trợ các vấn đề liên quan đến nội quy thư viện và tìm kiếm sách.";
         } else {
-            String systemPrompt;
+            String systemPrompt = "";
+            boolean bypassGemini = false;
+
             if ("Rules".equalsIgnoreCase(intent)) {
-                // Truy xuất nội quy
-                String rulesContext = aiChatbotService.retrieveRulesContext();
-                systemPrompt = "Bạn là trợ lý ảo hỗ trợ đàm thoại của thư viện trường đại học (UniLib). "
-                        + "Nhiệm vụ của bạn là trả lời câu hỏi dựa TRÊN ĐÚNG thông tin cấu hình và nội quy được cung cấp bên dưới, TUYỆT ĐỐI KHÔNG tự bịa ra con số (ví dụ: tiền phạt, số ngày). "
-                        + "Hãy trả lời THẬT NGẮN GỌN, đúng trọng tâm, KHÔNG dông dài. KHÔNG DÙNG công thức toán học phức tạp (như $$...$$), chỉ dùng văn bản Markdown đơn giản, thân thiện, dễ đọc. "
-                        + "Nếu câu hỏi không có trong nội dung cấu hình dưới đây, hãy trả lời: 'Tôi không có thông tin về vấn đề này. Vui lòng liên hệ thủ thư.'\n\n"
-                        + "Thông tin cấu hình/nội quy THỰC TẾ:\n" + rulesContext;
+                // Thử khớp FAQ trước để tránh gọi Gemini API
+                String faqResponse = aiChatbotService.matchRulesFAQ(userMessage);
+                if (faqResponse != null) {
+                    responseText = faqResponse;
+                    bypassGemini = true;
+                } else {
+                    // Truy xuất nội quy
+                    String rulesContext = aiChatbotService.retrieveRulesContext();
+                    systemPrompt = "Bạn là trợ lý ảo hỗ trợ đàm thoại của thư viện trường đại học (UniLib). "
+                            + "Nhiệm vụ của bạn là trả lời câu hỏi dựa TRÊN ĐÚNG thông tin cấu hình và nội quy được cung cấp bên dưới, TUYỆT ĐỐI KHÔNG tự bịa ra con số (ví dụ: tiền phạt, số ngày). "
+                            + "Hãy trả lời THẬT NGẮN GỌN, đúng trọng tâm, KHÔNG dông dài. KHÔNG DÙNG công thức toán học phức tạp (như $$...$$), chỉ dùng văn bản Markdown đơn giản, thân thiện, dễ đọc. "
+                            + "Nếu câu hỏi không có trong nội dung cấu hình dưới đây, hãy trả lời: 'Tôi không có thông tin về vấn đề này. Vui lòng liên hệ thủ thư.'\n\n"
+                            + "Thông tin cấu hình/nội quy THỰC TẾ:\n" + rulesContext;
+                }
             } else {
                 // Kiểm tra xem người dùng có hỏi gợi ý sách không
                 boolean isRecommend = userMessage.toLowerCase().matches(".*(gợi ý|đề xuất|khuyên đọc|phù hợp với tôi|nên đọc).*");
@@ -155,12 +164,14 @@ public class AiChatbotServlet extends HttpServlet {
                 }
             }
 
-            // Gọi AI Service
-            responseText = aiChatbotService.callGeminiChat(chatHistory, systemPrompt);
-            
-            // Xử lý Fallback khi AI lỗi hoặc timeout
-            if (responseText == null || responseText.trim().isEmpty()) {
-                responseText = "Hệ thống AI hiện đang quá tải. Vui lòng thử lại sau ít phút.";
+            if (!bypassGemini) {
+                // Gọi AI Service
+                responseText = aiChatbotService.callGeminiChat(chatHistory, systemPrompt);
+                
+                // Xử lý Fallback khi AI lỗi hoặc timeout
+                if (responseText == null || responseText.trim().isEmpty()) {
+                    responseText = "Hệ thống AI hiện đang quá tải. Vui lòng thử lại sau ít phút.";
+                }
             }
         }
 

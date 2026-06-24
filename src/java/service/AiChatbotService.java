@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +37,51 @@ public class AiChatbotService {
     private static volatile String cachedRulesContext;
     private static volatile long cacheTimestamp = 0;
     private static final long CACHE_TTL_MS = 10 * 60 * 1000; // 10 phút
+
+    private static final Map<String, String> FAQ_TEMPLATES = new LinkedHashMap<>();
+    static {
+        FAQ_TEMPLATES.put("FINE",
+            "📌 **Mức phạt tại thư viện**\n\n"
+            + "• Phạt trả sách trễ hạn: **{{FINE_RATE_PER_DAY}} VNĐ/ngày**\n"
+            + "• Phạt sách bị hỏng: giá sách × **{{DAMAGED_FINE_MULTIPLIER}}**\n"
+            + "• Phạt mất sách: giá sách × **{{LOST_FINE_MULTIPLIER}}**\n"
+            + "• Giá sách mặc định: {{DEFAULT_BOOK_PRICE}} VNĐ\n\n"
+            + "💡 *Hãy trả sách đúng hạn để tránh phạt nhé!*");
+
+        FAQ_TEMPLATES.put("BORROW_LIMIT",
+            "📚 **Giới hạn số sách được mượn**\n\n"
+            + "• Sinh viên: tối đa **{{STUDENT_MAX_BORROW_LIMIT}} cuốn** cùng lúc\n"
+            + "• Giảng viên: tối đa **{{LECTURER_MAX_BORROW_LIMIT}} cuốn** cùng lúc\n\n"
+            + "*Bao gồm cả sách đang mượn và đặt trước.*");
+
+        FAQ_TEMPLATES.put("BORROW_DURATION",
+            "📅 **Thời hạn mượn sách**\n\n"
+            + "• Sinh viên: **{{STUDENT_MAX_BORROW_DAYS}} ngày**\n"
+            + "• Giảng viên: **{{LECTURER_MAX_BORROW_DAYS}} ngày**\n\n"
+            + "*Bạn có thể gia hạn nếu đủ điều kiện.*");
+
+        FAQ_TEMPLATES.put("RENEWAL",
+            "🔄 **Quy định gia hạn sách**\n\n"
+            + "• Số lần gia hạn tối đa: **{{MAX_EXTENSION_COUNT}} lần**/lượt mượn\n"
+            + "• Mỗi lần gia hạn thêm: **{{RENEW_DURATION_DAYS}} ngày**\n"
+            + "• Điều kiện: đã mượn ít nhất **{{RENEW_THRESHOLD_PERCENT}}%** thời gian\n\n"
+            + "*Sách quá hạn hoặc đang có người đặt trước sẽ không được gia hạn.*");
+
+        FAQ_TEMPLATES.put("RESERVATION",
+            "🔖 **Quy định đặt trước sách**\n\n"
+            + "• Sau khi sách có sẵn, bạn có **{{RESERVATION_HOLD_DAYS}} ngày** để đến nhận\n"
+            + "• Quá thời hạn sẽ tự động hủy\n"
+            + "• Giới hạn đặt trước tính chung với giới hạn mượn sách");
+    }
+
+    private static final Map<String, String> FAQ_REGEX = new LinkedHashMap<>();
+    static {
+        FAQ_REGEX.put("FINE",            ".*(phạt|trễ hạn|quá hạn|bao nhiêu tiền|tiền phạt).*");
+        FAQ_REGEX.put("BORROW_LIMIT",   ".*(bao nhiêu cuốn|mấy cuốn|giới hạn mượn|mượn tối đa|mượn được mấy).*");
+        FAQ_REGEX.put("BORROW_DURATION",".*(mấy ngày|bao lâu|thời hạn mượn|hạn trả|mượn trong).*");
+        FAQ_REGEX.put("RENEWAL",        ".*(gia hạn|renew|mượn thêm|kéo dài).*");
+        FAQ_REGEX.put("RESERVATION",    ".*(đặt trước|giữ sách|reservation|hàng chờ).*");
+    }
 
     /**
      * Phân loại mục đích câu hỏi của người dùng.
@@ -169,6 +215,41 @@ public class AiChatbotService {
     public String retrieveRulesContext() {
         retrieveRulesConfigMap(); // Đảm bảo cache được làm mới nếu cần
         return cachedRulesContext != null ? cachedRulesContext : "Không tìm thấy cấu hình quy định cụ thể.";
+    }
+
+    /**
+     * Tìm kiếm và trả về nội dung FAQ từ cấu hình tĩnh nếu khớp.
+     */
+    public String matchRulesFAQ(String userMessage) {
+        if (userMessage == null) return null;
+        String m = userMessage.toLowerCase().trim();
+        for (Map.Entry<String, String> entry : FAQ_REGEX.entrySet()) {
+            if (m.matches(entry.getValue())) {
+                String template = FAQ_TEMPLATES.get(entry.getKey());
+                return (template != null) ? resolvePlaceholders(template) : null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Thay thế các placeholder bằng giá trị cấu hình thực tế.
+     */
+    private String resolvePlaceholders(String content) {
+        Map<String, String> configs = retrieveRulesConfigMap();
+        if (configs == null || configs.isEmpty()) {
+            return content;
+        }
+        String result = content;
+        for (Map.Entry<String, String> entry : configs.entrySet()) {
+            String value = entry.getValue();
+            int descIdx = value.indexOf(" (");
+            if (descIdx > 0) {
+                value = value.substring(0, descIdx);
+            }
+            result = result.replace("{{" + entry.getKey() + "}}", value);
+        }
+        return result;
     }
 
     /**
