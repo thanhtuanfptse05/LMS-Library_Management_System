@@ -32,6 +32,11 @@ public class AiChatbotService {
     private final SystemConfigurationsDAO systemConfigDAO = new SystemConfigurationsDAO();
     private final BookDAO bookDAO = new BookDAO();
 
+    private static volatile Map<String, String> cachedConfigMap;
+    private static volatile String cachedRulesContext;
+    private static volatile long cacheTimestamp = 0;
+    private static final long CACHE_TTL_MS = 10 * 60 * 1000; // 10 phút
+
     /**
      * Phân loại mục đích câu hỏi của người dùng.
      * Sử dụng mô hình Gemini với số lượng token nhỏ để đưa ra nhãn phân loại: "Rules", "Books", hoặc "Irrelevant".
@@ -125,19 +130,45 @@ public class AiChatbotService {
     }
 
     /**
+     * Truy cập map cấu hình từ cache (hoặc tải từ DB nếu hết hạn).
+     */
+    private Map<String, String> retrieveRulesConfigMap() {
+        long now = System.currentTimeMillis();
+        if (cachedConfigMap != null && (now - cacheTimestamp) < CACHE_TTL_MS) {
+            return cachedConfigMap;
+        }
+        
+        synchronized (AiChatbotService.class) {
+            // Double-checked locking
+            if (cachedConfigMap != null && (now - cacheTimestamp) < CACHE_TTL_MS) {
+                return cachedConfigMap;
+            }
+            
+            Map<String, String> configs = systemConfigDAO.getLibraryConfigurations();
+            if (!configs.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Dưới đây là các chính sách và cấu hình vận hành thư viện chính thức:\n");
+                for (Map.Entry<String, String> entry : configs.entrySet()) {
+                    sb.append("- ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+                }
+                cachedRulesContext = sb.toString();
+                cachedConfigMap = configs;
+                cacheTimestamp = now;
+            } else if (cachedConfigMap == null) {
+                cachedRulesContext = "Không tìm thấy cấu hình quy định cụ thể trong cơ sở dữ liệu. Thư viện mở cửa từ 8:00 đến 20:00 các ngày từ thứ 2 đến thứ 7.";
+                cachedConfigMap = configs;
+                cacheTimestamp = now;
+            }
+        }
+        return cachedConfigMap;
+    }
+
+    /**
      * Truy xuất các quy định, nội quy của thư viện từ CSDL để nhúng vào Prompt.
      */
     public String retrieveRulesContext() {
-        Map<String, String> configs = systemConfigDAO.getLibraryConfigurations();
-        if (configs.isEmpty()) {
-            return "Không tìm thấy cấu hình quy định cụ thể trong cơ sở dữ liệu. Thư viện mở cửa từ 8:00 đến 20:00 các ngày từ thứ 2 đến thứ 7.";
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append("Dưới đây là các chính sách và cấu hình vận hành thư viện chính thức:\n");
-        for (Map.Entry<String, String> entry : configs.entrySet()) {
-            sb.append("- ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-        }
-        return sb.toString();
+        retrieveRulesConfigMap(); // Đảm bảo cache được làm mới nếu cần
+        return cachedRulesContext != null ? cachedRulesContext : "Không tìm thấy cấu hình quy định cụ thể.";
     }
 
     /**
