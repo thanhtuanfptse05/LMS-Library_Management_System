@@ -651,10 +651,15 @@
             var wrapper = document.getElementById(wrapperId);
             if (!wrapper) return;
             wrapper.style.display = checkbox.checked ? 'block' : 'none';
-            // Nếu bỏ tick thì reset giá trị dropdown về mặc định
-            if (!checkbox.checked) {
-                var sel = wrapper.querySelector('select[name="templateName"]');
-                if (sel) sel.value = '';
+            
+            var sel = wrapper.querySelector('select[name="templateName"]');
+            if (sel) {
+                if (checkbox.checked) {
+                    sel.setAttribute('required', 'required');
+                } else {
+                    sel.removeAttribute('required');
+                    sel.value = '';
+                }
             }
         }
     </script>
