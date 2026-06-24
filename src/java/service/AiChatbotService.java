@@ -475,4 +475,42 @@ public class AiChatbotService {
         JsonArray parts = content.getAsJsonArray("parts");
         return parts.get(0).getAsJsonObject().get("text").getAsString();
     }
+
+    /**
+     * Định dạng ngữ cảnh sách thô thành Markdown đẹp.
+     */
+    public String formatBooksAsMarkdown(String query, String rawContext) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("📚 **Kết quả tìm kiếm sách**\n\n");
+        String[] lines = rawContext.split("\n");
+        int count = 0;
+        for (String line : lines) {
+            if (line.startsWith("- ID:")) {
+                count++;
+                String title = extractField(line, "Tên sách:");
+                String author = extractField(line, "Tác giả:");
+                String available = extractField(line, "Số lượng khả dụng:");
+                sb.append("**").append(count).append(". ").append(title).append("**\n");
+                sb.append("   Tác giả: ").append(author);
+                sb.append(" · Khả dụng: ").append(available).append(" cuốn\n\n");
+            }
+        }
+        if (count > 0) {
+            sb.append("*Bạn có thể đến thư viện để mượn trực tiếp các cuốn sách trên.*");
+        } else {
+            sb.append("Không tìm thấy sách nào phù hợp.");
+        }
+        return sb.toString();
+    }
+
+    private String extractField(String line, String fieldName) {
+        int start = line.indexOf(fieldName);
+        if (start == -1) return "Chưa rõ";
+        start += fieldName.length();
+        int end = line.indexOf(" |", start);
+        if (end == -1) {
+            end = line.length();
+        }
+        return line.substring(start, end).trim();
+    }
 }
