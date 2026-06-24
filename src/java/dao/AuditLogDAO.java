@@ -1,6 +1,6 @@
 package dao;
 
-import dto.AuditLogDTO;
+//import dto.AuditLogDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,32 +35,32 @@ public class AuditLogDAO {
         }
     }
 
-    public List<AuditLogDTO> findWithFilters(String actionType, String entityName, String email,
-            Timestamp fromDate, Timestamp toDate, String keyword, int page, int pageSize) throws SQLException {
-        List<AuditLogDTO> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT a.auditLogId, a.userId, a.actionType, a.entityName, a.entityId, a.oldValues, a.newValues, a.timestamp, u.email AS userEmail ");
-        sql.append("FROM AuditLogs a LEFT JOIN \"User\" u ON a.userId = u.userId WHERE 1=1 ");
-
-        List<Object> params = new ArrayList<>();
-        buildWhereClause(sql, params, actionType, entityName, email, fromDate, toDate, keyword);
-
-        sql.append(" ORDER BY a.timestamp DESC LIMIT ? OFFSET ?");
-        params.add(pageSize);
-        params.add((page - 1) * pageSize);
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            for (int i = 0; i < params.size(); i++) {
-                ps.setObject(i + 1, params.get(i));
-            }
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    list.add(mapResultSetToDTO(rs));
-                }
-            }
-        }
-        return list;
-    }
+//    public List<AuditLogDTO> findWithFilters(String actionType, String entityName, String email,
+//            Timestamp fromDate, Timestamp toDate, String keyword, int page, int pageSize) throws SQLException {
+//        List<AuditLogDTO> list = new ArrayList<>();
+//        StringBuilder sql = new StringBuilder("SELECT a.auditLogId, a.userId, a.actionType, a.entityName, a.entityId, a.oldValues, a.newValues, a.timestamp, u.email AS userEmail ");
+//        sql.append("FROM AuditLogs a LEFT JOIN \"User\" u ON a.userId = u.userId WHERE 1=1 ");
+//
+//        List<Object> params = new ArrayList<>();
+//        buildWhereClause(sql, params, actionType, entityName, email, fromDate, toDate, keyword);
+//
+//        sql.append(" ORDER BY a.timestamp DESC LIMIT ? OFFSET ?");
+//        params.add(pageSize);
+//        params.add((page - 1) * pageSize);
+//
+//        try (Connection conn = DatabaseConnection.getConnection();
+//             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+//            for (int i = 0; i < params.size(); i++) {
+//                ps.setObject(i + 1, params.get(i));
+//            }
+//            try (ResultSet rs = ps.executeQuery()) {
+//                while (rs.next()) {
+//                    list.add(mapResultSetToDTO(rs));
+//                }
+//            }
+//        }
+//        return list;
+//    }
 
     public int countWithFilters(String actionType, String entityName, String email,
             Timestamp fromDate, Timestamp toDate, String keyword) throws SQLException {
@@ -83,20 +83,20 @@ public class AuditLogDAO {
         return 0;
     }
 
-    public AuditLogDTO findById(int auditLogId) throws SQLException {
-        String sql = "SELECT a.auditLogId, a.userId, a.actionType, a.entityName, a.entityId, a.oldValues, a.newValues, a.timestamp, u.email AS userEmail "
-                + "FROM AuditLogs a LEFT JOIN \"User\" u ON a.userId = u.userId WHERE a.auditLogId = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, auditLogId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToDTO(rs);
-                }
-            }
-        }
-        return null;
-    }
+//    public AuditLogDTO findById(int auditLogId) throws SQLException {
+//        String sql = "SELECT a.auditLogId, a.userId, a.actionType, a.entityName, a.entityId, a.oldValues, a.newValues, a.timestamp, u.email AS userEmail "
+//                + "FROM AuditLogs a LEFT JOIN \"User\" u ON a.userId = u.userId WHERE a.auditLogId = ?";
+//        try (Connection conn = DatabaseConnection.getConnection();
+//             PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ps.setInt(1, auditLogId);
+//            try (ResultSet rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    return mapResultSetToDTO(rs);
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     public List<String> getDistinctActionTypes() throws SQLException {
         List<String> list = new ArrayList<>();
@@ -154,23 +154,23 @@ public class AuditLogDAO {
         }
     }
 
-    private AuditLogDTO mapResultSetToDTO(ResultSet rs) throws SQLException {
-        AuditLogDTO dto = new AuditLogDTO();
-        dto.setAuditLogId(rs.getInt("auditLogId"));
-        
-        int userId = rs.getInt("userId");
-        dto.setUserId(rs.wasNull() ? null : userId);
-        
-        dto.setActionType(rs.getString("actionType"));
-        dto.setEntityName(rs.getString("entityName"));
-        
-        int entityId = rs.getInt("entityId");
-        dto.setEntityId(rs.wasNull() ? null : entityId);
-        
-        dto.setOldValues(rs.getString("oldValues"));
-        dto.setNewValues(rs.getString("newValues"));
-        dto.setTimestamp(rs.getTimestamp("timestamp"));
-        dto.setUserEmail(rs.getString("userEmail"));
-        return dto;
-    }
+//    private AuditLogDTO mapResultSetToDTO(ResultSet rs) throws SQLException {
+//        AuditLogDTO dto = new AuditLogDTO();
+//        dto.setAuditLogId(rs.getInt("auditLogId"));
+//        
+//        int userId = rs.getInt("userId");
+//        dto.setUserId(rs.wasNull() ? null : userId);
+//        
+//        dto.setActionType(rs.getString("actionType"));
+//        dto.setEntityName(rs.getString("entityName"));
+//        
+//        int entityId = rs.getInt("entityId");
+//        dto.setEntityId(rs.wasNull() ? null : entityId);
+//        
+//        dto.setOldValues(rs.getString("oldValues"));
+//        dto.setNewValues(rs.getString("newValues"));
+//        dto.setTimestamp(rs.getTimestamp("timestamp"));
+//        dto.setUserEmail(rs.getString("userEmail"));
+//        return dto;
+//    }
 }
