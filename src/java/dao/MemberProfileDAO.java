@@ -10,15 +10,18 @@ import model.MemberProfile;
 import util.DatabaseConnection;
 
 /**
- * MemberProfileDAO — Data Access Object for MemberProfile table.
+ * MemberProfileDAO — Đối tượng truy cập dữ liệu (DAO) cho bảng MemberProfile.
  */
-// Verified compatibility with PostgreSQL
+// Đã xác minh tính tương thích với PostgreSQL
 public class MemberProfileDAO {
 
     private static final Logger LOGGER = Logger.getLogger(MemberProfileDAO.class.getName());
 
     /**
-     * Find profile by userId.
+     * Tìm kiếm hồ sơ thành viên theo ID người dùng.
+     * 
+     * @param userId ID người dùng cần tìm
+     * @return Đối tượng MemberProfile nếu tìm thấy, ngược lại trả về null
      */
     public MemberProfile findByUserId(int userId) {
         String sql = "SELECT userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate FROM MemberProfile WHERE userId = ?";
@@ -39,13 +42,16 @@ public class MemberProfileDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error querying member profile by userId=" + userId, e);
+            LOGGER.log(Level.SEVERE, "Lỗi truy vấn hồ sơ thành viên theo userId=" + userId, e);
         }
         return null;
     }
 
     /**
-     * Upsert profile (Insert if not exists, Update if exists).
+     * Thực hiện cập nhật hoặc thêm mới hồ sơ thành viên (Upsert).
+     * 
+     * @param profile Đối tượng MemberProfile cần lưu
+     * @return true nếu lưu thành công, ngược lại trả về false
      */
     public boolean upsertProfile(MemberProfile profile) {
         boolean exists = false;
@@ -59,7 +65,7 @@ public class MemberProfileDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error checking existence of member profile for userId=" + profile.getUserId(), e);
+            LOGGER.log(Level.SEVERE, "Lỗi kiểm tra sự tồn tại của hồ sơ thành viên theo userId=" + profile.getUserId(), e);
             return false;
         }
 
@@ -74,7 +80,7 @@ public class MemberProfileDAO {
                 ps.setInt(5, profile.getUserId());
                 return ps.executeUpdate() > 0;
             } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Error updating member profile for userId=" + profile.getUserId(), e);
+                LOGGER.log(Level.SEVERE, "Lỗi cập nhật hồ sơ thành viên theo userId=" + profile.getUserId(), e);
             }
         } else {
             String insertSql = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -85,19 +91,22 @@ public class MemberProfileDAO {
                 ps.setString(3, profile.getPhoneNumber());
                 ps.setString(4, profile.getGender());
                 ps.setDate(5, profile.getDateOfBirth());
-                // Default membership start/end dates if not specified (e.g. today to one year from now)
+                // Ngày bắt đầu mặc định là hôm nay, ngày kết thúc là 1 năm sau nếu không được đặt
                 ps.setDate(6, profile.getStartDate() != null ? profile.getStartDate() : new java.sql.Date(System.currentTimeMillis()));
-                ps.setDate(7, profile.getEndDate() != null ? profile.getEndDate() : new java.sql.Date(System.currentTimeMillis() + 31536000000L)); // 1 year
+                ps.setDate(7, profile.getEndDate() != null ? profile.getEndDate() : new java.sql.Date(System.currentTimeMillis() + 31536000000L)); // 1 năm
                 return ps.executeUpdate() > 0;
             } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Error inserting member profile for userId=" + profile.getUserId(), e);
+                LOGGER.log(Level.SEVERE, "Lỗi chèn mới hồ sơ thành viên theo userId=" + profile.getUserId(), e);
             }
         }
         return false;
     }
 
     /**
-     * Get the count of active loans (borrowed or overdue).
+     * Lấy số lượng lượt mượn sách đang hoạt động (Đang mượn hoặc Quá hạn).
+     * 
+     * @param userId ID người dùng
+     * @return Số lượng lượt mượn sách đang hoạt động
      */
     public int getActiveLoansCount(int userId) {
         String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status IN ('borrowed', 'overdue')";
@@ -110,13 +119,16 @@ public class MemberProfileDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error counting active loans for userId=" + userId, e);
+            LOGGER.log(Level.SEVERE, "Lỗi đếm số sách đang mượn hoạt động theo userId=" + userId, e);
         }
         return 0;
     }
 
     /**
-     * Get the count of active reservations (pending or readypickup).
+     * Lấy số lượng yêu cầu đặt trước sách đang hoạt động (Đang chờ hoặc Sẵn sàng lấy).
+     * 
+     * @param userId ID người dùng
+     * @return Số lượng yêu cầu đặt trước đang hoạt động
      */
     public int getActiveReservationsCount(int userId) {
         String sql = "SELECT COUNT(*) FROM Reservation WHERE userId = ? AND status IN ('pending', 'readypickup')";
@@ -129,9 +141,8 @@ public class MemberProfileDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error counting active reservations for userId=" + userId, e);
+            LOGGER.log(Level.SEVERE, "Lỗi đếm số lượng đặt trước hoạt động theo userId=" + userId, e);
         }
         return 0;
     }
 }
-
