@@ -1,6 +1,7 @@
 # SPEC.md — User Account Management
 # Version: 1.1.0 | Status: APPROVED | Risk Level: HIGH
 # Changelog: v1.1.0 — Giải quyết GAP-01 (Import Strategy) và GAP-02 (Error Reporting)
+# Mapping: UC-07, UC-08, UC-09, UC-10, UC-11, UC-30 | BR-10, BR-11, BR-12, BR-13, BR-14 | FR-12..FR-21, FR-45
 
 ## 1. Context & Goal
 Cung cấp công cụ CRUD và Bulk Import cho Admin để quản trị tài khoản, kiểm soát quyền truy cập và giải quyết bài toán nhập liệu khối lượng lớn.
@@ -16,10 +17,13 @@ Cung cấp công cụ CRUD và Bulk Import cho Admin để quản trị tài kho
 
 ### EVENT-DRIVEN (Thao tác Đọc/Ghi)
 * WHEN Admin truy cập danh sách, THE system SHALL hiển thị dữ liệu từ bảng `[User]` join với `MemberProfile`.
-* WHEN Admin submit form tạo đơn lẻ, THE system SHALL thực thi lệnh INSERT tuần tự vào `[User]`, `MemberProfile`, và bảng Role đã chọn.
+* WHEN Admin submit form tạo đơn lẻ thành công, THE system SHALL thực thi lệnh INSERT tuần tự vào `[User]`, `MemberProfile`, bảng Role đã chọn, VÀ ghi nhận Audit Log `CREATE_USER` (oldValues = NULL, newValues = JSON chứa thông tin email, role, code).
 * WHEN Admin chọn Role và upload file Excel, THE system SHALL thực thi **Phase 1 (Pre-Validation)**: parse toàn bộ file, quét tính hợp lệ (format, regex, trùng lặp email/code) trên RAM — KHÔNG mở DB Transaction.
 * WHEN Phase 1 phát hiện BẤT KỲ lỗi nào, THE system SHALL CHẶN toàn bộ Import, KHÔNG ghi bất kỳ dòng nào vào DB, VÀ trả về HTTP 400 kèm JSON array danh sách lỗi chi tiết.
 * WHEN Phase 1 pass hoàn toàn (zero error), THE system SHALL thực thi **Phase 2 (DB Transaction)**: mở Transaction, Batch Insert toàn bộ list đã xác thực, sinh mật khẩu mặc định, VÀ Commit.
+* WHEN Phase 2 thực thi thành công và Commit, THE system SHALL ghi nhận một Audit Log tổng hợp `IMPORT_USERS` (oldValues = NULL, newValues = JSON tóm tắt vai trò và số lượng bản ghi đã nhập).
+* WHEN Admin cập nhật thông tin tài khoản thành công, THE system SHALL thực thi cập nhật các bảng CSDL tương ứng VÀ ghi nhận Audit Log `UPDATE_USER` (oldValues và newValues chứa các trường thay đổi đối xứng).
+* WHEN Admin thực hiện Khóa hoặc Mở khóa tài khoản thành công, THE system SHALL cập nhật trạng thái VÀ ghi nhận Audit Log tương ứng `LOCK_USER` hoặc `UNLOCK_USER`.
 * WHEN Admin yêu cầu xuất danh sách, THE system SHALL sinh file Excel (.xlsx) chứa toàn bộ bản ghi định danh và trả về stream cho trình duyệt (UC-30, FR-45).
 
 ### STATE-DRIVEN (Trạng thái)
@@ -69,6 +73,5 @@ Cung cấp công cụ CRUD và Bulk Import cho Admin để quản trị tài kho
 * [ ] **[GAP-02]** Response HTTP 400 chứa JSON array `errors[]` với đúng `row`, `field`, `errorCode`, `message` cho từng dòng lỗi.
 
 ## 8. Out of Scope (Ngoài phạm vi)
-* THE system SHALL NOT ghi nhận Audit Logs cho module này (Override BR19).
 * THE system SHALL NOT cho phép thao tác "Xóa vĩnh viễn" (Hard Delete) bản ghi trong DB.
 * THE system SHALL NOT xử lý file Excel chứa nhiều Role lẫn lộn.

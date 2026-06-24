@@ -1,5 +1,6 @@
 # SPEC.md — Đặc tả Chức năng (Detailed Level)
-Mức độ: Detailed Spec (Level 2) | Risk: Medium
+# Mức độ: Detailed Spec (Level 2) | Risk: Medium
+# Mapping: UC-24, UC-25, UC-26 | BR: (none) | FR-44, FR-52
 
 ## 1. Context & Goal
 Số hóa việc truyền thông nội bộ và cấu hình thông báo tự động để tăng tính linh hoạt trong vận hành thư viện.
@@ -9,9 +10,9 @@ Số hóa việc truyền thông nội bộ và cấu hình thông báo tự đ�
 * **Receiver:** Toàn bộ người dùng (Student, Lecturer, Librarian)
 
 ## 3. Functional Requirements (EARS Notation)
-* **FR-N01 (Tạo thông báo):** WHEN Quản lý thư viện gửi form thông báo chung hợp lệ, THE system SHALL lưu vào bảng Notification và đẩy hiển thị lên Dashboard của mọi người dùng [UC19].
-* **FR-N02 (Cập nhật Template):** WHEN Quản lý thư viện lưu thay đổi mẫu tài liệu, THE system SHALL thực hiện UPDATE trường bodyContent và subject trong bảng DocumentTemp.
-* **FR-N03 (Tự động hóa):** WHERE sự kiện nghiệp vụ (ví dụ: OVERDUE_NOTICE) xảy ra, THE system SHALL trích xuất nội dung từ DocumentTemp tương ứng để thực hiện gửi [BR26].
+* **FR-44 (UC-24, UC-25): Tạo thông báo:** WHEN Quản lý thư viện gửi form thông báo chung hợp lệ, THE system SHALL lưu vào bảng Notification và đẩy hiển thị lên Dashboard của mọi người dùng (UC-24).
+* **FR-52 (UC-26): Cập nhật Template:** WHEN Quản lý thư viện lưu thay đổi mẫu tài liệu, THE system SHALL thực hiện UPDATE trường bodyContent và subject trong bảng DocumentTemp.
+* **FR-N03 (Tự động hóa):** WHERE sự kiện nghiệp vụ (ví dụ: OVERDUE_NOTICE) xảy ra, THE system SHALL trích xuất nội dung từ DocumentTemp tương ứng để thực hiện gửi (không có số FR toàn cục — logic nội bộ của F7).
 
 ## 4. Data Model (Reference)
 * **Notification:** {notificationId, title, content, createdBy, createdAt}

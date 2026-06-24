@@ -1,5 +1,7 @@
 # SPEC.md — Quản lý Cấu hình Hệ thống (System Configuration)
 # Version: 0.1 (DRAFT) | Owner: @tech-lead | Status: DRAFT | Ngày khởi tạo: 2026-06-20
+# Mapping: UC-32, UC-33 | BR-30, BR-31 | FR: (xem chi tiết: FR-SC-01..FR-SC-14)
+# Cross-ref: BR-SC-01 và BR-SC-07 = BR-30 (toàn cục) | BR-SC-03 = BR-31 (toàn cục)
 
 ## 1. Context & Goal
 Tính năng này cho phép **Library Manager** xem và cập nhật các thông số vận hành của hệ thống thư viện (chính sách mượn sách, tiền phạt, giới hạn mượn, số lần gia hạn, v.v.) thông qua giao diện quản trị mà không cần can thiệp vào mã nguồn hay CSDL thủ công.

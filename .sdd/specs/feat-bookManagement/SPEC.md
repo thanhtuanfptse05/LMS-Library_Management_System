@@ -1,5 +1,6 @@
 # SPEC.md — Quản lý Sách và Kho vật lý
 # Version: 1.0.0 | Owner: @tech-lead | Status: APPROVED
+# Mapping: UC-12, UC-13, UC-14, UC-15, UC-27 | BR-16, BR-17, BR-18, BR-27 | FR-22..FR-28, FR-46, FR-47 (chi tiết: FR-F4-01..FR-F4-24)
 
 ## 1. Context & Goal
 Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính duy nhất của mã vạch và sự đồng bộ tuyệt đối về số lượng tồn kho (Inventory) mỗi khi có sự thay đổi về bản sao vật lý.

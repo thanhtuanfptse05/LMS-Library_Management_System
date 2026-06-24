@@ -12,9 +12,9 @@ Sử dụng kiến trúc MVC thuần. Controller (`Servlet`) nhận request, đi
 | `UserDetailServlet` | GET chi tiết và POST Cập nhật/Khóa tài khoản. | `controller.admin.UserDetailServlet` |
 | `UserCreateServlet` | POST Tạo mới tài khoản đơn lẻ. | `controller.admin.UserCreateServlet` |
 | `UserImportServlet` | POST Parse Multipart file Excel và gọi Batch Insert. | `controller.admin.UserImportServlet` |
-| `UserService` | Chứa logic quét trùng lặp, hash pass, bóc tách Excel. | `service.UserService` |
+| `UserService` | Chứa logic quét trùng lặp, hash pass, bóc tách Excel, và gọi ghi Audit Log. | `service.UserService` |
 | `ExcelParserUtil` | Utility class wrap Apache POI để đọc file .xlsx. | `utils.ExcelParserUtil` |
-| `UserDAO` | Các hàm `insert`, `update`, `batchInsertUser`. | `dao.UserDAO` |
+| `UserDAO` | Các hàm `insert`, `update`, `batchInsertUser`, và `insertAuditLog`. | `dao.UserDAO` |
 | `ImportErrorDTO` | POJO Response-only, trả danh sách lỗi JSON cho Admin. | `dto.ImportErrorDTO` |
 
 ## 3. DATA FLOW (Luồng Import Bulk - 2-Phase Strategy)
@@ -36,8 +36,9 @@ Sử dụng kiến trúc MVC thuần. Controller (`Servlet`) nhận request, đi
    - Vòng lặp 3: Batch Insert `Student/Lecturer...`
    - `connection.commit();`
    - *SQLException tại bất kỳ bước nào* → `connection.rollback()` + HTTP 500.
+5. `UserService` gọi `UserDAO.insertAuditLog()` để ghi nhận Audit Log tổng hợp cho phiên import thành công (`IMPORT_USERS`).
 
 ## 4. DEPENDENCIES & RISKS
 * **Dependencies**: Yêu cầu AuthFilter chặn quyền, chỉ cho ADMIN đi qua. Library Apache POI, jBcrypt.
 * **Risk (Data Integrity)**: Batch Insert thất bại giữa chừng.
-* **Mitigation**: Bắt buộc sử dụng Connection Transaction. Lỗi ở bất kỳ step nào phải gọi `connection.rollback()`.
+* **Mitigation**: Bắt buộc sử dụng Connection Transaction. Lỗi ở bất kỳ step nào phải gọi `connection.rollback()`. Ghi log audit sau khi nghiệp vụ hoàn tất thành công.

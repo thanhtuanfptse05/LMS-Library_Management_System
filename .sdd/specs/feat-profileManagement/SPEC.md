@@ -1,5 +1,6 @@
 # SPEC.md — Quản lý hồ sơ người dùng (feat-profileManagement)
 # Version: 1.1.0 | Status: LOCKED | Risk Level: MEDIUM
+# Mapping: UC-04, UC-05, UC-06 | BR-08, BR-09, BR-15 | FR-09, FR-10, FR-11, FR-16
 
 ## 1. Context & Goal
 Cho phép người dùng đã xác thực truy vấn thông tin cá nhân, cập nhật dữ liệu liên lạc và thay đổi mật khẩu an toàn trực tiếp từ giao diện hệ thống.
@@ -9,14 +10,14 @@ Cho phép người dùng đã xác thực truy vấn thông tin cá nhân, cập
 
 ## 3. Functional Requirements (EARS)
 
-### FR04: Xem hồ sơ cá nhân
+### FR-09: Xem hồ sơ cá nhân (UC-04)
 * WHEN User truy cập endpoint quản lý hồ sơ, THE system SHALL truy vấn và hiển thị dữ liệu gộp từ bảng `[User]` và bảng `MemberProfile` dựa trên `userId` hiện tại.
 
-### FR05: Cập nhật thông tin cá nhân
+### FR-10: Cập nhật thông tin cá nhân (UC-05, BR-15)
 * WHEN User gửi biểu mẫu cập nhật thông tin cá nhân (`fullName`, `phoneNumber`, `gender`, `dateOfBirth`), THE system SHALL cập nhật các trường dữ liệu tương ứng vào bảng `MemberProfile`.
 * WHEN tiến trình cập nhật cơ sở dữ liệu hoàn tất, THE system SHALL trả về thông báo "Cập nhật thông tin cá nhân thành công".
 
-### Thay đổi mật khẩu
+### FR-11 (UC-06, BR-09): Đổi mật khẩu | FR-16: Xác thực mật khẩu mới
 * WHEN User gửi biểu mẫu đổi mật khẩu với "Mật khẩu hiện tại", "Mật khẩu mới", "Xác nhận mật khẩu mới", THE system SHALL mã hóa BCrypt mật khẩu hiện tại và đối chiếu với `passwordHash` trong bảng `[User]`.
 * WHERE mật khẩu hiện tại khớp VÀ mật khẩu mới đáp ứng chính sách bảo mật, THE system SHALL mã hóa BCrypt mật khẩu mới và ghi đè vào bảng `[User]`.
 * WHEN tiến trình cập nhật mật khẩu thành công, THE system SHALL trả về thông báo "Đổi mật khẩu thành công".

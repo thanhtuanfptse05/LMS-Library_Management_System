@@ -1,5 +1,6 @@
 # Feature Specification: System Report (Báo Cáo Hệ Thống)
 # Version: 1.1 (DRAFT) | Chủ sở hữu: @antigravity | Ngày cập nhật: 2026-06-22
+# Mapping: UC-34, UC-35 | BR: (none global) | FR: (nội bộ: FR-RPT-01..FR-RPT-05 — xem spec file)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
 Tính năng System Report cung cấp công cụ báo cáo và biểu đồ thống kê để theo dõi mượn/trả, tài chính, kho sách. Hệ thống cung cấp khả năng phân tích dữ liệu và xu hướng (trends) theo nhiều mốc thời gian (Ngày/Tháng/Năm) để LibraryManager nắm bắt được sự thay đổi, dự đoán xu hướng và ra quyết định vận hành hiệu quả.

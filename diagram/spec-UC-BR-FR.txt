@@ -125,21 +125,21 @@ F3 (User Account Management)
 - FR: FR-12, FR-13, FR-14, FR-15, FR-17, FR-18, FR-19, FR-20, FR-21, FR-45
 
 F4 (Book Management)
-- Owner: Team
+- Owner: Chuong
 - Spec Folder: feat-bookManagement
 - UC: UC-12, UC-13, UC-14, UC-15, UC-27
 - BR: BR-16, BR-17, BR-18, BR-27
 - FR: FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47
 
 F5 (Online Reservation & Renewal)
-- Owner: Team
+- Owner: Bao
 - Spec Folder: feat-Reservation&Renewal
 - UC: UC-16, UC-17
 - BR: BR-19, BR-20, BR-21
 - FR: FR-29, FR-30, FR-31, FR-32, FR-33
 
 F6 (Desk Circulation Operations)
-- Owner: Team
+- Owner: Thai
 - Spec Folder: feat-deskCirculationOperations
 - UC: UC-18, UC-19, UC-20
 - BR: BR-22, BR-23, BR-24, BR-25, BR-29
@@ -186,6 +186,13 @@ F13 (Book Maintenance)
 - UC: UC-28, UC-29
 - BR: BR-28
 - FR: FR-48, FR-49, FR-50, FR-51
+
+F12 (Audit Log)
+- Owner: Tuan
+- Spec Folder: feat-auditLog
+- UC: UC-40, UC-41
+- BR: BR-32, BR-33, BR-34
+- FR: FR-55, FR-56, FR-57, FR-58, FR-59, FR-60
 
 F14 (AI Chatbot)
 - Owner: Thai
@@ -354,6 +361,14 @@ UC-39 (Pay Fine Online)
 Actor: User
 Mô tả: (Thanh toán phạt trực tuyến): Người dùng quét mã QR để thanh toán tiền phạt qua cổng thanh toán điện tử.
 
+UC-40 (View Audit Log)
+Actor: SysAdmin
+Mô tả: (Xem Nhật ký Kiểm toán): Quản trị viên truy cập trang Nhật ký Kiểm toán để xem danh sách toàn bộ hành động thay đổi dữ liệu của người dùng, lọc theo nhiều tiêu chí, và xem chi tiết so sánh giá trị cũ/mới.
+
+UC-41 (Export Audit Log)
+Actor: SysAdmin
+Mô tả: (Xuất Nhật ký Kiểm toán): Quản trị viên xuất dữ liệu Nhật ký Kiểm toán ra file CSV để phục vụ báo cáo và lưu trữ ngoài hệ thống.
+
 // =============================================================================
 // SECTION 3: BUSINESS RULES (BR)
 // =============================================================================
@@ -450,6 +465,15 @@ Mô tả: Không được phép thêm mới hoặc xóa configKey thông qua UI.
 
 BR-31 (System Config Authorization)
 Mô tả: Library Manager chỉ được phép xem và cập nhật các config thuộc nhóm 'library'. Admin có toàn quyền với mọi nhóm config.
+
+BR-32 (Audit Log Read-Only)
+Mô tả: Tính năng Nhật ký Kiểm toán (F12) KHÔNG ĐƯỢC PHÉP Insert, Update hoặc Delete dữ liệu trong bất kỳ bảng nào. Chỉ được thực hiện SELECT.
+
+BR-33 (Audit Log JSON Format)
+Mô tả: Tất cả oldValues và newValues trong bảng AuditLogs BẮT BUỘC được ghi ở dạng JSON hợp lệ (hoặc NULL). KHÔNG sử dụng plain text để đảm bảo giao diện hiển thị nhất quán.
+
+BR-34 (Audit Log Pagination)
+Mô tả: Danh sách Nhật ký Kiểm toán BẮT BUỘC phải phân trang (20 bản ghi/trang) để bảo vệ hiệu năng hệ thống. KHÔNG ĐƯỢC PHÉP tải toàn bộ dữ liệu trong một request.
 
 
 // =============================================================================
@@ -672,10 +696,34 @@ FR-54 (Liên kết chuyển hướng Dashboard)
 Mô tả: WHEN người dùng nhấp vào các Stats Cards trên Dashboard, THE system SHALL điều hướng người dùng trực tiếp đến trang "Hàng mượn & chờ sách" tương ứng.
 Mapping: UC-31
 
+FR-55 (Truy vấn Danh sách Nhật ký Kiểm toán)
+Mô tả: WHEN SysAdmin truy cập trang Nhật ký Kiểm toán, THE system SHALL truy vấn bảng AuditLogs kết hợp LEFT JOIN bảng "User" để lấy email người thực hiện, sắp xếp theo timestamp giảm dần, phân trang 20 bản ghi mỗi trang. WHERE userId là NULL, THE system SHALL hiển thị "Hệ thống" ở cột Người thực hiện.
+Mapping: UC-40 / BR-32, BR-34
+
+FR-56 (Lọc Nhật ký Kiểm toán)
+Mô tả: WHEN SysAdmin áp dụng bộ lọc, THE system SHALL hỗ trợ lọc theo loại hành động (actionType), đối tượng (entityName), email người thực hiện (ILIKE), khoảng thời gian (fromDate–toDate), và từ khóa trong oldValues/newValues. WHILE chuyển trang phân trang, THE system SHALL giữ nguyên toàn bộ tham số filter.
+Mapping: UC-40 / BR-34
+
+FR-57 (Chi tiết Nhật ký dạng Card so sánh)
+Mô tả: WHEN SysAdmin click Chi tiết, THE system SHALL mở modal hiển thị bảng so sánh card-by-card giữa oldValues và newValues. Mỗi key thay đổi hiển thị trong 1 card riêng biệt: card giá trị cũ nền hồng nhạt, card giá trị mới nền xanh nhạt, xếp dọc đối xứng 1-1.
+Mapping: UC-40 / BR-33
+
+FR-58 (Xử lý hiển thị đặc biệt Modal)
+Mô tả: WHERE actionType là CREATE (oldValues=NULL), THE system SHALL hiển thị "—" ở cột Giá trị Cũ. WHERE actionType là DELETE (newValues=NULL), hiển thị ngược lại. WHERE actionType là CHANGE_PASSWORD, THE system SHALL hiển thị "Mật khẩu đã thay đổi (bảo mật)" thay vì cards rỗng. WHERE dữ liệu không phải JSON hợp lệ, THE system SHALL hiển thị raw text trong card đơn.
+Mapping: UC-40 / BR-33
+
+FR-59 (Xuất CSV Nhật ký)
+Mô tả: WHEN SysAdmin click Xuất CSV, THE system SHALL truy vấn toàn bộ bản ghi theo filter hiện tại (giới hạn tối đa 10,000), tạo file CSV mã hóa UTF-8 có BOM, VÀ trả về response với Content-Disposition attachment để trình duyệt tự động tải về.
+Mapping: UC-41 / BR-32
+
+FR-60 (Badge màu hành động)
+Mô tả: WHEN hiển thị danh sách Nhật ký Kiểm toán, THE system SHALL hiển thị badge màu cho cột actionType theo nhóm: Tạo mới (xanh lá), Cập nhật (vàng), Xóa/Hủy (đỏ), Giao dịch (xanh dương), Bảo mật (tím), Thanh toán (cam).
+Mapping: UC-40
+
 // =============================================================================
 // END OF SPECIFICATION
 // =============================================================================
-// Total UC: 39 | Total BR: 31 | Total FR: 54+
-// Version: 2.0.0 | Date: 2026-06-23
+// Total UC: 41 | Total BR: 34 | Total FR: 60
+// Version: 2.1.0 | Date: 2026-06-24
 // Project: Library Management System (LMS) - SWP391
 // =============================================================================

@@ -1,5 +1,6 @@
 # SPEC.md — Quản lý Luân chuyển tại quầy
 # Version: 1.0.0 | Owner: @tech-lead | Status: APPROVED
+# Mapping: UC-18, UC-19, UC-20 | BR-22, BR-23, BR-24, BR-25, BR-29 | FR-34..FR-41 (chi tiết: FR-F6-01..FR-F6-08)
 
 ## 1. Context & Goal
 Số hóa quá trình giao nhận vật lý, thu tiền mặt tại quầy. Đảm bảo tính nhất quán dữ liệu giữa số lượng kho thực tế, trạng thái bản sao sách, hàng đợi đặt trước và trạng thái nợ phạt của tài khoản.

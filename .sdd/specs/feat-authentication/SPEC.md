@@ -1,5 +1,6 @@
 # SPEC.md — Authentication
 # Version: 2.0.0 | Status: DRAFT | Phân loại: Formal Spec
+# Mapping: UC-01, UC-02, UC-03, UC-21 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-09, BR-26 | FR-01..FR-08, FR-42
 
 ## 1. Context & Goal
 Đảm bảo an toàn truy cập bằng cơ chế kiểm soát lỗi đăng nhập và quản lý phiên làm việc thông qua HttpSession.
@@ -32,7 +33,12 @@
 - WHERE Email tồn tại, THE System SHALL xử lý giống luồng Đăng nhập thông thường (kiểm tra status, reset failed attempts, tạo Session).
 
 ## 3.5. Business Rules (Quy tắc nghiệp vụ)
-- [BR-26]: Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước.
+- [BR-26]: Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước. (Xem: spec-UC-BR-FR.txt)
+- [BR-01, BR-02]: Đình chỉ tài khoản 30 phút sau 5 lần đăng nhập sai liên tiếp.
+- [BR-03, BR-04]: Trả thông báo giả định để chống User Enumeration.
+- [BR-05, BR-06]: Quy tắc mở khóa tự động theo loại lý do khóa.
+- [BR-07]: Mật khẩu tạm dài 8 ký tự.
+- [BR-09]: Chính sách bảo mật mật khẩu.
 
 ## 4. Non-functional Requirements
 - [NFR-01] Security: Mật khẩu KHÔNG ĐƯỢC PHÉP log dưới dạng plaintext.

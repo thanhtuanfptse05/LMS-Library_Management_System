@@ -1,0 +1,12 @@
+# TASKS.md — Task Breakdown Nhật ký Kiểm toán
+
+| ID | Task | Files liên quan | Est | Deps | DoD / Spec Refs |
+|---|---|---|---|---|---|
+| **T-F12-01** | Tạo Model AuditLog | `src/java/model/AuditLog.java` | 1h | None | Entity thuần map 1:1 bảng AuditLogs: auditLogId, userId, actionType, entityName, entityId, oldValues, newValues, timestamp. Getter/setter. |
+| **T-F12-02** | Tạo DTO AuditLogDTO | `src/java/dto/AuditLogDTO.java` | 1h | T-F12-01 | Chứa tất cả trường AuditLog + userEmail (String) từ LEFT JOIN "User". |
+| **T-F12-03** | Bổ sung methods đọc cho AuditLogDAO | `src/java/dao/AuditLogDAO.java` | 3h | T-F12-01, T-F12-02 | Thêm 5 methods: findWithFilters(filters, page, pageSize) → List\<AuditLogDTO\>, countWithFilters(filters) → int, findById(auditLogId) → AuditLogDTO, getDistinctActionTypes() → List\<String\>, getDistinctEntityNames() → List\<String\>. Xây WHERE động an toàn bằng PreparedStatement. Giữ nguyên insert() hiện có. Refs: FR-F12-01, FR-F12-04, FR-F12-05. |
+| **T-F12-04** | Tạo AuditLogServlet | `src/java/controllers/AuditLogServlet.java` | 3h | T-F12-03 | @WebServlet("/admin/audit-log"). doGet(): parse params (page, actionType, entityName, email, fromDate, toDate, keyword, action). Nhánh action=export → CSV. Nhánh mặc định → gọi DAO count + find → set attributes → forward JSP. Refs: FR-F12-01, FR-F12-04, FR-F12-06, FR-F12-12. |
+| **T-F12-05** | Tạo JSP audit-log-list.jsp | `web/admin/audit-log-list.jsp` | 5h | T-F12-04 | Include _head, _sidebar, _header, _footer. Filter bar (2 dropdown + 3 input + 2 button). Bảng 7 cột với badge màu. Phân trang giữ filter. Modal card-based: JS parse JSON → render cards hồng/xanh đối xứng. Fallback raw text. CHANGE_PASSWORD → text bảo mật. 100% tiếng Việt. Refs: FR-F12-01..11. |
+| **T-F12-06** | Cập nhật Sidebar | `web/admin/fragments/_sidebar.jsp` | 0.5h | T-F12-05 | Sửa href "Nhật ký Kiểm toán" từ # → ${pageContext.request.contextPath}/admin/audit-log. Cập nhật navMap JS. |
+| **T-F12-07** | Chuẩn hóa JSON — DeskCirculationService | `src/java/service/DeskCirculationService.java` | 2h | None | Sửa 6 chỗ ghi audit log: CHECK_OUT, CHECK_IN_GOOD, CHECK_IN_GOOD_QUEUE, CHECK_IN_DAMAGED, CHECK_IN_LOST, CASH_PAYMENT. Từ plain text ("key=value") sang JSON ({"key":"value"}). Refs: BR-33. |
+| **T-F12-08** | Chuẩn hóa JSON — ForgotPasswordServlet | `src/java/controllers/ForgotPasswordServlet.java` | 0.5h | None | Sửa CHANGE_PASSWORD audit: từ old=null, new="text" sang old="{}", new="{}". Nhất quán với ProfileService. Refs: BR-33. |

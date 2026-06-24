@@ -1,5 +1,6 @@
 # SPEC.md — Quản lý Đặt trước và Gia hạn trực tuyến
 # Version: 1.0.0 | Owner: @tech-lead | Status: APPROVED
+# Mapping: UC-16, UC-17 | BR-19, BR-20, BR-21 | FR-29..FR-33 (chi tiết: FR-F5-01..FR-F5-07)
 
 ## 1. Context & Goal
 Số hóa trải nghiệm lưu thông tài nguyên. Đảm bảo luồng Self-service hoạt động mượt mà, phân bổ sách theo nguyên tắc FIFO (First In First Out) thông qua hàng đợi.
