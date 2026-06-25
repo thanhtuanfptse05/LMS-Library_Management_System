@@ -68,19 +68,122 @@ public class BookSearchServlet extends HttpServlet {
             }
         }
         
-        String availableOnlyParam = request.getParameter("availableOnly");
-        boolean availableOnly = "true".equalsIgnoreCase(availableOnlyParam);
-
-        List<Book> books = bookDAO.searchBooks(keyword, categoryId, tagIds, availableOnly, page, PAGE_SIZE);
-        
-        int totalBooks = bookDAO.countSearchBooks(keyword, categoryId, tagIds, availableOnly);
-        int totalPages = (int) Math.ceil((double) totalBooks / PAGE_SIZE);
-        if (totalPages < 1) {
-            totalPages = 1;
+        String filterStatus = request.getParameter("filterStatus");
+        if (filterStatus == null && request.getParameter("availableOnly") != null) {
+            filterStatus = "true".equalsIgnoreCase(request.getParameter("availableOnly")) ? "available" : "";
         }
+        boolean availableOnly = "available".equals(filterStatus);
         
         List<Category> categories = bookDAO.getAllCategories();
         List<Tag> tags = bookDAO.getAllTags();
+        
+        java.util.Set<Integer> borrowedBookIds = new java.util.HashSet<>();
+        java.util.Set<Integer> pendingBookIds = new java.util.HashSet<>();
+        java.util.Set<Integer> pickupBookIds = new java.util.HashSet<>();
+
+        if (session != null && session.getAttribute("userId") != null) {
+            int userId = (int) session.getAttribute("userId");
+            try (java.sql.Connection conn = util.DatabaseConnection.getConnection()) {
+                dao.BorrowRecordDAO borrowRecordDAO = new dao.BorrowRecordDAO();
+                List<model.BorrowRecord> activeBorrows = borrowRecordDAO.findActiveBorrowRecordsByUserId(conn, userId);
+                for (model.BorrowRecord br : activeBorrows) {
+                    borrowedBookIds.add(br.getBookId());
+                }
+
+                dao.ReservationDAO reservationDAO = new dao.ReservationDAO();
+                List<model.Reservation> activeReservations = reservationDAO.findActiveReservationsByUserId(conn, userId);
+                for (model.Reservation res : activeReservations) {
+                    if ("readypickup".equals(res.getStatus())) {
+                        pickupBookIds.add(res.getBookId());
+                    } else if ("pending".equals(res.getStatus())) {
+                        pendingBookIds.add(res.getBookId());
+                    }
+                }
+            } catch (java.sql.SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        List<Book> books = new java.util.ArrayList<>();
+        int totalBooks = 0;
+        int totalPages = 1;
+
+        if ("borrowed".equals(filterStatus) && !borrowedBookIds.isEmpty()) {
+            for (Integer id : borrowedBookIds) {
+                Book b = bookDAO.getBookById(id);
+                if (b != null) books.add(b);
+            }
+            totalBooks = books.size();
+        } else if ("pickup".equals(filterStatus) && !pickupBookIds.isEmpty()) {
+            for (Integer id : pickupBookIds) {
+                Book b = bookDAO.getBookById(id);
+                if (b != null) books.add(b);
+            }
+            totalBooks = books.size();
+        } else if ("pending".equals(filterStatus) && !pendingBookIds.isEmpty()) {
+            for (Integer id : pendingBookIds) {
+                Book b = bookDAO.getBookById(id);
+                if (b != null) books.add(b);
+            }
+            totalBooks = books.size();
+        } else if ("borrowed".equals(filterStatus) || "pickup".equals(filterStatus) || "pending".equals(filterStatus)) {
+            // User selected a specific status but has none, so books is empty
+            totalBooks = 0;
+            totalPages = 1;
+        } else {
+            books = bookDAO.searchBooks(keyword, categoryId, tagIds, availableOnly, page, PAGE_SIZE);
+            totalBooks = bookDAO.countSearchBooks(keyword, categoryId, tagIds, availableOnly);
+            totalPages = (int) Math.ceil((double) totalBooks / PAGE_SIZE);
+            if (totalPages < 1) {
+                totalPages = 1;
+            }
+        }
+
+        // Apply keyword/category filtering manually for custom status views to avoid confusion
+        if (("borrowed".equals(filterStatus) || "pickup".equals(filterStatus) || "pending".equals(filterStatus)) && !books.isEmpty()) {
+            java.util.Iterator<Book> it = books.iterator();
+            while (it.hasNext()) {
+                Book b = it.next();
+                if (keyword != null && !keyword.trim().isEmpty() && !b.getTitle().toLowerCase().contains(keyword.trim().toLowerCase())) {
+                    it.remove();
+                    continue;
+                }
+                if (categoryId > 0) {
+                    boolean hasCat = false;
+                    for (Category c : b.getCategories()) {
+                        if (c.getCategoryId() == categoryId) { hasCat = true; break; }
+                    }
+                    if (!hasCat) {
+                        it.remove();
+                        continue;
+                    }
+                }
+                if (tagIds != null && tagIds.length > 0) {
+                    boolean hasAllTags = true;
+                    for (int tId : tagIds) {
+                        boolean hasThisTag = false;
+                        for (Tag t : b.getTags()) {
+                            if (t.getTagId() == tId) { hasThisTag = true; break; }
+                        }
+                        if (!hasThisTag) { hasAllTags = false; break; }
+                    }
+                    if (!hasAllTags) {
+                        it.remove();
+                        continue;
+                    }
+                }
+            }
+            totalBooks = books.size();
+        }
+        
+        request.setAttribute("books", books);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("filterStatus", filterStatus);
+        
+        request.setAttribute("borrowedBookIds", borrowedBookIds);
+        request.setAttribute("pendingBookIds", pendingBookIds);
+        request.setAttribute("pickupBookIds", pickupBookIds);
         
         request.setAttribute("books", books);
         request.setAttribute("categories", categories);

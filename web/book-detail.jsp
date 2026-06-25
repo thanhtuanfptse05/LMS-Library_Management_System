@@ -54,6 +54,20 @@
         background-color: rgba(239, 68, 68, 0.1);
         color: #ef4444;
     }
+
+    /* Badges */
+    .badge-category {
+        background-color: #f97316;
+        color: #fff;
+        border-radius: 50rem;
+        padding: 0.35em 0.75em;
+    }
+    .badge-tag {
+        background-color: #3b82f6;
+        color: #fff;
+        border-radius: 50rem;
+        padding: 0.35em 0.75em;
+    }
 </style>
 
 <body class="d-flex flex-column min-vh-100">
@@ -140,20 +154,20 @@
                             <div class="p-4 p-md-5 d-flex flex-column h-100">
                                 
                                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
-                                    <c:choose>
-                                        <c:when test="${book.availableQuantity > 0}">
-                                            <span class="badge rounded-pill badge-status-available px-3 py-2 fw-bold" style="font-size: 13px;">
-                                                <i class="bi bi-check-circle me-1"></i> Trong thư viện
-                                            </span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="badge rounded-pill badge-status-borrowed px-3 py-2 fw-bold" style="font-size: 13px;">
-                                                <i class="bi bi-hourglass-split me-1"></i> Hết sách — Có thể xếp hàng chờ
-                                            </span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <span style="font-size: 13px; color: var(--text-muted-custom); font-weight: 600;">Mã tài liệu: <c:out value="${book.bookId}"/></span>
-                                </div>
+                                     <c:choose>
+                                         <c:when test="${book.availableQuantity > 0}">
+                                             <span class="badge rounded-pill badge-status-available px-3 py-2 fw-bold" style="font-size: 13px;">
+                                                 <i class="bi bi-check-circle me-1"></i> Còn sách (<c:out value="${book.availableQuantity}"/>/<c:out value="${book.totalQuantity}"/>)
+                                             </span>
+                                         </c:when>
+                                         <c:otherwise>
+                                             <span class="badge rounded-pill badge-status-borrowed px-3 py-2 fw-bold" style="font-size: 13px;">
+                                                 <i class="bi bi-hourglass-split me-1"></i> Hết sách (0/<c:out value="${book.totalQuantity}"/>) — Có thể xếp hàng chờ
+                                             </span>
+                                         </c:otherwise>
+                                     </c:choose>
+                                     <span style="font-size: 13px; color: var(--text-muted-custom); font-weight: 600;">Mã tài liệu: <c:out value="${book.bookId}"/></span>
+                                 </div>
 
                                 <h1 class="fw-bold mb-2" style="color: var(--bs-body-color); line-height: 1.2;">
                                     <c:out value="${book.title}"/>
@@ -165,12 +179,12 @@
                                  <!-- Categories & Tags -->
                                  <div class="mb-4 d-flex flex-wrap gap-2">
                                      <c:forEach var="cat" items="${book.categories}">
-                                         <span class="badge rounded-pill py-2 px-3 fw-normal" style="font-size: 13px; background-color: rgba(249, 115, 22, 0.1); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.2);">
+                                         <span class="badge badge-category rounded-pill py-2 px-3 fw-normal" style="font-size: 13px;">
                                              <i class="bi bi-folder2-open me-1"></i> <c:out value="${cat.name}"/>
                                          </span>
                                      </c:forEach>
                                      <c:forEach var="tag" items="${book.tags}">
-                                         <span class="badge rounded-pill py-2 px-3 fw-normal" style="font-size: 13px; background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                         <span class="badge badge-tag rounded-pill py-2 px-3 fw-normal" style="font-size: 13px;">
                                              <i class="bi bi-hash"></i><c:out value="${tag.name}"/>
                                          </span>
                                      </c:forEach>
