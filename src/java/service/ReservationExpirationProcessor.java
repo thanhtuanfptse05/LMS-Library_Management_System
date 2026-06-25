@@ -108,8 +108,8 @@ public class ReservationExpirationProcessor implements Runnable {
                         // Tịnh tiến vị trí hàng chờ của những người xếp hàng phía sau (queuePosition - 1)
                         reservationDAO.decrementQueuePositions(conn, bookId);
 
-                        // Ghi Audit Log cho hành động hủy và đôn hàng chờ (hệ thống tự động thực hiện -> userId = NULL/0)
-                        userDAO.insertAuditLog(conn, 0, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
+                        // Ghi Audit Log cho hành động hủy và đôn hàng chờ (hệ thống tự động thực hiện -> userId = null)
+                        userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
                                 "status=readypickup, bookCopyId=" + copyId,
                                 "status=cancelled, promoted reservationId=" + nextRes.getReservationId() + " to ready");
 
@@ -126,7 +126,7 @@ public class ReservationExpirationProcessor implements Runnable {
                         bookDAO.updateQuantities(conn, bookId, 0, 1); // Tăng availableQuantity lên 1
 
                         // Ghi Audit Log cho hành động hủy và trả sách về kho
-                        userDAO.insertAuditLog(conn, 0, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
+                        userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
                                 "status=readypickup, bookCopyId=" + copyId,
                                 "status=cancelled, bookCopyId=" + copyId + " returned to available stock");
 
@@ -135,7 +135,7 @@ public class ReservationExpirationProcessor implements Runnable {
                     }
                 } else {
                     // Đơn hàng quá hạn không có bản sao (trường hợp hiếm gặp) -> Chỉ hủy
-                    userDAO.insertAuditLog(conn, 0, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
+                    userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
                             "status=readypickup, bookCopyId=null", "status=cancelled");
                     success = true;
                     conn.commit();
@@ -192,7 +192,7 @@ public class ReservationExpirationProcessor implements Runnable {
                             + "<p>Trân trọng,<br/>Ban quản lý Thư viện LMS</p>"
                             + "</div>";
 
-                    EmailService.getInstance().sendAsyncHtmlEmail(nextUser.getEmail(), subject, htmlContent);
+                    EmailService.sendAsyncHtmlEmail(nextUser.getEmail(), subject, htmlContent);
                     LOGGER.log(Level.INFO, "[ReservationExpirationProcessor] Đã gửi thông báo email cho người dùng: " + nextUser.getEmail());
                 }
             } catch (Exception e) {
