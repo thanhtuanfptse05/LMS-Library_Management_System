@@ -14,6 +14,7 @@ import java.io.IOException;
 import dao.UserDAO;
 import dao.UserLockReasonDAO;
 import model.User;
+import service.AuthService;
 
 /**
  * AuthFilter — Bộ lọc xác thực và phân quyền (Role-based Access Control).
@@ -72,14 +73,31 @@ public class AuthFilter implements Filter {
                 int userId = (Integer) session.getAttribute("userId");
                 UserDAO userDAO = new UserDAO();
                 User user = userDAO.findByUserId(userId);
-                if (user == null || "locked".equals(user.getStatus())) {
+
+                if (user == null) {
+                    // Tài khoản không còn tồn tại trong DB → đá session ra
                     session.invalidate();
                     isLoggedIn = false;
                     session = null;
-                    
-                    String errorParam = "locked";
-                    httpResponse.sendRedirect(contextPath + "/login?error=" + errorParam);
+                    httpResponse.sendRedirect(contextPath + "/login?error=locked");
                     return;
+                }
+
+                if ("locked".equals(user.getStatus())) {
+                    // Kiểm tra lý do khóa: nếu chỉ bị khóa do 'unpaid' thì cho qua
+                    AuthService authService = new AuthService();
+                    boolean onlyUnpaid = authService.isLockedOnlyForUnpaid(userId);
+
+                    if (!onlyUnpaid) {
+                        // Bị khóa vì lý do bảo mật hoặc admin → đá session ra
+                        session.invalidate();
+                        isLoggedIn = false;
+                        session = null;
+                        httpResponse.sendRedirect(contextPath + "/login?error=locked");
+                        return;
+                    }
+                    // Nếu chỉ bị khóa vì 'unpaid' → không đá session, cho tiếp tục
+                    // (session attribute 'unpaidWarning' đã được gán lúc login)
                 }
             }
         }
