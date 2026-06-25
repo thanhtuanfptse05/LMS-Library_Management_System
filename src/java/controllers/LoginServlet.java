@@ -78,24 +78,36 @@ public class LoginServlet extends HttpServlet {
             Timestamp lockedUntil = user.getLockedUntil();
             Timestamp now = new Timestamp(System.currentTimeMillis());
 
-            if (lockedUntil != null) {
-                if (lockedUntil.after(now)) {
-                    // Tài khoản vẫn đang bị khóa tạm thời [Node 10.16]
-                    request.setAttribute("errorMessage", "Tài khoản bị khóa do đăng nhập sai nhiều lần. Tự động mở khóa lúc: " + lockedUntil);
+            // Trường hợp đặc biệt: khóa tạm do nhập sai mật khẩu (securitybreach)
+            // và thời gian khóa đã hết → tự động mở khóa [Node 10.17]
+            if (lockedUntil != null && !lockedUntil.after(now)) {
+                userDAO.unlockAccount(user.getUserId());
+                user.setStatus("active");
+                user.setFailedLoginAttempts(0);
+                LOGGER.log(Level.INFO, "Auto-unlocked account for user email: {0}", email);
+            } else {
+                // Tài khoản vẫn đang bị khóa → kiểm tra lý do
+                // Nếu chỉ bị khóa do 'unpaid' → CHO PHÉP đăng nhập, đặt cờ cảnh báo
+                if (authService.isLockedOnlyForUnpaid(user.getUserId())) {
+                    // Cho qua — đặt flag để JSP hiển thị cảnh báo nợ phạt sau khi login
+                    // Lưu flag vào request để bước tạo session phía dưới có thể đọc
+                    request.setAttribute("unpaidWarning", true);
+                    LOGGER.log(Level.INFO,
+                            "User {0} has status=locked but only reason=unpaid — allowing login with warning.",
+                            email);
+                } else if (lockedUntil != null && lockedUntil.after(now)) {
+                    // Bị khóa tạm do nhập sai mật khẩu (securitybreach), chưa hết hạn [Node 10.16]
+                    request.setAttribute("errorMessage",
+                            "Tài khoản bị khóa do đăng nhập sai nhiều lần. Tự động mở khóa lúc: " + lockedUntil);
                     request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
                     return;
                 } else {
-                    // Đã hết thời gian khóa tạm thời -> Tự động mở khóa [Node 10.17]
-                    userDAO.unlockAccount(user.getUserId());
-                    user.setStatus("active");
-                    user.setFailedLoginAttempts(0);
-                    LOGGER.log(Level.INFO, "Auto-unlocked account for user email: {0}", email);
+                    // Bị khóa bởi Admin hoặc lý do bảo mật khác (lockedUntil = null + non-unpaid reason)
+                    request.setAttribute("errorMessage",
+                            "Tài khoản của bạn đã bị khóa bởi quản trị viên. Vui lòng liên hệ thư viện để được hỗ trợ.");
+                    request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+                    return;
                 }
-            } else {
-                // Tài khoản bị khóa vĩnh viễn hoặc bởi Admin (lockedUntil = null)
-                request.setAttribute("errorMessage", "Tài khoản của bạn đã bị khóa bởi quản trị viên.");
-                request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
-                return;
             }
         }
 
@@ -111,6 +123,13 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("role", user.getRole());
             session.setAttribute("email", user.getEmail());
+
+            // Nếu tài khoản bị khóa chỉ do 'unpaid', chuyển flag cảnh báo vào session
+            if (Boolean.TRUE.equals(request.getAttribute("unpaidWarning"))) {
+                session.setAttribute("unpaidWarning", true);
+                LOGGER.log(Level.WARNING,
+                        "User {0} logged in with unpaid fines — account status=locked(unpaid only).", email);
+            }
 
             LOGGER.log(Level.INFO, "User logged in successfully: {0} with role {1}", new Object[]{email, user.getRole()});
 
