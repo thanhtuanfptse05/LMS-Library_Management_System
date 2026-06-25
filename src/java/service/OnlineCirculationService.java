@@ -317,8 +317,9 @@ public class OnlineCirculationService {
                     // Tìm người kế tiếp (queuePosition = 1)
                     Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
                     if (nextRes != null && copyId != null) {
-                        // Đôn người kế tiếp lên nhận sách
-                        reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId);
+                        // Đôn người kế tiếp lên nhận sách, lấy holdDays từ cấu hình động
+                        int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                        reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId, holdDays);
                         // Dịch hàng đợi
                         reservationDAO.decrementQueuePositions(conn, res.getBookId());
                         
