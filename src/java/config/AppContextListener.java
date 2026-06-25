@@ -21,6 +21,9 @@ public class AppContextListener implements ServletContextListener {
     // Tiến trình ngầm Hủy đặt trước quá hạn (F5)
     private ScheduledExecutorService reservationExpirationScheduler;
 
+    // Tiến trình ngầm Quét quá hạn tự động (F9)
+    private ScheduledExecutorService overdueScheduler;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
@@ -45,6 +48,31 @@ public class AppContextListener implements ServletContextListener {
             TimeUnit.HOURS
         );
         LOGGER.log(Level.INFO, "[AppListener] Đã đăng ký tiến trình ngầm ReservationExpirationProcessor tự động chạy mỗi 1 giờ.");
+
+        // Đăng ký Tiến trình Quét quá hạn trả sách tự động lúc 00:00 AM hằng ngày
+        overdueScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "OverdueProcessor-Thread");
+            thread.setDaemon(true);
+            return thread;
+        });
+
+        java.util.Calendar tomorrow = java.util.Calendar.getInstance();
+        tomorrow.add(java.util.Calendar.DAY_OF_MONTH, 1);
+        tomorrow.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        tomorrow.set(java.util.Calendar.MINUTE, 0);
+        tomorrow.set(java.util.Calendar.SECOND, 0);
+        tomorrow.set(java.util.Calendar.MILLISECOND, 0);
+
+        long initialDelay = tomorrow.getTimeInMillis() - System.currentTimeMillis();
+        long period = TimeUnit.DAYS.toMillis(1);
+
+        overdueScheduler.scheduleAtFixedRate(
+            new service.OverdueProcessor(),
+            initialDelay,
+            period,
+            TimeUnit.MILLISECONDS
+        );
+        LOGGER.log(Level.INFO, "[AppListener] Đã đăng ký tiến trình ngầm OverdueProcessor tự động quét hằng đêm lúc 00:00 AM.");
     }
 
     @Override
@@ -58,6 +86,19 @@ public class AppContextListener implements ServletContextListener {
             try {
                 if (!reservationExpirationScheduler.awaitTermination(5, TimeUnit.SECONDS)) {
                     LOGGER.log(Level.WARNING, "[AppListener] Tiến trình ngầm không dừng trong thời gian quy định.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        // Dừng overdue scheduler
+        if (overdueScheduler != null && !overdueScheduler.isShutdown()) {
+            LOGGER.log(Level.INFO, "[AppListener] Đang dừng tiến trình ngầm OverdueProcessor...");
+            overdueScheduler.shutdownNow();
+            try {
+                if (!overdueScheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                    LOGGER.log(Level.WARNING, "[AppListener] Tiến trình ngầm OverdueProcessor không dừng trong thời gian quy định.");
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
