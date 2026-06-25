@@ -625,7 +625,7 @@ public class ReservationDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(mapRowToReservation(rs));
+                list.add(mapResultSetToReservation(rs));
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách Reservation quá hạn", e);
@@ -652,7 +652,7 @@ public class ReservationDAO {
             ps.setInt(1, reservationId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return mapRowToReservation(rs);
+                    return mapResultSetToReservation(rs);
                 }
             }
         } catch (SQLException e) {
