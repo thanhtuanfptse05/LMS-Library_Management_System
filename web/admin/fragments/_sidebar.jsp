@@ -52,7 +52,7 @@
 
         <!-- Kiểm toán & Giám sát -->
         <p class="sidebar-section-label">Kiểm toán &amp; Giám sát</p>
-        <a class="sidebar-link" id="nav-audit-logs" href="#">
+        <a class="sidebar-link" id="nav-audit-logs" href="${pageContext.request.contextPath}/admin/audit-log">
             <span class="material-symbols-outlined">receipt_long</span>
             <span>Nhật ký Kiểm toán</span>
         </a>
@@ -112,7 +112,7 @@
         'nav-security':        '/admin/security',
         'nav-config-list':     '/admin/system-config',
         'nav-config-edit':     'config-edit',
-        'nav-audit-logs':      'audit-logs',
+        'nav-audit-logs':      '/admin/audit-log',
         'nav-audit-detail':    'audit-detail',
         'nav-profile':         '/admin/profile'
     };
