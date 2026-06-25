@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +50,8 @@ public class SePayWebhookServlet extends HttpServlet {
     private final PaymentDAO paymentDAO = new PaymentDAO();
     private final FineDAO fineDAO = new FineDAO();
     private final AuditLogDAO auditLogDAO = new AuditLogDAO();
+    private final dao.UserLockReasonDAO userLockReasonDAO = new dao.UserLockReasonDAO();
+    private final dao.UserDAO userDAO = new dao.UserDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -231,6 +235,27 @@ public class SePayWebhookServlet extends HttpServlet {
 
                 // Cập nhật Fine -> paid
                 fineDAO.updateStatusToPaid(conn, fineId);
+
+                // Lấy userId từ bảng Fine để xử lý gỡ cờ khóa
+                int userId = -1;
+                String sqlUser = "SELECT userId FROM Fine WHERE fineId = ?";
+                try (PreparedStatement psUser = conn.prepareStatement(sqlUser)) {
+                    psUser.setInt(1, fineId);
+                    try (ResultSet rsUser = psUser.executeQuery()) {
+                        if (rsUser.next()) {
+                            userId = rsUser.getInt("userId");
+                        }
+                    }
+                }
+
+                // Xóa lý do khóa 'unpaid' và tự động mở khóa (BR-25)
+                if (userId != -1) {
+                    userLockReasonDAO.deleteLockReason(conn, userId, "unpaid");
+                    int remainingReasons = userLockReasonDAO.countLockReasonsByUserId(conn, userId);
+                    if (remainingReasons == 0) {
+                        userDAO.updateStatusToActive(conn, userId);
+                    }
+                }
 
                 // Ghi Audit Log
                 auditLogDAO.insert(conn, null, "SEPAY_WEBHOOK_PAYMENT",
