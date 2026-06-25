@@ -731,9 +731,14 @@ public class DeskCirculationService {
             fineDAO.updateStatusToPaid(conn, fineId);
 
             // ----------------------------------------------------------------
-            // (Đã gỡ bỏ) Bước 4 & 5: Xóa lý do khóa 'unpaid' và tự động mở khóa
-            // Tài khoản không còn bị khóa vì nợ phạt nữa nên không cần xử lý.
+            // [Node 5.25c - Bước 4] Xóa lý do khóa 'unpaid' và tự động mở khóa (BR-25)
             // ----------------------------------------------------------------
+            userLockReasonDAO.deleteLockReason(conn, userId, "unpaid");
+            int remainingReasons = userLockReasonDAO.countLockReasonsByUserId(conn, userId);
+            if (remainingReasons == 0) {
+                userDAO.updateStatusToActive(conn, userId);
+            }
+
 
             // 5.1. (MỚI) Ghi Audit Log cho hành động duyệt thanh toán (ARCH-02)
             userDAO.insertAuditLog(librarianId, "CASH_PAYMENT", "Payment", paymentId,
