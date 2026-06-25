@@ -262,11 +262,11 @@ books_data = [
     }
 ]
 
-# Generate copies for each book (3 copies per book)
+# Generate copies for each book (2 copies per book)
 copies_data = []
 for book in books_data:
     isbn = book["isbn"]
-    for i in range(1, 4):  # 3 copies
+    for i in range(1, 3):  # 2 copies
         barcode = f"BC{isbn}-{i:02d}"
         location = f"Kệ CS-{isbn[-4:]}-{i}" if "Computer Science" in book["categories"] else f"Kệ GEN-{isbn[-4:]}-{i}"
         copies_data.append({
