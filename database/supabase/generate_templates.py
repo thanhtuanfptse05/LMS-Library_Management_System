@@ -18,7 +18,7 @@ books_data = [
         "publicationYear": 2018,
         "price": 850000.0,
         "categories": "Computer Science",
-        "tags": "Textbook,Coding,Reference"
+        "tags": "Textbook;Coding;Reference"
     },
     {
         "isbn": "9780132350884",
@@ -28,7 +28,7 @@ books_data = [
         "publicationYear": 2008,
         "price": 650000.0,
         "categories": "Computer Science",
-        "tags": "Textbook,Coding"
+        "tags": "Textbook;Coding"
     },
     {
         "isbn": "9780201633610",
@@ -38,7 +38,7 @@ books_data = [
         "publicationYear": 1994,
         "price": 950000.0,
         "categories": "Computer Science",
-        "tags": "Reference,Theoretical"
+        "tags": "Reference;Theoretical"
     },
     {
         "isbn": "9781119560822",
@@ -48,7 +48,7 @@ books_data = [
         "publicationYear": 2019,
         "price": 1200000.0,
         "categories": "Economics & Finance",
-        "tags": "Textbook,CaseStudy"
+        "tags": "Textbook;CaseStudy"
     },
     {
         "isbn": "9780321356680",
@@ -58,7 +58,7 @@ books_data = [
         "publicationYear": 2011,
         "price": 900000.0,
         "categories": "Computer Science",
-        "tags": "Textbook,Coding,Theoretical"
+        "tags": "Textbook;Coding;Theoretical"
     },
     {
         "isbn": "9780073523323",
@@ -68,7 +68,7 @@ books_data = [
         "publicationYear": 2015,
         "price": 800000.0,
         "categories": "Economics & Finance",
-        "tags": "Textbook,Theoretical"
+        "tags": "Textbook;Theoretical"
     },
     {
         "isbn": "9780199232741",
@@ -78,7 +78,7 @@ books_data = [
         "publicationYear": 2016,
         "price": 550000.0,
         "categories": "Politics & International Relations",
-        "tags": "Introduction,Textbook"
+        "tags": "Introduction;Textbook"
     },
     {
         "isbn": "9781449331818",
@@ -88,7 +88,7 @@ books_data = [
         "publicationYear": 2017,
         "price": 1100000.0,
         "categories": "Computer Science",
-        "tags": "Reference,Advanced"
+        "tags": "Reference;Advanced"
     },
     {
         "isbn": "9780132145374",
@@ -98,7 +98,7 @@ books_data = [
         "publicationYear": 2010,
         "price": 1500000.0,
         "categories": "Computer Science",
-        "tags": "Textbook,AI_Driven,Advanced"
+        "tags": "Textbook;AI_Driven;Advanced"
     },
     {
         "isbn": "9780321573513",
@@ -108,7 +108,7 @@ books_data = [
         "publicationYear": 2012,
         "price": 750000.0,
         "categories": "Physics",
-        "tags": "Textbook,Theoretical"
+        "tags": "Textbook;Theoretical"
     },
     {
         "isbn": "9780134093413",
@@ -118,7 +118,7 @@ books_data = [
         "publicationYear": 2016,
         "price": 1600000.0,
         "categories": "Biology & Ecology",
-        "tags": "Textbook,Reference"
+        "tags": "Textbook;Reference"
     },
     {
         "isbn": "9780470503201",
@@ -128,7 +128,7 @@ books_data = [
         "publicationYear": 2012,
         "price": 700000.0,
         "categories": "Physics",
-        "tags": "Introduction,Textbook"
+        "tags": "Introduction;Textbook"
     },
     {
         "isbn": "9780078021558",
@@ -138,7 +138,7 @@ books_data = [
         "publicationYear": 2013,
         "price": 1300000.0,
         "categories": "Chemistry",
-        "tags": "Textbook,Experimental"
+        "tags": "Textbook;Experimental"
     },
     {
         "isbn": "9780136006633",
@@ -147,8 +147,8 @@ books_data = [
         "publisher": "Pearson",
         "publicationYear": 2009,
         "price": 1420000.0,
-        "categories": "Biology & Ecology,Medicine & Health Sciences",
-        "tags": "Textbook,LabManual"
+        "categories": "Biology & Ecology;Medicine & Health Sciences",
+        "tags": "Textbook;LabManual"
     },
     {
         "isbn": "9780470646151",
@@ -158,7 +158,7 @@ books_data = [
         "publicationYear": 2011,
         "price": 1800000.0,
         "categories": "Medicine & Health Sciences",
-        "tags": "Textbook,Reference"
+        "tags": "Textbook;Reference"
     },
     {
         "isbn": "9781285057903",
@@ -168,7 +168,7 @@ books_data = [
         "publicationYear": 2013,
         "price": 600000.0,
         "categories": "Business Administration",
-        "tags": "Introduction,Textbook"
+        "tags": "Introduction;Textbook"
     },
     {
         "isbn": "9780133098754",
@@ -178,7 +178,7 @@ books_data = [
         "publicationYear": 2015,
         "price": 1150000.0,
         "categories": "Business Administration",
-        "tags": "Textbook,CaseStudy,Strategic"
+        "tags": "Textbook;CaseStudy;Strategic"
     },
     {
         "isbn": "9781133312789",
@@ -187,8 +187,8 @@ books_data = [
         "publisher": "Cengage Learning",
         "publicationYear": 2015,
         "price": 980000.0,
-        "categories": "Chemistry,Pharmacy & Biochemistry",
-        "tags": "Textbook,LabManual"
+        "categories": "Chemistry;Pharmacy & Biochemistry",
+        "tags": "Textbook;LabManual"
     },
     {
         "isbn": "9780199571123",
@@ -198,7 +198,7 @@ books_data = [
         "publicationYear": 2014,
         "price": 670000.0,
         "categories": "Law & Legal Studies",
-        "tags": "Introduction,Textbook"
+        "tags": "Introduction;Textbook"
     },
     {
         "isbn": "9781305073036",
@@ -208,7 +208,7 @@ books_data = [
         "publicationYear": 2015,
         "price": 850000.0,
         "categories": "Psychology",
-        "tags": "Textbook,Behavioral"
+        "tags": "Textbook;Behavioral"
     },
     {
         "isbn": "9780321838964",
@@ -217,8 +217,8 @@ books_data = [
         "publisher": "Pearson",
         "publicationYear": 2016,
         "price": 930000.0,
-        "categories": "Computer Science,Arts & Design",
-        "tags": "Reference,Visual_Design"
+        "categories": "Computer Science;Arts & Design",
+        "tags": "Reference;Visual_Design"
     },
     {
         "isbn": "9780133914641",
@@ -228,7 +228,7 @@ books_data = [
         "publicationYear": 2015,
         "price": 950000.0,
         "categories": "Computer Science",
-        "tags": "Textbook,Management"
+        "tags": "Textbook;Management"
     },
     {
         "isbn": "9781491950296",
@@ -238,7 +238,7 @@ books_data = [
         "publicationYear": 2017,
         "price": 650000.0,
         "categories": "Computer Science",
-        "tags": "Reference,Advanced"
+        "tags": "Reference;Advanced"
     },
     {
         "isbn": "9781501257285",
@@ -248,7 +248,7 @@ books_data = [
         "publicationYear": 2014,
         "price": 450000.0,
         "categories": "Soft Skills",
-        "tags": "Reference,Management"
+        "tags": "Reference;Management"
     },
     {
         "isbn": "9780073523859",
@@ -258,7 +258,7 @@ books_data = [
         "publicationYear": 2009,
         "price": 1400000.0,
         "categories": "Computer Science",
-        "tags": "Textbook,Theoretical,Advanced"
+        "tags": "Textbook;Theoretical;Advanced"
     }
 ]
 
@@ -314,7 +314,7 @@ for row_idx, book in enumerate(books_data, 2):
     ws_books.cell(row=row_idx, column=5, value=book["publicationYear"]).alignment = align_center
     
     price_cell = ws_books.cell(row=row_idx, column=6, value=book["price"])
-    price_cell.number_format = '#,##0.00'
+    price_cell.number_format = '0.00'
     price_cell.alignment = Alignment(horizontal="right", vertical="center")
     
     ws_books.cell(row=row_idx, column=7, value=book["categories"]).alignment = align_left
