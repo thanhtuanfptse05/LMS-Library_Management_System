@@ -112,11 +112,56 @@ public class UserLockReasonDAO {
                     reasons.add(rs.getString("reason"));
                 }
             }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách lý do khóa cho userId=" + userId, e);
-            throw e;
         }
         return reasons;
     }
+
+    /**
+     * Kiểm tra xem người dùng có lý do khóa cụ thể nào không (dùng Connection truyền vào).
+     */
+    public boolean hasReason(Connection conn, int userId, String reason) throws SQLException {
+        String sql = "SELECT 1 FROM UserLockReason WHERE userId = ? AND reason = ? LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setString(2, reason);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra lý do khóa cho userId=" + userId + " và reason=" + reason, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Thêm lý do khóa cho người dùng (dùng Connection truyền vào).
+     */
+    public void insertLockReason(Connection conn, int userId, String reason) throws SQLException {
+        String sql = "INSERT INTO UserLockReason (userId, reason, createdAt) VALUES (?, ?, NOW())";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setString(2, reason);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi thêm lý do khóa cho userId=" + userId + " và reason=" + reason, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Xóa lý do khóa của người dùng (dùng Connection truyền vào).
+     */
+    public void deleteLockReason(Connection conn, int userId, String reason) throws SQLException {
+        String sql = "DELETE FROM UserLockReason WHERE userId = ? AND reason = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setString(2, reason);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi xóa lý do khóa cho userId=" + userId + " và reason=" + reason, e);
+            throw e;
+        }
+    }
 }
+
 
