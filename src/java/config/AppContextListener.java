@@ -17,7 +17,8 @@ public class AppContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        LOGGER.log(Level.INFO, "[AppListener] Application LMS Started.");
+        java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        LOGGER.log(Level.INFO, "[AppListener] Application LMS Started. System TimeZone set to Asia/Ho_Chi_Minh.");
         try {
             SystemConfigCache.load(sce.getServletContext());
             LOGGER.log(Level.INFO, "[AppListener] SystemConfigCache loaded successfully.");

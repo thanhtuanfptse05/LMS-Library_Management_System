@@ -4,7 +4,7 @@
               auth="Container"
               type="javax.sql.DataSource"
               driverClassName="org.postgresql.Driver"
-              url="jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&amp;prepareThreshold=0"
+              url="jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&amp;prepareThreshold=0&amp;options=-c%20timezone=Asia/Ho_Chi_Minh"
               username="postgres.wukwrfwdrbstyoqissjz"
               password="6wUw)Q6S/)LFeSE"
               maxTotal="20"
