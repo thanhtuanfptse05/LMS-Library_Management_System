@@ -707,21 +707,27 @@
                                                                                         Thao tác nghiệp vụ tại quầy
                                                                                     </h4>
                                                                                     
-                                                                                    <!-- 3 Action Buttons -->
+                                                                                    <!-- 4 Action Buttons -->
                                                                                     <div class="row g-3 mb-4">
-                                                                                        <div class="col-md-4">
+                                                                                        <div class="col-md-3">
                                                                                             <button onclick="showActionForm('checkout')" class="btn btn-primary-custom w-100 py-3 d-flex align-items-center justify-content-center gap-2 fw-bold">
                                                                                                 <span class="material-symbols-outlined">published_with_changes</span>
                                                                                                 Giao sách (Check-out)
                                                                                             </button>
                                                                                         </div>
-                                                                                        <div class="col-md-4">
+                                                                                        <div class="col-md-3">
                                                                                             <button onclick="showActionForm('checkin')" class="btn btn-success w-100 py-3 d-flex align-items-center justify-content-center gap-2 fw-bold text-white" style="border:none; background-color:#059669;">
                                                                                                 <span class="material-symbols-outlined">assignment_return</span>
                                                                                                 Nhận trả sách (Check-in)
                                                                                             </button>
                                                                                         </div>
-                                                                                        <div class="col-md-4">
+                                                                                        <div class="col-md-3">
+                                                                                            <button onclick="showActionForm('reserve')" class="btn btn-info w-100 py-3 d-flex align-items-center justify-content-center gap-2 fw-bold text-white" style="border:none; background-color:#0284c7;">
+                                                                                                <span class="material-symbols-outlined">pending_actions</span>
+                                                                                                Đặt trước sách (Reserve)
+                                                                                            </button>
+                                                                                        </div>
+                                                                                        <div class="col-md-3">
                                                                                             <button onclick="showActionForm('payment')" class="btn btn-warning w-100 py-3 d-flex align-items-center justify-content-center gap-2 fw-bold text-dark">
                                                                                                 <span class="material-symbols-outlined">payments</span>
                                                                                                 Thu tiền phạt (Cash Payment)
@@ -729,8 +735,41 @@
                                                                                         </div>
                                                                                     </div>
 
-                                                                                    <!-- 3 Inline Forms -->
+                                                                                    <!-- 4 Inline Forms -->
                                                                                     
+                                                                                    <!-- Form 4: Reserve -->
+                                                                                    <div id="actionFormReserve" class="p-4 rounded-4 mb-4" style="display:none; background-color:rgba(2,132,199,0.04); border:1px solid rgba(2,132,199,0.15);">
+                                                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                                            <h5 class="fw-bold m-0 d-flex align-items-center gap-2 text-info" style="font-size:16px; color:#0284c7 !important;">
+                                                                                                <span class="material-symbols-outlined">pending_actions</span>
+                                                                                                Đặt trước sách (Reserve)
+                                                                                            </h5>
+                                                                                            <button type="button" class="btn-close" onclick="hideActionForm('reserve')"></button>
+                                                                                        </div>
+                                                                                        
+                                                                                        <c:choose>
+                                                                                            <c:when test="${requestScope.searchedUser.status == 'active'}">
+                                                                                                <form action="${pageContext.request.contextPath}/librarian/reserve" method="POST" class="needs-validation" novalidate>
+                                                                                                    <input type="hidden" name="memberCode" value="${fn:escapeXml(requestScope.memberCode)}">
+                                                                                                    <div class="mb-3 col-md-6">
+                                                                                                        <label for="reserveBookIdOrIsbn" class="form-label small fw-bold">Mã đầu sách (Book ID) hoặc mã ISBN</label>
+                                                                                                        <input type="text" id="reserveBookIdOrIsbn" name="bookIdOrIsbn" class="form-control" placeholder="Nhập ID sách hoặc ISBN..." required>
+                                                                                                    </div>
+                                                                                                    <div class="d-flex gap-2">
+                                                                                                        <button type="submit" class="btn btn-info px-4 fw-bold text-white" style="border:none; background-color:#0284c7;">Xác nhận đặt trước</button>
+                                                                                                        <button type="button" class="btn btn-outline-secondary px-4" onclick="hideActionForm('reserve')">Hủy</button>
+                                                                                                    </div>
+                                                                                                </form>
+                                                                                            </c:when>
+                                                                                            <c:otherwise>
+                                                                                                <div class="alert alert-danger mb-0">
+                                                                                                    <span class="material-symbols-outlined align-middle me-2">block</span>
+                                                                                                    Tài khoản độc giả đang bị khóa. Không thể thực hiện đặt trước.
+                                                                                                </div>
+                                                                                            </c:otherwise>
+                                                                                        </c:choose>
+                                                                                    </div>
+
                                                                                     <!-- Form 1: Checkout -->
                                                                                     <div id="actionFormCheckout" class="p-4 rounded-4 mb-4" style="display:none; background-color:rgba(157,67,0,0.04); border:1px solid rgba(157,67,0,0.15);">
                                                                                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -833,7 +872,7 @@
                                                                                                     </c:forEach>
                                                                                                 </select>
                                                                                                 <div class="form-text text-muted">Chỉ hiển thị các khoản phạt đã có hóa đơn chờ thanh toán (có Mã hóa đơn).</div>
-                                                                                            </div>
+</div>
                                                                                             <div class="d-flex gap-2">
                                                                                                 <button type="submit" class="btn btn-warning px-4 fw-bold text-dark">Duyệt thu tiền mặt</button>
                                                                                                 <button type="button" class="btn btn-outline-secondary px-4" onclick="hideActionForm('payment')">Hủy</button>
@@ -855,7 +894,7 @@
                                 <script>
                                     // Tự động xóa khoảng trắng khỏi các ô nhập mã độc giả và barcode
                                      document.addEventListener('DOMContentLoaded', function () {
-                                         const autoTrimInputs = ['memberCodeSearch', 'checkoutBarcode', 'checkinBarcode'];
+                                         const autoTrimInputs = ['memberCodeSearch', 'checkoutBarcode', 'checkinBarcode', 'reserveBookIdOrIsbn'];
                                          autoTrimInputs.forEach(id => {
                                              const inputEl = document.getElementById(id);
                                              if (inputEl) {
@@ -869,10 +908,6 @@
                                          });
                                      });
 
-                                     // ════ QUẢN LÝ MÁY QUÉT BARCODE BẰNG ĐIỆN THOẠI ════
-                                    let activeScanInputId = null;
-                                    let activeScanButtonEl = null;
-                                    let originalBtnHtml = '';
 
                                     function toggleScanner(inputId, buttonEl) {
                                         if (activeScanInputId === inputId) {
@@ -932,10 +967,12 @@
                                         const checkoutForm = document.getElementById('actionFormCheckout');
                                         const checkinForm = document.getElementById('actionFormCheckin');
                                         const paymentForm = document.getElementById('actionFormPayment');
+                                        const reserveForm = document.getElementById('actionFormReserve');
                                         
                                         if (checkoutForm) checkoutForm.style.display = 'none';
                                         if (checkinForm) checkinForm.style.display = 'none';
                                         if (paymentForm) paymentForm.style.display = 'none';
+                                        if (reserveForm) reserveForm.style.display = 'none';
                                         
                                         // Hiển thị form mong muốn
                                         const formId = 'actionForm' + type.charAt(0).toUpperCase() + type.slice(1);
