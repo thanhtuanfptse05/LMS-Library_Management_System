@@ -607,7 +607,8 @@ public class DeskCirculationService {
             // ----------------------------------------------------------------
             // Có người chờ — đẩy Reservation lên readypickup
             // ----------------------------------------------------------------
-            reservationDAO.updateToReadyPickup(conn, nextInQueue.getReservationId(), bookCopyId);
+            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+            reservationDAO.updateToReadyPickup(conn, nextInQueue.getReservationId(), bookCopyId, holdDays);
             bookCopyDAO.updateStatusToReserved(conn, bookCopyId);
 
             // Dịch chuyển các vị trí hàng đợi phía sau (2->1, 3->2...)
