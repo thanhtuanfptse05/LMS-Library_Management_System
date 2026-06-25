@@ -609,6 +609,84 @@ public class ReservationDAO {
     }
 
     /**
+     * Tìm các đơn đặt trước ở trạng thái 'readypickup' và đã quá hạn nhận sách (endDate < NOW()).
+     *
+     * @param conn {@code Connection} tương tác DB
+     * @return danh sách các Reservation quá hạn nhận sách
+     * @throws SQLException nếu có lỗi truy vấn SQL
+     */
+    public List<Reservation> findExpiredReservations(Connection conn) throws SQLException {
+        List<Reservation> list = new ArrayList<>();
+        String sql = "SELECT reservationId, userId, bookId, bookCopyId, status, queuePosition, startDate, endDate "
+                   + "FROM   Reservation "
+                   + "WHERE  status = 'readypickup' "
+                   + "  AND  endDate < NOW()";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(mapRowToReservation(rs));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách Reservation quá hạn", e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
+     * Lấy đơn đặt trước theo ID và áp dụng khóa độc quyền FOR UPDATE để tránh race condition.
+     *
+     * @param conn          {@code Connection} trong Transaction
+     * @param reservationId ID đơn đặt trước cần khóa
+     * @return Reservation tương ứng hoặc null nếu không thấy
+     * @throws SQLException nếu có lỗi SQL
+     */
+    public Reservation findReservationByIdForUpdate(Connection conn, int reservationId) throws SQLException {
+        String sql = "SELECT reservationId, userId, bookId, bookCopyId, status, queuePosition, startDate, endDate "
+                   + "FROM   Reservation "
+                   + "WHERE  reservationId = ? "
+                   + "FOR UPDATE";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, reservationId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToReservation(rs);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tìm Reservation bằng ID và khóa dòng FOR UPDATE cho ID=" + reservationId, e);
+            throw e;
+        }
+        return null;
+    }
+
+    /**
+     * Cập nhật trạng thái đơn đặt trước thành 'cancelled', giải phóng queuePosition và gán endDate = NOW().
+     *
+     * @param conn          {@code Connection} trong Transaction
+     * @param reservationId ID đơn đặt trước cần cập nhật
+     * @throws SQLException nếu có lỗi SQL
+     */
+    public void updateStatusToCancelled(Connection conn, int reservationId) throws SQLException {
+        String sql = "UPDATE Reservation "
+                   + "SET    status        = 'cancelled', "
+                   + "       queuePosition = NULL, "
+                   + "       endDate       = NOW() "
+                   + "WHERE  reservationId = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, reservationId);
+            ps.executeUpdate();
+            LOGGER.log(Level.INFO, "Đã cập nhật Reservation ID={0} sang 'cancelled' và xóa queuePosition", reservationId);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi cập nhật Reservation sang 'cancelled' cho ID=" + reservationId, e);
+            throw e;
+        }
+    }
+
+    /**
      * Dọn dẹp tự động các đơn đặt trước đã quá hạn nhận sách (Ready Pickup Expiration).
      *
      * <p>Được gọi ở đầu mỗi giao dịch tại Service để quét và hủy các Reservation quá hạn nhận sách
