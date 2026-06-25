@@ -1,6 +1,7 @@
 package service;
 
 import dao.UserDAO;
+import dao.UserLockReasonDAO;
 import model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -17,14 +18,17 @@ import org.mindrot.jbcrypt.BCrypt;
 public class AuthService {
 
     private final UserDAO userDAO;
+    private final UserLockReasonDAO userLockReasonDAO;
 
     public AuthService() {
         this.userDAO = new UserDAO();
+        this.userLockReasonDAO = new UserLockReasonDAO();
     }
 
     // Constructor phục vụ mục đích Testing (Dependency Injection)
     AuthService(UserDAO userDAO) {
         this.userDAO = userDAO;
+        this.userLockReasonDAO = new UserLockReasonDAO();
     }
 
     /**
@@ -57,6 +61,37 @@ public class AuthService {
         }
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
         return lockedUntil.after(now);
+    }
+
+    /**
+     * Kiểm tra xem tài khoản bị khóa có CHỈ do lý do 'unpaid' hay không.
+     *
+     * <p>Nếu đúng, hệ thống cho phép người dùng đăng nhập nhưng sẽ hiển thị
+     * cảnh báo yêu cầu thanh toán tiền phạt.</p>
+     *
+     * @param userId ID của người dùng cần kiểm tra
+     * @return {@code true} nếu tài khoản bị khóa CHỈ vì lý do 'unpaid',
+     *         ngược lại {@code false}
+     */
+    public boolean isLockedOnlyForUnpaid(int userId) {
+        boolean hasUnpaid = userLockReasonDAO.hasReason(userId, "unpaid");
+        if (!hasUnpaid) {
+            return false;
+        }
+        // Kiểm tra xem có lý do khóa nào khác ngoài 'unpaid' không
+        return !hasNonUnpaidLockReason(userId);
+    }
+
+    /**
+     * Kiểm tra xem tài khoản có bất kỳ lý do khóa nào KHÁC 'unpaid' không.
+     * (ví dụ: 'securitybreach', 'adminban')
+     *
+     * @param userId ID của người dùng cần kiểm tra
+     * @return {@code true} nếu tồn tại ít nhất một lý do khóa khác 'unpaid'
+     */
+    public boolean hasNonUnpaidLockReason(int userId) {
+        return userLockReasonDAO.hasReason(userId, "securitybreach")
+                || userLockReasonDAO.hasReason(userId, "adminban");
     }
 
     /**
