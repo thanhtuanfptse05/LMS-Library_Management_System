@@ -93,6 +93,19 @@ public class ReservationExpirationProcessor implements Runnable {
                 Integer copyId = lockedRes.getBookCopyId();
                 int bookId = lockedRes.getBookId();
 
+                // NẾU bookCopyId trong Reservation bị NULL, tìm bản sao 'reserved' thuộc đầu sách này để xử lý giải phóng
+                if (copyId == null) {
+                    String findCopySql = "SELECT bookCopyId FROM BookCopy WHERE bookId = ? AND status = 'reserved' LIMIT 1";
+                    try (PreparedStatement psCopy = conn.prepareStatement(findCopySql)) {
+                        psCopy.setInt(1, bookId);
+                        try (ResultSet rsCopy = psCopy.executeQuery()) {
+                            if (rsCopy.next()) {
+                                copyId = rsCopy.getInt("bookCopyId");
+                            }
+                        }
+                    }
+                }
+
                 if (copyId != null) {
                     // Bước 5: Kiểm tra xem có người dùng nào khác đang xếp hàng cho tựa sách này không
                     Reservation nextRes = reservationDAO.findNextInQueue(conn, bookId);
