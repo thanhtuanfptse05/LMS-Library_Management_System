@@ -233,6 +233,7 @@ public class DeskCirculationService {
             // THE LMS System SHALL route to pre-reservation OR walk-in flow [Node 7.8]
             Reservation reservation = reservationDAO.findReadyPickupByUserAndBook(
                     conn, userId, bookId);
+            boolean reservationWasPreExisting = (reservation != null);
 
             if (reservation == null) {
                 // Nhánh Walk-in: người dùng KHÔNG có đơn đặt trước sẵn sàng
@@ -265,16 +266,26 @@ public class DeskCirculationService {
                 reservation.setBookCopyId(bookCopyId);
             } else {
                 // Nhánh Pre-reservation: người dùng đã có đơn đặt trước
-                // Bắt buộc BookCopy phải ở trạng thái 'reserved'
-                if (!"reserved".equals(bookCopy.getStatus())) {
-                    throw new IllegalStateException(
-                            "Bản sao sách này không ở trạng thái được giữ đặt trước (Trạng thái: '" 
-                            + bookCopy.getStatus() + "').");
-                }
-                // Nếu đơn đặt trước đã gắn sẵn bản sao khác
-                if (reservation.getBookCopyId() != null && reservation.getBookCopyId() != bookCopyId) {
-                    throw new IllegalStateException(
-                            "Bản sao này không khớp với bản sao được giữ riêng cho độc giả này.");
+                if (reservation.getBookCopyId() != null) {
+                    // Nếu đơn đặt trước đã gắn sẵn bản sao khác
+                    if (!"reserved".equals(bookCopy.getStatus())) {
+                        throw new IllegalStateException(
+                                "Bản sao sách này không ở trạng thái được giữ đặt trước (Trạng thái: '" 
+                                + bookCopy.getStatus() + "').");
+                    }
+                    if (reservation.getBookCopyId() != bookCopyId) {
+                        throw new IllegalStateException(
+                                "Bản sao này không khớp với bản sao được giữ riêng cho độc giả này.");
+                    }
+                } else {
+                    // Đơn đặt trước online chưa gán bản sao (bookCopyId == null)
+                    // Bắt buộc BookCopy phải ở trạng thái 'available'
+                    if (!"available".equals(bookCopy.getStatus())) {
+                        throw new IllegalStateException(
+                                "Bản sao sách này không sẵn sàng để mượn (Trạng thái: '" 
+                                + bookCopy.getStatus() + "').");
+                    }
+                    reservation.setBookCopyId(bookCopyId);
                 }
             }
 
@@ -305,13 +316,13 @@ public class DeskCirculationService {
             // 4b. INSERT BorrowRecord
             borrowRecordDAO.insert(conn, userId, bookCopyId, bookId, librarianId, endDate);
 
-            // 4c. UPDATE Reservation → 'fulfilled'
-            reservationDAO.updateStatusToFulfilled(conn, reservation.getReservationId());
+            // 4c. UPDATE Reservation → 'fulfilled' và cập nhật bookCopyId
+            reservationDAO.updateStatusToFulfilled(conn, reservation.getReservationId(), bookCopyId);
 
             // 4d. UPDATE BookCopy → 'borrowed' (phân nhánh theo trạng thái hiện tại)
-            if ("reserved".equals(bookCopy.getStatus())) {
-                // Pre-reservation: BookCopy đã ở 'reserved', availableQuantity đã giảm từ lúc đặt trước
-                bookCopyDAO.updateStatusToBorrowedFromReserved(conn, bookCopyId);
+            if (reservationWasPreExisting) {
+                // Pre-reservation: đã giảm availableQuantity từ trước khi đặt trước, chỉ chuyển trạng thái BookCopy
+                bookCopyDAO.updateStatusToBorrowedNoQtyChange(conn, bookCopyId);
             } else {
                 // Walk-in: BookCopy ở 'available', cần giảm availableQuantity
                 bookCopyDAO.updateStatusToBorrowedFromAvailable(conn, bookCopyId);
@@ -607,7 +618,8 @@ public class DeskCirculationService {
             // ----------------------------------------------------------------
             // Có người chờ — đẩy Reservation lên readypickup
             // ----------------------------------------------------------------
-            reservationDAO.updateToReadyPickup(conn, nextInQueue.getReservationId(), bookCopyId);
+            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+            reservationDAO.updateToReadyPickup(conn, nextInQueue.getReservationId(), bookCopyId, holdDays);
             bookCopyDAO.updateStatusToReserved(conn, bookCopyId);
 
             // Dịch chuyển các vị trí hàng đợi phía sau (2->1, 3->2...)
