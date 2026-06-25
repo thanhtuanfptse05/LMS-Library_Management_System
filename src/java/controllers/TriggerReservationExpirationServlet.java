@@ -28,8 +28,10 @@ public class TriggerReservationExpirationServlet extends HttpServlet {
         
         // 1. Phân quyền và bảo mật: Kiểm tra role ADMIN (được kết hợp kiểm tra từ AuthFilter)
         HttpSession session = request.getSession(false);
-        User user = (session != null) ? (User) session.getAttribute("user") : null;
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+        Integer userId = (session != null) ? (Integer) session.getAttribute("userId") : null;
+        String role = (session != null) ? (String) session.getAttribute("role") : null;
+        
+        if (userId == null || !"ADMIN".equalsIgnoreCase(role)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             try (PrintWriter out = response.getWriter()) {
                 out.print("{\"success\":false,\"message\":\"Bạn không có quyền thực hiện hành động này.\"}");
@@ -37,7 +39,7 @@ public class TriggerReservationExpirationServlet extends HttpServlet {
             return;
         }
 
-        LOGGER.log(Level.INFO, "Admin ID={0} kích hoạt quy trình hủy đặt trước quá hạn nhận sách thủ công.", user.getUserId());
+        LOGGER.log(Level.INFO, "Admin ID={0} kích hoạt quy trình hủy đặt trước quá hạn nhận sách thủ công.", userId);
 
         try {
             // 2. Chạy quy trình đồng bộ
