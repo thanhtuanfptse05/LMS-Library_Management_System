@@ -1,10 +1,20 @@
-# TASKS.md — Task Breakdown F5
+# TASK.md — Phân rã công việc cho Quản lý Đặt trước và Gia hạn trực tuyến
 
-| ID | Task | Files liên quan | Est | Deps | DoD / Spec Refs |
+## Giao diện & Nghiệp vụ chính (Hiện có)
+| ID | Tên Task | Files liên quan | Est | Deps | Định nghĩa hoàn thành (DoD) |
 |---|---|---|---|---|---|
-| **T-F5-01** | Bổ sung hàm cho DAOs có sẵn | `ReservationDAO.java`, `BorrowRecordDAO.java` | 2h | None | Thêm hàm `insertOnlineReservation`, `cancelReservation`, `findNextInQueue`, `promoteQueuePosition`, `incrementExtension`, `countActiveBorrowsByUser`. Đảm bảo dùng syntax PostgreSQL. |
-| **T-F5-02** | Tạo Config Fetcher | `SystemConfigDAO.java` | 1h | None | Đọc các limit (STUDENT_MAX_BORROW_LIMIT, LECTURER_MAX_BORROW_LIMIT, RENEW_THRESHOLD_PERCENT, MAX_EXTENSION_COUNT, RENEW_DURATION_DAYS). |
-| **T-F5-03** | Service Layer (Reservation & Cancel) | `OnlineCirculationService.java` | 3h | T-F5-01,02 | Bọc Transaction. Check limit theo role. `SELECT FOR UPDATE` chia nhánh `queuePosition = 0` và `>0`. Xử lý Cancel Reservation đôn hàng đợi và gửi email. |
-| **T-F5-04** | Service Layer (Renewal) | `OnlineCirculationService.java` | 2h | T-F5-01,02 | Logic: Check %, check count, check queue. Execute update `extensionCount + 1` (FR-F5-05,06,07). |
-| **T-F5-05** | Servlets (Controller) | `ReservationServlet.java`, `RenewalServlet.java`, `CancelReservationServlet.java`, `MyBorrowingsServlet.java` | 2h | T-F5-03,04 | Điều hướng HTTP bằng multiple paths (`/student/...`, `/lecturer/...`). Xử lý POST-Redirect-GET và map Flash messages. |
-| **T-F5-06** | Views (JSP Portal) | `book-detail.jsp`, `my-borrowings.jsp` | 3h | T-F5-05 | Nút bấm "Đặt trước". Bảng "Sách đang mượn" và "Sách đặt trước" hiển thị rõ ràng nút Gia hạn / Hủy. Submit qua form POST. |
+| **T-F5-01** | Bổ sung hàm cho DAOs có sẵn | `ReservationDAO.java`, `BorrowRecordDAO.java` | 2h | None | Thêm các hàm `insertOnlineReservation`, `cancelReservation`, `findNextInQueue`, `decrementQueuePositions`, `incrementExtension`, `countActiveBorrowsByUser`. Đảm bảo dùng syntax PostgreSQL. |
+| **T-F5-02** | Tạo Config Fetcher | `SystemConfigDAO.java` | 1h | None | Đọc các cấu hình giới hạn mượn/đặt từ CSDL. |
+| **T-F5-03** | Service Layer (Reservation & Cancel) | `OnlineCirculationService.java` | 3h | T-F5-01,02 | Xử lý logic đặt trước và hủy đặt trước chủ động từ phía độc giả. |
+| **T-F5-04** | Service Layer (Renewal) | `OnlineCirculationService.java` | 2h | T-F5-01,02 | Logic gia hạn sách trực tuyến. |
+| **T-F5-05** | Servlets (Controller) | `ReservationServlet.java`, `RenewalServlet.java`, `CancelReservationServlet.java`, `MyBorrowingsServlet.java` | 2h | T-F5-03,04 | Tiếp nhận và điều phối HTTP requests. |
+| **T-F5-06** | Views (JSP Portal) | `book-detail.jsp`, `my-borrowings.jsp` | 3h | T-F5-05 | Hiển thị giao diện Đặt trước/Gia hạn/Hủy đặt trước trên cổng độc giả. |
+
+## Tiến trình ngầm Hủy hàng chờ đặt trước quá hạn (Reservation Expiration)
+| ID | Tên Task | Files liên quan | Est | Deps | Định nghĩa hoàn thành (DoD) |
+|---|---|---|---|---|---|
+| **T-F5-07** | Refactor/Bổ sung hàm hủy quá hạn trong DAO | `src/java/dao/ReservationDAO.java` | 1.5h | None | Sửa đổi hoặc tạo mới cơ chế hủy đơn quá hạn: Cần hỗ trợ đôn hàng chờ cho người tiếp theo (`queuePosition = 1` của đầu sách đó) bằng cách cập nhật thông tin của họ lên `queuePosition = 0`, status='readypickup', gán `bookCopyId`, và thiết lập `endDate` cộng thêm số ngày lấy từ cấu hình `RESERVATION_HOLD_DAYS` của bảng `SystemConfigurations`; cập nhật BookCopy sang `'reserved'` thay vì trả về kho nếu có hàng đợi. |
+| **T-F5-08** | Xây dựng Service ReservationExpirationProcessor | `src/java/service/ReservationExpirationProcessor.java` | 3h | T-F5-07 | Xử lý logic tiến trình quét ngầm: quét đơn `readypickup` quá hạn, thực thi transaction cô lập cho từng đơn quá hạn, đôn hàng chờ, ghi Audit Log (`actionType='CANCEL_EXPIRED_RESERVATION'`, `userId=null`), và gọi `EmailService` gửi email thông báo bất đồng bộ. |
+| **T-F5-09** | Đăng ký lập lịch chạy trong Listener | `src/java/config/AppContextListener.java` | 1h | T-F5-08 | Cấu hình `ScheduledExecutorService` chạy định kỳ `ReservationExpirationProcessor` mỗi 1 giờ. Đảm bảo shutdown executor service khi ứng dụng tắt. |
+| **T-F5-10** | Tạo Servlet Trigger cho Admin | `src/java/controllers/TriggerReservationExpirationServlet.java` | 1.5h | T-F5-08 | Nhận POST request tại `/admin/trigger-reservation-expiration`. Xác thực quyền ADMIN, gọi chạy tiến trình đồng bộ, trả về JSON thống kê kết quả quét. |
+| **T-F5-11** | Thêm nút kích hoạt thủ công trên Admin Dashboard | `web/admin/dashboard-admin.jsp` | 1h | T-F5-10 | Thêm nút bấm chạy dọn dẹp đặt trước quá hạn thủ công, gửi request AJAX/Fetch và hiển thị Flash message báo kết quả thành công bằng tiếng Việt. |

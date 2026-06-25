@@ -174,6 +174,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
 
     /**
      * Xử lý xóa mẫu Email.
+     * Mẫu hệ thống ({@link dao.DocumentTempDAO#PROTECTED_TEMPLATES}) KHÔNG ĐƯỢC PHÉP xóa.
      * Ghi AuditLog sau khi DELETE thành công (ARCH-02).
      */
     private void handleDelete(HttpServletRequest request, HttpServletResponse response, int managerId)
@@ -192,6 +193,14 @@ public class DocumentTempManagerServlet extends HttpServlet {
                 return;
             }
 
+            // Kiểm tra bảo vệ mẫu hệ thống — KHÔNG ĐƯỢC PHÉP XÓA
+            if (documentTempDAO.isProtected(tempId)) {
+                redirectTo(response, request, "error",
+                        "Không thể xóa mẫu email hệ thống '" + old.getTempName()
+                        + "'. Đây là mẫu cốt lõi được dùng bởi tiến trình tự động. Bạn chỉ có thể chỉnh sửa nội dung.");
+                return;
+            }
+
             boolean deleted = documentTempDAO.delete(tempId);
             if (deleted) {
                 String oldVal = "tempName=" + old.getTempName() + "; subject=" + old.getSubject();
@@ -204,6 +213,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
             redirectTo(response, request, "error", "ID không hợp lệ");
         }
     }
+
 
     /** Helper: redirect với message đã được URL-encode đúng chuẩn UTF-8. */
     private void redirectTo(HttpServletResponse response, HttpServletRequest request,

@@ -1,63 +1,56 @@
-# PLAN.md — Kế hoạch Thực thi F5 (Online Circulation)
-# Trạng thái: APPROVED
+# PLAN.md — Kế hoạch & Thiết kế Kiến trúc F5 (Online Reservation & Renewal)
+# Trạng thái: APPROVED | Cập nhật: 2026-06-24
 
 ## 1. ARCHITECTURAL APPROACH
-Áp dụng mô hình MVC thuần với Servlet. Business Logic được tập trung toàn bộ tại `OnlineCirculationService` để dễ dàng quản lý Database Transaction, qua đó chống Race Condition khi hệ thống có nhiều yêu cầu mượn/đặt trước đồng thời.
+Hệ thống sử dụng mô hình MVC Monolith thuần với Servlet:
+- Business Logic được tập trung tại `OnlineCirculationService` để dễ dàng quản lý Database Transaction và chống Race Condition khi đặt sách.
+- **Tiến trình ngầm Reservation Expiration (Hủy hàng chờ):** Triển khai lớp `ReservationExpirationProcessor.java` chạy định kỳ mỗi 1 giờ (đăng ký qua `AppContextListener` bằng `ScheduledExecutorService`). Khi chạy, tiến trình quét các đơn đặt trước quá hạn nhận sách, thực thi transaction cô lập cho từng bản ghi quá hạn, gán bản sao sách cho người đang xếp hàng tiếp theo nếu có, hoặc trả sách về kho chung.
 
-## 2. COMPONENTS
-| Component | Trách nhiệm | File |
-| --- | --- | --- |
-| ReservationServlet | Xử lý request POST đặt trước. Map với `@WebServlet({"/student/reserve", "/lecturer/reserve"})` để tuân thủ tuyệt đối `AuthFilter`. | `ReservationServlet.java` |
-| RenewalServlet | Xử lý request POST gia hạn. Map với `@WebServlet({"/student/renew", "/lecturer/renew"})`. | `RenewalServlet.java` |
-| CancelReservationServlet | Xử lý request POST Hủy đặt trước. Phân phối hàng đợi cho người kế tiếp. Map với `@WebServlet({"/student/cancel-reservation", "/lecturer/cancel-reservation"})`. | `CancelReservationServlet.java` |
-| MyBorrowingsServlet | Lấy danh sách sách đang mượn và đặt trước để hiển thị trên UI. Map với `@WebServlet({"/student/my-borrowings", "/lecturer/my-borrowings"})`. | `MyBorrowingsServlet.java` |
-| OnlineCirculationService| Điều phối logic kiểm tra lock, tính toán Queue, Hủy đặt trước đôn hàng đợi, gọi DAO và commit/rollback Transaction. | `OnlineCirculationService.java` |
-| ReservationDAO | Tái sử dụng/thêm các hàm: `insertOnlineReservation`, `cancelReservation`, `findNextInQueue`, `promoteQueuePosition`. | `ReservationDAO.java` |
-| BorrowRecordDAO | Tái sử dụng/thêm hàm: `incrementExtension`, `countActiveBorrowsByUser`. | `BorrowRecordDAO.java` |
-| SystemConfigDAO | Đọc cài đặt (STUDENT_MAX_BORROW_LIMIT, LECTURER_MAX_BORROW_LIMIT, MAX_EXTENSION_COUNT, RENEW_THRESHOLD_PERCENT, RENEW_DURATION_DAYS). | `SystemConfigDAO.java` |
+---
 
-## 3. DATA FLOW
-**Luồng Reservation (Atomic Block):**
-`Client` -> `ReservationServlet` -> `Service.reserveBook()` 
-   -> Mở `conn.setAutoCommit(false)` 
-   -> Check Limit mượn/đặt (từ `SystemConfigDAO` theo Role của User)
-  -> Gọi `SELECT availableQuantity FROM Book WHERE bookId=? FOR UPDATE` (Lock dòng của sách)
-  -> Phân nhánh:
-     - Nếu `availableQuantity > 0`: `Insert Reservation (queuePosition=0, status='readypickup')` + `UPDATE Book.availableQuantity -= 1`. Gửi Email/Notification.
-     - Nếu `availableQuantity == 0`: `SELECT MAX(queuePosition)` + `Insert Reservation (queuePosition=MAX+1, status='pending')`. Gửi Notification.
-  -> `conn.commit()`.
+## 2. COMPONENTS MAPPING (Sơ đồ thành phần tham gia)
 
-**Luồng Renewal:**
-`Client` -> `RenewalServlet` -> `Service.renewBook()` 
-  -> Mở `conn.setAutoCommit(false)`
-  -> Check % thời gian đã qua >= `RENEW_THRESHOLD_PERCENT`
-  -> Check `extensionCount < MAX_EXTENSION_COUNT`
-  -> Check `ReservationDAO.hasQueuedReservation(conn, bookId)` (Từ chối nếu có người xếp hàng)
-   -> `BorrowRecordDAO.incrementExtension(conn, borrowRecordId, RENEW_DURATION_DAYS)` 
-   -> `conn.commit()`.
+| Tên lớp/File | Trách nhiệm trong hệ thống | Trạng thái |
+|---|---|---|
+| `dao.ReservationDAO` | Quản lý các đơn đặt trước. Bổ sung/refactor hàm `cancelExpiredReservations` để thực hiện hủy và đôn hàng chờ trong Transaction (lấy động cấu hình giữ sách từ `SystemConfigurations`). | Cần sửa |
+| `service.OnlineCirculationService` | Phụ trách logic đặt trước, gia hạn và hủy đặt trước của người dùng. | Đã có |
+| `service.ReservationExpirationProcessor` | Lớp dịch vụ chạy ngầm chính, điều phối toàn bộ transaction hủy đặt trước quá hạn, đôn hàng chờ và gửi email. | **Tạo mới** |
+| `controllers.ReservationServlet` | Tiếp nhận yêu cầu đặt trước sách của độc giả. | Đã có |
+| `controllers.RenewalServlet` | Tiếp nhận yêu cầu gia hạn sách của độc giả. | Đã có |
+| `controllers.CancelReservationServlet` | Tiếp nhận yêu cầu hủy đơn đặt sách chủ động từ độc giả. | Đã có |
+| `controllers.TriggerReservationExpirationServlet` | Servlet `/admin/trigger-reservation-expiration` (POST) cho phép Admin chạy quét thủ công qua dashboard. | **Tạo mới** |
+| `config.AppContextListener` | Khởi tạo/hủy `ScheduledExecutorService` chạy `ReservationExpirationProcessor` định kỳ 1 giờ/lần theo thiết kế vòng đời chung tại [F-AsyncEmail SPEC Section 9](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/.sdd/specs/feat-asyncEmailSender/SPEC.md#9-thiet-ke-lifecycle-va-thu-tu-khoi-tao-appcontextlistener-lifecycle). | Cần sửa |
+| `service.EmailService` | Tái sử dụng API gửi email thông báo nhận sách sẵn có cho độc giả mới được đôn hàng chờ. | Đã có |
+| `web/admin/dashboard-admin.jsp` | Thêm nút kích hoạt tiến trình quét hủy đặt trước thủ công dành cho quản trị viên. | Cần sửa |
 
-**Luồng Cancel Reservation (Atomic Block):**
-`Client` -> `CancelReservationServlet` -> `Service.cancelReservation()`
-  -> Mở `conn.setAutoCommit(false)`
-  -> Lấy Reservation đang muốn hủy. Cập nhật status = 'cancelled'.
-  -> Phân nhánh:
-     - Nếu Reservation cũ là `queue=0` (readypickup): Tìm người `queue=1`. Nếu có, chuyển người đó lên `queue=0` (readypickup) và gửi Email Sách sẵn sàng. Nếu không, `UPDATE Book.availableQuantity += 1`.
-     - Nếu Reservation cũ là `queue>0` (pending): Bỏ qua.
-  -> `conn.commit()`.
+---
 
-**Thiết kế Mẫu Email Sách Sẵn Sàng (DocumentTemp):**
-Hệ thống sử dụng bảng `DocumentTemp` (mã `RESERVATION_READY`) để quản lý nội dung email.
-- **Loại nội dung:** HTML hoàn chỉnh.
-- **Biến tham số (Placeholders):** Hệ thống sẽ map dữ liệu vào các biến `{{userName}}` và `{{bookTitle}}` thông qua hàm `replace()`.
-- **Cách gửi:** Gọi `EmailService.sendAsyncHtmlEmail()` để gửi bất đồng bộ, tránh làm chậm luồng UX.
+## 3. DATA FLOW (Luồng dữ liệu giao dịch)
 
-## 4. DEPENDENCIES & EXISTING CODE
-- **Cơ sở dữ liệu:** PostgreSQL (Supabase). Mọi query lock phải dùng `FOR UPDATE`.
-- **Hàm DAO có sẵn:** `ReservationDAO.hasQueuedReservation`, `BorrowRecordDAO.findActiveBorrowRecord` đã được code từ luồng F6, cần tái sử dụng.
-- **RBAC:** Dùng Multiple URL mapping thay vì tạo route ngoài vùng phủ sóng của `AuthFilter`. Không được sửa `AuthFilter.java`.
+### 3.1. Luồng chạy Reservation Expiration (Background & Trigger)
+1. **Trigger:** Đến chu kỳ (mỗi 1 giờ hoặc Admin nhấn nút trigger thủ công) -> `ReservationExpirationProcessor.processExpiration()` được gọi.
+2. **Select:** Gọi `ReservationDAO` quét danh sách đơn hàng có `status = 'readypickup' AND endDate < NOW()`.
+3. **Vòng lặp cô lập từng đơn quá hạn:**
+   - Mở Database Transaction riêng biệt (`setAutoCommit(false)`).
+   - Cập nhật đơn đặt trước quá hạn: `status = 'cancelled'`, `queuePosition = NULL`.
+   - Kiểm tra hàng chờ của đầu sách (`bookId`): Tìm xem có người đang chờ tiếp theo (`queuePosition = 1` và `status = 'pending'`).
+   - Phân nhánh:
+     - **Nhánh A (Có người xếp hàng tiếp theo):**
+       * Cập nhật Reservation người mới: `queuePosition = 0`, `status = 'readypickup'`, `endDate = NOW() + INTERVAL '1 day' * (SELECT configValue::INTEGER FROM SystemConfigurations WHERE configKey = 'RESERVATION_HOLD_DAYS')`, gán `bookCopyId` vừa giải phóng.
+       * Cập nhật `BookCopy.status = 'reserved'`.
+       * Dịch chuyển các vị trí hàng đợi phía sau (`queuePosition = queuePosition - 1` cho các đơn pending của bookId đó).
+       * Ghi Audit Log (`actionType = 'CANCEL_EXPIRED_RESERVATION'`, `userId = NULL`).
+       * Commit Transaction.
+       * Đẩy job gửi thư thông báo sách sẵn sàng cho người dùng mới vào hàng đợi bất đồng bộ (`EmailService.enqueue(new EmailJob("RESERVATION_READY", ...))`).
+     - **Nhánh B (Hàng chờ trống):**
+       * Cập nhật trạng thái bản sao vật lý `BookCopy.status = 'available'`.
+       * Tăng availableQuantity của đầu sách: `Book.availableQuantity = availableQuantity + 1`.
+       * Ghi Audit Log (`actionType = 'CANCEL_EXPIRED_RESERVATION'`, `userId = NULL`).
+       * Commit Transaction.
+   - Nếu xảy ra lỗi -> Rollback cho đơn hiện tại, log lỗi và tiếp tục vòng lặp xử lý các đơn quá hạn khác.
 
-## 5. RISKS & MITIGATIONS
-- **Risk:** Race Condition (2 người đặt sách cùng lúc khi `availableQuantity = 1`).
-- **Mitigation:** Trong `OnlineCirculationService`, hàm tạo Reservation BẮT BUỘC dùng Connection chung truyền vào các DAO, kết hợp `SELECT ... FOR UPDATE` trên bảng Book để khóa record sách.
-- **Risk:** Lỗ hổng double submit form gia hạn/đặt trước.
-- **Mitigation:** POST-Redirect-GET pattern. Sau khi POST thành công ở Servlet, ném Flash Message vào Session và `sendRedirect` về trang danh sách.
+---
+
+## 4. DEPENDENCIES & RISKS (Phụ thuộc & Rủi ro)
+- **Tranh chấp Transaction (Locking):** Khi tiến trình ngầm đang cập nhật trạng thái đơn hàng của cuốn sách, thủ thư cũng có thể đang thực hiện Check-out cuốn sách đó tại quầy. Bắt buộc sử dụng `FOR UPDATE` khi quét danh sách quá hạn và khóa dòng bản sao sách liên quan.
+- **Rò rỉ Connection:** Bắt buộc đóng Connection trong khối `finally` của vòng lặp tiến trình để ngăn ngừa cạn kiệt connection pool Supabase.

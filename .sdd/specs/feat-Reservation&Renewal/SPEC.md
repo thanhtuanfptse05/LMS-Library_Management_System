@@ -1,48 +1,64 @@
 # SPEC.md — Quản lý Đặt trước và Gia hạn trực tuyến
-# Version: 1.0.0 | Owner: @tech-lead | Status: APPROVED
-# Mapping: UC-16, UC-17 | BR-19, BR-20, BR-21 | FR-29..FR-33 (chi tiết: FR-F5-01..FR-F5-07)
+# Version: 1.1.0 | Owner: @tech-lead | Status: DRAFT | Ngày cập nhật: 2026-06-24
+# Mapping: UC-16, UC-17, UC-43 | BR-19, BR-20, BR-21, BR-36 | FR-29..FR-33, FR-67, FR-68
 
 ## 1. Context & Goal
 Số hóa trải nghiệm lưu thông tài nguyên. Đảm bảo luồng Self-service hoạt động mượt mà, phân bổ sách theo nguyên tắc FIFO (First In First Out) thông qua hàng đợi.
+Đồng thời, tích hợp tiến trình ngầm tự động dọn dẹp hàng chờ quá hạn nhận sách để giải phóng và tái cấp phát tài nguyên công bằng cho độc giả khác.
 
 ## 2. Actors & Roles
-- **Authenticated User (Student/Lecturer):** Được phép tạo yêu cầu Đặt trước và Gia hạn.
+- **Độc giả (Student/Lecturer):** Tạo yêu cầu đặt trước, gia hạn và hủy đơn đặt trước của chính mình.
+- **Hệ thống (System):** Chạy tiến trình ngầm Reservation Expiration tự động định kỳ (mỗi 1 giờ) để dọn dẹp và tái cấp phát hàng chờ quá hạn.
 
-## 3. Functional Requirements (EARS)
-**Luồng Đặt trước trực tuyến (Online Reservation)**
-- **FR-F5-01:** WHEN người dùng gửi yêu cầu đặt sách, THE system SHALL kiểm tra trạng thái bảng `[User]` và bảng `Fine`. WHERE `status` != 'active' HOẶC tồn tại nợ phạt `status` = 'unpaid', THE system SHALL từ chối và báo lỗi (BR-19).
-- **FR-F5-02:** WHERE tài khoản hợp lệ, THE system SHALL đọc cấu hình và kiểm tra tổng số sách đang mượn/đặt có vượt giới hạn không. WHERE vượt giới hạn, THE system SHALL chặn giao dịch.
-- **FR-F5-03:** WHERE `Book.availableQuantity` > 0, THE system SHALL tạo `Reservation` (`queuePosition` = 0, `status` = 'readypickup'), UPDATE `Book.availableQuantity` = `availableQuantity` - 1, VÀ trigger Email "Sách sẵn sàng" (BR-20).
-- **FR-F5-04:** WHERE `Book.availableQuantity` == 0, THE system SHALL tạo `Reservation` (`queuePosition` = MAX + 1, `status` = 'pending'), VÀ thông báo vị trí hàng đợi cho người dùng (BR-20).
+## 3. Business Rules (Quy tắc nghiệp vụ)
+- **BR-19 (Điều kiện đặt trước & gia hạn):** Độc giả chỉ được phép Đặt trước hoặc Gia hạn nếu tài khoản đang ở trạng thái hoạt động (`status = 'active'`) VÀ không có cờ lý do khóa `'unpaid'` (nợ phạt) trong bảng `UserLockReason`.
+- **BR-20 (Nguyên tắc phân bổ hàng đợi):** Đơn đặt trước khi sách còn bản sao sẵn có sẽ nhận `queuePosition = 0` (status = `'readypickup'`). Khi sách hết, đơn mới nhận `queuePosition = MAX + 1` (status = `'pending'`).
+- **BR-21 (Điều kiện gia hạn):** Bản ghi mượn chỉ được gia hạn khi chưa vượt quá số lần tối đa, thời gian mượn hiện tại đạt ngưỡng phần trăm quy định, VÀ không có bất kỳ ai đang xếp hàng chờ (`queuePosition > 0`) cho đầu sách đó.
+- **BR-36 (Thời hạn nhận sách đặt trước):** Đơn đặt trước ở trạng thái `'readypickup'` chỉ được giữ tại quầy trong một khoảng thời gian giới hạn được xác định bởi cấu hình `RESERVATION_HOLD_DAYS` trong bảng `SystemConfigurations` (mặc định là 3 ngày). Nếu quá thời hạn này (`endDate < NOW()`), đơn hàng sẽ tự động bị hủy và giải phóng bản sao sách mà không phát sinh tiền phạt.
 
-**Luồng Gia hạn (Renewal)**
-- **FR-F5-05:** WHEN người dùng yêu cầu gia hạn `BorrowRecord`, THE system SHALL kiểm tra: (1) Đã qua % thời gian quy định, (2) `extensionCount` < Max allowed. WHERE vi phạm, THE system SHALL từ chối giao dịch (BR-21).
-- **FR-F5-06:** WHERE thỏa mãn thời gian, THE system SHALL truy vấn bảng `Reservation`. WHERE tồn tại bất kỳ bản ghi nào có `queuePosition` > 0 cho `bookId` này, THE system SHALL từ chối gia hạn với lỗi: "Đang có người xếp hàng chờ" (BR-21).
-- **FR-F5-07:** WHERE mọi điều kiện hợp lệ, THE system SHALL thực thi UPDATE `BorrowRecord` (cộng thêm số ngày vào `endDate` VÀ `extensionCount` = `extensionCount` + 1).
+## 4. Functional Requirements (EARS)
 
-## 4. Non-functional Requirements
-- **Concurrency Prevention:** Thao tác kiểm tra `availableQuantity` và CREATE `Reservation` BẮT BUỘC nằm trong một Atomic Transaction (Sử dụng `SELECT FOR UPDATE` hoặc Double Check).
-- **Audit:** Mọi thay đổi trạng thái đều phải truy vết được qua `updatedAt`.
+### 4.1. Đặt trước trực tuyến (Online Reservation)
+- **FR-F5-01 (Kiểm định tài khoản):** WHEN người dùng gửi yêu cầu đặt sách, THE system SHALL kiểm tra trạng thái tài khoản. WHERE `status` != 'active' HOẶC tồn tại lý do khóa `'unpaid'` trong `UserLockReason`, THE system SHALL chặn và báo lỗi (BR-19).
+- **FR-F5-02 (Kiểm định số lượng):** WHERE tài khoản hợp lệ, THE system SHALL kiểm tra tổng số sách đang mượn/đặt của độc giả. WHERE vượt giới hạn quy định cho Role, THE system SHALL chặn giao dịch.
+- **FR-F5-03 (Đặt trước sách có sẵn):** WHERE `Book.availableQuantity` > 0, THE system SHALL thực thi giao dịch: tạo `Reservation` (`queuePosition = 0`, `status = 'readypickup'`, `endDate = NOW() + INTERVAL '1 day' * (SELECT configValue::INTEGER FROM SystemConfigurations WHERE configKey = 'RESERVATION_HOLD_DAYS')`), cập nhật `Book.availableQuantity = availableQuantity - 1`, gán `bookCopyId` sẵn có, VÀ kích hoạt gửi email thông báo nhận sách (BR-20).
+- **FR-F5-04 (Xếp hàng chờ sách hết bản sao):** WHERE `Book.availableQuantity` == 0, THE system SHALL tạo `Reservation` (`queuePosition = MAX + 1`, `status = 'pending'`), VÀ thông báo vị trí hàng đợi cho độc giả (BR-20).
 
-## 5. Data Model
-- **[User] & Fine:** Định danh và trạng thái nợ phạt.
-- **Reservation:** `reservationId`, `userId`, `bookId`, `queuePosition`, `status`.
-- **BorrowRecord:** `borrowRecordId`, `endDate`, `extensionCount`, `status`.
-- **Book:** `bookId`, `availableQuantity`.
+### 4.2. Gia hạn sách trực tuyến (Online Renewal)
+- **FR-F5-05 (Kiểm tra điều kiện gia hạn):** WHEN người dùng yêu cầu gia hạn, THE system SHALL kiểm tra: (1) Đã qua % thời gian quy định, (2) `extensionCount` chưa vượt mức tối đa. WHERE vi phạm, THE system SHALL chặn giao dịch (BR-21).
+- **FR-F5-06 (Kiểm tra hàng đợi):** WHEN kiểm tra điều kiện gia hạn, THE system SHALL truy vấn bảng `Reservation`. WHERE tồn tại bất kỳ bản ghi nào có `queuePosition > 0` cho `bookId` này, THE system SHALL chặn gia hạn (BR-21).
+- **FR-F5-07 (Thực thi gia hạn):** WHERE mọi điều kiện hợp lệ, THE system SHALL cập nhật `BorrowRecord` (thêm ngày vào `endDate` VÀ `extensionCount = extensionCount + 1`).
 
-## 6. Error Handling
-- WHERE người dùng nợ phạt, THE system SHALL hiển thị lỗi rõ ràng thay vì lỗi 500: "Tính năng bị vô hiệu hóa. Bạn đang có khoản phạt chưa thanh toán."
-- WHERE có 2 request đặt trước cùng lúc nhưng chỉ còn 1 sách, THE system SHALL cấp `queuePosition=0` cho request commit trước, request còn lại tự động fallback sang `queuePosition=1`.
+### 4.3. Tiến trình ngầm Hủy hàng chờ quá hạn (Reservation Expiration)
+- **FR-67 (Quét đặt trước quá hạn):** WHEN tiến trình ngầm Reservation Expiration được kích hoạt (định kỳ mỗi 1 giờ hoặc do Admin click trigger thủ công), THE system SHALL truy vấn tất cả các bản ghi đặt trước có `status = 'readypickup'` VÀ `endDate < NOW()`.
+- **FR-68 (Hủy đặt trước & Tái cấp phát):** For each expired reservation found, THE system SHALL thực thi một Database Transaction riêng lẻ:
+  1. Cập nhật Reservation quá hạn thành `status = 'cancelled'` và `queuePosition = NULL`.
+  2. Tìm kiếm độc giả tiếp theo đang đứng đầu hàng đợi của cùng đầu sách (`bookId` tương ứng có `queuePosition = 1` và `status = 'pending'`).
+  3. WHERE tồn tại độc giả tiếp theo:
+     * Cập nhật bản ghi đặt trước của người đó: `queuePosition = 0`, `status = 'readypickup'`, `endDate = NOW() + INTERVAL '1 day' * (SELECT configValue::INTEGER FROM SystemConfigurations WHERE configKey = 'RESERVATION_HOLD_DAYS')`, và gán `bookCopyId` vừa giải phóng.
+     * Cập nhật `BookCopy.status = 'reserved'`.
+     * Dịch chuyển các vị trí hàng đợi phía sau (`queuePosition = queuePosition - 1` cho các đơn pending của bookId đó).
+     * Gọi gửi email thông báo nhận sách bất đồng bộ cho độc giả tiếp theo này.
+  4. WHERE KHÔNG tồn tại độc giả tiếp theo:
+     * Cập nhật trạng thái bản sao vật lý `BookCopy.status = 'available'`.
+     * Tăng số lượng khả dụng của đầu sách `Book.availableQuantity = availableQuantity + 1`.
+  5. Ghi Audit Log hành động tự động hủy (`actionType = 'CANCEL_EXPIRED_RESERVATION'`, `userId = NULL` đại diện cho Hệ thống).
 
-## 7. Acceptance Criteria
-- [ ] User nợ phạt (tồn tại khoản `Fine`='unpaid') không thể Đặt trước hay Gia hạn.
-- [ ] Sách còn tồn kho: Đặt trước thành công, sinh Reservation queue 0, kho trừ 1.
-- [ ] Sách hết tồn kho: Đặt trước thành công, sinh Reservation queue MAX + 1, kho không trừ.
-- [ ] Gia hạn sớm hơn thời gian quy định bị chặn.
-- [ ] Gia hạn quá số lần quy định bị chặn.
-- [ ] Gia hạn khi có người đứng chờ ở queuePosition > 0 bị chặn.
-- [ ] Gia hạn thành công: endDate tăng, extensionCount tăng +1.
+## 5. Non-functional Requirements
+- **Concurrency Prevention:** Thao tác kiểm tra tồn kho và tạo Reservation bắt buộc nằm trong một Atomic Transaction (sử dụng `FOR UPDATE` dòng sách).
+- **Độ tin cậy của Tiến trình ngầm:** Tiến trình ngầm quét quá hạn phải cô lập transaction theo từng bản ghi để lỗi của một độc giả không gây treo toàn bộ tiến trình. Giải phóng kết nối JDBC trong khối `finally`.
 
-## 8. Out of Scope
-- Hệ thống KHÔNG tự động hủy đơn đặt trước khi quá hạn (Đây là job chạy ngầm của Module khác).
-- Hệ thống KHÔNG thực hiện check-out giao sách vật lý tại giao diện này (Thuộc F6).
+## 6. Database Schema & Data Models
+Xem chi tiết cấu trúc các bảng: `Reservation`, `BookCopy`, `Book`, `"User"`, `UserLockReason`, `AuditLogs` trong file `LMS_Schema_PostgreSQL.sql`.
+
+## 7. Error Handling
+- WHERE xảy ra lỗi kết nối hoặc ngoại lệ SQL trong tiến trình ngầm, hệ thống SHALL rollback giao dịch của bản ghi lỗi hiện tại, ghi nhận log lỗi và tiếp tục xử lý các đơn đặt trước tiếp theo.
+
+## 8. Acceptance Criteria
+- [ ] Đơn đặt trước `'readypickup'` đã vượt quá `endDate` -> Tiến trình ngầm đổi trạng thái sang `'cancelled'`.
+- [ ] Nếu đầu sách đó có người đang xếp hàng (`queuePosition = 1`): Bản sao sách được tự động chuyển sang gán cho người mới (`queuePosition = 0`, status `'readypickup'`, `endDate` mới được tính cộng thêm số ngày lấy từ cấu hình `RESERVATION_HOLD_DAYS`). Hàng chờ phía sau tịnh tiến lên trước, hệ thống gửi email thông báo nhận sách cho người mới.
+- [ ] Nếu đầu sách đó không có ai xếp hàng: Bản sao sách chuyển sang trạng thái `'available'`, availableQuantity của đầu sách được tăng thêm 1.
+- [ ] Ghi Audit Log hành động hủy tự động với email thực hiện là "Hệ thống" (`userId = null`).
+
+## 9. Out of Scope
+- Hệ thống **SHALL NOT** phát sinh tiền phạt đối với các trường hợp độc giả đặt trước sách mà không đến lấy.

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.DocumentTemp;
@@ -14,9 +15,17 @@ import util.DatabaseConnection;
 /**
  * DocumentTempDAO — Data Access Object cho bảng [DocumentTemp].
  *
- * <p>Bảng DocumentTemp lưu trữ các Mẫu Email (Email Template) dùng để gửi
- * thông báo giao dịch cá nhân hóa (Mượn sách, Trả sách, Phạt...).
- * Manager có quyền xem và cập nhật nội dung các mẫu.</p>
+ * <p>Bảng DocumentTemp hoạt động như bảng cấu hình hệ thống (System Config).
+ * Lưu trữ 6 Mẫu Email hệ thống dùng cho tiến trình ngầm Async Email Sender
+ * gửi thông báo tự động bị động (Passive Notification) tới độc giả.</p>
+ *
+ * <p>Quy tắc vận hành:</p>
+ * <ul>
+ *   <li>Manager được phép UPDATE subject và bodyContent.</li>
+ *   <li>Manager KHÔNG ĐƯỢC PHÉP xóa các mẫu trong {@link #PROTECTED_TEMPLATES}.</li>
+ *   <li>Phương thức {@link #delete(int)} sẽ trả về {@code false} ngay lập tức
+ *       nếu tempName thuộc danh sách bảo vệ.</li>
+ * </ul>
  *
  * <p>Tuân thủ nghiêm ngặt:</p>
  * <ul>
@@ -30,13 +39,30 @@ public class DocumentTempDAO {
     private static final Logger LOGGER = Logger.getLogger(DocumentTempDAO.class.getName());
 
     /**
+     * Danh sách tempName hệ thống — KHÔNG ĐƯỢC PHÉP XÓA.
+     * Đây là các mẫu email cốt lõi được seed sẵn khi deploy hệ thống.
+     */
+    public static final Set<String> PROTECTED_TEMPLATES = Set.of(
+            "RESET_PASSWORD",
+            "RESERVATION_READY",
+            "RENEWAL_CONFIRMATION",
+            "OVERDUE_NOTICE",
+            "INCIDENT_FINE_NOTICE",
+            "PAYMENT_CONFIRMATION"
+    );
+
+    // =========================================================================
+    // SELECT
+    // =========================================================================
+
+    /**
      * Lấy toàn bộ danh sách mẫu Email. Dùng cho trang quản lý của Manager.
      *
      * @return Danh sách DocumentTemp, danh sách rỗng nếu không có dữ liệu
      */
     public List<DocumentTemp> getAll() {
-        String sql = "SELECT tempId, tempName, subject, bodyContent, managerId, createdAt, updatedAt "
-                + "FROM DocumentTemp ORDER BY createdAt DESC";
+        String sql = "SELECT tempId, tempName, description, subject, bodyContent, managerId, createdAt, updatedAt "
+                + "FROM DocumentTemp ORDER BY tempName ASC";
 
         List<DocumentTemp> list = new ArrayList<>();
 
@@ -55,13 +81,13 @@ public class DocumentTempDAO {
 
     /**
      * Tìm mẫu Email theo tên định danh (tempName).
-     * Dùng khi hệ thống cần lấy mẫu để inject dữ liệu và gửi Email.
+     * Hàm này được gọi bởi tiến trình ngầm Async Email Sender để lấy template.
      *
-     * @param tempName Tên định danh mẫu (VD: 'BORROW_SUCCESS', 'RETURN_SUCCESS')
+     * @param tempName Tên định danh mẫu (VD: 'OVERDUE_NOTICE', 'RESERVATION_READY')
      * @return DocumentTemp nếu tìm thấy, null nếu không tồn tại
      */
     public DocumentTemp findByTempName(String tempName) {
-        String sql = "SELECT tempId, tempName, subject, bodyContent, managerId, createdAt, updatedAt "
+        String sql = "SELECT tempId, tempName, description, subject, bodyContent, managerId, createdAt, updatedAt "
                 + "FROM DocumentTemp WHERE tempName = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -87,7 +113,7 @@ public class DocumentTempDAO {
      * @return DocumentTemp nếu tìm thấy, null nếu không tồn tại
      */
     public DocumentTemp findById(int tempId) {
-        String sql = "SELECT tempId, tempName, subject, bodyContent, managerId, createdAt, updatedAt "
+        String sql = "SELECT tempId, tempName, description, subject, bodyContent, managerId, createdAt, updatedAt "
                 + "FROM DocumentTemp WHERE tempId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -106,23 +132,28 @@ public class DocumentTempDAO {
         return null;
     }
 
+    // =========================================================================
+    // INSERT
+    // =========================================================================
+
     /**
-     * Thêm mẫu Email mới vào CSDL.
+     * Thêm mẫu Email mới vào CSDL (Chỉ dùng khi khởi tạo bổ sung, không phải seed hệ thống).
      *
      * @param dt Đối tượng DocumentTemp cần lưu (tempId sẽ bị bỏ qua)
      * @return ID tự động tăng vừa được tạo, -1 nếu thất bại
      */
     public int insert(DocumentTemp dt) {
-        String sql = "INSERT INTO DocumentTemp (tempName, subject, bodyContent, managerId, createdAt) "
-                + "VALUES (?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO DocumentTemp (tempName, description, subject, bodyContent, managerId, createdAt) "
+                + "VALUES (?, ?, ?, ?, ?, NOW())";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, dt.getTempName());
-            ps.setString(2, dt.getSubject());
-            ps.setString(3, dt.getBodyContent());
-            ps.setInt(4, dt.getManagerId());
+            ps.setString(2, dt.getDescription());
+            ps.setString(3, dt.getSubject());
+            ps.setString(4, dt.getBodyContent());
+            ps.setInt(5, dt.getManagerId());
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
@@ -138,9 +169,14 @@ public class DocumentTempDAO {
         return -1;
     }
 
+    // =========================================================================
+    // UPDATE
+    // =========================================================================
+
     /**
      * Cập nhật nội dung mẫu Email. Chỉ Manager mới được thực hiện.
-     * Cập nhật: subject, bodyContent, updatedAt.
+     * Cập nhật được phép: subject, bodyContent, updatedAt.
+     * Không được phép thay đổi: tempName, description (do đây là metadata hệ thống).
      *
      * @param dt Đối tượng DocumentTemp chứa dữ liệu mới (tempId dùng để định vị bản ghi)
      * @return true nếu cập nhật thành công, false nếu thất bại
@@ -163,26 +199,60 @@ public class DocumentTempDAO {
         return false;
     }
 
+    // =========================================================================
+    // DELETE (có bảo vệ mẫu hệ thống)
+    // =========================================================================
+
     /**
      * Xóa mẫu Email. Chỉ Manager mới được thực hiện.
      *
+     * <p><strong>Bảo vệ hệ thống:</strong> Phương thức này sẽ TỪ CHỐI (trả về false)
+     * nếu mẫu có tempName thuộc {@link #PROTECTED_TEMPLATES}.
+     * Controller phải gọi {@link #isProtected(int)} trước để hiển thị thông báo lỗi phù hợp.</p>
+     *
      * @param tempId ID của mẫu Email cần xóa
-     * @return true nếu xóa thành công, false nếu thất bại
+     * @return true nếu xóa thành công, false nếu thất bại hoặc là mẫu hệ thống
      */
     public boolean delete(int tempId) {
+        // Kiểm tra bảo vệ: không xóa mẫu hệ thống
+        DocumentTemp existing = findById(tempId);
+        if (existing == null) {
+            return false;
+        }
+        if (PROTECTED_TEMPLATES.contains(existing.getTempName())) {
+            LOGGER.log(Level.WARNING, "[PROTECTED] Từ chối xóa mẫu email hệ thống: {0}", existing.getTempName());
+            return false;
+        }
+
         String sql = "DELETE FROM DocumentTemp WHERE tempId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, tempId);
-
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting document template id=" + tempId, e);
         }
         return false;
     }
+
+    /**
+     * Kiểm tra xem một mẫu Email có thuộc danh sách được bảo vệ không.
+     * Controller nên gọi hàm này trước khi gọi {@link #delete(int)} để hiển thị
+     * thông báo lỗi phù hợp cho người dùng.
+     *
+     * @param tempId ID mẫu cần kiểm tra
+     * @return true nếu là mẫu hệ thống (không được xóa), false nếu có thể xóa
+     */
+    public boolean isProtected(int tempId) {
+        DocumentTemp dt = findById(tempId);
+        return dt != null && PROTECTED_TEMPLATES.contains(dt.getTempName());
+    }
+
+    // =========================================================================
+    // Private helper
+    // =========================================================================
 
     /**
      * Ánh xạ một dòng ResultSet thành đối tượng DocumentTemp.
@@ -195,6 +265,7 @@ public class DocumentTempDAO {
         DocumentTemp dt = new DocumentTemp();
         dt.setTempId(rs.getInt("tempId"));
         dt.setTempName(rs.getString("tempName"));
+        dt.setDescription(rs.getString("description"));
         dt.setSubject(rs.getString("subject"));
         dt.setBodyContent(rs.getString("bodyContent"));
         dt.setManagerId(rs.getInt("managerId"));

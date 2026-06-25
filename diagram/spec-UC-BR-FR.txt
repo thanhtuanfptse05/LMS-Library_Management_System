@@ -134,9 +134,10 @@ F4 (Book Management)
 F5 (Online Reservation & Renewal)
 - Owner: Bao
 - Spec Folder: feat-Reservation&Renewal
-- UC: UC-16, UC-17
-- BR: BR-19, BR-20, BR-21
-- FR: FR-29, FR-30, FR-31, FR-32, FR-33
+- UC: UC-16, UC-17, UC-43
+- BR: BR-19, BR-20, BR-21, BR-36
+- FR: FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68
+
 
 F6 (Desk Circulation Operations)
 - Owner: Thai
@@ -161,10 +162,10 @@ F8 (Book Discovery)
 
 F9 (Fine & Payment Management)
 - Owner: Tuan
-- Spec Folder: (to be created)
-- UC: UC-31, UC-38, UC-39
-- BR: (none)
-- FR: FR-53, FR-54
+- Spec Folder: feat-finePayment
+- UC: UC-31, UC-38, UC-39, UC-42
+- BR: BR-35
+- FR: FR-53, FR-54, FR-61, FR-62, FR-63, FR-64, FR-65, FR-66
 
 F10 (System Configuration)
 - Owner: Quyet
@@ -369,6 +370,15 @@ UC-41 (Export Audit Log)
 Actor: SysAdmin
 Mô tả: (Xuất Nhật ký Kiểm toán): Quản trị viên xuất dữ liệu Nhật ký Kiểm toán ra file CSV để phục vụ báo cáo và lưu trữ ngoài hệ thống.
 
+UC-42 (Run Overdue Processor)
+Actor: System, SysAdmin
+Mô tả: (Quét quá hạn tự động): Hệ thống tự động chạy định kỳ (hoặc SysAdmin kích hoạt thủ công) để quét các bản ghi mượn trễ hạn, tính tiền phạt, khóa tài khoản độc giả và gửi email thông báo.
+
+UC-43 (Auto-cancel Expired Reservations)
+Actor: System, SysAdmin
+Mô tả: (Hủy đặt trước quá hạn): Hệ thống chạy định kỳ (hoặc SysAdmin kích hoạt thủ công) để quét các đơn đặt trước sẵn sàng nhận quá hạn, hủy bỏ chúng, đôn hàng chờ cho người tiếp theo hoặc trả sách về kho.
+
+
 // =============================================================================
 // SECTION 3: BUSINESS RULES (BR)
 // =============================================================================
@@ -474,6 +484,13 @@ Mô tả: Tất cả oldValues và newValues trong bảng AuditLogs BẮT BUỘC
 
 BR-34 (Audit Log Pagination)
 Mô tả: Danh sách Nhật ký Kiểm toán BẮT BUỘC phải phân trang (20 bản ghi/trang) để bảo vệ hiệu năng hệ thống. KHÔNG ĐƯỢC PHÉP tải toàn bộ dữ liệu trong một request.
+
+BR-35 (Overdue Policy)
+Mô tả: Giao dịch mượn (BorrowRecord) ở trạng thái 'borrowed' có endDate nhỏ hơn thời điểm quét phải được coi là quá hạn. Hệ thống SHALL phạt 5,000 VND (hoặc theo cấu hình FINE_RATE_PER_DAY) cho mỗi ngày trễ hạn và khóa tài khoản độc giả cho tới khi thanh toán xong.
+
+BR-36 (Reservation Pickup Limit)
+Mô tả: Đơn đặt trước ở trạng thái 'readypickup' chỉ được giữ tại quầy trong một khoảng thời gian giới hạn được xác định bởi cấu hình RESERVATION_HOLD_DAYS trong bảng SystemConfigurations (mặc định là 3 ngày). Nếu quá thời hạn này (endDate < NOW()), đơn hàng sẽ tự động bị hủy và giải phóng bản sao sách.
+
 
 
 // =============================================================================
@@ -720,10 +737,43 @@ FR-60 (Badge màu hành động)
 Mô tả: WHEN hiển thị danh sách Nhật ký Kiểm toán, THE system SHALL hiển thị badge màu cho cột actionType theo nhóm: Tạo mới (xanh lá), Cập nhật (vàng), Xóa/Hủy (đỏ), Giao dịch (xanh dương), Bảo mật (tím), Thanh toán (cam).
 Mapping: UC-40
 
+FR-61 (Quét quá hạn tự động)
+Mô tả: WHEN tiến trình ngầm Overdue Processor được kích hoạt (định kỳ 00:00 AM hằng đêm hoặc kích hoạt thủ công), THE system SHALL truy vấn tất cả các bản ghi mượn sách đang hoạt động (BorrowRecord.status = 'borrowed') có hạn trả (endDate) nhỏ hơn ngày hiện tại.
+Mapping: UC-42 / BR-35
+
+FR-62 (Xử lý phạt quá hạn và khóa tài khoản)
+Mô tả: For each overdue BorrowRecord found, THE system SHALL thực thi một DB Transaction để cập nhật BorrowRecord.status = 'overdue', tính số ngày trễ hạn và nhân với FINE_RATE_PER_DAY để tạo bản ghi Fine mới (status = 'unpaid'), đồng thời chèn reason = 'unpaid' vào UserLockReason và khóa status tài khoản người dùng thành 'locked'.
+Mapping: UC-42 / BR-22, BR-24, BR-35
+
+FR-63 (Gửi email thông báo trễ hạn)
+Mô tả: WHEN quá trình xử lý DB hoàn tất thành công cho độc giả, THE system SHALL gọi EmailService để gửi bất đồng bộ email thông báo trễ hạn và nợ phạt cho độc giả đó.
+Mapping: UC-42
+
+FR-64 (Hiển thị Lịch sử Phạt của Độc giả)
+Mô tả: WHEN người dùng truy cập trang Quản lý phạt, THE system SHALL hiển thị chi tiết các khoản phạt chưa thanh toán (unpaid) và đã thanh toán (paid), tổng nợ phạt chưa thanh toán, nút bấm "Thanh toán Online" cho mỗi khoản phạt chưa thanh toán, và trạng thái giao dịch VietQR/SePay đang chờ xử lý (pending) nếu có.
+Mapping: UC-38
+
+FR-65 (Tạo mã QR thanh toán SePay)
+Mô tả: WHEN độc giả click "Thanh toán Online" cho một khoản phạt chưa thanh toán, THE system SHALL tạo một bản ghi Payment mới với status='pending' (nếu chưa có). THEN, THE system SHALL sinh mã VietQR chứa số tài khoản, mã ngân hàng từ cấu hình hệ thống, số tiền phạt, và nội dung chuyển khoản bắt buộc dạng `LMSPF<paymentId>`.
+Mapping: UC-39
+
+FR-66 (Xử lý Webhook thanh toán SePay)
+Mô tả: WHEN nhận webhook POST từ SePay tại `/api/sepay-webhook`, THE system SHALL thực hiện: xác thực API Key, trích xuất `LMSPF<paymentId>`, mở DB Transaction cập nhật Payment status='completed', Fine status='paid', DELETE lock reason='unpaid' tương ứng, kiểm tra và mở khóa tài khoản người dùng (`User.status='active'`) nếu không còn lý do khóa, và ghi Audit Log.
+Mapping: UC-39
+
+FR-67 (Quét đơn đặt trước sẵn sàng quá hạn)
+Mô tả: WHEN tiến trình ngầm Reservation Expiration được kích hoạt (định kỳ mỗi 1 giờ hoặc kích hoạt thủ công), THE system SHALL truy vấn tất cả các bản ghi đặt trước có status = 'readypickup' VÀ endDate < NOW().
+Mapping: UC-43 / BR-36
+
+FR-68 (Hủy đặt trước và đôn hàng chờ)
+Mô tả: For each expired Reservation found, THE system SHALL thực thi một DB Transaction để: cập nhật status='cancelled', và kiểm tra hàng đợi của đầu sách đó. WHERE tồn tại người dùng tiếp theo (queuePosition = 1, status='pending'), hệ thống SHALL tịnh tiến hàng chờ (đổi thành queuePosition = 0, status = 'readypickup', gán bookCopyId, gia hạn endDate thêm số ngày được cấu hình bởi RESERVATION_HOLD_DAYS trong bảng SystemConfigurations) VÀ gửi email thông báo nhận sách. WHERE không có người chờ, hệ thống SHALL chuyển BookCopy sang 'available' VÀ cộng 1 vào Book.availableQuantity. ĐỒNG THỜI ghi nhận Audit Log.
+Mapping: UC-43 / BR-36
+
 // =============================================================================
 // END OF SPECIFICATION
 // =============================================================================
-// Total UC: 41 | Total BR: 34 | Total FR: 60
-// Version: 2.1.0 | Date: 2026-06-24
+// Total UC: 43 | Total BR: 36 | Total FR: 68
+// Version: 2.4.0 | Date: 2026-06-24
 // Project: Library Management System (LMS) - SWP391
 // =============================================================================
+
