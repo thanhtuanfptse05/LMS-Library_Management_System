@@ -338,6 +338,26 @@
                             </div>
                         </div>
 
+                        <!-- Maintenance Operations -->
+                        <div class="raised-card overflow-hidden">
+                            <div class="card-header-row">
+                                <div>
+                                    <h3 class="card-title">Bảo trì & Vận hành Hệ thống</h3>
+                                    <p class="card-subtitle">Kích hoạt nhanh quy trình xử lý tác vụ định kỳ bằng tay</p>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="d-flex flex-wrap gap-3">
+                                    <button id="btn-trigger-expiration" class="btn rounded-3 fw-semibold d-flex align-items-center gap-2"
+                                            style="border: 1.5px solid var(--outline-variant); font-size: 13.5px; padding: 10px 16px; color: var(--on-surface-variant); background: var(--surface-container-low); transition: all 0.2s ease;">
+                                        <span class="material-symbols-outlined" style="font-size: 20px;">cleaning_services</span>
+                                        Dọn dẹp Đặt trước Quá hạn (F5)
+                                    </button>
+                                </div>
+                                <div id="maintenance-msg" class="mt-3 d-none p-3 rounded-2" style="font-size: 13.5px;"></div>
+                            </div>
+                        </div>
+
                     </div><!-- /col-lg-8 -->
 
                     <!-- Right 1/3: Security Audit Feed -->
@@ -462,6 +482,62 @@
                 this.style.transform = '';
             });
         });
+
+        // Trigger Reservation Expiration AJAX (F5)
+        const btnTrigger = document.getElementById('btn-trigger-expiration');
+        const maintenanceMsg = document.getElementById('maintenance-msg');
+        
+        if (btnTrigger) {
+            btnTrigger.addEventListener('click', function() {
+                btnTrigger.disabled = true;
+                btnTrigger.innerHTML = '<span class="material-symbols-outlined spin" style="font-size: 20px; animation: rotation 2s infinite linear;">sync</span> Đang xử lý...';
+                
+                maintenanceMsg.classList.add('d-none');
+                maintenanceMsg.className = 'mt-3 p-3 rounded-2'; // Reset classes
+                
+                fetch('${pageContext.request.contextPath}/admin/trigger-reservation-expiration', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => {
+                    if (response.status === 403) {
+                        throw new Error('Bạn không có quyền thực hiện hành động này.');
+                    }
+                    if (!response.ok) {
+                        throw new Error('Lỗi hệ thống khi dọn dẹp.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        maintenanceMsg.classList.remove('d-none');
+                        maintenanceMsg.classList.add('alert', 'alert-success');
+                        maintenanceMsg.innerText = data.message;
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        throw new Error(data.message || 'Lỗi không xác định.');
+                    }
+                })
+                .catch(err => {
+                    maintenanceMsg.classList.remove('d-none');
+                    maintenanceMsg.classList.add('alert', 'alert-danger');
+                    maintenanceMsg.innerText = err.message;
+                    
+                    btnTrigger.disabled = false;
+                    btnTrigger.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px;">cleaning_services</span> Dọn dẹp Đặt trước Quá hạn (F5)';
+                });
+            });
+        }
     </script>
+    <style>
+        @keyframes rotation {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </body>
 </html>
