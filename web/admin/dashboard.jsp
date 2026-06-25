@@ -353,6 +353,11 @@
                                         <span class="material-symbols-outlined" style="font-size: 20px;">cleaning_services</span>
                                         Dọn dẹp Đặt trước Quá hạn (F5)
                                     </button>
+                                    <button id="btn-trigger-overdue" class="btn rounded-3 fw-semibold d-flex align-items-center gap-2"
+                                            style="border: 1.5px solid var(--outline-variant); font-size: 13.5px; padding: 10px 16px; color: var(--on-surface-variant); background: var(--surface-container-low); transition: all 0.2s ease;">
+                                        <span class="material-symbols-outlined" style="font-size: 20px;">alarm_on</span>
+                                        Quét Phạt & Khóa Quá Hạn (F9)
+                                    </button>
                                 </div>
                                 <div id="maintenance-msg" class="mt-3 d-none p-3 rounded-2" style="font-size: 13.5px;"></div>
                             </div>
@@ -529,6 +534,55 @@
                     
                     btnTrigger.disabled = false;
                     btnTrigger.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px;">cleaning_services</span> Dọn dẹp Đặt trước Quá hạn (F5)';
+                });
+            });
+        }
+
+        // Trigger Overdue Processor AJAX (F9)
+        const btnTriggerOverdue = document.getElementById('btn-trigger-overdue');
+        
+        if (btnTriggerOverdue) {
+            btnTriggerOverdue.addEventListener('click', function() {
+                btnTriggerOverdue.disabled = true;
+                btnTriggerOverdue.innerHTML = '<span class="material-symbols-outlined spin" style="font-size: 20px; animation: rotation 2s infinite linear;">sync</span> Đang xử lý...';
+                
+                maintenanceMsg.classList.add('d-none');
+                maintenanceMsg.className = 'mt-3 p-3 rounded-2'; // Reset classes
+                
+                fetch('${pageContext.request.contextPath}/admin/trigger-overdue', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => {
+                    if (response.status === 403) {
+                        throw new Error('Bạn không có quyền thực hiện hành động này.');
+                    }
+                    if (!response.ok) {
+                        throw new Error('Lỗi hệ thống khi quét quá hạn.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        maintenanceMsg.classList.remove('d-none');
+                        maintenanceMsg.classList.add('alert', 'alert-success');
+                        maintenanceMsg.innerText = data.message;
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        throw new Error(data.message || 'Lỗi không xác định.');
+                    }
+                })
+                .catch(err => {
+                    maintenanceMsg.classList.remove('d-none');
+                    maintenanceMsg.classList.add('alert', 'alert-danger');
+                    maintenanceMsg.innerText = err.message;
+                    
+                    btnTriggerOverdue.disabled = false;
+                    btnTriggerOverdue.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px;">alarm_on</span> Quét Phạt & Khóa Quá Hạn (F9)';
                 });
             });
         }
