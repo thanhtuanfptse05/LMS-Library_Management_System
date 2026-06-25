@@ -136,8 +136,24 @@ public class ReservationDAO {
     // EARS[Event-driven]: WHEN next-in-queue Reservation is found,
     // THE LMS System SHALL UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=?
     // WHERE reservationId = ? [FR-F6-06]
-    public void updateToReadyPickup(Connection conn, int reservationId, int bookCopyId)
-            throws SQLException {
+    public void updateToReadyPickup(Connection conn, int reservationId, int bookCopyId) throws SQLException {
+        // Mặc định sử dụng 3 ngày nếu không truyền cấu hình holdDays
+        updateToReadyPickup(conn, reservationId, bookCopyId, 3);
+    }
+
+    /**
+     * Cập nhật trạng thái của đơn đặt trước thành 'readypickup' (sẵn sàng nhận tại quầy).
+     *
+     * <p>Thiết lập queuePosition = 0, gán bookCopyId được cấp phát và set endDate quá hạn nhận sách
+     * theo cấu hình số ngày giữ sách động.</p>
+     *
+     * @param conn          {@code Connection} trong Transaction
+     * @param reservationId ID của đơn đặt trước cần cập nhật
+     * @param bookCopyId    ID bản sao sách vật lý được cấp phát cho đơn đặt trước
+     * @param holdDays      Số ngày giữ sách cấu hình động
+     * @throws SQLException nếu có lỗi SQL
+     */
+    public void updateToReadyPickup(Connection conn, int reservationId, int bookCopyId, int holdDays) throws SQLException {
         String sql = "UPDATE Reservation "
                    + "SET    queuePosition = 0, "
                    + "       status      = 'readypickup', "
