@@ -534,11 +534,19 @@ public class DeskCirculationService {
                 : "Sách bị mất — đền bù theo giá trị sách";
         int fineId = fineDAO.insertCompensationFine(conn, borrowRecordId, userId, fineAmount, fineReason);
 
-        // Bước 4.1: (MỚI) Tự động sinh Payment ở trạng thái 'pending' liên kết với fineId
+        // Bước 4.1: Tự động sinh Payment ở trạng thái 'pending' liên kết với fineId
         paymentDAO.insertPayment(conn, fineId, fineAmount, "pending");
 
-        // (Đã gỡ bỏ): Không còn khóa tài khoản và không ghi UserLockReason khi nợ phạt
-        // Việc chặn mượn sách sẽ được kiểm tra trực tiếp qua FineDAO.hasUnpaidFines()
+        // Bước 5: INSERT UserLockReason(reason='unpaid') — chỉ thêm nếu chưa có
+        // để tránh duplicate khi người dùng có nhiều khoản phạt chưa trả
+        boolean alreadyHasUnpaidReason = userLockReasonDAO.hasReason(conn, userId, "unpaid");
+        if (!alreadyHasUnpaidReason) {
+            userLockReasonDAO.insertLockReason(conn, userId, "unpaid");
+        }
+
+        // Bước 6: UPDATE User.status = 'locked' (BR-24)
+        // AuthFilter sẽ phát hiện reason='unpaid' và cho phép vào /fines để thanh toán
+        userDAO.updateStatusToLocked(conn, userId);
 
         // Bước 7: Ghi Audit Log cho Check-in hỏng/mất (ARCH-02)
         userDAO.insertAuditLog(librarianId, "CHECK_IN_" + condition.toUpperCase(), "BorrowRecord", borrowRecordId,

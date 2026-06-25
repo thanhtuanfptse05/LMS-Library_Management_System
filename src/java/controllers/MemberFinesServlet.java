@@ -1,6 +1,7 @@
 package controllers;
 
 import dao.FineDAO;
+import dao.PaymentDAO;
 import dao.SystemConfigDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -33,6 +34,7 @@ public class MemberFinesServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(MemberFinesServlet.class.getName());
 
     private final FineDAO fineDAO = new FineDAO();
+    private final PaymentDAO paymentDAO = new PaymentDAO();
     private final SystemConfigDAO systemConfigDAO = new SystemConfigDAO();
 
     @Override
@@ -49,27 +51,48 @@ public class MemberFinesServlet extends HttpServlet {
         String role = ((String) session.getAttribute("role")).toLowerCase();
 
         try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                // 1. Lấy danh sách phạt (cả paid và unpaid) kèm tên sách
+                List<Fine> fines = fineDAO.findFinesByUserId(conn, userId);
 
-            // 1. Lấy danh sách phạt (cả paid và unpaid) kèm tên sách
-            List<Fine> fines = fineDAO.findFinesByUserId(conn, userId);
-            request.setAttribute("fines", fines);
+                // 2. Tự động tạo Payment 'pending' cho Fine 'unpaid' chưa có paymentId
+                //    Đây là bước cần thiết để nút "Thanh toán QR" xuất hiện trên UI.
+                for (Fine fine : fines) {
+                    if ("unpaid".equals(fine.getStatus()) && fine.getPaymentId() == null) {
+                        int newPaymentId = paymentDAO.insertPayment(conn, fine.getFineId(),
+                                fine.getAmount(), "pending");
+                        fine.setPaymentId(newPaymentId);
+                        LOGGER.log(Level.INFO,
+                                "Tạo Payment pending mới: paymentId={0} cho fineId={1}, userId={2}",
+                                new Object[]{newPaymentId, fine.getFineId(), userId});
+                    }
+                }
+                conn.commit();
 
-            // 2. Tính tổng tiền phạt chưa thanh toán
-            BigDecimal totalUnpaid = fineDAO.getTotalUnpaidFinesByUser(conn, userId);
-            request.setAttribute("totalUnpaid", totalUnpaid);
+                request.setAttribute("fines", fines);
 
-            // 3. Đếm số khoản phạt unpaid
-            long unpaidCount = fines.stream().filter(f -> "unpaid".equals(f.getStatus())).count();
-            request.setAttribute("unpaidCount", unpaidCount);
+                // 3. Tính tổng tiền phạt chưa thanh toán
+                BigDecimal totalUnpaid = fineDAO.getTotalUnpaidFinesByUser(conn, userId);
+                request.setAttribute("totalUnpaid", totalUnpaid);
 
-            // 4. Lấy cấu hình SePay để sinh VietQR
-            String sepayAccountNumber = systemConfigDAO.getValue(conn, "SEPAY_ACCOUNT_NUMBER", "");
-            String sepayBankCode = systemConfigDAO.getValue(conn, "SEPAY_BANK_CODE", "BIDV");
-            String sepayAccountName = systemConfigDAO.getValue(conn, "SEPAY_ACCOUNT_NAME", "");
+                // 4. Đếm số khoản phạt unpaid
+                long unpaidCount = fines.stream().filter(f -> "unpaid".equals(f.getStatus())).count();
+                request.setAttribute("unpaidCount", unpaidCount);
 
-            request.setAttribute("sepayAccountNumber", sepayAccountNumber);
-            request.setAttribute("sepayBankCode", sepayBankCode);
-            request.setAttribute("sepayAccountName", sepayAccountName);
+                // 5. Lấy cấu hình SePay để sinh VietQR
+                String sepayAccountNumber = systemConfigDAO.getValue(conn, "SEPAY_ACCOUNT_NUMBER", "");
+                String sepayBankCode = systemConfigDAO.getValue(conn, "SEPAY_BANK_CODE", "BIDV");
+                String sepayAccountName = systemConfigDAO.getValue(conn, "SEPAY_ACCOUNT_NAME", "");
+
+                request.setAttribute("sepayAccountNumber", sepayAccountNumber);
+                request.setAttribute("sepayBankCode", sepayBankCode);
+                request.setAttribute("sepayAccountName", sepayAccountName);
+
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
 
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách phạt cho userId=" + userId, e);
