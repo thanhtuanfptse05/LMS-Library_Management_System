@@ -136,7 +136,7 @@ public class ReservationDAO {
     // EARS[Event-driven]: WHEN next-in-queue Reservation is found,
     // THE LMS System SHALL UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=?
     // WHERE reservationId = ? [FR-F6-06]
-    public void updateToReadyPickup(Connection conn, int reservationId, int bookCopyId) throws SQLException {
+    public void updateToReadyPickup(Connection conn, int reservationId, Integer bookCopyId) throws SQLException {
         // Mặc định sử dụng 3 ngày nếu không truyền cấu hình holdDays
         updateToReadyPickup(conn, reservationId, bookCopyId, 3);
     }
@@ -149,21 +149,26 @@ public class ReservationDAO {
      *
      * @param conn          {@code Connection} trong Transaction
      * @param reservationId ID của đơn đặt trước cần cập nhật
-     * @param bookCopyId    ID bản sao sách vật lý được cấp phát cho đơn đặt trước
+     * @param bookCopyId    ID bản sao sách vật lý được cấp phát cho đơn đặt trước (có thể là null)
      * @param holdDays      Số ngày giữ sách cấu hình động
      * @throws SQLException nếu có lỗi SQL
      */
-    public void updateToReadyPickup(Connection conn, int reservationId, int bookCopyId, int holdDays) throws SQLException {
+    public void updateToReadyPickup(Connection conn, int reservationId, Integer bookCopyId, int holdDays) throws SQLException {
         String sql = "UPDATE Reservation "
                    + "SET    queuePosition = 0, "
-                   + "       status      = 'readypickup', "
+                   + "       status        = 'readypickup', "
                    + "       bookCopyId    = ?, "
-                   + "       endDate       = NOW() + INTERVAL '3 days' "
+                   + "       endDate       = NOW() + CAST(? || ' days' AS INTERVAL) "
                    + "WHERE  reservationId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, bookCopyId);
-            ps.setInt(2, reservationId);
+            if (bookCopyId != null) {
+                ps.setInt(1, bookCopyId);
+            } else {
+                ps.setNull(1, java.sql.Types.INTEGER);
+            }
+            ps.setInt(2, holdDays);
+            ps.setInt(3, reservationId);
             ps.executeUpdate();
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE,
@@ -189,19 +194,22 @@ public class ReservationDAO {
      * @param conn          {@code Connection} được quản lý bởi tầng Service
      *                      (đã {@code setAutoCommit(false)})
      * @param reservationId ID bản ghi Reservation cần đánh dấu hoàn tất
+     * @param bookCopyId    ID bản sao sách được gán để hoàn tất đặt trước
      * @throws SQLException nếu có lỗi thực thi câu lệnh UPDATE,
      *                      cho phép Service tầng trên thực hiện rollback
      */
     // EARS[Event-driven]: WHEN BorrowRecord is inserted successfully,
     // THE LMS System SHALL UPDATE Reservation.status = 'fulfilled'
     // WHERE reservationId = ? [FR-F6-03]
-    public void updateStatusToFulfilled(Connection conn, int reservationId) throws SQLException {
+    public void updateStatusToFulfilled(Connection conn, int reservationId, int bookCopyId) throws SQLException {
         String sql = "UPDATE Reservation "
-                   + "SET    status = 'fulfilled' "
+                   + "SET    status = 'fulfilled', "
+                   + "       bookCopyId = ? "
                    + "WHERE  reservationId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, reservationId);
+            ps.setInt(1, bookCopyId);
+            ps.setInt(2, reservationId);
             ps.executeUpdate();
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE,

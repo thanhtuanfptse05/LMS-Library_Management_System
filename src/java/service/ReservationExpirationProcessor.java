@@ -93,19 +93,6 @@ public class ReservationExpirationProcessor implements Runnable {
                 Integer copyId = lockedRes.getBookCopyId();
                 int bookId = lockedRes.getBookId();
 
-                // NẾU bookCopyId trong Reservation bị NULL, tìm bản sao 'reserved' thuộc đầu sách này để xử lý giải phóng
-                if (copyId == null) {
-                    String findCopySql = "SELECT bookCopyId FROM BookCopy WHERE bookId = ? AND status = 'reserved' LIMIT 1";
-                    try (PreparedStatement psCopy = conn.prepareStatement(findCopySql)) {
-                        psCopy.setInt(1, bookId);
-                        try (ResultSet rsCopy = psCopy.executeQuery()) {
-                            if (rsCopy.next()) {
-                                copyId = rsCopy.getInt("bookCopyId");
-                            }
-                        }
-                    }
-                }
-
                 if (copyId != null) {
                     // Bước 5: Kiểm tra xem có người dùng nào khác đang xếp hàng cho tựa sách này không
                     Reservation nextRes = reservationDAO.findNextInQueue(conn, bookId);
@@ -147,11 +134,33 @@ public class ReservationExpirationProcessor implements Runnable {
                         conn.commit(); // Hoàn thành Transaction
                     }
                 } else {
-                    // Đơn hàng quá hạn không có bản sao (trường hợp hiếm gặp) -> Chỉ hủy
-                    userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
-                            "status=readypickup, bookCopyId=null", "status=cancelled");
-                    success = true;
-                    conn.commit();
+                    // bookCopyId == NULL (đơn đặt trước online chưa được lấy)
+                    // Tăng Book.availableQuantity + 1 (hoàn trả "chỗ đã giữ")
+                    bookDAO.updateQuantities(conn, bookId, 0, 1);
+
+                    Reservation nextRes = reservationDAO.findNextInQueue(conn, bookId);
+                    if (nextRes != null) {
+                        // Đôn người kế tiếp lên nhận sách (bookCopyId = null)
+                        reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), null, holdDays);
+                        // Dịch hàng đợi
+                        reservationDAO.decrementQueuePositions(conn, bookId);
+
+                        userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
+                                "status=readypickup, bookCopyId=null",
+                                "status=cancelled, promoted reservationId=" + nextRes.getReservationId() + " to ready");
+
+                        result.promotedCount++;
+                        success = true;
+                        conn.commit();
+
+                        sendNotificationEmailAsync(nextRes, bookId);
+                    } else {
+                        // Không có ai chờ
+                        userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
+                                "status=readypickup, bookCopyId=null", "status=cancelled");
+                        success = true;
+                        conn.commit();
+                    }
                 }
 
             } catch (SQLException e) {

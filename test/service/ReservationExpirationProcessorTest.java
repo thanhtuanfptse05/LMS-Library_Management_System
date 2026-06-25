@@ -166,13 +166,12 @@ public class ReservationExpirationProcessorTest {
     public void testProcessExpiredWithPromotedNextUser() throws SQLException {
         // Chuẩn bị kịch bản: Người A quá hạn (status='readypickup', endDate hôm qua), Người B pending (queuePosition=1)
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Đơn Người A quá hạn
+            // Đơn Người A quá hạn (bookCopyId = null theo logic mới)
             String sqlA = "INSERT INTO Reservation (userId, bookId, bookCopyId, status, queuePosition, startDate, endDate) "
-                        + "VALUES (?, ?, ?, 'readypickup', 0, NOW() - INTERVAL '4 days', NOW() - INTERVAL '1 day')";
+                        + "VALUES (?, ?, NULL, 'readypickup', 0, NOW() - INTERVAL '4 days', NOW() - INTERVAL '1 day')";
             try (PreparedStatement ps = conn.prepareStatement(sqlA)) {
                 ps.setInt(1, testUserId1);
                 ps.setInt(2, testBookId);
-                ps.setInt(3, testBookCopyId);
                 ps.executeUpdate();
             }
 
@@ -206,7 +205,7 @@ public class ReservationExpirationProcessorTest {
                 }
             }
 
-            // Đơn Người B phải được đôn lên readypickup và nhận bookCopyId=testBookCopyId
+            // Đơn Người B phải được đôn lên readypickup và bookCopyId vẫn là null
             try (PreparedStatement ps = conn.prepareStatement("SELECT status, queuePosition, bookCopyId FROM Reservation WHERE userId = ? AND bookId = ?")) {
                 ps.setInt(1, testUserId2);
                 ps.setInt(2, testBookId);
@@ -214,16 +213,7 @@ public class ReservationExpirationProcessorTest {
                     assertTrue(rs.next());
                     assertEquals("readypickup", rs.getString("status"));
                     assertEquals(0, rs.getInt("queuePosition"));
-                    assertEquals(testBookCopyId, rs.getInt("bookCopyId"));
-                }
-            }
-
-            // Bản sao sách vẫn phải là 'reserved'
-            try (PreparedStatement ps = conn.prepareStatement("SELECT status FROM BookCopy WHERE bookCopyId = ?")) {
-                ps.setInt(1, testBookCopyId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    assertTrue(rs.next());
-                    assertEquals("reserved", rs.getString("status"));
+                    assertNull(rs.getObject("bookCopyId"));
                 }
             }
         }
@@ -234,11 +224,10 @@ public class ReservationExpirationProcessorTest {
         // Chuẩn bị kịch bản: Người A quá hạn (status='readypickup', endDate hôm qua), Hàng chờ rỗng
         try (Connection conn = DatabaseConnection.getConnection()) {
             String sqlA = "INSERT INTO Reservation (userId, bookId, bookCopyId, status, queuePosition, startDate, endDate) "
-                        + "VALUES (?, ?, ?, 'readypickup', 0, NOW() - INTERVAL '4 days', NOW() - INTERVAL '1 day')";
+                        + "VALUES (?, ?, NULL, 'readypickup', 0, NOW() - INTERVAL '4 days', NOW() - INTERVAL '1 day')";
             try (PreparedStatement ps = conn.prepareStatement(sqlA)) {
                 ps.setInt(1, testUserId1);
                 ps.setInt(2, testBookId);
-                ps.setInt(3, testBookCopyId);
                 ps.executeUpdate();
             }
         }
@@ -252,16 +241,7 @@ public class ReservationExpirationProcessorTest {
 
         // Kiểm tra trạng thái trong DB sau khi chạy
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Bản sao sách phải quay lại 'available'
-            try (PreparedStatement ps = conn.prepareStatement("SELECT status FROM BookCopy WHERE bookCopyId = ?")) {
-                ps.setInt(1, testBookCopyId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    assertTrue(rs.next());
-                    assertEquals("available", rs.getString("status"));
-                }
-            }
-
-            // Số lượng khả dụng của sách phải tăng lên 1
+            // Số lượng khả dụng của sách phải tăng lên 1 (hoàn trả chỗ đã giữ)
             try (PreparedStatement ps = conn.prepareStatement("SELECT availableQuantity FROM Book WHERE bookId = ?")) {
                 ps.setInt(1, testBookId);
                 try (ResultSet rs = ps.executeQuery()) {

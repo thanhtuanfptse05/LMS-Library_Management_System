@@ -129,27 +129,16 @@ public class OnlineCirculationService {
 
                 // 6. Xử lý tồn kho & vị trí hàng đợi
                 if (book.getAvailableQuantity() > 0) {
-                    // Tìm bản sao khả dụng
-                    BookCopy copy = bookCopyDAO.findAvailableCopyByBookId(conn, bookId);
-                    if (copy != null) {
-                        copyId = copy.getBookCopyId();
-                        // Chuyển bản sao sang reserved
-                        bookCopyDAO.updateStatusToReserved(conn, copyId);
-                        // Giảm số lượng khả dụng của sách
-                        bookDAO.updateQuantities(conn, bookId, 0, -1);
-                        // Tạo đơn đặt trước với queuePosition = 0 (Ready Pickup)
-                        reservationId = reservationDAO.insertOnlineReservation(conn, userId, bookId, 0, copyId);
-                        auditLogDAO.insert(conn, userId, "RESERVE_READY", "Reservation", reservationId, null,
-                                "{\"bookId\":" + bookId + ",\"bookCopyId\":" + copyId + "}");
-                        isReady = true;
+                    // Chỉ giảm availableQuantity để "giữ chỗ", bookCopyId sẽ được gán bởi Thủ thư khi Check-out (F6)
+                    bookDAO.updateQuantities(conn, bookId, 0, -1);
+                    reservationId = reservationDAO.insertOnlineReservation(conn, userId, bookId, 0, null);
+                    auditLogDAO.insert(conn, userId, "RESERVE_READY", "Reservation", reservationId, null,
+                            "{\"bookId\":" + bookId + ",\"queuePosition\":0}");
+                    isReady = true;
 
-                        nextUserEmail = user.getEmail();
-                        MemberProfile profile = memberProfileDAO.findByUserId(userId);
-                        nextUserFullName = (profile != null) ? profile.getFullName() : user.getEmail();
-                    } else {
-                        // Nếu không tìm được bản sao dù availableQuantity > 0 (trường hợp hiếm), đưa vào hàng chờ
-                        reservationId = insertIntoPendingQueue(conn, userId, bookId);
-                    }
+                    nextUserEmail = user.getEmail();
+                    MemberProfile profile = memberProfileDAO.findByUserId(userId);
+                    nextUserFullName = (profile != null) ? profile.getFullName() : user.getEmail();
                 } else {
                     // Hết sách khả dụng -> đưa vào hàng chờ
                     reservationId = insertIntoPendingQueue(conn, userId, bookId);
@@ -227,28 +216,52 @@ public class OnlineCirculationService {
                 if (res.getQueuePosition() != null && res.getQueuePosition() == 0) {
                     Integer copyId = res.getBookCopyId();
                     
-                    // Tìm người kế tiếp (queuePosition = 1)
-                    Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
-                    if (nextRes != null && copyId != null) {
-                        // Đôn người kế tiếp lên nhận sách, lấy holdDays từ cấu hình động
-                        int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
-                        reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId, holdDays);
-                        // Dịch hàng đợi
-                        reservationDAO.decrementQueuePositions(conn, res.getBookId());
-                        
-                        // Lấy thông tin gửi email thông báo
-                        User nextUser = userDAO.findByUserId(nextRes.getUserId());
-                        if (nextUser != null) {
-                            nextUserEmail = nextUser.getEmail();
-                            MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
-                            nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
-                            Book b = bookDAO.findById(conn, res.getBookId());
-                            bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                    if (copyId != null) {
+                        // Tìm người kế tiếp (queuePosition = 1)
+                        Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
+                        if (nextRes != null) {
+                            // Đôn người kế tiếp lên nhận sách, lấy holdDays từ cấu hình động
+                            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                            reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId, holdDays);
+                            // Dịch hàng đợi
+                            reservationDAO.decrementQueuePositions(conn, res.getBookId());
+                            
+                            // Lấy thông tin gửi email thông báo
+                            User nextUser = userDAO.findByUserId(nextRes.getUserId());
+                            if (nextUser != null) {
+                                nextUserEmail = nextUser.getEmail();
+                                MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
+                                nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
+                                Book b = bookDAO.findById(conn, res.getBookId());
+                                bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                            }
+                        } else {
+                            // Không có ai chờ -> trả bản sao về available, tăng availableQuantity của Book
+                            bookCopyDAO.updateStatusToAvailable(conn, copyId);
+                            bookDAO.updateQuantities(conn, res.getBookId(), 0, 1);
                         }
-                    } else if (copyId != null) {
-                        // Không có ai chờ -> trả bản sao về available, tăng availableQuantity của Book
-                        bookCopyDAO.updateStatusToAvailable(conn, copyId);
+                    } else {
+                        // Đơn đặt trước online chưa được lấy (bookCopyId == NULL)
+                        // Tăng Book.availableQuantity + 1 (hoàn trả "chỗ đã giữ")
                         bookDAO.updateQuantities(conn, res.getBookId(), 0, 1);
+                        
+                        Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
+                        if (nextRes != null) {
+                            // Đôn người kế tiếp lên nhận sách (bookCopyId = null)
+                            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                            reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), null, holdDays);
+                            // Dịch hàng đợi
+                            reservationDAO.decrementQueuePositions(conn, res.getBookId());
+                            
+                            User nextUser = userDAO.findByUserId(nextRes.getUserId());
+                            if (nextUser != null) {
+                                nextUserEmail = nextUser.getEmail();
+                                MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
+                                nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
+                                Book b = bookDAO.findById(conn, res.getBookId());
+                                bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                            }
+                        }
                     }
                 } else if (res.getQueuePosition() != null && res.getQueuePosition() > 0) {
                     // Nếu hủy một đơn đang nằm trong hàng chờ (queuePosition > 0)
@@ -314,28 +327,52 @@ public class OnlineCirculationService {
                 if (res.getQueuePosition() != null && res.getQueuePosition() == 0) {
                     Integer copyId = res.getBookCopyId();
                     
-                    // Tìm người kế tiếp (queuePosition = 1)
-                    Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
-                    if (nextRes != null && copyId != null) {
-                        // Đôn người kế tiếp lên nhận sách, lấy holdDays từ cấu hình động
-                        int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
-                        reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId, holdDays);
-                        // Dịch hàng đợi
-                        reservationDAO.decrementQueuePositions(conn, res.getBookId());
-                        
-                        // Lấy thông tin gửi email thông báo
-                        User nextUser = userDAO.findByUserId(nextRes.getUserId());
-                        if (nextUser != null) {
-                            nextUserEmail = nextUser.getEmail();
-                            MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
-                            nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
-                            Book b = bookDAO.findById(conn, res.getBookId());
-                            bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                    if (copyId != null) {
+                        // Tìm người kế tiếp (queuePosition = 1)
+                        Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
+                        if (nextRes != null) {
+                            // Đôn người kế tiếp lên nhận sách, lấy holdDays từ cấu hình động
+                            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                            reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId, holdDays);
+                            // Dịch hàng đợi
+                            reservationDAO.decrementQueuePositions(conn, res.getBookId());
+                            
+                            // Lấy thông tin gửi email thông báo
+                            User nextUser = userDAO.findByUserId(nextRes.getUserId());
+                            if (nextUser != null) {
+                                nextUserEmail = nextUser.getEmail();
+                                MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
+                                nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
+                                Book b = bookDAO.findById(conn, res.getBookId());
+                                bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                            }
+                        } else {
+                            // Không có ai chờ -> trả bản sao về available, tăng availableQuantity của Book
+                            bookCopyDAO.updateStatusToAvailable(conn, copyId);
+                            bookDAO.updateQuantities(conn, res.getBookId(), 0, 1);
                         }
-                    } else if (copyId != null) {
-                        // Không có ai chờ -> trả bản sao về available, tăng availableQuantity của Book
-                        bookCopyDAO.updateStatusToAvailable(conn, copyId);
+                    } else {
+                        // Đơn đặt trước online chưa được lấy (bookCopyId == NULL)
+                        // Tăng Book.availableQuantity + 1 (hoàn trả "chỗ đã giữ")
                         bookDAO.updateQuantities(conn, res.getBookId(), 0, 1);
+                        
+                        Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
+                        if (nextRes != null) {
+                            // Đôn người kế tiếp lên nhận sách (bookCopyId = null)
+                            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                            reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), null, holdDays);
+                            // Dịch hàng đợi
+                            reservationDAO.decrementQueuePositions(conn, res.getBookId());
+                            
+                            User nextUser = userDAO.findByUserId(nextRes.getUserId());
+                            if (nextUser != null) {
+                                nextUserEmail = nextUser.getEmail();
+                                MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
+                                nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
+                                Book b = bookDAO.findById(conn, res.getBookId());
+                                bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                            }
+                        }
                     }
                 } else if (res.getQueuePosition() != null && res.getQueuePosition() > 0) {
                     // Nếu hủy một đơn đang nằm trong hàng chờ (queuePosition > 0)

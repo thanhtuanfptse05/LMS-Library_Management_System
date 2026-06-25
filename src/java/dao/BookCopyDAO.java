@@ -255,6 +255,20 @@ public class BookCopyDAO {
         updateStatus(conn, bookCopyId, "borrowed", "reserved");
     }
 
+    /**
+     * Chuyển BookCopy sang 'borrowed' từ 'available' hoặc 'reserved' mà KHÔNG làm thay đổi availableQuantity.
+     */
+    public void updateStatusToBorrowedNoQtyChange(Connection conn, int bookCopyId) throws SQLException {
+        String sql = "UPDATE BookCopy SET status = 'borrowed', updatedAt = NOW() "
+                   + "WHERE bookCopyId = ? AND status IN ('available', 'reserved')";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookCopyId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không ở trạng thái khả dụng hoặc được giữ đặt trước.");
+            }
+        }
+    }
+
     public void updateStatusToUnavailable(Connection conn, int bookCopyId, String condition)
             throws SQLException {
         String sql = "UPDATE BookCopy SET status = 'unavailable', condition = ?, updatedAt = NOW() "
