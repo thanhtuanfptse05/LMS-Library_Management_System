@@ -148,7 +148,10 @@ public class OnlineCirculationService {
 
                 // Gửi email thông báo nếu sách có sẵn
                 if (isReady && nextUserEmail != null) {
-                    sendReadyPickupEmail(nextUserEmail, nextUserFullName, book.getTitle());
+                    int holdDays = systemConfigDAO.getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                    java.sql.Timestamp deadline = new java.sql.Timestamp(System.currentTimeMillis() + holdDays * 24L * 60 * 60 * 1000);
+                    String deadlineStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(deadline);
+                    sendReadyPickupEmail(nextUserEmail, nextUserFullName, book.getTitle(), deadlineStr);
                 }
 
                 return reservationId;
@@ -211,6 +214,7 @@ public class OnlineCirculationService {
                 String nextUserEmail = null;
                 String nextUserFullName = null;
                 String bookTitle = null;
+                String deadlineStr = null;
 
                 // 4. Cascade logic nếu hủy một đơn đã có sẵn sách (queuePosition = 0)
                 if (res.getQueuePosition() != null && res.getQueuePosition() == 0) {
@@ -234,6 +238,9 @@ public class OnlineCirculationService {
                                 nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
                                 Book b = bookDAO.findById(conn, res.getBookId());
                                 bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                                
+                                java.sql.Timestamp deadline = new java.sql.Timestamp(System.currentTimeMillis() + holdDays * 24L * 60 * 60 * 1000);
+                                deadlineStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(deadline);
                             }
                         } else {
                             // Không có ai chờ -> trả bản sao về available, tăng availableQuantity của Book
@@ -260,6 +267,9 @@ public class OnlineCirculationService {
                                 nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
                                 Book b = bookDAO.findById(conn, res.getBookId());
                                 bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                                
+                                java.sql.Timestamp deadline = new java.sql.Timestamp(System.currentTimeMillis() + holdDays * 24L * 60 * 60 * 1000);
+                                deadlineStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(deadline);
                             }
                         }
                     }
@@ -273,7 +283,7 @@ public class OnlineCirculationService {
 
                 // Gửi email thông báo cho người kế tiếp ngoài transaction
                 if (nextUserEmail != null && bookTitle != null) {
-                    sendReadyPickupEmail(nextUserEmail, nextUserFullName, bookTitle);
+                    sendReadyPickupEmail(nextUserEmail, nextUserFullName, bookTitle, deadlineStr);
                 }
 
             } catch (ValidationException | SQLException e) {
@@ -539,10 +549,11 @@ public class OnlineCirculationService {
         return resId;
     }
 
-    private void sendReadyPickupEmail(String email, String fullName, String bookTitle) {
+    private void sendReadyPickupEmail(String email, String fullName, String bookTitle, String pickupDeadline) {
         try {
             java.util.Map<String, String> placeholders = new java.util.HashMap<>();
             placeholders.put("bookTitle", bookTitle);
+            placeholders.put("pickupDeadline", pickupDeadline);
             
             model.EmailJob job = new model.EmailJob("RESERVATION_READY", email, fullName, placeholders);
             EmailService.enqueue(job);
