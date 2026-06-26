@@ -103,20 +103,20 @@
                                             </thead>
                                             <tbody>
                                                 <c:forEach var="br" items="${borrows}">
-                                                    <!-- Tính phần trăm thời gian đã qua -->
-                                                    <c:set var="startMs" value="${br.startDate.time}"/>
-                                                    <c:set var="endMs" value="${br.endDate.time}"/>
-                                                    <c:set var="nowMs" value="<%= System.currentTimeMillis() %>"/>
-                                                    <c:set var="totalMs" value="${endMs - startMs}"/>
-                                                    <c:set var="elapsedMs" value="${nowMs - startMs}"/>
-                                                    <c:set var="percentPassed" value="${totalMs > 0 ? (elapsedMs * 100.0 / totalMs) : 0}"/>
+                                                    <!-- Tính phần trăm thời gian đã qua theo ngày nguyên -->
+                                                    <c:set var="startDay" value="${br.startDate.time / 86400000}"/>
+                                                    <c:set var="endDay" value="${br.endDate.time / 86400000}"/>
+                                                    <c:set var="nowDay" value="<%= System.currentTimeMillis() / 86400000.0 %>"/>
+                                                    <c:set var="totalDays" value="${endDay - startDay}"/>
+                                                    <c:set var="elapsedDays" value="${nowDay - startDay}"/>
+                                                    <c:set var="percentPassed" value="${totalDays > 0 ? (elapsedDays * 100.0 / totalDays) : 0}"/>
                                                     <c:if test="${percentPassed > 100}"><c:set var="percentPassed" value="100"/></c:if>
                                                     <c:if test="${percentPassed < 0}"><c:set var="percentPassed" value="0"/></c:if>
                                                     
                                                     <!-- Chọn màu progress bar -->
                                                     <c:set var="barColor" value="bg-primary"/>
                                                     <c:if test="${percentPassed >= 80}"><c:set var="barColor" value="bg-warning"/></c:if>
-                                                    <c:if test="${nowMs > endMs}"><c:set var="barColor" value="bg-danger"/></c:if>
+                                                    <c:if test="${nowDay > endDay}"><c:set var="barColor" value="bg-danger"/></c:if>
 
                                                     <tr>
                                                         <td class="py-3 px-4">
@@ -148,10 +148,10 @@
                                                             <fmt:formatDate value="${br.startDate}" pattern="dd/MM/yyyy HH:mm"/>
                                                         </td>
                                                         <td class="py-3">
-                                                            <span class="${nowMs > endMs ? 'text-danger fw-bold' : ''}">
+                                                            <span class="${nowDay > endDay ? 'text-danger fw-bold' : ''}">
                                                                 <fmt:formatDate value="${br.endDate}" pattern="dd/MM/yyyy HH:mm"/>
                                                             </span>
-                                                            <c:if test="${nowMs > endMs}">
+                                                            <c:if test="${nowDay > endDay}">
                                                                 <span class="badge bg-danger ms-1" style="font-size: 10px;">Quá hạn</span>
                                                             </c:if>
                                                         </td>

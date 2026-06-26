@@ -461,14 +461,15 @@ public class OnlineCirculationService {
 
                 // 3. Kiểm tra ngưỡng thời gian (RENEW_THRESHOLD_PERCENT)
                 int thresholdPercent = systemConfigDAO.getIntValue(conn, "RENEW_THRESHOLD_PERCENT", 50);
-                long startMs = br.getStartDate().getTime();
-                long endMs = br.getEndDate().getTime();
-                long nowMs = System.currentTimeMillis();
-                long totalDuration = endMs - startMs;
-                long elapsed = nowMs - startMs;
+                long startDay = br.getStartDate().getTime() / (24L * 60 * 60 * 1000);
+                long endDay = br.getEndDate().getTime() / (24L * 60 * 60 * 1000);
+                long nowDay = System.currentTimeMillis() / (24L * 60 * 60 * 1000);
 
-                if (totalDuration > 0) {
-                    double percentPassed = (double) elapsed / totalDuration * 100;
+                long totalDays = endDay - startDay;
+                long elapsedDays = nowDay - startDay;
+
+                if (totalDays > 0) {
+                    double percentPassed = (double) elapsedDays / totalDays * 100;
                     if (percentPassed < thresholdPercent) {
                         throw new ValidationException("Bạn chỉ được gia hạn khi đã sử dụng ít nhất " + thresholdPercent + "% thời hạn mượn sách.");
                     }
