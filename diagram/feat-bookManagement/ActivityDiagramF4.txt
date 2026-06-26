@@ -11,26 +11,25 @@ Loại: Decision Node
 Tên Action: Check Role
 Nội dung Action: Kiểm tra phân quyền người dùng bằng AuthFilter và HttpSession.
 Nối tới:
-Nhánh [ADMIN / LIBRARIAN]: rẽ tới [Manual Action 3.1].
-Nhánh [MANAGER]: rẽ tới [Manual Action 3.2].
-Nhánh [Other Role]: rẽ tới [System Action Box 20.1].
+Nhánh [LIBRARIAN]: rẽ tới [Manual Action 3.1].
+Nhánh [ADMIN / MANAGER / ROLE KHÁC]: rẽ tới [Manual Action 3.2].
 
 [Manual Action 3.1]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Manual Action
 Tên Action: Access Book Management
-Nội dung Action: Admin hoặc Thủ thư truy cập phân hệ Quản lý Sách với quyền đọc và thay đổi dữ liệu.
+Nội dung Action: Thủ thư truy cập phân hệ Quản lý Sách với quyền đọc và thay đổi dữ liệu.
 Nối tới: Mũi tên đi tới [Decision Node 4.1].
 
 [Manual Action 3.2]
-Actor: Library Manager
+Actor: Admin / Library Manager / Role khác
 Loại: Manual Action
-Tên Action: Access Inventory Monitoring
-Nội dung Action: Library Manager truy cập màn hình giám sát chỉ đọc: danh mục, tồn kho, lịch sử import, báo cáo hỏng/mất và cảnh báo lệch kho.
+Tên Action: Access Denied
+Nội dung Action: Hệ thống từ chối truy cập phân hệ Quản lý Sách và trả HTTP 403.
 Nối tới: Mũi tên đi tới [System Action Box 16.1].
 
 [Decision Node 4.1]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Decision Node
 Tên Action: Choose Main Operation
 Nội dung Action: Lựa chọn thao tác nghiệp vụ chính.
@@ -41,28 +40,28 @@ Nhánh [Bulk Import]: rẽ tới [Manual Action 5.3].
 Nhánh [View / Update]: rẽ tới [Manual Action 5.4].
 
 [Manual Action 5.1]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Manual Action
 Tên Action: Submit New Book Form
 Nội dung Action: Nhập metadata Book (ISBN, tiêu đề, tác giả, nhà xuất bản, năm xuất bản, giá, danh mục, thẻ) và gửi yêu cầu tạo đầu sách mới.
 Nối tới: Mũi tên đi tới [Decision Node 6.1].
 
 [Manual Action 5.2]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Manual Action
 Tên Action: Submit New Book Copy Form
 Nội dung Action: Nhập ISBN/BookId, Barcode và vị trí để thêm bản sao vật lý mới.
 Nối tới: Mũi tên đi tới [Decision Node 6.2].
 
 [Manual Action 5.3]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Manual Action
 Tên Action: Upload Excel Import File
 Nội dung Action: Tải lên file Excel .xlsx gồm sheet Books và BookCopies để import hàng loạt.
 Nối tới: Mũi tên đi tới [Decision Node 10.1].
 
 [Manual Action 5.4]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Manual Action
 Tên Action: View Book
 Nội dung Action: Xem danh sách/chi tiết Book và BookCopy trước khi chọn thao tác cập nhật.
@@ -87,7 +86,7 @@ Nhánh [Invalid / Duplicate Barcode]: rẽ tới [System Action Box 20.3].
 Nhánh [Valid]: rẽ tới [System Action Box 7.2].
 
 [Decision Node 6.3]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Decision Node
 Tên Action: Choose Manage Operation
 Nội dung Action: Chọn cập nhật metadata Book hoặc cập nhật thông tin BookCopy.
@@ -110,14 +109,14 @@ Nội dung Action: Mở transaction, tạo BookCopy với condition='good', stat
 Nối tới: Mũi tên đi tới [System Action Box 21.1].
 
 [Manual Action 7.3]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Manual Action
 Tên Action: Update Book Data
 Nội dung Action: Thay đổi metadata Book được phép sửa, không gửi sửa ISBN, totalQuantity hoặc availableQuantity.
 Nối tới: Mũi tên đi tới [Decision Node 8.1].
 
 [Manual Action 7.4]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Manual Action
 Tên Action: Update Book Copy Data
 Nội dung Action: Cập nhật location hoặc condition của BookCopy, không gửi sửa Barcode.
@@ -181,7 +180,7 @@ Nội dung Action: Lưu BookImportBatch và BookImportError theo sheet/dòng/c�
 Nối tới: Mũi tên đi tới [System Action Box 20.4].
 
 [Manual Action 12.2]
-Actor: Admin / Librarian
+Actor: Librarian
 Loại: Manual Action
 Tên Action: Confirm Bulk Import
 Nội dung Action: Xem preview hợp lệ và xác nhận import all-or-nothing.
@@ -206,8 +205,8 @@ Nhánh [Success]: rẽ tới [System Action Box 21.1].
 [System Action Box 16.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Load Manager Monitoring Data
-Nội dung Action: Truy vấn danh mục, tồn kho, lịch sử import, báo cáo BookCopy hỏng/mất.
+Tên Action: Deny Non-Librarian Access
+Nội dung Action: Hiển thị trang lỗi 403 cho Admin, Library Manager hoặc vai trò không phải Thủ thư.
 Nối tới: Mũi tên đi tới [System Action Box 16.2].
 
 [System Action Box 16.2]
@@ -221,7 +220,7 @@ Nối tới: Mũi tên đi tới [System Action Box 16.3].
 Actor: LMS System
 Loại: System Action Box
 Tên Action: Display Read-only Monitoring
-Nội dung Action: Hiển thị dữ liệu giám sát chỉ đọc cho Library Manager, không có thao tác sửa hoặc import.
+Nội dung Action: Hiển thị trang lỗi 403 cho Admin, Library Manager hoặc vai trò không phải Thủ thư.
 Nối tới: Mũi tên đi tới [Final Node 22.1].
 
 [System Action Box 20.1]
