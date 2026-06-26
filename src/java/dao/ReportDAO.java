@@ -70,7 +70,7 @@ public class ReportDAO {
         }
 
         String sql = "SELECT to_char(f.createdAt, '" + dateFormat + "') AS periodLabel, " +
-                     "SUM(CASE WHEN p.status = 'paid' THEN p.paidAmount ELSE 0 END) AS totalPaid, " +
+                     "SUM(CASE WHEN p.status = 'completed' THEN p.paidAmount ELSE 0 END) AS totalPaid, " +
                      "SUM(CASE WHEN f.status = 'unpaid' THEN f.amount ELSE 0 END) AS totalUnpaid " +
                      "FROM Fine f " +
                      "LEFT JOIN Payment p ON f.fineId = p.fineId " +
