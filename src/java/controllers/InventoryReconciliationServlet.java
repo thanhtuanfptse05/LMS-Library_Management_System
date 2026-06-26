@@ -93,7 +93,7 @@ public class InventoryReconciliationServlet extends HttpServlet {
         response.sendRedirect(target);
     }
     private void success(HttpSession session, String message) { session.setAttribute("successMessage", message); }
-    private boolean isEditor(String role) { return "ADMIN".equalsIgnoreCase(role) || "LIBRARIAN".equalsIgnoreCase(role); }
+    private boolean isEditor(String role) { return "LIBRARIAN".equalsIgnoreCase(role); }
     private String trim(String value) { return value == null || value.trim().isEmpty() ? null : value.trim(); }
     private Integer optionalInt(String value) { try { return value == null || value.isBlank() ? null : Integer.valueOf(value); } catch (NumberFormatException e) { return null; } }
     private int requiredInt(String value) throws ValidationException { Integer id = optionalInt(value); if (id == null || id <= 0) throw new ValidationException("Mã dữ liệu không hợp lệ."); return id; }
