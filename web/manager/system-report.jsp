@@ -212,6 +212,7 @@
         </c:forEach>
         
         const ctxFin = document.getElementById('financialChart').getContext('2d');
+        // Sử dụng biểu đồ cột (bar) để đảm bảo dữ liệu hiển thị rõ ràng ngay cả khi chỉ có 1 ngày duy nhất có phát sinh giao dịch.
         new Chart(ctxFin, {
             type: 'bar',
             data: {
