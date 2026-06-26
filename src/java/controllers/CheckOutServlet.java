@@ -101,10 +101,20 @@ public class CheckOutServlet extends HttpServlet {
             String memberCode = memberCodeRaw.trim();
             String barcode = barcodeRaw.trim();
 
+            String targetBookIdRaw = request.getParameter("targetBookId");
+            Integer targetBookId = null;
+            if (targetBookIdRaw != null && !targetBookIdRaw.isBlank()) {
+                try {
+                    targetBookId = Integer.parseInt(targetBookIdRaw.trim());
+                } catch (NumberFormatException e) {
+                    LOGGER.log(Level.WARNING, "Invalid targetBookId format: {0}", targetBookIdRaw);
+                }
+            }
+
             // ----------------------------------------------------------------
             // Gọi Service — toàn bộ logic nghiệp vụ nằm ở tầng này
             // ----------------------------------------------------------------
-            service.processCheckOut(librarianId, memberCode, barcode);
+            service.processCheckOut(librarianId, memberCode, barcode, targetBookId);
 
             session.setAttribute("successMessage",
                     "Giao sách thành công! Mã vạch: " + barcode + " — Độc giả: " + memberCode + ".");
