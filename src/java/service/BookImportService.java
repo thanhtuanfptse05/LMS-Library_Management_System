@@ -104,8 +104,6 @@ public class BookImportService {
             int bookId = bookDAO.insert(conn, book);
             bookDAO.replaceCategories(conn, bookId, resolveCategories(conn, row.getCategories(), actorId));
             bookDAO.replaceTags(conn, bookId, resolveTags(conn, row.getTags(), actorId));
-            auditDAO.insert(conn, actorId, "CREATE_BOOK", "Book", bookId, null,
-                    "{\"isbn\":\"" + escape(book.getIsbn()) + "\",\"source\":\"import\"}");
             ids.put(row.getIsbn().toLowerCase(), bookId);
         }
         return ids;
@@ -125,10 +123,8 @@ public class BookImportService {
             copy.setBookId(bookId);
             copy.setBarcode(row.getBarcode());
             copy.setLocation(row.getLocation());
-            int copyId = copyDAO.insert(conn, copy);
+            copyDAO.insert(conn, copy);
             quantities.merge(bookId, 1, Integer::sum);
-            auditDAO.insert(conn, actorId, "CREATE_BOOK_COPY", "BookCopy", copyId, null,
-                    "{\"barcode\":\"" + escape(copy.getBarcode()) + "\",\"source\":\"import\"}");
         }
         for (Map.Entry<Integer, Integer> item : quantities.entrySet()) {
             bookDAO.updateQuantities(conn, item.getKey(), item.getValue(), item.getValue());
@@ -146,8 +142,6 @@ public class BookImportService {
                 category.setDescription(null);
                 category.setStatus("active");
                 int id = categoryDAO.insert(conn, category, actorId);
-                auditDAO.insert(conn, actorId, "CREATE_CATEGORY", "Category", id, null,
-                        "{\"name\":\"" + escape(name) + "\",\"source\":\"import\"}");
                 ids.add(id);
             } else {
                 ids.add(category.getCategoryId());
@@ -165,8 +159,6 @@ public class BookImportService {
                 tag.setName(name);
                 tag.setStatus("active");
                 int id = tagDAO.insert(conn, tag, actorId);
-                auditDAO.insert(conn, actorId, "CREATE_TAG", "Tag", id, null,
-                        "{\"name\":\"" + escape(name) + "\",\"source\":\"import\"}");
                 ids.add(id);
             } else {
                 ids.add(tag.getTagId());
