@@ -812,7 +812,11 @@ public class ReservationDAO {
 
     /**
      * Lấy vị trí hàng chờ lớn nhất hiện tại của một cuốn sách.
+     *
+     * @deprecated Không sử dụng hàm này độc lập do nguy cơ TOCTOU race condition.
+     *             Dùng {@link #insertIntoPendingQueueAtomic(Connection, int, int)} thay thế.
      */
+    @Deprecated
     public int getMaxQueuePosition(Connection conn, int bookId) throws SQLException {
         String sql = "SELECT COALESCE(MAX(queuePosition), 0) FROM Reservation WHERE bookId = ? AND status = 'pending'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -827,6 +831,55 @@ public class ReservationDAO {
             throw e;
         }
         return 0;
+    }
+
+    /**
+     * Thêm người dùng vào hàng chờ đặt trước theo cách ATOMIC — không có TOCTOU race condition.
+     *
+     * <p>Thay vì 2 bước riêng biệt (đọc MAX rồi INSERT có thể bị race condition chen vào),
+     * hàm này dùng {@code INSERT ... SELECT} để tính toán và ghi {@code queuePosition}
+     * trong một câu SQL duy nhất, được bảo vệ bởi PostgreSQL row-level lock.
+     * Kết hợp với {@code SELECT Book FOR UPDATE} trong Service, toàn bộ luồng đặt chờ
+     * được bảo vệ tuyệt đối: 2 Transaction không thể gán cùng {@code queuePosition}.</p>
+     *
+     * <p><strong>Tại sao an toàn:</strong> {@code FOR UPDATE} trên bảng {@code Book}
+     * (được gọi trước trong Service) buộc các Transaction serialize với nhau.
+     * Khi Transaction A giữ lock, B bị block. Khi A commit và B tiếp tục,
+     * B sẽ tính lại MAX từ dữ liệu đã được A ghi — đảm bảo không bao giờ trùng.</p>
+     *
+     * @param conn   {@code Connection} đã {@code setAutoCommit(false)}, đang trong Transaction
+     * @param userId ID người dùng cần xếp hàng chờ
+     * @param bookId ID cuốn sách muốn đặt trước
+     * @return ID của Reservation vừa được tạo (GENERATED KEY)
+     * @throws SQLException nếu có lỗi SQL, cho phép Service rollback
+     */
+    public int insertIntoPendingQueueAtomic(Connection conn, int userId, int bookId) throws SQLException {
+        // INSERT ... SELECT: tính MAX(queuePosition) và INSERT trong 1 câu SQL không thể bị race
+        String sql = "INSERT INTO Reservation (userId, bookId, bookCopyId, status, queuePosition, startDate, endDate) "
+                   + "SELECT ?, ?, NULL, 'pending', "
+                   + "       COALESCE(MAX(r2.queuePosition), 0) + 1, "
+                   + "       NOW(), NULL "
+                   + "FROM   Reservation r2 "
+                   + "WHERE  r2.bookId = ? AND r2.status = 'pending'";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, bookId);
+            ps.setInt(3, bookId);
+            ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi thêm vào hàng chờ đặt trước (atomic) cho userId=" + userId
+                    + ", bookId=" + bookId, e);
+            throw e;
+        }
+        throw new SQLException("Thêm vào hàng chờ atomic thất bại: không lấy được generated key.");
     }
 
     /**

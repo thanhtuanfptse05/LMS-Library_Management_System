@@ -508,11 +508,14 @@ public class OnlineCirculationService {
     // ==========================================
 
     private int insertIntoPendingQueue(Connection conn, int userId, int bookId) throws SQLException {
-        int maxQueue = reservationDAO.getMaxQueuePosition(conn, bookId);
-        int queuePos = maxQueue + 1;
-        int resId = reservationDAO.insertOnlineReservation(conn, userId, bookId, queuePos, null);
+        // Dùng INSERT...SELECT atomic để tránh TOCTOU race condition khi 2 user đặt cùng lúc.
+        // Không tách thành 2 bước (getMaxQueue rồi insert) vì khi sách hết và cả 2 transaction
+        // đã qua lock Book, chúng có thể cùng đọc được MAX = N rồi cùng insert queuePosition = N+1.
+        int resId = reservationDAO.insertIntoPendingQueueAtomic(conn, userId, bookId);
+
+        // Đọc lại queuePosition thực tế đã được ghi để ghi AuditLog chính xác
         auditLogDAO.insert(conn, userId, "RESERVE_PENDING", "Reservation", resId, null,
-                "{\"bookId\":" + bookId + ",\"queuePosition\":" + queuePos + "}");
+                "{\"bookId\":" + bookId + ",\"atomicQueue\":true}");
         return resId;
     }
 
