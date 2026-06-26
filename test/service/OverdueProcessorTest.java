@@ -110,6 +110,10 @@ public class OverdueProcessorTest {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
+                // Xóa Payment trước
+                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM Payment WHERE fineId IN (SELECT fineId FROM Fine WHERE userId IN (SELECT userId FROM \"User\" WHERE email = 'test_overdue_u1@example.com'))")) {
+                    ps.executeUpdate();
+                }
                 // Xóa Fine trước
                 try (PreparedStatement ps = conn.prepareStatement("DELETE FROM Fine WHERE userId IN (SELECT userId FROM \"User\" WHERE email = 'test_overdue_u1@example.com')")) {
                     ps.executeUpdate();
@@ -216,6 +220,17 @@ public class OverdueProcessorTest {
                     assertTrue(rs.next());
                     assertEquals(0, BigDecimal.valueOf(5000).compareTo(rs.getBigDecimal("amount")));
                     assertEquals("unpaid", rs.getString("status"));
+                }
+            }
+
+            // 2.1. Có bản ghi Payment pending được tạo liên kết với Fine
+            String sqlCheckPayment = "SELECT paidAmount, status FROM Payment WHERE fineId IN (SELECT fineId FROM Fine WHERE borrowRecordId = ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sqlCheckPayment)) {
+                ps.setInt(1, testBorrowRecordId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    assertTrue(rs.next());
+                    assertEquals(0, BigDecimal.valueOf(5000).compareTo(rs.getBigDecimal("paidAmount")));
+                    assertEquals("pending", rs.getString("status"));
                 }
             }
 
