@@ -10,6 +10,7 @@
 --   - updatedBy/updatedAt = NULL khi chưa ai chỉnh sửa (mẫu nguyên bản).
 -- ============================================================
 
+TRUNCATE TABLE EmailTemplate RESTART IDENTITY CASCADE;
 
 INSERT INTO EmailTemplate (tempName, description, subject, bodyContent)
 VALUES
