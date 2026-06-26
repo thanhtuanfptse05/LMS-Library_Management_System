@@ -481,6 +481,26 @@ public class OnlineCirculationService {
 
                 conn.commit();
 
+                // Gửi email xác nhận gia hạn thành công (Passive flow)
+                try {
+                    String email = user.getEmail();
+                    MemberProfile profile = memberProfileDAO.findByUserId(userId);
+                    String fullName = (profile != null) ? profile.getFullName() : user.getEmail();
+                    Book book = bookDAO.findById(conn, br.getBookId());
+                    String bookTitle = (book != null) ? book.getTitle() : "Sách đã gia hạn";
+                    
+                    java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+                    placeholders.put("bookTitle", bookTitle);
+                    placeholders.put("newDueDate", new java.text.SimpleDateFormat("dd/MM/yyyy").format(newEnd));
+                    placeholders.put("extensionCount", String.valueOf(br.getExtensionCount() + 1));
+                    placeholders.put("maxExtension", String.valueOf(maxExtensions));
+                    
+                    model.EmailJob job = new model.EmailJob("RENEWAL_CONFIRMATION", email, fullName, placeholders);
+                    EmailService.enqueue(job);
+                } catch (Exception ex) {
+                    LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email xác nhận gia hạn.", ex);
+                }
+
             } catch (ValidationException | SQLException e) {
                 try {
                     conn.rollback();
@@ -521,16 +541,11 @@ public class OnlineCirculationService {
 
     private void sendReadyPickupEmail(String email, String fullName, String bookTitle) {
         try {
-            DocumentTemp temp = documentTempDAO.findByTempName("RESERVATION_READY");
-            if (temp != null) {
-                String subject = temp.getSubject();
-                String htmlBody = temp.getBodyContent()
-                        .replace("{{userName}}", fullName)
-                        .replace("{{bookTitle}}", bookTitle);
-                EmailService.sendAsyncHtmlEmail(email, subject, htmlBody);
-            } else {
-                LOGGER.log(Level.WARNING, "Không tìm thấy mẫu Email RESERVATION_READY trong cơ sở dữ liệu.");
-            }
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("bookTitle", bookTitle);
+            
+            model.EmailJob job = new model.EmailJob("RESERVATION_READY", email, fullName, placeholders);
+            EmailService.enqueue(job);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email thông báo sách sẵn sàng.", e);
         }
