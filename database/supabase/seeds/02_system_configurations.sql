@@ -24,5 +24,10 @@ INSERT INTO SystemConfigurations (configKey, configValue, description, configGro
 ('SEPAY_API_KEY', 'spsk_live_DXEB1eDLNX5VM7inLYKRDLzAL3KQQL2f', 'API Key xác thực Webhook từ SePay', 'system', 1, '2026-06-21 09:50:33.273388'),
 ('SEPAY_BANK_CODE', 'BIDV', 'Mã ngân hàng nhận tiền phạt (dùng cho VietQR)', 'system', 1, '2026-06-21 09:58:04.645602'),
 ('STUDENT_MAX_BORROW_DAYS', '14', 'Số ngày mượn tối đa cho sinh viên', 'library', 1, '2026-06-21 09:50:33.381931'),
-('STUDENT_MAX_BORROW_LIMIT', '5', 'Giới hạn tổng số sách được mượn và đặt trước cùng lúc của Sinh viên', 'library', 1, '2026-06-21 09:50:33.158691')
+('STUDENT_MAX_BORROW_LIMIT', '5', 'Giới hạn tổng số sách được mượn và đặt trước cùng lúc của Sinh viên', 'library', 1, '2026-06-21 09:50:33.158691'),
+('EMAIL_QUEUE_CAPACITY', '500', 'Sức chứa tối đa của hàng đợi EmailJob', 'system', 1, NOW()),
+('EMAIL_MAX_RETRIES', '3', 'Số lần thử lại tối đa khi gửi email lỗi', 'system', 1, NOW()),
+('EMAIL_RETRY_DELAY_SECONDS', '30', 'Độ trễ chờ thử lại gửi thư (giây)', 'system', 1, NOW()),
+('EMAIL_FROM_NAME', 'Thư viện LMS', 'Tên hiển thị người gửi email', 'system', 1, NOW())
 ON CONFLICT (configKey) DO NOTHING;
+
