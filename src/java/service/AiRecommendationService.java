@@ -180,7 +180,7 @@ public class AiRecommendationService {
     /**
      * Thực hiện gửi HTTP POST lên Google.
      */
-    private String sendPostRequest(String payload) throws Exception {
+    protected String sendPostRequest(String payload) throws Exception {
         URL url = new URL(AiConfig.GEMINI_API_URL + AiConfig.getGeminiApiKey());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");

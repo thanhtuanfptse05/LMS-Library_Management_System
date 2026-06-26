@@ -20,7 +20,7 @@ import model.User;
 @WebServlet(name = "BookDetailServlet", urlPatterns = {"/book-detail"})
 public class BookDetailServlet extends HttpServlet {
 
-    private final BookDAO bookDAO = new BookDAO();
+    BookDAO bookDAO = new BookDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

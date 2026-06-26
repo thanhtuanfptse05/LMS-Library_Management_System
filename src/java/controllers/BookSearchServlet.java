@@ -18,7 +18,7 @@ import model.Tag;
 @WebServlet(name = "BookSearchServlet", urlPatterns = {"/book-search"})
 public class BookSearchServlet extends HttpServlet {
 
-    private final BookDAO bookDAO = new BookDAO();
+    BookDAO bookDAO = new BookDAO();
     private static final int PAGE_SIZE = 12;
 
     @Override

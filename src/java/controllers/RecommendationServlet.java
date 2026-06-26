@@ -31,9 +31,9 @@ public class RecommendationServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(RecommendationServlet.class.getName());
 
-    private final BookDAO bookDAO = new BookDAO();
-    private final BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
-    private final AiRecommendationService aiService = new AiRecommendationService();
+    BookDAO bookDAO = new BookDAO();
+    BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
+    AiRecommendationService aiService = new AiRecommendationService();
 
     private static final String CACHE_KEY = "cachedRecommendations";
     private static final String REASONS_CACHE_KEY = "cachedRecommendationReasons";
