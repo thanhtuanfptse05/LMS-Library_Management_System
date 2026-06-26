@@ -90,6 +90,13 @@ public class OverdueProcessor implements Runnable {
 
     /**
      * Xử lý quá hạn cho một bản ghi mượn trong một Transaction riêng biệt.
+     * 
+     * Quy trình xử lý bao gồm:
+     * 1. Tính toán số tiền phạt trễ hạn dựa trên số ngày quá hạn và mức phạt cấu hình.
+     * 2. Cập nhật trạng thái của BorrowRecord sang 'overdue'.
+     * 3. Lưu thông tin tiền phạt trễ hạn (Fine) với trạng thái 'unpaid'.
+     * 4. Tự động khởi tạo hóa đơn thanh toán tương ứng (Payment) ở trạng thái 'pending'.
+     * 5. Khóa tài khoản độc giả do nợ phạt và lưu vết hệ thống (Audit Log).
      */
     private boolean processSingleRecord(BorrowRecord record) {
         Connection conn = null;
