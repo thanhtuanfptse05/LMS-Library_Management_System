@@ -460,7 +460,9 @@ public class DeskCirculationService {
             // ----------------------------------------------------------------
             // [Node 5.16] BƯỚC 3: Rẽ nhánh theo condition
             // ----------------------------------------------------------------
+            BigDecimal fineAmount = null;
             if ("damaged".equals(condition) || "lost".equals(condition)) {
+                fineAmount = calculateCompensationAmount(conn, bookId, condition);
                 processCheckInDamagedOrLost(conn, borrowRecordId, bookCopyId, bookId,
                                              userId, condition, librarianId);
             } else {
@@ -476,6 +478,11 @@ public class DeskCirculationService {
             LOGGER.log(Level.INFO,
                     "Check-in thành công: barcode={0}, condition={1}, borrowRecordId={2}",
                     new Object[]{barcode, condition, borrowRecordId});
+
+            // Gửi email thông báo phạt sự cố (bất đồng bộ, ngoài transaction)
+            if ("damaged".equals(condition) || "lost".equals(condition)) {
+                triggerIncidentFineEmailAsync(userId, bookId, condition, fineAmount);
+            }
 
         } catch (IllegalStateException e) {
             rollbackQuietly(conn, "processCheckIn[BusinessRule]", 0);
@@ -830,12 +837,59 @@ public class DeskCirculationService {
      * @param bookId        ID sách vừa sẵn sàng
      */
     private void triggerQueueNotificationEmailAsync(int waitingUserId, int bookId) {
-        // TODO Sprint 3: Tích hợp EmailService.sendAsyncPickupReadyNotification(waitingUserId, bookId)
-        // Email template: "Sách bạn đặt trước đã sẵn sàng. Vui lòng đến nhận trong vòng 3 ngày."
-        // Chạy trong EmailService.EXECUTOR (thread pool) theo pattern đã có (PLAN.md §4).
-        LOGGER.log(Level.INFO,
-                "[ASYNC] Sẽ gửi email thông báo sách sẵn sàng cho userId={0}, bookId={1}",
-                new Object[]{waitingUserId, bookId});
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            User user = userDAO.findByUserId(waitingUserId);
+            if (user == null) {
+                return;
+            }
+            dao.MemberProfileDAO profileDAO = new dao.MemberProfileDAO();
+            model.MemberProfile profile = profileDAO.findByUserId(waitingUserId);
+            String fullName = (profile != null) ? profile.getFullName() : user.getEmail();
+            
+            Book book = bookDAO.findById(conn, bookId);
+            String bookTitle = (book != null) ? book.getTitle() : "Sách đã đặt";
+            
+            int holdDays = systemConfigDAO.getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+            Timestamp deadline = new Timestamp(System.currentTimeMillis() + holdDays * 24L * 60 * 60 * 1000);
+            String deadlineStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(deadline);
+            
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("bookTitle", bookTitle);
+            placeholders.put("pickupDeadline", deadlineStr);
+            
+            model.EmailJob job = new model.EmailJob("RESERVATION_READY", user.getEmail(), fullName, placeholders);
+            EmailService.enqueue(job);
+            
+            LOGGER.log(Level.INFO, "[ASYNC] Đã enqueue email thông báo sách RESERVATION_READY sẵn sàng cho userId={0}", waitingUserId);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email thông báo sách đặt sẵn sàng nhận.", e);
+        }
+    }
+
+    private void triggerIncidentFineEmailAsync(int userId, int bookId, String condition, BigDecimal fineAmount) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            User user = userDAO.findByUserId(userId);
+            if (user == null) return;
+            
+            dao.MemberProfileDAO profileDAO = new dao.MemberProfileDAO();
+            model.MemberProfile profile = profileDAO.findByUserId(userId);
+            String fullName = (profile != null) ? profile.getFullName() : user.getEmail();
+            
+            Book book = bookDAO.findById(conn, bookId);
+            String bookTitle = (book != null) ? book.getTitle() : "Sách thư viện";
+            
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("bookTitle", bookTitle);
+            placeholders.put("incidentType", "damaged".equals(condition) ? "Hỏng sách" : "Mất sách");
+            placeholders.put("fineAmount", String.format("%,.0f VND", fineAmount.doubleValue()));
+            
+            model.EmailJob job = new model.EmailJob("INCIDENT_FINE_NOTICE", user.getEmail(), fullName, placeholders);
+            EmailService.enqueue(job);
+            
+            LOGGER.log(Level.INFO, "[ASYNC] Đã enqueue email thông báo phạt sự cố INCIDENT_FINE_NOTICE cho userId={0}", userId);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email thông báo phạt sự cố.", e);
+        }
     }
 
     /**
