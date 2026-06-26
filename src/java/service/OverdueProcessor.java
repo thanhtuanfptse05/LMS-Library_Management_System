@@ -6,6 +6,7 @@ import dao.BorrowRecordDAO;
 import dao.DocumentTempDAO;
 import dao.FineDAO;
 import dao.MemberProfileDAO;
+import dao.PaymentDAO;
 import dao.SystemConfigDAO;
 import dao.UserDAO;
 import dao.UserLockReasonDAO;
@@ -122,7 +123,10 @@ public class OverdueProcessor implements Runnable {
             }
 
             // 4. Tạo bản ghi Fine trễ hạn
-            fineDAO.insertOverdueFine(conn, record.getBorrowRecordId(), record.getUserId(), totalFine, "Trễ hạn " + overdueDays + " ngày");
+            int fineId = fineDAO.insertOverdueFine(conn, record.getBorrowRecordId(), record.getUserId(), totalFine, "Trễ hạn " + overdueDays + " ngày");
+
+            // 4.1. Tạo bản ghi Payment ở trạng thái 'pending'
+            new PaymentDAO().insertPayment(conn, fineId, totalFine, "pending");
 
             // 5. Thêm lý do khóa và khóa tài khoản người dùng nếu chưa bị khóa vì nợ phạt
             if (!userLockReasonDAO.hasReason(conn, record.getUserId(), "unpaid")) {
