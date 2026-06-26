@@ -120,7 +120,7 @@ public class BookCopyServlet extends HttpServlet {
     }
 
     private boolean isEditor(String role) {
-        return "ADMIN".equalsIgnoreCase(role) || "LIBRARIAN".equalsIgnoreCase(role);
+        return "LIBRARIAN".equalsIgnoreCase(role);
     }
 
     private String normalizeStatus(String status) {
