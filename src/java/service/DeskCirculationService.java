@@ -768,6 +768,9 @@ public class DeskCirculationService {
                     + "librarianId={3}",
                     new Object[]{paymentId, fineId, userId, librarianId});
 
+            // Gửi email xác nhận thanh toán (bất đồng bộ, ngoài transaction)
+            EmailService.sendPaymentConfirmationEmail(paymentId, userId, "Cash");
+
         } catch (IllegalStateException e) {
             rollbackQuietly(conn, "approveCashPayment[BusinessRule]", userId);
             throw e;
