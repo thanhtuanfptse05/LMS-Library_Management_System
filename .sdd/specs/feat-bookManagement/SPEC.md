@@ -11,15 +11,15 @@ Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính 
 - Q: Import hàng loạt sẽ nhập dữ liệu ở mức nào? → A: File import gồm danh sách `Book` và `BookCopy`; mỗi BookCopy phải có barcode cụ thể.
 - Q: Khi file import có một hoặc nhiều dòng lỗi, hệ thống xử lý thế nào? → A: Không lưu dòng nào; hiển thị toàn bộ lỗi để Librarian sửa file rồi import lại.
 - Q: Khi file import chứa ISBN đã tồn tại trong Database, hệ thống xử lý thế nào? → A: Giữ nguyên metadata của Book hiện hữu và chỉ thêm các BookCopy mới vào Book đó.
-- Q: Ai được phép sử dụng F4 và chức năng import hàng loạt? → A: Người dùng có Role = `LIBRARIAN` hoặc `ADMIN` được xem, tạo, cập nhật và import sách.
-- Q: Library Manager được làm gì trong F4? → A: Library Manager chỉ được xem danh mục, tồn kho, lịch sử import, báo cáo sách hỏng/mất và cảnh báo lệch kho; không được sửa dữ liệu hoặc import.
+- Q: Ai được phép sử dụng F4 và chức năng import hàng loạt? → A: Chỉ người dùng có Role = `LIBRARIAN` được xem, tạo, cập nhật và import sách.
+- Q: Admin hoặc Library Manager được làm gì trong F4? → A: Không được truy cập phân hệ BookManagement; mọi yêu cầu trực tiếp tới route F4 phải bị từ chối với HTTP 403.
 - Q: File import hàng loạt sử dụng định dạng nào? → A: File Excel `.xlsx` gồm hai sheet `Books` và `BookCopies`.
 - Q: Hệ thống xác định cảnh báo lệch kho như thế nào? → A: Cảnh báo khi `Book.totalQuantity` khác tổng số BookCopy hoặc `Book.availableQuantity` khác số BookCopy có `status='available'`.
-- Q: Khi nào hệ thống kiểm tra và hiển thị cảnh báo lệch kho? → A: Kiểm tra trực tiếp mỗi khi Library Manager mở hoặc làm mới báo cáo lệch kho.
+- Q: Khi nào hệ thống kiểm tra và hiển thị cảnh báo lệch kho? → A: Kiểm tra trực tiếp mỗi khi Librarian mở hoặc làm mới báo cáo lệch kho.
 - Q: Lịch sử import cần lưu mức độ chi tiết nào? → A: Lưu thông tin phiên import và danh sách lỗi theo sheet, dòng và cột.
 - Q: Giới hạn tối đa cho một file import là bao nhiêu? → A: Tối đa 5.000 BookCopy mỗi file.
-- Q: Admin và Librarian có được sửa trực tiếp số lượng tồn kho của Book không? → A: Không được sửa trực tiếp; `totalQuantity` và `availableQuantity` chỉ thay đổi thông qua nghiệp vụ BookCopy.
-- Q: Khi Library Manager phát hiện cảnh báo lệch kho, hệ thống hỗ trợ xử lý thế nào? → A: Chỉ hiển thị cảnh báo; Admin hoặc Librarian điều tra và xử lý BookCopy liên quan, hệ thống không tự sửa số lượng.
+- Q: Librarian có được sửa trực tiếp số lượng tồn kho của Book không? → A: Không được sửa trực tiếp; `totalQuantity` và `availableQuantity` chỉ thay đổi thông qua nghiệp vụ BookCopy.
+- Q: Khi Librarian phát hiện cảnh báo lệch kho, hệ thống hỗ trợ xử lý thế nào? → A: Chỉ hiển thị cảnh báo; Librarian điều tra và xử lý BookCopy liên quan, hệ thống không tự sửa số lượng.
 - Q: Khi import, hệ thống xử lý Category và Tag chưa tồn tại thế nào? → A: Tự động tạo Category/Tag chưa tồn tại trong cùng transaction import.
 - Q: BookCopy được import sẽ có trạng thái khởi tạo như thế nào? → A: Tất cả BookCopy import mặc định `condition='good'` và `status='available'`.
 - Q: Sheet `Books` cần các cột nào? → A: `isbn`, `title`, `author`, `publisher`, `publicationYear`, `price`, `categories`, `tags`.
@@ -32,9 +32,9 @@ Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính 
 
 ## 2. Actors & Roles
 - **Librarian:** Toàn quyền truy cập CRUD (Tạo, Đọc, Sửa, Đổi trạng thái) Đầu sách, Bản sao vật lý, Danh mục và Thẻ, bao gồm import sách hàng loạt.
-- **Admin:** Có toàn quyền thực hiện các chức năng F4 tương tự Librarian.
-- **Library Manager:** Chỉ được xem danh mục, tồn kho, lịch sử import, báo cáo sách hỏng/mất và cảnh báo lệch kho. Không được tạo, cập nhật, đổi trạng thái hoặc import dữ liệu.
-- **Access Control:** Role = `LIBRARIAN` hoặc `ADMIN` có quyền đọc và thay đổi dữ liệu F4. Role = `MANAGER` chỉ có quyền đọc các màn hình giám sát F4. Các vai trò khác phải bị từ chối với HTTP 403.
+- **Admin:** Không được truy cập phân hệ BookManagement; quản trị hệ thống thực hiện qua các màn hình `/admin/*` riêng.
+- **Library Manager:** Không được truy cập phân hệ BookManagement; các báo cáo quản trị được xử lý ở phân hệ Manager riêng khi có yêu cầu.
+- **Access Control:** Chỉ Role = `LIBRARIAN` có quyền truy cập route F4 `/book-management/*`. Role = `ADMIN`, `MANAGER` và các vai trò khác phải bị từ chối với HTTP 403.
 
 ## 3. Functional Requirements (EARS)
 **Quản lý Đầu sách (Book Catalog)**
@@ -42,7 +42,7 @@ Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính 
 - **FR-F4-02:** WHERE ISBN hợp lệ, THE system SHALL thực thi lệnh INSERT vào bảng `Book` VÀ gán giá trị mặc định `totalQuantity` = 0, `availableQuantity` = 0.
 - **FR-F4-03:** WHERE ISBN đã tồn tại, THE system SHALL từ chối lưu và trả về lỗi HTTP 400 kèm thông điệp "Trùng lặp ISBN".
 - **FR-F4-04:** WHEN Librarian cập nhật thông tin Đầu sách, THE system SHALL chặn bất kỳ hành vi sửa đổi nào đối với cột `isbn` (BR-18).
-- **FR-F4-04A:** WHEN Librarian hoặc Admin cập nhật thông tin Đầu sách, THE system SHALL chặn mọi hành vi sửa trực tiếp `totalQuantity` hoặc `availableQuantity`; hai trường này chỉ được hệ thống cập nhật thông qua nghiệp vụ BookCopy.
+- **FR-F4-04A:** WHEN Librarian cập nhật thông tin Đầu sách, THE system SHALL chặn mọi hành vi sửa trực tiếp `totalQuantity` hoặc `availableQuantity`; hai trường này chỉ được hệ thống cập nhật thông qua nghiệp vụ BookCopy.
 
 **Quản lý Bản sao vật lý (Book Copy)**
 - **FR-F4-05:** WHEN Librarian quét Barcode để thêm Bản sao vật lý, THE system SHALL kiểm tra tính duy nhất của mã vạch trong bảng `BookCopy`.
@@ -52,7 +52,7 @@ Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính 
 - **FR-F4-09:** WHEN Librarian cập nhật thông tin Bản sao, THE system SHALL chặn mọi hành vi sửa đổi đối với `barcode` (BR-18).
 
 **Import Sách hàng loạt**
-- **FR-F4-10:** WHEN Librarian hoặc Admin tải lên file Excel `.xlsx` import hàng loạt, THE system SHALL đọc danh sách `Book` từ sheet `Books` và danh sách `BookCopy` từ sheet `BookCopies`, trong đó mỗi `BookCopy` phải có một `barcode` cụ thể và tham chiếu được tới `Book` tương ứng bằng ISBN.
+- **FR-F4-10:** WHEN Librarian tải lên file Excel `.xlsx` import hàng loạt, THE system SHALL đọc danh sách `Book` từ sheet `Books` và danh sách `BookCopy` từ sheet `BookCopies`, trong đó mỗi `BookCopy` phải có một `barcode` cụ thể và tham chiếu được tới `Book` tương ứng bằng ISBN.
 - **FR-F4-11:** WHEN hệ thống kiểm tra file import, THE system SHALL kiểm tra dữ liệu bắt buộc, tính duy nhất của ISBN và Barcode trong file VÀ trong Database, cùng tính hợp lệ của liên kết giữa `BookCopy` và `Book`.
 - **FR-F4-12:** WHERE file import có ít nhất một dòng không hợp lệ, THE system SHALL từ chối toàn bộ phiên import, không lưu bất kỳ `Book` hoặc `BookCopy` nào VÀ hiển thị toàn bộ lỗi kèm số dòng để Librarian sửa file.
 - **FR-F4-13:** WHERE toàn bộ file import hợp lệ, THE system SHALL tạo các `Book`, `BookCopy` và cập nhật số lượng tồn kho trong cùng một Database Transaction. Nếu bất kỳ thao tác lưu nào thất bại, hệ thống SHALL rollback toàn bộ phiên import.
@@ -60,22 +60,22 @@ Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính 
 - **FR-F4-14A:** WHERE file import tham chiếu Category hoặc Tag chưa tồn tại, THE system SHALL tự động tạo Category hoặc Tag đó và liên kết với Book trong cùng Database Transaction của phiên import.
 - **FR-F4-14B:** WHEN hệ thống tạo BookCopy từ file import, THE system SHALL bỏ qua mọi giá trị `condition` hoặc `status` từ file nếu có và luôn khởi tạo `condition='good'`, `status='available'`.
 
-**Giám sát Kho dành cho Library Manager**
-- **FR-F4-15:** WHEN Library Manager truy cập phân hệ giám sát BookManagement, THE system SHALL cho phép xem danh mục sách, số lượng tồn kho, lịch sử các phiên import, báo cáo BookCopy hỏng/mất và cảnh báo lệch kho.
-- **FR-F4-16:** WHEN Library Manager gửi bất kỳ yêu cầu tạo, cập nhật, đổi trạng thái hoặc import dữ liệu F4, THE system SHALL từ chối yêu cầu với HTTP 403 và không thay đổi dữ liệu.
+**Đối chiếu Kho dành cho Librarian**
+- **FR-F4-15:** WHEN Librarian truy cập phân hệ đối chiếu tồn kho, THE system SHALL cho phép xem danh mục sách, số lượng tồn kho, lịch sử các phiên import, báo cáo BookCopy hỏng/mất và cảnh báo lệch kho.
+- **FR-F4-16:** WHEN Admin, Library Manager hoặc vai trò khác gửi bất kỳ yêu cầu truy cập route F4, THE system SHALL từ chối yêu cầu với HTTP 403 và không thay đổi dữ liệu.
 - **FR-F4-17:** WHEN hệ thống kiểm tra lệch kho, THE system SHALL cảnh báo một `Book` nếu `Book.totalQuantity` khác tổng số bản ghi `BookCopy` thuộc Book đó HOẶC `Book.availableQuantity` khác số `BookCopy` có `status='available'`.
-- **FR-F4-18:** WHEN Library Manager mở hoặc làm mới báo cáo lệch kho, THE system SHALL tính lại dữ liệu đối chiếu trực tiếp từ Database và hiển thị kết quả hiện tại mà không tự động sửa số lượng tồn kho.
-- **FR-F4-18A:** WHERE báo cáo phát hiện lệch kho, THE system SHALL chỉ hiển thị cảnh báo và dữ liệu đối chiếu để Admin hoặc Librarian điều tra BookCopy liên quan; hệ thống SHALL NOT tự động sửa `totalQuantity` hoặc `availableQuantity`.
+- **FR-F4-18:** WHEN Librarian mở hoặc làm mới báo cáo lệch kho, THE system SHALL tính lại dữ liệu đối chiếu trực tiếp từ Database và hiển thị kết quả hiện tại mà không tự động sửa số lượng tồn kho.
+- **FR-F4-18A:** WHERE báo cáo phát hiện lệch kho, THE system SHALL chỉ hiển thị cảnh báo và dữ liệu đối chiếu để Librarian điều tra BookCopy liên quan; hệ thống SHALL NOT tự động sửa `totalQuantity` hoặc `availableQuantity`.
 
 **Lịch sử Import**
 - **FR-F4-19:** WHEN hệ thống xử lý một file import, THE system SHALL lưu thông tin phiên import gồm người thực hiện, tên file, thời gian, trạng thái và tổng số dòng.
-- **FR-F4-20:** WHERE phiên import có lỗi validation hoặc lỗi lưu dữ liệu, THE system SHALL lưu danh sách lỗi theo sheet, dòng và cột để Librarian, Admin và Library Manager tra cứu.
+- **FR-F4-20:** WHERE phiên import có lỗi validation hoặc lỗi lưu dữ liệu, THE system SHALL lưu danh sách lỗi theo sheet, dòng và cột để Librarian tra cứu.
 - **FR-F4-21:** WHERE sheet `BookCopies` chứa nhiều hơn 5.000 dòng dữ liệu, THE system SHALL từ chối file trước khi mở Database Transaction và hiển thị thông báo vượt giới hạn import.
 - **FR-F4-21A:** THE system SHALL lưu lịch sử phiên import và lỗi import trong 1 năm kể từ thời điểm xử lý file.
 
 **Audit Log**
 - **FR-F4-22:** WHEN hệ thống import hàng loạt thành công, THE system SHALL ghi một Audit Log tổng hợp cho phiên import và ghi Audit Log chi tiết cho từng `Book`, `BookCopy`, `Category`, `Tag` được tạo.
-- **FR-F4-23:** WHEN Librarian hoặc Admin tạo hoặc cập nhật dữ liệu F4 ngoài import, THE system SHALL ghi Audit Log cho từng thao tác Create/Update quan trọng.
+- **FR-F4-23:** WHEN Librarian tạo hoặc cập nhật dữ liệu F4 ngoài import, THE system SHALL ghi Audit Log cho từng thao tác Create/Update quan trọng.
 
 **Import Template**
 - **FR-F4-24:** WHEN hệ thống đọc sheet `Books`, THE system SHALL yêu cầu đúng các cột `isbn`, `title`, `author`, `publisher`, `publicationYear`, `price`, `categories`, `tags`.
@@ -94,7 +94,7 @@ Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính 
 - **BookCopies Sheet Columns:** Sheet `BookCopies` phải có các cột `isbn`, `barcode`, `location`.
 - **Multi-value Separator:** Các cột `categories` và `tags` dùng dấu chấm phẩy `;` để phân tách nhiều giá trị.
 - **Import Capacity:** Mỗi file import hỗ trợ tối đa 5.000 BookCopy.
-- **Authorization:** Mọi Servlet và JSP thuộc F4 BẮT BUỘC được bảo vệ bởi `AuthFilter`. Role = `LIBRARIAN` hoặc `ADMIN` được phép đọc và thay đổi dữ liệu; Role = `MANAGER` chỉ được phép truy cập các chức năng giám sát chỉ đọc.
+- **Authorization:** Mọi Servlet và JSP thuộc F4 BẮT BUỘC được bảo vệ bởi `AuthFilter`. Chỉ Role = `LIBRARIAN` được phép truy cập, đọc và thay đổi dữ liệu; Role = `ADMIN`, `MANAGER` và các vai trò khác phải bị từ chối với HTTP 403.
 - **Performance:** Truy vấn danh mục sách (có filter) phải phản hồi dưới 500ms (P95).
 
 ## 5. Data Model
@@ -124,10 +124,10 @@ Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính 
 - [ ] Tải file import có BookCopy hợp lệ: Mọi BookCopy được tạo với `condition='good'` và `status='available'`.
 - [ ] Tải file import có ít nhất một dòng lỗi: Không có Book, BookCopy hoặc số lượng tồn kho nào bị thay đổi; hệ thống hiển thị toàn bộ lỗi theo dòng.
 - [ ] Xảy ra SQLException trong lúc lưu file import hợp lệ: Toàn bộ thay đổi của phiên import được rollback.
-- [ ] Người dùng có Role = `ADMIN` thực hiện chức năng F4 hoặc import hàng loạt: Có đầy đủ quyền tương tự Librarian.
-- [ ] Library Manager xem danh mục, tồn kho, lịch sử import, báo cáo hỏng/mất và cảnh báo lệch kho: Hiển thị dữ liệu nhưng không hiển thị thao tác thay đổi dữ liệu.
+- [ ] Người dùng có Role = `ADMIN` truy cập trực tiếp route F4 hoặc import hàng loạt: Hệ thống trả về HTTP 403 và không thay đổi dữ liệu.
+- [ ] Library Manager truy cập trực tiếp route F4: Hệ thống trả về HTTP 403 và không thay đổi dữ liệu.
 - [ ] Số lượng tổng hợp trong Book khác dữ liệu BookCopy: Hệ thống đánh dấu đúng Book bị lệch và hiển thị số lượng tổng hợp cùng số lượng tính lại.
-- [ ] Library Manager làm mới báo cáo lệch kho: Hệ thống tính lại cảnh báo từ dữ liệu Database hiện tại và không thay đổi dữ liệu Book hoặc BookCopy.
+- [ ] Librarian làm mới báo cáo lệch kho: Hệ thống tính lại cảnh báo từ dữ liệu Database hiện tại và không thay đổi dữ liệu Book hoặc BookCopy.
 - [ ] Báo cáo phát hiện lệch kho: Hệ thống chỉ hiển thị cảnh báo và không cung cấp thao tác tự động sửa số lượng.
 - [ ] Phiên import có lỗi: Lịch sử import lưu được thông tin phiên và toàn bộ lỗi theo sheet, dòng và cột.
 - [ ] Phiên import thành công: Hệ thống ghi Audit Log tổng hợp cho phiên import và Audit Log chi tiết cho từng entity được tạo.
@@ -138,8 +138,8 @@ Quản lý toàn bộ vòng đời của tài nguyên sách. Đảm bảo tính 
 - [ ] Cột `categories` hoặc `tags` chứa nhiều giá trị phân tách bằng `;`: Hệ thống trim và liên kết đúng từng Category/Tag.
 - [ ] File import chứa dòng trống hoàn toàn: Hệ thống bỏ qua dòng trống và không báo lỗi cho dòng đó.
 - [ ] File import chứa ISBN hoặc Barcode trùng lặp nội bộ: Hệ thống báo rõ các dòng trùng, không lưu bất kỳ dữ liệu nào.
-- [ ] Library Manager cố tình gửi yêu cầu tạo, cập nhật, đổi trạng thái hoặc import: Hệ thống trả về HTTP 403 và không thay đổi dữ liệu.
-- [ ] Người dùng không có Role = `LIBRARIAN`, `ADMIN` hoặc `MANAGER` truy cập chức năng F4: Hệ thống trả về HTTP 403 và không thay đổi dữ liệu.
+- [ ] Admin, Library Manager hoặc vai trò khác cố tình gửi yêu cầu tạo, cập nhật, đổi trạng thái hoặc import F4: Hệ thống trả về HTTP 403 và không thay đổi dữ liệu.
+- [ ] Người dùng không có Role = `LIBRARIAN` truy cập chức năng F4: Hệ thống trả về HTTP 403 và không thay đổi dữ liệu.
 
 ## 8. Out of Scope
 - Hệ thống KHÔNG cho phép Hard Delete (xóa cứng) dữ liệu `Book` và `BookCopy`.
