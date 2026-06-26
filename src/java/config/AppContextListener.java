@@ -18,11 +18,15 @@ public class AppContextListener implements ServletContextListener {
     
     private static final Logger LOGGER = Logger.getLogger(AppContextListener.class.getName());
 
-    // Tiến trình ngầm Hủy đặt trước quá hạn (F5)
+    // Tiết trình ngầm Hủy đặt trước quá hạn (F5)
     private ScheduledExecutorService reservationExpirationScheduler;
 
-    // Tiến trình ngầm Quét quá hạn tự động (F9)
+    // Tiết trình ngầm Quét quá hạn tự động (F9)
     private ScheduledExecutorService overdueScheduler;
+
+    // Tiến trình ngầm gửi email ngầm (F-AsyncEmail)
+    private service.EmailWorker emailWorker;
+    private Thread emailThread;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -33,6 +37,17 @@ public class AppContextListener implements ServletContextListener {
             LOGGER.log(Level.INFO, "[AppListener] SystemConfigCache loaded successfully.");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "[AppListener] Failed to load SystemConfigCache. Business defaults will be used.", e);
+        }
+
+        // Khởi động Async Email Worker Daemon Thread trước tiên
+        try {
+            emailWorker = new service.EmailWorker(sce.getServletContext());
+            emailThread = new Thread(emailWorker, "EmailWorker-Thread");
+            emailThread.setDaemon(true); // Daemon thread: tự tắt khi JVM dừng
+            emailThread.start();
+            LOGGER.log(Level.INFO, "[AppListener] Đã khởi động tiến trình ngầm EmailWorker Daemon Thread thành công.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "[AppListener] Lỗi khi khởi động EmailWorker Daemon Thread", e);
         }
 
         // Đăng ký Tiến trình Hủy đặt trước quá hạn lặp lại tự động sau mỗi 1 giờ (initialDelay=0, period=1, TimeUnit.HOURS)
@@ -79,7 +94,7 @@ public class AppContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         LOGGER.log(Level.INFO, "[AppListener] Application LMS Stopping. Cleaning up resources...");
 
-        // Dừng scheduler trước
+        // Dừng các scheduler trước
         if (reservationExpirationScheduler != null && !reservationExpirationScheduler.isShutdown()) {
             LOGGER.log(Level.INFO, "[AppListener] Đang dừng tiến trình ngầm ReservationExpirationProcessor...");
             reservationExpirationScheduler.shutdownNow();
@@ -101,6 +116,22 @@ public class AppContextListener implements ServletContextListener {
                     LOGGER.log(Level.WARNING, "[AppListener] Tiến trình ngầm OverdueProcessor không dừng trong thời gian quy định.");
                 }
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        // Dừng và Drain Email Queue
+        if (emailWorker != null) {
+            LOGGER.log(Level.INFO, "[AppListener] Đang dừng tiến trình ngầm EmailWorker...");
+            emailWorker.shutdown();
+        }
+        if (emailThread != null) {
+            emailThread.interrupt(); // Đánh thức khỏi queue.take()
+            try {
+                emailThread.join(5000); // Đợi tối đa 5 giây drain queue
+                LOGGER.log(Level.INFO, "[AppListener] Đã dừng hoàn toàn tiến trình ngầm EmailWorker.");
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, "[AppListener] Đang chờ dừng EmailWorker thì bị ngắt quãng.");
                 Thread.currentThread().interrupt();
             }
         }
