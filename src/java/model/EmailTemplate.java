@@ -1,1 +1,118 @@
-package model;\r\n\r\nimport java.sql.Timestamp;\r\n\r\n/**\r\n * EmailTemplate — Entity bean ánh xạ 1-1 với bảng [EmailTemplate] trong CSDL.\r\n *\r\n * <p>Bảng này lưu trữ 6 Mẫu Email Hệ Thống dùng cho tiến trình ngầm\r\n * Async Email Sender gửi thông báo tự động bị động (Passive Notification):\r\n * Khôi phục mật khẩu, Sách đặt trước sẵn sàng, Gia hạn thành công,\r\n * Cảnh báo quá hạn, Phạt sự cố, Xác nhận thanh toán.</p>\r\n *\r\n * <p>Quy tắc vận hành:</p>\r\n * <ul>\r\n *   <li>Mẫu được tạo bởi seed SQL khi deploy — không có createdAt.</li>\r\n *   <li>Manager được phép chỉnh sửa {@code subject} và {@code bodyContent}.</li>\r\n *   <li>Manager KHÔNG ĐƯỢC PHÉP tạo hoặc xóa mẫu (DAO không có insert/delete).</li>\r\n *   <li>Nội dung hỗ trợ placeholder dạng {{key}} để inject dữ liệu động.</li>\r\n * </ul>\r\n *\r\n * <p>Schema mapping:</p>\r\n * <ul>\r\n *   <li>{@code templateId} — INT IDENTITY PRIMARY KEY</li>\r\n *   <li>{@code tempName}   — VARCHAR(100) NOT NULL UNIQUE (VD: 'OVERDUE_NOTICE')</li>\r\n *   <li>{@code description}— VARCHAR(500) NULL (Mô tả mục đích mẫu cho Manager)</li>\r\n *   <li>{@code subject}    — VARCHAR(255) NOT NULL (Tiêu đề email)</li>\r\n *   <li>{@code bodyContent}— TEXT NOT NULL (Nội dung HTML có placeholder {{...}})</li>\r\n *   <li>{@code updatedBy}  — INT NULL (FK → \"User\".userId — ai cập nhật gần nhất)</li>\r\n *   <li>{@code updatedAt}  — TIMESTAMP NULL (thời điểm cập nhật gần nhất)</li>\r\n * </ul>\r\n *\r\n * <p>Tuân thủ: ARCH-01 (Java Bean thuần, không ORM annotation).</p>\r\n */\r\npublic class EmailTemplate {\r\n\r\n    private int templateId;\r\n    private String tempName;\r\n    private String description;\r\n    private String subject;\r\n    private String bodyContent;\r\n    private Integer updatedBy;\r\n    private Timestamp updatedAt;\r\n\r\n    public EmailTemplate() {\r\n    }\r\n\r\n    public EmailTemplate(int templateId, String tempName, String description,\r\n                         String subject, String bodyContent,\r\n                         Integer updatedBy, Timestamp updatedAt) {\r\n        this.templateId = templateId;\r\n        this.tempName = tempName;\r\n        this.description = description;\r\n        this.subject = subject;\r\n        this.bodyContent = bodyContent;\r\n        this.updatedBy = updatedBy;\r\n        this.updatedAt = updatedAt;\r\n    }\r\n\r\n    // ========================\r\n    // GETTERS & SETTERS\r\n    // ========================\r\n\r\n    public int getTemplateId() {\r\n        return templateId;\r\n    }\r\n\r\n    public void setTemplateId(int templateId) {\r\n        this.templateId = templateId;\r\n    }\r\n\r\n    public String getTempName() {\r\n        return tempName;\r\n    }\r\n\r\n    public void setTempName(String tempName) {\r\n        this.tempName = tempName;\r\n    }\r\n\r\n    public String getDescription() {\r\n        return description;\r\n    }\r\n\r\n    public void setDescription(String description) {\r\n        this.description = description;\r\n    }\r\n\r\n    public String getSubject() {\r\n        return subject;\r\n    }\r\n\r\n    public void setSubject(String subject) {\r\n        this.subject = subject;\r\n    }\r\n\r\n    public String getBodyContent() {\r\n        return bodyContent;\r\n    }\r\n\r\n    public void setBodyContent(String bodyContent) {\r\n        this.bodyContent = bodyContent;\r\n    }\r\n\r\n    public Integer getUpdatedBy() {\r\n        return updatedBy;\r\n    }\r\n\r\n    public void setUpdatedBy(Integer updatedBy) {\r\n        this.updatedBy = updatedBy;\r\n    }\r\n\r\n    public Timestamp getUpdatedAt() {\r\n        return updatedAt;\r\n    }\r\n\r\n    public void setUpdatedAt(Timestamp updatedAt) {\r\n        this.updatedAt = updatedAt;\r\n    }\r\n}\r\n
+package model;
+
+import java.sql.Timestamp;
+
+/**
+ * EmailTemplate — Entity bean ánh xạ 1-1 với bảng [EmailTemplate] trong CSDL.
+ *
+ * <p>Bảng này lưu trữ 6 Mẫu Email Hệ Thống dùng cho tiến trình ngầm
+ * Async Email Sender gửi thông báo tự động bị động (Passive Notification):
+ * Khôi phục mật khẩu, Sách đặt trước sẵn sàng, Gia hạn thành công,
+ * Cảnh báo quá hạn, Phạt sự cố, Xác nhận thanh toán.</p>
+ *
+ * <p>Quy tắc vận hành:</p>
+ * <ul>
+ *   <li>Mẫu được tạo bởi seed SQL khi deploy — không có createdAt.</li>
+ *   <li>Manager được phép chỉnh sửa {@code subject} và {@code bodyContent}.</li>
+ *   <li>Manager KHÔNG ĐƯỢC PHÉP tạo hoặc xóa mẫu (DAO không có insert/delete).</li>
+ *   <li>Nội dung hỗ trợ placeholder dạng {{key}} để inject dữ liệu động.</li>
+ * </ul>
+ *
+ * <p>Schema mapping:</p>
+ * <ul>
+ *   <li>{@code templateId} — INT IDENTITY PRIMARY KEY</li>
+ *   <li>{@code tempName}   — VARCHAR(100) NOT NULL UNIQUE (VD: 'OVERDUE_NOTICE')</li>
+ *   <li>{@code description}— VARCHAR(500) NULL (Mô tả mục đích mẫu cho Manager)</li>
+ *   <li>{@code subject}    — VARCHAR(255) NOT NULL (Tiêu đề email)</li>
+ *   <li>{@code bodyContent}— TEXT NOT NULL (Nội dung HTML có placeholder {{...}})</li>
+ *   <li>{@code updatedBy}  — INT NULL (FK → "User".userId — ai cập nhật gần nhất)</li>
+ *   <li>{@code updatedAt}  — TIMESTAMP NULL (thời điểm cập nhật gần nhất)</li>
+ * </ul>
+ *
+ * <p>Tuân thủ: ARCH-01 (Java Bean thuần, không ORM annotation).</p>
+ */
+public class EmailTemplate {
+
+    private int templateId;
+    private String tempName;
+    private String description;
+    private String subject;
+    private String bodyContent;
+    private Integer updatedBy;
+    private Timestamp updatedAt;
+
+    public EmailTemplate() {
+    }
+
+    public EmailTemplate(int templateId, String tempName, String description,
+                         String subject, String bodyContent,
+                         Integer updatedBy, Timestamp updatedAt) {
+        this.templateId = templateId;
+        this.tempName = tempName;
+        this.description = description;
+        this.subject = subject;
+        this.bodyContent = bodyContent;
+        this.updatedBy = updatedBy;
+        this.updatedAt = updatedAt;
+    }
+
+    // ========================
+    // GETTERS & SETTERS
+    // ========================
+
+    public int getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(int templateId) {
+        this.templateId = templateId;
+    }
+
+    public String getTempName() {
+        return tempName;
+    }
+
+    public void setTempName(String tempName) {
+        this.tempName = tempName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getBodyContent() {
+        return bodyContent;
+    }
+
+    public void setBodyContent(String bodyContent) {
+        this.bodyContent = bodyContent;
+    }
+
+    public Integer getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(Integer updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+}
