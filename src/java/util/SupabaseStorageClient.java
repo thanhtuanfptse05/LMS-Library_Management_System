@@ -48,12 +48,23 @@ public class SupabaseStorageClient {
                 .header("apikey", serviceRoleKey)
                 .header("Content-Type", contentType)
                 .header("Cache-Control", "public, max-age=31536000")
+                .header("x-upsert", "true")
                 .POST(HttpRequest.BodyPublishers.ofByteArray(bytes))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            if (response.statusCode() == 400 && response.body() != null && response.body().contains("\"Duplicate\"")) {
+                return publicObjectUrl(fileName);
+            }
             throw new IOException("Không thể upload ảnh lên Supabase Storage. Mã lỗi "
                     + response.statusCode() + ": " + response.body());
+        }
+        return publicObjectUrl(fileName);
+    }
+
+    public String publicObjectUrl(String fileName) {
+        if (!isConfigured()) {
+            throw new IllegalStateException("Supabase Storage chưa được cấu hình.");
         }
         return supabaseUrl + "/storage/v1/object/public/" + bucket + "/" + fileName;
     }
