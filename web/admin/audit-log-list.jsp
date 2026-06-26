@@ -332,7 +332,15 @@
 
     <!-- ════════════════ PAGE-SPECIFIC STYLES ════════════════ -->
     <style>
+        /* Mặc định cho các loại hành động khác chưa định nghĩa */
+        [class^="audit-badge-"] {
+            background: rgba(100, 116, 139, 0.12); color: #475569;
+        }
         /* Badge màu theo nhóm actionType (FR-F12-02) */
+        /* Hệ thống/Gửi Email — xanh xám */
+        [class*="audit-badge-SYSTEM_EMAIL"], [class*="audit-badge-SYSTEM"] {
+            background: rgba(100, 116, 139, 0.12) !important; color: #475569 !important;
+        }
         /* Tạo mới — xanh lá */
         [class*="audit-badge-CREATE"], [class*="audit-badge-IMPORT"] {
             background: rgba(16, 185, 129, 0.12) !important; color: #059669 !important;
