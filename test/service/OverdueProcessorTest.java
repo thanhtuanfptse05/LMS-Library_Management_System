@@ -223,14 +223,15 @@ public class OverdueProcessorTest {
                 }
             }
 
-            // 2.1. Có bản ghi Payment pending được tạo liên kết với Fine
+            // 2.1. Xác nhận rằng một hóa đơn thanh toán (Payment) ở trạng thái 'pending'
+            // cũng được tạo tự động để độc giả có thể thực hiện thanh toán ngay lập tức.
             String sqlCheckPayment = "SELECT paidAmount, status FROM Payment WHERE fineId IN (SELECT fineId FROM Fine WHERE borrowRecordId = ?)";
             try (PreparedStatement ps = conn.prepareStatement(sqlCheckPayment)) {
                 ps.setInt(1, testBorrowRecordId);
                 try (ResultSet rs = ps.executeQuery()) {
-                    assertTrue(rs.next());
-                    assertEquals(0, BigDecimal.valueOf(5000).compareTo(rs.getBigDecimal("paidAmount")));
-                    assertEquals("pending", rs.getString("status"));
+                    assertTrue("Phải tạo được bản ghi Payment liên kết với Fine", rs.next());
+                    assertEquals("Số tiền thanh toán phải bằng số tiền phạt 5000 VND", 0, BigDecimal.valueOf(5000).compareTo(rs.getBigDecimal("paidAmount")));
+                    assertEquals("Trạng thái thanh toán mặc định phải là 'pending'", "pending", rs.getString("status"));
                 }
             }
 
