@@ -1,363 +1,526 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE html>
-<html lang="vi">
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+            <!DOCTYPE html>
+            <html lang="vi">
 
-<jsp:include page="fragments/_head.jsp" />
+            <jsp:include page="fragments/_head.jsp" />
 
-<style>
-    :root {
-        --bs-primary: #9d4300;
-        --bs-primary-rgb: 157, 67, 0;
-        --primary-container: #f97316;
-        --primary-fixed: #ffdbca;
-        --on-surface: #191c1e;
-        --on-surface-variant: #584237;
-        --surface-container-lowest: #ffffff;
-        --surface-container-low: #f2f4f6;
-        --surface-container-high: #e6e8ea;
-        --secondary-container: #dae2fd;
-        --on-secondary-container: #5c647a;
-        --outline-variant: #e0c0b1;
-        --surface-variant: #e0e3e5;
-        --background: #f7f9fb;
-    }
+            <style>
+                :root {
+                    --bs-primary: #9d4300;
+                    --bs-primary-rgb: 157, 67, 0;
+                    --primary-container: #f97316;
+                    --primary-fixed: #ffdbca;
+                    --on-surface: #191c1e;
+                    --on-surface-variant: #584237;
+                    --surface-container-lowest: #ffffff;
+                    --surface-container-low: #f2f4f6;
+                    --surface-container-high: #e6e8ea;
+                    --secondary-container: #dae2fd;
+                    --on-secondary-container: #5c647a;
+                    --outline-variant: #e0c0b1;
+                    --surface-variant: #e0e3e5;
+                    --background: #f7f9fb;
+                }
 
-    .font-headline-lg { font-size: 32px; line-height: 40px; letter-spacing: -0.01em; font-weight: 600; }
-    @media (max-width: 768px) { .font-headline-lg { font-size: 24px; line-height: 32px; } }
-    .font-headline-md { font-size: 24px; line-height: 32px; font-weight: 600; }
-    .font-title-lg { font-size: 20px; line-height: 28px; font-weight: 600; }
-    .font-body-md { font-size: 16px; line-height: 24px; font-weight: 400; }
-    .font-body-sm { font-size: 14px; line-height: 20px; font-weight: 400; }
-    .font-label-md { font-size: 12px; line-height: 16px; letter-spacing: 0.05em; font-weight: 600; }
-    .font-display { font-size: 48px; line-height: 56px; letter-spacing: -0.02em; font-weight: 700; }
+                .font-headline-lg {
+                    font-size: 32px;
+                    line-height: 40px;
+                    letter-spacing: -0.01em;
+                    font-weight: 600;
+                }
 
-    .rounded-xl { border-radius: 0.75rem !important; }
-    .card-shadow { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); transition: transform 0.2s ease-out; }
-    .card-shadow:hover { transform: translateY(-2px); }
+                @media (max-width: 768px) {
+                    .font-headline-lg {
+                        font-size: 24px;
+                        line-height: 32px;
+                    }
+                }
 
-    .profile-img-container { width: 128px; height: 128px; border: 4px solid var(--primary-fixed); }
-    .btn-camera {
-        position: absolute; bottom: 0; right: 0; background-color: var(--bs-primary);
-        color: white; border: none; padding: 6px; border-radius: 50%;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease;
-    }
-    .btn-camera:hover { transform: scale(1.05); }
-</style>
+                .font-headline-md {
+                    font-size: 24px;
+                    line-height: 32px;
+                    font-weight: 600;
+                }
 
-<body class="d-flex flex-column">
+                .font-title-lg {
+                    font-size: 20px;
+                    line-height: 28px;
+                    font-weight: 600;
+                }
 
-    <jsp:include page="fragments/_sidebar.jsp" />
+                .font-body-md {
+                    font-size: 16px;
+                    line-height: 24px;
+                    font-weight: 400;
+                }
 
-    <div class="d-flex main-wrapper overflow-hidden">
-        
-        <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: #f7f9fb;">
-            
-            <jsp:include page="fragments/_header.jsp" />
+                .font-body-sm {
+                    font-size: 14px;
+                    line-height: 20px;
+                    font-weight: 400;
+                }
 
-            <div class="container-fluid px-4 py-4" style="max-width: 1400px; margin: 0 auto;">
+                .font-label-md {
+                    font-size: 12px;
+                    line-height: 16px;
+                    letter-spacing: 0.05em;
+                    font-weight: 600;
+                }
 
-                <c:if test="${not empty sessionScope.successMessage}">
-                    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <span class="material-symbols-outlined me-2">check_circle</span>
-                        <c:out value="${sessionScope.successMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-                    </div>
-                    <c:remove var="successMessage" scope="session" />
-                </c:if>
-                <c:if test="${not empty sessionScope.errorMessage}">
-                    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <span class="material-symbols-outlined me-2">error</span>
-                        <c:out value="${sessionScope.errorMessage}" />
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-                    </div>
-                    <c:remove var="errorMessage" scope="session" />
-                </c:if>
+                .font-display {
+                    font-size: 48px;
+                    line-height: 56px;
+                    letter-spacing: -0.02em;
+                    font-weight: 700;
+                }
 
-                <div class="mb-4">
-                    <h2 class="font-headline-lg mb-1" style="color: var(--on-surface);">Hồ sơ Quản lý</h2>
-                    <p class="font-body-md text-on-surface-variant">Quản lý thông tin đăng nhập và chi tiết liên hệ của bạn.</p>
-                </div>
+                .rounded-xl {
+                    border-radius: 0.75rem !important;
+                }
 
-                <div class="row g-4 align-items-start">
-                    <div class="col-12 col-lg-4">
-                        <div class="d-flex flex-column gap-4">
+                .card-shadow {
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+                    transition: transform 0.2s ease-out;
+                }
 
-                            <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant text-center">
-                                <div class="relative d-inline-block mb-3 position-relative">
-                                    <div class="profile-img-container rounded-circle overflow-hidden mx-auto bg-primary-fixed d-flex align-items-center justify-content-center text-primary" style="font-size: 48px; font-weight: bold;">
-                                        <c:out value="${not empty profile.fullName ? profile.fullName.substring(0,1).toUpperCase() : 'M'}" />
-                                    </div>
-                                    <button class="btn-camera d-flex align-items-center justify-content-center" title="Thay đổi Ảnh đại diện">
-                                        <span class="material-symbols-outlined style-icon" style="font-size: 20px;">photo_camera</span>
-                                    </button>
+                .card-shadow:hover {
+                    transform: translateY(-2px);
+                }
+
+                .profile-img-container {
+                    width: 128px;
+                    height: 128px;
+                    border: 4px solid var(--primary-fixed);
+                }
+
+                .btn-camera {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    background-color: var(--bs-primary);
+                    color: white;
+                    border: none;
+                    padding: 6px;
+                    border-radius: 50%;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    transition: transform 0.2s ease;
+                }
+
+                .btn-camera:hover {
+                    transform: scale(1.05);
+                }
+            </style>
+
+            <body class="d-flex flex-column">
+
+                <jsp:include page="fragments/_sidebar.jsp" />
+
+                <div class="d-flex main-wrapper overflow-hidden">
+
+                    <main class="flex-grow-1 overflow-y-auto main-content-layout" style="background-color: #f7f9fb;">
+
+                        <jsp:include page="fragments/_header.jsp" />
+
+                        <div class="container-fluid px-4 py-4" style="max-width: 1400px; margin: 0 auto;">
+
+                            <c:if test="${not empty sessionScope.successMessage}">
+                                <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4"
+                                    role="alert">
+                                    <span class="material-symbols-outlined me-2">check_circle</span>
+                                    <c:out value="${sessionScope.successMessage}" />
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Đóng"></button>
                                 </div>
-                                <h3 class="font-headline-md mb-1" style="color: var(--on-surface);">
-                                    <c:out value="${not empty profile.fullName ? profile.fullName : 'Quản lý Thư viện'}" />
-                                </h3>
-                                <p class="font-body-sm text-on-surface-variant mb-4">
-                                    Quản lý Thư viện <br/>
-                                    Mã nhân viên: <span class="fw-bold"><c:out value="${manager.staffCode}" /></span>
-                                </p>
-                                <div class="d-flex flex-column gap-2">
-                                    <button class="btn btn-primary-custom w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
-                                            data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Chỉnh sửa hồ sơ
-                                    </button>
-                                    <button class="btn btn-outline-secondary w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
-                                            data-bs-toggle="modal" data-bs-target="#changePwModal">
-                                        <span class="material-symbols-outlined">security</span>
-                                        Đổi mật khẩu
-                                    </button>
+                                <c:remove var="successMessage" scope="session" />
+                            </c:if>
+                            <c:if test="${not empty sessionScope.errorMessage}">
+                                <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
+                                    <span class="material-symbols-outlined me-2">error</span>
+                                    <c:out value="${sessionScope.errorMessage}" />
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Đóng"></button>
                                 </div>
+                                <c:remove var="errorMessage" scope="session" />
+                            </c:if>
+
+                            <div class="mb-4">
+                                <h2 class="font-headline-lg mb-1" style="color: var(--on-surface);">Hồ sơ Quản lý</h2>
+                                <p class="font-body-md text-on-surface-variant">Quản lý thông tin đăng nhập và chi tiết
+                                    liên hệ của bạn.</p>
                             </div>
 
-                            <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
-                                <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Sức khỏe Thư viện</h4>
-                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 font-label-md d-flex align-items-center gap-2">
-                                        <span class="spinner-grow spinner-grow-sm text-success" role="status"
-                                              style="width: 8px; height: 8px; --bs-spinner-animation-speed: 1.2s;"></span>
-                                        Tối ưu
-                                    </span>
-                                </div>
-                                <div class="d-flex flex-column gap-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="font-body-sm text-on-surface-variant">Tổng số Thành viên</span>
-                                        <span class="font-label-md fw-bold" style="color: #059669;">12,890</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="font-body-sm text-on-surface-variant">Tiền phạt hiện tại</span>
-                                        <span class="font-label-md fw-bold text-danger">3,450,000 ₫</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            <div class="row g-4 align-items-start">
+                                <div class="col-12 col-lg-4">
+                                    <div class="d-flex flex-column gap-4">
 
-                    <div class="col-12 col-lg-8">
-                        <div class="d-flex flex-column gap-4">
-
-                            <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
-                                <div class="d-flex align-items-center gap-2 mb-4">
-                                    <span class="material-symbols-outlined text-primary fs-4">badge</span>
-                                    <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Thông tin Cá nhân</h4>
-                                </div>
-
-                                <div class="row g-4">
-                                    <div class="col-12 col-md-6">
-                                        <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Họ và tên</label>
-                                            <p class="font-body-md mb-0 text-on-surface">
-                                                <c:out value="${not empty profile.fullName ? profile.fullName : 'Chưa thiết lập'}" />
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Mã Nhân viên</label>
-                                            <p class="font-body-md mb-0 text-on-surface fw-bold">
-                                                <c:out value="${not empty manager.staffCode ? manager.staffCode : 'Chưa thiết lập'}" />
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Địa chỉ Email</label>
-                                            <p class="font-body-md mb-0 text-on-surface">
-                                                <c:out value="${not empty user.email ? user.email : 'Chưa thiết lập'}" />
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Số điện thoại</label>
-                                            <p class="font-body-md mb-0 text-on-surface">
-                                                <c:out value="${not empty profile.phoneNumber ? profile.phoneNumber : 'Chưa thiết lập'}" />
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Giới tính</label>
-                                            <p class="font-body-md mb-0 text-on-surface">
-                                                <c:out value="${not empty profile.gender ? (profile.gender == 'Male' ? 'Nam' : (profile.gender == 'Female' ? 'Nữ' : 'Khác')) : 'Chưa thiết lập'}" />
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <div class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
-                                            <label class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Ngày sinh</label>
-                                            <p class="font-body-md mb-0 text-on-surface">
-                                                <c:choose>
-                                                    <c:when test="${not empty profile.dateOfBirth}">
-                                                        <fmt:formatDate value="${profile.dateOfBirth}" pattern="dd/MM/yyyy" />
-                                                    </c:when>
-                                                    <c:otherwise>Chưa thiết lập</c:otherwise>
-                                                </c:choose>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
-                                <div class="d-flex align-items-center gap-2 mb-4">
-                                    <span class="material-symbols-outlined text-primary fs-4">work</span>
-                                    <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Chi tiết Việc làm</h4>
-                                </div>
-
-                                <div class="row g-3">
-                                    <div class="col-12 col-md-6">
-                                        <div class="bg-surface-container-low p-3 rounded-3 border border-outline-variant d-flex align-items-center gap-3">
-                                            <div class="d-flex align-items-center justify-content-center bg-white rounded-3 shadow-sm text-primary" style="width: 48px; height: 48px;">
-                                                <span class="material-symbols-outlined">event_available</span>
+                                        <div
+                                            class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant text-center">
+                                            <div class="relative d-inline-block mb-3 position-relative">
+                                                <div class="profile-img-container rounded-circle overflow-hidden mx-auto bg-primary-fixed d-flex align-items-center justify-content-center text-primary"
+                                                    style="font-size: 48px; font-weight: bold;">
+                                                    <c:out
+                                                        value="${not empty profile.fullName ? profile.fullName.substring(0,1).toUpperCase() : 'M'}" />
+                                                </div>
+                                                <button
+                                                    class="btn-camera d-flex align-items-center justify-content-center"
+                                                    title="Thay đổi Ảnh đại diện">
+                                                    <span class="material-symbols-outlined style-icon"
+                                                        style="font-size: 20px;">photo_camera</span>
+                                                </button>
                                             </div>
-                                            <div>
-                                                <label class="font-label-md text-on-surface-variant d-block">Ngày bắt đầu</label>
-                                                <p class="font-body-md fw-bold mb-0 text-on-surface">
-                                                    <c:choose>
-                                                        <c:when test="${not empty profile.startDate}">
-                                                            <fmt:formatDate value="${profile.startDate}" pattern="dd/MM/yyyy" />
-                                                        </c:when>
-                                                        <c:otherwise>Chưa thiết lập</c:otherwise>
-                                                    </c:choose>
-                                                </p>
+                                            <h3 class="font-headline-md mb-1" style="color: var(--on-surface);">
+                                                <c:out
+                                                    value="${not empty profile.fullName ? profile.fullName : 'Quản lý Thư viện'}" />
+                                            </h3>
+                                            <p class="font-body-sm text-on-surface-variant mb-4">
+                                                Quản lý Thư viện <br />
+                                                Mã nhân viên: <span class="fw-bold">
+                                                    <c:out value="${manager.staffCode}" />
+                                                </span>
+                                            </p>
+                                            <div class="d-flex flex-column gap-2">
+                                                <button
+                                                    class="btn btn-primary-custom w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+                                                    data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                                    <span class="material-symbols-outlined">edit</span>
+                                                    Chỉnh sửa hồ sơ
+                                                </button>
+                                                <button
+                                                    class="btn btn-outline-secondary w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+                                                    data-bs-toggle="modal" data-bs-target="#changePwModal">
+                                                    <span class="material-symbols-outlined">security</span>
+                                                    Đổi mật khẩu
+                                                </button>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <div class="bg-surface-container-low p-3 rounded-3 border border-outline-variant d-flex align-items-center gap-3">
-                                            <div class="d-flex align-items-center justify-content-center bg-white rounded-3 shadow-sm text-primary" style="width: 48px; height: 48px;">
-                                                <span class="material-symbols-outlined">verified</span>
+
+                                        <div
+                                            class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
+                                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                                <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Sức
+                                                    khỏe Thư viện</h4>
+                                                <span
+                                                    class="badge bg-success-subtle text-success rounded-pill px-3 py-2 font-label-md d-flex align-items-center gap-2">
+                                                    <span class="spinner-grow spinner-grow-sm text-success"
+                                                        role="status"
+                                                        style="width: 8px; height: 8px; --bs-spinner-animation-speed: 1.2s;"></span>
+                                                    Tối ưu
+                                                </span>
                                             </div>
-                                            <div>
-                                                <label class="font-label-md text-on-surface-variant d-block">Trạng thái Tài khoản</label>
-                                                <p class="font-body-md fw-bold mb-0 text-success">
-                                                    Hoạt động
-                                                </p>
+                                            <div class="d-flex flex-column gap-3">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="font-body-sm text-on-surface-variant">Tổng số Thành
+                                                        viên</span>
+                                                    <span class="font-label-md fw-bold"
+                                                        style="color: #059669;">12,890</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="font-body-sm text-on-surface-variant">Tiền phạt hiện
+                                                        tại</span>
+                                                    <span class="font-label-md fw-bold text-danger">3,450,000 ₫</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="row g-3">
-                                <div class="col-12 col-md-4">
-                                    <div class="p-3 rounded-xl text-white h-100" style="background-color: var(--bs-primary);">
-                                        <span class="material-symbols-outlined display-6 mb-2">auto_stories</span>
-                                        <div class="font-display mb-1">124K</div>
-                                        <p class="font-label-md mb-0 text-white-50">Tổng số Sách Đang quản lý</p>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="bg-surface-container-high p-3 rounded-xl h-100">
-                                        <span class="material-symbols-outlined text-primary display-6 mb-2">assignment</span>
-                                        <div class="font-display mb-1 text-on-surface">18</div>
-                                        <p class="font-label-md mb-0 text-on-surface-variant">Chính sách Đã cập nhật</p>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="bg-secondary-container p-3 rounded-xl h-100">
-                                        <span class="material-symbols-outlined text-on-secondary-container display-6 mb-2">mark_email_read</span>
-                                        <div class="font-display text-on-secondary-container mb-1">5</div>
-                                        <p class="font-label-md mb-0 text-on-secondary-container text-opacity-75">Mẫu Đã quản lý</p>
+                                <div class="col-12 col-lg-8">
+                                    <div class="d-flex flex-column gap-4">
+
+                                        <div
+                                            class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
+                                            <div class="d-flex align-items-center gap-2 mb-4">
+                                                <span class="material-symbols-outlined text-primary fs-4">badge</span>
+                                                <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Thông
+                                                    tin Cá nhân</h4>
+                                            </div>
+
+                                            <div class="row g-4">
+                                                <div class="col-12 col-md-6">
+                                                    <div
+                                                        class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
+                                                        <label
+                                                            class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Họ
+                                                            và tên</label>
+                                                        <p class="font-body-md mb-0 text-on-surface">
+                                                            <c:out
+                                                                value="${not empty profile.fullName ? profile.fullName : 'Chưa thiết lập'}" />
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div
+                                                        class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
+                                                        <label
+                                                            class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Mã
+                                                            Nhân viên</label>
+                                                        <p class="font-body-md mb-0 text-on-surface fw-bold">
+                                                            <c:out
+                                                                value="${not empty manager.staffCode ? manager.staffCode : 'Chưa thiết lập'}" />
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div
+                                                        class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
+                                                        <label
+                                                            class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Địa
+                                                            chỉ Email</label>
+                                                        <p class="font-body-md mb-0 text-on-surface">
+                                                            <c:out
+                                                                value="${not empty user.email ? user.email : 'Chưa thiết lập'}" />
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div
+                                                        class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
+                                                        <label
+                                                            class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Số
+                                                            điện thoại</label>
+                                                        <p class="font-body-md mb-0 text-on-surface">
+                                                            <c:out
+                                                                value="${not empty profile.phoneNumber ? profile.phoneNumber : 'Chưa thiết lập'}" />
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div
+                                                        class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
+                                                        <label
+                                                            class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Giới
+                                                            tính</label>
+                                                        <p class="font-body-md mb-0 text-on-surface">
+                                                            <c:out
+                                                                value="${not empty profile.gender ? (profile.gender == 'Male' ? 'Nam' : (profile.gender == 'Female' ? 'Nữ' : 'Khác')) : 'Chưa thiết lập'}" />
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div
+                                                        class="d-flex flex-column gap-1 border-bottom border-surface-variant pb-2">
+                                                        <label
+                                                            class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Ngày
+                                                            sinh</label>
+                                                        <p class="font-body-md mb-0 text-on-surface">
+                                                            <c:choose>
+                                                                <c:when test="${not empty profile.dateOfBirth}">
+                                                                    <fmt:formatDate value="${profile.dateOfBirth}"
+                                                                        pattern="dd/MM/yyyy" />
+                                                                </c:when>
+                                                                <c:otherwise>Chưa thiết lập</c:otherwise>
+                                                            </c:choose>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
+                                            <div class="d-flex align-items-center gap-2 mb-4">
+                                                <span class="material-symbols-outlined text-primary fs-4">work</span>
+                                                <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Chi
+                                                    tiết Việc làm</h4>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-12 col-md-6">
+                                                    <div
+                                                        class="bg-surface-container-low p-3 rounded-3 border border-outline-variant d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center bg-white rounded-3 shadow-sm text-primary"
+                                                            style="width: 48px; height: 48px;">
+                                                            <span
+                                                                class="material-symbols-outlined">event_available</span>
+                                                        </div>
+                                                        <div>
+                                                            <label
+                                                                class="font-label-md text-on-surface-variant d-block">Ngày
+                                                                bắt đầu</label>
+                                                            <p class="font-body-md fw-bold mb-0 text-on-surface">
+                                                                <c:choose>
+                                                                    <c:when test="${not empty profile.startDate}">
+                                                                        <fmt:formatDate value="${profile.startDate}"
+                                                                            pattern="dd/MM/yyyy" />
+                                                                    </c:when>
+                                                                    <c:otherwise>Chưa thiết lập</c:otherwise>
+                                                                </c:choose>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div
+                                                        class="bg-surface-container-low p-3 rounded-3 border border-outline-variant d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center bg-white rounded-3 shadow-sm text-primary"
+                                                            style="width: 48px; height: 48px;">
+                                                            <span class="material-symbols-outlined">verified</span>
+                                                        </div>
+                                                        <div>
+                                                            <label
+                                                                class="font-label-md text-on-surface-variant d-block">Trạng
+                                                                thái Tài khoản</label>
+                                                            <p class="font-body-md fw-bold mb-0 text-success">
+                                                                Hoạt động
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-12 col-md-4">
+                                                <div class="p-3 rounded-xl text-white h-100"
+                                                    style="background-color: var(--bs-primary);">
+                                                    <span
+                                                        class="material-symbols-outlined display-6 mb-2">auto_stories</span>
+                                                    <div class="font-display mb-1">124K</div>
+                                                    <p class="font-label-md mb-0 text-white-50">Tổng số Sách Đang quản
+                                                        lý</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <div class="bg-surface-container-high p-3 rounded-xl h-100">
+                                                    <span
+                                                        class="material-symbols-outlined text-primary display-6 mb-2">assignment</span>
+                                                    <div class="font-display mb-1 text-on-surface">18</div>
+                                                    <p class="font-label-md mb-0 text-on-surface-variant">Chính sách Đã
+                                                        cập nhật</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <div class="bg-secondary-container p-3 rounded-xl h-100">
+                                                    <span
+                                                        class="material-symbols-outlined text-on-secondary-container display-6 mb-2">mark_email_read</span>
+                                                    <div class="font-display text-on-secondary-container mb-1">5</div>
+                                                    <p
+                                                        class="font-label-md mb-0 text-on-secondary-container text-opacity-75">
+                                                        Mẫu Đã quản lý</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
+                        <jsp:include page="fragments/_footer.jsp" />
+                    </main>
+                </div>
+
+                <!-- Modals -->
+                <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-4 border-0 shadow-lg">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title font-title-lg">Chỉnh sửa Thông tin Hồ sơ</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Đóng"></button>
+                            </div>
+                            <form action="${pageContext.request.contextPath}/manager/profile" method="POST">
+                                <input type="hidden" name="action" value="updateInfo" />
+                                <div class="modal-body py-4">
+                                    <div class="d-flex flex-column gap-3">
+                                        <div>
+                                            <label
+                                                class="form-label font-label-md text-on-surface-variant text-uppercase">Họ
+                                                và tên</label>
+                                            <input type="text" name="fullName" class="form-control rounded-3 py-2"
+                                                value="<c:out value=" ${profile.fullName}" />" required />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="form-label font-label-md text-on-surface-variant text-uppercase">Số
+                                                điện thoại</label>
+                                            <input type="text" name="phoneNumber" class="form-control rounded-3 py-2"
+                                                value="<c:out value=" ${profile.phoneNumber}" />" />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="form-label font-label-md text-on-surface-variant text-uppercase">Giới
+                                                tính</label>
+                                            <select name="gender" class="form-select rounded-3 py-2">
+                                                <option value="" ${empty profile.gender ? 'selected' : '' }>Chọn Giới
+                                                    tính</option>
+                                                <option value="Male" ${profile.gender=='Male' ? 'selected' : '' }>Nam
+                                                </option>
+                                                <option value="Female" ${profile.gender=='Female' ? 'selected' : '' }>Nữ
+                                                </option>
+                                                <option value="Other" ${profile.gender=='Other' ? 'selected' : '' }>Khác
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="form-label font-label-md text-on-surface-variant text-uppercase">Ngày
+                                                sinh</label>
+                                            <input type="date" name="dateOfBirth" class="form-control rounded-3 py-2"
+                                                value="<c:out value=" ${profile.dateOfBirth}" />" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0 pt-0">
+                                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold"
+                                        data-bs-dismiss="modal">Hủy</button>
+                                    <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Lưu
+                                        thay đổi</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <jsp:include page="fragments/_footer.jsp" />
-        </main>
-    </div>
-
-    <!-- Modals -->
-    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow-lg">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-title-lg">Chỉnh sửa Thông tin Hồ sơ</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <form action="${pageContext.request.contextPath}/manager/profile" method="POST">
-                    <input type="hidden" name="action" value="updateInfo" />
-                    <div class="modal-body py-4">
-                        <div class="d-flex flex-column gap-3">
-                            <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Họ và tên</label>
-                                <input type="text" name="fullName" class="form-control rounded-3 py-2" 
-                                       value="<c:out value="${profile.fullName}" />" required />
+                <div class="modal fade" id="changePwModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-4 border-0 shadow-lg">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title font-title-lg">Thay đổi Mật khẩu Bảo mật</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Đóng"></button>
                             </div>
-                            <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Số điện thoại</label>
-                                <input type="text" name="phoneNumber" class="form-control rounded-3 py-2" 
-                                       value="<c:out value="${profile.phoneNumber}" />" />
-                            </div>
-                            <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Giới tính</label>
-                                <select name="gender" class="form-select rounded-3 py-2">
-                                    <option value="" ${empty profile.gender ? 'selected' : ''}>Chọn Giới tính</option>
-                                    <option value="Male" ${profile.gender == 'Male' ? 'selected' : ''}>Nam</option>
-                                    <option value="Female" ${profile.gender == 'Female' ? 'selected' : ''}>Nữ</option>
-                                    <option value="Other" ${profile.gender == 'Other' ? 'selected' : ''}>Khác</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Ngày sinh</label>
-                                <input type="date" name="dateOfBirth" class="form-control rounded-3 py-2" 
-                                       value="<c:out value="${profile.dateOfBirth}" />" />
-                            </div>
+                            <form action="${pageContext.request.contextPath}/manager/profile" method="POST">
+                                <input type="hidden" name="action" value="changePw" />
+                                <div class="modal-body py-4">
+                                    <div class="d-flex flex-column gap-3">
+                                        <div>
+                                            <label
+                                                class="form-label font-label-md text-on-surface-variant text-uppercase">Mật
+                                                khẩu hiện tại</label>
+                                            <input type="password" name="currentPw" class="form-control rounded-3 py-2"
+                                                required />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="form-label font-label-md text-on-surface-variant text-uppercase">Mật
+                                                khẩu mới</label>
+                                            <input type="password" name="newPw" class="form-control rounded-3 py-2"
+                                                required minlength="8" />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="form-label font-label-md text-on-surface-variant text-uppercase">Xác
+                                                nhận Mật khẩu mới</label>
+                                            <input type="password" name="confirmPw" class="form-control rounded-3 py-2"
+                                                required minlength="8" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0 pt-0">
+                                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold"
+                                        data-bs-dismiss="modal">Hủy</button>
+                                    <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Cập
+                                        nhật Mật khẩu</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Lưu thay đổi</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="changePwModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow-lg">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-title-lg">Thay đổi Mật khẩu Bảo mật</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
-                <form action="${pageContext.request.contextPath}/manager/profile" method="POST">
-                    <input type="hidden" name="action" value="changePw" />
-                    <div class="modal-body py-4">
-                        <div class="d-flex flex-column gap-3">
-                            <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Mật khẩu hiện tại</label>
-                                <input type="password" name="currentPw" class="form-control rounded-3 py-2" required />
-                            </div>
-                            <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Mật khẩu mới</label>
-                                <input type="password" name="newPw" class="form-control rounded-3 py-2" required minlength="8" />
-                            </div>
-                            <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Xác nhận Mật khẩu mới</label>
-                                <input type="password" name="confirmPw" class="form-control rounded-3 py-2" required minlength="8" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 fw-bold">Cập nhật Mật khẩu</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            </body>
+
+            </html>
