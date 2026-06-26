@@ -34,6 +34,7 @@ public class DeskReservationServlet extends HttpServlet {
     private UserLookupDAO userLookupDAO;
     private UserDAO userDAO;
     private BookDAO bookDAO;
+    private dao.BookCopyDAO bookCopyDAO;
     private OnlineCirculationService onlineCirculationService;
 
     @Override
@@ -41,6 +42,7 @@ public class DeskReservationServlet extends HttpServlet {
         this.userLookupDAO = new UserLookupDAO();
         this.userDAO = new UserDAO();
         this.bookDAO = new BookDAO();
+        this.bookCopyDAO = new dao.BookCopyDAO();
         this.onlineCirculationService = new OnlineCirculationService();
     }
 
@@ -92,7 +94,7 @@ public class DeskReservationServlet extends HttpServlet {
                 }
                 role = user.getRole();
 
-                // 3. Tìm đầu sách dựa trên bookId (nếu là số) hoặc ISBN
+                // 3. Tìm đầu sách dựa trên bookId (nếu là số), barcode hoặc ISBN
                 try {
                     int parsedId = Integer.parseInt(bookIdOrIsbn);
                     Book bookById = bookDAO.findById(conn, parsedId);
@@ -100,9 +102,18 @@ public class DeskReservationServlet extends HttpServlet {
                         bookId = bookById.getBookId();
                     }
                 } catch (NumberFormatException e) {
-                    // Không phải số, thử tìm bằng ISBN
+                    // Không phải số
                 }
 
+                // Thử tìm theo Barcode (Mã vạch bản sao)
+                if (bookId == null) {
+                    model.BookCopy copy = bookCopyDAO.findByBarcode(conn, bookIdOrIsbn);
+                    if (copy != null) {
+                        bookId = copy.getBookId();
+                    }
+                }
+
+                // Thử tìm theo ISBN
                 if (bookId == null) {
                     Book bookByIsbn = bookDAO.findByIsbn(conn, bookIdOrIsbn);
                     if (bookByIsbn != null) {
@@ -112,7 +123,7 @@ public class DeskReservationServlet extends HttpServlet {
             }
 
             if (bookId == null) {
-                session.setAttribute("errorMessage", "Không tìm thấy đầu sách với Mã đầu sách hoặc ISBN: '" + bookIdOrIsbn + "'.");
+                session.setAttribute("errorMessage", "Không tìm thấy đầu sách với Mã đầu sách, Barcode hoặc ISBN: '" + bookIdOrIsbn + "'.");
                 response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard?memberCode=" + memberCode);
                 return;
             }
