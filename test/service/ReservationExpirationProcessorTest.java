@@ -62,7 +62,7 @@ public class ReservationExpirationProcessorTest {
 
                 // 2. Tạo 1 Book
                 String sqlBook = "INSERT INTO Book (isbn, title, author, publisher, publicationYear, price, totalQuantity, availableQuantity, status) "
-                               + "VALUES ('EXP-ISBN-123', 'Sách Kiểm Thử Quá Hạn', 'Tác giả', 'Nhà XB', 2026, 50000, 1, 0, 'active')";
+                               + "VALUES ('EXP-ISBN-123', 'Sách Kiểm Thử Quá Hạn', 'Tác giả', 'Nhà XB', 2026, 50000, 1, 0, 'available')";
                 try (PreparedStatement ps = conn.prepareStatement(sqlBook, PreparedStatement.RETURN_GENERATED_KEYS)) {
                     ps.executeUpdate();
                     try (ResultSet rs = ps.getGeneratedKeys()) {

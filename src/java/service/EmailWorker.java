@@ -159,20 +159,21 @@ public class EmailWorker implements Runnable {
     }
 
     private void writeAuditLog(EmailJob job, String status, String errorMessage) {
-        try {
-            // Không log thông tin mật khẩu tạm để bảo vệ an toàn
-            String details = String.format("Status: %s | TempName: %s | Recipient: %s | Attempts: %d",
-                    status,
-                    job.getTempName() != null ? job.getTempName() : "DIRECT_HTML",
-                    job.getRecipientEmail(),
-                    job.getAttemptCount());
-            
-            if (errorMessage != null) {
-                details += " | Error: " + errorMessage;
-            }
+        // Không log thông tin mật khẩu tạm để bảo vệ an toàn
+        String details = String.format("Status: %s | TempName: %s | Recipient: %s | Attempts: %d",
+                status,
+                job.getTempName() != null ? job.getTempName() : "DIRECT_HTML",
+                job.getRecipientEmail(),
+                job.getAttemptCount());
+        
+        if (errorMessage != null) {
+            details += " | Error: " + errorMessage;
+        }
 
+        try (java.sql.Connection conn = util.DatabaseConnection.getConnection()) {
             // Ghi Audit Log hệ thống
             auditLogDAO.insert(
+                    conn,
                     null, // Tác vụ hệ thống tự động, userId = null
                     "SYSTEM_EMAIL",
                     "EmailJob",

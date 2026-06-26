@@ -262,12 +262,12 @@ public class OnlineCirculationServiceTest {
         int resId = service.reserveBook(1, 101, "student");
 
         assertEquals(555, resId);
-        assertTrue(mockBookCopyDAO.updateStatusToReservedCalled);
+        assertFalse(mockBookCopyDAO.updateStatusToReservedCalled);
         assertTrue(mockBookDAO.updateQuantitiesCalled);
         assertEquals(-1, mockBookDAO.lastAvailableQtyChange);
         assertTrue(mockReservationDAO.insertCalled);
         assertEquals(0, mockReservationDAO.lastQueuePositionInserted);
-        assertEquals(Integer.valueOf(202), mockReservationDAO.lastBookCopyIdInserted);
+        assertNull(mockReservationDAO.lastBookCopyIdInserted);
         assertTrue(mockAuditLogDAO.insertCalled);
         assertEquals("RESERVE_READY", mockAuditLogDAO.lastActionType);
     }
@@ -773,6 +773,13 @@ public class OnlineCirculationServiceTest {
         }
 
         @Override
+        public int insertIntoPendingQueueAtomic(Connection conn, int userId, int bookId) throws SQLException {
+            insertCalled = true;
+            lastQueuePositionInserted = maxQueuePositionToReturn + 1;
+            return insertedReservationId;
+        }
+
+        @Override
         public Reservation findReservationById(Connection conn, int reservationId) throws SQLException {
             return reservationToReturn;
         }
@@ -788,7 +795,14 @@ public class OnlineCirculationServiceTest {
         }
 
         @Override
-        public void updateToReadyPickup(Connection conn, int reservationId, int bookCopyId) throws SQLException {
+        public void updateToReadyPickup(Connection conn, int reservationId, Integer bookCopyId) throws SQLException {
+            updateToReadyPickupCalled = true;
+            lastReservationReady = reservationId;
+            lastBookCopyReady = bookCopyId;
+        }
+
+        @Override
+        public void updateToReadyPickup(Connection conn, int reservationId, Integer bookCopyId, int holdDays) throws SQLException {
             updateToReadyPickupCalled = true;
             lastReservationReady = reservationId;
             lastBookCopyReady = bookCopyId;
@@ -892,6 +906,10 @@ public class OnlineCirculationServiceTest {
     }
 
     private static class MockFineDAO extends FineDAO {
-        // Trống vì không được gọi trong OnlineCirculationService
+        boolean hasUnpaid = false;
+        @Override
+        public boolean hasUnpaidFines(Connection conn, int userId) throws SQLException {
+            return hasUnpaid;
+        }
     }
 }

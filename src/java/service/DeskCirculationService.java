@@ -14,6 +14,7 @@ import model.Book;
 import model.BookCopy;
 import model.BorrowRecord;
 import model.Reservation;
+import model.User;
 import util.DatabaseConnection;
 
 import java.math.BigDecimal;

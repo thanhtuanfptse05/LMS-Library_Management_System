@@ -160,7 +160,7 @@ public class EmailService {
      * @param paymentMethod Phương thức thanh toán ("Cash" hoặc "BankTransfer")
      */
     public static void sendPaymentConfirmationEmail(int paymentId, int userId, String paymentMethod) {
-        try (Connection conn = util.DatabaseConnection.getConnection()) {
+        try (java.sql.Connection conn = util.DatabaseConnection.getConnection()) {
             dao.UserDAO userDAO = new dao.UserDAO();
             model.User user = userDAO.findByUserId(userId);
             if (user == null || user.getEmail() == null) return;

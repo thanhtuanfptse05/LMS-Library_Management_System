@@ -225,7 +225,7 @@ public class OnlineCirculationService {
                         Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
                         if (nextRes != null) {
                             // Đôn người kế tiếp lên nhận sách, lấy holdDays từ cấu hình động
-                            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                            int holdDays = systemConfigDAO.getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
                             reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId, holdDays);
                             // Dịch hàng đợi
                             reservationDAO.decrementQueuePositions(conn, res.getBookId());
@@ -255,7 +255,7 @@ public class OnlineCirculationService {
                         Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
                         if (nextRes != null) {
                             // Đôn người kế tiếp lên nhận sách (bookCopyId = null)
-                            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                            int holdDays = systemConfigDAO.getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
                             reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), null, holdDays);
                             // Dịch hàng đợi
                             reservationDAO.decrementQueuePositions(conn, res.getBookId());
@@ -332,6 +332,7 @@ public class OnlineCirculationService {
                 String nextUserEmail = null;
                 String nextUserFullName = null;
                 String bookTitle = null;
+                String deadlineStr = null;
 
                 // 3. Cascade logic nếu hủy một đơn đã có sẵn sách (queuePosition = 0)
                 if (res.getQueuePosition() != null && res.getQueuePosition() == 0) {
@@ -342,7 +343,7 @@ public class OnlineCirculationService {
                         Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
                         if (nextRes != null) {
                             // Đôn người kế tiếp lên nhận sách, lấy holdDays từ cấu hình động
-                            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                            int holdDays = systemConfigDAO.getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
                             reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId, holdDays);
                             // Dịch hàng đợi
                             reservationDAO.decrementQueuePositions(conn, res.getBookId());
@@ -355,6 +356,9 @@ public class OnlineCirculationService {
                                 nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
                                 Book b = bookDAO.findById(conn, res.getBookId());
                                 bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                                
+                                java.sql.Timestamp deadline = new java.sql.Timestamp(System.currentTimeMillis() + holdDays * 24L * 60 * 60 * 1000);
+                                deadlineStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(deadline);
                             }
                         } else {
                             // Không có ai chờ -> trả bản sao về available, tăng availableQuantity của Book
@@ -369,7 +373,7 @@ public class OnlineCirculationService {
                         Reservation nextRes = reservationDAO.findNextInQueue(conn, res.getBookId());
                         if (nextRes != null) {
                             // Đôn người kế tiếp lên nhận sách (bookCopyId = null)
-                            int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+                            int holdDays = systemConfigDAO.getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
                             reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), null, holdDays);
                             // Dịch hàng đợi
                             reservationDAO.decrementQueuePositions(conn, res.getBookId());
@@ -381,6 +385,9 @@ public class OnlineCirculationService {
                                 nextUserFullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
                                 Book b = bookDAO.findById(conn, res.getBookId());
                                 bookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                                
+                                java.sql.Timestamp deadline = new java.sql.Timestamp(System.currentTimeMillis() + holdDays * 24L * 60 * 60 * 1000);
+                                deadlineStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(deadline);
                             }
                         }
                     }
@@ -394,7 +401,7 @@ public class OnlineCirculationService {
 
                 // Gửi email thông báo cho người kế tiếp ngoài transaction
                 if (nextUserEmail != null && bookTitle != null) {
-                    sendReadyPickupEmail(nextUserEmail, nextUserFullName, bookTitle);
+                    sendReadyPickupEmail(nextUserEmail, nextUserFullName, bookTitle, deadlineStr);
                 }
 
             } catch (ValidationException | SQLException e) {
