@@ -151,4 +151,54 @@ public class EmailService {
             }
         });
     }
+
+    /**
+     * Gửi email xác nhận thanh toán nợ phạt thành công (Passive flow).
+     *
+     * @param paymentId     ID phiếu thanh toán
+     * @param userId        ID người dùng thực hiện thanh toán
+     * @param paymentMethod Phương thức thanh toán ("Cash" hoặc "BankTransfer")
+     */
+    public static void sendPaymentConfirmationEmail(int paymentId, int userId, String paymentMethod) {
+        try (Connection conn = util.DatabaseConnection.getConnection()) {
+            dao.UserDAO userDAO = new dao.UserDAO();
+            model.User user = userDAO.findByUserId(userId);
+            if (user == null || user.getEmail() == null) return;
+            
+            dao.MemberProfileDAO profileDAO = new dao.MemberProfileDAO();
+            model.MemberProfile profile = profileDAO.findByUserId(userId);
+            String fullName = (profile != null) ? profile.getFullName() : user.getEmail();
+            
+            double amount = 0;
+            String paidAtStr = "";
+            String sql = "SELECT paidAmount, paidAt FROM Payment WHERE paymentId = ?";
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, paymentId);
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        amount = rs.getDouble("paidAmount");
+                        java.sql.Timestamp paidAt = rs.getTimestamp("paidAt");
+                        if (paidAt != null) {
+                            paidAtStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(paidAt);
+                        } else {
+                            paidAtStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date());
+                        }
+                    }
+                }
+            }
+            
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("paymentId", String.valueOf(paymentId));
+            placeholders.put("amount", String.format("%,.0f", amount));
+            placeholders.put("paymentMethod", "Cash".equalsIgnoreCase(paymentMethod) ? "Tiền mặt" : "Chuyển khoản (SePay)");
+            placeholders.put("paidAt", paidAtStr);
+            
+            EmailJob job = new EmailJob("PAYMENT_CONFIRMATION", user.getEmail(), fullName, placeholders);
+            enqueue(job);
+            
+            LOGGER.log(Level.INFO, "[EMAIL] Đã enqueue email PAYMENT_CONFIRMATION thành công cho paymentId={0}", paymentId);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email xác nhận thanh toán cho paymentId=" + paymentId, e);
+        }
+    }
 }

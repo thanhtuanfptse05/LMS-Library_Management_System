@@ -268,6 +268,11 @@ public class SePayWebhookServlet extends HttpServlet {
                         + paymentId + ", fineId=" + fineId
                         + ", amount=" + transferAmount);
 
+                // Gửi email xác nhận thanh toán (bất đồng bộ, ngoài transaction)
+                if (userId != -1) {
+                    service.EmailService.sendPaymentConfirmationEmail(paymentId, userId, "BankTransfer");
+                }
+
                 out.print("{\"success\":true,\"message\":\"Payment processed successfully\"}");
 
             } catch (SQLException e) {
