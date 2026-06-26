@@ -446,7 +446,7 @@
                                                                                                                                     <button
                                                                                                                                         class="btn btn-xs btn-outline-primary w-100 py-1 fw-bold text-uppercase"
                                                                                                                                         style="font-size:10px;"
-                                                                                                                                        onclick="fillCheckout('${copyBarcodeMap[res.bookCopyId]}')">
+                                                                                                                                        onclick="fillCheckout('${copyBarcodeMap[res.bookCopyId]}', '${res.bookId}')">
                                                                                                                                         Chọn
                                                                                                                                         giao
                                                                                                                                         sách
@@ -784,6 +784,7 @@
                                                                                             <c:when test="${requestScope.searchedUser.status == 'active'}">
                                                                                                 <form action="${pageContext.request.contextPath}/librarian/checkout" method="POST" class="needs-validation" novalidate>
                                                                                                     <input type="hidden" name="memberCode" value="${fn:escapeXml(requestScope.memberCode)}">
+                                                                                                    <input type="hidden" id="checkoutTargetBookId" name="targetBookId" value="">
                                                                                                     <div class="mb-3 col-md-6">
                                                                                                         <label for="checkoutBarcode" class="form-label small fw-bold">Mã vạch bản sao (Barcode)</label>
                                                                                                         <div class="input-group">
@@ -974,6 +975,12 @@
                                         if (paymentForm) paymentForm.style.display = 'none';
                                         if (reserveForm) reserveForm.style.display = 'none';
                                         
+                                        // Clear targetBookId when showing form
+                                        const targetBookIdInput = document.getElementById('checkoutTargetBookId');
+                                        if (targetBookIdInput) {
+                                            targetBookIdInput.value = '';
+                                        }
+                                        
                                         // Hiển thị form mong muốn
                                         const formId = 'actionForm' + type.charAt(0).toUpperCase() + type.slice(1);
                                         const targetForm = document.getElementById(formId);
@@ -991,12 +998,16 @@
                                         }
                                     }
 
-                                    function fillCheckout(barcode) {
+                                    function fillCheckout(barcode, bookId) {
                                         showActionForm('checkout');
                                         const coInput = document.getElementById('checkoutBarcode');
                                         if (coInput) {
                                             coInput.value = barcode;
                                             coInput.focus();
+                                        }
+                                        const targetBookIdInput = document.getElementById('checkoutTargetBookId');
+                                        if (targetBookIdInput) {
+                                            targetBookIdInput.value = bookId || '';
                                         }
                                     }
 
