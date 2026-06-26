@@ -188,33 +188,16 @@ public class OverdueProcessor implements Runnable {
             String formattedFineRate = df.format(fineRate);
             String formattedTotalFine = df.format(totalFine);
 
-            // Tải template OVERDUE_NOTICE
-            DocumentTemp template = documentTempDAO.findByTempName("OVERDUE_NOTICE");
-            String subject = "Cảnh báo: Sách quá hạn và tài khoản bị tạm khóa — Thư viện LMS";
-            String htmlBody;
+            // Gửi email bất đồng bộ qua EmailService sử dụng Queue ngầm
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("bookTitle", bookTitle);
+            placeholders.put("dueDate", formattedDueDate);
+            placeholders.put("overdueDays", String.valueOf(overdueDays));
+            placeholders.put("finePerDay", formattedFineRate);
+            placeholders.put("totalFine", formattedTotalFine);
 
-            if (template != null) {
-                subject = template.getSubject();
-                htmlBody = template.getBodyContent()
-                        .replace("{{userName}}", userName)
-                        .replace("{{bookTitle}}", bookTitle)
-                        .replace("{{dueDate}}", formattedDueDate)
-                        .replace("{{overdueDays}}", String.valueOf(overdueDays))
-                        .replace("{{finePerDay}}", formattedFineRate)
-                        .replace("{{totalFine}}", formattedTotalFine);
-            } else {
-                // Fallback email content nếu không có template trong DB
-                htmlBody = "<p>Xin chào " + userName + ",</p>"
-                        + "<p>Cuốn sách <strong>" + bookTitle + "</strong> mượn ngày " 
-                        + sdf.format(record.getStartDate()) + " đã quá hạn trả (Hạn trả: " 
-                        + formattedDueDate + ").</p>"
-                        + "<p>Số ngày trễ hạn: " + overdueDays + " ngày.</p>"
-                        + "<p>Tiền phạt phát sinh: " + formattedTotalFine + " VND.</p>"
-                        + "<p>Tài khoản của bạn đã bị khóa tạm thời. Vui lòng đóng phạt để kích hoạt lại.</p>";
-            }
-
-            // Gửi email bất đồng bộ qua EmailService
-            EmailService.sendAsyncHtmlEmail(user.getEmail(), subject, htmlBody);
+            model.EmailJob job = new model.EmailJob("OVERDUE_NOTICE", user.getEmail(), userName, placeholders);
+            EmailService.enqueue(job);
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Lỗi gửi email quá hạn cho userId=" + record.getUserId(), e);
