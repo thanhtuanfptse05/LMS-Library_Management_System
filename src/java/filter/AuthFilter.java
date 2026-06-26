@@ -124,10 +124,9 @@ public class AuthFilter implements Filter {
                 httpResponse.sendRedirect(contextPath + "/login");
                 return;
             }
-            if (!"ADMIN".equalsIgnoreCase(role) && !"LIBRARIAN".equalsIgnoreCase(role)
-                    && !"MANAGER".equalsIgnoreCase(role)) {
+            if (!"LIBRARIAN".equalsIgnoreCase(role)) {
                 httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
-                        "Bạn không có quyền truy cập chức năng quản lý sách.");
+                        "Chức năng quản lý sách chỉ dành cho Thủ thư.");
                 return;
             }
         } else if (isAdminRoute) {
