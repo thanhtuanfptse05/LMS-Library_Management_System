@@ -61,7 +61,7 @@
             <span class="material-symbols-outlined">fact_check</span>
             <span>Đối chiếu tồn kho</span>
         </a>
-        <c:if test="${sessionScope.role == 'ADMIN' or sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'admin' or sessionScope.role == 'librarian'}">
+        <c:if test="${sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'librarian'}">
             <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import">
                 <span class="material-symbols-outlined">upload_file</span>
                 <span>Nhập dữ liệu</span>
