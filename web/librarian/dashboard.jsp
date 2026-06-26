@@ -405,7 +405,7 @@
                                         <span class="text-muted" style="font-size: 11px;">Mở phiên kiểm kê sách thực tế tại quầy</span>
                                     </div>
                                 </a>
-                                <c:if test="${sessionScope.role == 'ADMIN' or sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'admin' or sessionScope.role == 'librarian'}">
+                                <c:if test="${sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'librarian'}">
                                     <a href="${pageContext.request.contextPath}/book-management/import" 
                                        class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
                                        style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
