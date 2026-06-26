@@ -213,25 +213,19 @@
         
         const ctxFin = document.getElementById('financialChart').getContext('2d');
         new Chart(ctxFin, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: financialLabels,
                 datasets: [
                     {
                         label: 'Tiền đã thu (VND)',
                         data: dataPaid,
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        fill: true,
-                        tension: 0.3
+                        backgroundColor: '#10b981'
                     },
                     {
                         label: 'Tiền chưa thu (VND)',
                         data: dataUnpaid,
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        fill: true,
-                        tension: 0.3
+                        backgroundColor: '#ef4444'
                     }
                 ]
             },
