@@ -184,6 +184,11 @@ public class DeskCirculationService {
     // atomic INSERT BorrowRecord + UPDATE Reservation + UPDATE BookCopy [FR-F6-01~03]
     public void processCheckOut(int librarianId, String memberCode, String barcode)
             throws IllegalStateException, SQLException {
+        processCheckOut(librarianId, memberCode, barcode, null);
+    }
+
+    public void processCheckOut(int librarianId, String memberCode, String barcode, Integer targetBookId)
+            throws IllegalStateException, SQLException {
 
         Connection conn = null;
         int userId = 0;
@@ -226,6 +231,13 @@ public class DeskCirculationService {
 
             int bookCopyId = bookCopy.getBookCopyId();
             int bookId     = bookCopy.getBookId();
+
+            // Kiểm tra nếu có yêu cầu bookId cụ thể (ví dụ từ danh sách đặt trước)
+            if (targetBookId != null && targetBookId != bookId) {
+                throw new IllegalStateException(
+                        "Mã vạch này thuộc về đầu sách khác, không khớp với đầu sách được yêu cầu giao (Yêu cầu Book ID: " 
+                        + targetBookId + ", Nhập vào Book ID: " + bookId + ").");
+            }
 
             // ----------------------------------------------------------------
             // [Node 7.8 / FR-F6-02] BƯỚC 3: Phân nhánh Reservation
