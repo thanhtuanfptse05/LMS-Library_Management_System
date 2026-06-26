@@ -108,7 +108,7 @@ public class BookImportServlet extends HttpServlet {
             return null;
         }
         String role = (String) session.getAttribute("role");
-        if (!"ADMIN".equalsIgnoreCase(role) && !"LIBRARIAN".equalsIgnoreCase(role)) {
+        if (!"LIBRARIAN".equalsIgnoreCase(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền import dữ liệu sách.");
             return null;
         }
