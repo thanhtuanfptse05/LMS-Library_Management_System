@@ -752,8 +752,14 @@
                                                                                                 <form action="${pageContext.request.contextPath}/librarian/reserve" method="POST" class="needs-validation" novalidate>
                                                                                                     <input type="hidden" name="memberCode" value="${fn:escapeXml(requestScope.memberCode)}">
                                                                                                     <div class="mb-3 col-md-6">
-                                                                                                        <label for="reserveBookIdOrIsbn" class="form-label small fw-bold">Mã đầu sách (Book ID) hoặc mã ISBN</label>
-                                                                                                        <input type="text" id="reserveBookIdOrIsbn" name="bookIdOrIsbn" class="form-control" placeholder="Nhập ID sách hoặc ISBN..." required>
+                                                                                                        <label for="reserveBookIdOrIsbn" class="form-label small fw-bold">Mã đầu sách (Book ID), ISBN hoặc Mã vạch (Barcode)</label>
+                                                                                                        <div class="input-group">
+                                                                                                            <input type="text" id="reserveBookIdOrIsbn" name="bookIdOrIsbn" class="form-control" placeholder="Nhập ID sách, ISBN hoặc quét barcode..." required>
+                                                                                                            <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-1 btn-scan" onclick="toggleScanner('reserveBookIdOrIsbn', this)">
+                                                                                                                <span class="material-symbols-outlined" style="font-size:18px;">barcode_scanner</span>
+                                                                                                                <span>Quét</span>
+                                                                                                            </button>
+                                                                                                        </div>
                                                                                                     </div>
                                                                                                     <div class="d-flex gap-2">
                                                                                                         <button type="submit" class="btn btn-info px-4 fw-bold text-white" style="border:none; background-color:#0284c7;">Xác nhận đặt trước</button>
