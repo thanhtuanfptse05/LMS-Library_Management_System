@@ -87,9 +87,15 @@ public class ForgotPasswordServlet extends HttpServlet {
             String rawPassword = authService.resetPassword(email);
 
             if (rawPassword != null) {
-                // 3. Gửi email bất đồng bộ trực tiếp tới USER
-                EmailService.sendAsyncPasswordReset(email, rawPassword);
-                LOGGER.log(Level.INFO, "Password reset successfully. Temp/new password generated and email sent asynchronously to user: {0}", email);
+                dao.MemberProfileDAO profileDAO = new dao.MemberProfileDAO();
+                model.MemberProfile profile = profileDAO.findByUserId(user.getUserId());
+                String fullName = (profile != null) ? profile.getFullName() : email;
+
+                java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+                placeholders.put("tempPassword", rawPassword);
+
+                EmailService.enqueue(new model.EmailJob("RESET_PASSWORD", email, fullName, placeholders));
+                LOGGER.log(Level.INFO, "Password reset successfully. Temp/new password generated and email enqueued asynchronously to user: {0}", email);
             }
 
             // Chống User Enumeration: Trả về Fake Success trùng khớp hoàn toàn
