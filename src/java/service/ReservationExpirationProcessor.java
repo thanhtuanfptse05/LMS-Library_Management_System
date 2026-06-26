@@ -187,40 +187,39 @@ public class ReservationExpirationProcessor implements Runnable {
     }
 
     /**
-     * Gửi email thông báo bất đồng bộ bằng EmailService.
+     * Gửi email thông báo bất đồng bộ bằng EmailService sử dụng Queue ngầm.
      */
     private void sendNotificationEmailAsync(Reservation nextRes, int bookId) {
-        // Chạy ngầm bất đồng bộ bằng Thread để tránh block luồng chính
-        new Thread(() -> {
-            try {
-                User nextUser = userDAO.findByUserId(nextRes.getUserId());
-                if (nextUser != null && nextUser.getEmail() != null) {
-                    MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
-                    String fullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
+        try {
+            User nextUser = userDAO.findByUserId(nextRes.getUserId());
+            if (nextUser != null && nextUser.getEmail() != null) {
+                MemberProfile profile = memberProfileDAO.findByUserId(nextRes.getUserId());
+                String fullName = (profile != null) ? profile.getFullName() : nextUser.getEmail();
 
-                    String bookTitle = "Sách đã đặt";
-                    try (Connection conn = DatabaseConnection.getConnection()) {
-                        Book b = bookDAO.findById(conn, bookId);
-                        if (b != null) {
-                            bookTitle = b.getTitle();
-                        }
+                String bookTitle = "Sách đã đặt";
+                int holdDays = 3;
+                try (Connection conn = DatabaseConnection.getConnection()) {
+                    Book b = bookDAO.findById(conn, bookId);
+                    if (b != null) {
+                        bookTitle = b.getTitle();
                     }
-
-                    String subject = "[LMS] Sách đã sẵn sàng cho bạn nhận tại quầy";
-                    String htmlContent = "<div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>"
-                            + "<h2>Xin chào " + fullName + ",</h2>"
-                            + "<p>Cuốn sách <strong>\"" + bookTitle + "\"</strong> bạn đang xếp hàng chờ đặt trước đã sẵn sàng để nhận.</p>"
-                            + "<p>Vui lòng đến quầy thư viện để nhận sách trong thời hạn quy định.</p>"
-                            + "<p>Trân trọng,<br/>Ban quản lý Thư viện LMS</p>"
-                            + "</div>";
-
-                    EmailService.sendAsyncHtmlEmail(nextUser.getEmail(), subject, htmlContent);
-                    LOGGER.log(Level.INFO, "[ReservationExpirationProcessor] Đã gửi thông báo email cho người dùng: " + nextUser.getEmail());
+                    holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
                 }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Lỗi khi gửi email thông báo đôn hàng chờ cho userId=" + nextRes.getUserId(), e);
+
+                java.sql.Timestamp deadline = new java.sql.Timestamp(System.currentTimeMillis() + holdDays * 24L * 60 * 60 * 1000);
+                String deadlineStr = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(deadline);
+
+                java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+                placeholders.put("bookTitle", bookTitle);
+                placeholders.put("pickupDeadline", deadlineStr);
+
+                model.EmailJob job = new model.EmailJob("RESERVATION_READY", nextUser.getEmail(), fullName, placeholders);
+                EmailService.enqueue(job);
+                LOGGER.log(Level.INFO, "[ReservationExpirationProcessor] Đã enqueue email thông báo RESERVATION_READY cho người dùng: " + nextUser.getEmail());
             }
-        }).start();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi gửi email thông báo đôn hàng chờ cho userId=" + nextRes.getUserId(), e);
+        }
     }
 
     /**
