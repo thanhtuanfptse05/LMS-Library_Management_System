@@ -1,18 +1,18 @@
 # BÁO CÁO NHẬT KÝ LÀM VIỆC VỚI AI - MÔN HỌC SWP391
 
 ## Thông tin chung
-- Sinh viên thực hiện: Lê Thế Bảo
-- Thời gian xuất log: 26/06/2026 10:15:00
+- Sinh viên thực hiện: Nguyễn Huy Chương
+- Thời gian xuất log: 22/06/2026 14:15:00
 
 ---
 **Lượt 1**
-**Thời gian (Timestamp):** 2026-06-03T14:10:00Z
+**Thời gian (Timestamp):** 2026-06-11T14:10:00Z
 
 **Người dùng (User Prompt):** 
 triển khai F2 profile management đi. Có các file JSP nào cần sửa?
 
 **AI Phản hồi (AI Response):** 
-Chào anh, để triển khai tính năng **F2: Profile Management**, chúng ta cần xây dựng chức năng cho phép người dùng xem thông tin cá nhân và cập nhật (Số điện thoại, địa chỉ, ảnh đại diện...).
+Chào anh, để triển khai tính năng **F2: Profile Management**, chúng ta cần xây chức năng cho phép người dùng xem thông tin cá nhân và cập nhật (Số điện thoại, địa chỉ, ảnh đại diện...).
 
 Các file cần tạo/sửa:
 1. `MemberProfileDAO.java`: Truy xuất và cập nhật dữ liệu bảng `MemberProfile`.
@@ -24,7 +24,7 @@ Anh muốn em bắt đầu với logic lấy thông tin và hiển thị ra giao
 
 ---
 **Lượt 2**
-**Thời gian (Timestamp):** 2026-06-03T14:15:20Z
+**Thời gian (Timestamp):** 2026-06-11T14:15:20Z
 
 **Người dùng (User Prompt):** 
 ok bắt đầu đi. lấy thông tin từ DB lên và điền vào các form trong jsp. Giao diện dùng tiếng việt nhé.
@@ -40,7 +40,7 @@ Hoàn tất! Em đã kết xuất giao diện bằng Tiếng Việt 100% đúng 
 
 ---
 **Lượt 3**
-**Thời gian (Timestamp):** 2026-06-03T14:25:40Z
+**Thời gian (Timestamp):** 2026-06-11T14:25:40Z
 
 **Người dùng (User Prompt):** 
 bị lỗi 500 ở JSP rồi. Cannot find any information on property 'fullName' in a bean of type 'model.MemberProfile'
@@ -55,7 +55,7 @@ Xong rồi anh ạ. Hãy tải lại trang, lỗi 500 đã biến mất và tên
 
 ---
 **Lượt 4**
-**Thời gian (Timestamp):** 2026-06-03T14:40:12Z
+**Thời gian (Timestamp):** 2026-06-11T14:40:12Z
 
 **Người dùng (User Prompt):** 
 giờ làm phần đổi mật khẩu trong trang profile. Nhớ phải bắt người dùng nhập mật khẩu cũ. Kiểm tra mật khẩu cũ bằng BCrypt.
@@ -75,7 +75,7 @@ Quy trình:
 
 ---
 **Lượt 5**
-**Thời gian (Timestamp):** 2026-06-03T15:00:20Z
+**Thời gian (Timestamp):** 2026-06-11T15:00:20Z
 
 **Người dùng (User Prompt):** 
 Audit log chưa được ghi lại kìa. Cột actionType trong DB bị rỗng nên lỗi SQL insert.

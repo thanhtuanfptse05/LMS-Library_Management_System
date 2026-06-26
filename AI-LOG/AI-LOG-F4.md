@@ -1,12 +1,12 @@
 # BÁO CÁO NHẬT KÝ LÀM VIỆC VỚI AI - MÔN HỌC SWP391
 
 ## Thông tin chung
-- Sinh viên thực hiện: Lê Thế Bảo
-- Thời gian xuất log: 26/06/2026 10:25:00
+- Sinh viên thực hiện: Vũ Văn Quyết
+- Thời gian xuất log: 24/06/2026 11:10:00
 
 ---
 **Lượt 1**
-**Thời gian (Timestamp):** 2026-06-05T08:10:00Z
+**Thời gian (Timestamp):** 2026-06-13T08:10:00Z
 
 **Người dùng (User Prompt):** 
 triển khai F4: Quản lý sách (Book Management). Giờ thủ thư (Librarian) cần thêm sách mới, chọn danh mục và tag. Bắt đầu từ giao diện thêm sách.
@@ -22,7 +22,7 @@ Anh muốn lưu ảnh bìa ở thư mục local nào trong Project ạ? `web/ass
 
 ---
 **Lượt 2**
-**Thời gian (Timestamp):** 2026-06-05T08:18:22Z
+**Thời gian (Timestamp):** 2026-06-13T08:18:22Z
 
 **Người dùng (User Prompt):** 
 đúng rồi, lưu trong thư mục web/assets/images/books. Nhưng nhớ đổi tên file ảnh thành mã ISBN của sách cho khỏi bị trùng tên.
@@ -40,7 +40,7 @@ Xong! Chức năng thêm sách đã hoàn tất. Ảnh tải lên đã tự đ�
 
 ---
 **Lượt 3**
-**Thời gian (Timestamp):** 2026-06-05T08:35:10Z
+**Thời gian (Timestamp):** 2026-06-13T08:35:10Z
 
 **Người dùng (User Prompt):** 
 ảnh bị vỡ khi uplaod kìa, có cách nào resize ảnh bằng java thuần không?
@@ -57,7 +57,7 @@ Em sẽ thêm class `ImageUtil.java` vào thư mục `util`:
 
 ---
 **Lượt 4**
-**Thời gian (Timestamp):** 2026-06-05T09:00:45Z
+**Thời gian (Timestamp):** 2026-06-13T09:00:45Z
 
 **Người dùng (User Prompt):** 
 làm tiếp phần BookCopy đi. Mỗi cuốn sách có nhiều bản sao, phải sinh mã vạch ngẫu nhiên cho từng bản sao khi thủ thư ấn nút "Thêm bản sao".

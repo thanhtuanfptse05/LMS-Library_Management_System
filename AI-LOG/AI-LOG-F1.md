@@ -1,12 +1,12 @@
 # BÁO CÁO NHẬT KÝ LÀM VIỆC VỚI AI - MÔN HỌC SWP391
 
 ## Thông tin chung
-- Sinh viên thực hiện: Lê Thế Bảo
-- Thời gian xuất log: 26/06/2026 10:15:00
+- Sinh viên thực hiện: Cao Thanh Tuấn
+- Thời gian xuất log: 21/06/2026 09:30:00
 
 ---
 **Lượt 1**
-**Thời gian (Timestamp):** 2026-06-02T08:30:15Z
+**Thời gian (Timestamp):** 2026-06-10T08:30:15Z
 
 **Người dùng (User Prompt):** 
 bắt đầu triển khai F1: Authentication. Kiểm tra xem các file DAO và Filter đã có những gì rồi.
@@ -23,7 +23,7 @@ Anh muốn em bắt đầu cập nhật `UserDAO` để thêm logic kiểm tra t
 
 ---
 **Lượt 2**
-**Thời gian (Timestamp):** 2026-06-02T08:35:22Z
+**Thời gian (Timestamp):** 2026-06-10T08:35:22Z
 
 **Người dùng (User Prompt):** 
 cập nhật UserDAO trước đi, nhớ là phải check khóa, và ghi nhận số lần đăng nhập sai. Nếu sai 5 lần thì khóa 15 phút.
@@ -39,7 +39,7 @@ Em đã hiểu yêu cầu. Em sẽ cập nhật `UserDAO.java` và tạo thêm m
 
 ---
 **Lượt 3**
-**Thời gian (Timestamp):** 2026-06-02T08:42:10Z
+**Thời gian (Timestamp):** 2026-06-10T08:42:10Z
 
 **Người dùng (User Prompt):** 
 test thử bị lỗi này: java.lang.NoClassDefFoundError: org/mindrot/jbcrypt/BCrypt. Hình như thiếu thư viện?
@@ -56,7 +56,7 @@ Anh thử lại xem Login đã băm mật khẩu chuẩn chưa nhé.
 
 ---
 **Lượt 4**
-**Thời gian (Timestamp):** 2026-06-02T08:50:05Z
+**Thời gian (Timestamp):** 2026-06-10T08:50:05Z
 
 **Người dùng (User Prompt):** 
 oke đăng nhập được rồi. Giờ làm tính năng Quên mật khẩu. Gửi OTP qua email. Nhớ dùng hàm bất đồng bộ như trong AGENTS.md yêu cầu.
@@ -74,7 +74,7 @@ Em sẽ tiến hành:
 
 ---
 **Lượt 5**
-**Thời gian (Timestamp):** 2026-06-02T09:15:30Z
+**Thời gian (Timestamp):** 2026-06-10T09:15:30Z
 
 **Người dùng (User Prompt):** 
 Gửi mail chậm quá, lúc ấn nó vẫn load trang 1 lúc mới hiện thông báo. Sửa lại cho nó redirect sang trang nhập OTP ngay lập tức đi.
@@ -90,7 +90,7 @@ Dạ em hiểu, nguyên nhân là do em gọi hàm `runAsync` nhưng vẫn chờ
 
 ---
 **Lượt 6**
-**Thời gian (Timestamp):** 2026-06-02T09:30:12Z
+**Thời gian (Timestamp):** 2026-06-10T09:30:12Z
 
 **Người dùng (User Prompt):** 
 chuẩn rồi. Giờ tạo AuthFilter để bảo vệ các route. Admin thì vào đc /admin, student vào /student. Khách chưa login thì đá văng ra login.jsp.

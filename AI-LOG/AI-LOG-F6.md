@@ -1,12 +1,12 @@
 # BÁO CÁO NHẬT KÝ LÀM VIỆC VỚI AI - MÔN HỌC SWP391
 
 ## Thông tin chung
-- Sinh viên thực hiện: Lê Thế Bảo
-- Thời gian xuất log: 26/06/2026 10:30:00
+- Sinh viên thực hiện: Nguyễn Huy Chương
+- Thời gian xuất log: 25/06/2026 08:20:00
 
 ---
 **Lượt 1**
-**Thời gian (Timestamp):** 2026-06-06T13:00:00Z
+**Thời gian (Timestamp):** 2026-06-14T13:00:00Z
 
 **Người dùng (User Prompt):** 
 bắt đầu F6 desk circulation. Làm cái màn hình quét mã vạch cho thủ thư. Quét mã sách và mã user để làm phiếu mượn (Check-out).
@@ -22,7 +22,7 @@ Anh muốn làm giao diện bằng tiếng Việt theo phong cách tối giản 
 
 ---
 **Lượt 2**
-**Thời gian (Timestamp):** 2026-06-06T13:15:40Z
+**Thời gian (Timestamp):** 2026-06-14T13:15:40Z
 
 **Người dùng (User Prompt):** 
 đúng rồi, làm như vậy. Và nhớ phải bắt lỗi nghiêm ngặt: sinh viên nợ phạt quá hạn thì cấm mượn. 1 người chỉ mượn tối đa 5 cuốn theo SystemConfig.
@@ -38,7 +38,7 @@ Xong! Nếu cố tình mượn cuốn thứ 6, hệ thống sẽ hiện hộp th
 
 ---
 **Lượt 3**
-**Thời gian (Timestamp):** 2026-06-06T13:40:12Z
+**Thời gian (Timestamp):** 2026-06-14T13:40:12Z
 
 **Người dùng (User Prompt):** 
 phần trả sách (Check-in). Khi quét mã trả, nếu trễ hạn thì phải tự động sinh ra tiền phạt (Fine) theo công thức cấu hình.
@@ -58,7 +58,7 @@ Em tiến hành code đây...
 
 ---
 **Lượt 4**
-**Thời gian (Timestamp):** 2026-06-06T14:10:05Z
+**Thời gian (Timestamp):** 2026-06-14T14:10:05Z
 
 **Người dùng (User Prompt):** 
 sao code CheckIn lại bị lỗi SQL ở đoạn Insert Fine thế kia. Check lại xem. "column 'status' of relation 'Fine' does not exist"??

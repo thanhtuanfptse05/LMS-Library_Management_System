@@ -1,12 +1,12 @@
 # BÁO CÁO NHẬT KÝ LÀM VIỆC VỚI AI - MÔN HỌC SWP391
 
 ## Thông tin chung
-- Sinh viên thực hiện: Lê Thế Bảo
-- Thời gian xuất log: 26/06/2026 10:20:00
+- Sinh viên thực hiện: Vũ Doanh Thái
+- Thời gian xuất log: 23/06/2026 16:45:00
 
 ---
 **Lượt 1**
-**Thời gian (Timestamp):** 2026-06-04T09:00:10Z
+**Thời gian (Timestamp):** 2026-06-12T09:00:10Z
 
 **Người dùng (User Prompt):** 
 triển khai F3 quản lý tài khoản người dùng đi. Bắt đầu từ việc Admin xem danh sách tất cả người dùng và khóa/mở khóa.
@@ -22,7 +22,7 @@ Anh có muốn bắt đầu với giao diện bảng danh sách người dùng `
 
 ---
 **Lượt 2**
-**Thời gian (Timestamp):** 2026-06-04T09:12:35Z
+**Thời gian (Timestamp):** 2026-06-12T09:12:35Z
 
 **Người dùng (User Prompt):** 
 ok bắt đầu code đi, làm cả phân trang cho tôi. Và lúc khóa phải bắt nhập lý do khóa.
@@ -40,7 +40,7 @@ Tiến hành (Gọi tool xử lý các file):
 
 ---
 **Lượt 3**
-**Thời gian (Timestamp):** 2026-06-04T09:25:40Z
+**Thời gian (Timestamp):** 2026-06-12T09:25:40Z
 
 **Người dùng (User Prompt):** 
 giờ làm phần import danh sách người dùng bằng excel. Dùng thư viện Apache POI nha, check trong thư mục allowedlib xem có chưa.
@@ -62,7 +62,7 @@ Em sẽ thực hiện tính năng Import:
 
 ---
 **Lượt 4**
-**Thời gian (Timestamp):** 2026-06-04T09:40:15Z
+**Thời gian (Timestamp):** 2026-06-12T09:40:15Z
 
 **Người dùng (User Prompt):** 
 import chạy tốt nhưng nếu bị trùng email thì nó văng lỗi 500. Xử lý lỗi cho mượt đi, đừng để 500, báo lỗi đỏ ra màn hình ấy.

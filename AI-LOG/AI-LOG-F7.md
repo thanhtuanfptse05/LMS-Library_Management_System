@@ -1,12 +1,12 @@
 # BÁO CÁO NHẬT KÝ LÀM VIỆC VỚI AI - MÔN HỌC SWP391
 
 ## Thông tin chung
-- Sinh viên thực hiện: Lê Thế Bảo
-- Thời gian xuất log: 26/06/2026 10:35:00
+- Sinh viên thực hiện: Vũ Doanh Thái
+- Thời gian xuất log: 25/06/2026 15:50:00
 
 ---
 **Lượt 1**
-**Thời gian (Timestamp):** 2026-06-07T15:20:00Z
+**Thời gian (Timestamp):** 2026-06-15T15:20:00Z
 
 **Người dùng (User Prompt):** 
 làm nốt F7 notification management. Admin có thể tạo thông báo chung (Global) hoặc gửi cho đích danh 1 người.
@@ -24,7 +24,7 @@ Anh nghiêng về phương án nào hơn ạ? (Tối ưu truy vấn hay Dễ cod
 
 ---
 **Lượt 2**
-**Thời gian (Timestamp):** 2026-06-07T15:28:15Z
+**Thời gian (Timestamp):** 2026-06-15T15:28:15Z
 
 **Người dùng (User Prompt):** 
 Dùng addBatch() đi, vì sinh viên thực sự chỉ có vài ngàn, insert 1 lần cũng ko chết DB đâu, logic lấy ra sẽ dễ và nhất quán hơn.
@@ -41,7 +41,7 @@ Code đã hoàn tất. Lệnh `executeBatch()` hoạt động trơn tru. Khi tes
 
 ---
 **Lượt 3**
-**Thời gian (Timestamp):** 2026-06-07T15:45:00Z
+**Thời gian (Timestamp):** 2026-06-15T15:45:00Z
 
 **Người dùng (User Prompt):** 
 làm cái chuông thông báo trên Header của học sinh. Bấm vào thì xổ ra, có nút "đánh dấu đã đọc tất cả".
