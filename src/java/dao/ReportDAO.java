@@ -69,8 +69,6 @@ public class ReportDAO {
             dateFormat = "YYYY";
         }
 
-        // Lưu ý: p.status của bảng Payment phải kiểm tra là 'completed' khi thanh toán thành công
-        // (chứ không phải 'paid' như trạng thái của bảng Fine).
         String sql = "SELECT to_char(f.createdAt, '" + dateFormat + "') AS periodLabel, " +
                      "SUM(CASE WHEN p.status = 'completed' THEN p.paidAmount ELSE 0 END) AS totalPaid, " +
                      "SUM(CASE WHEN f.status = 'unpaid' THEN f.amount ELSE 0 END) AS totalUnpaid " +

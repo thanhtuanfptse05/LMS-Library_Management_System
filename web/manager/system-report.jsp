@@ -212,21 +212,26 @@
         </c:forEach>
         
         const ctxFin = document.getElementById('financialChart').getContext('2d');
-        // Sử dụng biểu đồ cột (bar) để đảm bảo dữ liệu hiển thị rõ ràng ngay cả khi chỉ có 1 ngày duy nhất có phát sinh giao dịch.
         new Chart(ctxFin, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: financialLabels,
                 datasets: [
                     {
                         label: 'Tiền đã thu (VND)',
                         data: dataPaid,
-                        backgroundColor: '#10b981'
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.3
                     },
                     {
                         label: 'Tiền chưa thu (VND)',
                         data: dataUnpaid,
-                        backgroundColor: '#ef4444'
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.3
                     }
                 ]
             },
