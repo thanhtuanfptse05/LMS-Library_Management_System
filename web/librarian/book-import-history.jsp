@@ -31,7 +31,7 @@
                     <h2 class="bm-page__title mb-1">Lịch sử xử lý</h2>
                     <p class="bm-page__subtitle mb-0">Theo dõi kết quả, người thực hiện và lỗi của từng phiên nhập sách trong một năm.</p>
                 </div>
-                <c:if test="${sessionScope.role == 'ADMIN' or sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'admin' or sessionScope.role == 'librarian'}">
+                <c:if test="${sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'librarian'}">
                     <a class="btn btn-primary-custom" href="${pageContext.request.contextPath}/book-management/import">
                         <span class="material-symbols-outlined">upload_file</span>Nhập mới
                     </a>
