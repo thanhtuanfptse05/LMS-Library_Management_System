@@ -48,10 +48,10 @@ public class EmailService {
             return;
         }
         
-        // Tránh gửi tới địa chỉ ảo hoặc rỗng
+        // Chỉ chấp nhận gửi tới email thật kết thúc bằng @gmail.com
         String toEmail = job.getRecipientEmail();
-        if (toEmail == null || toEmail.trim().isEmpty() || toEmail.trim().endsWith("@lms.com")) {
-            LOGGER.log(Level.INFO, "[EMAIL QUEUE] Bỏ qua đẩy vào hàng đợi do địa chỉ nhận rỗng hoặc địa chỉ ảo: {0}", toEmail);
+        if (toEmail == null || toEmail.trim().isEmpty() || !toEmail.trim().toLowerCase().endsWith("@gmail.com")) {
+            LOGGER.log(Level.INFO, "[EMAIL QUEUE] Bỏ qua đẩy vào hàng đợi do địa chỉ nhận rỗng hoặc không phải gmail thật: {0}", toEmail);
             return;
         }
 
