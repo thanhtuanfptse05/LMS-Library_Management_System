@@ -820,12 +820,31 @@ public class DeskCirculationService {
      * @param endDate Hạn trả sách kèm trong nội dung email
      */
     private void triggerCheckOutEmailAsync(int userId, int bookId, Timestamp endDate) {
-        // TODO Sprint 3: Tích hợp EmailService.sendAsyncCheckOutConfirmation(userId, bookId, endDate)
-        // Email template: "Bạn đã mượn sách thành công. Hạn trả: {endDate}."
-        // Chạy trong EmailService.EXECUTOR (thread pool) theo pattern đã có.
-        LOGGER.log(Level.INFO,
-                "[ASYNC] Sẽ gửi email xác nhận mượn sách cho userId={0}, bookId={1}",
-                new Object[]{userId, bookId});
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            User user = userDAO.findByUserId(userId);
+            if (user == null || user.getEmail() == null) {
+                return;
+            }
+            dao.MemberProfileDAO profileDAO = new dao.MemberProfileDAO();
+            model.MemberProfile profile = profileDAO.findByUserId(userId);
+            String fullName = (profile != null) ? profile.getFullName() : user.getEmail();
+            
+            Book book = bookDAO.findById(conn, bookId);
+            String bookTitle = (book != null) ? book.getTitle() : "Sách mượn";
+            
+            String formattedEndDate = new java.text.SimpleDateFormat("dd/MM/yyyy").format(endDate);
+            
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("bookTitle", bookTitle);
+            placeholders.put("endDate", formattedEndDate);
+            
+            model.EmailJob job = new model.EmailJob("CHECKOUT_CONFIRMATION", user.getEmail(), fullName, placeholders);
+            EmailService.enqueue(job);
+            
+            LOGGER.log(Level.INFO, "[ASYNC] Đã enqueue email thông báo CHECKOUT_CONFIRMATION thành công cho userId={0}", userId);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email xác nhận mượn sách.", e);
+        }
     }
 
     /**

@@ -179,6 +179,30 @@ VALUES
   <hr style="border:none;border-top:1px solid #eee;margin:24px 0;"/>
   <p style="font-size:12px;color:#888;">Thư viện Đại học LMS — Phục vụ tri thức, kiến tạo tương lai.</p>
 </div></body></html>'
+),
+
+-- ============================================================
+-- [7] Xác nhận mượn sách thành công
+-- Trigger: DeskCirculationService -> sau khi Check-out thành công tại quầy
+-- Placeholders: {{userName}}, {{bookTitle}}, {{endDate}}
+-- ============================================================
+(
+    'CHECKOUT_CONFIRMATION',
+    'Xác nhận mượn sách thành công tại quầy và thông báo hạn trả sách cho độc giả.',
+    'Mượn sách thành công — Thư viện LMS',
+    '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;">
+<div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;padding:36px;box-shadow:0 2px 16px rgba(0,0,0,0.08);">
+  <h2 style="color:#1a4fa3;margin-top:0;">📖 Mượn sách thành công!</h2>
+  <p>Xin chào <strong>{{userName}}</strong>,</p>
+  <p>Bạn đã thực hiện mượn sách thành công tại quầy thủ thư. Thông tin chi tiết:</p>
+  <div style="background:#f0f4ff;border:1px solid #c7d6f7;border-radius:8px;padding:16px 20px;margin:16px 0;">
+    <p style="margin:0 0 8px;font-size:16px;font-weight:bold;color:#1a4fa3;">📚 Sách mượn: {{bookTitle}}</p>
+    <p style="margin:0;color:#1a4fa3;">⏰ Hạn trả sách: <strong style="color:#dc2626;">{{endDate}}</strong></p>
+  </div>
+  <p>Vui lòng trả sách đúng hạn để tránh phát sinh nợ phạt trễ hạn. Cảm ơn bạn!</p>
+  <hr style="border:none;border-top:1px solid #eee;margin:24px 0;"/>
+  <p style="font-size:12px;color:#888;">Thư viện Đại học LMS — Phục vụ tri thức, kiến tạo tương lai.</p>
+</div></body></html>'
 )
 
 ON CONFLICT (tempName) DO NOTHING;
