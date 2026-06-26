@@ -69,7 +69,7 @@ public class EmailService {
      * @return EmailJob tiếp theo cần xử lý
      * @throws InterruptedException nếu luồng bị ngắt khi đang đợi lấy job
      */
-    static EmailJob take() throws InterruptedException {
+    public static EmailJob take() throws InterruptedException {
         return EMAIL_QUEUE.take();
     }
 
