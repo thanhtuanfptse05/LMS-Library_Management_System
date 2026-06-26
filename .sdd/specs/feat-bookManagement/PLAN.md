@@ -12,19 +12,19 @@ Mọi DAO tham gia cùng một nghiệp vụ thay đổi dữ liệu BẮT BUỘ
 | BookController | Router cho luồng CRUD Book, hiển thị Catalog và chặn sửa ISBN/số lượng tồn kho trực tiếp. | `BookServlet.java` |
 | BookCopyController | Router cho luồng thêm/cập nhật BookCopy; chỉ cho đổi `condition` khi BookCopy đang `available`. | `BookCopyServlet.java` |
 | BookImportController | Router upload, validate, preview và xác nhận import file Excel `.xlsx`. | `BookImportServlet.java` |
-| InventoryMonitorController | Màn hình chỉ đọc cho Library Manager xem tồn kho, lịch sử import, báo cáo hỏng/mất và cảnh báo lệch kho. | `InventoryMonitorServlet.java` |
+| InventoryReconciliationController | Màn hình đối chiếu tồn kho cho Librarian xem phiên kiểm kê, lịch sử import, báo cáo hỏng/mất và cảnh báo lệch kho. | `InventoryReconciliationServlet.java` |
 | BookService | Xử lý logic nghiệp vụ Book/BookCopy, chặn sửa định danh và điều phối transaction tồn kho. | `BookService.java` |
 | BookImportService | Điều phối validate/import all-or-nothing cho file `.xlsx`, rollback Book/BookCopy/Category/Tag/link table/Audit Log khi có lỗi. | `BookImportService.java` |
 | BookImportValidator | Đọc và kiểm tra cấu trúc sheet `Books`, `BookCopies`, dòng trống, duplicate nội bộ, giới hạn 5.000 BookCopy. | `BookImportValidator.java` |
-| InventoryMonitorService | Tính cảnh báo lệch kho trực tiếp khi Manager mở/làm mới báo cáo; không tự sửa số lượng. | `InventoryMonitorService.java` |
+| InventoryReconciliationService | Tính cảnh báo lệch kho trực tiếp khi Librarian mở/làm mới báo cáo; không tự sửa số lượng. | `InventoryReconciliationService.java` |
 | AuditLogService | Ghi Audit Log tổng hợp phiên import và chi tiết từng entity được tạo/cập nhật. | `AuditLogService.java` |
 | DAO Layer | Data Access bằng PreparedStatement, nhận chung Connection khi nằm trong transaction. | `BookDAO.java`, `BookCopyDAO.java`, `CategoryDAO.java`, `TagDAO.java`, `BookImportDAO.java`, `AuditLogDAO.java` |
 
 ## 3. DATA FLOW
-- **Luồng Nhập Kho Bản Sao thủ công:** Librarian/Admin submit Barcode -> `BookCopyServlet` -> `BookService.addBookCopy()` -> mở Transaction -> `BookCopyDAO.insert(conn)` -> `BookDAO.updateQuantities(conn, +1, +1)` -> `AuditLogDAO.insert(conn)` -> commit -> trả về UI "Nhập kho thành công".
-- **Luồng Cập nhật Condition:** Librarian/Admin submit update -> `BookCopyServlet` -> `BookService.updateCondition()` -> kiểm tra `BookCopy.status='available'` và không sửa Barcode -> mở Transaction -> update BookCopy -> cập nhật `availableQuantity` nếu chuyển `good` sang `damaged/lost` -> ghi Audit Log -> commit.
-- **Luồng Import hàng loạt:** Librarian/Admin upload `.xlsx` -> `BookImportServlet` -> `BookImportValidator` kiểm tra sheet/cột/dòng/duplicate/giới hạn -> nếu có lỗi, lưu `BookImportBatch` + `BookImportError` và không tạo dữ liệu sách -> nếu hợp lệ, `BookImportService` mở Transaction -> tạo Book mới, Category/Tag mới, BookCopy mặc định `good/available`, cập nhật số lượng, ghi Audit Log tổng hợp và chi tiết -> commit.
-- **Luồng Giám sát Manager:** Library Manager mở báo cáo -> `InventoryMonitorServlet` -> `InventoryMonitorService` truy vấn Book/BookCopy để tính lệch kho hiện tại -> hiển thị chỉ đọc; mọi request ghi dữ liệu từ Manager trả HTTP 403.
+- **Luồng Nhập Kho Bản Sao thủ công:** Librarian submit Barcode -> `BookCopyServlet` -> `BookService.addBookCopy()` -> mở Transaction -> `BookCopyDAO.insert(conn)` -> `BookDAO.updateQuantities(conn, +1, +1)` -> `AuditLogDAO.insert(conn)` -> commit -> trả về UI "Nhập kho thành công".
+- **Luồng Cập nhật Condition:** Librarian submit update -> `BookCopyServlet` -> `BookService.updateCondition()` -> kiểm tra `BookCopy.status='available'` và không sửa Barcode -> mở Transaction -> update BookCopy -> cập nhật `availableQuantity` nếu chuyển `good` sang `damaged/lost` -> ghi Audit Log -> commit.
+- **Luồng Import hàng loạt:** Librarian upload `.xlsx` -> `BookImportServlet` -> `BookImportValidator` kiểm tra sheet/cột/dòng/duplicate/giới hạn -> nếu có lỗi, lưu `BookImportBatch` + `BookImportError` và không tạo dữ liệu sách -> nếu hợp lệ, `BookImportService` mở Transaction -> tạo Book mới, Category/Tag mới, BookCopy mặc định `good/available`, cập nhật số lượng, ghi Audit Log tổng hợp và chi tiết -> commit.
+- **Luồng truy cập trái quyền:** Admin, Library Manager hoặc các vai trò khác mở `/book-management/*` -> `AuthFilter` trả HTTP 403 trước khi vào servlet/JSP.
 
 ## 4. IMPORT TEMPLATE
 - File import bắt buộc là Excel `.xlsx`.
@@ -37,9 +37,8 @@ Mọi DAO tham gia cùng một nghiệp vụ thay đổi dữ liệu BẮT BUỘ
 - ISBN/Barcode trùng nội bộ trong file hoặc Barcode trùng Database là lỗi validation và làm fail toàn bộ file.
 
 ## 5. ACCESS CONTROL
-- `LIBRARIAN` và `ADMIN`: được xem, tạo, cập nhật và import dữ liệu F4.
-- `MANAGER`: chỉ được xem danh mục, tồn kho, lịch sử import, báo cáo BookCopy hỏng/mất và cảnh báo lệch kho; không được tạo, cập nhật, đổi trạng thái hoặc import.
-- Các vai trò khác: bị từ chối với HTTP 403 khi truy cập F4.
+- `LIBRARIAN`: được xem, tạo, cập nhật và import dữ liệu F4.
+- `ADMIN`, `MANAGER` và các vai trò khác: bị từ chối với HTTP 403 khi truy cập F4.
 
 ## 6. DATABASE CHANGES
 - Bổ sung CHECK constraint cho `Book.totalQuantity >= 0`, `Book.availableQuantity >= 0`, `availableQuantity <= totalQuantity`, `BookCopy.condition`, `BookCopy.status` và `Book.price >= 0`.
@@ -52,8 +51,8 @@ Mọi DAO tham gia cùng một nghiệp vụ thay đổi dữ liệu BẮT BUỘ
   **Mitigation:** Service mở một transaction chung và truyền cùng Connection vào mọi DAO.
 - **Risk:** File import lớn làm transaction kéo dài.
   **Mitigation:** Giới hạn 5.000 BookCopy/file, validate toàn bộ trước khi mở transaction, fail-fast khi sai cấu trúc.
-- **Risk:** Manager hoặc role khác gửi request ghi dữ liệu bằng tay.
-  **Mitigation:** Kiểm tra RBAC tại Servlet/Service, không chỉ ẩn nút UI.
+- **Risk:** Admin, Manager hoặc role khác gửi request truy cập F4 bằng tay.
+  **Mitigation:** `AuthFilter` kiểm tra role server-side trước mọi route `/book-management/*`, không chỉ ẩn nút UI.
 - **Risk:** Audit Log quá nhiều khi import.
   **Mitigation:** Ghi một log tổng hợp theo batch và log chi tiết theo entity tạo mới để bảo đảm truy vết.
 
