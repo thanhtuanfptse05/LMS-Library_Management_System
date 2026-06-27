@@ -21,6 +21,7 @@ import util.DatabaseConnection;
 @WebServlet(name = "TagServlet", urlPatterns = {"/book-management/tags"})
 public class TagServlet extends HttpServlet {
 
+    private static final int PAGE_SIZE = 20;
     private static final Logger LOGGER = Logger.getLogger(TagServlet.class.getName());
     private final TagDAO tagDAO = new TagDAO();
     private final TagService tagService = new TagService();
@@ -36,13 +37,23 @@ public class TagServlet extends HttpServlet {
         boolean canEdit = isEditor((String) session.getAttribute("role"));
         String keyword = trimToNull(request.getParameter("q"));
         String status = normalizeStatus(request.getParameter("status"));
+        int page = parsePage(request.getParameter("page"));
         try {
-            request.setAttribute("tags", tagDAO.search(keyword, status));
+            int totalItems = tagDAO.count(keyword, status);
+            int totalPages = Math.max(1, (int) Math.ceil(totalItems / (double) PAGE_SIZE));
+            page = Math.min(page, totalPages);
+
+            request.setAttribute("tags", tagDAO.search(keyword, status,
+                    (page - 1) * PAGE_SIZE, PAGE_SIZE));
             request.setAttribute("allTags", tagDAO.findAll());
             request.setAttribute("summary", tagDAO.getSummary());
             request.setAttribute("canEdit", canEdit);
             request.setAttribute("q", keyword == null ? "" : keyword);
             request.setAttribute("selectedStatus", status == null ? "" : status);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("totalItems", totalItems);
+            request.setAttribute("pageSize", PAGE_SIZE);
             Integer editId = parseOptionalInt(request.getParameter("editId"));
             if (canEdit && editId != null) {
                 try (Connection conn = DatabaseConnection.getConnection()) {
@@ -116,6 +127,15 @@ public class TagServlet extends HttpServlet {
             return value == null || value.isBlank() ? null : Integer.valueOf(value);
         } catch (NumberFormatException e) {
             return null;
+        }
+    }
+
+    private int parsePage(String value) {
+        try {
+            int page = value == null || value.isBlank() ? 1 : Integer.parseInt(value);
+            return Math.max(1, page);
+        } catch (NumberFormatException e) {
+            return 1;
         }
     }
 

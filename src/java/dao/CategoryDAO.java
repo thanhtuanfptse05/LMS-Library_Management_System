@@ -18,6 +18,10 @@ public class CategoryDAO {
     }
 
     public List<Category> search(String keyword, String status) throws SQLException {
+        return search(keyword, status, 0, 0);
+    }
+
+    public List<Category> search(String keyword, String status, int offset, int limit) throws SQLException {
         StringBuilder sql = new StringBuilder(
                 "SELECT c.categoryId, c.name, c.description, c.status, c.updatedAt, c.updatedBy, "
                 + "COALESCE(mp.fullName, u.email, 'Chưa cập nhật') AS updatedByName, "
@@ -26,26 +30,38 @@ public class CategoryDAO {
                 + "LEFT JOIN \"User\" u ON u.userId = c.updatedBy "
                 + "LEFT JOIN MemberProfile mp ON mp.userId = c.updatedBy WHERE 1 = 1 ");
         List<String> values = new ArrayList<>();
-        if (keyword != null) {
-            sql.append("AND (LOWER(c.name) LIKE ? OR LOWER(COALESCE(c.description, '')) LIKE ?) ");
-            values.add("%" + keyword.toLowerCase() + "%");
-            values.add("%" + keyword.toLowerCase() + "%");
-        }
-        if (status != null) {
-            sql.append("AND c.status = ? ");
-            values.add(status);
-        }
+        appendFilters(sql, values, keyword, status);
         sql.append("GROUP BY c.categoryId, c.name, c.description, c.status, c.updatedAt, c.updatedBy, "
                 + "mp.fullName, u.email ORDER BY CASE WHEN c.status = 'active' THEN 0 ELSE 1 END, c.name");
+        if (limit > 0) {
+            sql.append(" LIMIT ? OFFSET ?");
+        }
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            bindStrings(ps, values);
+            int parameterIndex = bindStrings(ps, values);
+            if (limit > 0) {
+                ps.setInt(parameterIndex++, limit);
+                ps.setInt(parameterIndex, Math.max(0, offset));
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 List<Category> categories = new ArrayList<>();
                 while (rs.next()) {
                     categories.add(map(rs));
                 }
                 return categories;
+            }
+        }
+    }
+
+    public int count(String keyword, String status) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Category c WHERE 1 = 1 ");
+        List<String> values = new ArrayList<>();
+        appendFilters(sql, values, keyword, status);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            bindStrings(ps, values);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
             }
         }
     }
@@ -160,9 +176,22 @@ public class CategoryDAO {
         return category;
     }
 
-    private void bindStrings(PreparedStatement ps, List<String> values) throws SQLException {
+    private void appendFilters(StringBuilder sql, List<String> values, String keyword, String status) {
+        if (keyword != null) {
+            sql.append("AND (LOWER(c.name) LIKE ? OR LOWER(COALESCE(c.description, '')) LIKE ?) ");
+            values.add("%" + keyword.toLowerCase() + "%");
+            values.add("%" + keyword.toLowerCase() + "%");
+        }
+        if (status != null) {
+            sql.append("AND c.status = ? ");
+            values.add(status);
+        }
+    }
+
+    private int bindStrings(PreparedStatement ps, List<String> values) throws SQLException {
         for (int i = 0; i < values.size(); i++) {
             ps.setString(i + 1, values.get(i));
         }
+        return values.size() + 1;
     }
 }

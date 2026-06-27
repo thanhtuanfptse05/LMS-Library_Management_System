@@ -174,8 +174,15 @@
                     </table>
                 </div>
             </section>
+
+            <jsp:include page="fragments/_book-pagination.jsp">
+                <jsp:param name="label" value="Phân trang thể loại" />
+                <jsp:param name="inputId" value="bookCategoryPageJump" />
+                <jsp:param name="pageSize" value="${pageSize}" />
+            </jsp:include>
         </div>
         <jsp:include page="fragments/_footer.jsp" />
+        <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
         <script src="${pageContext.request.contextPath}/assets/js/book-categories.js?v=20260610-1"></script>
     </main>
 </div>
