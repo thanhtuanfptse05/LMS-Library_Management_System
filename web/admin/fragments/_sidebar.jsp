@@ -23,20 +23,7 @@
             <span>Bảng điều khiển</span>
         </a>
 
-        <!-- Người dùng & Phân quyền -->
-        <p class="sidebar-section-label">Người dùng &amp; Phân quyền</p>
-        <a class="sidebar-link" id="nav-user-management" href="${pageContext.request.contextPath}/admin/user">
-            <span class="material-symbols-outlined">group</span>
-            <span>Quản lý Người dùng</span>
-        </a>
-        <a class="sidebar-link" id="nav-role-assignment" href="#">
-            <span class="material-symbols-outlined">verified_user</span>
-            <span>Phân quyền</span>
-        </a>
-        <a class="sidebar-link" id="nav-security" href="#">
-            <span class="material-symbols-outlined">security</span>
-            <span>Bảo mật</span>
-        </a>
+
 
         <!-- Cấu hình Hệ thống -->
         <p class="sidebar-section-label">Cấu hình Hệ thống</p>
