@@ -23,7 +23,12 @@
             <span>Bảng điều khiển</span>
         </a>
 
-
+        <!-- Người dùng -->
+        <p class="sidebar-section-label">Người dùng</p>
+        <a class="sidebar-link" id="nav-user-management" href="${pageContext.request.contextPath}/admin/user">
+            <span class="material-symbols-outlined">group</span>
+            <span>Quản lý Người dùng</span>
+        </a>
 
         <!-- Cấu hình Hệ thống -->
         <p class="sidebar-section-label">Cấu hình Hệ thống</p>
