@@ -218,4 +218,25 @@ public class PaymentDAO {
         }
         return null;
     }
+
+    /**
+     * Đếm số lượng giao dịch thanh toán đang ở trạng thái 'pending' trên toàn hệ thống.
+     *
+     * @param conn Connection từ servlet
+     * @return Số lượng giao dịch pending
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public int countPendingPayments(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Payment WHERE status = 'pending'";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số Payment pending toàn hệ thống", e);
+            throw e;
+        }
+        return 0;
+    }
 }
