@@ -505,13 +505,27 @@
                                                                 <p class="text-on-surface-variant mb-1" style="font-size: 12px;">
                                                                     Người dùng: <span style="color: var(--on-surface); font-weight: 600;"><c:out value="${not empty log.userEmail ? log.userEmail : 'Hệ thống'}" /></span>
                                                                 </p>
-                                                                <div class="p-2 rounded-2 audit-json-display"
-                                                                     data-old="${fn:escapeXml(log.oldValues)}"
-                                                                     data-new="${fn:escapeXml(log.newValues)}"
-                                                                     data-action-type="${fn:escapeXml(log.actionType)}"
-                                                                     data-entity-id="${log.entityId}"
+                                                                <div class="p-2 rounded-2"
                                                                      style="background-color: var(--surface-container-low); font-size: 11.5px; color: var(--on-surface-variant); line-height: 1.5; word-break: break-all;">
-                                                                    Đang nạp chi tiết...
+                                                                    <c:choose>
+                                                                        <c:when test="${log.actionType == 'LOCK_USER'}">
+                                                                            Trạng thái: Khóa tài khoản
+                                                                        </c:when>
+                                                                        <c:when test="${log.actionType == 'UNLOCK_USER'}">
+                                                                            Trạng thái: Mở khóa hoạt động
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <c:if test="${not empty log.friendlyOldValues}">
+                                                                                <div>Cũ: <c:out value="${log.friendlyOldValues}" /></div>
+                                                                            </c:if>
+                                                                            <c:if test="${not empty log.friendlyNewValues}">
+                                                                                <div>Mới: <c:out value="${log.friendlyNewValues}" /></div>
+                                                                            </c:if>
+                                                                            <c:if test="${empty log.oldValues && empty log.newValues}">
+                                                                                ID Thực thể: <c:out value="${log.entityId}" />
+                                                                            </c:if>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
                                                                 </div>
                                                             </div>
                                                         </c:forEach>
@@ -749,118 +763,6 @@
                             }
                         }
 
-                        // Định nghĩa từ điển chuyển đổi nhãn các trường dữ liệu sang tiếng Việt
-                        const fieldDict = {
-                            "LOST_FINE_MULTIPLIER": "Hệ số phạt mất sách",
-                            "STUDENT_MAX_BORROW_DAYS": "Hạn mượn tối đa Sinh viên",
-                            "LECTURER_MAX_BORROW_DAYS": "Hạn mượn tối đa Giảng viên",
-                            "FINE_RATE_PER_DAY": "Mức phạt quá hạn/ngày",
-                            "RESERVATION_HOLD_DAYS": "Hạn giữ đặt trước",
-                            "MAX_EXTENSION_COUNT": "Số lần gia hạn tối đa",
-                            "email": "Email",
-                            "fullName": "Họ và tên",
-                            "phoneNumber": "Số điện thoại",
-                            "gender": "Giới tính",
-                            "dateOfBirth": "Ngày sinh",
-                            "role": "Vai trò",
-                            "status": "Trạng thái",
-                            "studentCode": "Mã sinh viên",
-                            "lecturerCode": "Mã giảng viên",
-                            "staffCode": "Mã nhân viên",
-                            "major": "Ngành học",
-                            "enrollmentYear": "Khóa",
-                            "department": "Khoa/Bộ môn",
-                            "isbn": "ISBN",
-                            "title": "Tên sách",
-                            "author": "Tác giả",
-                            "publisher": "Nhà xuất bản",
-                            "publicationYear": "Năm xuất bản",
-                            "price": "Giá",
-                            "totalQuantity": "Tổng số lượng",
-                            "availableQuantity": "Số lượng sẵn có",
-                            "startDate": "Ngày bắt đầu",
-                            "endDate": "Ngày hết hạn",
-                            "returnedAt": "Ngày trả",
-                            "extensionCount": "Số lần gia hạn",
-                            "amount": "Số tiền phạt",
-                            "reason": "Lý do phạt",
-                            "paidAmount": "Số tiền thanh toán",
-                            "paymentMethod": "Phương thức thanh toán",
-                            "transactionReference": "Mã tham chiếu giao dịch"
-                        };
-
-                        function formatAuditValue(val) {
-                            if (val === "active") return "Hoạt động";
-                            if (val === "locked") return "Đã khóa";
-                            if (val === "ADMIN") return "SysAdmin";
-                            if (val === "STUDENT") return "Sinh viên";
-                            if (val === "LECTURER") return "Giảng viên";
-                            if (val === "LIBRARIAN") return "Thủ thư";
-                            if (val === "MANAGER") return "Quản lý";
-                            return val;
-                        }
-
-                        function translateKey(key) {
-                            return fieldDict[key] || key;
-                        }
-
-                        document.querySelectorAll('.audit-json-display').forEach(function(el) {
-                            const actionType = el.getAttribute('data-action-type');
-                            const oldVal = el.getAttribute('data-old');
-                            const newVal = el.getAttribute('data-new');
-                            const entityId = el.getAttribute('data-entity-id');
-
-                            if (actionType === 'LOCK_USER') {
-                                el.innerHTML = '<strong>Trạng thái:</strong> Khóa tài khoản';
-                                return;
-                            }
-                            if (actionType === 'UNLOCK_USER') {
-                                el.innerHTML = '<strong>Trạng thái:</strong> Mở khóa hoạt động';
-                                return;
-                            }
-                            if (actionType === 'CHANGE_PASSWORD' || actionType === 'RESET_PASSWORD') {
-                                el.innerHTML = '<span class="d-flex align-items-center gap-1 text-success"><span class="material-symbols-outlined" style="font-size: 16px;">lock</span> Mật khẩu đã được thay đổi an toàn</span>';
-                                return;
-                            }
-
-                            let oldObj = null;
-                            let newObj = null;
-
-                            try { if (oldVal) oldObj = JSON.parse(oldVal); } catch(e) {}
-                            try { if (newVal) newObj = JSON.parse(newVal); } catch(e) {}
-
-                            let html = '';
-
-                            if (oldObj && newObj) {
-                                html += '<div class="fw-semibold text-warning mb-1" style="font-size: 10px; text-transform: uppercase;">Thay đổi:</div>';
-                                let changes = 0;
-                                for (let key in newObj) {
-                                    let oldStr = oldObj[key] !== undefined ? String(oldObj[key]) : '—';
-                                    let newStr = String(newObj[key]);
-                                    if (oldStr !== newStr) {
-                                        html += `<div class="mb-0.5">• <strong>${translateKey(key)}:</strong> <span class="text-danger">${formatAuditValue(oldStr)}</span> → <span class="text-success">${formatAuditValue(newStr)}</span></div>`;
-                                        changes++;
-                                    }
-                                }
-                                if (changes === 0) {
-                                    html += '<div class="text-muted">Cập nhật thông tin bổ sung</div>';
-                                }
-                            } else if (newObj) {
-                                html += '<div class="fw-semibold text-success mb-1" style="font-size: 10px; text-transform: uppercase;">Thông tin mới:</div>';
-                                for (let key in newObj) {
-                                    html += `<div class="mb-0.5">• <strong>${translateKey(key)}:</strong> <span>${formatAuditValue(String(newObj[key]))}</span></div>`;
-                                }
-                            } else if (oldObj) {
-                                html += '<div class="fw-semibold text-danger mb-1" style="font-size: 10px; text-transform: uppercase;">Thông tin cũ:</div>';
-                                for (let key in oldObj) {
-                                    html += `<div class="mb-0.5">• <strong>${translateKey(key)}:</strong> <span>${formatAuditValue(String(oldObj[key]))}</span></div>`;
-                                }
-                            } else {
-                                html += `<strong>ID Đối tượng:</strong> ${entityId || '—'}`;
-                            }
-
-                            el.innerHTML = html;
-                        });
                     </script>
 
                     <!-- Form ẩn để thay đổi trạng thái nhanh từ Dashboard -->
