@@ -1,6 +1,6 @@
 // =============================================================================
 // LMS UC-BR-FR SPECIFICATION
-// Version: 2.0.0 | Date: 2026-06-23 | Project: Library Management System
+// Version: 3.0.0 | Date: 2026-06-27 | Project: Library Management System
 // =============================================================================
 
 // =============================================================================
@@ -108,7 +108,7 @@ F1 (Authentication)
 - Spec Folder: feat-authentication
 - UC: UC-01, UC-02, UC-03, UC-21
 - BR: BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-09, BR-26
-- FR: FR-01, FR-02, FR-03, FR-04, FR-05, FR-06, FR-07, FR-08, FR-42
+- FR: FR-01, FR-02, FR-03, FR-04, FR-05, FR-06, FR-07, FR-08, FR-42, FR-77
 
 F2 (Profile Management)
 - Owner: Tuan
@@ -199,8 +199,36 @@ F14 (AI Chatbot)
 - Owner: Thai
 - Spec Folder: feat-ai-chatbot
 - UC: UC-36, UC-37
+- BR: BR-37
+- FR: FR-69, FR-70
+
+F15 (Dashboard — Librarian)
+- Owner: Thai
+- Spec Folder: (integrated with feat-deskCirculationOperations)
+- UC: UC-44
 - BR: (none)
-- FR: (see spec file)
+- FR: FR-71
+
+F16 (Dashboard — Manager)
+- Owner: Quyet
+- Spec Folder: feat-systemReport
+- UC: UC-45
+- BR: (none)
+- FR: FR-72
+
+F17 (Dashboard — Admin)
+- Owner: Tuan
+- Spec Folder: feat-auditLog
+- UC: UC-46
+- BR: (none)
+- FR: FR-73, FR-74
+
+F18 (Public Pages)
+- Owner: Tuan
+- Spec Folder: (standalone)
+- UC: UC-47, UC-48
+- BR: (none)
+- FR: FR-75, FR-76
 
 // =============================================================================
 // SECTION 2: USE CASE SPECIFICATIONS (UC)
@@ -378,6 +406,26 @@ UC-43 (Auto-cancel Expired Reservations)
 Actor: System, SysAdmin
 Mô tả: (Hủy đặt trước quá hạn): Hệ thống chạy định kỳ (hoặc SysAdmin kích hoạt thủ công) để quét các đơn đặt trước sẵn sàng nhận quá hạn, hủy bỏ chúng, đôn hàng chờ cho người tiếp theo hoặc trả sách về kho.
 
+UC-44 (View Librarian Dashboard)
+Actor: Librarian
+Mô tả: (Xem bảng điều khiển thủ thư): Thủ thư xem tổng quan hoạt động thư viện bao gồm số lượng sách đang được mượn, số giao dịch hôm nay, sách quá hạn, và các thống kê nhanh về kho sách.
+
+UC-45 (View Manager Dashboard)
+Actor: Library Manager
+Mô tả: (Xem bảng điều khiển quản lý): Quản lý thư viện xem các chỉ số hiệu suất tổng hợp (KPI) bao gồm xu hướng mượn trả, thống kê tài chính, tình trạng kho sách, và các cảnh báo hệ thống.
+
+UC-46 (View Admin Dashboard)
+Actor: Admin
+Mô tả: (Xem bảng điều khiển quản trị): Quản trị viên hệ thống xem tổng quan toàn hệ thống bao gồm tổng số tài khoản, sách, tiền phạt chưa thu, giao dịch đang chờ, hoạt động gần đây và cấu hình hệ thống quan trọng.
+
+UC-47 (View Public Homepage)
+Actor: Guest
+Mô tả: (Xem trang chủ công khai): Khách truy cập xem trang chủ với thông tin giới thiệu thư viện, tin tức, thông báo quan trọng được ghim.
+
+UC-48 (View Library Policies)
+Actor: Guest, User
+Mô tả: (Xem nội quy thư viện): Người dùng và khách truy cập tra cứu các quy định, chính sách mượn trả, và hướng dẫn sử dụng dịch vụ thư viện.
+
 
 // =============================================================================
 // SECTION 3: BUSINESS RULES (BR)
@@ -491,43 +539,52 @@ Mô tả: Giao dịch mượn (BorrowRecord) ở trạng thái 'borrowed' có en
 BR-36 (Reservation Pickup Limit)
 Mô tả: Đơn đặt trước ở trạng thái 'readypickup' chỉ được giữ tại quầy trong một khoảng thời gian giới hạn được xác định bởi cấu hình RESERVATION_HOLD_DAYS trong bảng SystemConfigurations (mặc định là 3 ngày). Nếu quá thời hạn này (endDate < NOW()), đơn hàng sẽ tự động bị hủy và giải phóng bản sao sách.
 
+BR-37 (AI Chatbot Access Control)
+Mô tả: Tính năng AI Chatbot SHALL được public cho cả Guest và User đã đăng nhập. Chatbot SHALL chỉ trả lời các câu hỏi liên quan đến nội quy thư viện, chính sách mượn trả, và tra cứu thông tin sách. Chatbot MUST NOT trả lời các yêu cầu thực hiện giao dịch (mượn, trả, thanh toán) thay người dùng.
+
+BR-38 (Dashboard Data Isolation)
+Mô tả: Mỗi Dashboard (Admin/Manager/Librarian/Student/Lecturer) BẮT BUỘC chỉ hiển thị dữ liệu và chỉ số phù hợp với role của người dùng. Dashboard KHÔNG ĐƯỢC PHÉP truy xuất hoặc hiển thị dữ liệu ngoài phạm vi quyền hạn của role.
+
+BR-39 (Session Management)
+Mô tả: Hệ thống BẮT BUỘC kiểm tra trạng thái tài khoản từ database cho mỗi request (ngoại trừ static resources). Nếu tài khoản bị xóa hoặc status thay đổi thành 'locked', session BẮT BUỘC phải bị invalidate ngay lập tức và redirect về trang login.
+
 
 
 // =============================================================================
 // SECTION 4: FUNCTIONAL REQUIREMENTS (FR)
 // =============================================================================
 
-FR-01 (Xác minh danh tính)
-Mô tả: WHEN người dùng gửi thông tin đăng nhập, THE system SHALL mã hóa mật khẩu bằng BCrypt và đối chiếu với dữ liệu bảo mật đã lưu trữ.
+FR-01 (Xác minh danh tính với chống Timing Attack)
+Mô tả: WHEN người dùng gửi thông tin đăng nhập, THE system SHALL kiểm tra email trong DB. WHERE email tồn tại, THE system SHALL mã hóa plaintext password bằng BCrypt và đối chiếu với passwordHash đã lưu. WHERE email KHÔNG tồn tại, THE system SHALL gọi authService.runDummyVerify() để cân bằng thời gian phản hồi, ngăn chặn Timing Attack. THE system SHALL LUÔN trả về thông báo lỗi chung "Tài khoản hoặc mật khẩu không chính xác" để chống User Enumeration.
 Mapping: UC-01 / BR-03, BR-09
 
-FR-02 (Kiểm soát trạng thái)
-Mô tả: BEFORE cho phép truy cập luồng nghiệp vụ, THE system SHALL kiểm tra trạng thái tài khoản; WHERE trạng thái là 'locked', hệ thống SHALL chặn truy cập.
+FR-02 (Kiểm soát trạng thái phân biệt lý do khóa)
+Mô tả: AFTER xác thực thành công, THE system SHALL truy vấn bảng UserLockReason để kiểm tra lý do khóa. WHERE tồn tại reason='unpaid' VÀ KHÔNG có reason='securitybreach' hoặc 'adminban', THE system SHALL CHO PHÉP đăng nhập VÀ đặt flag unpaidWarning=true vào session để hiển thị cảnh báo. WHERE tồn tại reason='securitybreach' hoặc 'adminban', THE system SHALL CHẶN đăng nhập VÀ redirect về /login?error=locked.
 Mapping: UC-01 / BR-06
 
-FR-03 (Tự động khôi phục)
-Mô tả: WHERE lý do khóa là vi phạm bảo mật VÀ thời điểm hiện tại vượt qua lockedUntil, THE system SHALL tự động đặt lại trạng thái hoạt động khi người dùng đăng nhập.
+FR-03 (Tự động khôi phục khi hết thời gian khóa tạm)
+Mô tả: WHERE User.status='locked' VÀ lockedUntil != NULL VÀ NOW() > lockedUntil, THE system SHALL tự động xóa reason='securitybreach' trong UserLockReason, UPDATE User.status='active', VÀ reset failedLoginAttempts=0. THEN CHO PHÉP đăng nhập tiếp. (Chỉ áp dụng cho khóa tạm do sai mật khẩu, KHÔNG áp dụng cho adminban hoặc lockedUntil=NULL).
 Mapping: UC-01 / BR-05
 
-FR-04 (Ghi nhận đăng nhập sai)
-Mô tả: WHEN người dùng cung cấp mật khẩu không chính xác, THE system SHALL tự động tăng bộ đếm số lần vi phạm (failedLoginAttempts) trong cơ sở dữ liệu lên 1 đơn vị.
-Mapping: UC-01 / BR-01
-
-FR-05 (Thực hiện đình chỉ)
-Mô tả: WHEN bộ đếm vi phạm đạt ngưỡng 5 lần liên tiếp, THE system SHALL thiết lập trạng thái 'locked' trong 30 phút và ghi nhận lý do 'securitybreach'.
+FR-04 (Ghi nhận đăng nhập sai và khóa tự động)
+Mô tả: WHEN mật khẩu không khớp, THE system SHALL gọi authService.handleFailedLogin(user) để tăng User.failedLoginAttempts lên 1. WHERE failedLoginAttempts ≥ 5, THE system SHALL tự động gọi lockAccount(userId, 30 phút) để: (1) INSERT UserLockReason(userId, reason='securitybreach'), (2) UPDATE User.status='locked' VÀ User.lockedUntil = NOW() + 30 phút, (3) Trả về số lần đăng nhập sai = 5 để hiển thị thông báo.
 Mapping: UC-01 / BR-01, BR-02
+
+FR-05 (Tạo session và redirect theo role)
+Mô tả: WHEN đăng nhập thành công, THE system SHALL tạo HttpSession mới chứa: {userId, role, email, fullName, unpaidWarning (nếu có)}. THEN THE system SHALL gọi getRedirectByRole(role) để redirect về dashboard tương ứng: ADMIN→/admin/dashboard, LIBRARIAN→/librarian/dashboard, MANAGER→/manager/dashboard, STUDENT→/student/dashboard, LECTURER→/lecturer/dashboard. WHERE có query param redirect hợp lệ (qua isSafeInternalRedirect), ưu tiên redirect theo param.
+Mapping: UC-01
 
 FR-06 (Hủy bỏ phiên làm việc)
 Mô tả: WHEN có yêu cầu đăng xuất, THE system SHALL vô hiệu hóa hoàn toàn HttpSession hiện tại và điều hướng trình duyệt về màn hình đăng nhập.
 Mapping: UC-02
 
-FR-07 (Trả kết quả giả định)
-Mô tả: WHERE Email yêu cầu khôi phục mật khẩu không tồn tại, THE system SHALL trả về thông báo thành công giả định để ngăn chặn việc dò quét thông tin người dùng.
+FR-07 (Trả kết quả giả định cho Forgot Password)
+Mô tả: WHEN ForgotPasswordServlet.handleForgotPasswordRequest(email) được gọi, THE system SHALL tìm user theo email. WHERE email KHÔNG tồn tại, THE system SHALL KHÔNG gọi authService.resetPassword() NHƯNG VẪN trả về JSON {success:true, message:"Mật khẩu tạm thời đã được gửi đến email của bạn"} để chống User Enumeration. WHERE email tồn tại, gọi resetPassword() và enqueue email RESET_PASSWORD async.
 Mapping: UC-03 / BR-04
 
-FR-08 (Cấp mật khẩu tạm)
-Mô tả: WHERE Email khôi phục hợp lệ, THE system SHALL sinh mật khẩu ngẫu nhiên 8 ký tự, mã hóa BCrypt cập nhật vào DB và gửi qua Email.
-Mapping: UC-03 / BR-07
+FR-08 (Cấp mật khẩu tạm và Reset mật khẩu)
+Mô tả: WHEN authService.resetPassword(email) được gọi, THE system SHALL: (1) Gọi generateRandomPassword() để sinh 8 ký tự ngẫu nhiên từ [A-Za-z0-9], (2) Mã hóa BCrypt, (3) Gọi UserDAO.updatePasswordHash(), (4) Trả về plaintext password để ForgotPasswordServlet enqueue email. WHEN handleResetPassword(email, tempPassword, newPassword, confirmPassword), THE system SHALL validate: newPassword ≥ 8 ký tự VÀ chứa [a-zA-Z] VÀ [0-9], tempPassword khớp với DB, confirmPassword == newPassword. THEN mã hóa BCrypt newPassword, updatePasswordHash, INSERT AuditLog(CHANGE_PASSWORD).
+Mapping: UC-03 / BR-07, BR-09
 
 FR-09 (Hiển thị hồ sơ)
 Mô tả: WHEN người dùng truy cập trang cá nhân, THE system SHALL thực hiện truy vấn gộp (Join) dữ liệu để hiển thị thông tin định danh và thông tin liên lạc tương ứng.
@@ -545,16 +602,16 @@ FR-12 (Đối chiếu dữ liệu trùng)
 Mô tả: WHEN Admin thực hiện tạo hoặc cập nhật tài khoản, THE system SHALL quét toàn bộ CSDL để đảm bảo Email và Mã định danh là duy nhất.
 Mapping: UC-09, UC-11 / BR-10
 
-FR-13 (Rà soát danh sách Import)
-Mô tả: WHEN Admin tải lên tệp Excel, THE system SHALL thực hiện Phase 1 (Pre-Validation) trên RAM để kiểm tra định dạng và tính duy nhất của toàn bộ danh sách.
+FR-13 (Rà soát danh sách Import với 2 Phase Validation)
+Mô tả: WHEN ImportUserServlet.doPost(action=upload) nhận file Excel (.xlsx ≤10MB, tên ≤255 ký tự), THE system SHALL thực hiện Phase 1 (Pre-Validation) trên RAM: (1) Parse Excel bằng Apache POI, đọc từng sheet (Student/Lecturer/Admin), (2) Validate từng dòng: email unique (không trùng DB và không trùng trong file), memberCode unique, phoneNumber format, dateOfBirth hợp lệ, role-specific fields (major/enrollmentYear cho Student, department cho Lecturer), (3) WHERE phát hiện lỗi: thêm vào List<ImportError> với format "Sheet {sheetName} - Row {rowIndex}: {field} - {error detail}", (4) WHERE có lỗi: lưu errors vào session + redirect error page, (5) WHERE không lỗi: lưu List<UserImportDTO> vào session attribute "userImportPreview" + redirect confirmation page.
 Mapping: UC-10 / BR-10, BR-11
 
 FR-14 (Báo cáo lỗi Import)
 Mô tả: WHERE Phase 1 phát hiện bất kỳ dữ liệu không hợp lệ nào, THE system SHALL hủy bỏ toàn bộ tiến trình (All-or-Nothing) và xuất báo cáo JSON chi tiết vị trí lỗi.
 Mapping: UC-10 / BR-11
 
-FR-15 (Lưu trữ hàng loạt)
-Mô tả: WHEN toàn bộ danh sách import được xác nhận hợp lệ, THE system SHALL thực hiện Phase 2 (DB Transaction) để lưu trữ hàng loạt và cấp mật khẩu mặc định theo Email.
+FR-15 (Lưu trữ hàng loạt với DB Transaction)
+Mô tả: WHEN ImportUserServlet.doPost(action=import-{role}) được gọi sau khi user xác nhận preview, THE system SHALL thực hiện Phase 2 (DB Transaction): (1) Lấy userImportPreview từ session, lọc theo role, (2) Mở DB Transaction (conn.setAutoCommit(false)), (3) Với mỗi UserImportDTO: gọi UserService.createUser(dto, actorId) để BCrypt hash mật khẩu (= email), INSERT User, INSERT MemberProfile, INSERT role-specific table (Student/Lecturer/Admin), tạo thẻ thư viện mặc định 1 năm (libraryCardExpiry = NOW() + 31536000000ms), (4) INSERT AuditLog(BULK_USER_IMPORT, actorId, entityName='User', entityId=batchId), (5) conn.commit(), (6) WHERE SQLException: conn.rollback() + trả lỗi HTTP 500, (7) Clear session preview + redirect với flash success.
 Mapping: UC-10 / BR-11, BR-12
 
 FR-16 (Xác thực đầu vào mật khẩu)
@@ -581,199 +638,235 @@ FR-21 (Rollback ngoại lệ Phase 2)
 Mô tả: WHERE xảy ra lỗi SQLException bất ngờ trong quá trình thực thi Batch Insert (Phase 2) của tiến trình Import, THE system SHALL Rollback toàn bộ Database Transaction VÀ trả về HTTP 500 kèm lỗi hệ thống chung (ẩn stack trace).
 Mapping: UC-10 / BR-11
 
-FR-22 (Tạo Đầu sách)
-Mô tả: WHEN Quản trị viên thư viện gửi biểu mẫu tạo đầu sách mới, THE system SHALL kiểm tra tính duy nhất của ISBN. WHERE hợp lệ, hệ thống SHALL thực thi INSERT vào bảng Book VÀ gán giá trị mặc định totalQuantity = 0, availableQuantity = 0.
+FR-22 (Tạo Đầu sách với validation ISBN)
+Mô tả: WHEN BookServlet.doPost(action=create) nhận biểu mẫu tạo sách mới, THE system SHALL: (1) Validate ISBN: kiểm tra 13 chữ số + checksum mod10 đúng, (2) Gọi BookDAO.findByIsbn(isbn), WHERE tồn tại: trả lỗi "ISBN đã tồn tại trong hệ thống", (3) WHERE hợp lệ: BookService.createBook(book, categoryIds[], tagIds[], actorId) thực thi INSERT Book(isbn, title, author, publisher, publicationYear, price, imagePath, totalQuantity=0, availableQuantity=0, status, description, pageCount, language, createdAt=NOW()), (4) INSERT BookCategory cho mỗi categoryId, (5) INSERT BookTag cho mỗi tagId, (6) Lưu ảnh bìa (nếu có) vào thư mục uploads/books/ với tên file = {bookId}_{timestamp}.{ext}, (7) INSERT AuditLog(CREATE_BOOK), (8) Redirect với flash success.
 Mapping: UC-13 / BR-16
 
-FR-23 (Lỗi Định danh Đầu sách)
-Mô tả: WHERE ISBN nhập vào đã tồn tại, THE system SHALL từ chối khởi tạo và báo lỗi "Trùng lặp ISBN".
+FR-23 (Validation trùng lặp ISBN)
+Mô tả: WHEN BookServlet.doPost(action=create) hoặc action=update nhận ISBN từ biểu mẫu, THE system SHALL gọi BookDAO.findByIsbn(isbn) để kiểm tra tồn tại. WHERE ISBN đã tồn tại VÀ bookId khác với book đang sửa (action=update), THE system SHALL từ chối và trả về flash error message: "ISBN {isbn} đã tồn tại trong hệ thống, thuộc sách: {existingBook.title}". WHERE ISBN chưa tồn tại hoặc trùng với chính bản ghi đang sửa, CHO PHÉP tiếp tục.
 Mapping: UC-13 / BR-16
 
-FR-24 (Nhập Kho Bản sao)
-Mô tả: WHEN Quản trị viên quét Barcode để thêm Bản sao vật lý, THE system SHALL quét trùng lặp mã vạch. WHERE hợp lệ, hệ thống SHALL thực thi INSERT vào bảng BookCopy.
+FR-24 (Nhập Kho Bản sao với đồng bộ số lượng)
+Mô tả: WHEN BookCopyServlet.doPost(action=create) nhận biểu mẫu thêm bản sao mới, THE system SHALL: (1) Validate barcode unique: BookCopyDAO.findByBarcode(barcode), WHERE tồn tại: trả lỗi "Mã vạch đã tồn tại, thuộc sách {bookTitle}", (2) WHERE hợp lệ: Mở DB Transaction, (3) INSERT BookCopy(bookId, barcode, location, condition='good', status='available', acquisitionDate=NOW()), (4) **Đồng bộ số lượng theo BR-17**: UPDATE Book SET totalQuantity = totalQuantity + 1, availableQuantity = availableQuantity + 1 WHERE bookId=?, (5) INSERT AuditLog(CREATE_BOOK_COPY, actorId), (6) conn.commit(), (7) WHERE SQLException: rollback + throw.
+Mapping: UC-14 / BR-16, BR-17
+
+FR-25 (DEPRECATED - Logic merged into FR-24)
+Mô tả: Logic đồng bộ số lượng khi thêm bản sao đã được tích hợp vào FR-24. Không còn sử dụng FR riêng biệt.
+Mapping: (merged into FR-24)
+
+FR-26 (Validation trùng lặp Barcode)
+Mô tả: WHEN BookCopyServlet.doPost(action=create) hoặc action=update nhận barcode từ biểu mẫu, THE system SHALL gọi BookCopyDAO.findByBarcode(barcode) để kiểm tra tồn tại. WHERE barcode đã tồn tại VÀ bookCopyId khác với bản sao đang sửa (action=update), THE system SHALL từ chối và trả về flash error message có cấu trúc: "Mã vạch {barcode} đã tồn tại trong hệ thống, thuộc sách: {existingCopy.book.title} (ID: {existingCopy.bookCopyId})". WHERE barcode chưa tồn tại hoặc trùng với chính bản ghi đang sửa, CHO PHÉP tiếp tục. Error message giúp Librarian nhanh chóng xác định vị trí barcode trùng để điều tra nguyên nhân (lỗi dán nhãn, lỗi scan, hoặc cố tình trùng).
 Mapping: UC-14 / BR-16
 
-FR-25 (Đồng bộ Khởi tạo Bản sao)
-Mô tả: WHILE thực thi thành công việc nhập kho Bản sao mới, THE system SHALL tự động UPDATE tăng totalQuantity + 1 VÀ availableQuantity + 1 cho Book tương ứng trong cùng 1 Transaction.
-Mapping: UC-14 / BR-17
-
-FR-26 (Lỗi Mã vạch Bản sao)
-Mô tả: WHERE Barcode bị trùng, THE system SHALL từ chối và báo lỗi có cấu trúc kèm thông tin tên sách đang sở hữu Barcode đó.
-Mapping: UC-14 / BR-16
-
-FR-27 (Ngăn chặn Sửa đổi Định danh)
-Mô tả: WHEN Quản trị viên cập nhật thông tin Đầu sách hoặc Bản sao, WHERE phát hiện sửa đổi ISBN hoặc Barcode, THE system SHALL chặn giao dịch.
+FR-27 (Chặn sửa đổi Định danh bất biến)
+Mô tả: WHEN BookServlet.doPost(action=update) hoặc BookCopyServlet.doPost(action=update) nhận request cập nhật, THE system SHALL kiểm tra các trường định danh bất biến (immutable identifiers): (1) **Đầu sách (Book)**: Load Book hiện tại từ DB theo bookId, so sánh request.isbn với book.isbn, WHERE khác nhau: CHẶN giao dịch và trả lỗi "Không được phép thay đổi ISBN sau khi đầu sách đã được tạo", (2) **Bản sao (BookCopy)**: Load BookCopy hiện tại từ DB theo bookCopyId, so sánh request.barcode với bookCopy.barcode, WHERE khác nhau: CHẶN giao dịch và trả lỗi "Không được phép thay đổi Barcode sau khi bản sao đã được tạo". Chỉ cho phép cập nhật các trường metadata khác (title, author, publisher cho Book; location, condition, status cho BookCopy). WHERE cố tình sửa ISBN/Barcode: ghi AuditLog(ATTEMPTED_IDENTIFIER_CHANGE, actorId, oldValue, attemptedValue) để theo dõi hành vi bất thường.
 Mapping: UC-13, UC-14 / BR-18
 
-FR-28 (Đồng bộ Hư hỏng/Mất mát)
-Mô tả: WHEN Quản trị viên cập nhật trường Condition của BookCopy, WHERE trạng thái chuyển từ 'good' sang 'damaged' hoặc 'lost', THE system SHALL tự động trigger giảm availableQuantity của Book đi 1 đơn vị.
-Mapping: UC-14 / BR-17
+FR-28 (Đồng bộ Hư hỏng/Mất mát với Trigger)
+Mô tả: WHEN BookCopyServlet.doPost(action=update) cập nhật BookCopy VÀ phát hiện condition thay đổi từ 'good' sang 'damaged' hoặc 'lost', THE system SHALL: (1) Mở DB Transaction, (2) UPDATE BookCopy SET condition=?, status='unavailable', (3) **Trigger đồng bộ theo BR-17**: UPDATE Book SET availableQuantity = availableQuantity - 1 WHERE bookId=?, (4) INSERT BookCopyIncident(bookCopyId, type=condition, description='Phát hiện khi cập nhật bản sao', status='open', reportedBy=actorId), (5) INSERT AuditLog(UPDATE_BOOK_COPY), (6) conn.commit(). WHERE condition thay đổi từ 'damaged'/'lost' về 'good' (sau khi sửa chữa): UPDATE availableQuantity = availableQuantity + 1.
+Mapping: UC-14 / BR-17, BR-28
 
-FR-29 (Xác thực điều kiện Giao dịch Trực tuyến)
-Mô tả: WHEN người dùng yêu cầu đặt trước hoặc gia hạn sách, THE system SHALL kiểm tra trạng thái tài khoản và giới hạn giao dịch. WHERE tài khoản không ở trạng thái 'active' HOẶC số lượng mượn/đặt đã đạt giới hạn tối đa, hệ thống SHALL chặn giao dịch và trả về thông báo lỗi cụ thể.
+FR-29 (Xác thực điều kiện Giao dịch Trực tuyến đầy đủ)
+Mô tả: WHEN ReservationServlet hoặc RenewalServlet nhận request từ user, THE system SHALL kiểm tra điều kiện giao dịch: (1) Verify session userId hợp lệ, (2) UserDAO.findById(userId), kiểm tra User.status='active' (không locked), (3) UserLockReasonDAO.hasLockReason(userId, 'unpaid'), WHERE tồn tại: chặn với thông báo "Tài khoản có nợ phạt chưa thanh toán, không thể thực hiện giao dịch", (4) BorrowRecordDAO.countActiveBorrowsByUser(userId), so sánh với SystemConfig: STUDENT_MAX_BORROW_BOOKS hoặc LECTURER_MAX_BORROW_BOOKS theo role, WHERE vượt hạn mức: chặn với thông báo "Đã đạt giới hạn số sách mượn", (5) WHERE tất cả điều kiện OK: tiếp tục xử lý reserve/renew.
 Mapping: UC-16, UC-17 / BR-19
 
-FR-30 (Đặt trước sách có sẵn)
-Mô tả: WHEN người dùng yêu cầu đặt trước VÀ Book.availableQuantity > 0, THE system SHALL tạo Reservation với queuePosition = 0 và status = 'readypickup', ĐỒNG THỜI thực thi UPDATE Book.availableQuantity = availableQuantity - 1 và gửi email thông báo.
+FR-30 (Đặt trước sách có sẵn với Transaction)
+Mô tả: WHEN OnlineCirculationService.reserveBook(userId, bookId, role) được gọi VÀ Book.availableQuantity > 0, THE system SHALL mở DB Transaction (conn.setAutoCommit(false)): (1) **SELECT ... FOR UPDATE** Book WHERE bookId=? (lock row chống race condition), (2) Re-check availableQuantity > 0, (3) INSERT Reservation(userId, bookId, bookCopyId=NULL, queuePosition=0, status='readypickup', createdAt=NOW(), endDate=NOW()+RESERVATION_HOLD_DAYS từ SystemConfig), (4) UPDATE Book SET availableQuantity = availableQuantity - 1, (5) INSERT AuditLog(RESERVE_BOOK_ONLINE, userId), (6) conn.commit(), (7) EmailService.enqueue(RESERVATION_READY, userId) [async, ngoài transaction]. WHERE SQLException: rollback.
 Mapping: UC-16 / BR-20
 
-FR-31 (Xếp hàng chờ sách hết bản sao)
-Mô tả: WHEN người dùng yêu cầu đặt trước VÀ Book.availableQuantity == 0, THE system SHALL truy vấn MAX(queuePosition) hiện tại của đầu sách đó, VÀ tạo Reservation với queuePosition = MAX + 1 và status = 'pending'.
+FR-31 (Xếp hàng chờ sách hết bản sao với Race Condition Protection)
+Mô tả: WHEN OnlineCirculationService.reserveBook(userId, bookId, role) được gọi VÀ Book.availableQuantity == 0, THE system SHALL mở DB Transaction: (1) **SELECT ... FOR UPDATE** Book WHERE bookId=? (lock row), (2) Re-check availableQuantity == 0, (3) ReservationDAO.getMaxQueuePosition(bookId) → maxQueue, (4) INSERT Reservation(userId, bookId, bookCopyId=NULL, queuePosition=maxQueue+1, status='pending', createdAt=NOW(), endDate=NULL), (5) INSERT AuditLog(RESERVE_BOOK_QUEUE, userId), (6) conn.commit(), (7) Trả về flash message "Đã xếp hàng chờ tại vị trí {maxQueue+1}". WHERE SQLException: rollback. (KHÔNG trừ availableQuantity vì sách đã hết).
 Mapping: UC-16 / BR-20
 
-FR-32 (Kiểm tra điều kiện Gia hạn)
-Mô tả: WHEN người dùng yêu cầu gia hạn, THE system SHALL đối chiếu BorrowRecord hiện tại với các điều kiện gia hạn (thời gian tối thiểu, số lần tối đa, và sự tồn tại của hàng đợi pending cho cuốn sách này). WHERE bất kỳ điều kiện nào không thỏa mãn, THE system SHALL từ chối và báo lỗi.
+FR-32 (Kiểm tra điều kiện Gia hạn với 3 điều kiện bắt buộc)
+Mô tả: WHEN OnlineCirculationService.renewBook(userId, borrowRecordId) được gọi, THE system SHALL kiểm tra 3 điều kiện theo BR-21: (1) **Điều kiện 1 - Thời gian tối thiểu**: Tính số ngày đã mượn = (NOW() - BorrowRecord.startDate), lấy RENEWAL_MIN_DAYS_BEFORE_DUE từ SystemConfig (default 0), WHERE số ngày < minDays: chặn với thông báo "Chưa đủ thời gian để gia hạn", (2) **Điều kiện 2 - Số lần tối đa**: Lấy MAX_EXTENSION_COUNT từ SystemConfig, WHERE BorrowRecord.extensionCount >= maxCount: chặn với thông báo "Đã hết lượt gia hạn", (3) **Điều kiện 3 - Không có người chờ**: ReservationDAO.hasPendingQueue(bookId) WHERE tồn tại Reservation có queuePosition > 0 AND status='pending': chặn với thông báo "Có người đang chờ sách này, không thể gia hạn". WHERE tất cả điều kiện OK: tiếp tục FR-33.
 Mapping: UC-17 / BR-21
 
-FR-33 (Thực thi Gia hạn)
-Mô tả: WHERE yêu cầu gia hạn hợp lệ, THE system SHALL thực thi UPDATE bảng BorrowRecord bằng cách cộng thêm số ngày quy định vào endDate VÀ tăng giá trị extensionCount = extensionCount + 1.
+FR-33 (Thực thi Gia hạn với cập nhật endDate)
+Mô tả: WHERE yêu cầu gia hạn hợp lệ (qua FR-32), THE system SHALL mở DB Transaction: (1) Lấy STUDENT_MAX_BORROW_DAYS hoặc LECTURER_MAX_BORROW_DAYS từ SystemConfig theo role, (2) UPDATE BorrowRecord SET endDate = endDate + {loanDays} ngày, extensionCount = extensionCount + 1 WHERE borrowRecordId=?, (3) INSERT AuditLog(RENEW_BOOK_ONLINE, userId), (4) conn.commit(), (5) EmailService.enqueue(RENEWAL_CONFIRMATION, userId) [async], (6) Trả về flash "Gia hạn thành công, hạn mới: {newEndDate}".
 Mapping: UC-17 / BR-21
 
-FR-34 (Kiểm tra điều kiện Giao sách)
-Mô tả: WHEN Thủ thư quét mã định danh và mã vạch bản sao để mượn sách, THE system SHALL truy vấn bảng UserLockReason. WHERE tồn tại bản ghi reason == 'unpaid', THE system SHALL chặn giao dịch. Đồng thời, hệ thống SHALL kiểm soát trạng thái bản sao: Walk-in checkout yêu cầu trạng thái 'available', Pre-reservation checkout yêu cầu trạng thái 'reserved' và phải khớp với bản sao gán cho người dùng.
+FR-34 (Kiểm tra điều kiện Giao sách đầy đủ)
+Mô tả: WHEN CheckOutServlet.doPost(memberCode, barcode, targetBookId) được gọi, THE system SHALL: (1) Validate barcode và memberCode không rỗng, (2) UserLookupDAO.findUserIdByMemberCode() → userId, (3) Kiểm tra User tồn tại và không bị xóa, (4) Truy vấn UserLockReason: WHERE tồn tại reason='unpaid', CHẶN giao dịch với thông báo "Tài khoản có nợ phạt chưa thanh toán", (5) BookCopyDAO.findByBarcode(barcode), (6) Kiểm tra BookCopy.status: Walk-in yêu cầu 'available', Pre-reservation yêu cầu 'reserved', (7) Kiểm tra hạn mức: đếm số BorrowRecord active của user, so với STUDENT_MAX_BORROW_BOOKS hoặc LECTURER_MAX_BORROW_BOOKS từ SystemConfig.
 Mapping: UC-18 / BR-22, BR-29
 
-FR-35 (Xử lý Mượn trực tiếp)
-Mô tả: WHERE người dùng chưa có đơn đặt trước (Mượn trực tiếp) VÀ không vi phạm nợ phạt, THE system SHALL kiểm tra hàng đợi trong bảng Reservation. WHERE queuePosition > 0, THE system SHALL từ chối. WHERE hàng đợi trống, THE system SHALL tự động CREATE Reservation tại chỗ (queuePosition = 0, status = 'readypickup').
+FR-35 (Xử lý Mượn trực tiếp với Reservation ảo)
+Mô tả: WHERE người dùng chưa có đơn đặt trước (Mượn trực tiếp Walk-in) VÀ không vi phạm nợ phạt, THE system SHALL kiểm tra hàng đợi: ReservationDAO.hasQueueForBook(bookId) WHERE tồn tại Reservation có queuePosition > 0 AND status='pending', THE system SHALL từ chối với thông báo "Sách đang có người chờ, không thể mượn trực tiếp". WHERE hàng đợi trống, THE system SHALL tự động CREATE Reservation tại chỗ với (userId, bookId, bookCopyId, queuePosition=0, status='readypickup', createdAt=NOW(), endDate=NOW()+LoanDays) theo BR-23 để chuẩn hóa dữ liệu trước khi insert BorrowRecord.
 Mapping: UC-18 / BR-23
 
-FR-36 (Thực thi Giao sách)
-Mô tả: WHERE Reservation hợp lệ (queuePosition = 0, status = 'readypickup'), THE system SHALL thực thi một DB Transaction: INSERT BorrowRecord (status='borrowed'), UPDATE Reservation (status='fulfilled'), VÀ UPDATE BookCopy (status='borrowed'). Trong đó, hệ thống phân nhánh: nếu BookCopy ở trạng thái 'available' (Walk-in), hệ thống SHALL giảm Book.availableQuantity đi 1; nếu BookCopy ở trạng thái 'reserved' (Pre-reservation), hệ thống SHALL KHÔNG giảm availableQuantity (vì đã giảm từ lúc đặt trước online).
+FR-36 (Thực thi Giao sách với DB Transaction)
+Mô tả: WHERE tất cả điều kiện FR-34, FR-35 thỏa mãn, THE system SHALL mở DB Transaction (conn.setAutoCommit(false)) và thực thi tuần tự: (1) INSERT BorrowRecord(userId, bookCopyId, status='borrowed', startDate=NOW(), endDate=NOW()+LoanDays theo role, extensionCount=0), (2) UPDATE Reservation SET status='fulfilled', borrowRecordId=? WHERE reservationId=?, (3) UPDATE BookCopy SET status='borrowed', (4) **PHÂN NHÁNH**: IF BookCopy trước đó status='available' (Walk-in): UPDATE Book.availableQuantity = availableQuantity - 1, ELSE IF BookCopy status='reserved' (Pre-reservation): SKIP (đã trừ khi đặt trước), (5) INSERT AuditLog(CHECKOUT, actorId=librarianId), (6) conn.commit(). WHERE SQLException: conn.rollback() + throw. (7) EmailService.enqueue(CHECKOUT_CONFIRMATION, userId) [async, ngoài transaction].
 Mapping: UC-18 / BR-29
 
-FR-37 (Nhận sách Hỏng/Mất)
-Mô tả: WHEN Thủ thư trả sách với Condition IN ('damaged', 'lost'), THE system SHALL thực thi DB Transaction: UPDATE Book.totalQuantity = totalQuantity - 1, UPDATE BookCopy (status='unavailable', condition), INSERT Fine. ĐỒNG THỜI, THE system SHALL INSERT UserLockReason (reason='unpaid') VÀ UPDATE [User] (status='locked').
+FR-37 (Nhận sách Hỏng/Mất với khóa tức thì)
+Mô tả: WHEN CheckInServlet.doPost(barcode, condition='damaged'|'lost', memberCode) được gọi, THE system SHALL mở DB Transaction: (1) BookCopyDAO.findByBarcode(), (2) BorrowRecordDAO.findActiveBorrowByBookCopyId(), (3) Tính số ngày trễ = (NOW() - BorrowRecord.endDate), WHERE > 0: amount = FINE_RATE_PER_DAY × số ngày, INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue'), (4) UPDATE BorrowRecord SET status='returned', returnedAt=NOW(), (5) UPDATE BookCopy SET status='unavailable', condition=condition, (6) UPDATE Book.totalQuantity = totalQuantity - 1 (vì sách hỏng/mất không còn lưu thông), (7) INSERT BookCopyIncident(bookCopyId, type=condition, description='Phát hiện khi trả sách', status='open'), (8) **KHÓA TỨC THÌ**: INSERT UserLockReason(userId, reason='unpaid') + UPDATE User.status='locked' (KHÔNG chờ background job), (9) INSERT AuditLog(CHECKIN), (10) conn.commit(). WHERE có người chờ: SKIP FR-39 (sách hỏng không luân chuyển).
 Mapping: UC-19 / BR-24
 
-FR-38 (Nhận sách Nguyên vẹn)
-Mô tả: WHEN Thủ thư trả sách với Condition == 'good', THE system SHALL UPDATE BorrowRecord (status='returned', returnedAt=GETDATE()) VÀ UPDATE BookCopy (condition='good').
+FR-38 (Nhận sách Nguyên vẹn với tính phạt trễ hạn)
+Mô tả: WHEN CheckInServlet.doPost(barcode, condition='good', memberCode) được gọi, THE system SHALL mở DB Transaction: (1) BookCopyDAO.findByBarcode(), (2) BorrowRecordDAO.findActiveBorrowByBookCopyId(), (3) Tính số ngày trễ = (NOW() - BorrowRecord.endDate), WHERE số ngày > 0: amount = FINE_RATE_PER_DAY × số ngày trễ, INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue'), INSERT UserLockReason(userId, reason='unpaid'), UPDATE User.status='locked', (4) UPDATE BorrowRecord SET status='returned', returnedAt=NOW(), (5) UPDATE BookCopy SET condition='good', status='available' (tạm thời, sẽ đổi nếu có người chờ ở FR-39), (6) INSERT AuditLog(CHECKIN), (7) THEN gọi FR-39 để điều phối hàng chờ, (8) conn.commit(). (9) EmailService.enqueue(CHECKIN_CONFIRMATION) [async].
 Mapping: UC-19
 
-FR-39 (Điều phối Hàng chờ Check-in)
-Mô tả: WHILE hệ thống nhận trả sách 'good', THE system SHALL tìm Reservation chờ tiếp theo (queuePosition = 1). WHERE tồn tại người chờ, THE system SHALL UPDATE Reservation đó (queuePosition=0, status='readypickup', gán bookCopyId), UPDATE BookCopy.status='reserved', VÀ Trigger email. WHERE không có người chờ, THE system SHALL UPDATE Book.availableQuantity = availableQuantity + 1 VÀ BookCopy.status='available'.
+FR-39 (Điều phối Hàng chờ Check-in với tính HOLD_DAYS)
+Mô tả: WHILE hệ thống nhận trả sách condition='good' VÀ hoàn tất cập nhật BorrowRecord, THE system SHALL truy vấn ReservationDAO.findNextInQueue(bookId) WHERE queuePosition = 1 AND status='pending'. WHERE tồn tại người chờ tiếp theo: (1) UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=?, endDate=NOW()+RESERVATION_HOLD_DAYS (từ SystemConfig), (2) UPDATE BookCopy SET status='reserved', (3) EmailService.enqueue(RESERVATION_READY, userId) [async]. WHERE KHÔNG có người chờ: (1) UPDATE Book.availableQuantity = availableQuantity + 1, (2) UPDATE BookCopy.status='available'. (Tất cả trong cùng 1 transaction của FR-38).
 Mapping: UC-19
 
-FR-40 (Xác nhận Thanh toán Tiền mặt)
-Mô tả: WHEN Thủ thư xác nhận duyệt đơn Payment tiền mặt, THE system SHALL thực thi DB Transaction: UPDATE Payment (status='completed', paidAt=GETDATE()), UPDATE Fine (status='paid'), VÀ DELETE bản ghi có reason='unpaid' trong UserLockReason của User hiện tại.
-Mapping: UC-20
-
-FR-41 (Kiểm định Mở khóa Tự động)
-Mô tả: WHILE hoàn tất duyệt thanh toán tiền mặt, THE system SHALL COUNT số lượng bản ghi trong UserLockReason của User. WHERE COUNT == 0, THE system SHALL thực thi UPDATE [User] (status='active'). WHERE COUNT > 0, THE system SHALL giữ nguyên trạng thái khóa và hiển thị cảnh báo cho Thủ thư.
+FR-40 (Xác nhận Thanh toán Tiền mặt với BR-25)
+Mô tả: WHEN CashPaymentServlet.doPost(paymentId, memberCode) được gọi, THE system SHALL: (1) UserLookupDAO.findUserIdByMemberCode() → userId, (2) Mở DB Transaction: PaymentDAO.updatePaymentCompleted(paymentId, librarianId), FineDAO.updateStatusToPaid(fineId), UserLockReasonDAO.deleteLockReason(userId, 'unpaid'), (3) **Kiểm định mở khóa tự động theo BR-25**: COUNT(*) FROM UserLockReason WHERE userId=?, WHERE count = 0: UserDAO.updateStatusToActive(userId) [auto-unlock], WHERE count > 0: GIỮ NGUYÊN status='locked' (vì còn lý do khóa khác như 'adminban' hoặc 'securitybreach'), (4) INSERT AuditLog(CASH_PAYMENT), (5) conn.commit(), (6) EmailService.enqueue(PAYMENT_CONFIRMATION) [async].
 Mapping: UC-20 / BR-25
 
+FR-41 (DEPRECATED - Merged into FR-40)
+Mô tả: Logic kiểm định mở khóa tự động đã được tích hợp vào FR-40 theo BR-25. Không còn sử dụng FR riêng biệt.
+Mapping: (merged into FR-40)
+
 FR-42 (Google SSO Verification)
-Mô tả: WHEN người dùng chọn đăng nhập bằng Google, THE system SHALL lấy Email từ Google Token. WHERE Email không tồn tại trong bảng [User], THE system SHALL chặn truy cập và báo lỗi. WHERE tồn tại, thực hiện kiểm tra trạng thái tương tự FR-02.
+Mô tả: WHEN GoogleLoginServlet.doGet() nhận code param từ Google OAuth callback, THE system SHALL: (1) Đổi code → accessToken qua GoogleSSOUtil.exchangeCodeForToken(code), (2) Lấy email từ Google Token bằng GoogleSSOUtil.getUserEmail(accessToken), (3) Tìm User bằng email trong DB: UserDAO.findByEmail(email). WHERE email KHÔNG tồn tại, THE system SHALL trả lỗi "Email chưa được cấp tài khoản trong hệ thống LMS". WHERE tồn tại, kiểm tra locked tương tự FR-02 (phân biệt unpaid vs securitybreach/adminban), FR-03 (auto-unlock nếu hết thời gian khóa tạm). THEN tạo HttpSession với {userId, role, email, fullName} và gọi getRedirectByRole(role) để redirect. **BUG HIỆN TẠI**: GoogleLoginServlet.getRedirectByRole() hiện luôn return "/" thay vì dashboard đúng theo role → CẦN SỬA để redirect logic giống LoginServlet (ADMIN→/admin/dashboard, LIBRARIAN→/librarian/dashboard, MANAGER→/manager/dashboard, STUDENT→/student/dashboard, LECTURER→/lecturer/dashboard). WHERE có query param redirect, áp dụng FR-77 (whitelist validation) trước khi redirect.
 Mapping: UC-21 / BR-26
 
-FR-43 (AI Recommendation Retrieval)
-Mô tả: WHEN người dùng xem chi tiết sách, THE system SHALL gọi API Gemini để lấy danh sách ISBN gợi ý và truy vấn bảng Book để hiển thị.
-Mapping: UC-23
+FR-43 (Tra cứu & Gợi ý sách với AI Recommendation)
+Mô tả: WHEN BookSearchServlet.doGet() hoặc BookDetailServlet.doGet() được gọi, THE system SHALL: (1) **Search Logic**: BookDAO.search(keyword, categoryId, tagIds[], filterStatus, page, pageSize=12) thực thi SQL với ILIKE '%keyword%' trên title, author, publisher, ISBN, pagination OFFSET (page-1)*12 LIMIT 12, (2) **User Context**: WHERE user đã login: BorrowRecordDAO.findBorrowedBookIdsByUser(userId) và ReservationDAO.findReservedBookIdsByUser(userId) để đánh dấu sách đang mượn/đặt trước trên giao diện, (3) **AI Recommendation** (chỉ BookDetailServlet): Gọi RecommendationServlet.doGet() (API endpoint) để lấy recommendations từ AiRecommendationService.getRecommendationsForUser(userId, currentBookId), Service gọi Gemini API với prompt chứa lịch sử mượn, category/tags của sách hiện tại, danh sách ISBN sách có sẵn, Gemini trả về JSON array chứa 5-10 ISBN gợi ý, Service parse JSON và truy vấn BookDAO.findByIsbnList(isbns) để lấy thông tin đầy đủ, Cache recommendations trong session với TTL 30 phút, (4) Forward sang JSP với {books[], categories[], tags[], borrowedBookIds[], reservedBookIds[], recommendations[]}.
+Mapping: UC-22, UC-23
 
-FR-44 (Notification Distribution)
-Mô tả: WHEN Manager tạo thông báo, THE system SHALL lưu vào DB và cấp phát biểu tượng chuông hiển thị thông báo chưa đọc cho các đối tượng áp dụng (Lecturer/Student).
+FR-44 (Quản lý & Phát hành Thông báo hàng loạt)
+Mô tả: WHEN NotificationManagerServlet.doPost(action=create) hoặc action=update được gọi, THE system SHALL: (1) **Validate input**: title không rỗng và ≤ 255 ký tự, content ≤ 10.000 ký tự (hỗ trợ Markdown), type IN ['news', 'policy', 'announcement', 'maintenance'], isPinned = true/false, (2) **Create/Update Notification**: Mở DB Transaction, INSERT hoặc UPDATE Notification(notificationId, title, content, type, isPinned, status='published', createdBy=managerId, createdAt=NOW() hoặc updatedAt=NOW()), INSERT AuditLog(CREATE_NOTIFICATION hoặc UPDATE_NOTIFICATION, managerId), conn.commit(), (3) **Gửi Email hàng loạt** (chỉ khi action=create VÀ user chọn "Gửi email thông báo"): WHERE templateId được cung cấp, DocumentTempDAO.findById(templateId) để load email template, EmailService.sendBulkNotificationEmails(notificationId, templateId) [async, ngoài transaction]: Query UserDAO.findAllActiveUsersWithRole(['STUDENT', 'LECTURER']), Với mỗi user: render template với variables {userName, notificationTitle, notificationContent, notificationUrl}, enqueue email vào background ExecutorService, ghi log số lượng email queued, (4) **Widget Update**: NotificationWidgetServlet sẽ hiển thị badge số lượng thông báo chưa đọc dựa trên UserNotificationStatus.
 Mapping: UC-24, UC-25
 
-FR-45 (Bulk Excel Export)
-Mô tả: WHEN Admin yêu cầu xuất danh sách, THE system SHALL sinh file Excel (.xlsx) chứa toàn bộ bản ghi định danh và trả về stream cho trình duyệt.
+FR-45 (Bulk Excel Export với 10 cột)
+Mô tả: WHEN ExportUserServlet.doGet(search, role, status) được gọi, THE system SHALL: (1) Gọi UserService.getUsersForExport(search, role, status) để lấy toàn bộ danh sách user KHÔNG phân trang, (2) Build file Excel (.xlsx) bằng Apache POI với 10 cột: [Email, Họ tên, SĐT, Giới tính, Ngày sinh, Vai trò, Mã số (MSSV/MSGV/Staff), Chuyên ngành/Khoa, Năm nhập học/Năm vào, Trạng thái], (3) Set header Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, (4) Set header Content-Disposition: attachment; filename="danh_sach_nguoi_dung_{ROLE}_{YYYYMMDD}.xlsx", (5) Write workbook to response OutputStream, (6) Ghi AuditLog(EXPORT_USER_LIST, actorId).
 Mapping: UC-30
 
-FR-46 (Kiểm định tệp Excel Sách)
-Mô tả: WHEN Thủ thư tải lên tệp Import Sách, THE system SHALL đọc tệp và phân tích tính hợp lệ của ISBN và Barcode. WHERE phát hiện lỗi, hệ thống SHALL hủy bỏ toàn bộ và báo cáo vị trí lỗi chi tiết.
+FR-46 (Kiểm định tệp Excel Sách với 2 Phase)
+Mô tả: WHEN BookImportServlet.doPost(action=upload) nhận file upload (.xlsx ≤10MB, tên ≤255 ký tự), THE system SHALL thực hiện 2 Phase: **Phase 1 (Validation — RAM only)**: Gọi BookImportWorkbookReader.read() để dùng Apache POI đọc file Excel, với mỗi row (skip header): validate ISBN (13 chữ số + checksum mod10 đúng) qua BookImportValidator, validate Barcode unique (không trùng trong DB), validate các field bắt buộc (title, authorName, categoryId, quantity > 0). WHERE phát hiện lỗi bất kỳ: thêm vào List<String> errors với format "Row {rowIndex}: {field} - {lỗi chi tiết}" và DỪNG import. WHERE validation pass: lưu BookImportPreview vào HttpSession để user xem lại, THEN redirect về book-import.jsp. **Phase 2 (Transaction Insert)**: WHEN user click confirm, doPost(action=confirm) gọi BookImportService.commit(preview, actorId) mở DB Transaction để INSERT từng Book record, AUTO sinh barcode nếu không cung cấp, INSERT BookCopy tương ứng với totalQuantity = availableQuantity = số bản sao, INSERT BookImportBatch để lưu lịch sử import, INSERT AuditLog(BOOK_IMPORT, actorId), THEN conn.commit(). WHERE SQLException: rollback và forward error page.
 Mapping: UC-27 / BR-27
 
-FR-47 (Lưu trữ hàng loạt Sách)
-Mô tả: WHERE tệp Import Sách hợp lệ toàn bộ, THE system SHALL thực thi lưu vào CSDL cho các bảng Book và BookCopy, đồng bộ totalQuantity và availableQuantity.
-Mapping: UC-27 / BR-17
+FR-47 (Lưu trữ hàng loạt Sách với đồng bộ số lượng)
+Mô tả: WHEN BookImportServlet.doPost(action=confirm) thực thi Phase 2 sau khi user xác nhận preview hợp lệ, THE system SHALL: (1) Lấy BookImportPreview từ HttpSession, (2) Mở DB Transaction (conn.setAutoCommit(false)), (3) INSERT BookImportBatch(importedBy=librarianId, fileName, totalRows, successRows=0, failedRows=0, status='processing', importedAt=NOW()) → lấy importBatchId, (4) Với mỗi BookImportDTO trong preview: (a) INSERT Book(isbn, title, authorName, publisherName, publicationYear, price, categoryId, totalQuantity=dto.quantity, availableQuantity=dto.quantity, status='available', createdAt=NOW()), (b) Lấy bookId vừa insert, (c) Loop từ 1 đến dto.quantity: AUTO-GENERATE barcode (nếu không cung cấp) theo format "LMS{bookId}{sequenceNumber}" hoặc dùng barcode từ Excel nếu có, INSERT BookCopy(bookId, barcode, location=dto.defaultLocation hoặc 'Kệ chính', condition='good', status='available', acquisitionDate=NOW()), (d) WHERE SQLException xảy ra cho bất kỳ row nào: INSERT BookImportError(importBatchId, sheetName, rowNumber, columnName='N/A', errorMessage=exception.getMessage()), failedRows++, CONTINUE (skip row lỗi), (e) WHERE thành công: successRows++, (5) UPDATE BookImportBatch SET successRows=?, failedRows=?, status='completed' WHERE importBatchId=?, (6) INSERT AuditLog(BOOK_IMPORT, librarianId, entityName='BookImportBatch', entityId=importBatchId, newValues=JSON.stringify({fileName, totalRows, successRows, failedRows})), (7) conn.commit(), (8) WHERE SQLException ở cấp transaction: conn.rollback() + forward error page, (9) Redirect sang /book-management/import-history?batchId={importBatchId} với flash success "Đã nhập thành công {successRows}/{totalRows} sách".
+Mapping: UC-27 / BR-17, BR-27
 
-FR-48 (Ghi nhận sự cố Bản sao)
-Mô tả: WHEN Thủ thư báo cáo một Bản sao bị hỏng hoặc mất, THE system SHALL cập nhật trạng thái bản sao thành 'unavailable', trừ số lượng availableQuantity của Book, và lưu vào bảng BookCopyIncident.
+FR-48 (Ghi nhận sự cố Bản sao với vô hiệu hóa tức thì)
+Mô tả: WHEN BookCopyIncidentServlet.doPost(action=report) nhận báo cáo sự cố, THE system SHALL: (1) Validate bookCopyId tồn tại, (2) Mở DB Transaction, (3) INSERT BookCopyIncident(bookCopyId, incidentType IN ['damaged','lost','missing'], description, status='open', reportedBy=librarianId, reportedAt=NOW()), (4) **Vô hiệu hóa bản sao tức thì theo BR-28**: UPDATE BookCopy SET status='unavailable', condition=incidentType, (5) UPDATE Book SET availableQuantity = availableQuantity - 1 WHERE bookId=?, (6) INSERT AuditLog(REPORT_BOOK_INCIDENT), (7) conn.commit(), (8) WHERE SQLException: rollback.
 Mapping: UC-28 / BR-28
 
-FR-49 (Giải quyết sự cố Bản sao)
-Mô tả: WHEN sự cố Bản sao được kết luận (resolve) hoặc bác bỏ (reject), THE system SHALL cập nhật trạng thái vật lý của Bản sao và tự động phục hồi availableQuantity nếu sự cố bị bác bỏ.
+FR-49 (Giải quyết sự cố Bản sao với phục hồi số lượng)
+Mô tả: WHEN BookCopyIncidentServlet.doPost(action=resolve) xử lý sự cố, THE system SHALL: (1) Load BookCopyIncident by incidentId, (2) Mở DB Transaction, (3) UPDATE BookCopyIncident SET status='resolved', resolution=?, resolvedBy=librarianId, resolvedAt=NOW(), (4) **Phân nhánh theo resolution**: IF resolution='rejected' (sự cố không xảy ra): UPDATE BookCopy SET status='available', condition='good', UPDATE Book SET availableQuantity = availableQuantity + 1 (phục hồi số lượng theo BR-28), ELSE IF resolution='repaired': UPDATE BookCopy SET status='available', condition='good', UPDATE availableQuantity + 1, ELSE IF resolution='disposed': UPDATE BookCopy SET status='disposed', condition='lost', UPDATE Book.totalQuantity = totalQuantity - 1 (loại bỏ vĩnh viễn), (5) INSERT AuditLog(RESOLVE_INCIDENT), (6) conn.commit().
 Mapping: UC-28 / BR-28
 
-FR-50 (Tạo phiên Kiểm kê Kho)
-Mô tả: WHEN Thủ thư bắt đầu phiên kiểm kê, THE system SHALL tạo InventorySession. Thủ thư quét Barcode để ghi nhận các mục InventoryItem và so sánh với expectedLocation trên hệ thống.
+FR-50 (Tạo phiên Kiểm kê Kho với 8 action)
+Mô tả: WHEN InventoryReconciliationServlet nhận các action khác nhau, THE system SHALL xử lý theo state machine: **action=create**: INSERT InventorySession(location, note, status='created', startedBy=librarianId, startedAt=NOW()), **action=start**: UPDATE status='in_progress', **action=scan**: INSERT InventoryItem(sessionId, bookCopyId FROM barcode, expectedLocation=BookCopy.location, scannedLocation=session.location, result='scanned'), **action=finish-counting**: Tính toán chênh lệch: SELECT BookCopy WHERE location=session.location AND NOT EXISTS InventoryItem → INSERT InventoryItem với result='missing', UPDATE session.status='counting_complete', **action=resolve-misplaced**: UPDATE BookCopy.location = scannedLocation WHERE itemId, UPDATE InventoryItem.result='resolved', **action=resolve-missing**: INSERT BookCopyIncident(type='missing') + UPDATE BookCopy.status='unavailable', **action=complete**: UPDATE session.status='completed', completedBy=librarianId, completedAt=NOW(), **action=cancel**: UPDATE session.status='cancelled'.
 Mapping: UC-29
 
-FR-51 (Kết luận Kiểm kê Kho)
-Mô tả: WHEN kết thúc phiên kiểm kê, THE system SHALL tự động đồng bộ lại vị trí (location) thực tế của các bản sao sách dựa trên kết quả quét (scannedLocation) và đánh dấu trạng thái bị mất (missing) nếu không tìm thấy.
-Mapping: UC-29
+FR-51 (DEPRECATED - Logic merged into FR-50)
+Mô tả: Logic kết luận kiểm kê đã được tích hợp vào FR-50 với action=complete. Không còn sử dụng FR riêng biệt.
+Mapping: (merged into FR-50)
 
-FR-52 (Quản lý Mẫu văn bản)
-Mô tả: WHEN Manager thay đổi nội dung Mẫu văn bản (DocumentTemp), THE system SHALL lưu mẫu thiết kế mới dùng cho việc tự động hóa gửi email (như gửi OTP, báo phạt).
+FR-52 (Quản lý Mẫu Email với Markdown support)
+Mô tả: WHEN DocumentTempManagerServlet.doPost(action=update) cập nhật email template, THE system SHALL: (1) Validate input: tempId tồn tại, subject không rỗng và ≤ 255 ký tự, bodyContent ≤ 50.000 ký tự (hỗ trợ Markdown + placeholders), (2) Kiểm tra các placeholders bắt buộc theo loại template: RESET_PASSWORD template MUST chứa {{tempPassword}}, {{userName}}, {{resetLink}}, OVERDUE_NOTICE template MUST chứa {{bookTitle}}, {{dueDate}}, {{daysLate}}, {{fineAmount}}, RESERVATION_READY template MUST chứa {{bookTitle}}, {{pickupDeadline}}, {{libraryLocation}}, WHERE thiếu placeholder bắt buộc: trả lỗi validation "Template thiếu biến bắt buộc: {missingPlaceholders}", (3) Mở DB Transaction: UPDATE DocumentTemp SET subject=?, bodyContent=?, updatedBy=managerId, updatedAt=NOW() WHERE tempId=?, INSERT AuditLog(UPDATE_EMAIL_TEMPLATE, managerId, entityName='DocumentTemp', entityId=tempId, oldValues=JSON.stringify({oldSubject, oldBodyContent}), newValues=JSON.stringify({subject, bodyContent})), conn.commit(), (4) **Clear template cache**: DocumentTemplateCache.invalidate(tempId) để buộc reload template mới khi gửi email tiếp theo, (5) Redirect với flash success "Đã cập nhật mẫu email: {tempName}". **Rendering**: EmailService.sendEmail() sẽ dùng MarkdownUtil.renderToHtml(bodyContent) để convert Markdown sang HTML, sau đó thay thế placeholders bằng SimpleTemplateEngine hoặc String.replace().
 Mapping: UC-26
 
-FR-53 (Hiển thị Hàng mượn & chờ sách)
-Mô tả: WHEN người dùng truy cập trang "Hàng mượn & chờ sách", THE system SHALL truy vấn dữ liệu từ BorrowRecord (active & history) và Reservation (active) của người dùng đó để hiển thị trên giao diện.
+FR-53 (Hiển thị Hàng mượn & chờ sách với trạng thái)
+Mô tả: WHEN MyBorrowingsServlet.doGet() được gọi, THE system SHALL: (1) BorrowRecordDAO.findActiveBorrowsByUser(userId) → JOIN Book, BookCopy để lấy {borrowRecordId, bookTitle, barcode, startDate, endDate, extensionCount, daysUntilDue, isOverdue}, (2) ReservationDAO.findActiveReservationsByUser(userId) → JOIN Book, BookCopy (nếu có) để lấy {reservationId, bookTitle, queuePosition, status, createdAt, endDate (nếu readypickup), barcode (nếu có)}, (3) Tính toán các flag: isOverdue = (endDate < NOW()), canRenew = (extensionCount < MAX_EXTENSION_COUNT AND không có người chờ), canCancel = (status='pending' OR status='readypickup'), (4) Forward sang JSP với {activeBorrows, activeReservations} để hiển thị.
 Mapping: UC-31
 
-FR-54 (Liên kết chuyển hướng Dashboard)
-Mô tả: WHEN người dùng nhấp vào các Stats Cards trên Dashboard, THE system SHALL điều hướng người dùng trực tiếp đến trang "Hàng mượn & chờ sách" tương ứng.
+FR-54 (Liên kết chuyển hướng Dashboard với stats cards)
+Mô tả: WHEN StudentDashboardServlet hoặc LecturerDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu: (1) activeLoansCount = BorrowRecordDAO.countActiveBorrowsByUser(userId), (2) dueSoonCount = BorrowRecordDAO.countDueSoonByUser(userId, 3) — số sách hạn trả trong 3 ngày, (3) reservedCount = ReservationDAO.countActiveReservationsByUser(userId), (4) totalFines = FineDAO.getTotalUnpaidFinesByUser(userId), (5) activeLoans = BorrowRecordDAO.findActiveBorrowsByUser(userId) JOIN Book (top 5), (6) recentLoans = BorrowRecordDAO.findRecentByUser(userId, limit=5), (7) recommendations = AiRecommendationService.getRecommendationsForUser(userId) [cache trong session]. THEN forward sang dashboard.jsp với các stats cards có link: "Sách đang mượn" → /{role}/my-borrowings, "Sách quá hạn" → /{role}/my-borrowings?filter=overdue, "Tiền phạt" → /{role}/fines.
 Mapping: UC-31
 
-FR-55 (Truy vấn Danh sách Nhật ký Kiểm toán)
-Mô tả: WHEN SysAdmin truy cập trang Nhật ký Kiểm toán, THE system SHALL truy vấn bảng AuditLogs kết hợp LEFT JOIN bảng "User" để lấy email người thực hiện, sắp xếp theo timestamp giảm dần, phân trang 20 bản ghi mỗi trang. WHERE userId là NULL, THE system SHALL hiển thị "Hệ thống" ở cột Người thực hiện.
+FR-55 (Truy vấn Danh sách Nhật ký Kiểm toán với phân trang)
+Mô tả: WHEN AuditLogServlet.doGet(action=list) được gọi, THE system SHALL: (1) Parse filter params: actionType, entityName, email (search user), fromDate, toDate, keyword (search in oldValues/newValues JSON), page (default 1), pageSize (fixed 20), (2) AuditLogDAO.findWithFilters(filters, page, pageSize) thực thi SQL: SELECT a.*, u.email AS actorEmail FROM AuditLogs a LEFT JOIN "User" u ON a.userId = u.userId WHERE (filters) ORDER BY timestamp DESC LIMIT 20 OFFSET (page-1)*20, (3) WHERE userId IS NULL: hiển thị "Hệ thống" thay vì email, (4) Tính totalCount để phân trang, totalPages = CEIL(totalCount / 20), (5) Forward sang audit-log-list.jsp với {logs[], currentPage, totalPages, filters (giữ nguyên để preserve state)}.
 Mapping: UC-40 / BR-32, BR-34
 
-FR-56 (Lọc Nhật ký Kiểm toán)
-Mô tả: WHEN SysAdmin áp dụng bộ lọc, THE system SHALL hỗ trợ lọc theo loại hành động (actionType), đối tượng (entityName), email người thực hiện (ILIKE), khoảng thời gian (fromDate–toDate), và từ khóa trong oldValues/newValues. WHILE chuyển trang phân trang, THE system SHALL giữ nguyên toàn bộ tham số filter.
+FR-56 (Lọc Nhật ký Kiểm toán với 7 filter params)
+Mô tả: WHEN AuditLogServlet nhận filter params, THE system SHALL build SQL WHERE clause động: (1) actionType filter: WHERE actionType = ? (dropdown: CREATE, UPDATE, DELETE, LOGIN, LOGOUT, CHECKOUT, CHECKIN, ...), (2) entityName filter: WHERE entityName = ? (dropdown: User, Book, BorrowRecord, Payment, ...), (3) email filter: WHERE u.email ILIKE '%?%' (case-insensitive search), (4) fromDate filter: WHERE timestamp >= ? (parse yyyy-MM-dd), (5) toDate filter: WHERE timestamp <= ? + 1 day, (6) keyword filter: WHERE (oldValues::text ILIKE '%?%' OR newValues::text ILIKE '%?%') — search trong JSON string, (7) WHILE chuyển trang (page param thay đổi): giữ nguyên toàn bộ filter params trong query string để preserve filter state.
 Mapping: UC-40 / BR-34
 
-FR-57 (Chi tiết Nhật ký dạng Card so sánh)
-Mô tả: WHEN SysAdmin click Chi tiết, THE system SHALL mở modal hiển thị bảng so sánh card-by-card giữa oldValues và newValues. Mỗi key thay đổi hiển thị trong 1 card riêng biệt: card giá trị cũ nền hồng nhạt, card giá trị mới nền xanh nhạt, xếp dọc đối xứng 1-1.
+FR-57 (Chi tiết Nhật ký dạng Card so sánh 1-1)
+Mô tả: WHEN SysAdmin click "Xem chi tiết" trên một AuditLog row, THE system SHALL mở modal popup hiển thị: (1) Parse oldValues và newValues từ JSON string → Map<String, Object>, (2) Lấy tất cả keys từ cả 2 maps, (3) Với mỗi key: tạo 1 comparison card pair với 2 cột: LEFT (Giá trị Cũ - nền hồng nhạt), RIGHT (Giá trị Mới - nền xanh nhạt), (4) Format: Key name (bold) ở header, old value ở card trái, new value ở card phải, xếp theo chiều dọc, (5) WHERE value là nested object/array: pretty-print JSON với indent, (6) Hiển thị metadata: {actionType, entityName, entityId, actorEmail, timestamp} ở modal header.
 Mapping: UC-40 / BR-33
 
-FR-58 (Xử lý hiển thị đặc biệt Modal)
-Mô tả: WHERE actionType là CREATE (oldValues=NULL), THE system SHALL hiển thị "—" ở cột Giá trị Cũ. WHERE actionType là DELETE (newValues=NULL), hiển thị ngược lại. WHERE actionType là CHANGE_PASSWORD, THE system SHALL hiển thị "Mật khẩu đã thay đổi (bảo mật)" thay vì cards rỗng. WHERE dữ liệu không phải JSON hợp lệ, THE system SHALL hiển thị raw text trong card đơn.
+FR-58 (Xử lý hiển thị đặc biệt Modal theo actionType)
+Mô tả: WHEN render modal chi tiết AuditLog, THE system SHALL xử lý các trường hợp đặc biệt: (1) **actionType = CREATE**: oldValues = NULL → hiển thị "—" hoặc badge "Không có" ở cột trái, chỉ hiển thị newValues ở cột phải, (2) **actionType = DELETE**: newValues = NULL → hiển thị "—" ở cột phải, chỉ hiển thị oldValues ở cột trái, (3) **actionType = CHANGE_PASSWORD**: oldValues và newValues đều NULL hoặc rỗng (vì bảo mật) → hiển thị text "Mật khẩu đã thay đổi (bảo mật)" thay vì cards rỗng, (4) **WHERE JSON invalid**: không parse được oldValues/newValues → hiển thị raw text trong 1 card đơn với border đỏ + icon warning, (5) **WHERE field name dài**: truncate với tooltip hover để xem full text.
 Mapping: UC-40 / BR-33
 
-FR-59 (Xuất CSV Nhật ký)
-Mô tả: WHEN SysAdmin click Xuất CSV, THE system SHALL truy vấn toàn bộ bản ghi theo filter hiện tại (giới hạn tối đa 10,000), tạo file CSV mã hóa UTF-8 có BOM, VÀ trả về response với Content-Disposition attachment để trình duyệt tự động tải về.
+FR-59 (Xuất CSV Nhật ký với UTF-8 BOM)
+Mô tả: WHEN AuditLogServlet.doGet(action=export) được gọi, THE system SHALL: (1) Lấy cùng filter params từ list view (actionType, entityName, email, fromDate, toDate, keyword), (2) AuditLogDAO.findWithFilters(filters, page=1, pageSize=10000) — giới hạn tối đa 10.000 bản ghi để bảo vệ hiệu năng, (3) Build CSV content: header row = ["Thời gian", "Hành động", "Đối tượng", "ID", "Người thực hiện", "Giá trị cũ", "Giá trị mới"], data rows với oldValues/newValues được flatten thành string (bỏ qua nested structure), (4) Set response headers: Content-Type: text/csv; charset=UTF-8, Content-Disposition: attachment; filename="audit_log_{yyyyMMdd_HHmmss}.csv", (5) **Write UTF-8 BOM** (0xEF, 0xBB, 0xBF) đầu file để Excel mở đúng encoding, (6) Write CSV rows, (7) INSERT AuditLog(EXPORT_AUDIT_LOG, actorId).
 Mapping: UC-41 / BR-32
 
-FR-60 (Badge màu hành động)
-Mô tả: WHEN hiển thị danh sách Nhật ký Kiểm toán, THE system SHALL hiển thị badge màu cho cột actionType theo nhóm: Tạo mới (xanh lá), Cập nhật (vàng), Xóa/Hủy (đỏ), Giao dịch (xanh dương), Bảo mật (tím), Thanh toán (cam).
+FR-60 (Badge màu hành động theo nhóm)
+Mô tả: WHEN hiển thị danh sách Nhật ký Kiểm toán trong audit-log-list.jsp, THE system SHALL render badge màu cho cột actionType theo nhóm: (1) **Nhóm Tạo mới** (màu xanh lá - green): CREATE, CREATE_USER, CREATE_BOOK, BULK_USER_IMPORT, BOOK_IMPORT, (2) **Nhóm Cập nhật** (màu vàng - yellow/warning): UPDATE, UPDATE_USER, UPDATE_BOOK, UPDATE_BOOK_COPY, (3) **Nhóm Xóa/Hủy** (màu đỏ - red): DELETE, DELETE_USER, CANCEL_RESERVATION, CANCEL_EXPIRED_RESERVATION, (4) **Nhóm Giao dịch** (màu xanh dương - blue): CHECKOUT, CHECKIN, RESERVE_BOOK_ONLINE, RENEW_BOOK_ONLINE, (5) **Nhóm Bảo mật** (màu tím - purple): LOGIN, LOGOUT, CHANGE_PASSWORD, LOCK_ACCOUNT, UNLOCK_ACCOUNT, (6) **Nhóm Thanh toán** (màu cam - orange): CASH_PAYMENT, SEPAY_WEBHOOK_PAYMENT, CREATE_FINE_OVERDUE, (7) **Mặc định** (màu xám - gray): các action khác.
 Mapping: UC-40
 
-FR-61 (Quét quá hạn tự động)
-Mô tả: WHEN tiến trình ngầm Overdue Processor được kích hoạt (định kỳ 00:00 AM hằng đêm hoặc kích hoạt thủ công), THE system SHALL truy vấn tất cả các bản ghi mượn sách đang hoạt động (BorrowRecord.status = 'borrowed') có hạn trả (endDate) nhỏ hơn ngày hiện tại.
+FR-61 (Quét quá hạn tự động với cron job)
+Mô tả: WHEN OverdueProcessor chạy định kỳ (scheduled 00:00 AM hằng đêm) hoặc TriggerOverdueServlet được admin kích hoạt thủ công, THE system SHALL: (1) Truy vấn BorrowRecordDAO.findOverdueBorrows(NOW()) để lấy tất cả BorrowRecord WHERE status='borrowed' AND endDate < NOW(), (2) Ghi log số lượng overdue tìm được, (3) Với mỗi overdue BorrowRecord: gọi FR-62 để xử lý phạt + khóa tài khoản, (4) Đếm số lượng: processedRecords, lockedUsers, emailsSent, (5) INSERT AuditLog(RUN_OVERDUE_PROCESSOR, actorId=NULL, details={processedRecords, lockedUsers}), (6) Trả về JSON {success:true, processedRecords, lockedUsers, emailsSent} cho admin monitor.
 Mapping: UC-42 / BR-35
 
-FR-62 (Xử lý phạt quá hạn và khóa tài khoản)
-Mô tả: For each overdue BorrowRecord found, THE system SHALL thực thi một DB Transaction để cập nhật BorrowRecord.status = 'overdue', tính số ngày trễ hạn và nhân với FINE_RATE_PER_DAY để tạo bản ghi Fine mới (status = 'unpaid'), đồng thời chèn reason = 'unpaid' vào UserLockReason và khóa status tài khoản người dùng thành 'locked'.
+FR-62 (Xử lý phạt quá hạn và khóa tài khoản tức thì)
+Mô tả: For each overdue BorrowRecord found trong FR-61, THE system SHALL mở DB Transaction: (1) Tính số ngày trễ = DATEDIFF(NOW(), BorrowRecord.endDate), (2) Lấy FINE_RATE_PER_DAY từ SystemConfig (default 5000 VNĐ), tính amount = daysLate × FINE_RATE_PER_DAY, (3) INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue', createdAt=NOW()), (4) UPDATE BorrowRecord SET status='overdue' WHERE borrowRecordId=?, (5) **Khóa tài khoản tức thì theo BR-24**: INSERT UserLockReason(userId, reason='unpaid', createdAt=NOW()), UPDATE User SET status='locked' WHERE userId=?, (6) INSERT AuditLog(CREATE_FINE_OVERDUE, actorId=NULL), (7) conn.commit(), (8) EmailService.enqueue(OVERDUE_NOTICE, userId, templateData={bookTitle, daysLate, fineAmount}) [async, ngoài transaction].
 Mapping: UC-42 / BR-22, BR-24, BR-35
 
-FR-63 (Gửi email thông báo trễ hạn)
-Mô tả: WHEN quá trình xử lý DB hoàn tất thành công cho độc giả, THE system SHALL gọi EmailService để gửi bất đồng bộ email thông báo trễ hạn và nợ phạt cho độc giả đó.
+FR-63 (Gửi email thông báo trễ hạn async)
+Mô tả: WHEN FR-62 hoàn tất thành công xử lý DB cho một overdue BorrowRecord, THE system SHALL gọi EmailService.sendOverdueNotificationEmail(userId, fineId) [async]. EmailService sẽ: (1) Lấy DocumentTemp WHERE tempName='OVERDUE_NOTICE', (2) Render template với biến {userName, bookTitle, dueDate, daysLate, fineAmount, libraryContactInfo}, (3) Enqueue email vào background worker (ExecutorService) với subject="Thông báo sách quá hạn - {bookTitle}", (4) Background worker gửi email qua SMTP/SendGrid, (5) Ghi log email sent. WHERE email fail: retry 3 lần, sau đó ghi error log.
 Mapping: UC-42
 
-FR-64 (Hiển thị Lịch sử Phạt của Độc giả)
-Mô tả: WHEN người dùng truy cập trang Quản lý phạt, THE system SHALL hiển thị chi tiết các khoản phạt chưa thanh toán (unpaid) và đã thanh toán (paid), tổng nợ phạt chưa thanh toán, nút bấm "Thanh toán Online" cho mỗi khoản phạt chưa thanh toán, và trạng thái giao dịch VietQR/SePay đang chờ xử lý (pending) nếu có.
+FR-64 (Hiển thị Lịch sử Phạt của Độc giả với Payment status)
+Mô tả: WHEN MemberFinesServlet.doGet() được gọi (đã xử lý ở FR-65 - tự động tạo Payment), THE system SHALL: (1) FineDAO.findByUserId(userId) ORDER BY createdAt DESC → lấy tất cả Fine, (2) Với mỗi Fine: LEFT JOIN Payment để lấy {paymentId, paymentStatus, paidAt, method, transactionReference}, (3) Tính toán flags: isPaid = (Fine.status='paid'), hasPendingPayment = (paymentStatus='pending'), (4) Tính totalUnpaid = SUM(amount WHERE status='unpaid'), unpaidCount = COUNT(*), (5) Forward sang fines.jsp với {fines[], totalUnpaid, unpaidCount, sePayConfig}. JSP hiển thị: Fine unpaid → button "Thanh toán Online" (nếu có paymentId) hoặc "Thanh toán tại quầy", Fine paid → badge "Đã thanh toán" + paidAt + method.
 Mapping: UC-38
 
-FR-65 (Tạo mã QR thanh toán SePay)
-Mô tả: WHEN độc giả click "Thanh toán Online" cho một khoản phạt chưa thanh toán, THE system SHALL tạo một bản ghi Payment mới với status='pending' (nếu chưa có). THEN, THE system SHALL sinh mã VietQR chứa số tài khoản, mã ngân hàng từ cấu hình hệ thống, số tiền phạt, và nội dung chuyển khoản bắt buộc dạng `LMSPF<paymentId>`.
+FR-65 (Tạo mã QR thanh toán SePay tự động)
+Mô tả: WHEN MemberFinesServlet.doGet() được gọi, THE system SHALL: (1) Lấy danh sách Fine của userId từ FineDAO, (2) Với mỗi Fine có status='unpaid' VÀ paymentId=NULL, TỰ ĐỘNG INSERT Payment(fineId, userId, amount=Fine.amount, method='BankTransfer', status='pending', createdAt=NOW()), (3) Tính totalUnpaid = SUM(Fine.amount WHERE status='unpaid'), (4) Lấy cấu hình SePay từ SystemConfigDAO: SEPAY_ACCOUNT_NUMBER, SEPAY_BANK_CODE, SEPAY_ACCOUNT_NAME, (5) Forward sang JSP với dữ liệu {fines, totalUnpaid, unpaidCount, SePay config}. JSP sẽ sinh mã VietQR cho từng khoản phạt với nội dung="LMSPF{paymentId}".
 Mapping: UC-39
 
-FR-66 (Xử lý Webhook thanh toán SePay)
-Mô tả: WHEN nhận webhook POST từ SePay tại `/api/sepay-webhook`, THE system SHALL thực hiện: xác thực API Key, trích xuất `LMSPF<paymentId>`, mở DB Transaction cập nhật Payment status='completed', Fine status='paid', DELETE lock reason='unpaid' tương ứng, kiểm tra và mở khóa tài khoản người dùng (`User.status='active'`) nếu không còn lý do khóa, và ghi Audit Log.
-Mapping: UC-39
+FR-66 (Xử lý Webhook thanh toán SePay với Parse JSON thủ công)
+Mô tả: WHEN SePayWebhookServlet.doPost() nhận webhook, THE system SHALL: (1) **Xác thực tùy chọn**: IF SystemConfig có SEPAY_API_KEY, đọc header Authorization, WHERE không khớp: trả 401 Unauthorized, (2) **Parse JSON thủ công** (không dùng thư viện): Đọc request body, dùng regex tìm "content":"([^"]*)", "code":"([^"]*)", "transferAmount":([0-9.]+), "referenceCode":"([^"]*)", (3) Dùng regex LMSPF(\\d+) tìm paymentId trong content+code, WHERE không tìm thấy: trả JSON {success:false, message:"Không tìm thấy mã thanh toán"}, (4) **Mở DB Transaction** (conn.setAutoCommit(false)): PaymentDAO.updatePaymentOnlineSuccess(paymentId, transactionReference, transferAmount), FineDAO.updateStatusToPaid(fineId), SELECT userId FROM Fine WHERE fineId=?, UserLockReasonDAO.deleteLockReason(userId, 'unpaid'), countLockReasonsByUserId(userId) → IF = 0: UserDAO.updateStatusToActive(userId), AuditLogDAO.insert(SEPAY_WEBHOOK_PAYMENT, userId=NULL, entityName='Payment', entityId=paymentId), conn.commit(), (5) **Gửi email xác nhận** (ngoài transaction): EmailService.sendPaymentConfirmationEmail(paymentId, userId, "BankTransfer") [async], (6) Trả JSON {success:true, message:"Thanh toán thành công"}.
+Mapping: UC-39 / BR-25
 
-FR-67 (Quét đơn đặt trước sẵn sàng quá hạn)
-Mô tả: WHEN tiến trình ngầm Reservation Expiration được kích hoạt (định kỳ mỗi 1 giờ hoặc kích hoạt thủ công), THE system SHALL truy vấn tất cả các bản ghi đặt trước có status = 'readypickup' VÀ endDate < NOW().
+FR-67 (Quét đơn đặt trước sẵn sàng quá hạn theo BR-36)
+Mô tả: WHEN ReservationExpirationProcessor chạy định kỳ (mỗi 1 giờ) hoặc TriggerReservationExpirationServlet được admin kích hoạt thủ công, THE system SHALL: (1) Lấy RESERVATION_HOLD_DAYS từ SystemConfig (default 3 ngày), (2) Truy vấn ReservationDAO.findExpiredReadyPickup(NOW()) để lấy tất cả Reservation WHERE status='readypickup' AND endDate < NOW(), (3) Ghi log số lượng đơn hết hạn tìm được, (4) Với mỗi expired reservation: gọi FR-68 để xử lý cancel + đôn hàng chờ, (5) Trả về JSON {processedCount, cancelledCount, reassignedCount, emailsSent}.
 Mapping: UC-43 / BR-36
 
-FR-68 (Hủy đặt trước và đôn hàng chờ)
-Mô tả: For each expired Reservation found, THE system SHALL thực thi một DB Transaction để: cập nhật status='cancelled', và kiểm tra hàng đợi của đầu sách đó. WHERE tồn tại người dùng tiếp theo (queuePosition = 1, status='pending'), hệ thống SHALL tịnh tiến hàng chờ (đổi thành queuePosition = 0, status = 'readypickup', gán bookCopyId, gia hạn endDate thêm số ngày được cấu hình bởi RESERVATION_HOLD_DAYS trong bảng SystemConfigurations) VÀ gửi email thông báo nhận sách. WHERE không có người chờ, hệ thống SHALL chuyển BookCopy sang 'available' VÀ cộng 1 vào Book.availableQuantity. ĐỒNG THỜI ghi nhận Audit Log.
+FR-68 (Hủy đặt trước và đôn hàng chờ tự động)
+Mô tả: For each expired Reservation found trong FR-67, THE system SHALL mở DB Transaction: (1) UPDATE Reservation SET status='cancelled', cancelledAt=NOW(), cancelReason='Expired - không nhận sách trong thời hạn' WHERE reservationId=?, (2) **Kiểm tra hàng chờ**: ReservationDAO.findNextInQueue(bookId) WHERE queuePosition=1 AND status='pending', (3) **PHÂN NHÁNH A - Có người chờ tiếp theo**: UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=expired.bookCopyId (kế thừa bản sao), endDate=NOW()+RESERVATION_HOLD_DAYS, UPDATE BookCopy SET status='reserved' (giữ nguyên), EmailService.enqueue(RESERVATION_READY, nextUserId) [async], **PHÂN NHÁNH B - Không có người chờ**: UPDATE BookCopy SET status='available', UPDATE Book SET availableQuantity = availableQuantity + 1, (4) INSERT AuditLog(CANCEL_EXPIRED_RESERVATION), (5) conn.commit(), (6) EmailService.enqueue(RESERVATION_EXPIRED_NOTICE, originalUserId) [async].
 Mapping: UC-43 / BR-36
+
+FR-69 (Gửi câu hỏi Chatbot với RAG)
+Mô tả: WHEN AiChatbotServlet.doPost() nhận JSON {message:"..."}, THE system SHALL: (1) Validate message không rỗng và ≤ 500 ký tự, (2) Lấy chatHistory từ HttpSession (nếu chưa có: khởi tạo empty list), (3) Gọi AiChatbotService.processMessage(message, chatHistory): Service thực hiện RAG (Retrieval-Augmented Generation): (a) Query relevant context từ DB: NotificationDAO.findPinned() (nội quy), SystemConfigDAO.getAllPublic() (chính sách mượn/phạt), BookDAO.findPopular() (sách hot), (b) Build prompt với context + chatHistory (latest 5 messages) + new message, (c) Gọi Gemini API với prompt, (d) Parse response từ Gemini, (4) Append {role:"user", content:message} và {role:"assistant", content:reply} vào chatHistory, (5) Lưu chatHistory vào session, (6) Trả JSON {status:"success", reply, history}.
+Mapping: UC-36 / BR-37
+
+FR-70 (Lấy lịch sử Chat từ session)
+Mô tả: WHEN AiChatbotServlet.doGet() được gọi, THE system SHALL: (1) Lấy chatHistory từ HttpSession (attribute name: "chatHistory"), (2) WHERE session không tồn tại hoặc chatHistory = NULL: trả JSON {status:"success", history:[]}, (3) WHERE chatHistory tồn tại: trả JSON {status:"success", history:[{role, content, timestamp}...]} với tối đa 50 messages gần nhất, (4) Không ghi AuditLog (read-only operation).
+Mapping: UC-37
+
+FR-71 (Hiển thị Dashboard Thủ thư với stats hoạt động)
+Mô tả: WHEN LibrarianDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu: (1) activeBorrowsCount = BorrowRecordDAO.countAllActiveBorrows(), (2) todayCheckoutsCount = BorrowRecordDAO.countTodayCheckouts(), (3) todayCheckinsCount = BorrowRecordDAO.countTodayCheckins(), (4) overdueCount = BorrowRecordDAO.countAllOverdue(), (5) recentCheckouts = BorrowRecordDAO.findRecentCheckouts(limit=10) JOIN User, Book, (6) recentCheckins = BorrowRecordDAO.findRecentCheckins(limit=10), (7) inventoryStats = {totalBooks: BookCopyDAO.countAll(), available: COUNT(status='available'), borrowed: COUNT(status='borrowed'), unavailable: COUNT(status='unavailable'), byCondition: {good, damaged, lost}}, (8) Forward sang librarian/dashboard.jsp với tất cả stats + charts (hoạt động theo giờ trong ngày).
+Mapping: UC-44 / BR-38
+
+FR-72 (Hiển thị Dashboard Quản lý với KPI)
+Mô tả: WHEN ManagerDashboardServlet.doGet() được gọi với filters {startDate, endDate, groupBy}, THE system SHALL: (1) **borrowTrends** = ReportDAO.getBorrowTrendsByPeriod(startDate, endDate, groupBy='day'|'week'|'month') → {date, checkoutCount, checkinCount, activeCount}, (2) **financialTrends** = ReportDAO.getFinancialTrendsByPeriod() → {date, finesCollected, finesPending, cashPayments, onlinePayments}, (3) **inventoryStats** = InventoryReportDAO.getCurrentInventoryStats() → {totalBooks, availableBooks, borrowedBooks, damagedBooks, lostBooks, topBorrowedBooks[], lowStockBooks[]}, (4) **alerts** = {overdueCount, expiredReservationsCount, unpaidFinesCount, incidentsOpenCount}, (5) Forward sang manager/dashboard.jsp với charts library (Chart.js) render trend graphs.
+Mapping: UC-45 / BR-38
+
+FR-73 (Hiển thị Dashboard Admin với tổng quan hệ thống)
+Mô tả: WHEN AdminDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu toàn hệ thống: (1) **totalBooks** = BookCopyDAO.count(null, null, null) — tổng số bản sao vật lý, (2) **totalMembers** = UserDAO.countAllUsers("", "ALL", "ALL") — tổng số tài khoản, (3) **unpaidFines** = FineDAO.getTotalUnpaidFines() — tổng tiền phạt chưa thu (VNĐ), (4) **pendingPayments** = PaymentDAO.countPendingPayments() — số giao dịch đang chờ, (5) **recentUsers** = UserService.getUserList("", "ALL", "ALL", page=1, pageSize=5) — 5 user mới nhất, (6) **recentAuditLogs** = AuditLogDAO.findWithFilters(null, page=1, pageSize=5) — 5 log gần nhất, (7) Forward sang admin/dashboard.jsp. Dashboard có quick links: "Quản lý người dùng", "Xem Audit Log", "Cấu hình hệ thống".
+Mapping: UC-46 / BR-38
+
+FR-74 (Hiển thị Cấu hình Quan trọng trên Admin Dashboard)
+Mô tả: WHEN AdminDashboardServlet.doGet() render dashboard, THE system SHALL đọc SystemConfigCache để lấy các cấu hình quan trọng: (1) STUDENT_MAX_BORROW_DAYS (số ngày mượn SV), (2) LECTURER_MAX_BORROW_DAYS (số ngày mượn GV), (3) FINE_RATE_PER_DAY (tiền phạt/ngày VNĐ), (4) RESERVATION_HOLD_DAYS (số ngày giữ sách đặt trước), (5) MAX_EXTENSION_COUNT (số lần gia hạn tối đa), (6) STUDENT_MAX_BORROW_BOOKS (hạn mức sách SV), (7) LECTURER_MAX_BORROW_BOOKS (hạn mức sách GV). Hiển thị trong panel "Cấu hình Hệ thống Quan trọng" với button "Chỉnh sửa" → redirect sang /admin/system-config. WHERE cache miss: load từ DB và populate cache.
+Mapping: UC-46
+
+FR-75 (Hiển thị Trang Chủ Công Khai với thông báo ghim)
+Mô tả: WHEN NewsServlet.doGet() hoặc user truy cập index.jsp, THE system SHALL: (1) NotificationDAO.findPinnedNotifications() WHERE isPinned=true AND status='published' ORDER BY createdAt DESC LIMIT 5 → lấy thông báo quan trọng được ghim, (2) NotificationDAO.findRecentNews(limit=10) WHERE type='news' AND status='published' ORDER BY createdAt DESC → tin tức mới nhất, (3) BookDAO.findFeaturedBooks(limit=6) WHERE bookStatus='available' ORDER BY viewCount DESC → sách nổi bật, (4) Render index.jsp với sections: Hero banner (giới thiệu thư viện), Pinned notifications carousel, Recent news cards, Featured books grid, Quick links (Tra cứu sách, Đăng nhập, Xem nội quy).
+Mapping: UC-47
+
+FR-76 (Hiển thị Nội Quy Thư Viện chi tiết)
+Mô tả: WHEN user hoặc guest truy cập trang policies.jsp hoặc services.jsp, THE system SHALL hiển thị nội dung đầy đủ: (1) **Chính sách mượn trả**: Số ngày mượn theo role (STUDENT_MAX_BORROW_DAYS, LECTURER_MAX_BORROW_DAYS từ SystemConfig), Hạn mức sách (STUDENT_MAX_BORROW_BOOKS, LECTURER_MAX_BORROW_BOOKS), Quy định gia hạn (MAX_EXTENSION_COUNT, RENEWAL_MIN_DAYS_BEFORE_DUE), Quy định đặt trước (RESERVATION_HOLD_DAYS), (2) **Chính sách tiền phạt**: Phạt trễ hạn (FINE_RATE_PER_DAY VNĐ/ngày), Phạt sách hư hỏng/mất (theo giá sách), Hình thức thanh toán (tiền mặt tại quầy, online qua VietQR), (3) **Quyền lợi và nghĩa vụ**: Quyền của độc giả, Nghĩa vụ bảo quản sách, Xử lý vi phạm, (4) **Hướng dẫn sử dụng**: Cách tra cứu sách online, Cách đặt trước và gia hạn, Liên hệ thư viện. Content MUST được format rõ ràng với headings, lists, tables, và được viết hoàn toàn bằng **tiếng Việt**.
+Mapping: UC-48
+
+FR-77 (Whitelist validation cho Safe Redirect)
+Mô tả: WHEN LoginServlet hoặc GoogleLoginServlet nhận query param redirect, THE system SHALL gọi isSafeInternalRedirect(redirect) để kiểm tra: redirect KHÔNG chứa ["://", "..", "\\", "\r", "\n"]. WHERE hợp lệ, redirect theo param. WHERE không hợp lệ, bỏ qua param và redirect theo role mặc định từ getRedirectByRole(role). Whitelist validation ngăn chặn Open Redirect Attack bằng cách chặn: (1) Absolute URLs với protocol ("://"), (2) Path traversal (".."), (3) Windows path separator ("\\"), (4) CRLF injection ("\r", "\n").
+Mapping: UC-01, UC-21
 
 // =============================================================================
 // END OF SPECIFICATION
 // =============================================================================
-// Total UC: 43 | Total BR: 36 | Total FR: 68
-// Version: 2.4.0 | Date: 2026-06-24
+// Total UC: 48 | Total BR: 39 | Total FR: 77
+// Version: 3.0.0 | Date: 2026-06-27
 // Project: Library Management System (LMS) - SWP391
 // =============================================================================
 
