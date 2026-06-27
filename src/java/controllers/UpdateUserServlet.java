@@ -105,6 +105,11 @@ public class UpdateUserServlet extends HttpServlet {
             session.setAttribute("errorMessage", e.getMessage());
         }
 
-        response.sendRedirect(request.getContextPath() + "/admin/user");
+        String referer = request.getHeader("Referer");
+        if (referer != null && referer.contains("/admin/dashboard")) {
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/admin/user");
+        }
     }
 }
