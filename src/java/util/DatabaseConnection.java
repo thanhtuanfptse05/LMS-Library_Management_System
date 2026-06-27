@@ -58,17 +58,28 @@ public class DatabaseConnection {
     public static Connection testConnection = null;
 
     public static Connection getConnection() throws SQLException {
+        Connection conn = null;
         if (testConnection != null) {
-            return testConnection;
-        }
-        if (dataSource != null) {
+            conn = testConnection;
+        } else if (dataSource != null) {
             try {
-                return dataSource.getConnection();
+                conn = dataSource.getConnection();
             } catch (SQLException e) {
                 LOGGER.log(Level.WARNING, "Loi khi lay ket noi tu DataSource JNDI. Fallback ve DriverManager...", e);
             }
         }
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        if (conn == null) {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        }
+
+        // Thiết lập múi giờ Việt Nam (GMT+7) cho session làm việc của Connection
+        try (java.sql.Statement stmt = conn.createStatement()) {
+            stmt.execute("SET TIME ZONE 'Asia/Ho_Chi_Minh';");
+        } catch (SQLException e) {
+            LOGGER.log(Level.WARNING, "Khong the thiet lap SET TIME ZONE 'Asia/Ho_Chi_Minh': " + e.getMessage());
+        }
+
+        return conn;
     }
 
     private DatabaseConnection() {

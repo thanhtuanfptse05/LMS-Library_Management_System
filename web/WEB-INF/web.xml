@@ -41,6 +41,12 @@
         <location>/errors/500.jsp</location>
     </error-page>
 
+    <!-- JSTL TimeZone Configuration -->
+    <context-param>
+        <param-name>jakarta.servlet.jsp.jstl.fmt.timeZone</param-name>
+        <param-value>Asia/Ho_Chi_Minh</param-value>
+    </context-param>
+
     <jsp-config>
         <jsp-property-group>
             <url-pattern>*.jsp</url-pattern>
