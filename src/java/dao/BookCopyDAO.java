@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.BookCopy;
 import dto.BookCopySummaryDTO;
 import util.DatabaseConnection;
@@ -60,6 +62,33 @@ public class BookCopyDAO {
             }
             return locations;
         }
+    }
+
+    public Map<Integer, List<BookCopy>> findByBookIds(List<Integer> bookIds) throws SQLException {
+        Map<Integer, List<BookCopy>> copiesByBookId = new HashMap<>();
+        if (bookIds == null || bookIds.isEmpty()) {
+            return copiesByBookId;
+        }
+
+        StringBuilder sql = new StringBuilder(baseSelect() + " WHERE bc.bookId IN (");
+        for (int i = 0; i < bookIds.size(); i++) {
+            sql.append(i == 0 ? "?" : ", ?");
+        }
+        sql.append(") ORDER BY bc.bookId, COALESCE(bc.updatedAt, bc.createdAt) DESC, bc.bookCopyId DESC");
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < bookIds.size(); i++) {
+                ps.setInt(i + 1, bookIds.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    BookCopy copy = map(rs);
+                    copiesByBookId.computeIfAbsent(copy.getBookId(), key -> new ArrayList<>()).add(copy);
+                }
+            }
+        }
+        return copiesByBookId;
     }
 
     public BookCopySummaryDTO getSummary() throws SQLException {

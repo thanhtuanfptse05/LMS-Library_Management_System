@@ -1,5 +1,6 @@
 package controllers;
 
+import dao.BookCopyDAO;
 import dao.BookDAO;
 import dao.CategoryDAO;
 import dao.TagDAO;
@@ -15,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Book;
@@ -29,6 +32,7 @@ public class BookServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(BookServlet.class.getName());
 
     private final BookDAO bookDAO = new BookDAO();
+    private final BookCopyDAO bookCopyDAO = new BookCopyDAO();
     private final CategoryDAO categoryDAO = new CategoryDAO();
     private final TagDAO tagDAO = new TagDAO();
     private final BookService bookService = new BookService();
@@ -57,8 +61,15 @@ public class BookServlet extends HttpServlet {
             int totalPages = Math.max(1, (int) Math.ceil(totalItems / (double) PAGE_SIZE));
             page = Math.min(page, totalPages);
 
-            request.setAttribute("books", bookDAO.search(keyword, categoryId, tagId, status, sort,
-                    (page - 1) * PAGE_SIZE, PAGE_SIZE));
+            List<Book> books = bookDAO.search(keyword, categoryId, tagId, status, sort,
+                    (page - 1) * PAGE_SIZE, PAGE_SIZE);
+            List<Integer> bookIds = new ArrayList<>();
+            for (Book book : books) {
+                bookIds.add(book.getBookId());
+            }
+
+            request.setAttribute("books", books);
+            request.setAttribute("copiesByBookId", bookCopyDAO.findByBookIds(bookIds));
             request.setAttribute("summary", bookDAO.getSummary());
             request.setAttribute("categories", categoryDAO.findAll());
             request.setAttribute("tags", tagDAO.findAll());
