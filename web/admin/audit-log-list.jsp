@@ -479,6 +479,60 @@
             modal.show();
         }
 
+        const fieldDict = {
+            "LOST_FINE_MULTIPLIER": "Hệ số phạt mất sách",
+            "STUDENT_MAX_BORROW_DAYS": "Hạn mượn tối đa Sinh viên",
+            "LECTURER_MAX_BORROW_DAYS": "Hạn mượn tối đa Giảng viên",
+            "FINE_RATE_PER_DAY": "Mức phạt quá hạn/ngày",
+            "RESERVATION_HOLD_DAYS": "Hạn giữ đặt trước",
+            "MAX_EXTENSION_COUNT": "Số lần gia hạn tối đa",
+            "email": "Email",
+            "fullName": "Họ và tên",
+            "phoneNumber": "Số điện thoại",
+            "gender": "Giới tính",
+            "dateOfBirth": "Ngày sinh",
+            "role": "Vai trò",
+            "status": "Trạng thái",
+            "studentCode": "Mã sinh viên",
+            "lecturerCode": "Mã giảng viên",
+            "staffCode": "Mã nhân viên",
+            "major": "Ngành học",
+            "enrollmentYear": "Khóa",
+            "department": "Khoa/Bộ môn",
+            "isbn": "ISBN",
+            "title": "Tên sách",
+            "author": "Tác giả",
+            "publisher": "Nhà xuất bản",
+            "publicationYear": "Năm xuất bản",
+            "price": "Giá",
+            "totalQuantity": "Tổng số lượng",
+            "availableQuantity": "Số lượng sẵn có",
+            "startDate": "Ngày bắt đầu",
+            "endDate": "Ngày hết hạn",
+            "returnedAt": "Ngày trả",
+            "extensionCount": "Số lần gia hạn",
+            "amount": "Số tiền phạt",
+            "reason": "Lý do phạt",
+            "paidAmount": "Số tiền thanh toán",
+            "paymentMethod": "Phương thức thanh toán",
+            "transactionReference": "Mã tham chiếu giao dịch"
+        };
+
+        function formatAuditValue(val) {
+            if (val === "active") return "Hoạt động";
+            if (val === "locked") return "Đã khóa";
+            if (val === "ADMIN") return "SysAdmin";
+            if (val === "STUDENT") return "Sinh viên";
+            if (val === "LECTURER") return "Giảng viên";
+            if (val === "LIBRARIAN") return "Thủ thư";
+            if (val === "MANAGER") return "Quản lý";
+            return val;
+        }
+
+        function translateKey(key) {
+            return fieldDict[key] || key;
+        }
+
         function renderCardComparison(container, oldObj, newObj, actionType) {
             var allKeys = new Set();
             if (oldObj) Object.keys(oldObj).forEach(function(k) { allKeys.add(k); });
@@ -497,19 +551,19 @@
             container.innerHTML += headerHtml;
 
             allKeys.forEach(function(key) {
-                var oldValue = (oldObj && oldObj[key] !== undefined) ? String(oldObj[key]) : '—';
-                var newValue = (newObj && newObj[key] !== undefined) ? String(newObj[key]) : '—';
+                var oldValue = (oldObj && oldObj[key] !== undefined) ? formatAuditValue(String(oldObj[key])) : '—';
+                var newValue = (newObj && newObj[key] !== undefined) ? formatAuditValue(String(newObj[key])) : '—';
 
                 var rowHtml = '<div class="row g-2 mb-2">' +
                     '<div class="col-6">' +
                         '<div class="compare-card-old">' +
-                            '<p class="compare-card-key">' + escapeHtml(key) + '</p>' +
+                            '<p class="compare-card-key">' + escapeHtml(translateKey(key)) + '</p>' +
                             '<p class="compare-card-value mb-0">' + escapeHtml(oldValue) + '</p>' +
                         '</div>' +
                     '</div>' +
                     '<div class="col-6">' +
                         '<div class="compare-card-new">' +
-                            '<p class="compare-card-key">' + escapeHtml(key) + '</p>' +
+                            '<p class="compare-card-key">' + escapeHtml(translateKey(key)) + '</p>' +
                             '<p class="compare-card-value mb-0">' + escapeHtml(newValue) + '</p>' +
                         '</div>' +
                     '</div>' +
