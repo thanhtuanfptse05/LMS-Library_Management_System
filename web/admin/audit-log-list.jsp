@@ -333,7 +333,7 @@
     <!-- ════════════════ PAGE-SPECIFIC STYLES ════════════════ -->
     <style>
         /* Mặc định cho các loại hành động khác chưa định nghĩa */
-        [class^="audit-badge-"] {
+        [class*="audit-badge-"] {
             background: rgba(100, 116, 139, 0.12); color: #475569;
         }
         /* Badge màu theo nhóm actionType (FR-F12-02) */
@@ -341,12 +341,13 @@
         [class*="audit-badge-SYSTEM_EMAIL"], [class*="audit-badge-SYSTEM"] {
             background: rgba(100, 116, 139, 0.12) !important; color: #475569 !important;
         }
-        /* Tạo mới — xanh lá */
-        [class*="audit-badge-CREATE"], [class*="audit-badge-IMPORT"] {
+        /* Tạo mới / Hoàn thành — xanh lá */
+        [class*="audit-badge-CREATE"], [class*="audit-badge-IMPORT"], [class*="audit-badge-COMPLETE"] {
             background: rgba(16, 185, 129, 0.12) !important; color: #059669 !important;
         }
-        /* Cập nhật — vàng */
-        [class*="audit-badge-UPDATE"], [class*="audit-badge-EDIT"], [class*="audit-badge-RESTORE"] {
+        /* Cập nhật / Giải quyết — vàng */
+        [class*="audit-badge-UPDATE"], [class*="audit-badge-EDIT"], [class*="audit-badge-RESTORE"],
+        [class*="audit-badge-MERGE"], [class*="audit-badge-RESOLVE"] {
             background: rgba(245, 158, 11, 0.12) !important; color: #b45309 !important;
         }
         /* Xóa/Hủy — đỏ */
@@ -354,9 +355,10 @@
         [class*="audit-badge-LOCK"], [class*="audit-badge-REJECT"] {
             background: rgba(239, 68, 68, 0.12) !important; color: #dc2626 !important;
         }
-        /* Giao dịch — xanh dương */
+        /* Giao dịch / Quét — xanh dương */
         [class*="audit-badge-CHECK_OUT"], [class*="audit-badge-CHECK_IN"], [class*="audit-badge-BORROW"],
-        [class*="audit-badge-RETURN"], [class*="audit-badge-RESERVE"], [class*="audit-badge-EXTEND"] {
+        [class*="audit-badge-RETURN"], [class*="audit-badge-RESERVE"], [class*="audit-badge-EXTEND"],
+        [class*="audit-badge-RENEW"], [class*="audit-badge-SCAN"] {
             background: rgba(59, 130, 246, 0.12) !important; color: #2563eb !important;
         }
         /* Bảo mật — tím */
