@@ -61,7 +61,7 @@
 
         <!-- Nhân viên -->
         <p class="sidebar-section-label">Nhân viên</p>
-        <a class="sidebar-link" id="mgr-nav-staff" href="#">
+        <a class="sidebar-link" id="mgr-nav-staff" href="${pageContext.request.contextPath}/manager/staff-performance">
             <span class="material-symbols-outlined">groups</span>
             <span>Hiệu suất Nhân viên</span>
         </a>

@@ -624,6 +624,82 @@ public class BorrowRecordDAO {
         }
         return list;
     }
+
+    // =========================================================================
+    // MANAGER DASHBOARD KPI METHODS
+    // =========================================================================
+
+    /**
+     * Đếm tổng số lượt mượn trong tháng hiện tại (KPI card 1 của Manager Dashboard).
+     */
+    public int countThisMonth(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord "
+                   + "WHERE EXTRACT(MONTH FROM startDate) = EXTRACT(MONTH FROM NOW()) "
+                   + "  AND EXTRACT(YEAR  FROM startDate) = EXTRACT(YEAR  FROM NOW())";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm tổng mượn tháng hiện tại", e);
+            throw e;
+        }
+        return 0;
+    }
+
+    /**
+     * Lấy xu hướng số lượt mượn trong N tháng gần nhất (cho biểu đồ cột).
+     *
+     * @param conn   Connection đọc
+     * @param months Số tháng cần lấy (VD: 8)
+     * @return Danh sách int[3] = {year, month, count}, sắp xếp theo thứ tự thời gian tăng dần
+     */
+    public java.util.List<int[]> getMonthlyTrend(Connection conn, int months) throws SQLException {
+        String sql = "SELECT EXTRACT(YEAR FROM startDate)  AS yr, "
+                   + "       EXTRACT(MONTH FROM startDate) AS mo, "
+                   + "       COUNT(*) AS cnt "
+                   + "FROM BorrowRecord "
+                   + "WHERE startDate >= date_trunc('month', NOW()) - (? - 1) * INTERVAL '1 month' "
+                   + "GROUP BY yr, mo "
+                   + "ORDER BY yr ASC, mo ASC";
+        java.util.List<int[]> result = new java.util.ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, months);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(new int[]{rs.getInt("yr"), rs.getInt("mo"), rs.getInt("cnt")});
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy xu hướng mượn theo tháng", e);
+            throw e;
+        }
+        return result;
+    }
+
+    /**
+     * Tính tỷ lệ trễ hạn (%) = số mượn status='borrowed' AND endDate < NOW() / tổng đang mượn.
+     *
+     * @param conn Connection đọc
+     * @return Tỷ lệ phần trăm (0.0 – 100.0), 0 nếu không có dữ liệu
+     */
+    public double getOverdueRate(Connection conn) throws SQLException {
+        String sql = "SELECT "
+                   + "    COUNT(*) FILTER (WHERE endDate < NOW()) AS overdue, "
+                   + "    COUNT(*) AS total "
+                   + "FROM BorrowRecord WHERE status = 'borrowed'";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int total = rs.getInt("total");
+                if (total == 0) return 0.0;
+                return rs.getInt("overdue") * 100.0 / total;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tính tỷ lệ trễ hạn", e);
+            throw e;
+        }
+        return 0.0;
+    }
 }
 
 

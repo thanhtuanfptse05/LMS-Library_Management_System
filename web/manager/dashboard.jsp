@@ -65,8 +65,8 @@
                                         <span class="material-symbols-outlined" style="font-size: 15px;">trending_up</span> +8.2%
                                     </span>
                                 </div>
-                                <p class="stat-label">Tổng số Mượn</p>
-                                <p class="stat-value"><c:out value="${totalBorrowings != null ? totalBorrowings : '1,254'}" /></p>
+                                <p class="stat-label">Tổng số Mượn (tháng này)</p>
+                                <p class="stat-value"><c:out value="${not empty totalBorrowings ? totalBorrowings : '—'}" /></p>
                                 <div class="mini-progress">
                                     <div class="mini-progress-bar" style="width: 78%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
                                 </div>
@@ -85,7 +85,7 @@
                                     </span>
                                 </div>
                                 <p class="stat-label">Thành viên hoạt động</p>
-                                <p class="stat-value"><c:out value="${activeMembers != null ? activeMembers : '3,401'}" /></p>
+                                <p class="stat-value"><c:out value="${not empty activeMembers ? activeMembers : '—'}" /></p>
                                 <div class="mini-progress">
                                     <div class="mini-progress-bar" style="width: 65%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
                                 </div>
@@ -103,8 +103,8 @@
                                         <span class="material-symbols-outlined" style="font-size: 15px;">trending_up</span> +12.1%
                                     </span>
                                 </div>
-                                <p class="stat-label">Doanh thu Tiền phạt (VND)</p>
-                                <p class="stat-value"><c:out value="${fineRevenue != null ? fineRevenue : '2.4M'}" /></p>
+                                <p class="stat-label">Doanh thu Tiền phạt (tháng này)</p>
+                                <p class="stat-value"><c:out value="${not empty fineRevenue ? fineRevenue : '—'}" /></p>
                                 <div class="mini-progress">
                                     <div class="mini-progress-bar" style="width: 55%; background: linear-gradient(90deg, #fde68a, var(--warning));"></div>
                                 </div>
@@ -123,9 +123,9 @@
                                     </span>
                                 </div>
                                 <p class="stat-label">Tỷ lệ Trễ hạn</p>
-                                <p class="stat-value">5.6%</p>
+                                <p class="stat-value"><c:out value="${not empty overdueRate ? overdueRate : '—'}" /></p>
                                 <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 22%; background: linear-gradient(90deg, #fca5a5, var(--error));"></div>
+                                    <div class="mini-progress-bar" style="width: ${not empty overdueRateVal ? overdueRateVal : 0}%; background: linear-gradient(90deg, #fca5a5, var(--error));"></div>
                                 </div>
                             </div>
                         </div>
@@ -145,41 +145,30 @@
                                     <h3 class="card-title">Xu hướng Mượn hàng tháng</h3>
                                     <p class="card-subtitle">Số phiếu mượn mỗi tháng (8 tháng gần nhất)</p>
                                 </div>
-                                <span class="badge-pill badge-primary">2025</span>
+                                <span class="badge-pill badge-primary" id="chart-year-badge"></span>
                             </div>
                             <div class="d-flex align-items-end gap-2 pt-2" style="height: 140px; border-bottom: 2px solid var(--outline-variant);">
-                                <div class="bar-chart-col flex-fill" title="Tháng 10: 820">
-                                    <div class="bar-track" style="height: 65%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th10</span>
-                                </div>
-                                <div class="bar-chart-col flex-fill" title="Tháng 11: 940">
-                                    <div class="bar-track" style="height: 75%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th11</span>
-                                </div>
-                                <div class="bar-chart-col flex-fill" title="Tháng 12: 1100">
-                                    <div class="bar-track" style="height: 87%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th12</span>
-                                </div>
-                                <div class="bar-chart-col flex-fill" title="Tháng 1: 1000">
-                                    <div class="bar-track" style="height: 79%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th1</span>
-                                </div>
-                                <div class="bar-chart-col flex-fill" title="Tháng 2: 870">
-                                    <div class="bar-track" style="height: 69%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th2</span>
-                                </div>
-                                <div class="bar-chart-col flex-fill" title="Tháng 3: 1050">
-                                    <div class="bar-track" style="height: 83%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th3</span>
-                                </div>
-                                <div class="bar-chart-col flex-fill" title="Tháng 4: 1150">
-                                    <div class="bar-track" style="height: 91%; background-color: var(--surface-container-high);"></div>
-                                    <span style="font-size: 10px; color: var(--on-surface-variant);">Th4</span>
-                                </div>
-                                <div class="bar-chart-col flex-fill" title="Tháng 5: 1254">
-                                    <div class="bar-track" style="height: 100%; background: linear-gradient(180deg, var(--primary-container) 0%, var(--primary) 100%);"></div>
-                                    <span style="font-size: 10px; font-weight: 700; color: var(--primary);">Th5</span>
-                                </div>
+                                <c:choose>
+                                    <c:when test="${not empty monthlyTrend}">
+                                        <c:forEach var="row" items="${monthlyTrend}" varStatus="loop">
+                                            <c:set var="barHeight" value="${maxTrend > 0 ? row[2] * 100 / maxTrend : 0}" />
+                                            <c:set var="isLast" value="${loop.last}" />
+                                            <div class="bar-chart-col flex-fill" title="Tháng ${row[1]}/${row[0]}: ${row[2]}">
+                                                <div class="bar-track" style="height: ${barHeight}%; background: ${isLast ? 'linear-gradient(180deg, var(--primary-container) 0%, var(--primary) 100%)' : 'var(--surface-container-high)'};"></div>
+                                                <span style="font-size: 10px; color: ${isLast ? 'var(--primary)' : 'var(--on-surface-variant)'}; font-weight: ${isLast ? '700' : 'normal'};">Th<c:out value="${row[1]}"/></span>
+                                            </div>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <%-- Fallback: hiển thị 8 cột trống khi chưa có dữ liệu --%>
+                                        <c:forEach begin="1" end="8">
+                                            <div class="bar-chart-col flex-fill">
+                                                <div class="bar-track" style="height: 10%; background-color: var(--surface-container-high);"></div>
+                                                <span style="font-size: 10px; color: var(--on-surface-variant);">—</span>
+                                            </div>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                             <div class="d-flex gap-4 mt-3">
                                 <div class="d-flex align-items-center gap-2">
@@ -200,7 +189,8 @@
                                     <h3 class="card-title">Hiệu suất Nhân viên</h3>
                                     <p class="card-subtitle">Hoạt động hàng tháng theo thủ thư</p>
                                 </div>
-                                <a href="#" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 text-decoration-none">
+                                <a href="${pageContext.request.contextPath}/manager/staff-performance"
+                                   class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 text-decoration-none">
                                     Báo cáo Chi tiết
                                 </a>
                             </div>
@@ -209,10 +199,9 @@
                                     <thead>
                                         <tr>
                                             <th>Thủ thư</th>
-                                            <th>Số phiếu cấp</th>
-                                            <th>Số trả</th>
-                                            <th>Tiền phạt thu</th>
-                                            <th>Đánh giá</th>
+                                            <th class="text-center">Phiếu cấp</th>
+                                            <th class="text-center">Phiếu trả</th>
+                                            <th class="text-end">Tiền phạt thu</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -222,14 +211,15 @@
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--primary-fixed), var(--primary-fixed-dim)); color: var(--on-primary-container);">LB</div>
-                                                                <span style="font-size: 13px; font-weight: 600;"><c:out value="${staff.name}" /></span>
+                                                                <div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--primary-fixed), var(--primary-fixed-dim)); color: var(--on-primary-container);">
+                                                                    <c:out value="${staff.initials}"/>
+                                                                </div>
+                                                                <span style="font-size: 13px; font-weight: 600;"><c:out value="${staff.fullName}" /></span>
                                                             </div>
                                                         </td>
-                                                        <td class="fw-bold" style="font-size: 13px;"><c:out value="${staff.issues}" /></td>
-                                                        <td class="fw-bold" style="font-size: 13px;"><c:out value="${staff.returns}" /></td>
-                                                        <td class="fw-bold text-success" style="font-size: 13px;"><c:out value="${staff.fineCollected}" /></td>
-                                                        <td><span class="badge-pill badge-success">★ <c:out value="${staff.rating}" /></span></td>
+                                                        <td class="fw-bold text-center" style="font-size: 13px;"><c:out value="${staff.issueCount}" /></td>
+                                                        <td class="fw-bold text-center" style="font-size: 13px;"><c:out value="${staff.returnCount}" /></td>
+                                                        <td class="fw-bold text-end" style="font-size: 13px; color: var(--success);"><c:out value="${staff.fineCollectedFormatted}" /></td>
                                                     </tr>
                                                 </c:forEach>
                                             </c:when>
@@ -320,9 +310,11 @@
                                         <c:forEach var="ann" items="${announcements}">
                                             <div class="announcement-card">
                                                 <p class="fw-bold mb-1" style="font-size: 13px;"><c:out value="${ann.title}" /></p>
-                                                <p class="text-on-surface-variant mb-1" style="font-size: 12px;"><c:out value="${ann.body}" /></p>
+                                                <p class="text-on-surface-variant mb-1" style="font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                    <c:out value="${ann.content}" />
+                                                </p>
                                                 <span class="text-on-surface-variant" style="font-size: 11px;">
-                                                    <fmt:formatDate value="${ann.postedAt}" pattern="dd/MM/yyyy" />
+                                                    <fmt:formatDate value="${ann.createdAt}" pattern="dd/MM/yyyy" />
                                                 </span>
                                             </div>
                                         </c:forEach>
@@ -358,6 +350,8 @@
     <script>
         document.getElementById('current-month').textContent =
             new Date().toLocaleString('vi-VN', { month: 'long', year: 'numeric' });
+        const chartBadge = document.getElementById('chart-year-badge');
+        if (chartBadge) chartBadge.textContent = new Date().getFullYear();
     </script>
 </body>
 </html>

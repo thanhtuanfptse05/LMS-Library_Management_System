@@ -390,4 +390,32 @@ public class FineDAO {
         }
         return BigDecimal.ZERO;
     }
+
+    // =========================================================================
+    // MANAGER DASHBOARD KPI METHOD
+    // =========================================================================
+
+    /**
+     * Tổng tiền phạt đã thu (Payment status='completed') trong tháng hiện tại.
+     * Dùng cho KPI card "Doanh thu Tiền phạt" trên Manager Dashboard.
+     *
+     * @param conn Connection đọc
+     * @return Tổng tiền phạt đã thu trong tháng, 0 nếu chưa có
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public BigDecimal getTotalFineRevenueThisMonth(Connection conn) throws SQLException {
+        String sql = "SELECT COALESCE(SUM(p.paidAmount), 0) "
+                   + "FROM Payment p "
+                   + "WHERE p.status = 'completed' "
+                   + "  AND EXTRACT(MONTH FROM p.paidAt) = EXTRACT(MONTH FROM NOW()) "
+                   + "  AND EXTRACT(YEAR  FROM p.paidAt) = EXTRACT(YEAR  FROM NOW())";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getBigDecimal(1);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tính doanh thu tiền phạt tháng hiện tại", e);
+            throw e;
+        }
+        return BigDecimal.ZERO;
+    }
 }

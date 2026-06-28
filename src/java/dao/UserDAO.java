@@ -970,4 +970,30 @@ public class UserDAO {
             throw e;
         }
     }
+
+    // =========================================================================
+    // MANAGER DASHBOARD KPI METHOD
+    // =========================================================================
+
+    /**
+     * Đếm số thành viên hoạt động (status='active', role IN STUDENT/LECTURER).
+     * Dùng cho KPI card "Thành viên hoạt động" trên Manager Dashboard.
+     *
+     * @param conn Connection đọc
+     * @return Số lượng thành viên active
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public int countActiveMembers(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM \"User\" "
+                   + "WHERE status = 'active' "
+                   + "  AND role IN ('STUDENT', 'LECTURER')";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số thành viên hoạt động", e);
+            throw e;
+        }
+        return 0;
+    }
 }
