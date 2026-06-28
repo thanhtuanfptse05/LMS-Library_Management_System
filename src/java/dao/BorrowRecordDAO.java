@@ -677,16 +677,25 @@ public class BorrowRecordDAO {
     }
 
     /**
-     * Tính tỷ lệ trễ hạn (%) = số mượn status='borrowed' AND endDate < NOW() / tổng đang mượn.
+     * Tính tỷ lệ trễ hạn (%) trên toàn bộ lịch sử giao dịch.
+     *
+     * <p>Bao gồm cả 2 trường hợp:</p>
+     * <ul>
+     *   <li>Đang trễ hạn: status='borrowed' AND endDate &lt; NOW()</li>
+     *   <li>Đã trả muộn: returnedAt IS NOT NULL AND returnedAt &gt; endDate</li>
+     * </ul>
      *
      * @param conn Connection đọc
      * @return Tỷ lệ phần trăm (0.0 – 100.0), 0 nếu không có dữ liệu
      */
     public double getOverdueRate(Connection conn) throws SQLException {
         String sql = "SELECT "
-                   + "    COUNT(*) FILTER (WHERE endDate < NOW()) AS overdue, "
+                   + "    COUNT(*) FILTER ("
+                   + "        WHERE (status = 'borrowed' AND endDate < NOW()) "
+                   + "           OR (returnedAt IS NOT NULL AND returnedAt > endDate)"
+                   + "    ) AS overdue, "
                    + "    COUNT(*) AS total "
-                   + "FROM BorrowRecord WHERE status = 'borrowed'";
+                   + "FROM BorrowRecord";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
