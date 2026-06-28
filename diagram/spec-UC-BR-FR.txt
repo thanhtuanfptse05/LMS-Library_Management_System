@@ -127,24 +127,23 @@ F3 (User Account Management)
 F4 (Book Management)
 - Owner: Chuong
 - Spec Folder: feat-bookManagement
-- UC: UC-12, UC-13, UC-14, UC-15, UC-27
+- UC: UC-12, UC-13, UC-14, UC-15, UC-27, UC-52
 - BR: BR-16, BR-17, BR-18, BR-27
-- FR: FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47
+- FR: FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47, FR-81
 
 F5 (Online Reservation & Renewal)
 - Owner: Bao
 - Spec Folder: feat-Reservation&Renewal
-- UC: UC-16, UC-17, UC-43
+- UC: UC-16, UC-17, UC-43, UC-49, UC-50
 - BR: BR-19, BR-20, BR-21, BR-36
-- FR: FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68
-
+- FR: FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68, FR-78, FR-79
 
 F6 (Desk Circulation Operations)
 - Owner: Thai
 - Spec Folder: feat-deskCirculationOperations
-- UC: UC-18, UC-19, UC-20
-- BR: BR-22, BR-23, BR-24, BR-25, BR-29
-- FR: FR-34, FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41
+- UC: UC-18, UC-19, UC-20, UC-51
+- BR: BR-22, BR-23, BR-24, BR-25, BR-29, BR-41
+- FR: FR-34, FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41, FR-80
 
 F7 (Notification Management)
 - Owner: Tuan
@@ -163,23 +162,23 @@ F8 (Book Discovery)
 F9 (Fine & Payment Management)
 - Owner: Tuan
 - Spec Folder: feat-finePayment
-- UC: UC-31, UC-38, UC-39, UC-42
+- UC: UC-31, UC-38, UC-39, UC-42, UC-53
 - BR: BR-35
-- FR: FR-53, FR-54, FR-61, FR-62, FR-63, FR-64, FR-65, FR-66
+- FR: FR-53, FR-54, FR-61, FR-62, FR-63, FR-64, FR-65, FR-66, FR-82
 
 F10 (System Configuration)
 - Owner: Quyet
 - Spec Folder: feat-systemConfiguration
 - UC: UC-32, UC-33
 - BR: BR-30, BR-31
-- FR: (see spec file)
+- FR: FR-84, FR-85, FR-86, FR-87, FR-88, FR-89, FR-90, FR-91, FR-92, FR-93, FR-94, FR-95, FR-96, FR-97
 
 F11 (System Reports)
 - Owner: Quyet
 - Spec Folder: feat-systemReport
-- UC: UC-34, UC-35
-- BR: (none)
-- FR: (see spec file)
+- UC: UC-34, UC-35, UC-54
+- BR: BR-43, BR-44, BR-45
+- FR: FR-98, FR-99, FR-100, FR-101, FR-102, FR-83
 
 F13 (Book Maintenance)
 - Owner: Chuong
@@ -229,6 +228,14 @@ F18 (Public Pages)
 - UC: UC-47, UC-48
 - BR: (none)
 - FR: FR-75, FR-76
+
+F19 (Async Email Infrastructure)
+- Owner: System
+- Spec Folder: feat-asyncEmailSender
+- UC: (none)
+- BR: BR-46, BR-47, BR-48, BR-49, BR-50, BR-51, BR-52, BR-53
+- FR: FR-103, FR-104, FR-105, FR-106, FR-107, FR-108, FR-109, FR-110, FR-111, FR-112, FR-113, FR-114, FR-115, FR-116, FR-117, FR-118
+
 
 // =============================================================================
 // SECTION 2: USE CASE SPECIFICATIONS (UC)
@@ -426,6 +433,30 @@ UC-48 (View Library Policies)
 Actor: Guest, User
 Mô tả: (Xem nội quy thư viện): Người dùng và khách truy cập tra cứu các quy định, chính sách mượn trả, và hướng dẫn sử dụng dịch vụ thư viện.
 
+UC-49 (View Full Borrow/Return History)
+Actor: Student, Lecturer
+Mô tả: (Xem lịch sử mượn trả đầy đủ): Độc giả xem danh sách tất cả các bản ghi mượn sách trong lịch sử (đang mượn và đã trả) của bản thân.
+
+UC-50 (Cancel Online Reservation)
+Actor: Student, Lecturer
+Mô tả: (Hủy đặt trước trực tuyến): Độc giả chủ động hủy yêu cầu đặt trước sách khi đang trong hàng đợi hoặc trạng thái sẵn sàng nhận sách.
+
+UC-51 (Register Desk Reservation)
+Actor: Librarian
+Mô tả: (Đăng ký đặt trước tại quầy): Thủ thư thực hiện đăng ký đặt trước sách thay cho độc giả ngay tại quầy khi được yêu cầu trực tiếp.
+
+UC-52 (View Book Import History)
+Actor: Librarian
+Mô tả: (Xem lịch sử nhập sách hàng loạt): Thủ thư xem danh sách các đợt nhập sách số lượng lớn từ Excel, tìm kiếm và kiểm tra lỗi của từng dòng dữ liệu.
+
+UC-53 (Configure Payment Gateway Integration)
+Actor: Library Manager
+Mô tả: (Cấu hình cổng SePay QR): Quản lý thư viện cấu hình thông tin tích hợp SePay để sinh mã QR chuyển khoản thanh toán tiền phạt trực tuyến.
+
+UC-54 (View Staff Performance Report)
+Actor: Library Manager
+Mô tả: (Xem báo cáo hiệu suất nhân viên): Quản lý thư viện theo dõi số lượt giao sách, nhận sách và số tiền phạt thu được của từng thủ thư theo tháng/năm.
+
 
 // =============================================================================
 // SECTION 3: BUSINESS RULES (BR)
@@ -519,10 +550,10 @@ BR-29 (Walk-in vs Pre-reservation Checkout Policy)
 Mô tả: Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity (vì đã trừ khi đặt trước online).
 
 BR-30 (System Config Immutability)
-Mô tả: Không được phép thêm mới hoặc xóa configKey thông qua UI. Chỉ cho phép UPDATE giá trị configValue của các key đã tồn tại.
+Mô tả: Cấm tuyệt đối việc xóa cấu hình (delete configKey) thông qua UI hoặc hệ thống dưới mọi hình thức. Hệ thống chỉ cho phép cập nhật (UPDATE) giá trị configValue của các key đã tồn tại, hoặc thêm mới (INSERT) đối với các key thuộc whitelist (KEY_TYPES) chưa tồn tại trong CSDL.
 
 BR-31 (System Config Authorization)
-Mô tả: Library Manager chỉ được phép xem và cập nhật các config thuộc nhóm 'library'. Admin có toàn quyền với mọi nhóm config.
+Mô tả: Library Manager chỉ được phép xem và cập nhật các config thuộc nhóm 'library' hoặc cấu hình tích hợp SePay. Admin có toàn quyền với mọi nhóm config.
 
 BR-32 (Audit Log Read-Only)
 Mô tả: Tính năng Nhật ký Kiểm toán (F12) KHÔNG ĐƯỢC PHÉP Insert, Update hoặc Delete dữ liệu trong bất kỳ bảng nào. Chỉ được thực hiện SELECT.
@@ -548,6 +579,47 @@ Mô tả: Mỗi Dashboard (Admin/Manager/Librarian/Student/Lecturer) BẮT BUỘ
 BR-39 (Session Management)
 Mô tả: Hệ thống BẮT BUỘC kiểm tra trạng thái tài khoản từ database cho mỗi request (ngoại trừ static resources). Nếu tài khoản bị xóa hoặc status thay đổi thành 'locked', session BẮT BUỘC phải bị invalidate ngay lập tức và redirect về trang login.
 
+BR-40 (SePay Whitelist Modification)
+Mô tả: Cập nhật cấu hình hệ thống chỉ được áp dụng với các key cấu hình nằm trong whitelist (KEY_TYPES) định nghĩa sẵn trong mã nguồn. Mọi thao tác cập nhật phải được kiểm tra kiểu dữ liệu (số nguyên dương, số nguyên không âm, số thực không âm) trước khi lưu DB.
+
+BR-41 (Desk Reservation Rules)
+Mô tả: Khi Thủ thư đăng ký đặt trước tại quầy thay cho độc giả (UC-51), hệ thống BẮT BUỘC phải tuân thủ đầy đủ các giới hạn về chặn nợ phạt (BR-22) và hạn mức mượn sách (BR-19, BR-21).
+
+BR-42 (Graceful Shutdown Email Queue)
+Mô tả: Khi ứng dụng shutdown, hệ thống PHẢI dừng tiếp nhận email mới vào hàng đợi, chờ tối đa 5 giây để gửi nốt các email còn tồn đọng trong queue rồi mới ngắt luồng Consumer.
+
+BR-43 (System Report Integrity)
+Mô tả: Dữ liệu thống kê tài chính BẮT BUỘC hiển thị song song cả 2 chiều: tiền phạt đã thu (paid) và tiền phạt chưa thu (unpaid) để phục vụ đối chiếu minh bạch.
+
+BR-44 (System Report Inventory Reconciliation)
+Mô tả: Dữ liệu kho sách hiển thị trong báo cáo quản lý bắt buộc phải đối chiếu dựa trên dữ liệu từ đợt kiểm kê gần nhất.
+
+BR-45 (System Report Granularity)
+Mô tả: Hệ thống phải cung cấp dữ liệu báo cáo phân nhóm linh hoạt theo Ngày, Tháng, Năm để hỗ trợ phân tích chiều hướng phát triển (tăng/giảm) của thư viện.
+
+BR-46 (Email SMTP Configurations)
+Mô tả: Các tham số cấu hình SMTP (Host, Port, Username, Password) BẮT BUỘC phải được đọc trực tiếp từ bảng SystemConfigurations.
+
+BR-47 (Email Template Protection)
+Mô tả: Các mẫu email hệ thống (RESET_PASSWORD, RESERVATION_READY, RENEWAL_CONFIRMATION, OVERDUE_NOTICE, INCIDENT_FINE_NOTICE, PAYMENT_CONFIRMATION) cấm tuyệt đối xóa khỏi hệ thống.
+
+BR-48 (Email Worker Error Recovery)
+Mô tả: Lỗi kết nối SMTP không được phép làm crash thread Consumer; hệ thống phải tự động retry tối đa số lần cấu hình (EMAIL_MAX_RETRIES) trước khi bỏ qua job.
+
+BR-49 (Email Job Queue Limits)
+Mô tả: Hàng đợi email bất đồng bộ BẮT BUỘC giới hạn dung lượng tối đa (EMAIL_QUEUE_CAPACITY). Khi hàng đợi đầy, hệ thống SHALL ghi log cảnh báo và bỏ qua (drop) email mới nhất để bảo vệ tính ổn định hệ thống.
+
+BR-50 (Email Temp Password Exclusion)
+Mô tả: Tiến trình ngầm gửi mail TUYỆT ĐỐI KHÔNG ĐƯỢC log mật khẩu tạm thời (tempPassword) dưới dạng thô nhằm đảm bảo an toàn bảo mật.
+
+BR-51 (Email Template Rendering)
+Mô tả: Hệ thống hỗ trợ định dạng Markdown và render ra HTML trước khi gửi đi. Placeholders trong email template phải ở định dạng `{{key}}`.
+
+BR-52 (Librarian Performance Isolation)
+Mô tả: Báo cáo hiệu suất nhân viên chỉ thống kê các giao dịch được thực hiện bởi các tài khoản có vai trò là LIBRARIAN.
+
+BR-53 (Payment Config Group Access)
+Mô tả: Library Manager chỉ có quyền xem và sửa các cấu hình có prefix `SEPAY_`. Việc phân quyền sửa cấu hình SePay được kiểm soát nghiêm ngặt ở tầng Service.
 
 
 // =============================================================================
@@ -862,11 +934,175 @@ FR-77 (Whitelist validation cho Safe Redirect)
 Mô tả: WHEN LoginServlet hoặc GoogleLoginServlet nhận query param redirect, THE system SHALL gọi isSafeInternalRedirect(redirect) để kiểm tra: redirect KHÔNG chứa ["://", "..", "\\", "\r", "\n"]. WHERE hợp lệ, redirect theo param. WHERE không hợp lệ, bỏ qua param và redirect theo role mặc định từ getRedirectByRole(role). Whitelist validation ngăn chặn Open Redirect Attack bằng cách chặn: (1) Absolute URLs với protocol ("://"), (2) Path traversal (".."), (3) Windows path separator ("\\"), (4) CRLF injection ("\r", "\n").
 Mapping: UC-01, UC-21
 
+FR-78 (Hủy đặt trước trực tuyến)
+Mô tả: WHEN CancelReservationServlet.doPost() nhận request hủy đặt trước từ Student hoặc Lecturer, THE system SHALL: (1) Lấy reservationId từ param, (2) Gọi OnlineCirculationService.cancelReservation(userId, reservationId) để mở DB Transaction: (a) Đổi status Reservation thành 'cancelled', (b) UPDATE queuePosition của các đơn hàng chờ phía sau trong hàng đợi cho đầu sách đó (trừ đi 1), (c) Ghi log AuditLog(CANCEL_RESERVATION), (3) Redirect về trang my-borrowings kèm success flash message.
+Mapping: UC-50 / BR-19
+
+FR-79 (Xem lịch sử mượn trả đầy đủ)
+Mô tả: WHEN BorrowHistoryServlet.doGet() được gọi, THE system SHALL: (1) Lấy userId từ session, (2) Gọi BorrowRecordDAO.findAllBorrowRecordsByUserId() để JOIN Book và BookCopy lấy toàn bộ lịch sử mượn trả (bao gồm các bản ghi đã trả 'returned', quá hạn 'overdue', đang mượn 'borrowed'), (3) Set attribute và forward sang borrow-history.jsp tương ứng với role.
+Mapping: UC-49
+
+FR-80 (Đăng ký đặt trước tại quầy)
+Mô tả: WHEN DeskReservationServlet.doPost() nhận mã độc giả (memberCode) và mã sách/ISBN (bookIdOrIsbn), THE system SHALL: (1) Ánh xạ memberCode sang userId, (2) Xác định bookId từ ISBN/barcode/bookId, (3) Gọi OnlineCirculationService.reserveBook(userId, bookId, role) trong DB Transaction: thực hiện validate các quy tắc chặn nợ phạt (BR-22), giới hạn số lượng sách (BR-19), sau đó tạo bản ghi Reservation với queuePosition thích hợp, (4) Redirect về desk-dashboard kèm thông báo thành công.
+Mapping: UC-51 / BR-41
+
+FR-81 (Xem lịch sử nhập sách hàng loạt)
+Mô tả: WHEN BookImportHistoryServlet.doGet() được gọi, THE system SHALL: (1) Đọc từ khóa tìm kiếm (q), trạng thái lọc (status), trang hiện tại (page, pageSize=20), (2) Gọi BookImportDAO.search() để lấy danh sách BookImportBatch kèm phân trang, (3) WHERE có param batchId, THE system SHALL truy vấn chi tiết lỗi từng dòng trong BookImportError để hiển thị cho Librarian, (4) Forward sang book-import-history.jsp.
+Mapping: UC-52
+
+FR-82 (Cấu hình cổng SePay QR)
+Mô tả: WHEN ManagerPaymentConfigServlet.doGet() được gọi, THE system SHALL truy vấn từ SystemConfigDAO tất cả các cấu hình có prefix `SEPAY_` để hiển thị lên giao diện quản lý. WHEN doPost() nhận key và value mới, hệ thống SHALL gọi SystemConfigService.update() để cập nhật giá trị vào DB, ghi Audit Log và reload cache config.
+Mapping: UC-53 / BR-31, BR-53
+
+FR-83 (Xem báo cáo hiệu suất nhân viên)
+Mô tả: WHEN StaffPerformanceServlet.doGet() được gọi với month và year chọn lựa (mặc định tháng/năm hiện tại), THE system SHALL: (1) Gọi StaffPerformanceDAO.getStaffPerformance() để tính toán số lần Checkout, Checkin, và tổng tiền phạt đã thu của từng tài khoản LIBRARIAN trong khoảng thời gian đó, (2) Gọi getMonthTotals() lấy tổng toàn hệ thống, (3) Forward sang staff-performance.jsp để hiển thị bảng dữ liệu.
+Mapping: UC-54 / BR-52
+
+FR-84 (Xem cấu hình nhóm library của Manager)
+Mô tả: WHEN SystemConfigServlet.doGet() được gọi bởi MANAGER, THE system SHALL truy vấn SystemConfigDAO.findByGroup(conn, "library") để lấy danh sách các cấu hình chính sách mượn/trả và đặt trước, sau đó forward sang manager/system-config-list.jsp.
+Mapping: UC-32 / BR-31
+
+FR-85 (Xem toàn bộ cấu hình của Admin)
+Mô tả: WHEN AdminSystemConfigServlet.doGet() được gọi bởi ADMIN, THE system SHALL lấy toàn bộ cấu hình hệ thống từ DB, hỗ trợ lọc theo nhóm thông qua query parameter 'group', sau đó forward sang admin/system-config-list.jsp.
+Mapping: UC-32 / BR-31
+
+FR-86 (Cập nhật cấu hình hệ thống)
+Mô tả: WHEN SystemConfigServlet hoặc AdminSystemConfigServlet nhận POST cập nhật, THE system SHALL gọi SystemConfigService.update(key, value, actorId, role) để: (1) Kiểm tra key có trong whitelist (KEY_TYPES), (2) Xác thực giá trị hợp lệ theo kiểu dữ liệu quy định, (3) Chặn Manager nếu cố ý sửa các key nhóm khác (ngoại trừ sepay), (4) Thực thi UPDATE câu lệnh SQL, ghi Audit Log và reload cache config.
+Mapping: UC-33 / BR-30, BR-31, BR-40
+
+FR-87 (Thêm mới cấu hình whitelist)
+Mô tả: WHEN Servlet nhận POST thêm mới (action=create), THE system SHALL gọi SystemConfigService.create() để kiểm tra key có trong whitelist và chưa tồn tại trong CSDL. THEN thực hiện INSERT vào bảng SystemConfigurations, ghi Audit Log, và reload cache.
+Mapping: UC-33 / BR-30, BR-40
+
+FR-88 (Bảo mật chặn xóa cấu hình)
+Mô tả: WHEN SystemConfigServlet nhận POST xóa cấu hình (action=delete), THE system SHALL ném ra lỗi ValidationException "Cấm tuyệt đối việc xóa cấu hình khỏi hệ thống" và chặn đứng mọi hoạt động xóa dữ liệu.
+Mapping: UC-33 / BR-30
+
+FR-89 (Hiển thị màu badge nhóm cấu hình)
+Mô tả: WHEN kết xuất danh sách cấu hình trên JSP, THE system SHALL render class CSS tương ứng để tạo badge màu: library=green, fine=yellow, notification=blue, system=gray.
+Mapping: UC-32
+
+FR-90 (Phân quyền AuthFilter cấu hình Manager)
+Mô tả: WHERE người dùng không có vai trò MANAGER cố tình truy cập `/manager/system-config`, THE system SHALL chặn lại tại AuthFilter và trả về lỗi SC_FORBIDDEN (403).
+Mapping: UC-32 / BR-31
+
+FR-91 (Phân quyền AuthFilter cấu hình Admin)
+Mô tả: WHERE người dùng không có vai trò ADMIN cố tình truy cập `/admin/system-config`, THE system SHALL chặn lại tại AuthFilter và trả về lỗi SC_FORBIDDEN (403).
+Mapping: UC-32 / BR-31
+
+FR-92 (Chặn sửa đổi chéo nhóm config)
+Mô tả: WHERE Manager cố ý chỉnh sửa key cấu hình thuộc nhóm system/fine/notification thông qua giả lập request, THE system SHALL phát hiện tại Service layer và trả về lỗi "Bạn không có quyền chỉnh sửa nhóm cấu hình này."
+Mapping: UC-33 / BR-31
+
+FR-93 (Khởi động nạp Cache cấu hình)
+Mô tả: WHEN ứng dụng khởi động (AppContextListener.contextInitialized), THE system SHALL gọi SystemConfigCache.reload() để nạp toàn bộ cặp key-value từ bảng SystemConfigurations vào bộ nhớ ServletContext.
+Mapping: UC-32
+
+FR-94 (Đồng bộ cache tức thời khi update)
+Mô tả: WHEN cập nhật hoặc thêm mới cấu hình thành công, THE system SHALL gọi ngay SystemConfigCache.reload(ctx) để làm mới giá trị lưu trữ trong bộ nhớ RAM, phục vụ các nghiệp vụ mượn trả tức thì.
+Mapping: UC-33 / BR-30
+
+FR-95 (Validation kiểu dữ liệu số nguyên dương)
+Mô tả: WHERE configKey yêu cầu kiểu POSITIVE_INT, THE system SHALL validate value phải parse được thành số nguyên lớn hơn 0; ngược lại ném lỗi ValidationException.
+Mapping: UC-33 / BR-40
+
+FR-96 (Validation kiểu dữ liệu số nguyên không âm)
+Mô tả: WHERE configKey yêu cầu kiểu NON_NEGATIVE_INT, THE system SHALL validate value phải parse được thành số nguyên lớn hơn hoặc bằng 0; ngược lại ném lỗi.
+Mapping: UC-33 / BR-40
+
+FR-97 (Validation kiểu dữ liệu số thực không âm)
+Mô tả: WHERE configKey yêu cầu kiểu NON_NEGATIVE_DECIMAL, THE system SHALL validate value phải parse được thành số thực lớn hơn hoặc bằng 0; ngược lại ném lỗi.
+Mapping: UC-33 / BR-40
+
+FR-98 (Hiển thị biểu đồ xu hướng mượn trả)
+Mô tả: WHEN SystemReportServlet nhận tham số biểu đồ mượn trả, THE system SHALL truy vấn số lượng mượn/trả qua ReportDAO.getBorrowTrendsByPeriod(), phân nhóm theo Ngày/Tháng/Năm, và render dữ liệu dưới dạng JSON để Chart.js hiển thị biểu đồ đường (Line Chart).
+Mapping: UC-34 / BR-45
+
+FR-99 (Hiển thị biểu đồ đối chiếu tài chính)
+Mô tả: WHEN hiển thị báo cáo tài chính, THE system SHALL gọi ReportDAO.getFinancialTrendsByPeriod() để lấy dữ liệu đối chiếu số tiền phạt đã thu và chưa thu, vẽ biểu đồ Pie/Bar Chart.
+Mapping: UC-34 / BR-43
+
+FR-100 (Truy xuất báo cáo kho sách và kiểm kê)
+Mô tả: WHEN hiển thị báo cáo kho sách, THE system SHALL truy vấn kết quả đợt kiểm kê gần nhất từ bảng InventorySession và InventoryItem để tính toán số sách khớp, mất, sai vị trí, đưa ra tỷ lệ thất thoát.
+Mapping: UC-34 / BR-44
+
+FR-101 (Tính toán tỷ lệ tăng trưởng)
+Mô tả: THE system SHALL tự động so sánh số liệu của chu kỳ hiện tại (ngày/tháng/năm) với chu kỳ trước đó để tính tỷ lệ % tăng/giảm và hiển thị nhận xét xu hướng trên giao diện.
+Mapping: UC-34
+
+FR-102 (Xuất báo cáo hệ thống ra Excel)
+Mô tả: WHEN ExportReportServlet.doGet() được gọi, THE system SHALL tập hợp dữ liệu thống kê từ ReportService, ghi vào tệp Excel (.xlsx) thông qua Apache POI và ghi nhận AuditLog(EXPORT_REPORT).
+Mapping: UC-35
+
+FR-103 (Giao diện public cho enqueue EmailJob)
+Mô tả: WHEN bất kỳ dịch vụ nào gọi EmailService.enqueue(job), THE system SHALL đẩy job vào LinkedBlockingQueue và trả về kết quả thành công ngay lập tức để tránh block luồng xử lý chính.
+Mapping: BR-41, BR-49
+
+FR-104 (Khởi chạy Daemon Thread Worker)
+Mô tả: WHEN ứng dụng bắt đầu khởi động, AppContextListener SHALL khởi tạo một instance duy nhất của EmailWorker, đăng ký là Daemon Thread và kích hoạt luồng xử lý chạy nền.
+Mapping: BR-41
+
+FR-105 (Consumer lấy Job từ hàng đợi)
+Mô tả: WHILE EmailWorker hoạt động, Consumer SHALL liên tục lấy job ra bằng phương thức queue.take() (sử dụng cơ chế block để không tiêu hao tài nguyên CPU khi hàng đợi rỗng).
+Mapping: BR-41
+
+FR-106 (Tra cứu template động từ DB)
+Mô tả: WHEN xử lý gửi email, THE system SHALL gọi DocumentTempDAO.findByTempName() để lấy nội dung template mới nhất do Manager chỉnh sửa từ CSDL.
+Mapping: BR-41 / BR-47
+
+FR-107 (Inject dữ liệu vào Template placeholders)
+Mô tả: THE system SHALL quét và thay thế tất cả các placeholder có định dạng `{{key}}` trong nội dung mẫu email bằng giá trị tương ứng truyền vào từ EmailJob.placeholders.
+Mapping: BR-51
+
+FR-108 (Gửi email qua SMTP JavaMail)
+Mô tả: THE system SHALL sử dụng thư viện JavaMail để kết nối SMTP Server dựa trên các tham số cấu hình (SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD) lấy từ cache hệ thống.
+Mapping: BR-46
+
+FR-109 (Cơ chế tự động Retry gửi lỗi)
+Mô tả: WHERE xảy ra lỗi kết nối SMTP trong quá trình gửi, Consumer SHALL tự động thử lại sau mỗi EMAIL_RETRY_DELAY_SECONDS giây, tối đa EMAIL_MAX_RETRIES lần.
+Mapping: BR-48
+
+FR-110 (Ghi log lỗi khi vượt quá lượt retry)
+Mô tả: WHERE vượt quá giới hạn retry cho phép mà email vẫn lỗi, Consumer SHALL ghi nhận log lỗi mức SEVERE và tiếp tục xử lý các email khác trong hàng đợi.
+Mapping: BR-48
+
+FR-111 (Chặn xóa mẫu email hệ thống)
+Mô tả: WHEN Manager yêu cầu xóa mẫu email, THE system SHALL kiểm tra danh sách PROTECTED_TEMPLATES. WHERE mẫu email nằm trong danh sách được bảo vệ, hệ thống SHALL ngăn chặn hành động và trả về thông báo lỗi bằng tiếng Việt.
+Mapping: BR-47
+
+FR-112 (Bảo mật không ghi log mật khẩu thô)
+Mô tả: THE system SHALL loại bỏ giá trị của placeholder {{tempPassword}} trước khi ghi log hoặc Audit Log để tránh lộ thông tin nhạy cảm.
+Mapping: BR-50
+
+FR-113 (Graceful Shutdown hàng đợi)
+Mô tả: WHEN ứng dụng Tomcat tắt (contextDestroyed), THE system SHALL set cờ running=false, đợi tối đa 5 giây cho luồng Consumer xử lý hết các email còn lại trong queue trước khi dừng hẳn thread.
+Mapping: BR-42
+
+FR-114 (Tích hợp Email Reset Mật Khẩu)
+Mô tả: WHEN người dùng yêu cầu đặt lại mật khẩu thành công, THE system SHALL đẩy một job gửi email với template 'RESET_PASSWORD' và placeholders chứa userName, tempPassword, resetLink vào hàng đợi.
+Mapping: UC-03
+
+FR-115 (Tích hợp Email Sách Sẵn Sàng Nhận)
+Mô tả: WHEN một bản sao sách được giải phóng hoặc sẵn sàng cho người tiếp theo trong hàng đợi, THE system SHALL đẩy một job gửi email với template 'RESERVATION_READY' và deadline nhận sách vào hàng đợi.
+Mapping: UC-16, UC-43
+
+FR-116 (Tích hợp Email Báo Phạt Quá Hạn)
+Mô tả: WHEN OverdueProcessor chạy định kỳ phát hiện sách quá hạn, THE system SHALL đẩy job gửi email với template 'OVERDUE_NOTICE' chứa số ngày trễ và tiền phạt ước tính vào hàng đợi.
+Mapping: UC-42
+
+FR-117 (Tích hợp Email Báo Sự Cố Sách)
+Mô tả: WHEN thủ thư nhận trả sách và phát hiện hỏng/mất sách dẫn đến phạt tiền, THE system SHALL đẩy job gửi email với template 'INCIDENT_FINE_NOTICE' báo chi tiết sự cố và mức phạt vào hàng đợi.
+Mapping: UC-19, UC-28
+
+FR-118 (Tích hợp Email Xác Nhận Thanh Toán)
+Mô tả: WHEN độc giả thanh toán thành công tiền phạt (qua tiền mặt tại quầy hoặc SePay online), THE system SHALL đẩy job gửi email với template 'PAYMENT_CONFIRMATION' xác nhận hoàn thành nghĩa vụ đóng phạt vào hàng đợi.
+Mapping: UC-20, UC-39
+
 // =============================================================================
 // END OF SPECIFICATION
 // =============================================================================
-// Total UC: 48 | Total BR: 39 | Total FR: 77
-// Version: 3.0.0 | Date: 2026-06-27
+// Total UC: 54 | Total BR: 53 | Total FR: 118
+// Version: 3.1.0 | Date: 2026-06-29
 // Project: Library Management System (LMS) - SWP391
 // =============================================================================
 

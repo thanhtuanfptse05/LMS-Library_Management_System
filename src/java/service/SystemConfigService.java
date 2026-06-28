@@ -152,38 +152,7 @@ public class SystemConfigService {
     }
 
     public void delete(String key, int actorId, String actorRole, ServletContext ctx) throws ValidationException, DatabaseException {
-        Connection conn = null;
-        try {
-            conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false);
-
-            SystemConfiguration current = dao.findByKey(conn, key);
-            if (current == null) {
-                throw new ValidationException("Khóa cấu hình không tồn tại trong CSDL.");
-            }
-
-            if ("MANAGER".equals(actorRole) && !"library".equals(current.getConfigGroup())) {
-                throw new ValidationException("Bạn không có quyền xóa nhóm cấu hình này.");
-            }
-
-            String oldJson = buildJson(key, current.getConfigValue());
-
-            dao.delete(conn, key);
-            auditLogDAO.insert(conn, actorId, "DELETE_SYSTEM_CONFIG", "SystemConfigurations", null, oldJson, null);
-
-            conn.commit();
-            
-            SystemConfigCache.reload(ctx);
-
-        } catch (ValidationException e) {
-            rollbackQuietly(conn);
-            throw e;
-        } catch (Exception e) {
-            rollbackQuietly(conn);
-            throw new DatabaseException("Lỗi hệ thống khi xóa cấu hình", e);
-        } finally {
-            closeQuietly(conn);
-        }
+        throw new ValidationException("Cấm tuyệt đối việc xóa cấu hình khỏi hệ thống.");
     }
 
     public void validateValue(String key, String value) throws ValidationException {

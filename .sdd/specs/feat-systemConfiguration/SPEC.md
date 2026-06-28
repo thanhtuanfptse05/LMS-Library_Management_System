@@ -34,20 +34,21 @@ Mọi giá trị cấu hình được lưu tập trung trong bảng `SystemConfi
 
   | configKey                      | configGroup  | Kiểu       | Mô tả                                                | Giá trị mặc định |
   |-------------------------------|--------------|------------|------------------------------------------------------|------------------|
-  | `max_borrow_days_student`     | `library`    | INT > 0    | Số ngày mượn tối đa cho sinh viên                    | 14               |
-  | `max_borrow_days_lecturer`    | `library`    | INT > 0    | Số ngày mượn tối đa cho giảng viên                   | 30               |
-  | `max_borrow_books_student`    | `library`    | INT > 0    | Số đầu sách mượn đồng thời tối đa (sinh viên)        | 3                |
-  | `max_borrow_books_lecturer`   | `library`    | INT > 0    | Số đầu sách mượn đồng thời tối đa (giảng viên)       | 5                |
-  | `max_extension_count`         | `library`    | INT ≥ 0    | Số lần gia hạn tối đa mỗi lần mượn                  | 2                |
-  | `extension_days`              | `library`    | INT > 0    | Số ngày gia hạn mỗi lần                              | 7                |
-  | `reservation_hold_days`       | `library`    | INT > 0    | Số ngày giữ sách đặt trước trước khi huỷ tự động    | 3                |
-  | `fine_per_day_overdue`        | `fine`       | DEC ≥ 0    | Tiền phạt mỗi ngày quá hạn (VNĐ)                    | 2000             |
-  | `fine_lost_book_multiplier`   | `fine`       | DEC ≥ 0    | Hệ số nhân giá sách khi mất sách                    | 2.0              |
-  | `fine_damaged_book_flat`      | `fine`       | DEC ≥ 0    | Tiền phạt cố định khi sách bị hỏng (VNĐ)            | 50000            |
-  | `email_otp_expire_minutes`    | `notification`| INT > 0   | Thời gian hết hạn OTP qua email (phút)               | 10               |
-  | `email_overdue_notice_days`   | `notification`| INT > 0   | Số ngày trước khi quá hạn để gửi email nhắc          | 1                |
-  | `max_import_rows`             | `system`     | INT > 0    | Số BookCopy tối đa trong một file import             | 5000             |
-  | `import_expire_days`          | `system`     | INT > 0    | Số ngày lưu lịch sử import                           | 365              |
+  | `STUDENT_MAX_BORROW_DAYS`     | `library`    | INT > 0    | Số ngày mượn tối đa cho sinh viên                    | 14               |
+  | `LECTURER_MAX_BORROW_DAYS`    | `library`    | INT > 0    | Số ngày mượn tối đa cho giảng viên                   | 30               |
+  | `STUDENT_MAX_BORROW_LIMIT`    | `library`    | INT > 0    | Số đầu sách mượn đồng thời tối đa (sinh viên)        | 5                |
+  | `LECTURER_MAX_BORROW_LIMIT`   | `library`    | INT > 0    | Số đầu sách mượn đồng thời tối đa (giảng viên)       | 15               |
+  | `MAX_EXTENSION_COUNT`         | `library`    | INT ≥ 0    | Số lần gia hạn tối đa mỗi lần mượn                  | 3                |
+  | `RENEW_DURATION_DAYS`         | `library`    | INT > 0    | Số ngày gia hạn mỗi lần                              | 14               |
+  | `RESERVATION_HOLD_DAYS`       | `library`    | INT > 0    | Số ngày giữ sách đặt trước trước khi huỷ tự động    | 3                |
+  | `FINE_RATE_PER_DAY`           | `library`    | DEC ≥ 0    | Tiền phạt mỗi ngày quá hạn (VNĐ)                    | 5000             |
+  | `LOST_FINE_MULTIPLIER`        | `library`    | DEC ≥ 0    | Hệ số nhân giá sách khi mất sách                    | 2.0              |
+  | `DAMAGED_FINE_MULTIPLIER`     | `library`    | DEC ≥ 0    | Hệ số nhân giá sách khi sách bị hỏng                 | 2.0              |
+  | `DEFAULT_BOOK_PRICE`          | `library`    | DEC ≥ 0    | Giá mặc định của sách khi không có giá gốc (VND)     | 500000           |
+  | `EMAIL_OTP_EXPIRE_MINUTES`    | `system`     | INT > 0    | Thời gian hết hạn OTP qua email (phút)               | 10               |
+  | `EMAIL_OVERDUE_NOTICE_DAYS`   | `system`     | INT > 0    | Số ngày trước khi quá hạn để gửi email nhắc          | 1                |
+  | `MAX_IMPORT_ROWS`             | `system`     | INT > 0    | Số BookCopy tối đa trong một file import             | 5000             |
+  | `IMPORT_EXPIRE_DAYS`          | `system`     | INT > 0    | Số ngày lưu lịch sử import                           | 365              |
 
 ---
 
