@@ -12,7 +12,7 @@
     </div>
     <div class="d-flex align-items-center gap-3">
         <p class="text-on-surface-variant small mb-0">Xuất dữ liệu:</p>
-        <a href="#" class="btn btn-sm px-3 rounded-3 text-decoration-none"
+        <a href="${pageContext.request.contextPath}/manager/reports/dashboard" class="btn btn-sm px-3 rounded-3 text-decoration-none"
            style="background-color: var(--primary); color: #fff;">
             <span class="material-symbols-outlined" style="font-size: 15px;">download</span> Báo cáo Hàng tháng
         </a>

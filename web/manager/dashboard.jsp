@@ -47,7 +47,7 @@
                                 <span id="current-month" class="fw-semibold"></span>
                             </p>
                         </div>
-                        <a href="#" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
+                        <a href="${pageContext.request.contextPath}/manager/reports/dashboard" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
                             <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Xuất báo cáo
                         </a>
                     </div>
@@ -247,9 +247,9 @@
                         <div class="raised-card overflow-hidden">
                             <div class="card-header-row">
                                 <h3 class="card-title mb-0">Thông báo hệ thống</h3>
-                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1" style="font-size: 12px;">
+                                <a href="${pageContext.request.contextPath}/manager/notifications" class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1 text-decoration-none" style="font-size: 12px;">
                                     <span class="material-symbols-outlined" style="font-size: 15px;">campaign</span> Đăng
-                                </button>
+                                </a>
                             </div>
                             <div class="p-3 d-flex flex-column gap-2">
                                 <c:choose>

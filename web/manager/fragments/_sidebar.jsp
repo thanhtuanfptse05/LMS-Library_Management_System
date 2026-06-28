@@ -27,10 +27,7 @@
 
         <!-- Quản lý Chính sách -->
         <p class="sidebar-section-label">Chính sách &amp; Cấu hình</p>
-        <a class="sidebar-link" id="mgr-nav-policy" href="#">
-            <span class="material-symbols-outlined">gavel</span>
-            <span>Chính sách Hoạt động</span>
-        </a>
+
         <a class="sidebar-link" id="mgr-nav-config" href="${pageContext.request.contextPath}/manager/system-config">
             <span class="material-symbols-outlined">settings</span>
             <span>Cấu hình Hệ thống</span>
@@ -39,10 +36,7 @@
             <span class="material-symbols-outlined">qr_code_scanner</span>
             <span>Cấu hình Thanh toán</span>
         </a>
-        <a class="sidebar-link" id="mgr-nav-documents" href="${pageContext.request.contextPath}/manager/document-templates">
-            <span class="material-symbols-outlined">description</span>
-            <span>Mẫu Văn bản</span>
-        </a>
+
 
         <!-- Thông báo & Báo cáo -->
         <p class="sidebar-section-label">Thông báo &amp; Báo cáo</p>
@@ -77,7 +71,7 @@
 
     <!-- ── Footer ── -->
     <div class="px-3 pb-3">
-        <a class="sidebar-link mb-2" href="#">
+        <a class="sidebar-link mb-2" href="${pageContext.request.contextPath}/#footer">
             <span class="material-symbols-outlined">help</span>
             <span>Trung tâm Trợ giúp</span>
         </a>
