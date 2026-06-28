@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import model.BookCopy;
+import dto.BookLocationSummaryDTO;
 import dto.BookCopySummaryDTO;
 import util.DatabaseConnection;
 
@@ -109,6 +110,34 @@ public class BookCopyDAO {
                 summary.setIncidentCopies(rs.getInt("incidentCopies"));
             }
             return summary;
+        }
+    }
+
+    public List<BookLocationSummaryDTO> getLocationSummaries(int limit) throws SQLException {
+        String sql = "SELECT COALESCE(NULLIF(TRIM(location), ''), 'Chưa gán vị trí') locationName, "
+                + "COUNT(*) totalCopies, "
+                + "SUM(CASE WHEN status = 'available' AND condition = 'good' THEN 1 ELSE 0 END) availableCopies, "
+                + "SUM(CASE WHEN status = 'unavailable' OR condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) issueCopies "
+                + "FROM BookCopy "
+                + "GROUP BY COALESCE(NULLIF(TRIM(location), ''), 'Chưa gán vị trí') "
+                + "HAVING SUM(CASE WHEN status = 'unavailable' OR condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) > 0 "
+                + "ORDER BY issueCopies DESC, totalCopies DESC, locationName ASC "
+                + "LIMIT ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<BookLocationSummaryDTO> summaries = new ArrayList<>();
+                while (rs.next()) {
+                    BookLocationSummaryDTO summary = new BookLocationSummaryDTO();
+                    summary.setLocation(rs.getString("locationName"));
+                    summary.setTotalCopies(rs.getInt("totalCopies"));
+                    summary.setAvailableCopies(rs.getInt("availableCopies"));
+                    summary.setIssueCopies(rs.getInt("issueCopies"));
+                    summaries.add(summary);
+                }
+                return summaries;
+            }
         }
     }
 

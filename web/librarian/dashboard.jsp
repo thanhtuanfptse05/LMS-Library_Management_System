@@ -49,7 +49,7 @@
                         </p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="${pageContext.request.contextPath}/librarian/book-overview.jsp"
+                        <a href="${pageContext.request.contextPath}/book-management/overview"
                            class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
                             <span class="material-symbols-outlined" style="font-size: 16px;">auto_stories</span> Quản lý sách
                         </a>

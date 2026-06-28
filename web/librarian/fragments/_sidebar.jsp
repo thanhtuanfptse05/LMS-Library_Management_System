@@ -33,7 +33,7 @@
 
         <!-- Quản lý sách -->
         <p class="sidebar-section-label">Quản lý sách</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-overview.jsp">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/overview">
             <span class="material-symbols-outlined">space_dashboard</span>
             <span>Tổng quan</span>
         </a>

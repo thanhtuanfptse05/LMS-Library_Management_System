@@ -162,6 +162,89 @@ body {
     font-weight: 700;
 }
 
+.bm-overview-hero {
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255, 247, 237, 0.92), rgba(255, 255, 255, 0.72));
+    border: 1px solid rgba(157, 67, 0, 0.16);
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(88, 34, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+}
+
+.bm-overview-hero__action {
+    align-items: center;
+    background: #fff7ed;
+    border: 1px solid rgba(234, 88, 12, 0.28);
+    border-radius: 999px;
+    color: #9a3412;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 800;
+    gap: 6px;
+    padding: 9px 13px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.bm-overview-hero__action:hover {
+    background: #fed7aa;
+    color: #7c2d12;
+}
+
+.bm-overview-kpi {
+    border: 1px solid rgba(120, 113, 108, 0.18);
+    overflow: hidden;
+    position: relative;
+}
+
+.bm-overview-kpi::before {
+    background: var(--overview-accent, var(--primary));
+    border-radius: 0 999px 999px 0;
+    content: "";
+    height: 54px;
+    left: 0;
+    opacity: 0.95;
+    position: absolute;
+    top: 24px;
+    width: 4px;
+}
+
+.bm-overview-kpi .bm-stat-card__icon {
+    background: var(--overview-icon-bg, var(--surface-container-low));
+    color: var(--overview-accent, var(--primary));
+}
+
+.bm-overview-kpi--catalog {
+    --overview-accent: #c2410c;
+    --overview-icon-bg: #ffedd5;
+}
+
+.bm-overview-kpi--copies {
+    --overview-accent: #b45309;
+    --overview-icon-bg: #fef3c7;
+}
+
+.bm-overview-kpi--healthy {
+    --overview-accent: #059669;
+    --overview-icon-bg: #d1fae5;
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.bm-overview-kpi--attention {
+    --overview-accent: #dc2626;
+    --overview-icon-bg: #fee2e2;
+    background: linear-gradient(135deg, #fff7ed 0%, #ffffff 58%, #fef2f2 100%);
+    border-color: rgba(220, 38, 38, 0.34);
+    box-shadow: 0 14px 34px rgba(127, 29, 29, 0.1);
+}
+
+.bm-overview-kpi--attention .bm-stat-card__value {
+    color: #991b1b;
+}
+
 .bm-filter-card {
     background: var(--surface-container-lowest);
     border: 1px solid var(--outline-variant);
@@ -790,12 +873,62 @@ body {
     padding: 16px;
 }
 
+.bm-overview-stock {
+    background: linear-gradient(180deg, #ffffff 0%, #fffaf7 100%);
+}
+
+.bm-overview-stock .bm-table-card__header {
+    background: linear-gradient(135deg, #fff7ed, #ffffff);
+}
+
+.bm-overview-row--attention {
+    background: #fff7ed;
+}
+
+.bm-overview-row--attention td:first-child {
+    box-shadow: inset 4px 0 0 #f59e0b;
+}
+
+.bm-overview-actions {
+    background: linear-gradient(180deg, #ffffff 0%, #fff7ed 100%);
+    border-color: rgba(234, 88, 12, 0.24);
+    box-shadow: 0 12px 28px rgba(88, 34, 0, 0.08);
+}
+
+.bm-overview-actions .bm-section-title {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+}
+
+.bm-overview-actions .bm-section-title::before {
+    background: #ea580c;
+    border-radius: 999px;
+    content: "";
+    display: inline-block;
+    height: 9px;
+    width: 9px;
+}
+
 .bm-alert-item {
     align-items: flex-start;
     border-bottom: 1px solid var(--outline-variant);
     display: flex;
     gap: 10px;
     padding: 13px 0;
+}
+
+.bm-overview-actions .bm-alert-item {
+    background: rgba(255, 255, 255, 0.76);
+    border: 1px solid rgba(234, 88, 12, 0.14);
+    border-radius: 14px;
+    margin-top: 12px;
+    padding: 13px;
+}
+
+.bm-overview-actions .bm-alert-item:last-child {
+    border-bottom: 1px solid rgba(234, 88, 12, 0.14);
+    padding-bottom: 13px;
 }
 
 .bm-alert-item:last-child {
@@ -813,6 +946,21 @@ body {
     height: 34px;
     justify-content: center;
     width: 34px;
+}
+
+.bm-alert-item--danger .bm-alert-item__icon {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.bm-alert-item--warning .bm-alert-item__icon {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.bm-alert-item--info .bm-alert-item__icon {
+    background: #dbeafe;
+    color: #2563eb;
 }
 
 .bm-alert-item__title {
