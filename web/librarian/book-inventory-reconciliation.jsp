@@ -336,5 +336,6 @@
             </div>
         </div>
     </c:if>
+    <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260628-inventory-combobox"></script>
 </body>
 </html>

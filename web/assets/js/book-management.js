@@ -5,13 +5,29 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.querySelectorAll('#createCopyModal select[name="bookId"]').forEach(enhanceBookSelect);
+    document.querySelectorAll('#createCopyModal select[name="bookId"]').forEach((select) => {
+        enhanceRequiredSelectCombobox(select, {
+            placeholder: 'Gõ tên sách hoặc ISBN để chọn',
+            clearLabel: 'Xóa đầu sách đã chọn',
+            emptyText: 'Không tìm thấy đầu sách phù hợp.',
+            errorText: 'Vui lòng chọn một đầu sách trong danh sách gợi ý.'
+        });
+    });
+    document.querySelectorAll('#createInventoryModal select[name="location"]').forEach((select) => {
+        enhanceRequiredSelectCombobox(select, {
+            placeholder: 'Gõ để tìm khu vực kiểm kê',
+            clearLabel: 'Xóa khu vực đã chọn',
+            emptyText: 'Không tìm thấy khu vực phù hợp.',
+            errorText: 'Vui lòng chọn một khu vực trong danh sách gợi ý.',
+            optionLimit: 80
+        });
+    });
     document.querySelectorAll('#createCopyModal input[name="location"], #editCopyModal input[name="location"]')
         .forEach(enhanceLocationInput);
     initBookManagementPagination();
 });
 
-function enhanceBookSelect(select) {
+function enhanceRequiredSelectCombobox(select, config = {}) {
     const form = select.closest('form');
     const wrapper = document.createElement('div');
     const control = document.createElement('div');
@@ -28,13 +44,21 @@ function enhanceBookSelect(select) {
             search: option.textContent.trim().toLowerCase()
         }));
 
+    const settings = {
+        placeholder: config.placeholder || 'Gõ để tìm và chọn',
+        clearLabel: config.clearLabel || 'Xóa lựa chọn',
+        emptyText: config.emptyText || 'Không tìm thấy lựa chọn phù hợp.',
+        errorText: config.errorText || 'Vui lòng chọn một mục trong danh sách gợi ý.',
+        optionLimit: config.optionLimit || 40
+    };
+
     wrapper.className = 'bm-combobox';
-    wrapper.dataset.enhancedBookSelect = 'true';
+    wrapper.dataset.enhancedSelectCombobox = 'true';
 
     control.className = 'bm-combobox__control';
     input.type = 'text';
     input.className = 'form-control bm-combobox__input';
-    input.placeholder = 'Gõ tên sách hoặc ISBN để chọn';
+    input.placeholder = settings.placeholder;
     input.autocomplete = 'off';
     input.setAttribute('role', 'combobox');
     input.setAttribute('aria-expanded', 'false');
@@ -42,17 +66,17 @@ function enhanceBookSelect(select) {
 
     clearButton.type = 'button';
     clearButton.className = 'bm-combobox__clear';
-    clearButton.setAttribute('aria-label', 'Xóa đầu sách đã chọn');
+    clearButton.setAttribute('aria-label', settings.clearLabel);
     clearButton.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">close</span>';
 
     menu.className = 'bm-combobox__menu';
     menu.setAttribute('role', 'listbox');
 
     emptyState.className = 'bm-combobox__empty';
-    emptyState.textContent = 'Không tìm thấy đầu sách phù hợp.';
+    emptyState.textContent = settings.emptyText;
 
     error.className = 'bm-field-error mb-0';
-    error.textContent = 'Vui lòng chọn một đầu sách trong danh sách gợi ý.';
+    error.textContent = settings.errorText;
 
     select.classList.add('bm-select-fallback');
     select.required = false;
@@ -105,7 +129,7 @@ function enhanceBookSelect(select) {
         visibleOptions = options.filter((option) => !normalizedKeyword || option.search.includes(normalizedKeyword));
         menu.innerHTML = '';
 
-        visibleOptions.slice(0, 40).forEach((option, index) => {
+        visibleOptions.slice(0, settings.optionLimit).forEach((option, index) => {
             const button = document.createElement('button');
             const title = document.createElement('span');
             const meta = document.createElement('span');
