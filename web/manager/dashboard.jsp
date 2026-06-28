@@ -243,45 +243,6 @@
                     <!-- Right 1/3: Policies + Announcements -->
                     <div class="col-12 col-lg-4 d-flex flex-column gap-4">
 
-                        <!-- Library Policies -->
-                        <div class="raised-card overflow-hidden">
-                            <div class="card-header-row">
-                                <h3 class="card-title mb-0">Chính sách Hoạt động</h3>
-                                <button class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1" style="font-size: 12px;">
-                                    <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Thêm mới
-                                </button>
-                            </div>
-                            <div class="p-3 d-flex flex-column gap-2">
-                                <div class="policy-item">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Chính sách Thời hạn Mượn</p>
-                                        <span class="badge-pill badge-success">Hoạt động</span>
-                                    </div>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Tối đa 21 ngày mỗi lần mượn. Gia hạn được 1 lần.</p>
-                                </div>
-                                <div class="policy-item">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Chính sách Tiền phạt</p>
-                                        <span class="badge-pill badge-success">Hoạt động</span>
-                                    </div>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Phí 5.000 VND/ngày quá hạn.</p>
-                                </div>
-                                <div class="policy-item" style="border-left-color: var(--warning-container);">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <p class="fw-bold mb-0" style="font-size: 13px;">Hết hạn Đặt trước</p>
-                                        <span class="badge-pill badge-warning">Xem xét</span>
-                                    </div>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">Đặt trước tự động hủy sau 48 giờ.</p>
-                                </div>
-                            </div>
-                            <div class="p-3" style="border-top: 1px solid var(--outline-variant); background: var(--surface-container-low);">
-                                <a href="#" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
-                                    Quản lý Chính sách
-                                    <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
-                                </a>
-                            </div>
-                        </div>
-
                         <!-- System Announcements -->
                         <div class="raised-card overflow-hidden">
                             <div class="card-header-row">
