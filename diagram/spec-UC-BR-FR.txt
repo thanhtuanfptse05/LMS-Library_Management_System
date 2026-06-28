@@ -396,7 +396,7 @@ Mô tả: (Xem Nhật ký Kiểm toán): Quản trị viên truy cập trang Nh�
 
 UC-41 (Export Audit Log)
 Actor: SysAdmin
-Mô tả: (Xuất Nhật ký Kiểm toán): Quản trị viên xuất dữ liệu Nhật ký Kiểm toán ra file CSV để phục vụ báo cáo và lưu trữ ngoài hệ thống.
+Mô tả: (Xuất Nhật ký Kiểm toán): Quản trị viên xuất dữ liệu Nhật ký Kiểm toán ra file Excel để phục vụ báo cáo và lưu trữ ngoài hệ thống.
 
 UC-42 (Run Overdue Processor)
 Actor: System, SysAdmin
@@ -786,8 +786,8 @@ FR-58 (Xử lý hiển thị đặc biệt Modal theo actionType)
 Mô tả: WHEN render modal chi tiết AuditLog, THE system SHALL xử lý các trường hợp đặc biệt: (1) **actionType = CREATE**: oldValues = NULL → hiển thị "—" hoặc badge "Không có" ở cột trái, chỉ hiển thị newValues ở cột phải, (2) **actionType = DELETE**: newValues = NULL → hiển thị "—" ở cột phải, chỉ hiển thị oldValues ở cột trái, (3) **actionType = CHANGE_PASSWORD**: oldValues và newValues đều NULL hoặc rỗng (vì bảo mật) → hiển thị text "Mật khẩu đã thay đổi (bảo mật)" thay vì cards rỗng, (4) **WHERE JSON invalid**: không parse được oldValues/newValues → hiển thị raw text trong 1 card đơn với border đỏ + icon warning, (5) **WHERE field name dài**: truncate với tooltip hover để xem full text.
 Mapping: UC-40 / BR-33
 
-FR-59 (Xuất CSV Nhật ký với UTF-8 BOM)
-Mô tả: WHEN AuditLogServlet.doGet(action=export) được gọi, THE system SHALL: (1) Lấy cùng filter params từ list view (actionType, entityName, email, fromDate, toDate, keyword), (2) AuditLogDAO.findWithFilters(filters, page=1, pageSize=10000) — giới hạn tối đa 10.000 bản ghi để bảo vệ hiệu năng, (3) Build CSV content: header row = ["Thời gian", "Hành động", "Đối tượng", "ID", "Người thực hiện", "Giá trị cũ", "Giá trị mới"], data rows với oldValues/newValues được flatten thành string (bỏ qua nested structure), (4) Set response headers: Content-Type: text/csv; charset=UTF-8, Content-Disposition: attachment; filename="audit_log_{yyyyMMdd_HHmmss}.csv", (5) **Write UTF-8 BOM** (0xEF, 0xBB, 0xBF) đầu file để Excel mở đúng encoding, (6) Write CSV rows, (7) INSERT AuditLog(EXPORT_AUDIT_LOG, actorId).
+FR-59 (Xuất Excel Nhật ký Kiểm toán)
+Mô tả: WHEN AuditLogServlet.doGet(action=export) được gọi, THE system SHALL: (1) Lấy cùng filter params từ list view (actionType, entityName, email, fromDate, toDate, keyword), (2) AuditLogDAO.findWithFilters(filters, page=1, pageSize=10000) — giới hạn tối đa 10.000 bản ghi để bảo vệ hiệu năng, (3) Build Excel file (.xlsx) bằng Apache POI: tạo header row = ["Thời gian", "Hành động", "Đối tượng", "ID", "Người thực hiện", "Giá trị cũ", "Giá trị mới"], data rows với oldValues/newValues được flatten thành string (bỏ qua nested structure), (4) Set response headers: Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, Content-Disposition: attachment; filename="audit_log_{yyyyMMdd_HHmmss}.xlsx", (5) Write workbook to response OutputStream, (6) INSERT AuditLog(EXPORT_AUDIT_LOG, actorId).
 Mapping: UC-41 / BR-32
 
 FR-60 (Badge màu hành động theo nhóm)
