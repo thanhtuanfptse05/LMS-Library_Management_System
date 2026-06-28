@@ -18,7 +18,7 @@
             <div id="ai-recommendation-container" data-context="${pageContext.request.contextPath}"></div>
         </section>
 
-        <jsp:include page="common/_section-quicklinks.jsp" />
+
         <jsp:include page="common/_section-news.jsp" />
     </main>
 

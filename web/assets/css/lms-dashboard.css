@@ -9,8 +9,8 @@
 ══════════════════════════════════════════ */
 :root {
     /* Brand Colors */
-    --primary: #9d4300;
-    --primary-hover: #7c3400;
+    --primary: #8d4b00;
+    --primary-hover: #6e3900;
     --primary-container: #f97316;
     --primary-fixed: #ffdbca;
     --primary-fixed-dim: #ffb690;
@@ -101,6 +101,16 @@ body {
 .main-wrapper {
     height: calc(100vh - var(--header-height));
     margin-top: var(--header-height);
+}
+
+.main-content-layout {
+    display: flex;
+    flex-direction: column;
+}
+.main-content-layout > .container-xl,
+.main-content-layout > .container-fluid,
+.main-content-layout > .container {
+    flex-grow: 1;
 }
 
 @media (min-width: 992px) {

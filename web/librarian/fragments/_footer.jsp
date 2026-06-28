@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <footer class="librarian-footer w-100 px-4 py-4">
     <div class="librarian-footer__links">
-        <span class="text-on-surface-variant small">&copy; 2024 Thư viện Đại học LMS System</span>
+        <span class="text-on-surface-variant small">&copy; 2026 Thư viện Đại học LMS System</span>
         <nav class="librarian-footer__policy-links" aria-label="Chính sách">
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Chính sách bảo mật</a>
             <a class="text-on-surface-variant small text-decoration-underline" href="#">Điều khoản dịch vụ</a>
