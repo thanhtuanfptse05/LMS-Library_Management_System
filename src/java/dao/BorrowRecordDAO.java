@@ -654,19 +654,36 @@ public class BorrowRecordDAO {
      * @return Danh sách int[3] = {year, month, count}, sắp xếp theo thứ tự thời gian tăng dần
      */
     public java.util.List<int[]> getMonthlyTrend(Connection conn, int months) throws SQLException {
+        // Khởi tạo danh sách mặc định có đủ 'months' tháng với số lượng = 0
+        java.util.List<int[]> result = new java.util.ArrayList<>();
+        java.time.LocalDate current = java.time.LocalDate.now().withDayOfMonth(1);
+        java.time.LocalDate startMonth = current.minusMonths(months - 1);
+        for (int i = 0; i < months; i++) {
+            java.time.LocalDate d = startMonth.plusMonths(i);
+            result.add(new int[]{d.getYear(), d.getMonthValue(), 0});
+        }
+
         String sql = "SELECT EXTRACT(YEAR FROM startDate)  AS yr, "
                    + "       EXTRACT(MONTH FROM startDate) AS mo, "
                    + "       COUNT(*) AS cnt "
                    + "FROM BorrowRecord "
                    + "WHERE startDate >= date_trunc('month', NOW()) - (? - 1) * INTERVAL '1 month' "
-                   + "GROUP BY yr, mo "
-                   + "ORDER BY yr ASC, mo ASC";
-        java.util.List<int[]> result = new java.util.ArrayList<>();
+                   + "GROUP BY yr, mo";
+        
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, months);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    result.add(new int[]{rs.getInt("yr"), rs.getInt("mo"), rs.getInt("cnt")});
+                    int yr = rs.getInt("yr");
+                    int mo = rs.getInt("mo");
+                    int cnt = rs.getInt("cnt");
+                    // Ghi đè số lượng vào tháng tương ứng
+                    for (int[] row : result) {
+                        if (row[0] == yr && row[1] == mo) {
+                            row[2] = cnt;
+                            break;
+                        }
+                    }
                 }
             }
         } catch (SQLException e) {
