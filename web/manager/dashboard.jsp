@@ -225,25 +225,11 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <tr>
-                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--primary-fixed), var(--primary-fixed-dim)); color: var(--on-primary-container);">JS</div><span style="font-size: 13px; font-weight: 600;">John Stevens</span></div></td>
-                                                    <td class="fw-bold" style="font-size: 13px;">345</td>
-                                                    <td class="fw-bold" style="font-size: 13px;">312</td>
-                                                    <td class="fw-bold" style="font-size: 13px; color: var(--success);">680,000đ</td>
-                                                    <td><span class="badge-pill badge-success">★ 4.9</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--secondary-fixed), var(--secondary-fixed-dim)); color: var(--on-secondary-fixed);">MH</div><span style="font-size: 13px; font-weight: 600;">Mai Huong</span></div></td>
-                                                    <td class="fw-bold" style="font-size: 13px;">298</td>
-                                                    <td class="fw-bold" style="font-size: 13px;">281</td>
-                                                    <td class="fw-bold" style="font-size: 13px; color: var(--success);">540,000đ</td>
-                                                    <td><span class="badge-pill badge-success">★ 4.7</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background: linear-gradient(135deg, var(--tertiary-fixed), #a0d0f5); color: var(--on-tertiary-fixed);">NQ</div><span style="font-size: 13px; font-weight: 600;">Nguyen Quang</span></div></td>
-                                                    <td class="fw-bold" style="font-size: 13px;">210</td>
-                                                    <td class="fw-bold" style="font-size: 13px;">195</td>
-                                                    <td class="fw-bold" style="font-size: 13px; color: var(--warning);">380,000đ</td>
-                                                    <td><span class="badge-pill badge-warning">★ 4.2</span></td>
+                                                    <td colspan="4" class="text-center py-4">
+                                                        <span class="material-symbols-outlined d-block mb-2" style="font-size: 36px; color: var(--outline-variant);">groups</span>
+                                                        <p class="mb-0 fw-semibold" style="font-size: 13px; color: var(--on-surface-variant);">Chưa có dữ liệu hoạt động tháng này</p>
+                                                        <a href="${pageContext.request.contextPath}/manager/staff-performance" class="text-primary-custom fw-semibold text-decoration-none" style="font-size: 12px;">Xem toàn bộ →</a>
+                                                    </td>
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>
@@ -320,15 +306,9 @@
                                         </c:forEach>
                                     </c:when>
                                     <c:otherwise>
-                                        <div class="announcement-card">
-                                            <p class="fw-bold mb-1" style="font-size: 13px;">Cập nhật Giờ mùa hè</p>
-                                            <p class="text-on-surface-variant mb-1" style="font-size: 12px;">Thư viện mở cửa đến 22:00 từ ngày 10/6 đến 31/8.</p>
-                                            <span class="text-on-surface-variant" style="font-size: 11px;">Ngày đăng: 01/06/2025</span>
-                                        </div>
-                                        <div class="announcement-card" style="border-left-color: var(--tertiary); background-color: rgba(205,229,255,0.15);">
-                                            <p class="fw-bold mb-1" style="font-size: 13px;">Thông báo bổ sung Sách mới</p>
-                                            <p class="text-on-surface-variant mb-1" style="font-size: 12px;">220 tựa sách Khoa học Máy tính mới được thêm vào danh mục Kèo Đông.</p>
-                                            <span class="text-on-surface-variant" style="font-size: 11px;">Ngày đăng: 28/05/2025</span>
+                                        <div class="text-center py-4">
+                                            <span class="material-symbols-outlined d-block mb-2" style="font-size: 36px; color: var(--outline-variant);">campaign</span>
+                                            <p class="mb-0" style="font-size: 13px; color: var(--on-surface-variant);">Chưa có thông báo nào</p>
                                         </div>
                                     </c:otherwise>
                                 </c:choose>
