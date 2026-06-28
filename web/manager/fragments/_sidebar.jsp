@@ -71,7 +71,7 @@
 
     <!-- ── Footer ── -->
     <div class="px-3 pb-3">
-        <a class="sidebar-link mb-2" href="${pageContext.request.contextPath}/#footer">
+        <a class="sidebar-link mb-2" href="${pageContext.request.contextPath}/#contact">
             <span class="material-symbols-outlined">help</span>
             <span>Trung tâm Trợ giúp</span>
         </a>
