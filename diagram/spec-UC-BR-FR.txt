@@ -121,7 +121,7 @@ F3 (User Account Management)
 - Owner: Quyet
 - Spec Folder: feat-userAccountManagement
 - UC: UC-07, UC-08, UC-09, UC-10, UC-11, UC-30
-- BR: BR-10, BR-11, BR-12, BR-13, BR-14
+- BR: BR-10, BR-11, BR-12, BR-13, BR-14, BR-54, BR-55
 - FR: FR-12, FR-13, FR-14, FR-15, FR-17, FR-18, FR-19, FR-20, FR-21, FR-45
 
 F4 (Book Management)
@@ -620,6 +620,12 @@ Mô tả: Báo cáo hiệu suất nhân viên chỉ thống kê các giao dịch
 
 BR-53 (Payment Config Group Access)
 Mô tả: Library Manager chỉ có quyền xem và sửa các cấu hình có prefix `SEPAY_`. Việc phân quyền sửa cấu hình SePay được kiểm soát nghiêm ngặt ở tầng Service.
+
+BR-54 (User List Pagination)
+Mô tả: Tính năng xem danh sách tài khoản BẮT BUỘC phải phân trang và hỗ trợ bộ lọc (Filter) theo Role/Status để chống tràn bộ nhớ.
+
+BR-55 (Self-Lock Prevention)
+Mô tả: Quản trị viên (Admin) KHÔNG ĐƯỢC PHÉP thực hiện thao tác Khóa (Lock), Xóa (Delete), hoặc thay đổi Role trên chính tài khoản mà họ đang đăng nhập để tránh tình trạng hệ thống bị vô chủ (orphaned system).
 
 
 // =============================================================================
