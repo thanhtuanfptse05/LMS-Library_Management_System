@@ -8,7 +8,7 @@
     <div class="d-flex align-items-center gap-3 flex-grow-1 text-nowrap overflow-hidden me-3">
         <h1 class="mb-0 fw-bold text-primary-custom d-none d-md-block" style="font-size: 16px; white-space: nowrap;">
             <span class="material-symbols-outlined me-1" style="font-size: 18px; font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;">school</span>
-            Tài nguyên Học thuật
+            Không gian Giảng viên
         </h1>
         <div class="d-none d-lg-flex gap-1 align-items-center">
             <span style="width: 1px; height: 20px; background: var(--outline-variant); display: inline-block;"></span>

@@ -39,20 +39,6 @@
             <span>Bảng tin</span>
         </a>
 
-        <!-- Tài nguyên học tập -->
-        <p class="sidebar-section-label">Tài nguyên học tập</p>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">menu_book</span>
-            <span>Sách theo môn học</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">article</span>
-            <span>Danh mục tài liệu đọc</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="material-symbols-outlined">science</span>
-            <span>Tài liệu nghiên cứu</span>
-        </a>
 
         <!-- Thư viện -->
         <p class="sidebar-section-label">Thư viện</p>

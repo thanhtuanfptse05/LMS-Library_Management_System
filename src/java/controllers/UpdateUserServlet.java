@@ -51,6 +51,13 @@ public class UpdateUserServlet extends HttpServlet {
             return;
         }
 
+        // BR-41: Ngăn Admin tự khóa hoặc tự sửa thông tin định danh của chính mình
+        if (userId == actorId) {
+            session.setAttribute("errorMessage", "Bạn không thể tự khóa hoặc tự thay đổi thông tin định danh của chính mình.");
+            response.sendRedirect(request.getContextPath() + "/admin/user");
+            return;
+        }
+
         try {
             if ("updateInfo".equals(action)) {
                 String email = request.getParameter("email");
