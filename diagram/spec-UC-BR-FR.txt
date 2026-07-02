@@ -230,7 +230,7 @@ F18 (Public Pages)
 - FR: FR-75, FR-76
 
 F19 (Async Email Infrastructure)
-- Owner: System
+- Owner: Bao
 - Spec Folder: feat-asyncEmailSender
 - UC: (none)
 - BR: BR-46, BR-47, BR-48, BR-49, BR-50, BR-51, BR-52, BR-53
