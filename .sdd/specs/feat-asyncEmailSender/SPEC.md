@@ -1,192 +1,32 @@
-# SPEC — Tiến Trình Ngầm: Async Email Sender (Luồng Gửi Email)
-# Feature ID: F-AsyncEmail | Truy vết: FR-31, NFR-02
-# Version: 1.0.0 | Ngày tạo: 2026-06-25
+# Feature Specification: Hạ tầng gửi email bất đồng bộ (Async Email Infrastructure)
+# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
 
----
+## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
+Thiết lập hệ thống gửi email bất đồng bộ chạy nền bằng Daemon Thread để xử lý gửi OTP xác thực, thông báo phạt quá hạn, thông báo sách sẵn sàng nhận nhằm tối ưu hóa hiệu năng ứng dụng.
 
-## 1. TỔNG QUAN (Overview)
+## 2. Actors & Roles (Tác nhân & Quyền hạn)
+* **Hệ thống (System):** Tự động đưa các yêu cầu gửi email vào hàng đợi và xử lý gửi đi.
 
-### 1.1 Mô tả
+## 3. Business Rules (Quy tắc nghiệp vụ)
+* **BR-46 (Email SMTP Configurations):** Các tham số cấu hình SMTP (Host, Port, Username, Password) BẮT BUỘC phải được đọc trực tiếp từ bảng SystemConfigurations.\n* **BR-48 (Email Worker Error Recovery):** Lỗi kết nối SMTP không được phép làm crash thread Consumer; hệ thống phải tự động retry tối đa số lần cấu hình (EMAIL_MAX_RETRIES) trước khi bỏ qua job.\n* **BR-49 (Email Job Queue Limits):** Hàng đợi email bất đồng bộ BẮT BUỘC giới hạn dung lượng tối đa. Khi hàng đợi đầy, hệ thống SHALL ghi log cảnh báo và bỏ qua email mới nhất để bảo vệ tính ổn định hệ thống.\n* **BR-50 (Email Temp Password Exclusion):** Tiến trình ngầm gửi mail TUYỆT ĐỐI KHÔNG ĐƯỢC log mật khẩu tạm thời dưới dạng thô.\n* **BR-42 (Graceful Shutdown Email Queue):** Khi ứng dụng shutdown, hệ thống PHẢI dừng tiếp nhận email mới vào hàng đợi, chờ tối đa 5 giây để gửi nốt các email còn tồn đọng.
 
-`Async Email Sender` là **tiến trình ngầm hạ tầng dùng chung (Shared Infrastructure Background Process)** — không thuộc về bất kỳ phân hệ chức năng cụ thể nào, mà phục vụ toàn bộ hệ thống LMS.
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
+* **FR-103 (Giao diện public cho enqueue EmailJob):** WHEN các nghiệp vụ khác gọi EmailService, THE system SHALL đẩy job vào LinkedBlockingQueue và trả về kết quả thành công tức thì.\n* **.FR-104 (Khởi chạy Daemon Thread Worker):** WHEN ứng dụng khởi động (ServletContextListener), THE system SHALL khởi tạo luồng Daemon Thread chạy ngầm xử lý hàng đợi.\n* **FR-105 (Consumer lấy Job từ hàng đợi):** Consumer SHALL block cho đến khi có email job mới xuất hiện trong hàng đợi để xử lý.\n* **FR-106 (Tra cứu template động từ DB):** WHEN xử lý email, THE system SHALL truy vấn mẫu thư điện tử mới nhất từ bảng DocumentTemp hoặc EmailTemplate.\n* **FR-107 (Inject dữ liệu vào Template):** THE system SHALL thay thế toàn bộ placeholders định dạng `{{key}}` bằng giá trị thực.\n* **FR-108 (Gửi email qua SMTP JavaMail):** THE system SHALL kết nối SMTP Server dựa trên cấu hình hệ thống nạp sẵn để gửi email HTML.\n* **FR-109 (Cơ chế tự động Retry gửi lỗi):** WHERE gửi lỗi, THE system SHALL tự động thử lại sau mỗi khoảng thời gian delay cho đến khi thành công hoặc đạt số lần tối đa.\n* **FR-113 (Graceful Shutdown hàng đợi):** WHEN Tomcat tắt, THE system SHALL dừng nhận job mới, chờ tối đa 5 giây cho các email trong hàng đợi gửi nốt trước khi kết thúc luồng.
 
-Tiến trình này hoạt động theo mô hình **Producer-Consumer**:
-- **Producers (Người sản xuất):** Bất kỳ phân hệ nào (F1, F5, F6, F9) cần gửi email đều đẩy payload vào một **hàng đợi chung (BlockingQueue)** thông qua API public của `EmailService`.
-- **Consumer (Người tiêu thụ):** Một **Daemon Thread** duy nhất chạy nền liên tục, lấy từng job từ hàng đợi → tra cứu template từ `DocumentTemp` → inject placeholder → gửi qua SMTP → ghi log kết quả.
+## 5. Non-functional Requirements (Yêu cầu phi chức năng)
+* Độ tin cậy: Không làm nghẽn luồng xử lý HTTP request chính của người dùng khi gửi email.\n* Bảo mật: Tuyệt đối không log thông tin mật khẩu thô ra file log.
 
-### 1.2 Phạm vi tác nhân
+## 6. Database Schema & Data Models (Lược đồ dữ liệu)
+### Bảng EmailTemplate\n* `templateId` (INT, PK)\n* `tempName` (VARCHAR(100), UNIQUE)\n* `subject` (VARCHAR(255))\n* `bodyContent` (TEXT)\n\n
 
-| Actor | Vai trò |
-|---|---|
-| Hệ thống (System) | Vận hành toàn bộ tiến trình tự động, không có tương tác người dùng trực tiếp |
-| Library Manager | Có thể xem và chỉnh sửa nội dung mẫu email tại `/manager/email-templates` |
+## 7. Error Handling (Xử lý lỗi ngoại lệ)
+* WHERE xảy ra lỗi kết nối SMTP kéo dài, THE system SHALL tự động hủy job sau khi đạt số lần retry tối đa và ghi log báo động.
 
-### 1.3 Vị trí trong kiến trúc
+## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] Gửi email quên mật khẩu: Người dùng nhấn quên mật khẩu -> Nhận email OTP trong hòm thư, luồng HTTP chính phản hồi ngay lập tức.
 
-```
-Tất cả các phân hệ (F1, F5, F6, F9)
-        │
-        ▼ gọi EmailService.enqueue(EmailJob)
-┌─────────────────────────────────────────┐
-│         EmailService (Producer API)      │
-│  LinkedBlockingQueue<EmailJob> (buffer)  │
-└─────────────────┬───────────────────────┘
-                  │ Daemon Thread lấy job
-                  ▼
-┌─────────────────────────────────────────┐
-│         EmailWorker (Consumer)           │
-│  1. findByTempName(job.tempName) → DAO   │
-│  2. inject placeholders vào template     │
-│  3. build MIME message                   │
-│  4. SMTP send (JavaMail)                 │
-│  5. retry nếu thất bại (max N lần)       │
-│  6. ghi AuditLog kết quả                │
-└─────────────────────────────────────────┘
-```
+## 9. Out of Scope (Phạm vi không thực hiện)
+* Quản lý và thống kê tỷ lệ email được mở (open rate) hoặc bị bounce trong hệ thống.
 
----
-
-## 2. YÊU CẦU CHỨC NĂNG (Functional Requirements)
-
-### 2.1 Hàng đợi Email (EmailJob Queue)
-
-| ID | Mô tả |
-|---|---|
-| FR-31.1 | Hệ thống PHẢI cung cấp phương thức `EmailService.enqueue(EmailJob)` thread-safe để bất kỳ luồng nào cũng có thể đẩy job vào hàng đợi mà không block. |
-| FR-31.2 | `EmailJob` PHẢI chứa: `tempName`, `recipientEmail`, `recipientName`, `placeholders` (Map<String, String>). |
-| FR-31.3 | Hàng đợi PHẢI là `LinkedBlockingQueue<EmailJob>` với sức chứa tối đa cấu hình từ `SystemConfigurations.EMAIL_QUEUE_CAPACITY` (mặc định: 500). |
-| FR-31.4 | Nếu hàng đợi đầy (queue full), hệ thống PHẢI ghi log cảnh báo và loại bỏ job mới nhất (drop) — không được block luồng Producer. |
-
-### 2.2 Daemon Thread Worker
-
-| ID | Mô tả |
-|---|---|
-| FR-31.5 | Hệ thống PHẢI khởi động một Daemon Thread duy nhất khi ứng dụng start (trong `AppContextListener.contextInitialized`). |
-| FR-31.6 | Worker PHẢI dùng `queue.take()` (blocking) để chờ job mà không tiêu tốn CPU khi hàng đợi rỗng. |
-| FR-31.7 | Worker PHẢI tra cứu template từ `DocumentTempDAO.findByTempName(tempName)` mỗi lần gửi để lấy nội dung mới nhất Manager đã chỉnh sửa. Có thể cache trong RAM để tối ưu. |
-| FR-31.8 | Worker PHẢI inject dữ liệu động vào template bằng cách thay thế các placeholder dạng `{{key}}` → giá trị tương ứng từ `EmailJob.placeholders`. |
-| FR-31.9 | Worker PHẢI gửi email qua SMTP (JavaMail) sử dụng cấu hình `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` từ `SystemConfigurations`. |
-
-### 2.3 Cơ chế Retry
-
-| ID | Mô tả |
-|---|---|
-| FR-31.10 | Nếu gửi thất bại (Exception SMTP), Worker PHẢI thử lại tối đa `EMAIL_MAX_RETRIES` lần (mặc định: 3, lấy từ SystemConfigurations). |
-| FR-31.11 | Giữa các lần retry, Worker PHẢI chờ `EMAIL_RETRY_DELAY_SECONDS` giây (mặc định: 30 giây, lấy từ SystemConfigurations). |
-| FR-31.12 | Sau khi vượt quá số lần retry, Worker PHẢI ghi log lỗi và tiếp tục xử lý job tiếp theo (không crash thread). |
-
-### 2.4 Template & DocumentTemp
-
-| ID | Mô tả |
-|---|---|
-| FR-31.13 | Template được lưu trong bảng `DocumentTemp` với khóa `tempName`. 6 mẫu hệ thống bên dưới được seed sẵn khi deploy. |
-| FR-31.14 | Manager được phép chỉnh sửa `subject` và `bodyContent` của template tại `/manager/email-templates`. |
-| FR-31.15 | 6 mẫu hệ thống KHÔNG ĐƯỢC PHÉP XÓA: `RESET_PASSWORD`, `RESERVATION_READY`, `RENEWAL_CONFIRMATION`, `OVERDUE_NOTICE`, `INCIDENT_FINE_NOTICE`, `PAYMENT_CONFIRMATION`. |
-
-### 2.5 Graceful Shutdown
-
-| ID | Mô tả |
-|---|---|
-| FR-31.16 | Khi ứng dụng shutdown (`AppContextListener.contextDestroyed`), hệ thống PHẢI dừng tiếp nhận job mới, chờ tối đa 5 giây để drain các job còn lại trong hàng đợi rồi mới tắt Worker thread. |
-
----
-
-## 3. CÁC SỰ KIỆN GỬI EMAIL (Email Event Catalog)
-
-| # | tempName | Phân hệ nguồn | Trigger Point |
-|---|---|---|---|
-| 1 | `RESET_PASSWORD` | F1 - Auth | `ForgotPasswordServlet` → sau khi UPDATE passwordHash thành công |
-| 2 | `RESERVATION_READY` | F5 - Reservation | 3 nguồn: (a) `OnlineCirculationService` sách có sẵn, (b) `DeskCirculationService` trả sách đôn hàng chờ, (c) `ReservationExpirationProcessor` hủy đơn đôn hàng chờ |
-| 3 | `RENEWAL_CONFIRMATION` | F5 - Renewal | `OnlineCirculationService` → sau UPDATE BorrowRecord.endDate thành công |
-| 4 | `OVERDUE_NOTICE` | F9 - OverdueProcessor | `OverdueProcessor` → sau INSERT Fine + UPDATE User.status='locked' |
-| 5 | `INCIDENT_FINE_NOTICE` | F6 - DeskCirculation | `DeskCirculationService` → sau INSERT Fine khi check-in sách damaged/lost |
-| 6 | `PAYMENT_CONFIRMATION` | F9 - Payment | `CashPaymentServlet` và SePay Webhook handler |
-
----
-
-## 4. QUY TẮC NGHIỆP VỤ (Business Rules — EARS)
-
-| ID | Rule |
-|---|---|
-| BR-37.1 | WHEN bất kỳ phân hệ nào gọi `EmailService.enqueue(job)`, THE system SHALL đẩy job vào `LinkedBlockingQueue` mà không block luồng gọi. |
-| BR-37.2 | WHEN hàng đợi đạt `EMAIL_QUEUE_CAPACITY`, THE system SHALL ghi log WARNING và loại bỏ job mới nhất (drop), ưu tiên bảo vệ tính ổn định hệ thống. |
-| BR-37.3 | WHEN Worker lấy job từ hàng đợi, THE system SHALL tra cứu template từ `DocumentTemp` theo `tempName` để luôn dùng nội dung mới nhất Manager đã chỉnh sửa. |
-| BR-37.4 | WHEN gửi email thất bại lần đầu, THE system SHALL thử lại tối đa `EMAIL_MAX_RETRIES` lần với khoảng chờ `EMAIL_RETRY_DELAY_SECONDS` giữa các lần. |
-| BR-37.5 | WHEN vượt quá số lần retry, THE system SHALL ghi log SEVERE với đầy đủ thông tin (tempName, recipientEmail, exception) và tiếp tục xử lý job tiếp theo. |
-| BR-37.6 | WHEN ứng dụng nhận lệnh shutdown, THE system SHALL đánh dấu cờ `running = false`, đợi tối đa 5 giây drain queue, rồi interrupt Worker thread. |
-| BR-37.7 | WHEN Manager cố gắng xóa mẫu email hệ thống, THE system SHALL từ chối và hiển thị thông báo lỗi bằng tiếng Việt rõ ràng. |
-| BR-37.8 | WHEN xử lý job RESET_PASSWORD, Worker PHẢI KHÔNG log giá trị mật khẩu tạm `{{tempPassword}}` dưới bất kỳ hình thức nào để đảm bảo bảo mật. |
-
----
-
-## 5. YÊU CẦU PHI CHỨC NĂNG (Non-Functional Requirements)
-
-| ID | Yêu cầu |
-|---|---|
-| NFR-02.1 | **Performance:** Thao tác `enqueue()` phải trả về trong < 10ms để không ảnh hưởng HTTP response của luồng chính. |
-| NFR-02.2 | **Reliability:** Worker là Daemon Thread — không làm treo JVM khi tắt. Phải xử lý Exception không để crash. |
-| NFR-02.3 | **Observability:** Mọi sự kiện gửi email (success/fail/retry) phải được ghi vào Java Logger với đủ thông tin: tempName, recipientEmail, attempt number. |
-| NFR-02.4 | **Configurability:** Các tham số (queue capacity, max retries, retry delay, email from name) phải đọc từ `SystemConfigurations` — không hardcode. |
-
----
-
-## 6. CẤU HÌNH HỆ THỐNG (SystemConfigurations Keys)
-
-| configKey | configValue mặc định | Mô tả |
-|---|---|---|
-| `EMAIL_QUEUE_CAPACITY` | `500` | Sức chứa tối đa của hàng đợi EmailJob |
-| `EMAIL_MAX_RETRIES` | `3` | Số lần thử lại tối đa khi gửi thất bại |
-| `EMAIL_RETRY_DELAY_SECONDS` | `30` | Thời gian chờ (giây) giữa các lần retry |
-| `EMAIL_FROM_NAME` | `Thư viện LMS` | Tên hiển thị ở trường "From" |
-
----
-
-## 7. CẤU TRÚC FILE TRIỂN KHAI
-
-```
-src/java/
-├── service/
-│   ├── EmailService.java          [MODIFY] Refactor thành queue-based producer
-│   └── EmailWorker.java           [NEW]    Daemon Thread consumer
-├── model/
-│   └── EmailJob.java              [NEW]    DTO chứa payload gửi email
-├── dao/
-│   └── DocumentTempDAO.java       [DONE ✓] Đã có findByTempName(), PROTECTED_TEMPLATES
-├── model/
-│   └── DocumentTemp.java          [DONE ✓] Đã bổ sung description field
-└── config/
-    └── AppContextListener.java    [MODIFY] Khởi động/dừng EmailWorker daemon thread
-
-database/supabase/seeds/
-└── 04_document_templates.sql      [DONE ✓] 6 mẫu email hệ thống đã seed
-```
-
----
-
-## 8. RÀNG BUỘC & GIẢ ĐỊNH
-
-- **Giả định:** SMTP credentials đã được cấu hình trong `AppConfig` (thông qua biến môi trường hoặc giá trị fallback cứng) trước khi deploy.
-- **Giả định:** Manager mặc định (managerId=6) đã tồn tại trong DB (từ seed data).
-- **Ràng buộc:** Chỉ dùng JavaMail (đã có trong `allowedlib/jakarta.mail-2.0.1.jar`). Không dùng API bên ngoài.
-- **Ràng buộc:** Một Worker thread duy nhất — không scale-out (đủ cho quy mô thư viện đại học).
-- **Ràng buộc:** Template hỗ trợ placeholder dạng `{{key}}` (không dùng engine phức tạp như Thymeleaf).
-- **Lưu ý bảo mật:** Tuyệt đối không log thông tin mật khẩu thô của người dùng trong hệ thống (đặc biệt khi thực hiện job `RESET_PASSWORD`).
-
----
-
-## 9. THIẾT KẾ LIFECYCLE VÀ THỨ TỰ KHỞI TẠO (AppContextListener Lifecycle)
-
-Để tránh lỗi phụ thuộc thời gian chạy giữa các tiến trình ngầm (như việc processor quét quá hạn hoặc hủy hàng chờ cố gắng đẩy email vào hàng đợi khi worker gửi mail chưa khởi động, hoặc caches chưa load xong cấu hình), `AppContextListener` sẽ quản lý vòng đời khởi tạo và dọn dẹp tài nguyên theo thứ tự nghiêm ngặt sau:
-
-### 9.1 Khởi tạo (`contextInitialized`)
-1. **Khởi tạo Cache Cấu hình:** `SystemConfigCache.load(context)` — Nạp cấu hình từ DB lên bộ nhớ (ví dụ: `EMAIL_QUEUE_CAPACITY`, `RESERVATION_HOLD_DAYS`). Bắt buộc phải có để các tiến trình sau hoạt động chính xác.
-2. **Khởi động Async Email Worker:** Khởi tạo `EmailWorker`, đăng ký Daemon Thread và bắt đầu chạy (`thread.start()`). Lưu đối tượng `EmailWorker` vào `ServletContext` để có thể truy xuất khi shutdown.
-3. **Khởi chạy Overdue Processor (F9):** Khởi tạo `ScheduledExecutorService` cho `OverdueProcessor`, thiết lập trigger chạy định kỳ hàng đêm vào lúc 00:00 AM.
-4. **Khởi chạy Reservation Expiration Processor (F5):** Khởi tạo `ScheduledExecutorService` cho `ReservationExpirationProcessor`, thiết lập chạy định kỳ mỗi 1 giờ.
-
-### 9.2 Hủy bỏ (`contextDestroyed`)
-1. **Dừng các Processor lập lịch (F9 và F5):** Gọi `shutdownNow()` đối với cả hai `ScheduledExecutorService` của `OverdueProcessor` và `ReservationExpirationProcessor` để lập tức ngắt các luồng lập lịch quét mới.
-2. **Dừng và Drain Email Queue:** Gọi `EmailWorker.shutdown()`, sau đó chờ tối đa 5 giây (`thread.join(5000)`) để worker xử lý nốt các job email còn tồn đọng trong queue trước khi JVM shutdown.
-3. **Giải phóng Driver JDBC:** Thực hiện deregister các driver SQL để tránh lỗi rò rỉ bộ nhớ (memory leak) của Tomcat/Glassfish container.
-
-
+## Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.

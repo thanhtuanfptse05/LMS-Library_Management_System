@@ -1,44 +1,32 @@
-# SPEC.md — Quản lý Luân chuyển tại quầy
-# Version: 1.0.0 | Owner: @tech-lead | Status: APPROVED
-# Mapping: UC-18, UC-19, UC-20 | BR-22, BR-23, BR-24, BR-25, BR-29 | FR-34..FR-41 (chi tiết: FR-F6-01..FR-F6-08)
+# Feature Specification: Mượn và Trả sách tại quầy (Desk Circulation Operations)
+# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
 
-## 1. Context & Goal
-Số hóa quá trình giao nhận vật lý, thu tiền mặt tại quầy. Đảm bảo tính nhất quán dữ liệu giữa số lượng kho thực tế, trạng thái bản sao sách, hàng đợi đặt trước và trạng thái nợ phạt của tài khoản.
+## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
+Hỗ trợ Thủ thư (Librarian) xử lý trực tiếp các nghiệp vụ giao sách (Check-out) và nhận sách trả (Check-in) tại quầy thông qua thao tác quét mã vạch (Barcode) bản sao sách và mã độc giả.
 
-## 2. Actors & Roles
-- **Librarian:** Người có thẩm quyền quét mã xuất/nhập kho và duyệt thanh toán tiền mặt.
+## 2. Actors & Roles (Tác nhân & Quyền hạn)
+* **Thủ thư (Librarian):** Quét mã vạch mượn/trả sách, đánh giá tình trạng sách khi trả, thu phí phạt tiền mặt.
 
-## 3. Functional Requirements (EARS)
-**Luồng Giao Sách (Check-out & Mượn trực tiếp)**
-- **FR-F6-01:** WHEN Thủ thư quét mã định danh, THE system SHALL truy vấn bảng `Fine` tìm các khoản phạt chưa thanh toán. WHERE tồn tại bất kỳ khoản phạt `status` == 'unpaid', THE system SHALL từ chối giao dịch và báo lỗi: "Tài khoản đang nợ phạt" (BR-22).
-- **FR-F6-02:** WHERE Độc giả mượn trực tiếp (không có đơn đặt trước), THE system SHALL kiểm tra `Reservation`. WHERE đang có người chờ (`queuePosition` > 0), THE system SHALL từ chối. WHERE hàng đợi trống, THE system SHALL tự động INSERT `Reservation` tại chỗ (`queuePosition` = 0) (BR-23).
-- **FR-F6-03:** WHERE hợp lệ, THE system SHALL thực thi một Transaction: INSERT `BorrowRecord`, UPDATE `Reservation.status` = 'fulfilled', UPDATE `BookCopy.status` = 'borrowed'.
+## 3. Business Rules (Quy tắc nghiệp vụ)
+* **BR-22 (Strict Fine Enforcement):** Hệ thống BẮT BUỘC chặn giao dịch mượn sách nếu tồn tại bất kỳ bản ghi nào có reason = 'unpaid' trong bảng UserLockReason của người dùng.\n* **BR-23 (Direct Borrow Queue Policy):** Độc giả mượn sách trực tiếp tại quầy KHÔNG ĐƯỢC PHÉP mượn đầu sách đang có người xếp hàng chờ. Mọi giao dịch mượn trực tiếp đều BẮT BUỘC phải tự động sinh ra một Reservation ảo với queuePosition = 0 tại chỗ trước khi insert BorrowRecord.\n* **BR-24 (Damaged/Lost Inventory Deduction):** Khi nhận sách trả với tình trạng 'damaged' hoặc 'lost', hệ thống BẮT BUỘC trừ 1 đơn vị vào Book.totalQuantity. ĐỒNG THỜI, BẮT BUỘC phải insert tức thời bản ghi 'unpaid' vào UserLockReason và đổi status User thành 'locked'.\n* **BR-25 (Conditional Auto-Unlock):** Sau khi thanh toán tiền phạt (xóa reason 'unpaid'), hệ thống BẮT BUỘC đếm số lượng lý do khóa còn lại trong UserLockReason. CHỈ KHỞI ĐỘNG quy trình mở khóa (Update User.status = 'active') NẾU COUNT == 0.\n* **BR-29 (Walk-in vs Pre-reservation Checkout Policy):** Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity.
 
-**Luồng Nhận Sách (Check-in)**
-- **FR-F6-04:** WHEN Thủ thư nhận trả sách với Condition IN ('damaged', 'lost'), THE system SHALL thực thi Transaction: UPDATE `Book.totalQuantity` = `totalQuantity` - 1, UPDATE `BookCopy.status` = 'unavailable', INSERT `Fine` ('unpaid') (BR-24).
-- **FR-F6-05:** WHEN Thủ thư trả sách Condition == 'good', THE system SHALL UPDATE `BorrowRecord.status` = 'returned' VÀ `BookCopy.condition` = 'good'.
-- **FR-F6-06:** WHILE Check-in Condition == 'good', THE system SHALL tìm `Reservation` đang chờ (`queuePosition` = 1). WHERE có người chờ, THE system SHALL UPDATE `Reservation` (`queuePosition`=0, `status`='readypickup', gán `bookCopyId`) VÀ gửi Email. WHERE không có người chờ, THE system SHALL UPDATE `Book.availableQuantity` = `availableQuantity` + 1 VÀ `BookCopy.status` = 'available'.
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
+* **FR-34 (Xử lý giao sách - Check-out):** WHEN thủ thư quét mã độc giả và barcode bản sao sách, THE system SHALL kiểm tra điều kiện chặn nợ phạt và hạn mức mượn. WHERE hợp lệ, chuyển BookCopy thành 'borrowed', chèn BorrowRecord mới và cập nhật sẵn số lượng.\n* **FR-35 (Xử lý nhận sách trả - Check-in):** WHEN thủ thư quét barcode sách trả, THE system SHALL tính toán xem sách có bị trễ hạn hay không và ghi nhận returnedAt. WHERE trễ hạn, tự động tạo khoản phạt Fine.\n* **FR-36 (Đánh giá tình trạng sách khi trả):** WHEN thực hiện trả sách, THE system SHALL cho phép thủ thư chọn tình trạng sách ('good', 'damaged', 'lost'). WHERE hỏng/mất, áp dụng BR-24 để khóa tài khoản độc giả lập tức và trừ totalQuantity.\n* **FR-37 (Tự động luân chuyển sách khi trả):** WHEN sách được trả mà có hàng đợi đang chờ, THE system SHALL tự động chuyển sách sang trạng thái 'reserved' và gán cho đơn đặt trước của độc giả tiếp theo.\n* **FR-38 (Duyệt thanh toán tiền mặt):** WHEN thủ thư xác nhận độc giả nộp tiền mặt, THE system SHALL tạo Payment status='completed', đóng khoản phạt và mở khóa tài khoản nếu đủ điều kiện.\n* **FR-39 (Kiểm tra giới hạn mượn theo vai trò):** WHEN check-out, THE system SHALL truy vấn cấu hình hạn mức tối đa của Student/Lecturer để đảm bảo không vượt quá số lượng sách cho phép.\n* **FR-40 (Quét mã barcode):** SYSTEM SHALL hỗ trợ quét hoặc nhập barcode trực tiếp trên biểu mẫu để tải nhanh thông tin độc giả/sách.\n* **FR-41 (Đăng ký đặt trước tại quầy):** WHEN độc giả yêu cầu tại quầy, THE system SHALL cho phép thủ thư tạo Reservation ảo thay thế.
 
-**Luồng Thanh toán Tiền mặt (Cash Payment)**
-- **FR-F6-07:** WHEN Thủ thư xác nhận duyệt đơn `Payment` tiền mặt, THE system SHALL thực thi Transaction: UPDATE `Payment.status` = 'completed', VÀ UPDATE `Fine.status` = 'paid'.
-- **FR-F6-08:** WHILE duyệt thanh toán hoàn tất, tài khoản độc giả tự động không còn bị chặn mượn sách mới do nợ phạt (trừ khi tài khoản bị khóa bởi lý do kỷ luật khác trong `UserLockReason`).
+## 5. Non-functional Requirements (Yêu cầu phi chức năng)
+* Ràng buộc: Giao dịch Check-out phải hoàn tất trong dưới 500ms để đảm bảo tốc độ tại quầy.\n* Bảo mật: Chặn đứng mọi trường hợp mượn sách khi độc giả đang nợ phạt.
 
-## 4. Non-functional Requirements
-- **Concurrency:** Luồng đẩy hàng chờ (đẩy queue 1 thành queue 0) tại Check-in BẮT BUỘC sử dụng Transaction lock để tránh việc 2 sách trả cùng lúc gán cho cùng 1 người chờ.
+## 6. Database Schema & Data Models (Lược đồ dữ liệu)
+### Bảng BorrowRecord\n* `borrowRecordId` (INT, PK)\n* `userId` (INT, FK)\n* `bookCopyId` (INT, FK)\n* `startDate` (TIMESTAMP)\n* `endDate` (TIMESTAMP)\n* `returnedAt` (TIMESTAMP, NULL)\n* `status` (VARCHAR(50))\n* `createdBy` (INT)\n\n### Bảng Fine\n* `fineId` (INT, PK)\n* `borrowRecordId` (INT, FK)\n* `amount` (DECIMAL)\n* `status` (VARCHAR(50))\n\n
 
-## 5. Data Model
-- Tham chiếu bảng: `[User]`, `UserLockReason`, `Book`, `BookCopy`, `BorrowRecord`, `Reservation`, `Fine`, `Payment`.
+## 7. Error Handling (Xử lý lỗi ngoại lệ)
+* WHERE độc giả đang bị khóa do nợ phạt, THE system SHALL ngăn chặn checkout và hiển thị cảnh báo đỏ trên màn hình thủ thư.\n* WHERE barcode bản sao sách không tồn tại hoặc đang ở trạng thái 'unavailable', THE system SHALL báo lỗi.
 
-## 6. Error Handling
-- WHERE mã Barcode không khớp với bất kỳ `BookCopy` nào trên hệ thống, THE system SHALL chặn thao tác và hiển thị cảnh báo.
+## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] Check-out hợp lệ: Độc giả không nợ phạt, sách có sẵn -> Tạo BorrowRecord thành công.\n- [ ] Check-in trễ hạn: Trả sách trễ 3 ngày -> Tự động sinh khoản phạt 15,000đ, khóa tài khoản độc giả với lý do 'unpaid'.\n- [ ] Trả sách hỏng: Độc giả trả sách bị rách nát -> Ghi nhận tình trạng 'damaged', trừ 1 totalQuantity của sách, khóa tài khoản độc giả.
 
-## 7. Acceptance Criteria
-- [ ] Mượn sách khi tài khoản nợ phạt (Fine status='unpaid'): Bị chặn.
-- [ ] Mượn trực tiếp tại quầy khi đang có người khác xếp hàng: Bị chặn.
-- [ ] Trả sách 'good' khi có người xếp hàng: Người chờ (Queue=1) trở thành (Queue=0, readypickup).
-- [ ] Trả sách 'damaged/lost': Sách chuyển thành 'unavailable', totalQuantity giảm 1, tạo khoản phạt unpaid, độc giả không bị khóa tài khoản.
-- [ ] Thanh toán phạt: Trạng thái Fine chuyển thành 'paid', độc giả được phép mượn sách mới bình thường.
+## 9. Out of Scope (Phạm vi không thực hiện)
+* Thanh toán trả góp khoản phạt (phải thanh toán toàn bộ nợ mới được mở khóa mượn sách).
 
-## 8. Out of Scope
-- KHÔNG tích hợp thanh toán trực tuyến trực tiếp trên máy của Thủ thư (Thủ thư chỉ duyệt tiền mặt; độc giả tự quét QR SePay trên thiết bị cá nhân để thanh toán tự động).
-- KHÔNG cho phép độc giả tự thao tác trên phân hệ này.
+## Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.

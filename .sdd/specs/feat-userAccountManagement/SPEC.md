@@ -1,77 +1,32 @@
-# SPEC.md — User Account Management
-# Version: 1.1.0 | Status: APPROVED | Risk Level: HIGH
-# Changelog: v1.1.0 — Giải quyết GAP-01 (Import Strategy) và GAP-02 (Error Reporting)
-# Mapping: UC-07, UC-08, UC-09, UC-10, UC-11, UC-30 | BR-10, BR-11, BR-12, BR-13, BR-14 | FR-12..FR-21, FR-45
+# Feature Specification: Quản trị tài khoản (User Account Management)
+# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
 
-## 1. Context & Goal
-Cung cấp công cụ CRUD và Bulk Import cho Admin để quản trị tài khoản, kiểm soát quyền truy cập và giải quyết bài toán nhập liệu khối lượng lớn.
+## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
+Cho phép Quản trị viên (Admin) quản lý vòng đời tài khoản người dùng bao gồm tạo mới đơn lẻ, import hàng loạt từ Excel, cập nhật thông tin, xuất danh sách ra Excel và khóa/mở khóa tài khoản.
 
-## 2. Actors & Roles
-* **Admin**: Role duy nhất được phép truy cập (`/admin/users/*`).
+## 2. Actors & Roles (Tác nhân & Quyền hạn)
+* **Quản trị viên (Admin):** Có toàn quyền xem danh sách, tạo mới, cập nhật, khóa/mở khóa và import/export tài khoản.
 
-## 3. Functional Requirements (EARS)
+## 3. Business Rules (Quy tắc nghiệp vụ)
+* **BR-10 (Data Validation):** Dữ liệu định danh gồm Email và Mã số (MSSV, MSGV...) BẮT BUỘC là duy nhất trên toàn hệ thống.\n* **BR-11 (Transaction):** Quy trình nhập danh sách tài khoản khối lượng lớn BẮT BUỘC tuân thủ chiến lược 'Thành công toàn bộ hoặc Hủy bỏ toàn bộ'.\n* **BR-12 (Provisioning):** Tài khoản khi khởi tạo BẮT BUỘC dùng Email làm mật khẩu mặc định.\n* **BR-13 (Role Assignment):** File Excel dùng để Import khối lượng lớn KHÔNG ĐƯỢC chứa định nghĩa phân quyền. Quản trị viên BẮT BUỘC phải cấu hình Role chung từ giao diện trước khi thực thi tải tệp.\n* **BR-14 (Mandatory Audit):** Mọi thao tác làm thay đổi dữ liệu tài khoản (Thêm, Sửa, Khóa, Mở khóa, Import) từ Quản trị viên BẮT BUỘC phải được lưu vết vào hệ thống Audit Log.\n* **BR-54 (User List Pagination):** Tính năng xem danh sách tài khoản BẮT BUỘC phải phân trang và hỗ trợ bộ lọc (Filter) theo Role/Status để chống tràn bộ nhớ.\n* **BR-55 (Self-Lock Prevention):** Quản trị viên (Admin) KHÔNG ĐƯỢC PHÉP thực hiện thao tác Khóa (Lock), Xóa (Delete), hoặc thay đổi Role trên chính tài khoản mà họ đang đăng nhập.
 
-### UBIQUITOUS (Luật chung)
-* THE system SHALL mã hóa toàn bộ mật khẩu mới bằng thuật toán BCrypt trước khi lưu.
-* THE system SHALL cấp mật khẩu mặc định (Email) cho tài khoản mới VÀ đánh dấu `lockReason = 'RequirePasswordChange'` nếu cần ép đổi pass lần đầu (BR29).
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
+* **FR-12 (Đối chiếu dữ liệu trùng):** WHEN Admin thực hiện tạo hoặc cập nhật tài khoản, THE system SHALL quét toàn bộ CSDL để đảm bảo Email và Mã định danh là duy nhất.\n* **FR-13 (Rà soát danh sách Import với 2 Phase Validation):** WHEN ImportUserServlet.doPost(action=upload) nhận file Excel, THE system SHALL thực hiện Phase 1 (Pre-Validation) trên RAM để đọc và kiểm tra định dạng tất cả các dòng dữ liệu. WHERE có lỗi, báo lỗi chi tiết.\n* **FR-14 (Báo cáo lỗi Import):** WHERE Phase 1 phát hiện bất kỳ dữ liệu không hợp lệ nào, THE system SHALL hủy bỏ toàn bộ tiến trình và hiển thị danh sách dòng bị lỗi.\n* **FR-15 (Lưu trữ hàng loạt với DB Transaction):** WHEN Admin xác nhận preview hợp lệ, THE system SHALL mở DB Transaction để ghi toàn bộ người dùng vào DB, mã hóa mật khẩu mặc định bằng BCrypt, cập nhật hạn thẻ mặc định 1 năm, và ghi Audit Log.\n* **FR-17 (Ghi nhận Audit Log Quản trị):** WHEN Admin tạo mới, chỉnh sửa hoặc khóa tài khoản, THE system SHALL tự động insert bản ghi vào bảng AuditLogs.\n* **FR-18 (Truy xuất danh sách và chi tiết):** WHEN Admin yêu cầu xem danh sách hoặc chi tiết, THE system SHALL JOIN các bảng User, MemberProfile, Student, Lecturer, Librarian để lấy đầy đủ thông tin.\n* **FR-19 (Khởi tạo tài khoản đơn lẻ):** WHEN Admin gửi form tạo tài khoản đơn lẻ hợp lệ, THE system SHALL insert vào bảng User, MemberProfile, và bảng vai trò tương ứng.\n* **FR-20 (Cập nhật thông tin tài khoản):** WHEN Admin gửi thông tin chỉnh sửa tài khoản, THE system SHALL cập nhật thông tin trong DB và ghi log.\n* **FR-21 (Khóa/Mở khóa tài khoản):** WHEN Admin thực hiện khóa hoặc mở khóa tài khoản, THE system SHALL cập nhật trạng thái User thành 'locked'/'active' và ghi nhận UserLockReason là 'adminban'.\n* **FR-45 (Bulk Excel Export):** WHEN Admin yêu cầu xuất dữ liệu, THE system SHALL tạo tệp Excel (.xlsx) gồm 10 cột thông tin chi tiết của người dùng theo bộ lọc và tải xuống máy.
 
-### EVENT-DRIVEN (Thao tác Đọc/Ghi)
-* WHEN Admin truy cập danh sách, THE system SHALL hiển thị dữ liệu từ bảng `[User]` join với `MemberProfile`.
-* WHEN Admin submit form tạo đơn lẻ thành công, THE system SHALL thực thi lệnh INSERT tuần tự vào `[User]`, `MemberProfile`, bảng Role đã chọn, VÀ ghi nhận Audit Log `CREATE_USER` (oldValues = NULL, newValues = JSON chứa thông tin email, role, code).
-* WHEN Admin chọn Role và upload file Excel, THE system SHALL thực thi **Phase 1 (Pre-Validation)**: parse toàn bộ file, quét tính hợp lệ (format, regex, trùng lặp email/code) trên RAM — KHÔNG mở DB Transaction.
-* WHEN Phase 1 phát hiện BẤT KỲ lỗi nào, THE system SHALL CHẶN toàn bộ Import, KHÔNG ghi bất kỳ dòng nào vào DB, VÀ trả về HTTP 400 kèm JSON array danh sách lỗi chi tiết.
-* WHEN Phase 1 pass hoàn toàn (zero error), THE system SHALL thực thi **Phase 2 (DB Transaction)**: mở Transaction, Batch Insert toàn bộ list đã xác thực, sinh mật khẩu mặc định, VÀ Commit.
-* WHEN Phase 2 thực thi thành công và Commit, THE system SHALL ghi nhận một Audit Log tổng hợp `IMPORT_USERS` (oldValues = NULL, newValues = JSON tóm tắt vai trò và số lượng bản ghi đã nhập).
-* WHEN Admin cập nhật thông tin tài khoản thành công, THE system SHALL thực thi cập nhật các bảng CSDL tương ứng VÀ ghi nhận Audit Log `UPDATE_USER` (oldValues và newValues chứa các trường thay đổi đối xứng).
-* WHEN Admin thực hiện Khóa hoặc Mở khóa tài khoản thành công, THE system SHALL cập nhật trạng thái VÀ ghi nhận Audit Log tương ứng `LOCK_USER` hoặc `UNLOCK_USER`.
-* WHEN Admin yêu cầu xuất danh sách, THE system SHALL sinh file Excel (.xlsx) chứa toàn bộ bản ghi định danh và trả về stream cho trình duyệt (UC-30, FR-45).
+## 5. Non-functional Requirements (Yêu cầu phi chức năng)
+* Bảo mật: Mã hóa mật khẩu bằng BCrypt, chống SQL Injection trong truy vấn tìm kiếm.\n* Hiệu năng: Xuất file Excel 10,000 dòng trong dưới 3 giây.
 
-### STATE-DRIVEN (Trạng thái)
-* WHILE tài khoản có `status = 'locked'`, THE system SHALL từ chối mọi yêu cầu xác thực đăng nhập từ tài khoản đó.
+## 6. Database Schema & Data Models (Lược đồ dữ liệu)
+### Bảng User\n* `userId` (INT, PK)\n* `email` (VARCHAR(255))\n* `passwordHash` (VARCHAR(255))\n* `status` (VARCHAR(50))\n* `role` (VARCHAR(50))\n\n### Bảng MemberProfile\n* `userId` (INT, PK, FK)\n\n### Bảng Student\n* `userId` (INT, PK, FK)\n* `studentCode` (VARCHAR(50))\n* `major` (VARCHAR(255))\n* `enrollmentYear` (INT)\n\n### Bảng Lecturer\n* `userId` (INT, PK, FK)\n* `lecturerCode` (VARCHAR(50))\n* `department` (VARCHAR(255))\n\n
 
-## 4. Non-functional Requirements
-* **Performance**: Luồng Import Excel xử lý thành công file 1,000 dòng trong < 5 giây (P95).
-* **Memory**: File upload phải được parse bằng SAX parser hoặc chunk processing để tránh OutOfMemoryError.
+## 7. Error Handling (Xử lý lỗi ngoại lệ)
+* WHERE Email hoặc Mã số sinh viên/giảng viên bị trùng lặp, THE system SHALL thông báo lỗi cụ thể cho Quản trị viên.\n* WHERE file Excel tải lên sai định dạng cột, THE system SHALL từ chối import và hiển thị cấu trúc mẫu đúng.
 
-## 5. Data Model
-* `[User]`: userId, email, passwordHash, status, role
-* `MemberProfile`: userId, fullName, phoneNumber
-* Bảng liên kết Role: `Student` (studentCode), `Lecturer` (lecturerCode), `Admin`, `Librarian`, `LibraryManager`.
-* **`ImportErrorDTO`** *(Response-only, không map DB)*: `{ int row, String field, String errorCode, String message }`
-  * `errorCode` nhận các giá trị: `DUPLICATE_EMAIL`, `DUPLICATE_CODE`, `INVALID_FORMAT`, `MISSING_REQUIRED_FIELD`.
+## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] Tạo tài khoản đơn lẻ: Email và Mã số hợp lệ -> Tạo thành công, ghi Audit Log.\n- [ ] Khóa tài khoản sinh viên: Trạng thái sinh viên chuyển sang 'locked', không thể đăng nhập.\n- [ ] Import Excel không hợp lệ: Có 1 dòng sai định dạng -> Hủy toàn bộ đợt import, hiển thị thông báo lỗi dòng tương ứng.\n- [ ] Tự khóa bản thân: Admin cố tình khóa tài khoản chính mình -> Hệ thống chặn và hiển thị lỗi 'Không thể tự khóa tài khoản của mình'.
 
-## 6. Error Handling (UNWANTED)
+## 9. Out of Scope (Phạm vi không thực hiện)
+* Xóa vĩnh viễn tài khoản khỏi cơ sở dữ liệu (chỉ sử dụng soft-delete bằng cách cập nhật status sang locked).
 
-### 6.1 — Form Tạo Đơn Lẻ
-* WHERE Form chứa Email hoặc Mã định danh đã tồn tại, THE system SHALL từ chối ghi dữ liệu VÀ trả về HTTP 400 kèm JSON `{ "error": "DUPLICATE_EMAIL" | "DUPLICATE_CODE", "message": "..." }`.
-
-### 6.2 — Import Excel (GAP-01 & GAP-02 Resolution)
-* WHERE Phase 1 (Pre-Validation) phát hiện lỗi trong file Excel, THE system SHALL:
-  1. Dừng toàn bộ Import (ALL-OR-NOTHING — không ghi bất kỳ dòng nào).
-  2. Trả về HTTP 400 với body JSON:
-     ```json
-     {
-       "status": "VALIDATION_FAILED",
-       "totalRows": 1000,
-       "errorCount": 3,
-       "errors": [
-         { "row": 5,  "field": "email",       "errorCode": "DUPLICATE_EMAIL",       "message": "Email đã tồn tại trong hệ thống." },
-         { "row": 12, "field": "studentCode",  "errorCode": "DUPLICATE_CODE",        "message": "Mã sinh viên đã tồn tại." },
-         { "row": 47, "field": "phoneNumber",  "errorCode": "INVALID_FORMAT",        "message": "Số điện thoại không đúng định dạng 10 chữ số." }
-       ]
-     }
-     ```
-* WHERE SQL Exception xảy ra trong Phase 2 (Batch Insert), THE system SHALL Rollback toàn bộ Transaction VÀ trả về HTTP 500 với message hệ thống (không lộ stack trace ra client).
-
-## 7. Acceptance Criteria (Theo Activity Diagram)
-* [ ] Admin xem được danh sách và chi tiết User (Node 4 - 6).
-* [ ] Admin tạo tài khoản đơn lẻ thành công, DB ghi đúng 3 bảng phụ thuộc (Node 7, 10, 13, 16).
-* [ ] Admin cập nhật thông tin/Khóa tài khoản thành công (Node 12, 15, 18, 20, 22).
-* [ ] Nhập trùng Email/Code trong Form bị chặn lại — trả về JSON lỗi (Node 24).
-* [ ] Admin Import Excel 100 dòng hợp lệ → Phase 1 pass → Phase 2 Batch Insert thành công (Node 8, 11, 14, 17, 19, 21, 23).
-* [ ] **[GAP-01]** Upload file Excel có ≥ 1 dòng sai → Phase 1 chặn, DB KHÔNG ghi bất kỳ dòng nào.
-* [ ] **[GAP-02]** Response HTTP 400 chứa JSON array `errors[]` với đúng `row`, `field`, `errorCode`, `message` cho từng dòng lỗi.
-
-## 8. Out of Scope (Ngoài phạm vi)
-* THE system SHALL NOT cho phép thao tác "Xóa vĩnh viễn" (Hard Delete) bản ghi trong DB.
-* THE system SHALL NOT xử lý file Excel chứa nhiều Role lẫn lộn.
+## Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.

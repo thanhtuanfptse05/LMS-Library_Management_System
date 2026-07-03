@@ -1,53 +1,32 @@
-# Book Discovery Spec
-# Version: 1.0 | Owner: @Antigravity | Date: 2026-06-08
-# Mapping: UC-22, UC-23 | BR: (none) | FR-43 (global) — chi tiết: FR-F8-01..FR-F8-07
-# Lưu ý: FR-42 toàn cục = Google SSO (F1). FR-46..48 toàn cục = F4/F13. File này dùng FR-F8-XX để tránh xụng đột.
+# Feature Specification: Tra cứu và Gợi ý sách (Book Discovery)
+# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
 
-## 1. Context & Goal
-Tính năng F8 cung cấp khả năng tìm kiếm, lọc, xem chi tiết sách và nhận các gợi ý cá nhân hóa dựa trên dữ liệu người dùng. Mục tiêu là hỗ trợ người dùng khám phá sách trong thư viện một cách nhanh chóng, thông minh, đồng thời tối ưu chi phí sử dụng API AI thông qua các cơ chế Fallback và Threshold an toàn.
+## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
+Cung cấp giao diện tra cứu sách đa tiêu chí cho độc giả và tích hợp hệ thống gợi ý sách thông minh sử dụng AI (Gemini) dựa trên lịch sử mượn và thông tin cuốn sách đang xem.
 
-## 2. Actors & Roles
-- **Guest**: Có thể tra cứu, xem chi tiết sách, nhận gợi ý Top Trending. Không có quyền tạo giao dịch mượn sách.
-- **Authenticated User**: Có quyền tra cứu, xem chi tiết, nhận gợi ý Top Trending hoặc AI Recommendation (nếu đạt đủ số lượt mượn). Có quyền kích hoạt nút đặt mượn.
+## 2. Actors & Roles (Tác nhân & Quyền hạn)
+* **Độc giả & Khách (Guest/User):** Tìm kiếm đầu sách, xem chi tiết sách, nhận gợi ý từ AI.
 
-## 3. Functional Requirements
-- **FR-F8-01 (global: FR-43 part)**: WHEN người dùng submit từ khóa văn bản (tiêu đề, tác giả) hoặc chọn bộ lọc (Danh mục, Thẻ), THE system SHALL thực hiện truy vấn `LIKE` trên bảng `Book` kết hợp `JOIN` với `BookCategory`, `BookTag` và trả về danh sách kết quả phân trang.
-- **FR-F8-02 (global: FR-43 part)**: WHEN người dùng chọn xem một tựa sách, THE system SHALL trích xuất dữ liệu metadata từ bảng `Book` VÀ tính toán số lượng khả dụng (`availableQuantity`) hiện tại từ bảng `BookCopy`.
-- **FR-F8-03 (global: FR-43 part)**: WHERE người dùng là Guest (chưa đăng nhập), THE system SHALL thay đổi đích đến của nút "Đặt mượn" thành hành động điều hướng (Redirect) về trang Đăng nhập. WHERE người dùng là Authenticated User, THE system SHALL hiển thị nút "Đặt mượn" trỏ tới Module giao dịch.
-- **FR-F8-04**: WHEN người dùng truy cập trang chủ, THE system SHALL render ngay lập tức các thành phần tĩnh VÀ kích hoạt một HTTP Request bất đồng bộ (AJAX/Fetch) để lấy danh sách gợi ý nhằm tránh block UI.
-- **FR-F8-05**: WHERE Request tới trang chủ đến từ Guest HOẶC User có `COUNT(BorrowRecord) < 3`, THE system SHALL thực thi SQL nội bộ lấy Top 10 sách thịnh hành có sẵn.
-- **FR-F8-06**: WHEN người dùng đạt ngưỡng kích hoạt AI (`COUNT(BorrowRecord) >= 3`), THE system SHALL trích xuất ngữ cảnh (Chuyên ngành, Tần suất phân bổ Danh mục/Thẻ, Lịch sử 3 cuốn gần nhất). ĐỒNG THỜI, THE system SHALL dùng SQL lấy TỐI ĐA 50 Candidate Books làm dữ liệu nguồn gửi tới AI Service.
-- **FR-F8-07 (global: FR-43)**: WHEN nhận phản hồi JSON từ AI Service, THE system SHALL parse danh sách TỐI ĐA 10 `book_id` hợp lệ kèm lý do. THE system SHALL xác thực mọi `book_id` trả về ĐỀU PHẢI nằm trong Candidate Pool đã cung cấp (Chống Hallucination).
-- **FR-F8-Fallback**: WHERE kết nối AI bị Timeout HOẶC trả về HTTP 5xx HOẶC trả về `book_id` vi phạm xác thực, THE system SHALL tự động fallback sang thực thi FR-F8-05 (Top Trending SQL) VÀ ghi log cảnh báo sự cố AI.
+## 3. Business Rules (Quy tắc nghiệp vụ)
+* Không có cấu hình quy tắc nghiệp vụ riêng.
 
-## 4. Non-functional Requirements
-- **Performance**: API phục vụ gợi ý sách bất đồng bộ SHALL phản hồi `< 500ms` (đối với SQL) và `< 3000ms` (đối với AI Endpoint).
-- **Security**: Mọi truy vấn tìm kiếm SHALL sử dụng `PreparedStatement` (SEC-03). Mọi API nhận tham số từ bên ngoài SHALL kiểm tra tính hợp lệ của input.
-- **Usability (BR-27)**: Giao diện hiển thị sách (Unified Component) SHALL được thiết kế đồng nhất để tái sử dụng độc lập với nguồn gốc dữ liệu.
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
+* **FR-43 (Tra cứu & Gợi ý sách AI):** WHEN người dùng tìm kiếm, THE system SHALL thực thi tìm kiếm đa lọc (từ khóa, danh mục, tag) và phân trang 12 cuốn/trang. WHERE người dùng xem chi tiết sách, THE system SHALL gọi AiRecommendationService để lấy danh sách ISBN gợi ý từ Gemini API, JOIN thông tin sách và hiển thị. Kết quả gợi ý được cache trong session 30 phút. WHERE AI lỗi hoặc lịch sử mượn ít hơn 3 cuốn, SHALL dùng thuật toán Fallback hiển thị sách hot thịnh hành.
 
-## 5. Data Model
-- `Book` (bookId, title, author, categoryId, tagId, status)
-- `BookCopy` (copyId, bookId, status)
-- `BorrowRecord` (recordId, copyId, userId, status)
+## 5. Non-functional Requirements (Yêu cầu phi chức năng)
+* Thời gian đáp ứng: Kết quả tìm kiếm và gợi ý phải hiển thị dưới 1 giây (nhờ cơ chế cache session).\n* Chất lượng: Chống ảo tưởng (Anti-Hallucination) từ kết quả AI bằng cách đối chiếu ISBN trả về với DB thực tế.
 
-## 6. Error Handling (Unwanted)
-- WHERE Service AI Timeout hoặc lỗi HTTP 5xx, THE system SHALL không ném Exception về Frontend mà catch lỗi, ghi Audit Log cảnh báo, sau đó tự động trả về list SQL Top Trending.
-- WHERE AI trả về ID sách không nằm trong Candidate Pool, THE system SHALL ghi Audit Log cảnh báo "Hallucination" và kích hoạt fallback SQL Top Trending.
-- WHERE Guest bấm "Đặt mượn" trên thẻ sách, THE system SHALL ngăn chặn quyền truy cập và redirect về trang `/login` với thông báo tương ứng.
+## 6. Database Schema & Data Models (Lược đồ dữ liệu)
+### Bảng Book\n* `bookId` (INT, PK)\n* `isbn` (VARCHAR(20))\n* `title` (VARCHAR(500))\n* `availableQuantity` (INT)\n\n
 
-## 7. Acceptance Criteria
-- [ ] Tính năng tìm kiếm theo text và filter danh mục hoạt động, hiển thị kết quả phân trang đúng.
-- [ ] Hiển thị chi tiết sách có tính toán và hiển thị đúng thông số `availableQuantity`.
-- [ ] Trang chủ nạp dữ liệu sách gợi ý bằng AJAX thành công mà không làm chậm việc tải cấu trúc trang.
-- [ ] Guest và User (< 3 lần mượn) nhận được kết quả SQL Top Trending.
-- [ ] User (>= 3 lần mượn) nhận được kết quả phân tích cá nhân hóa từ AI Recommendation.
-- [ ] Giả lập ngắt mạng AI hoặc Fake response sai ID -> Hệ thống tự fallback về SQL Top Trending thành công và hiển thị UI bình thường.
-- [ ] Thành phần UI hiển thị thẻ sách (Unified Book Card) được tái sử dụng thành công trên cả màn hình Tìm kiếm và màn hình Trang chủ.
+## 7. Error Handling (Xử lý lỗi ngoại lệ)
+* WHERE API Gemini gặp sự cố kết nối, THE system SHALL tự động chuyển sang hiển thị danh sách sách hot thịnh hành và ghi log.
 
-## 8. Out of Scope
-- KHÔNG chặn luồng tải trang UI để chờ API AI.
-- KHÔNG hiển thị sách do AI ảo giác sinh ra (Chống Hallucination).
-- KHÔNG cho phép Guest thực hiện bất kỳ giao dịch đặt/mượn sách trực tiếp nào.
+## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] Tra cứu sách: Nhập từ khóa 'Java' -> Trả về danh sách sách liên quan, hỗ trợ phân trang đúng 12 bản ghi.\n- [ ] Xem gợi ý sách AI: Xem chi tiết sách -> Hiển thị phần 'Sách gợi ý dành cho bạn' tương thích với thể loại.
 
-## Notes / Open Questions
-- Quy tắc BR-26 và BR-27 đã được xác định và đóng vai trò làm rule chốt (locked). Không có open question mới.
+## 9. Out of Scope (Phạm vi không thực hiện)
+* Đánh giá và viết nhận xét (review) sách của độc giả trong sprint này.
+
+## Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.

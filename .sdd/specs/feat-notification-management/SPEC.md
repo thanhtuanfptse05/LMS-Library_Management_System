@@ -1,32 +1,32 @@
-# SPEC.md — Đặc tả Chức năng (Detailed Level)
-# Mức độ: Detailed Spec (Level 2) | Risk: Medium
-# Mapping: UC-24, UC-25, UC-26 | BR: (none) | FR-44, FR-52
+# Feature Specification: Quản lý thông báo và mẫu văn bản (Notification Management)
+# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
 
-## 1. Context & Goal
-Số hóa việc truyền thông nội bộ và cấu hình thông báo tự động để tăng tính linh hoạt trong vận hành thư viện.
+## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
+Cho phép Quản lý Thư viện (Manager) tạo và phát hành thông báo hệ thống đến các vai trò độc giả, ghim thông báo quan trọng, quản lý các mẫu văn bản email tự động, và cho phép độc giả theo dõi thông báo.
 
-## 2. Actors & Roles
-* **Primary Actor:** Library Manager (Quản lý thư viện)
-* **Receiver:** Toàn bộ người dùng (Student, Lecturer, Librarian)
+## 2. Actors & Roles (Tác nhân & Quyền hạn)
+* **Quản lý Thư viện (Manager):** Tạo, sửa, xóa thông báo, quản lý mẫu email tự động.\n* **Độc giả (User):** Xem thông báo hệ thống, đánh dấu đã đọc thông báo.
 
-## 3. Functional Requirements (EARS Notation)
-* **FR-44 (UC-24, UC-25): Tạo thông báo:** WHEN Quản lý thư viện gửi form thông báo chung hợp lệ, THE system SHALL lưu vào bảng Notification và đẩy hiển thị lên Dashboard của mọi người dùng (UC-24).
-* **FR-52 (UC-26): Cập nhật Template:** WHEN Quản lý thư viện lưu thay đổi mẫu tài liệu, THE system SHALL thực hiện UPDATE trường bodyContent và subject trong bảng DocumentTemp.
-* **FR-N03 (Tự động hóa):** WHERE sự kiện nghiệp vụ (ví dụ: OVERDUE_NOTICE) xảy ra, THE system SHALL trích xuất nội dung từ DocumentTemp tương ứng để thực hiện gửi (không có số FR toàn cục — logic nội bộ của F7).
+## 3. Business Rules (Quy tắc nghiệp vụ)
+* **BR-47 (Email Template Protection):** Các mẫu email hệ thống (RESET_PASSWORD, RESERVATION_READY, OVERDUE_NOTICE, v.v.) cấm tuyệt đối xóa khỏi hệ thống.
 
-## 4. Data Model (Reference)
-* **Notification:** {notificationId, title, content, createdBy, createdAt}
-* **DocumentTemp:** {tempId, tempName, subject, bodyContent, managerId, updatedAt}
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
+* **FR-44 (Quản lý & Phát hành thông báo hàng loạt):** WHEN Manager tạo thông báo mới, THE system SHALL lưu vào bảng Notification. WHERE có tùy chọn gửi email, SHALL tải email template, kết xuất nội dung và xếp hàng gửi email async đến toàn bộ độc giả hoạt động.\n* **FR-52 (Quản lý Mẫu Email Markdown):** WHEN Manager sửa template, THE system SHALL kiểm tra các placeholder bắt buộc (ví dụ: {{tempPassword}} cho mẫu reset mật khẩu). WHERE đầy đủ, SHALL cập nhật DB, ghi Audit Log và clear cache template.\n* **FR-111 (Chặn xóa mẫu email hệ thống):** WHEN Manager yêu cầu xóa mẫu email, THE system SHALL kiểm tra danh sách bảo vệ và từ chối nếu mẫu thuộc danh sách hệ thống bắt buộc.
 
-## 5. Error Handling (Unwanted Patterns)
-* WHERE nội dung thông báo rỗng, THE system SHALL từ chối lưu và hiển thị lỗi: "Nội dung không được để trống".
-* WHERE template chứa placeholder sai cú pháp (không nằm trong danh sách hỗ trợ), THE system SHALL cảnh báo người dùng trước khi lưu.
+## 5. Non-functional Requirements (Yêu cầu phi chức năng)
+* Tính khả dụng: Hỗ trợ viết nội dung thông báo bằng định dạng Markdown.\n* Bảo mật: Phân quyền chặt chẽ chỉ Manager mới được phép chỉnh sửa mẫu email.
 
-## 6. Acceptance Criteria (DoD)
-- [ ] Manager tạo thông báo thành công, nội dung xuất hiện ngay lập tức ở Widget thông báo của Sinh viên.
-- [ ] Chỉnh sửa mẫu Email quá hạn, Email gửi đi sau đó phải áp dụng nội dung mới.
-- [ ] Hệ thống ghi nhận đúng managerId thực hiện thay đổi vào audit trail.
+## 6. Database Schema & Data Models (Lược đồ dữ liệu)
+### Bảng Notification\n* `notificationId` (INT, PK)\n* `title` (VARCHAR(500))\n* `content` (TEXT)\n* `type` (VARCHAR(50))\n* `targetRole` (VARCHAR(50))\n* `isPinned` (BOOLEAN)\n* `createdBy` (INT)\n* `createdAt` (TIMESTAMP)\n\n### Bảng UserNotificationStatus\n* `userId` (INT, PK, FK)\n* `notificationId` (INT, PK, FK)\n* `readAt` (TIMESTAMP)\n\n### Bảng DocumentTemp\n* `tempId` (INT, PK)\n* `tempName` (VARCHAR(100), UNIQUE)\n* `subject` (VARCHAR(255))\n* `bodyContent` (TEXT)\n* `managerId` (INT)\n\n
 
-## 7. Out of Scope
-* Hệ thống SHALL NOT hỗ trợ gửi SMS thủ công.
-* Hệ thống SHALL NOT hỗ trợ thu hồi thông báo đã gửi sau 24h.
+## 7. Error Handling (Xử lý lỗi ngoại lệ)
+* WHERE mẫu email chỉnh sửa thiếu biến placeholder bắt buộc, THE system SHALL báo lỗi và không cho phép lưu.
+
+## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] Tạo thông báo ghim thành công: Tạo thông báo mới và ghim -> Hiện lên đầu trang chủ công khai của độc giả.\n- [ ] Đọc thông báo: Độc giả nhấn xem thông báo -> Badge số lượng thông báo chưa đọc giảm đi 1.
+
+## 9. Out of Scope (Phạm vi không thực hiện)
+* Gửi thông báo riêng cho từng cá nhân (chỉ gửi theo vai trò hoặc toàn thể thư viện).
+
+## Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.

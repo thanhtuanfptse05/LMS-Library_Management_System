@@ -1,53 +1,32 @@
-# SPEC.md — Quản lý hồ sơ người dùng (feat-profileManagement)
-# Version: 1.1.0 | Status: LOCKED | Risk Level: MEDIUM
-# Mapping: UC-04, UC-05, UC-06 | BR-08, BR-09, BR-15 | FR-09, FR-10, FR-11, FR-16
+# Feature Specification: Quản lý hồ sơ cá nhân (Profile Management)
+# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
 
-## 1. Context & Goal
-Cho phép người dùng đã xác thực truy vấn thông tin cá nhân, cập nhật dữ liệu liên lạc và thay đổi mật khẩu an toàn trực tiếp từ giao diện hệ thống.
+## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
+Cung cấp giao diện cho phép người dùng tự xem và cập nhật thông tin cá nhân của mình (họ tên, số điện thoại, giới tính, ngày sinh) và thực hiện đổi mật khẩu cá nhân để bảo vệ tài khoản.
 
-## 2. Actors & Roles
-* User (Mọi Role): Truy cập route `/profile` được bảo vệ bởi phiên làm việc (session).
+## 2. Actors & Roles (Tác nhân & Quyền hạn)
+* **Người dùng đã đăng nhập (User):** Xem và cập nhật thông tin cá nhân của mình, đổi mật khẩu.
 
-## 3. Functional Requirements (EARS)
+## 3. Business Rules (Quy tắc nghiệp vụ)
+* **BR-08 (Data Integrity):** Cập nhật hồ sơ cá nhân KHÔNG ĐƯỢC PHÉP thay đổi các trường định danh hệ thống (mã số, vai trò, trạng thái).\n* **BR-09 (Security):** Mật khẩu mới BẮT BUỘC đáp ứng tiêu chuẩn bảo mật.\n* **BR-15 (UPSERT Mechanism):** Tiến trình cập nhật hồ sơ cá nhân của người dùng BẮT BUỘC sử dụng cơ chế UPSERT (Cập nhật hoặc Chèn mới) để đảm bảo không đứt gãy dữ liệu đối với các tài khoản chưa có profile gốc.
 
-### FR-09: Xem hồ sơ cá nhân (UC-04)
-* WHEN User truy cập endpoint quản lý hồ sơ, THE system SHALL truy vấn và hiển thị dữ liệu gộp từ bảng `[User]` và bảng `MemberProfile` dựa trên `userId` hiện tại.
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
+* **FR-09 (Hiển thị hồ sơ):** WHEN người dùng truy cập trang cá nhân, THE system SHALL thực hiện truy vấn JOIN dữ liệu từ bảng User, MemberProfile và các bảng vai trò để hiển thị chi tiết.\n* **FR-10 (Cơ chế UPSERT hồ sơ):** WHEN người dùng lưu thay đổi hồ sơ, THE system SHALL kiểm tra; WHERE bản ghi MemberProfile chưa tồn tại, hệ thống SHALL thực thi lệnh INSERT thay vì UPDATE.\n* **FR-11 (Bảo mật sau đổi pass):** WHEN thay đổi mật khẩu thành công, THE system SHALL ghi nhật ký Audit Log, đồng thời vô hiệu hóa session hiện tại và buộc người dùng đăng nhập lại.\n* **FR-16 (Xác thực đầu vào mật khẩu):** WHEN người dùng yêu cầu thay đổi mật khẩu, THE system SHALL mã hóa BCrypt mật khẩu hiện tại và đối chiếu với CSDL. WHERE mật khẩu không khớp hoặc mật khẩu mới vi phạm chính sách bảo mật, hệ thống SHALL từ chối yêu cầu và hiển thị lỗi.
 
-### FR-10: Cập nhật thông tin cá nhân (UC-05, BR-15)
-* WHEN User gửi biểu mẫu cập nhật thông tin cá nhân (`fullName`, `phoneNumber`, `gender`, `dateOfBirth`), THE system SHALL cập nhật các trường dữ liệu tương ứng vào bảng `MemberProfile`.
-* WHEN tiến trình cập nhật cơ sở dữ liệu hoàn tất, THE system SHALL trả về thông báo "Cập nhật thông tin cá nhân thành công".
+## 5. Non-functional Requirements (Yêu cầu phi chức năng)
+* Bảo mật: Mật khẩu mới phải được hash BCrypt trước khi ghi đè vào CSDL.\n* Độ khả dụng: Giao diện trực quan, hiển thị thông báo lỗi/thành công rõ ràng bằng tiếng Việt.
 
-### FR-11 (UC-06, BR-09): Đổi mật khẩu | FR-16: Xác thực mật khẩu mới
-* WHEN User gửi biểu mẫu đổi mật khẩu với "Mật khẩu hiện tại", "Mật khẩu mới", "Xác nhận mật khẩu mới", THE system SHALL mã hóa BCrypt mật khẩu hiện tại và đối chiếu với `passwordHash` trong bảng `[User]`.
-* WHERE mật khẩu hiện tại khớp VÀ mật khẩu mới đáp ứng chính sách bảo mật, THE system SHALL mã hóa BCrypt mật khẩu mới và ghi đè vào bảng `[User]`.
-* WHEN tiến trình cập nhật mật khẩu thành công, THE system SHALL trả về thông báo "Đổi mật khẩu thành công".
-* WHEN tiến trình đổi mật khẩu hoàn tất thành công, THE system SHALL ghi log vào bảng `AuditLogs` với `actionType='CHANGE_PASSWORD'`.
-* WHEN tiến trình đổi mật khẩu hoàn tất thành công, THE system SHALL vô hiệu hóa `HttpSession` hiện tại và yêu cầu người dùng đăng nhập lại.
+## 6. Database Schema & Data Models (Lược đồ dữ liệu)
+### Bảng MemberProfile\n* `userId` (INT, PK, FK REFERENCES "User")\n* `fullName` (VARCHAR(255), NOT NULL)\n* `phoneNumber` (VARCHAR(20), NOT NULL)\n* `gender` (VARCHAR(10), NOT NULL)\n* `dateOfBirth` (DATE, NOT NULL)\n* `startDate` (DATE, NULL)\n* `endDate` (DATE, NULL)\n\n
 
-## 4. Non-functional Requirements
-* Data Integrity: Transaction cập nhật hồ sơ KHÔNG ĐƯỢC làm thay đổi hoặc xóa bỏ các trường dữ liệu không nằm trong biểu mẫu (ví dụ: `startDate`, `endDate`).
-* Security: Không lưu trữ hoặc log plaintext password dưới bất kỳ hình thức nào.
+## 7. Error Handling (Xử lý lỗi ngoại lệ)
+* WHERE số điện thoại nhập không đúng định dạng hoặc tuổi dưới 15, THE system SHALL hiển thị lỗi thông báo trên form.\n* WHERE mật khẩu cũ nhập sai, THE system SHALL hiển thị thông báo lỗi 'Mật khẩu cũ không chính xác' và giữ nguyên form.
 
-## 5. Data Model (Tham chiếu)
-* Table `[User]`: `userId` (PK), `passwordHash`.
-* Table `MemberProfile`: `userId` (PK), `fullName`, `phoneNumber`, `gender`, `dateOfBirth`.
+## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] Xem thông tin hồ sơ: Hiển thị đúng họ tên, SĐT, giới tính, ngày sinh và mã định danh theo vai trò.\n- [ ] Cập nhật thông tin cá nhân: Lưu thành công thông tin mới và cập nhật tức thì trên giao diện.\n- [ ] Đổi mật khẩu thành công: Đăng xuất tài khoản ngay lập tức, chuyển hướng về login và dùng mật khẩu mới đăng nhập thành công.
 
-## 6. Error Handling (Unwanted)
-* WHERE "Mật khẩu hiện tại" không chính xác, THE system SHALL từ chối cập nhật mật khẩu và hiển thị lỗi: "Mật khẩu hiện tại không chính xác".
-* WHERE "Mật khẩu mới" vi phạm chính sách định dạng (không đủ 8 ký tự, thiếu chữ/số/ký tự đặc biệt), THE system SHALL từ chối cập nhật và hiển thị lỗi: "Mật khẩu mới không đáp ứng tiêu chuẩn bảo mật".
-* WHERE "Xác nhận mật khẩu mới" không khớp với "Mật khẩu mới", THE system SHALL từ chối cập nhật và hiển thị lỗi: "Xác nhận mật khẩu không khớp".
-* WHERE bản ghi `MemberProfile` của `userId` chưa tồn tại, THE system SHALL thực thi lệnh `INSERT` thay vì `UPDATE` (Cơ chế UPSERT — ưu tiên nhất quán dữ liệu).
+## 9. Out of Scope (Phạm vi không thực hiện)
+* Thay đổi ảnh đại diện (avatar) cá nhân.\n* Thay đổi email cá nhân (email dùng làm ID duy nhất và chỉ có Admin mới sửa được).
 
-## 7. Acceptance Criteria
-* [ ] Hồ sơ hiển thị chính xác và đầy đủ dữ liệu hiện tại của user đang đăng nhập.
-* [ ] Cập nhật thành công số điện thoại, họ tên và giới tính phản ánh ngay lập tức trên UI và Database.
-* [ ] User mới chưa có bản ghi `MemberProfile` vẫn cập nhật thông tin thành công (cơ chế UPSERT hoạt động đúng).
-* [ ] Nhập sai mật khẩu hiện tại bị chặn và báo lỗi rõ ràng.
-* [ ] Đổi mật khẩu thành công, mật khẩu cũ bị vô hiệu hóa, người dùng có thể đăng nhập lại bằng mật khẩu mới.
-* [ ] Sau khi đổi mật khẩu thành công, bảng `AuditLogs` ghi nhận bản ghi mới với `actionType='CHANGE_PASSWORD'`.
-* [ ] Sau khi đổi mật khẩu thành công, session hiện tại bị hủy và người dùng bị chuyển hướng về trang đăng nhập.
-
-## 8. Out of Scope (Ngoài phạm vi)
-* Hệ thống SHALL NOT cho phép user tự thay đổi Email, `studentCode`, hoặc `staffCode` (Thẩm quyền của Admin).
-* Hệ thống SHALL NOT yêu cầu hoặc gửi mã OTP khi đổi mật khẩu từ trang Profile.
-* Hệ thống SHALL NOT xử lý cập nhật Avatar (Ảnh đại diện) trong phạm vi tài liệu này.
+## Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.

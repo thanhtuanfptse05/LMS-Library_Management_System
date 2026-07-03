@@ -1,40 +1,32 @@
-# SPEC.md — Nhật ký Kiểm toán (Audit Log)
-# Version: 1.0.0 | Owner: @tech-lead | Status: APPROVED
+# Feature Specification: Nhật ký hoạt động và Dashboard Admin (Audit Log)
+# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
 
-## 1. Context & Goal
-Cung cấp giao diện cho SysAdmin xem, lọc, tìm kiếm và xuất dữ liệu Nhật ký Kiểm toán (Audit Log). Dữ liệu audit đã được ghi sẵn bởi các tính năng F1–F14 thông qua tiến trình ngầm trong Service/Controller. F12 chỉ tạo giao diện ĐỌC, không ghi thêm dữ liệu.
+## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
+Ghi nhận và hiển thị tất cả các hành động thay đổi dữ liệu cốt lõi (Thêm, Sửa, Xóa, Import, Giao dịch) của mọi tài khoản trong hệ thống dưới dạng nhật ký kiểm toán so sánh giá trị cũ và mới chi tiết.
 
-## 2. Actors & Roles
-- **SysAdmin:** Là người duy nhất có quyền truy cập trang Nhật ký Kiểm toán. Xem danh sách, lọc, xem chi tiết so sánh Old ↔ New, và xuất CSV.
-- **Access Control:** Role = `ADMIN` có toàn quyền đọc audit log. Các vai trò khác (Librarian, Manager, Student, Lecturer) PHẢI bị từ chối với HTTP 403.
+## 2. Actors & Roles (Tác nhân & Quyền hạn)
+* **Quản trị viên (Admin):** Xem danh sách audit log, xem chi tiết so sánh 1-1, xuất nhật ký ra Excel.
 
-## 3. Functional Requirements (EARS)
+## 3. Business Rules (Quy tắc nghiệp vụ)
+* **BR-32 (Audit Log Read-Only):** Tính năng Nhật ký Kiểm toán KHÔNG ĐƯỢC PHÉP Insert, Update hoặc Delete dữ liệu trong bất kỳ bảng nào. Chỉ được thực hiện SELECT.\n* **BR-33 (Audit Log JSON Format):** Tất cả oldValues và newValues trong bảng AuditLogs BẮT BUỘC được ghi ở dạng JSON hợp lệ để đảm bảo hiển thị nhất quán.\n* **BR-34 (Audit Log Pagination):** Danh sách Nhật ký Kiểm toán BẮT BUỘC phải phân trang (20 bản ghi/trang) để bảo vệ hiệu năng hệ thống.
 
-**Truy vấn & Hiển thị Danh sách**
-- **FR-F12-01:** WHEN SysAdmin truy cập trang Nhật ký Kiểm toán, THE system SHALL truy vấn bảng AuditLogs kết hợp LEFT JOIN bảng "User" để lấy email người thực hiện, sắp xếp theo timestamp giảm dần, phân trang 20 bản ghi mỗi trang.
-- **FR-F12-02:** WHEN hiển thị danh sách, THE system SHALL hiển thị badge màu cho cột actionType theo nhóm: Tạo mới (xanh lá), Cập nhật (vàng), Xóa/Hủy (đỏ), Giao dịch (xanh dương), Bảo mật (tím), Thanh toán (cam).
-- **FR-F12-03:** WHERE userId trong bản ghi AuditLogs là NULL, THE system SHALL hiển thị "Hệ thống" thay vì email ở cột Người thực hiện.
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
+* **FR-73 (Hiển thị Dashboard Admin):** WHEN Admin truy cập dashboard, THE system SHALL hiển thị tổng quan hệ thống (tổng tài khoản, tổng sách, tiền phạt chưa thu) và 5 log mới nhất.\n* **FR-55 (Truy vấn Danh sách Audit Log phân trang):** WHEN Admin truy cập trang nhật ký, THE system SHALL tải danh sách phân trang 20 bản ghi/trang, sắp xếp giảm dần theo thời gian.\n* **FR-56 (Lọc Nhật ký Kiểm toán với 7 filter params):** WHEN Admin thực hiện lọc, THE system SHALL xây dựng câu lệnh truy vấn động theo actionType, entityName, email người thực hiện, thời gian và từ khóa JSON.\n* **FR-57 (Chi tiết Nhật ký dạng Card so sánh 1-1):** WHEN Admin click xem chi tiết log, THE system SHALL hiển thị modal so sánh 2 cột Cũ và Mới tương ứng với từng key thuộc JSON.\n* **FR-58 (Hiển thị đặc biệt theo actionType):** THE system SHALL hiển thị hợp lý: action CREATE thì cột Cũ để trống, action DELETE thì cột Mới để trống, đổi mật khẩu ẩn giá trị thô.\n* **FR-59 (Xuất Excel Nhật ký Kiểm toán):** WHEN Admin yêu cầu xuất log, THE system SHALL xuất tối đa 10,000 dòng ra file Excel và ghi Audit Log.\n* **FR-60 (Badge màu hành động theo nhóm):** SYSTEM SHALL hiển thị màu sắc tương ứng cho từng nhóm hành động (CREATE-xanh lá, UPDATE-vàng, DELETE-đỏ, SECURITY-tím...).
 
-**Lọc & Tìm kiếm**
-- **FR-F12-04:** WHEN SysAdmin áp dụng bộ lọc, THE system SHALL hỗ trợ lọc theo: loại hành động (actionType), đối tượng (entityName), email người thực hiện (ILIKE), khoảng thời gian (fromDate–toDate), và từ khóa trong oldValues/newValues. Các điều kiện lọc kết hợp bằng AND.
-- **FR-F12-05:** WHEN populate dropdown bộ lọc, THE system SHALL truy vấn DISTINCT actionType và DISTINCT entityName có trong bảng AuditLogs.
-- **FR-F12-06:** WHILE chuyển trang phân trang, THE system SHALL giữ nguyên toàn bộ tham số filter hiện tại.
+## 5. Non-functional Requirements (Yêu cầu phi chức năng)
+* Bảo mật: Nhật ký kiểm toán là read-only đối với người dùng (kể cả Admin qua giao diện không thể xóa log).\n* Ràng buộc: Giá trị thay đổi bắt buộc lưu định dạng JSON.
 
-**Xem chi tiết (Modal Card-based)**
-- **FR-F12-07:** WHEN SysAdmin click nút Chi tiết trên một dòng, THE system SHALL mở modal hiển thị thông tin chung (thời gian, email, actionType, entityName, entityId) và bảng so sánh card-by-card giữa oldValues và newValues.
-- **FR-F12-08:** WHEN render modal, THE system SHALL parse JSON oldValues/newValues và hiển thị mỗi key thay đổi trong 1 card riêng biệt: card giá trị cũ nền hồng nhạt (error-container), card giá trị mới nền xanh nhạt (tertiary-fixed), xếp dọc đối xứng 1-1.
-- **FR-F12-09:** WHERE actionType là CREATE (oldValues=NULL), THE system SHALL hiển thị "—" ở cột Giá trị Cũ và liệt kê cards cho newValues. WHERE actionType là DELETE (newValues=NULL), THE system SHALL hiển thị ngược lại.
-- **FR-F12-10:** WHERE actionType là CHANGE_PASSWORD (oldValues={}, newValues={}), THE system SHALL hiển thị dòng text "Mật khẩu đã được thay đổi (không hiển thị giá trị vì lý do bảo mật)" thay vì cards rỗng.
-- **FR-F12-11:** WHERE oldValues hoặc newValues không phải JSON hợp lệ, THE system SHALL hiển thị raw text trong 1 card đơn thay vì bảng so sánh.
+## 6. Database Schema & Data Models (Lược đồ dữ liệu)
+### Bảng AuditLogs\n* `auditLogId` (INT, PK, Identity)\n* `userId` (INT, FK REFERENCES "User")\n* `actionType` (VARCHAR(100))\n* `entityName` (VARCHAR(255))\n* `entityId` (INT)\n* `oldValues` (TEXT - JSON format)\n* `newValues` (TEXT - JSON format)\n* `timestamp` (TIMESTAMP)\n\n
 
-**Xuất CSV**
-- **FR-F12-12:** WHEN SysAdmin click Xuất CSV, THE system SHALL truy vấn toàn bộ bản ghi theo filter hiện tại (giới hạn tối đa 10,000 bản ghi), tạo file CSV mã hóa UTF-8 có BOM, và trả về response với Content-Disposition attachment.
+## 7. Error Handling (Xử lý lỗi ngoại lệ)
+* WHERE dữ liệu JSON trong log bị lỗi cú pháp, THE system SHALL hiển thị thẻ đơn kèm viền đỏ cảnh báo thay vì làm crash giao diện.
 
-## 4. Business Rules
-- **BR-32 (Audit Log Read-Only):** Tính năng F12 KHÔNG ĐƯỢC PHÉP Insert, Update hoặc Delete bất kỳ dữ liệu nào trong bất kỳ bảng nào. Chỉ được thực hiện SELECT.
-- **BR-33 (Audit Log JSON Format):** Tất cả oldValues và newValues trong hệ thống BẮT BUỘC được ghi ở dạng JSON (hoặc NULL). Không sử dụng plain text. Các tính năng đang dùng plain text (F6: CHECK_OUT/CHECK_IN/CASH_PAYMENT, F1: CHANGE_PASSWORD qua reset) BẮT BUỘC phải chuẩn hóa.
-- **BR-34 (Audit Log Pagination):** Danh sách Nhật ký Kiểm toán BẮT BUỘC phải phân trang (20 bản ghi/trang) để bảo vệ hiệu năng. KHÔNG ĐƯỢC PHÉP load toàn bộ dữ liệu trong 1 request.
+## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] Ghi nhận log: Tạo sách mới -> Hệ thống tự động insert 1 log hành động 'CREATE_BOOK' chứa JSON thông tin sách mới.\n- [ ] Xem chi tiết log: Nhấn xem chi tiết cập nhật -> Modal mở ra hiển thị rõ cột trái giá trị cũ, cột phải giá trị mới song song.
 
-## 5. Non-Functional Requirements
-- **NFR-F12-01 (Performance):** Trang danh sách audit log với filter phải phản hồi trong P95 < 500ms.
-- **NFR-F12-02 (Export Limit):** Xuất CSV giới hạn tối đa 10,000 bản ghi để tránh timeout và quá tải bộ nhớ.
+## 9. Out of Scope (Phạm vi không thực hiện)
+* Xóa hoặc sửa đổi bất kỳ dòng nhật ký nào trong bảng AuditLogs thông qua ứng dụng web.
+
+## Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.

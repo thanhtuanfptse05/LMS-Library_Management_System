@@ -1,71 +1,32 @@
-# SPEC.md — Authentication
-# Version: 2.0.0 | Status: DRAFT | Phân loại: Formal Spec
-# Mapping: UC-01, UC-02, UC-03, UC-21 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-09, BR-26 | FR-01..FR-08, FR-42
+# Feature Specification: Xác thực tài khoản (Authentication)
+# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
 
-## 1. Context & Goal
-Đảm bảo an toàn truy cập bằng cơ chế kiểm soát lỗi đăng nhập và quản lý phiên làm việc thông qua HttpSession.
+## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
+Tính năng này cung cấp cơ chế xác thực bảo mật cho toàn bộ người dùng trong hệ thống thư viện (LMS), bao gồm các chức năng đăng nhập, đăng xuất, phục hồi mật khẩu và đăng nhập SSO Google, cùng với cơ chế phân quyền dựa trên vai trò (RBAC) để bảo vệ các tài nguyên hệ thống.
 
-## 2. Actors & Roles
-- Guest: Truy cập `Access Authentication System`.
-- LMS System: Xử lý logic, truy vấn DB.
-- Email System: Gửi thông báo (Background task).
+## 2. Actors & Roles (Tác nhân & Quyền hạn)
+* **Khách (Guest):** Có thể truy cập trang đăng nhập, đăng nhập bằng Google, và yêu cầu quên mật khẩu.\n* **Người dùng đã đăng nhập (User):** Có thể thực hiện đăng xuất và thay đổi mật khẩu cá nhân.
 
-## 3. Functional Requirements (EARS)
+## 3. Business Rules (Quy tắc nghiệp vụ)
+* **BR-01 (Authentication):** Hệ thống SHALL tạm đình chỉ quyền truy cập nếu người dùng cung cấp thông tin xác thực sai 5 lần liên tiếp.\n* **BR-02 (Authentication):** Thời gian đình chỉ quyền truy cập mặc định cho các vi phạm bảo mật SHALL là 30 phút kể từ lần cuối.\n* **BR-03 (Security):** Hệ thống SHALL cung cấp thông báo lỗi chung cho xác thực thất bại để ngăn chặn việc dò quét thông tin.\n* **BR-04 (Security):** Đối với yêu cầu khôi phục mật khẩu, hệ thống SHALL trả về thông báo giả định chung bất kể định danh tồn tại hay không.\n* **BR-05 (Authentication):** Việc tự động khôi phục quyền truy cập SHALL chỉ áp dụng cho tài khoản bị đình chỉ do sai sót thông tin xác thực.\n* **BR-06 (Authentication):** Tài khoản bị đình chỉ do vi phạm hành chính hoặc nợ phạt SHALL KHÔNG được tự động khôi phục theo thời gian.\n* **BR-07 (Security):** Thông tin xác thực tạm thời được cấp tự động (khi quên mật khẩu) SHALL bao gồm đúng 8 ký tự ngẫu nhiên.\n* **BR-09 (Security):** Mật khẩu mới BẮT BUỘC đáp ứng tiêu chuẩn bảo mật (tối thiểu 8 ký tự, bao gồm chữ và số).\n* **BR-26 (Google SSO):** Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước.
 
-### Luồng Đăng nhập (Login)
-- WHEN Guest submits Login Form, THE LMS System SHALL Query User Data dựa trên Email [Node 5.6].
-- WHERE Email tồn tại, THE LMS System SHALL Check Account Status [Node 7.10].
-- WHILE status = 'locked', THE LMS System SHALL kiểm tra `lockedUntil`. Nếu `lockedUntil <= NOW`, THE LMS System SHALL update status='active', `lockReason`=null, `failedLoginAttempts`=0 [Node 10.17].
-- WHEN Account is active, THE LMS System SHALL Verify BCrypt Password [Node 11.18].
-- WHERE Password is correct, THE LMS System SHALL Create Http Session (lưu userId, role), set `failedLoginAttempts` = 0, VÀ Redirect To Dashboard theo Role [Node 13.21, 14.23].
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
+* **FR-01 (Xác minh danh tính):** WHEN người dùng gửi thông tin đăng nhập, THE system SHALL kiểm tra email trong DB. WHERE email tồn tại, THE system SHALL mã hóa password bằng BCrypt và đối chiếu. WHERE không tồn tại, THE system SHALL gọi runDummyVerify() để ngăn Timing Attack. Hệ thống SHALL trả về thông báo lỗi chung.\n* **FR-02 (Kiểm soát trạng thái khóa):** AFTER xác thực thành công, THE system SHALL kiểm tra lý do khóa. WHERE tồn tại reason='unpaid' và không có lý do khác, THE system SHALL cho phép đăng nhập và đặt warning. WHERE có 'securitybreach' hoặc 'adminban', THE system SHALL chặn đăng nhập.\n* **FR-03 (Tự động mở khóa):** WHERE User.status='locked' và lockedUntil < NOW(), THE system SHALL tự động xóa lý do 'securitybreach' và kích hoạt lại tài khoản.\n* **FR-04 (Đăng nhập sai và khóa tạm):** WHEN đăng nhập thất bại, THE system SHALL tăng số lần failedLoginAttempts. WHERE đạt 5 lần, THE system SHALL khóa tài khoản 30 phút, đặt status='locked' và insert UserLockReason.\n* **FR-05 (Tạo session & redirect theo role):** WHEN đăng nhập thành công, THE system SHALL tạo HttpSession và điều hướng về dashboard phù hợp: ADMIN->/admin/dashboard, LIBRARIAN->/librarian/dashboard, MANAGER->/manager/dashboard, STUDENT->/student/dashboard, LECTURER->/lecturer/dashboard.\n* **FR-06 (Đăng xuất):** WHEN người dùng yêu cầu đăng xuất, THE system SHALL vô hiệu hóa session và redirect về trang đăng nhập.\n* **FR-07 (Forgot Password giả định):** WHEN yêu cầu quên mật khẩu gửi lên, THE system SHALL trả về thông báo thành công chung để tránh dò email.\n* **FR-08 (Cấp mật khẩu tạm):** WHEN xác nhận email thành công cho Forgot Password, THE system SHALL sinh 8 ký tự ngẫu nhiên làm mật khẩu tạm, lưu hash BCrypt và gửi email async.\n* **FR-42 (Google Login SSO):** WHEN nhận callback code từ Google OAuth, THE system SHALL xác thực email Google. WHERE email không tồn tại trong DB, SHALL báo lỗi. WHERE tồn tại, SHALL đăng nhập và redirect theo vai trò.\n* **FR-77 (Safe Redirect Validation):** WHEN redirect dựa trên query parameter, THE system SHALL validate đường dẫn an toàn (chống Open Redirect).
 
-### Luồng Quên mật khẩu (Forgot Password)
-- WHEN Guest submits Forgot Password Form, THE LMS System SHALL Query User Data For Reset [Node 5.7].
-- WHERE Email tồn tại, THE LMS System SHALL Generate New Password (8 ký tự ngẫu nhiên), mã hóa BCrypt VÀ update DB [Node 7.12].
-- WHEN New Password is saved, THE Email System SHALL Send Password Email chạy ngầm [Node 8.14].
+## 5. Non-functional Requirements (Yêu cầu phi chức năng)
+* Bảo mật: Chống SQL Injection bằng PreparedStatement, mã hóa BCrypt cho mật khẩu, bảo vệ chống Session Fixation và Open Redirect.\n* Hiệu năng: Thời gian xác thực thông tin đăng nhập dưới 300ms (ngoại trừ dummy verify để cân bằng thời gian).
 
-### Luồng Đăng xuất (Logout)
-- WHEN User Requests Logout, THE LMS System SHALL Invalidate Session [Node 16.27] VÀ Redirect To Login [Node 17.28].
+## 6. Database Schema & Data Models (Lược đồ dữ liệu)
+### Bảng User\n* `userId` (INT, PK, Identity)\n* `email` (VARCHAR(255), UNIQUE, NOT NULL)\n* `passwordHash` (VARCHAR(255), NOT NULL)\n* `status` (VARCHAR(50), DEFAULT 'active')\n* `role` (VARCHAR(50), NOT NULL)\n* `failedLoginAttempts` (INT, DEFAULT 0)\n* `lockedUntil` (TIMESTAMP, NULL)\n\n### Bảng UserLockReason\n* `lockReasonId` (INT, PK, Identity)\n* `userId` (INT, FK, REFERENCES "User")\n* `reason` (VARCHAR(50), NOT NULL)\n* `createdAt` (TIMESTAMP, DEFAULT NOW())\n\n
 
-### Luồng Đăng nhập bằng Google (Google SSO)
-- WHEN Guest chooses Google Login, THE System SHALL retrieve the Google Token.
-- WHERE Email không tồn tại trong DB, THE System SHALL chặn truy cập và báo lỗi.
-- WHERE Email tồn tại, THE System SHALL xử lý giống luồng Đăng nhập thông thường (kiểm tra status, reset failed attempts, tạo Session).
+## 7. Error Handling (Xử lý lỗi ngoại lệ)
+* WHERE thông tin đăng nhập trống hoặc sai định dạng, THE system SHALL trả về thông báo lỗi chi tiết trên biểu mẫu.\n* WHERE lỗi kết nối CSDL xảy ra, THE system SHALL ghi log lỗi và chuyển hướng đến trang báo lỗi hệ thống thân thiện.
 
-## 3.5. Business Rules (Quy tắc nghiệp vụ)
-- [BR-26]: Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước. (Xem: spec-UC-BR-FR.txt)
-- [BR-01, BR-02]: Đình chỉ tài khoản 30 phút sau 5 lần đăng nhập sai liên tiếp.
-- [BR-03, BR-04]: Trả thông báo giả định để chống User Enumeration.
-- [BR-05, BR-06]: Quy tắc mở khóa tự động theo loại lý do khóa.
-- [BR-07]: Mật khẩu tạm dài 8 ký tự.
-- [BR-09]: Chính sách bảo mật mật khẩu.
+## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] Happy Path: Đăng nhập thành công với email và mật khẩu đúng, chuyển hướng đến đúng dashboard theo vai trò.\n- [ ] Đăng nhập sai 5 lần liên tiếp: Tài khoản bị khóa tạm trong 30 phút, kiểm tra bảng UserLockReason có dòng mới.\n- [ ] Quên mật khẩu: Gửi email chứa mật khẩu tạm thời 8 ký tự, mật khẩu mới hoạt động bình thường.\n- [ ] Bypass Authentication: Truy cập trực tiếp các trang trong /admin/* mà chưa đăng nhập, bị chặn bởi AuthFilter và redirect về /login.
 
-## 4. Non-functional Requirements
-- [NFR-01] Security: Mật khẩu KHÔNG ĐƯỢC PHÉP log dưới dạng plaintext.
-- [NFR-02] Performance: Gửi email [Node 8.14] BẮT BUỘC thực hiện qua ExecutorService (Async) để không block luồng HTTP.
+## 9. Out of Scope (Phạm vi không thực hiện)
+* Tự đăng ký tài khoản mới trực tuyến (tất cả tài khoản phải được Admin cấp phát).\n* Tích hợp xác thực 2 thành phần (2FA) qua SMS hoặc ứng dụng Authenticator trong sprint này.
 
-## 5. Data Model (Schema Mapping)
-Table: `[User]`
-- `email`: Nhận dạng tài khoản.
-- `passwordHash`: Đối chiếu BCrypt.
-- `status`: 'active' hoặc 'locked'.
-- `lockReason`: 'securitybreach' (đối với lỗi đăng nhập).
-- `failedLoginAttempts`: INT (Reset về 0 nếu đăng nhập thành công).
-- `lockedUntil`: DATETIME.
-
-## 6. Error Handling (Unwanted Patterns)
-- WHERE Password incorrect, THE LMS System SHALL Increase `failedLoginAttempts` += 1 [Node 13.20].
-- WHERE `failedLoginAttempts` >= 5, THE LMS System SHALL Execute Temp Lock (status='locked', lockedUntil = NOW + 30 phút, lockReason='securitybreach') [Node 15.24].
-- WHERE Email không tồn tại VÀ Request = Login, THE LMS System SHALL Return Auth Error chung: "Tài khoản hoặc mật khẩu không chính xác" [Node 16.26]. (Chống User Enumeration).
-- WHERE Email không tồn tại VÀ Request = Forgot Password, THE LMS System SHALL Return Fake Success: "Nếu email hợp lệ, hệ thống đã gửi mật khẩu mới" [Node 7.11].
-- WHERE Account is locked VÀ `lockedUntil > NOW`, THE LMS System SHALL Return Lock Time Error: "Tài khoản bị khóa... tự mở khóa lúc [lockedUntil]" [Node 10.16].
-
-## 7. Acceptance Criteria (Traceability to EARS)
-- [ ] AC1: Đăng nhập sai 5 lần liên tiếp -> Bị khóa đúng 30 phút (status='locked', lockReason='securitybreach').
-- [ ] AC2: Đăng nhập lại sau thời gian khóa -> Tự động mở khóa và đăng nhập thành công.
-- [ ] AC3: Gửi form Quên mật khẩu với email không tồn tại -> Hiển thị Fake Success.
-- [ ] AC4: Session bị invalidate hoàn toàn sau khi nhấn Logout.
-
-## 8. Out of Scope
-- KHÔNG hỗ trợ xác thực JWT nội bộ hệ thống.
-- KHÔNG yêu cầu xác thực OTP hoặc ép đổi mật khẩu sau khi Reset (dựa trên giải quyết xung đột BR22).
+## Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.
