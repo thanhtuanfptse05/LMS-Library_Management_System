@@ -7,23 +7,59 @@ Ghi nhận và hiển thị tất cả các hành động thay đổi dữ liệ
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Quản trị viên (Admin):** Xem danh sách audit log, xem chi tiết so sánh 1-1, xuất nhật ký ra Excel.
 
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-40 (View Audit Log):** Actor: SysAdmin | (Xem Nhật ký Kiểm toán): Quản trị viên truy cập trang Nhật ký Kiểm toán để xem danh sách toàn bộ hành động thay đổi dữ liệu của người dùng, lọc theo nhiều tiêu chí, và xem chi tiết so sánh giá trị cũ/mới.
+* **UC-41 (Export Audit Log):** Actor: SysAdmin | (Xuất Nhật ký Kiểm toán): Quản trị viên xuất dữ liệu Nhật ký Kiểm toán ra file Excel để phục vụ báo cáo và lưu trữ ngoài hệ thống.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-46 (View Admin Dashboard):** Actor: Admin | (Xem bảng điều khiển quản trị): Quản trị viên hệ thống xem tổng quan toàn hệ thống bao gồm tổng số tài khoản, sách, tiền phạt chưa thu, giao dịch đang chờ, hoạt động gần đây và cấu hình hệ thống quan trọng.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-40 (View Audit Log):** Actor: SysAdmin | (Xem Nhật ký Kiểm toán): Quản trị viên truy cập trang Nhật ký Kiểm toán để xem danh sách toàn bộ hành động thay đổi dữ liệu của người dùng, lọc theo nhiều tiêu chí, và xem chi tiết so sánh giá trị cũ/mới.
+* **UC-41 (Export Audit Log):** Actor: SysAdmin | (Xuất Nhật ký Kiểm toán): Quản trị viên xuất dữ liệu Nhật ký Kiểm toán ra file Excel để phục vụ báo cáo và lưu trữ ngoài hệ thống.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-46 (View Admin Dashboard):** Actor: Admin | (Xem bảng điều khiển quản trị): Quản trị viên hệ thống xem tổng quan toàn hệ thống bao gồm tổng số tài khoản, sách, tiền phạt chưa thu, giao dịch đang chờ, hoạt động gần đây và cấu hình hệ thống quan trọng.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-40 (View Audit Log):** Actor: SysAdmin | (Xem Nhật ký Kiểm toán): Quản trị viên truy cập trang Nhật ký Kiểm toán để xem danh sách toàn bộ hành động thay đổi dữ liệu của người dùng, lọc theo nhiều tiêu chí, và xem chi tiết so sánh giá trị cũ/mới.
+* **UC-41 (Export Audit Log):** Actor: SysAdmin | (Xuất Nhật ký Kiểm toán): Quản trị viên xuất dữ liệu Nhật ký Kiểm toán ra file Excel để phục vụ báo cáo và lưu trữ ngoài hệ thống.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-46 (View Admin Dashboard):** Actor: Admin | (Xem bảng điều khiển quản trị): Quản trị viên hệ thống xem tổng quan toàn hệ thống bao gồm tổng số tài khoản, sách, tiền phạt chưa thu, giao dịch đang chờ, hoạt động gần đây và cấu hình hệ thống quan trọng.
+
 ## 3. Business Rules (Quy tắc nghiệp vụ)
-* **BR-32 (Audit Log Read-Only):** Tính năng Nhật ký Kiểm toán KHÔNG ĐƯỢC PHÉP Insert, Update hoặc Delete dữ liệu trong bất kỳ bảng nào. Chỉ được thực hiện SELECT.\n* **BR-33 (Audit Log JSON Format):** Tất cả oldValues và newValues trong bảng AuditLogs BẮT BUỘC được ghi ở dạng JSON hợp lệ để đảm bảo hiển thị nhất quán.\n* **BR-34 (Audit Log Pagination):** Danh sách Nhật ký Kiểm toán BẮT BUỘC phải phân trang (20 bản ghi/trang) để bảo vệ hiệu năng hệ thống.
+*(Không có Business Rule riêng biệt)*
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
-* **FR-73 (Hiển thị Dashboard Admin):** WHEN Admin truy cập dashboard, THE system SHALL hiển thị tổng quan hệ thống (tổng tài khoản, tổng sách, tiền phạt chưa thu) và 5 log mới nhất.\n* **FR-55 (Truy vấn Danh sách Audit Log phân trang):** WHEN Admin truy cập trang nhật ký, THE system SHALL tải danh sách phân trang 20 bản ghi/trang, sắp xếp giảm dần theo thời gian.\n* **FR-56 (Lọc Nhật ký Kiểm toán với 7 filter params):** WHEN Admin thực hiện lọc, THE system SHALL xây dựng câu lệnh truy vấn động theo actionType, entityName, email người thực hiện, thời gian và từ khóa JSON.\n* **FR-57 (Chi tiết Nhật ký dạng Card so sánh 1-1):** WHEN Admin click xem chi tiết log, THE system SHALL hiển thị modal so sánh 2 cột Cũ và Mới tương ứng với từng key thuộc JSON.\n* **FR-58 (Hiển thị đặc biệt theo actionType):** THE system SHALL hiển thị hợp lý: action CREATE thì cột Cũ để trống, action DELETE thì cột Mới để trống, đổi mật khẩu ẩn giá trị thô.\n* **FR-59 (Xuất Excel Nhật ký Kiểm toán):** WHEN Admin yêu cầu xuất log, THE system SHALL xuất tối đa 10,000 dòng ra file Excel và ghi Audit Log.\n* **FR-60 (Badge màu hành động theo nhóm):** SYSTEM SHALL hiển thị màu sắc tương ứng cho từng nhóm hành động (CREATE-xanh lá, UPDATE-vàng, DELETE-đỏ, SECURITY-tím...).
+* **FR-73 (Hiển thị Dashboard Admin với tổng quan hệ thống):** WHEN AdminDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu toàn hệ thống: (1) **totalBooks** = BookCopyDAO.count(null, null, null) — tổng số bản sao vật lý, (2) **totalMembers** = UserDAO.countAllUsers("", "ALL", "ALL") — tổng số tài khoản, (3) **unpaidFines** = FineDAO.getTotalUnpaidFines() — tổng tiền phạt chưa thu (VNĐ), (4) **pendingPayments** = PaymentDAO.countPendingPayments() — số giao dịch đang chờ, (5) **recentUsers** = UserService.getUserList("", "ALL", "ALL", page=1, pageSize=5) — 5 user mới nhất, (6) **recentAuditLogs** = AuditLogDAO.findWithFilters(null, page=1, pageSize=5) — 5 log gần nhất, (7) Forward sang admin/dashboard.jsp. Dashboard có quick links: "Quản lý người dùng", "Xem Audit Log", "Cấu hình hệ thống".
+  * *Mapping:* UC-46 / BR-38
+* **FR-74 (Hiển thị Cấu hình Quan trọng trên Admin Dashboard):** WHEN AdminDashboardServlet.doGet() render dashboard, THE system SHALL đọc SystemConfigCache để lấy các cấu hình quan trọng: (1) STUDENT_MAX_BORROW_DAYS (số ngày mượn SV), (2) LECTURER_MAX_BORROW_DAYS (số ngày mượn GV), (3) FINE_RATE_PER_DAY (tiền phạt/ngày VNĐ), (4) RESERVATION_HOLD_DAYS (số ngày giữ sách đặt trước), (5) MAX_EXTENSION_COUNT (số lần gia hạn tối đa), (6) STUDENT_MAX_BORROW_BOOKS (hạn mức sách SV), (7) LECTURER_MAX_BORROW_BOOKS (hạn mức sách GV). Hiển thị trong panel "Cấu hình Hệ thống Quan trọng" với button "Chỉnh sửa" → redirect sang /admin/system-config. WHERE cache miss: load từ DB và populate cache.
+  * *Mapping:* UC-46
 
 ## 5. Non-functional Requirements (Yêu cầu phi chức năng)
-* Bảo mật: Nhật ký kiểm toán là read-only đối với người dùng (kể cả Admin qua giao diện không thể xóa log).\n* Ràng buộc: Giá trị thay đổi bắt buộc lưu định dạng JSON.
+* Bảo mật: Nhật ký kiểm toán là read-only đối với người dùng (kể cả Admin qua giao diện không thể xóa log).
+* Ràng buộc: Giá trị thay đổi bắt buộc lưu định dạng JSON.
 
 ## 6. Database Schema & Data Models (Lược đồ dữ liệu)
-### Bảng AuditLogs\n* `auditLogId` (INT, PK, Identity)\n* `userId` (INT, FK REFERENCES "User")\n* `actionType` (VARCHAR(100))\n* `entityName` (VARCHAR(255))\n* `entityId` (INT)\n* `oldValues` (TEXT - JSON format)\n* `newValues` (TEXT - JSON format)\n* `timestamp` (TIMESTAMP)\n\n
+### Bảng AuditLogs
+* `auditLogId` (INT, PK, Identity)
+* `userId` (INT, FK REFERENCES "User")
+* `actionType` (VARCHAR(100))
+* `entityName` (VARCHAR(255))
+* `entityId` (INT)
+* `oldValues` (TEXT - JSON format)
+* `newValues` (TEXT - JSON format)
+* `timestamp` (TIMESTAMP)
+
+
 
 ## 7. Error Handling (Xử lý lỗi ngoại lệ)
 * WHERE dữ liệu JSON trong log bị lỗi cú pháp, THE system SHALL hiển thị thẻ đơn kèm viền đỏ cảnh báo thay vì làm crash giao diện.
 
 ## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
-- [ ] Ghi nhận log: Tạo sách mới -> Hệ thống tự động insert 1 log hành động 'CREATE_BOOK' chứa JSON thông tin sách mới.\n- [ ] Xem chi tiết log: Nhấn xem chi tiết cập nhật -> Modal mở ra hiển thị rõ cột trái giá trị cũ, cột phải giá trị mới song song.
+- [ ] Ghi nhận log: Tạo sách mới -> Hệ thống tự động insert 1 log hành động 'CREATE_BOOK' chứa JSON thông tin sách mới.
+- [ ] Xem chi tiết log: Nhấn xem chi tiết cập nhật -> Modal mở ra hiển thị rõ cột trái giá trị cũ, cột phải giá trị mới song song.
 
 ## 9. Out of Scope (Phạm vi không thực hiện)
 * Xóa hoặc sửa đổi bất kỳ dòng nhật ký nào trong bảng AuditLogs thông qua ứng dụng web.

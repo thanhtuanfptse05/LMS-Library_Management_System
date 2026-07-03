@@ -1,7 +1,8 @@
 # .sdd/shared_context.md
 # File này là NGUỒN SỰ THẬT CHUNG (Source of Truth) cho toàn bộ AI Agents & Developers
-# Version: 2026-05-29T22:16:00Z (timestamp-based)
-# Cập nhật bởi: Lead Architect AI Agent
+# Version: 1.3.0 (Cập nhật theo thực tế code PostgreSQL/Supabase)
+# Cập nhật bởi: Lead Architect AI Agent | Ngày: 2026-07-03
+
 
 ---
 
@@ -89,9 +90,34 @@
 ---
 
 ## 4. SHARED DEPENDENCIES & ENVIRONMENT (Cơ sở môi trường và thư viện dùng chung)
-* **Môi trường:**
-  * DB Connection URL: `jdbc:sqlserver://localhost:1433;databaseName=LMS_Library_Management_System`
-  * Cổng Local Web Server: `http://localhost:8080/LMS-Library_Management_System/`
-* **Che giấu thông tin nhạy cảm (PII masking pattern):**
+
+### 4.1 Cấu hình Cơ sở dữ liệu (PostgreSQL & Supabase)
+* **Hệ quản trị CSDL**: PostgreSQL (Supabase / Supavisor)
+* **JDBC Driver**: `org.postgresql.Driver` (sử dụng thư viện `postgresql-42.7.3.jar`)
+* **JNDI DataSource (Tomcat)**: `java:comp/env/jdbc/LMSDB`
+* **Direct JDBC Connection (Fallback/Local)**:
+  * URL: `jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0&options=-c%20timezone=Asia/Ho_Chi_Minh`
+  * Port: `6543` (Supabase Transaction Pooler hỗ trợ IPv4)
+* **Ràng buộc SQL**: Tên bảng và tên cột phân biệt hoa/thường. Riêng bảng `"User"` bắt buộc phải bọc trong nháy kép `"User"` ở mọi câu truy vấn.
+
+### 4.2 Tích hợp dịch vụ ngoại vi (External Integrations)
+* **Dịch vụ gửi Email (Async Email Infrastructure - F19)**:
+  * Gửi email bất đồng bộ sử dụng Java `ExecutorService`.
+  * SMTP Host: `smtp.gmail.com` (Port: 587 - TLS).
+  * Email gửi hệ thống: `caotuan2k50112@gmail.com` (đọc từ biến môi trường `SMTP_USERNAME`).
+  * Tên người gửi hiển thị: `LMS University Library`.
+* **Lưu trữ ảnh bìa sách (Book Covers Storage - F4)**:
+  * Local Storage (Fallback): `~/.lms/book-images/` (đọc từ biến môi trường `LMS_BOOK_IMAGE_DIR`).
+  * Cloud Storage: Supabase Storage Bucket `book-covers` (sử dụng `SupabaseStorageClient` qua HTTP POST API với key `SUPABASE_SERVICE_ROLE_KEY`).
+* **Trợ lý AI & Gợi ý sách (AI Chatbot & Recommendation - F8, F14)**:
+  * Google Gemini API (sử dụng API Key cấu hình trong bảng `SystemConfigurations` hoặc fallback qua biến môi trường).
+  * Hỗ trợ cache cấu hình hệ thống `SystemConfigCache` để giảm tải DB query.
+* **Đăng nhập Google SSO (Google Login - F1)**:
+  * Tích hợp qua Google OAuth2 (`GoogleSSOUtil.java`).
+
+### 4.3 Quản lý Nhật ký & Bảo mật (PII Masking & Audit)
+* **Ghi vết tự động (Audit Log - F12)**: Mọi thao tác CUD quan trọng đều tự động lưu vào bảng `AuditLogs`.
+* **Che giấu thông tin nhạy cảm (PII masking pattern)**:
   * Email log format: `use***@domain.com`
   * Phone log format: `091***456`
+

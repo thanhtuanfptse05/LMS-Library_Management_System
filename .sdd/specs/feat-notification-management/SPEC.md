@@ -5,25 +5,68 @@
 Cho phép Quản lý Thư viện (Manager) tạo và phát hành thông báo hệ thống đến các vai trò độc giả, ghim thông báo quan trọng, quản lý các mẫu văn bản email tự động, và cho phép độc giả theo dõi thông báo.
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
-* **Quản lý Thư viện (Manager):** Tạo, sửa, xóa thông báo, quản lý mẫu email tự động.\n* **Độc giả (User):** Xem thông báo hệ thống, đánh dấu đã đọc thông báo.
+* **Quản lý Thư viện (Manager):** Tạo, sửa, xóa thông báo, quản lý mẫu email tự động.
+* **Độc giả (User):** Xem thông báo hệ thống, đánh dấu đã đọc thông báo.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-24 (Manage Notifications):** Actor: Manager | (Quản lý thông báo): Quản lý thư viện soạn thảo, ghim, phát hành hoặc xóa các thông báo hệ thống.
+* **UC-25 (View Notifications):** Actor: User | (Xem thông báo): Người dùng theo dõi thông báo qua biểu tượng chuông và đánh dấu trạng thái đã đọc.
+* **UC-26 (Manage Document Templates):** Actor: Manager | (Quản lý mẫu văn bản): Cấu hình các mẫu nội dung email tự động.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-24 (Manage Notifications):** Actor: Manager | (Quản lý thông báo): Quản lý thư viện soạn thảo, ghim, phát hành hoặc xóa các thông báo hệ thống.
+* **UC-25 (View Notifications):** Actor: User | (Xem thông báo): Người dùng theo dõi thông báo qua biểu tượng chuông và đánh dấu trạng thái đã đọc.
+* **UC-26 (Manage Document Templates):** Actor: Manager | (Quản lý mẫu văn bản): Cấu hình các mẫu nội dung email tự động.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-24 (Manage Notifications):** Actor: Manager | (Quản lý thông báo): Quản lý thư viện soạn thảo, ghim, phát hành hoặc xóa các thông báo hệ thống.
+* **UC-25 (View Notifications):** Actor: User | (Xem thông báo): Người dùng theo dõi thông báo qua biểu tượng chuông và đánh dấu trạng thái đã đọc.
+* **UC-26 (Manage Document Templates):** Actor: Manager | (Quản lý mẫu văn bản): Cấu hình các mẫu nội dung email tự động.
 
 ## 3. Business Rules (Quy tắc nghiệp vụ)
-* **BR-47 (Email Template Protection):** Các mẫu email hệ thống (RESET_PASSWORD, RESERVATION_READY, OVERDUE_NOTICE, v.v.) cấm tuyệt đối xóa khỏi hệ thống.
+*(Không có Business Rule riêng biệt)*
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
-* **FR-44 (Quản lý & Phát hành thông báo hàng loạt):** WHEN Manager tạo thông báo mới, THE system SHALL lưu vào bảng Notification. WHERE có tùy chọn gửi email, SHALL tải email template, kết xuất nội dung và xếp hàng gửi email async đến toàn bộ độc giả hoạt động.\n* **FR-52 (Quản lý Mẫu Email Markdown):** WHEN Manager sửa template, THE system SHALL kiểm tra các placeholder bắt buộc (ví dụ: {{tempPassword}} cho mẫu reset mật khẩu). WHERE đầy đủ, SHALL cập nhật DB, ghi Audit Log và clear cache template.\n* **FR-111 (Chặn xóa mẫu email hệ thống):** WHEN Manager yêu cầu xóa mẫu email, THE system SHALL kiểm tra danh sách bảo vệ và từ chối nếu mẫu thuộc danh sách hệ thống bắt buộc.
+* **FR-44 (Quản lý & Phát hành Thông báo hàng loạt):** WHEN NotificationManagerServlet.doPost(action=create) hoặc action=update được gọi, THE system SHALL: (1) **Validate input**: title không rỗng và ≤ 255 ký tự, content ≤ 10.000 ký tự (hỗ trợ Markdown), type IN ['news', 'policy', 'announcement', 'maintenance'], isPinned = true/false, (2) **Create/Update Notification**: Mở DB Transaction, INSERT hoặc UPDATE Notification(notificationId, title, content, type, isPinned, status='published', createdBy=managerId, createdAt=NOW() hoặc updatedAt=NOW()), INSERT AuditLog(CREATE_NOTIFICATION hoặc UPDATE_NOTIFICATION, managerId), conn.commit(), (3) **Gửi Email hàng loạt** (chỉ khi action=create VÀ user chọn "Gửi email thông báo"): WHERE templateId được cung cấp, DocumentTempDAO.findById(templateId) để load email template, EmailService.sendBulkNotificationEmails(notificationId, templateId) [async, ngoài transaction]: Query UserDAO.findAllActiveUsersWithRole(['STUDENT', 'LECTURER']), Với mỗi user: render template với variables {userName, notificationTitle, notificationContent, notificationUrl}, enqueue email vào background ExecutorService, ghi log số lượng email queued, (4) **Widget Update**: NotificationWidgetServlet sẽ hiển thị badge số lượng thông báo chưa đọc dựa trên UserNotificationStatus.
+  * *Mapping:* UC-24, UC-25
+* **FR-52 (Quản lý Mẫu Email với Markdown support):** WHEN DocumentTempManagerServlet.doPost(action=update) cập nhật email template, THE system SHALL: (1) Validate input: tempId tồn tại, subject không rỗng và ≤ 255 ký tự, bodyContent ≤ 50.000 ký tự (hỗ trợ Markdown + placeholders), (2) Kiểm tra các placeholders bắt buộc theo loại template: RESET_PASSWORD template MUST chứa {{tempPassword}}, {{userName}}, {{resetLink}}, OVERDUE_NOTICE template MUST chứa {{bookTitle}}, {{dueDate}}, {{daysLate}}, {{fineAmount}}, RESERVATION_READY template MUST chứa {{bookTitle}}, {{pickupDeadline}}, {{libraryLocation}}, WHERE thiếu placeholder bắt buộc: trả lỗi validation "Template thiếu biến bắt buộc: {missingPlaceholders}", (3) Mở DB Transaction: UPDATE DocumentTemp SET subject=?, bodyContent=?, updatedBy=managerId, updatedAt=NOW() WHERE tempId=?, INSERT AuditLog(UPDATE_EMAIL_TEMPLATE, managerId, entityName='DocumentTemp', entityId=tempId, oldValues=JSON.stringify({oldSubject, oldBodyContent}), newValues=JSON.stringify({subject, bodyContent})), conn.commit(), (4) **Clear template cache**: DocumentTemplateCache.invalidate(tempId) để buộc reload template mới khi gửi email tiếp theo, (5) Redirect với flash success "Đã cập nhật mẫu email: {tempName}". **Rendering**: EmailService.sendEmail() sẽ dùng MarkdownUtil.renderToHtml(bodyContent) để convert Markdown sang HTML, sau đó thay thế placeholders bằng SimpleTemplateEngine hoặc String.replace().
+  * *Mapping:* UC-26
 
 ## 5. Non-functional Requirements (Yêu cầu phi chức năng)
-* Tính khả dụng: Hỗ trợ viết nội dung thông báo bằng định dạng Markdown.\n* Bảo mật: Phân quyền chặt chẽ chỉ Manager mới được phép chỉnh sửa mẫu email.
+* Tính khả dụng: Hỗ trợ viết nội dung thông báo bằng định dạng Markdown.
+* Bảo mật: Phân quyền chặt chẽ chỉ Manager mới được phép chỉnh sửa mẫu email.
 
 ## 6. Database Schema & Data Models (Lược đồ dữ liệu)
-### Bảng Notification\n* `notificationId` (INT, PK)\n* `title` (VARCHAR(500))\n* `content` (TEXT)\n* `type` (VARCHAR(50))\n* `targetRole` (VARCHAR(50))\n* `isPinned` (BOOLEAN)\n* `createdBy` (INT)\n* `createdAt` (TIMESTAMP)\n\n### Bảng UserNotificationStatus\n* `userId` (INT, PK, FK)\n* `notificationId` (INT, PK, FK)\n* `readAt` (TIMESTAMP)\n\n### Bảng DocumentTemp\n* `tempId` (INT, PK)\n* `tempName` (VARCHAR(100), UNIQUE)\n* `subject` (VARCHAR(255))\n* `bodyContent` (TEXT)\n* `managerId` (INT)\n\n
+### Bảng Notification
+* `notificationId` (INT, PK)
+* `title` (VARCHAR(500))
+* `content` (TEXT)
+* `type` (VARCHAR(50))
+* `targetRole` (VARCHAR(50))
+* `isPinned` (BOOLEAN)
+* `createdBy` (INT)
+* `createdAt` (TIMESTAMP)
+
+### Bảng UserNotificationStatus
+* `userId` (INT, PK, FK)
+* `notificationId` (INT, PK, FK)
+* `readAt` (TIMESTAMP)
+
+### Bảng DocumentTemp
+* `tempId` (INT, PK)
+* `tempName` (VARCHAR(100), UNIQUE)
+* `subject` (VARCHAR(255))
+* `bodyContent` (TEXT)
+* `managerId` (INT)
+
+
 
 ## 7. Error Handling (Xử lý lỗi ngoại lệ)
 * WHERE mẫu email chỉnh sửa thiếu biến placeholder bắt buộc, THE system SHALL báo lỗi và không cho phép lưu.
 
 ## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
-- [ ] Tạo thông báo ghim thành công: Tạo thông báo mới và ghim -> Hiện lên đầu trang chủ công khai của độc giả.\n- [ ] Đọc thông báo: Độc giả nhấn xem thông báo -> Badge số lượng thông báo chưa đọc giảm đi 1.
+- [ ] Tạo thông báo ghim thành công: Tạo thông báo mới và ghim -> Hiện lên đầu trang chủ công khai của độc giả.
+- [ ] Đọc thông báo: Độc giả nhấn xem thông báo -> Badge số lượng thông báo chưa đọc giảm đi 1.
 
 ## 9. Out of Scope (Phạm vi không thực hiện)
 * Gửi thông báo riêng cho từng cá nhân (chỉ gửi theo vai trò hoặc toàn thể thư viện).

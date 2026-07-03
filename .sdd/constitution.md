@@ -21,8 +21,15 @@
 * TUYỆT ĐỐI NGHIÊM CẤM sử dụng phép cộng chuỗi (String Concatenation) để chèn user input trực tiếp vào câu lệnh SQL. 
 
 ## DATA-01: Soft-Delete cho các giao dịch cốt lõi
-* THE system SHALL sử dụng cơ chế Soft-delete (cập nhật trạng thái `status` thành `'inactive'`, `'cancelled'`, `'lost'`,...) thay vì dùng câu lệnh `DELETE FROM` SQL cho các bảng dữ liệu giao dịch cốt lõi (`[User]`, `Book`, `BookCopy`, `BorrowRecord`, `Fine`, `Payment`, `Reservation`).
+* THE system SHALL sử dụng cơ chế Soft-delete (cập nhật trạng thái `status` thành `'inactive'`, `'cancelled'`, `'lost'`,...) thay vì dùng câu lệnh `DELETE FROM` SQL cho các bảng dữ liệu giao dịch cốt lõi (`"User"`, `Book`, `BookCopy`, `BorrowRecord`, `Fine`, `Payment`, `Reservation`).
 * Hard-delete chỉ được phép áp dụng cho các file tạm (temporary files) hoặc dữ liệu log hệ thống vượt quá 90 ngày.
+
+## DB-01: Ràng buộc PostgreSQL & Supabase
+* **Bắt buộc viết `"User"` có nháy kép**: Vì `User` là từ khóa hệ thống của PostgreSQL, các truy vấn SQL tác động lên bảng này phải viết rõ dạng `"User"`. Các bảng khác tuyệt đối không bọc nháy kép để tránh lỗi phân biệt hoa/thường (`relation does not exist`).
+* **Cấu hình Pooler cổng 6543**: Để tránh lỗi không phân giải được IPv6 (`UnknownHostException`), JDBC kết nối qua cổng **6543** (Transaction/Session Pooler) của Supabase để được hỗ trợ định tuyến IPv4 mặc định.
+* **Cột processedBy trong Payment**: Cột được lưu thực tế là `processedBy INT NULL`. Mã nguồn Java (DAO, DTO, Model) cần map chính xác với tên này.
+* **Hàm thời gian**: Sử dụng hàm `NOW()` hoặc `CURRENT_TIMESTAMP` của PostgreSQL thay cho `GETDATE()` của SQL Server.
+* **Driver JDBC**: Sử dụng driver `org.postgresql.Driver` thay thế hoàn toàn cho SQL Server Driver.
 
 ═══════════════════════════════════════════════
   LAYER 2: ARCHITECTURAL CONSTRAINTS
@@ -84,6 +91,10 @@
   - [ ] Mọi kết nối CSDL đều được đóng an toàn bằng try-with-resources hoặc khối `finally`.
   - [ ] Trả về thông báo lỗi thân thiện, không in stack trace ra màn hình giao diện.
   - [ ] Các file code (JSP fragments, Java classes, CSS, JS) được chia nhỏ hợp lý và không ôm đồm nhiều nhiệm vụ.
+  - [ ] Bảng `"User"` bắt buộc được bọc nháy kép trong các câu lệnh SQL, các bảng khác không bọc.
+  - [ ] Sử dụng hàm `NOW()` hoặc `CURRENT_TIMESTAMP` thay thế hoàn toàn cho `GETDATE()`.
+  - [ ] Cấu hình kết nối DB qua cổng 6543 (Supabase Transaction Pooler) và driver `org.postgresql.Driver`.
+  - [ ] Cột `processedBy` trong Payment/DAO/DTO được đặt đúng camelCase (chữ B viết thường: `processedBy`).
 
 ### Quy trình xử lý vi phạm:
 Nếu phát hiện vi phạm Hiến pháp trong codebase:

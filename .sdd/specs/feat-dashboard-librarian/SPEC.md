@@ -7,17 +7,32 @@ Cung cấp bảng thống kê và giám sát nhanh dành riêng cho Thủ thư (
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Thủ thư (Librarian):** Xem thống kê giao dịch và hoạt động tại quầy.
 
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-44 (View Librarian Dashboard):** Actor: Librarian | (Xem bảng điều khiển thủ thư): Thủ thư xem tổng quan hoạt động thư viện bao gồm số lượng sách đang được mượn, số giao dịch hôm nay, sách quá hạn, và các thống kê nhanh về kho sách.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-44 (View Librarian Dashboard):** Actor: Librarian | (Xem bảng điều khiển thủ thư): Thủ thư xem tổng quan hoạt động thư viện bao gồm số lượng sách đang được mượn, số giao dịch hôm nay, sách quá hạn, và các thống kê nhanh về kho sách.
+
+## 2.5 Use Cases (Danh sách Use Cases)
+* **UC-44 (View Librarian Dashboard):** Actor: Librarian | (Xem bảng điều khiển thủ thư): Thủ thư xem tổng quan hoạt động thư viện bao gồm số lượng sách đang được mượn, số giao dịch hôm nay, sách quá hạn, và các thống kê nhanh về kho sách.
+
 ## 3. Business Rules (Quy tắc nghiệp vụ)
-* **BR-38 (Dashboard Data Isolation):** Mỗi Dashboard BẮT BUỘC chỉ hiển thị dữ liệu và chỉ số phù hợp với vai trò của người dùng.
+*(Không có Business Rule riêng biệt)*
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
-* **FR-71 (Hiển thị Dashboard Thủ thư):** WHEN thủ thư đăng nhập và truy cập trang chủ dashboard, THE system SHALL tính toán và hiển thị: (1) Tổng số sách đang được mượn, (2) Số lượt check-out trong ngày, (3) Số lượt check-in trong ngày, (4) Số sách quá hạn hiện tại, (5) Danh sách 10 giao dịch gần nhất, (6) Thống kê tình trạng sách (tốt, hỏng, mất) vẽ biểu đồ tròn.
+* **FR-71 (Hiển thị Dashboard Thủ thư với stats hoạt động):** WHEN LibrarianDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu: (1) activeBorrowsCount = BorrowRecordDAO.countAllActiveBorrows(), (2) todayCheckoutsCount = BorrowRecordDAO.countTodayCheckouts(), (3) todayCheckinsCount = BorrowRecordDAO.countTodayCheckins(), (4) overdueCount = BorrowRecordDAO.countAllOverdue(), (5) recentCheckouts = BorrowRecordDAO.findRecentCheckouts(limit=10) JOIN User, Book, (6) recentCheckins = BorrowRecordDAO.findRecentCheckins(limit=10), (7) inventoryStats = {totalBooks: BookCopyDAO.countAll(), available: COUNT(status='available'), borrowed: COUNT(status='borrowed'), unavailable: COUNT(status='unavailable'), byCondition: {good, damaged, lost}}, (8) Forward sang librarian/dashboard.jsp với tất cả stats + charts (hoạt động theo giờ trong ngày).
+  * *Mapping:* UC-44 / BR-38
 
 ## 5. Non-functional Requirements (Yêu cầu phi chức năng)
-* Hiệu năng: Trang tải nhanh dưới 500ms.\n* Độ chính xác: Số liệu giao dịch trong ngày phải được cập nhật tức thời theo thời gian thực.
+* Hiệu năng: Trang tải nhanh dưới 500ms.
+* Độ chính xác: Số liệu giao dịch trong ngày phải được cập nhật tức thời theo thời gian thực.
 
 ## 6. Database Schema & Data Models (Lược đồ dữ liệu)
-### Bảng BorrowRecord\n* `borrowRecordId` (INT, PK)\n* `status` (VARCHAR(50))\n\n
+### Bảng BorrowRecord
+* `borrowRecordId` (INT, PK)
+* `status` (VARCHAR(50))
+
+
 
 ## 7. Error Handling (Xử lý lỗi ngoại lệ)
 * WHERE lỗi truy xuất dữ liệu thống kê CSDL, THE system SHALL hiển thị thông báo lỗi chung và giữ nguyên giao diện khung dashboard.
