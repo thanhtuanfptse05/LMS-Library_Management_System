@@ -71,10 +71,14 @@ for filepath in files:
     # 4. FileWriter to OutputStreamWriter
     content = content.replace('try (FileWriter writer = new FileWriter(mdFile))',
                               'try (java.io.OutputStreamWriter writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(mdFile), java.nio.charset.StandardCharsets.UTF_8))')
+    
+    # Fallback to absolute path write check (for F5 where it had absolute path before)
+    content = content.replace('try (FileWriter writer = new FileWriter(mdFile))',
+                              'try (java.io.OutputStreamWriter writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(mdFile), java.nio.charset.StandardCharsets.UTF_8))')
 
     # 5. Modify the report detail block (remove the if (failures > 0) logic)
-    # We will use regex to replace from "if (failures > 0) {" to "} else {" and the following block until "Đã kết xuất báo cáo Markdown thành công tại:"
-    
+    # The pattern matches "if (failures > 0)" up to the pass/fail block.
+    # Note that F5, F6, F14 have slightly different things inside failures > 0, so we can match dynamically.
     pattern = r"if \(failures > 0\) \{.*?Đã kết xuất báo cáo Markdown thành công tại:"
     
     new_report_code = """writer.write("\\n## 2. Nhật ký chi tiết từng Test Case\\n\\n");
@@ -89,9 +93,9 @@ for filepath in files:
 
             System.out.println("Đã kết xuất báo cáo Markdown thành công tại:"""
             
-    content = re.sub(pattern, new_report_code, content, flags=re.DOTALL)
+    content = re.sub(pattern, lambda m: new_report_code, content, flags=re.DOTALL)
 
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(content)
 
-print("Updated all TestRunners.")
+print("Updated all TestRunners safely.")

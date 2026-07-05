@@ -130,21 +130,14 @@ public class F14TestRunner {
                     servlet.getRunCount(), servlet.getRunCount() - servlet.getFailureCount(), servlet.getFailureCount(), 
                     servlet.wasSuccessful() ? "PASS" : "FAIL"));
 
-            writer.write("
-## 2. Nhật ký chi tiết từng Test Case
-
-");
-            writer.write("| STT | Tên Test Case | Trạng thái | Ghi chú / Lỗi |
-");
-            writer.write("| --- | --- | --- | --- |
-");
+            writer.write("\n## 2. Nhật ký chi tiết từng Test Case\n\n");
+            writer.write("| STT | Tên Test Case | Trạng thái | Ghi chú / Lỗi |\n");
+            writer.write("| --- | --- | --- | --- |\n");
             int stt = 1;
             for (TestDetail td : testDetails) {
                 String status = td.passed ? "✅ PASS" : "❌ FAIL";
-                String note = td.errorMsg != null ? td.errorMsg.replace("
-", " ").replace("|", "\|") : "OK";
-                writer.write(String.format("| %d | `%s` | %s | %s |
-", stt++, td.name, status, note));
+                String note = td.errorMsg != null ? td.errorMsg.replace("\n", " ").replace("|", "\\|") : "OK";
+                writer.write(String.format("| %d | `%s` | %s | %s |\n", stt++, td.name, status, note));
             }
 
             System.out.println("Đã kết xuất báo cáo Markdown thành công tại: " + mdFile.getAbsolutePath());
