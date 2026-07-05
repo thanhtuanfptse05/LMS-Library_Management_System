@@ -49,6 +49,10 @@
             <span class="material-symbols-outlined">sell</span>
             <span>Nhãn sách</span>
         </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-suggestions">
+            <span class="material-symbols-outlined">approval_delegation</span>
+            <span>Đề xuất sách</span>
+        </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/copies">
             <span class="material-symbols-outlined">inventory_2</span>
             <span>Tất cả bản sao</span>

@@ -1,7 +1,7 @@
 # .sdd/shared_context.md
 # File này là NGUỒN SỰ THẬT CHUNG (Source of Truth) cho toàn bộ AI Agents & Developers
-# Version: 1.3.0 (Cập nhật theo thực tế code PostgreSQL/Supabase)
-# Cập nhật bởi: Lead Architect AI Agent | Ngày: 2026-07-03
+# Version: 2.0.0 (Đồng bộ với spec-UC-BR-FR.txt v4.0.0)
+# Cập nhật bởi: Lead Architect AI Agent | Ngày: 2026-07-05
 
 
 ---
@@ -10,82 +10,107 @@
 
 | Actor (Tác nhân) | Use Cases được phép thực thi |
 | :--- | :--- |
-| **Guest (Khách)** | UC01, UC05, UC06 |
-| **Student (Sinh viên)** | UC01, UC02, UC03, UC04, UC05, UC06, UC07, UC08, UC09, UC10, UC11, UC12 |
-| **Lecturer (Giảng viên)** | UC01, UC02, UC03, UC04, UC05, UC06, UC07, UC08, UC09, UC10, UC11, UC12 |
-| **Librarian (Thủ thư)** | UC01, UC02, UC13, UC14, UC15, UC16, UC17, UC18 |
-| **Library Manager (Quản lý)** | UC01, UC02, UC19, UC20 |
-| **SysAdmin (Quản trị viên)** | UC01, UC02, UC21, UC22, UC23 |
+| **Guest (Khách)** | UC-01, UC-03, UC-36, UC-47, UC-48 |
+| **Student (Sinh viên)** | UC-01→06, UC-16, UC-17, UC-22, UC-23, UC-25, UC-31, UC-38, UC-39, UC-49, UC-50 |
+| **Lecturer (Giảng viên)** | UC-01→06, UC-16, UC-17, UC-22, UC-23, UC-25, UC-31, UC-38, UC-39, UC-49, UC-50, UC-55 |
+| **Librarian (Thủ thư)** | UC-01, UC-02, UC-04, UC-05, UC-12→15, UC-18, UC-19, UC-20, UC-27, UC-28, UC-29, UC-44, UC-51, UC-52, UC-56 |
+| **Library Manager (Quản lý)** | UC-01, UC-02, UC-04, UC-05, UC-24, UC-26, UC-32, UC-33, UC-34, UC-35, UC-45, UC-53, UC-54 |
+| **SysAdmin (Quản trị viên)** | UC-01, UC-02, UC-04, UC-05, UC-07→11, UC-30, UC-32, UC-33, UC-34, UC-35, UC-40, UC-41, UC-46 |
+| **System (Tự động)** | UC-42, UC-43 |
 
 ---
 
-## 2. USE CASES REGISTRY (Danh sách 23 Use Cases chính thức)
+## 2. USE CASES REGISTRY (Danh sách 56 Use Cases — spec-UC-BR-FR.txt v4.0.0)
 
-| Mã UC | Tác nhân (Actor) | Tên Use Case | Mô tả Luồng Nghiệp Vụ (Business Flow) |
-| :--- | :--- | :--- | :--- |
-| **UC01** | Guest, All Users | Đăng nhập hệ thống | Người dùng nhập thông tin xác thực để truy cập vào các tính năng dành riêng cho thành viên. |
-| **UC02** | All Users | Đăng xuất tài khoản | Người dùng chủ động kết thúc phiên làm việc để bảo vệ thông tin cá nhân. |
-| **UC03** | Student, Lecturer | Xem hồ sơ cá nhân | Người dùng truy cập để xem các thông tin cá nhân và vai trò hiện tại của mình trong thư viện. |
-| **UC04** | Student, Lecturer | Cập nhật hồ sơ | Người dùng thay đổi các thông tin liên lạc được phép (ví dụ: số điện thoại). |
-| **UC05** | Student, Lecturer | Tìm kiếm Đầu sách | Người dùng nhập từ khóa để tìm các tựa sách, tác giả hoặc chủ đề mình quan tâm. |
-| **UC06** | Student, Lecturer | Xem trạng thái Kho sách | Người dùng xem chi tiết một tựa sách để biết hiện thư viện còn bao nhiêu cuốn vật lý có thể mượn. |
-| **UC07** | Student, Lecturer | Nhận gợi ý sách (AI) | Người dùng tương tác với hệ thống AI để nhận các đề xuất sách dựa trên lịch sử đọc của mình. |
-| **UC08** | Student, Lecturer | Yêu cầu Gia hạn | Người dùng chủ động xin kéo dài thời gian mượn đối với cuốn sách đang giữ. |
-| **UC09** | Student, Lecturer | Ghi danh Đặt trước | Người dùng đăng ký xếp hàng chờ mượn một tựa sách hiện đang hết bản sao vật lý. |
-| **UC10** | Student, Lecturer | Hủy Đặt trước chủ động | Người dùng tự rút tên khỏi danh sách hàng chờ nếu không còn nhu cầu mượn tựa sách đó nữa. |
-| **UC11** | Student, Lecturer | Tra cứu nợ phạt | Người dùng xem danh sách các khoản phạt quá hạn hoặc đền bù tài sản chưa thanh toán. |
-| **UC12** | Student, Lecturer | Thanh toán VNPAY | Người dùng thực hiện trả tiền phạt thông qua cổng thanh toán trực tuyến. |
-| **UC13** | Librarian | Quét mã Mượn sách | Thủ thư ghi nhận việc giao một cuốn sách vật lý cho người dùng mang ra khỏi thư viện. |
-| **UC14** | Librarian | Quét mã Trả sách | Thủ thư ghi nhận việc thu hồi lại một cuốn sách vật lý từ tay người dùng. |
-| **UC15** | Librarian | Quản lý thông tin Đầu sách | Thủ thư khởi tạo hoặc chỉnh sửa thông tin trừu tượng của một tựa sách (Tên, Tác giả, Nhà xuất bản). |
-| **UC16** | Librarian | Quản lý Phân loại sách | Thủ thư thêm hoặc sửa các danh mục (Category) và thẻ (Tag) để tổ chức hệ thống tra cứu. |
-| **UC17** | Librarian | Khai báo Bản sao vật lý | Thủ thư thêm mới từng cuốn sách thực tế vào kho và sinh mã vạch (Barcode) tương ứng. |
-| **UC18** | Librarian | Cập nhật Hao mòn tài sản | Thủ thư ghi nhận tình trạng vật lý (rách, hỏng, mất) của một cuốn sách cụ thể sau khi kiểm tra. |
-| **UC19** | Library Manager | Đăng Thông báo chung | Quản lý thư viện phát đi các thông báo về lịch hoạt động hoặc chính sách mới trên bảng tin hệ thống. |
-| **UC20** | Library Manager | Cấu hình Quy tắc Thư viện | Quản lý thư viện thay đổi các con số luật lệ (số ngày mượn, giá tiền phạt) áp dụng cho hệ thống. |
-| **UC21** | SysAdmin | Quản trị Danh sách User | Quản trị viên hệ thống tra cứu và xem chi tiết thông tin toàn bộ tài khoản đang hoạt động. |
-| **UC22** | SysAdmin | Xử lý Vi phạm thủ công | Quản trị viên trực tiếp thực hiện lệnh khóa hoặc mở khóa một tài khoản cụ thể. |
-| **UC23** | SysAdmin | Tra cứu Nhật ký (Audit) | Quản trị viên xem lại lịch sử các thao tác thay đổi dữ liệu quan trọng để truy vết sự cố. |
+> Nguồn sự thật chính: `diagram/spec-UC-BR-FR.txt`. Dưới đây là tóm tắt.
 
----
-
-## 3. FUNCTIONAL REQUIREMENTS REGISTRY (Danh sách 33 Yêu cầu Chức năng)
-
-| Mã FR | Tên Chức Năng | Mô tả chi tiết hành vi hệ thống (System Behavior) |
+| Mã UC | Actor | Tên Use Case |
 | :--- | :--- | :--- |
-| **FR01** | Đăng nhập hệ thống | Hệ thống cho phép người dùng xác thực bằng Email và Mật khẩu. |
-| **FR02** | Xử lý đăng nhập sai | *(Hệ thống tự động)*: Nếu phát hiện đăng nhập sai quá số lần quy định, hệ thống tự động khóa tài khoản tạm thời. |
-| **FR03** | Đăng xuất | Hệ thống xóa phiên làm việc hiện tại, đưa người dùng về trạng thái chưa xác thực. |
-| **FR04** | Xem hồ sơ cá nhân | Hệ thống hiển thị thông tin người dùng. Giao diện tự động thay đổi các trường dữ liệu tùy thuộc người dùng là Sinh viên hay Giảng viên. |
-| **FR05** | Cập nhật hồ sơ | Hệ thống cho phép người dùng chỉnh sửa các thông tin cá nhân được phép thay đổi (ví dụ: số điện thoại). |
-| **FR06** | Tìm kiếm Đầu sách | Hệ thống trả về danh sách các tựa sách dựa trên từ khóa tìm kiếm (tiêu đề, tác giả, danh mục, thẻ). |
-| **FR07** | Xem trạng thái Kho | Hệ thống hiển thị số lượng bản sao sách vật lý hiện đang có sẵn để mượn đối với một tựa sách cụ thể. |
-| **FR08** | Gợi ý Sách (AI) | Hệ thống sử dụng AI phân tích lịch sử để đưa ra danh sách các tựa sách đề xuất cá nhân hóa. |
-| **FR09** | Ghi nhận Mượn Sách | Hệ thống ghi nhận việc mượn một cuốn sách vật lý thông qua mã vạch, đánh dấu cuốn sách đó đang được mượn. |
-| **FR10** | Tính hạn trả sách | *(Hệ thống tự động)*: Khi giao dịch mượn thành công, hệ thống tự động tính toán và lưu ngày phải trả dựa trên vai trò của người mượn. |
-| **FR11** | Yêu cầu Gia hạn | Hệ thống tiếp nhận yêu cầu kéo dài thời gian mượn sách từ người dùng và tính toán ngày trả mới. |
-| **FR12** | Chặn Gia hạn | *(Hệ thống tự động)*: Hệ thống từ chối gia hạn nếu cuốn sách đang có người xếp hàng đặt trước hoặc người dùng đã hết lượt gia hạn. |
-| **FR13** | Ghi danh Đặt trước | Hệ thống ghi nhận người dùng vào hàng chờ của một tựa sách đã hết và cấp số thứ tự chờ. Hệ thống sẽ tự động chặn và từ chối yêu cầu nếu tổng số lượng sách đang mượn và đang đặt trước của người dùng đã đạt hạn mức tối đa. |
-| **FR14** | Hủy Đặt trước chủ động | Hệ thống cho phép người dùng tự xóa tên mình khỏi hàng chờ nếu không còn nhu cầu. |
-| **FR15** | Hiển thị Cảnh báo | *(Giao diện động)*: Hệ thống tính toán realtime và hiển thị cảnh báo trực quan trên màn hình khi người dùng có sách sắp đến hạn, quá hạn hoặc có nợ phạt (Không lưu database). |
-| **FR16** | Khởi tạo Thanh toán | Hệ thống đóng gói thông tin khoản phạt và điều hướng người dùng sang cổng thanh toán VNPAY. |
-| **FR17** | Xử lý Kết quả VNPAY | *(Hệ thống tự động)*: Hệ thống nhận phản hồi từ VNPAY để ghi nhận trạng thái giao dịch và xóa nợ cho người dùng nếu thành công. |
-| **FR18** | Quản lý Đầu sách | Thủ thư thực hiện thêm, sửa, xóa thông tin trừu tượng của các tựa sách (Tên, Tác giả, Nhà XB). |
-| **FR19** | Quản lý Phân loại | Thủ thư thực hiện thêm, sửa, xóa các Danh mục (Category) và Thẻ (Tag). |
-| **FR20** | Quản lý Mã vạch | Thủ thư thêm mới và sinh mã vạch cho từng cuốn sách vật lý nhập kho. |
-| **FR21** | Cập nhật Hao mòn | Thủ thư ghi nhận lại tình trạng vật lý thực tế của sách (còn tốt, rách, mất). |
-| **FR22** | Quét mã Trả sách | Hệ thống ghi nhận trả sách và bắt buộc thủ thư xác nhận tình trạng vật lý của cuốn sách. Sách chỉ được chuyển về trạng thái sẵn sàng hoặc phân bổ cho hàng chờ nếu tình trạng là bình thường. |
-| **FR23** | Phân bổ Hàng chờ | *(Hệ thống tự động)*: Ngay khi sách được trả, hệ thống kiểm tra và tự động giữ cuốn sách đó cho người đứng đầu tiên trong hàng chờ (nếu có). |
-| **FR24** | Quản lý Thông báo | Quản lý thư viện đăng tải các thông báo chung (Lễ, Tết), hiển thị trên bảng tin của toàn bộ người dùng. |
-| **FR25** | Cấu hình Chính sách | Quản lý thư viện thay đổi các quy tắc hệ thống (số ngày mượn, tiền phạt). |
-| **FR26** | Quản lý Danh sách User | Quản trị viên xem danh sách và thông tin chi tiết của người dùng. |
-| **FR27** | Xử lý Vi phạm thủ công | Quản trị viên thực hiện khóa hoặc mở khóa tài khoản người dùng bằng tay khi có sự cố. |
-| **FR28** | Xem Nhật ký Audit | Quản trị viên xem lịch sử vết của các thao tác thay đổi dữ liệu trong hệ thống. |
-| **FR29** | Tính Phạt Trễ hạn | *(Hệ thống chạy ngầm)*: Mỗi đêm, rà soát các giao dịch quá hạn để tự động sinh ra khoản tiền phạt. |
-| **FR30** | Dọn dẹp Hàng chờ | *(Hệ thống chạy ngầm)*: Hủy bỏ các phiếu đặt trước đã có sách sẵn sàng nhưng người dùng quá hạn không đến lấy. |
-| **FR31** | Gửi Email | *(Hệ thống chạy ngầm)*: Gửi Email thông báo (sắp đến hạn, có sách chờ, bị phạt) đến hộp thư người dùng. |
-| **FR32** | Hủy Giao dịch treo | *(Hệ thống chạy ngầm)*: Mỗi 15 phút, hệ thống tự động quét và chuyển trạng thái các yêu cầu thanh toán trực tuyến chưa nhận được phản hồi thành trạng thái hủy bỏ. |
-| **FR33** | Chatbot hỗ trợ (AI) | Hệ thống cung cấp giao diện hội thoại (Chatbot), tiếp nhận câu hỏi tự nhiên từ người dùng về quy định thư viện, tìm kiếm sách hoặc hỗ trợ sử dụng. Hệ thống gửi yêu cầu đến AI Service (kèm theo ngữ cảnh nếu cần) và trả về phản hồi văn bản cho người dùng. |
+| **UC-01** | Guest, User | Đăng nhập hệ thống |
+| **UC-02** | User | Đăng xuất tài khoản |
+| **UC-03** | Guest | Quên mật khẩu (Reset Password) |
+| **UC-04** | User | Xem hồ sơ cá nhân |
+| **UC-05** | User | Cập nhật hồ sơ |
+| **UC-06** | User | Thay đổi mật khẩu |
+| **UC-07** | Admin | Xem danh sách người dùng |
+| **UC-08** | Admin | Xem chi tiết tài khoản |
+| **UC-09** | Admin | Cấp tài khoản đơn lẻ |
+| **UC-10** | Admin | Nhập tài khoản hàng loạt (Excel) |
+| **UC-11** | Admin | Quản trị tài khoản (Sửa/Khóa/Mở khóa) |
+| **UC-12** | Librarian | Xem Danh mục & Kho sách |
+| **UC-13** | Librarian | Quản lý Đầu sách |
+| **UC-14** | Librarian | Quản lý Bản sao vật lý |
+| **UC-15** | Librarian | Quản lý Danh mục & Thẻ |
+| **UC-16** | Student, Lecturer | Đặt trước sách trực tuyến |
+| **UC-17** | Student, Lecturer | Gia hạn sách trực tuyến |
+| **UC-18** | Librarian | Giao sách tại quầy (Check-out) |
+| **UC-19** | Librarian | Nhận sách tại quầy (Check-in) |
+| **UC-20** | Librarian | Duyệt thanh toán tiền mặt |
+| **UC-21** | Guest | Đăng nhập bằng Google SSO |
+| **UC-22** | User | Tra cứu sách |
+| **UC-23** | User | Nhận gợi ý sách từ AI |
+| **UC-24** | Manager | Quản lý thông báo |
+| **UC-25** | User | Xem thông báo |
+| **UC-26** | Manager | Quản lý mẫu văn bản email |
+| **UC-27** | Librarian | Nhập sách hàng loạt (Excel) |
+| **UC-28** | Librarian | Báo cáo sự cố sách |
+| **UC-29** | Librarian | Kiểm kê kho |
+| **UC-30** | Admin | Xuất danh sách người dùng (Excel) |
+| **UC-31** | Student, Lecturer | Xem Hàng mượn & Chờ sách |
+| **UC-32** | Manager, Admin | Xem cấu hình hệ thống |
+| **UC-33** | Manager, Admin | Cập nhật cấu hình hệ thống |
+| **UC-34** | Manager, Admin | Xem báo cáo hệ thống |
+| **UC-35** | Manager, Admin | Xuất báo cáo (Excel) |
+| **UC-36** | Guest, User | Hỏi chatbot AI |
+| **UC-37** | User | Xem lịch sử chat |
+| **UC-38** | User | Xem lịch sử phạt |
+| **UC-39** | User | Thanh toán phạt trực tuyến (SePay) |
+| **UC-40** | SysAdmin | Xem Nhật ký Kiểm toán |
+| **UC-41** | SysAdmin | Xuất Nhật ký Kiểm toán (Excel) |
+| **UC-42** | System, SysAdmin | Quét quá hạn tự động |
+| **UC-43** | System, SysAdmin | Hủy đặt trước quá hạn tự động |
+| **UC-44** | Librarian | Xem Dashboard Thủ thư |
+| **UC-45** | Manager | Xem Dashboard Quản lý |
+| **UC-46** | Admin | Xem Dashboard Quản trị |
+| **UC-47** | Guest | Xem trang chủ công khai |
+| **UC-48** | Guest, User | Xem nội quy thư viện |
+| **UC-49** | Student, Lecturer | Xem lịch sử mượn trả đầy đủ |
+| **UC-50** | Student, Lecturer | Hủy đặt trước trực tuyến |
+| **UC-51** | Librarian | Đăng ký đặt trước tại quầy |
+| **UC-52** | Librarian | Xem lịch sử nhập sách hàng loạt |
+| **UC-53** | Manager | Cấu hình cổng SePay QR |
+| **UC-54** | Manager | Xem báo cáo hiệu suất nhân viên |
+| **UC-55** | Lecturer | Đề xuất & Vote sách mới |
+| **UC-56** | Librarian | Quản lý trạng thái đề xuất sách |
+
+---
+
+## 3. FEATURE REGISTRY (Danh sách 20 Feature — F1→F20)
+
+| Feature | Tên | UC liên quan | Spec Folder |
+| :--- | :--- | :--- | :--- |
+| **F1** | Authentication | UC-01→03, UC-21 | `feat-authentication` |
+| **F2** | Profile Management | UC-04→06 | `feat-profileManagement` |
+| **F3** | User Account Management | UC-07→11, UC-30 | `feat-userAccountManagement` |
+| **F4** | Book Management | UC-12→15, UC-27, UC-52 | `feat-bookManagement` |
+| **F5** | Online Reservation & Renewal | UC-16, UC-17, UC-43, UC-49, UC-50 | `feat-Reservation&Renewal` |
+| **F6** | Desk Circulation Operations | UC-18→20, UC-51 | `feat-deskCirculationOperations` |
+| **F7** | Notification Management | UC-24→26 | `feat-notification-management` |
+| **F8** | Book Discovery | UC-22, UC-23 | `feat-bookDiscovery` |
+| **F9** | Fine & Payment Management | UC-31, UC-38, UC-39, UC-42, UC-53 | `feat-finePayment` |
+| **F10** | System Configuration | UC-32, UC-33 | `feat-systemConfiguration` |
+| **F11** | System Reports | UC-34, UC-35, UC-54 | `feat-systemReport` |
+| **F12** | Audit Log | UC-40, UC-41 | `feat-auditLog` |
+| **F13** | Book Maintenance | UC-28, UC-29 | `feat-bookMaintenance` |
+| **F14** | AI Chatbot | UC-36, UC-37 | `feat-ai-chatbot` |
+| **F15** | Dashboard — Librarian | UC-44 | `feat-dashboard-librarian` |
+| **F16** | Dashboard — Manager | UC-45 | `feat-systemReport` |
+| **F17** | Dashboard — Admin | UC-46 | `feat-auditLog` |
+| **F18** | Public Pages | UC-47, UC-48 | `feat-publicPages` |
+| **F19** | Async Email Infrastructure | (none) | `feat-asyncEmailSender` |
+| **F20** | Book Suggestion | UC-55, UC-56 | `feat-bookSuggestion` |
+
+> Chi tiết đầy đủ BR và FR của từng Feature → xem `diagram/spec-UC-BR-FR.txt`
 
 ---
 
@@ -120,4 +145,3 @@
 * **Che giấu thông tin nhạy cảm (PII masking pattern)**:
   * Email log format: `use***@domain.com`
   * Phone log format: `091***456`
-

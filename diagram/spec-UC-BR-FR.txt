@@ -180,19 +180,19 @@ F11 (System Reports)
 - BR: BR-43, BR-44, BR-45
 - FR: FR-98, FR-99, FR-100, FR-101, FR-102, FR-83
 
+F12 (Audit Log)
+- Owner: Quyet
+- Spec Folder: feat-auditLog
+- UC: UC-40, UC-41
+- BR: BR-32, BR-33, BR-34
+- FR: FR-55, FR-56, FR-57, FR-58, FR-59, FR-60
+
 F13 (Book Maintenance)
 - Owner: Chuong
 - Spec Folder: (to be created)
 - UC: UC-28, UC-29
 - BR: BR-28
 - FR: FR-48, FR-49, FR-50, FR-51
-
-F12 (Audit Log)
-- Owner: Tuan
-- Spec Folder: feat-auditLog
-- UC: UC-40, UC-41
-- BR: BR-32, BR-33, BR-34
-- FR: FR-55, FR-56, FR-57, FR-58, FR-59, FR-60
 
 F14 (AI Chatbot)
 - Owner: Thai
@@ -235,6 +235,13 @@ F19 (Async Email Infrastructure)
 - UC: (none)
 - BR: BR-46, BR-47, BR-48, BR-49, BR-50, BR-51, BR-52, BR-53
 - FR: FR-103, FR-104, FR-105, FR-106, FR-107, FR-108, FR-109, FR-110, FR-111, FR-112, FR-113, FR-114, FR-115, FR-116, FR-117, FR-118
+
+F20 (Book Suggestion)
+- Owner: 
+- Spec Folder: feat-bookSuggestion
+- UC: UC-55, UC-56
+- BR: BR-56, BR-57, BR-58
+- FR: FR-119, FR-120, FR-121, FR-122, FR-123, FR-124, FR-125, FR-126, FR-127, FR-128, FR-129, FR-130, FR-131, FR-132
 
 
 // =============================================================================
@@ -457,6 +464,14 @@ UC-54 (View Staff Performance Report)
 Actor: Library Manager
 Mô tả: (Xem báo cáo hiệu suất nhân viên): Quản lý thư viện theo dõi số lượt giao sách, nhận sách và số tiền phạt thu được của từng thủ thư theo tháng/năm.
 
+UC-55 (Submit & Vote Book Suggestion)
+Actor: Lecturer
+Mô tả: (Đề xuất & Vote sách mới): Giảng viên gửi đề xuất sách mới cần bổ sung cho thư viện hoặc vote (+1) cho đề xuất có sẵn của giảng viên khác. Giảng viên cũng có thể hủy vote và sửa/xóa đề xuất của mình khi còn ở trạng thái pending.
+
+UC-56 (Manage Book Suggestion Status)
+Actor: Librarian
+Mô tả: (Quản lý trạng thái đề xuất sách): Thủ thư xem danh sách đề xuất sách từ giảng viên, xét duyệt và cập nhật trạng thái (pending / acknowledged / rejected) kèm ghi chú lý do.
+
 
 // =============================================================================
 // SECTION 3: BUSINESS RULES (BR)
@@ -626,6 +641,15 @@ Mô tả: Tính năng xem danh sách tài khoản BẮT BUỘC phải phân tran
 
 BR-55 (Self-Lock Prevention)
 Mô tả: Quản trị viên (Admin) KHÔNG ĐƯỢC PHÉP thực hiện thao tác Khóa (Lock), Xóa (Delete), hoặc thay đổi Role trên chính tài khoản mà họ đang đăng nhập để tránh tình trạng hệ thống bị vô chủ (orphaned system).
+
+BR-56 (Book Suggestion Vote Uniqueness)
+Mô tả: Mỗi Giảng viên SHALL chỉ được vote tối đa 1 lần cho mỗi đề xuất sách. Hệ thống BẮT BUỘC kiểm tra tính duy nhất trước khi ghi nhận vote.
+
+BR-57 (Book Suggestion Vote Restriction)
+Mô tả: Tính năng vote (+1) và hủy vote CHỈ ĐƯỢC PHÉP thực hiện khi đề xuất sách còn ở trạng thái 'pending'. Khi status = 'acknowledged' hoặc 'rejected', hệ thống MUST NOT cho phép vote mới hoặc hủy vote.
+
+BR-58 (Book Suggestion Edit/Delete Restriction)
+Mô tả: Giảng viên CHỈ ĐƯỢC PHÉP sửa hoặc xóa (soft-delete) đề xuất sách của chính mình KHI VÀ CHỈ KHI status = 'pending' VÀ voteCount = 1 (chỉ có vote của chính mình). Nếu có người khác đã vote hoặc trạng thái đã thay đổi, hệ thống MUST NOT cho phép sửa/xóa.
 
 
 // =============================================================================
@@ -1104,11 +1128,67 @@ FR-118 (Tích hợp Email Xác Nhận Thanh Toán)
 Mô tả: WHEN độc giả thanh toán thành công tiền phạt (qua tiền mặt tại quầy hoặc SePay online), THE system SHALL đẩy job gửi email với template 'PAYMENT_CONFIRMATION' xác nhận hoàn thành nghĩa vụ đóng phạt vào hàng đợi.
 Mapping: UC-20, UC-39
 
+FR-119 (Gửi đề xuất sách mới)
+Mô tả: WHEN BookSuggestionServlet.doPost(action=create) nhận form đề xuất từ Giảng viên, THE system SHALL: (1) Validate các trường bắt buộc (title, author, reason), (2) Kiểm tra tiêu đề tương tự đã tồn tại (LIKE query), WHERE trùng THE system SHALL hiển thị cảnh báo, (3) INSERT vào bảng BookSuggestion với status='pending', voteCount=1, (4) INSERT bản ghi SuggestionVote tương ứng, (5) INSERT AuditLog(CREATE_SUGGESTION), (6) Redirect kèm thông báo thành công.
+Mapping: UC-55 / BR-56
+
+FR-120 (Vote đề xuất sách)
+Mô tả: WHEN BookSuggestionServlet.doPost(action=vote) nhận request vote từ Giảng viên, THE system SHALL mở DB Transaction: (1) Kiểm tra đề xuất tồn tại và status='pending', (2) Kiểm tra user chưa vote cho đề xuất này (BR-56), WHERE đã vote THE system SHALL trả lỗi "Bạn đã vote cho đề xuất này", (3) INSERT SuggestionVote(suggestionId, userId), (4) UPDATE BookSuggestion SET voteCount = voteCount + 1, (5) conn.commit(), (6) Redirect kèm thông báo.
+Mapping: UC-55 / BR-56, BR-57
+
+FR-121 (Hủy vote đề xuất sách)
+Mô tả: WHEN BookSuggestionServlet.doPost(action=unvote) nhận request hủy vote từ Giảng viên, THE system SHALL mở DB Transaction: (1) Kiểm tra đề xuất tồn tại và status='pending' (BR-57), WHERE status ≠ 'pending' THE system SHALL từ chối, (2) Kiểm tra user đã vote, (3) DELETE bản ghi SuggestionVote, (4) UPDATE BookSuggestion SET voteCount = voteCount - 1, (5) conn.commit().
+Mapping: UC-55 / BR-57
+
+FR-122 (Sửa đề xuất sách)
+Mô tả: WHEN BookSuggestionServlet.doPost(action=edit) nhận request sửa đề xuất, THE system SHALL: (1) Kiểm tra đề xuất thuộc về user hiện tại, (2) Kiểm tra status='pending' VÀ voteCount=1 (BR-58), WHERE không thỏa THE system SHALL từ chối, (3) UPDATE các trường được phép (title, author, publisher, isbn, reason), (4) INSERT AuditLog(UPDATE_SUGGESTION).
+Mapping: UC-55 / BR-58
+
+FR-123 (Xóa mềm đề xuất sách)
+Mô tả: WHEN BookSuggestionServlet.doPost(action=delete) nhận request xóa đề xuất, THE system SHALL: (1) Kiểm tra đề xuất thuộc về user, (2) Kiểm tra status='pending' VÀ voteCount=1 (BR-58), (3) UPDATE BookSuggestion SET status='deleted', (4) DELETE bản ghi SuggestionVote liên quan, (5) INSERT AuditLog(DELETE_SUGGESTION). Soft-delete tuân thủ DATA-01.
+Mapping: UC-55 / BR-58
+
+FR-124 (Xem danh sách đề xuất sách - Giảng viên)
+Mô tả: WHEN BookSuggestionServlet.doGet() được gọi bởi Lecturer, THE system SHALL: (1) Đọc params tìm kiếm (keyword), lọc (status), phân trang (page, pageSize=10), (2) Truy vấn BookSuggestionDAO với JOIN User để lấy tên người đề xuất, (3) Sắp xếp mặc định theo voteCount DESC, (4) Kiểm tra user hiện tại đã vote cho từng đề xuất chưa, (5) Forward sang lecturer/book-suggestions.jsp với danh sách và trạng thái vote.
+Mapping: UC-55
+
+FR-125 (Xem danh sách đề xuất sách - Thủ thư)
+Mô tả: WHEN BookSuggestionServlet.doGet() được gọi bởi Librarian, THE system SHALL: (1) Đọc params tìm kiếm và lọc tương tự FR-124, (2) Truy vấn danh sách đề xuất với JOIN User, (3) Sắp xếp mặc định theo voteCount DESC, (4) Forward sang librarian/book-suggestions.jsp với giao diện quản lý trạng thái.
+Mapping: UC-56
+
+FR-126 (Cập nhật trạng thái đề xuất sách)
+Mô tả: WHEN BookSuggestionServlet.doPost(action=updateStatus) nhận request từ Thủ thư, THE system SHALL: (1) Validate status mới phải thuộc {'pending', 'acknowledged', 'rejected'}, (2) UPDATE BookSuggestion SET status=newStatus, librarianNote=note, reviewedBy=librarianUserId, updatedAt=NOW(), (3) INSERT AuditLog(UPDATE_SUGGESTION_STATUS) ghi oldStatus → newStatus, (4) Redirect kèm thông báo thành công.
+Mapping: UC-56
+
+FR-127 (Phân quyền truy cập đề xuất sách)
+Mô tả: WHERE người dùng không có vai trò LECTURER hoặc LIBRARIAN cố truy cập URL /lecturer/book-suggestions hoặc /librarian/book-suggestions, THE system SHALL chặn tại AuthFilter và trả về lỗi SC_FORBIDDEN (403).
+Mapping: UC-55, UC-56
+
+FR-128 (Cảnh báo đề xuất trùng lặp)
+Mô tả: WHEN Giảng viên nhập tiêu đề sách để đề xuất, THE system SHALL truy vấn BookSuggestionDAO.findByTitleLike(title) để kiểm tra đề xuất tương tự đã tồn tại. WHERE tìm thấy, THE system SHALL hiển thị danh sách đề xuất tương tự kèm gợi ý "Đề xuất tương tự đã tồn tại, bạn có muốn vote thay vì tạo mới?". Giảng viên vẫn được phép tạo nếu xác nhận.
+Mapping: UC-55
+
+FR-129 (Transaction an toàn cho Vote)
+Mô tả: THE system SHALL thực hiện mọi thao tác vote/unvote trong một DB Transaction duy nhất: INSERT/DELETE SuggestionVote VÀ UPDATE voteCount trong BookSuggestion. WHERE xảy ra lỗi giữa chừng, THE system SHALL rollback toàn bộ transaction.
+Mapping: UC-55 / BR-56, BR-57
+
+FR-130 (Ẩn nút tương tác theo trạng thái)
+Mô tả: WHEN hiển thị đề xuất sách trên JSP, THE system SHALL ẩn/hiện các nút tương tác dựa trên trạng thái: (1) Nút "Tôi cũng cần (+1)" chỉ hiện khi status='pending' VÀ user chưa vote, (2) Nút "Hủy vote" chỉ hiện khi status='pending' VÀ user đã vote, (3) Nút "Sửa"/"Xóa" chỉ hiện khi user là người tạo VÀ status='pending' VÀ voteCount=1.
+Mapping: UC-55 / BR-57, BR-58
+
+FR-131 (Ghi Audit Log đề xuất sách)
+Mô tả: THE system SHALL ghi nhận vào bảng AuditLogs cho mọi thao tác CUD trên đề xuất sách: CREATE_SUGGESTION, UPDATE_SUGGESTION, DELETE_SUGGESTION, UPDATE_SUGGESTION_STATUS với đầy đủ oldValues/newValues.
+Mapping: UC-55, UC-56
+
+FR-132 (Bảo vệ voteCount không âm)
+Mô tả: WHERE thao tác hủy vote khiến voteCount giảm dưới 0, THE system SHALL đặt voteCount = 0 (tối thiểu là 0). Đề xuất với voteCount = 0 vẫn tồn tại trong hệ thống để Thủ thư xem xét.
+Mapping: UC-55 / BR-57
+
 // =============================================================================
 // END OF SPECIFICATION
 // =============================================================================
-// Total UC: 54 | Total BR: 53 | Total FR: 118
-// Version: 3.1.0 | Date: 2026-06-29
+// Total UC: 56 | Total BR: 58 | Total FR: 132
+// Version: 4.0.0 | Date: 2026-07-05
 // Project: Library Management System (LMS) - SWP391
 // =============================================================================
 

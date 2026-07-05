@@ -3,8 +3,12 @@ package f5;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
+import org.junit.runner.Description;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.File;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +19,14 @@ import java.util.Date;
  */
 public class F5TestRunner {
 
+    static class TestDetail {
+        String name;
+        boolean passed;
+        String errorMsg;
+    }
+
+    static List<TestDetail> testDetails = new ArrayList<>();
+
     public static void main(String[] args) {
         System.out.println("==================================================");
         System.out.println("BẮT ĐẦU CHẠY BỘ KIỂM THỬ PHÂN HỆ F5 (200+ CASES)");
@@ -24,6 +36,34 @@ public class F5TestRunner {
 
         // Chạy các Test Suites
         JUnitCore junit = new JUnitCore();
+        junit.addListener(new RunListener() {
+            private TestDetail currentTest;
+
+            @Override
+            public void testStarted(Description description) {
+                currentTest = new TestDetail();
+                currentTest.name = description.getMethodName();
+                if (currentTest.name == null) {
+                    currentTest.name = description.getDisplayName();
+                }
+                currentTest.passed = true;
+            }
+
+            @Override
+            public void testFailure(Failure failure) {
+                if (currentTest != null) {
+                    currentTest.passed = false;
+                    currentTest.errorMsg = failure.getMessage();
+                }
+            }
+
+            @Override
+            public void testFinished(Description description) {
+                if (currentTest != null) {
+                    testDetails.add(currentTest);
+                }
+            }
+        });
         
         System.out.print("1. Đang chạy OnlineCirculationServiceUnitTest... ");
         Result unitResult = junit.run(OnlineCirculationServiceUnitTest.class);
@@ -73,7 +113,7 @@ public class F5TestRunner {
 
         // 1. Tạo file báo cáo Markdown duy nhất
         File mdFile = new File(dir, "reservationRenewal.md");
-        try (FileWriter writer = new FileWriter(mdFile)) {
+        try (java.io.OutputStreamWriter writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(mdFile), java.nio.charset.StandardCharsets.UTF_8)) {
             writer.write("# BÁO CÁO KẾT QUẢ KIỂM THỬ PHÂN HỆ F5 (RESERVATION & RENEWAL)\n\n");
             writer.write("- **Thời gian xuất báo cáo:** " + dateStr + "\n");
             writer.write("- **Sinh viên thực hiện:** Lê Thế Bảo\n");
@@ -96,23 +136,21 @@ public class F5TestRunner {
                     servlet.getRunCount(), servlet.getRunCount() - servlet.getFailureCount(), servlet.getFailureCount(), 
                     servlet.wasSuccessful() ? "PASS" : "FAIL"));
 
-            if (failures > 0) {
-                writer.write("\n## 2. Chi tiết các lỗi gặp phải\n\n");
-                for (Failure f : unit.getFailures()) {
-                    writer.write("- **Unit Test:** `" + f.getTestHeader() + "` - Lỗi: `" + f.getMessage() + "`\n");
-                }
-                for (Failure f : integration.getFailures()) {
-                    writer.write("- **Integration Test:** `" + f.getTestHeader() + "` - Lỗi: `" + f.getMessage() + "`\n");
-                    // In stack trace ra console của runner để debug
-                    System.err.println("INTEGRATION FAIL: " + f.getTestHeader());
-                    System.err.println(f.getTrace());
-                }
-                for (Failure f : servlet.getFailures()) {
-                    writer.write("- **Servlet Test:** `" + f.getTestHeader() + "` - Lỗi: `" + f.getMessage() + "`\n");
-                }
-            } else {
-                writer.write("\n## 2. Nhật ký chi tiết\n\n");
-                writer.write("✅ **Tất cả các test cases đã vượt qua thành công!** Không có lỗi nào xảy ra.\n");
+            writer.write("
+## 2. Nhật ký chi tiết từng Test Case
+
+");
+            writer.write("| STT | Tên Test Case | Trạng thái | Ghi chú / Lỗi |
+");
+            writer.write("| --- | --- | --- | --- |
+");
+            int stt = 1;
+            for (TestDetail td : testDetails) {
+                String status = td.passed ? "✅ PASS" : "❌ FAIL";
+                String note = td.errorMsg != null ? td.errorMsg.replace("
+", " ").replace("|", "\|") : "OK";
+                writer.write(String.format("| %d | `%s` | %s | %s |
+", stt++, td.name, status, note));
             }
 
             System.out.println("Đã kết xuất báo cáo Markdown thành công tại: " + mdFile.getAbsolutePath());

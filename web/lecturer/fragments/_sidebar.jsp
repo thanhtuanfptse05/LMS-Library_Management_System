@@ -34,6 +34,10 @@
             <span class="material-symbols-outlined">payments</span>
             <span>Tiền phạt &amp; Thanh toán</span>
         </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/lecturer/book-suggestions">
+            <span class="material-symbols-outlined">description</span>
+            <span>Đề xuất sách</span>
+        </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/notifications">
             <span class="material-symbols-outlined">campaign</span>
             <span>Bảng tin</span>

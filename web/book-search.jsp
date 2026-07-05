@@ -340,8 +340,12 @@
                                                 Không có cuốn sách nào khớp với từ khóa hoặc bộ lọc của bạn. Hãy thử
                                                 dùng từ khóa ngắn hơn hoặc phổ biến hơn.
                                             </p>
-                                            <a href="book-search" class="btn btn-primary-custom fw-bold px-4 py-2">Quay
-                                                lại danh mục</a>
+                                            <div class="d-flex gap-2 justify-content-center">
+                                                <a href="book-search" class="btn btn-primary-custom fw-bold px-4 py-2">Quay lại danh mục</a>
+                                                <c:if test="${sessionScope.role eq 'LECTURER' or sessionScope.role eq 'lecturer'}">
+                                                    <a href="${pageContext.request.contextPath}/lecturer/book-suggestions?q=${param.keyword}" class="btn btn-outline-primary fw-bold px-4 py-2">Đề xuất mua sách</a>
+                                                </c:if>
+                                            </div>
                                         </div>
                                     </c:when>
 

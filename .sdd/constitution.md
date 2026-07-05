@@ -1,5 +1,5 @@
 # PROJECT CONSTITUTION — LMS Library Management System
-# Version: 1.2.0 | Owner: @tech-lead | Updated: 2026-06-06
+# Version: 1.3.0 | Owner: @tech-lead | Updated: 2026-07-05
 # Status: LOCKED — Chỉ được phép thay đổi qua RFC process có chữ ký của Human
 # Áp dụng cho: Mọi AI Agent, mọi Developer, mọi Pull Request của dự án LMS
 
@@ -21,7 +21,7 @@
 * TUYỆT ĐỐI NGHIÊM CẤM sử dụng phép cộng chuỗi (String Concatenation) để chèn user input trực tiếp vào câu lệnh SQL. 
 
 ## DATA-01: Soft-Delete cho các giao dịch cốt lõi
-* THE system SHALL sử dụng cơ chế Soft-delete (cập nhật trạng thái `status` thành `'inactive'`, `'cancelled'`, `'lost'`,...) thay vì dùng câu lệnh `DELETE FROM` SQL cho các bảng dữ liệu giao dịch cốt lõi (`"User"`, `Book`, `BookCopy`, `BorrowRecord`, `Fine`, `Payment`, `Reservation`).
+* THE system SHALL sử dụng cơ chế Soft-delete (cập nhật trạng thái `status` thành `'inactive'`, `'cancelled'`, `'lost'`, `'deleted'`,...) thay vì dùng câu lệnh `DELETE FROM` SQL cho các bảng dữ liệu giao dịch cốt lõi (`"User"`, `Book`, `BookCopy`, `BorrowRecord`, `Fine`, `Payment`, `Reservation`, `BookSuggestion`).
 * Hard-delete chỉ được phép áp dụng cho các file tạm (temporary files) hoặc dữ liệu log hệ thống vượt quá 90 ngày.
 
 ## DB-01: Ràng buộc PostgreSQL & Supabase

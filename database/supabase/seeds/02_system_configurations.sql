@@ -28,6 +28,7 @@ INSERT INTO SystemConfigurations (configKey, configValue, description, configGro
 ('EMAIL_QUEUE_CAPACITY', '500', 'Sức chứa tối đa của hàng đợi EmailJob', 'system', 1, NOW()),
 ('EMAIL_MAX_RETRIES', '3', 'Số lần thử lại tối đa khi gửi email lỗi', 'system', 1, NOW()),
 ('EMAIL_RETRY_DELAY_SECONDS', '30', 'Độ trễ chờ thử lại gửi thư (giây)', 'system', 1, NOW()),
-('EMAIL_FROM_NAME', 'Thư viện LMS', 'Tên hiển thị người gửi email', 'system', 1, NOW())
+('EMAIL_FROM_NAME', 'Thư viện LMS', 'Tên hiển thị người gửi email', 'system', 1, NOW()),
+('MAX_SUGGESTION_PER_LECTURER', '10', 'Giới hạn số đề xuất đang ở trạng thái pending tối đa cho mỗi giảng viên', 'library', 1, NOW())
 ON CONFLICT (configKey) DO NOTHING;
 
