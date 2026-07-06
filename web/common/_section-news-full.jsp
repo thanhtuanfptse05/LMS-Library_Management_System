@@ -4,31 +4,7 @@
 <!-- Latest News Section (Full Categorized) -->
 <section class="bg-container-low py-5" id="news">
     <style>
-        .news-categories {
-            border-bottom: 2px solid var(--surface-container-highest);
-            padding-bottom: 0.75rem;
-        }
-        .news-category-btn {
-            background: transparent;
-            border: none;
-            color: var(--secondary);
-            font-weight: 600;
-            font-size: 15px;
-            padding: 0.5rem 1.25rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .news-category-btn:hover {
-            background-color: rgba(157, 67, 0, 0.05);
-            color: var(--primary-color);
-        }
-        .news-category-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-            box-shadow: 0 4px 12px rgba(157, 67, 0, 0.25);
-        }
+
         .news-pane {
             animation: newsFadeIn 0.4s ease-out forwards;
         }
@@ -56,18 +32,6 @@
             <h2 class="fw-bold text-dark mt-1 mb-0" style="font-size: 28px;">Tin tức Thư viện &amp; Sự kiện</h2>
         </div>
 
-        <!-- News Categories Navigation -->
-        <div class="news-categories d-flex flex-wrap gap-2 mb-4">
-            <a href="${pageContext.request.contextPath}/news" class="news-category-btn ${empty activeType ? 'active' : ''}">
-                Tất cả
-            </a>
-            <a href="${pageContext.request.contextPath}/news?type=general" class="news-category-btn ${activeType == 'general' ? 'active' : ''}">
-                Tin tức
-            </a>
-            <a href="${pageContext.request.contextPath}/news?type=event" class="news-category-btn ${activeType == 'event' ? 'active' : ''}">
-                Sự kiện
-            </a>
-        </div>
 
         <!-- Content Area -->
         <div class="news-content">

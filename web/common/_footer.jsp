@@ -122,7 +122,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="${pageContext.request.contextPath}/news.jsp"
+                            <a href="${pageContext.request.contextPath}/news"
                                 class="text-decoration-none d-flex align-items-center gap-1 footer-nav-link">
                                 <i class="bi bi-chevron-right" style="font-size: 11px;"></i> Tin tức &amp; Sự kiện
                             </a>

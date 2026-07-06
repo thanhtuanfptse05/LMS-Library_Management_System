@@ -40,7 +40,7 @@
                 <a class="nav-link-custom" href="${pageContext.request.contextPath}/">Trang chủ</a>
                 <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
                 <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
-                <a class="nav-link-custom" href="${pageContext.request.contextPath}/news.jsp">Tin tức</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/news">Tin tức</a>
                 <a class="nav-link-custom" href="#contact">Liên hệ</a>
             </div>
 
