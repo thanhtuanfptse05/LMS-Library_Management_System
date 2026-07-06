@@ -375,7 +375,7 @@ public class NotificationManagerServlet extends HttpServlet {
     /** Kiểm tra type hợp lệ */
     private boolean isValidType(String type) {
         return type != null && (type.equals("general") || type.equals("urgent")
-                || type.equals("policy") || type.equals("event"));
+                || type.equals("event"));
     }
 
     /** Kiểm tra xác thực và phân quyền Manager. */

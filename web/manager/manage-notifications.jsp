@@ -114,7 +114,6 @@
                                             <select class="form-select rounded-3" id="editType" name="type">
                                                 <option value="general" ${editNotification.type == 'general' ? 'selected' : ''}>📢 Thông tin chung</option>
                                                 <option value="urgent"  ${editNotification.type == 'urgent'  ? 'selected' : ''}>🔴 Khẩn cấp</option>
-                                                <option value="policy"  ${editNotification.type == 'policy'  ? 'selected' : ''}>📋 Nội quy / Chính sách</option>
                                                 <option value="event"   ${editNotification.type == 'event'   ? 'selected' : ''}>🎯 Sự kiện / Hoạt động</option>
                                             </select>
                                         </div>
@@ -254,7 +253,6 @@
                                                     onchange="onTypeChangeCreate(this)">
                                                 <option value="general">📢 Thông tin chung</option>
                                                 <option value="urgent">🔴 Khẩn cấp</option>
-                                                <option value="policy">📋 Nội quy / Chính sách</option>
                                                 <option value="event">🎯 Sự kiện / Hoạt động</option>
                                             </select>
                                         </div>
@@ -365,10 +363,6 @@
                                     <span style="color: var(--on-surface-variant);">Đóng cửa đột xuất, thay đổi khẩn</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="notif-badge-type type-policy" style="flex-shrink:0;">Nội quy</span>
-                                    <span style="color: var(--on-surface-variant);">Quy định mượn trả, nội quy mới</span>
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
                                     <span class="notif-badge-type type-event" style="flex-shrink:0;">Sự kiện</span>
                                     <span style="color: var(--on-surface-variant);">Workshop, triển lãm, hoạt động</span>
                                 </div>
@@ -403,7 +397,6 @@
                                         <option value="">Tất cả loại</option>
                                         <option value="general" ${typeFilter == 'general' ? 'selected' : ''}>📢 Chung</option>
                                         <option value="urgent"  ${typeFilter == 'urgent'  ? 'selected' : ''}>🔴 Khẩn cấp</option>
-                                        <option value="policy"  ${typeFilter == 'policy'  ? 'selected' : ''}>📋 Nội quy</option>
                                         <option value="event"   ${typeFilter == 'event'   ? 'selected' : ''}>🎯 Sự kiện</option>
                                     </select>
                                     <button type="submit" class="btn btn-primary-custom rounded-3 px-3">
@@ -435,12 +428,10 @@
                                                 <!-- Icon type -->
                                                 <div class="notif-type-icon flex-shrink-0
                                                             ${notif.type == 'urgent'  ? 'icon-urgent'  :
-                                                              notif.type == 'policy'  ? 'icon-policy'  :
                                                               notif.type == 'event'   ? 'icon-event'   : 'icon-general'}">
                                                     <span class="material-symbols-outlined"
                                                           style="font-variation-settings: 'FILL' 1; font-size: 20px;">
                                                         ${notif.type == 'urgent'  ? 'error'         :
-                                                          notif.type == 'policy'  ? 'policy'        :
                                                           notif.type == 'event'   ? 'celebration'   : 'campaign'}
                                                     </span>
                                                 </div>
@@ -457,7 +448,6 @@
                                                         <!-- Type badge -->
                                                         <span class="notif-badge-type type-${notif.type}">
                                                             ${notif.type == 'urgent'  ? 'Khẩn cấp'        :
-                                                              notif.type == 'policy'  ? 'Nội quy'          :
                                                               notif.type == 'event'   ? 'Sự kiện'          : 'Chung'}
                                                         </span>
                                                         <h6 class="fw-bold mb-0 text-truncate"

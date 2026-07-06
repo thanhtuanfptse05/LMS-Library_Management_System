@@ -82,7 +82,6 @@
                                     <option value="">Tất cả loại</option>
                                     <option value="general" ${typeFilter == 'general' ? 'selected' : ''}>📢 Chung</option>
                                     <option value="urgent"  ${typeFilter == 'urgent'  ? 'selected' : ''}>🔴 Khẩn cấp</option>
-                                    <option value="policy"  ${typeFilter == 'policy'  ? 'selected' : ''}>📋 Nội quy</option>
                                     <option value="event"   ${typeFilter == 'event'   ? 'selected' : ''}>🎯 Sự kiện</option>
                                 </select>
                                 <button type="submit" class="btn btn-primary-custom rounded-3 px-3 fw-semibold">
@@ -114,12 +113,10 @@
                                                 <!-- Type icon -->
                                                 <div class="notif-card-icon
                                                             ${notif.type == 'urgent'  ? 'icon-urgent'  :
-                                                              notif.type == 'policy'  ? 'icon-policy'  :
                                                               notif.type == 'event'   ? 'icon-event'   : 'icon-general'}">
                                                     <span class="material-symbols-outlined"
                                                           style="font-variation-settings: 'FILL' 1; font-size: 22px;">
                                                         ${notif.type == 'urgent'  ? 'error'       :
-                                                          notif.type == 'policy'  ? 'policy'      :
                                                           notif.type == 'event'   ? 'celebration' : 'campaign'}
                                                     </span>
                                                 </div>
@@ -137,7 +134,6 @@
                                                             <!-- Type badge -->
                                                             <span class="notif-badge-type type-${notif.type}">
                                                                 ${notif.type == 'urgent'  ? 'Khẩn cấp'     :
-                                                                  notif.type == 'policy'  ? 'Nội quy'       :
                                                                   notif.type == 'event'   ? 'Sự kiện'       : 'Thông tin'}
                                                             </span>
                                                             <!-- Unread dot -->
@@ -291,11 +287,6 @@
                                    class="type-filter-btn ${typeFilter == 'urgent' ? 'active-filter' : ''}">
                                     <span class="notif-badge-type type-urgent me-2">Khẩn cấp</span>
                                     <span class="text-secondary small">Thông báo hỏa tốc</span>
-                                </a>
-                                <a href="${pageContext.request.contextPath}/notifications?typeFilter=policy"
-                                   class="type-filter-btn ${typeFilter == 'policy' ? 'active-filter' : ''}">
-                                    <span class="notif-badge-type type-policy me-2">Nội quy</span>
-                                    <span class="text-secondary small">Quy định mượn trả</span>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/notifications?typeFilter=event"
                                    class="type-filter-btn ${typeFilter == 'event' ? 'active-filter' : ''}">
@@ -479,7 +470,6 @@
         // ── Open detail modal + auto mark as read ────────────────
         const typeIconMap = {
             urgent:  { symbol: 'error',       cls: 'icon-urgent',  badgeCls: 'type-urgent',  label: 'Khẩn cấp' },
-            policy:  { symbol: 'policy',      cls: 'icon-policy',  badgeCls: 'type-policy',  label: 'Nội quy' },
             event:   { symbol: 'celebration', cls: 'icon-event',   badgeCls: 'type-event',   label: 'Sự kiện' },
             general: { symbol: 'campaign',    cls: 'icon-general', badgeCls: 'type-general', label: 'Thông tin' }
         };
