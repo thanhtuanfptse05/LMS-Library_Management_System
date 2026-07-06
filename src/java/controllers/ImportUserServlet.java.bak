@@ -208,10 +208,8 @@ public class ImportUserServlet extends HttpServlet {
                 session.setAttribute("userImportErrors", errors);
 
             } else if ("confirm".equals(action)) {
-                @SuppressWarnings("unchecked")
                 List<UserDTO> users = (List<UserDTO>) session.getAttribute("userImportList");
                 String role = (String) session.getAttribute("userImportRole");
-                @SuppressWarnings("unchecked")
                 List<String> errors = (List<String>) session.getAttribute("userImportErrors");
 
                 if (users == null || role == null) {

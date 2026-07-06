@@ -28,7 +28,8 @@ INSERT INTO Category (categoryId, name, description) VALUES
 (22, 'Environmental Studies', 'Sách môi trường và biến đổi khí hậu'),
 (23, 'Agriculture', 'Sách nông nghiệp và công nghệ thực phẩm'),
 (24, 'Tourism & Hospitality', 'Sách quản trị du lịch và khách sạn'),
-(25, 'Soft Skills', 'Sách kỹ năng mềm và phát triển bản thân');
+(25, 'Soft Skills', 'Sách kỹ năng mềm và phát triển bản thân')
+ON CONFLICT (categoryId) DO NOTHING;
 
 -- 2. INSERT TAGS (50 TAGS)
 INSERT INTO Tag (tagId, name) VALUES 
@@ -81,4 +82,5 @@ INSERT INTO Tag (tagId, name) VALUES
 (47, 'BigData'),
 (48, 'Urbanization'),
 (49, 'Behavioral'),
-(50, 'NicheTopic');
+(50, 'NicheTopic')
+ON CONFLICT (tagId) DO NOTHING;
