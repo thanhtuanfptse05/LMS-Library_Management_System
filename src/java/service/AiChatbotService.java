@@ -38,50 +38,7 @@ public class AiChatbotService {
     private static volatile long cacheTimestamp = 0;
     private static final long CACHE_TTL_MS = 10 * 60 * 1000; // 10 phút
 
-    private static final Map<String, String> FAQ_TEMPLATES = new LinkedHashMap<>();
-    static {
-        FAQ_TEMPLATES.put("FINE",
-            "📌 **Mức phạt tại thư viện**\n\n"
-            + "• Phạt trả sách trễ hạn: **{{FINE_RATE_PER_DAY}} VNĐ/ngày**\n"
-            + "• Phạt sách bị hỏng: giá sách × **{{DAMAGED_FINE_MULTIPLIER}}**\n"
-            + "• Phạt mất sách: giá sách × **{{LOST_FINE_MULTIPLIER}}**\n"
-            + "• Giá sách mặc định: {{DEFAULT_BOOK_PRICE}} VNĐ\n\n"
-            + "💡 *Hãy trả sách đúng hạn để tránh phạt nhé!*");
 
-        FAQ_TEMPLATES.put("BORROW_LIMIT",
-            "📚 **Giới hạn số sách được mượn**\n\n"
-            + "• Sinh viên: tối đa **{{STUDENT_MAX_BORROW_LIMIT}} cuốn** cùng lúc\n"
-            + "• Giảng viên: tối đa **{{LECTURER_MAX_BORROW_LIMIT}} cuốn** cùng lúc\n\n"
-            + "*Bao gồm cả sách đang mượn và đặt trước.*");
-
-        FAQ_TEMPLATES.put("BORROW_DURATION",
-            "📅 **Thời hạn mượn sách**\n\n"
-            + "• Sinh viên: **{{STUDENT_MAX_BORROW_DAYS}} ngày**\n"
-            + "• Giảng viên: **{{LECTURER_MAX_BORROW_DAYS}} ngày**\n\n"
-            + "*Bạn có thể gia hạn nếu đủ điều kiện.*");
-
-        FAQ_TEMPLATES.put("RENEWAL",
-            "🔄 **Quy định gia hạn sách**\n\n"
-            + "• Số lần gia hạn tối đa: **{{MAX_EXTENSION_COUNT}} lần**/lượt mượn\n"
-            + "• Mỗi lần gia hạn thêm: **{{RENEW_DURATION_DAYS}} ngày**\n"
-            + "• Điều kiện: đã mượn ít nhất **{{RENEW_THRESHOLD_PERCENT}}%** thời gian\n\n"
-            + "*Sách quá hạn hoặc đang có người đặt trước sẽ không được gia hạn.*");
-
-        FAQ_TEMPLATES.put("RESERVATION",
-            "🔖 **Quy định đặt trước sách**\n\n"
-            + "• Sau khi sách có sẵn, bạn có **{{RESERVATION_HOLD_DAYS}} ngày** để đến nhận\n"
-            + "• Quá thời hạn sẽ tự động hủy\n"
-            + "• Giới hạn đặt trước tính chung với giới hạn mượn sách");
-    }
-
-    private static final Map<String, String> FAQ_REGEX = new LinkedHashMap<>();
-    static {
-        FAQ_REGEX.put("FINE",            ".*(phạt|trễ hạn|quá hạn|bao nhiêu tiền|tiền phạt).*");
-        FAQ_REGEX.put("BORROW_LIMIT",   ".*(bao nhiêu cuốn|mấy cuốn|giới hạn mượn|mượn tối đa|mượn được mấy).*");
-        FAQ_REGEX.put("BORROW_DURATION",".*(mấy ngày|bao lâu|thời hạn mượn|hạn trả|mượn trong).*");
-        FAQ_REGEX.put("RENEWAL",        ".*(gia hạn|renew|mượn thêm|kéo dài).*");
-        FAQ_REGEX.put("RESERVATION",    ".*(đặt trước|giữ sách|reservation|hàng chờ).*");
-    }
 
     /**
      * Phân loại mục đích câu hỏi của người dùng.
@@ -95,7 +52,7 @@ public class AiChatbotService {
         String m = userMessage.toLowerCase().trim();
 
         // Lớp 1: Keyword rõ ràng → return ngay (0ms)
-        if (m.matches(".*(phạt|nội quy|quy định|giờ mở cửa|quá hạn|gia hạn|bao nhiêu tiền|mấy ngày|mấy cuốn).*")) {
+        if (m.matches(".*(phạt|nội quy|quy định|giờ mở cửa|quá hạn|gia hạn|bao nhiêu tiền|mấy ngày|mấy cuốn|mấy quyển|tối đa|tôi đa|tối thiểu|bao nhiêu cuốn|bao nhiêu quyển|hạn mượn|mượn được|mượn tối đa|được mượn|mượn trong|đặt trước|giữ sách|trễ hạn|đền bù|làm mất|làm hỏng|mất sách|hỏng sách).*")) {
             return "Rules";
         }
         if (m.matches(".*(tìm sách|sách về|cuốn sách|tác giả|gợi ý sách|đề xuất sách|tìm cuốn).*")) {
@@ -165,7 +122,7 @@ public class AiChatbotService {
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "[AI-SVC] Lỗi phân loại intent bằng AI, fallback dựa trên từ khóa: " + e.getMessage());
             // Fallback dựa trên từ khoá tiếng Việt thông thường
-            if (lowerMsg.contains("phạt") || lowerMsg.contains("nội quy") || lowerMsg.contains("quy định") || lowerMsg.contains("giờ") || lowerMsg.contains("bao nhiêu tiền") || lowerMsg.contains("quá hạn") || lowerMsg.contains("gia hạn")) {
+            if (lowerMsg.matches(".*(phạt|nội quy|quy định|giờ mở cửa|quá hạn|gia hạn|bao nhiêu tiền|mấy ngày|mấy cuốn|mấy quyển|tối đa|tôi đa|tối thiểu|bao nhiêu cuốn|bao nhiêu quyển|hạn mượn|mượn được|mượn tối đa|được mượn|mượn trong|đặt trước|giữ sách|trễ hạn|đền bù|làm mất|làm hỏng|mất sách|hỏng sách).*")) {
                 return "Rules";
             }
             if (lowerMsg.contains("sách") || lowerMsg.contains("tác giả") || lowerMsg.contains("cuốn") || lowerMsg.contains("truyện") || lowerMsg.contains("tìm") || lowerMsg.contains("mượn") || lowerMsg.contains("trả")) {
@@ -217,40 +174,7 @@ public class AiChatbotService {
         return cachedRulesContext != null ? cachedRulesContext : "Không tìm thấy cấu hình quy định cụ thể.";
     }
 
-    /**
-     * Tìm kiếm và trả về nội dung FAQ từ cấu hình tĩnh nếu khớp.
-     */
-    public String matchRulesFAQ(String userMessage) {
-        if (userMessage == null) return null;
-        String m = userMessage.toLowerCase().trim();
-        for (Map.Entry<String, String> entry : FAQ_REGEX.entrySet()) {
-            if (m.matches(entry.getValue())) {
-                String template = FAQ_TEMPLATES.get(entry.getKey());
-                return (template != null) ? resolvePlaceholders(template) : null;
-            }
-        }
-        return null;
-    }
 
-    /**
-     * Thay thế các placeholder bằng giá trị cấu hình thực tế.
-     */
-    private String resolvePlaceholders(String content) {
-        Map<String, String> configs = retrieveRulesConfigMap();
-        if (configs == null || configs.isEmpty()) {
-            return content;
-        }
-        String result = content;
-        for (Map.Entry<String, String> entry : configs.entrySet()) {
-            String value = entry.getValue();
-            int descIdx = value.indexOf(" (");
-            if (descIdx > 0) {
-                value = value.substring(0, descIdx);
-            }
-            result = result.replace("{{" + entry.getKey() + "}}", value);
-        }
-        return result;
-    }
 
     /**
      * Thực hiện RAG tìm kiếm sách từ CSDL dựa trên câu hỏi của người dùng.
