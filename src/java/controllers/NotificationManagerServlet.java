@@ -18,7 +18,6 @@ import model.DocumentTemp;
 import model.Notification;
 import model.UserContactDTO;
 import service.EmailService;
-import service.MarkdownUtil;
 
 /**
  * NotificationManagerServlet — Servlet quản lý Bảng tin hệ thống cho Manager.
@@ -184,6 +183,9 @@ public class NotificationManagerServlet extends HttpServlet {
         notification.setTargetRole(targetRole);
         notification.setPinned(isPinned);
         notification.setCreatedBy(managerId);
+        // URL ảnh minh họa (chỉ có ý nghĩa với type general/event trên trang công khai)
+        String thumbnailUrl = request.getParameter("thumbnailUrl");
+        notification.setThumbnailUrl(thumbnailUrl);
 
         int newId = notificationDAO.insert(notification);
         if (newId > 0) {
@@ -245,6 +247,9 @@ public class NotificationManagerServlet extends HttpServlet {
             updated.setType(isValidType(type) ? type : "general");
             updated.setTargetRole(targetRole);
             updated.setPinned(isPinned);
+            // URL ảnh minh họa (chỉ có ý nghĩa với type general/event trên trang công khai)
+            String thumbnailUrl = request.getParameter("thumbnailUrl");
+            updated.setThumbnailUrl(thumbnailUrl);
 
             boolean success = notificationDAO.update(updated);
             if (success) {
@@ -328,8 +333,8 @@ public class NotificationManagerServlet extends HttpServlet {
             return;
         }
 
-        // Chuyển Markdown sang HTML một lần (dùng chung cho tất cả người nhận)
-        String contentHtml = MarkdownUtil.toHtml(notifContent != null ? notifContent : "");
+        // Chuyển \n sang <br> cho email HTML (vì template là HTML)
+        String contentHtml = notifContent != null ? notifContent.replace("\n", "<br>") : "";
 
         LOGGER.log(Level.INFO, "[NOTIFICATION EMAIL] Bắt đầu gửi {0} email bằng mẫu {1} cho {2}.",
                 new Object[]{contacts.size(), tempName, targetRole});
@@ -344,6 +349,7 @@ public class NotificationManagerServlet extends HttpServlet {
             String finalSubject = template.getSubject()
                     .replace("{{notificationTitle}}", notifTitle);
 
+            // Chèn HTML đã convert <br> vào template
             String finalBody = template.getBodyContent()
                     .replace("{{userName}}", displayName)
                     .replace("{{notificationTitle}}", notifTitle)

@@ -123,8 +123,13 @@
                                             <label for="editContent" class="form-label small fw-semibold"
                                                    style="color: var(--on-surface-variant);">Nội dung <span class="text-danger">*</span></label>
                                             <textarea class="form-control rounded-3" id="editContent" name="content"
-                                                      rows="6"
-                                                      placeholder="Mô tả chi tiết thông báo..." required><c:out value="${editNotification.content}"/></textarea>
+                                                      rows="8"
+                                                      placeholder="Nhập nội dung thông báo. Xuống dòng sẽ được giữ nguyên khi hiển thị."
+                                                      style="white-space: pre-line;"
+                                                      required><c:out value="${editNotification.content}"/></textarea>
+                                            <small class="text-secondary d-block mt-1" style="font-size:12px;">
+                                                ✏️ Nhập văn bản thường. Xuống dòng và khoảng trắng sẽ được giữ nguyên.
+                                            </small>
                                         </div>
 
                                         <div class="mb-3">
@@ -147,6 +152,33 @@
                                                 Ghim thông báo lên đầu
                                             </label>
                                         </div>
+
+                                        <!-- Ghi chú công khai (hiển thị khi type != urgent & policy) -->
+                                        <c:if test="${editNotification.type == 'general' or editNotification.type == 'event'}">
+                                        <div class="mb-3 p-2 rounded-3"
+                                             style="background: rgba(22,163,74,0.06); border: 1px dashed rgba(22,163,74,0.3);">
+                                            <small style="color: #15803d; font-size: 12px;">
+                                                🌐 Bài đăng này đang hiển thị trên <strong>trang Tin tức công khai</strong>.
+                                            </small>
+                                        </div>
+                                        </c:if>
+
+                                        <!-- URL ảnh minh họa (chỉ hiện khi type = general hoặc event) -->
+                                        <c:if test="${editNotification.type == 'general' or editNotification.type == 'event'}">
+                                        <div class="mb-3">
+                                            <label for="editThumbnail" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">
+                                                Ảnh minh họa (URL) <span class="text-muted fw-normal">— không bắt buộc</span>
+                                            </label>
+                                            <input type="url" class="form-control rounded-3" id="editThumbnail"
+                                                   name="thumbnailUrl"
+                                                   placeholder="https://example.com/hinh-su-kien.jpg"
+                                                   value="<c:out value='${editNotification.thumbnailUrl}'/>"><br>
+                                            <small class="text-muted" style="font-size:12px;">
+                                                📸 Dán link ảnh từ Internet. Ảnh sẽ hiển thị trên trang Tin tức công khai.
+                                            </small>
+                                        </div>
+                                        </c:if>
 
                                         <div class="mb-1" style="background: rgba(22,163,74,0.05); border: 1px solid rgba(22,163,74,0.2); border-radius: 8px; padding: 10px 12px;">
                                             <div class="form-check d-flex align-items-center gap-2 p-0 mb-0">
@@ -218,7 +250,8 @@
                                         <div class="mb-3">
                                             <label for="notifType" class="form-label small fw-semibold"
                                                    style="color: var(--on-surface-variant);">Phân loại</label>
-                                            <select class="form-select rounded-3" id="notifType" name="type">
+                                            <select class="form-select rounded-3" id="notifType" name="type"
+                                                    onchange="onTypeChangeCreate(this)">
                                                 <option value="general">📢 Thông tin chung</option>
                                                 <option value="urgent">🔴 Khẩn cấp</option>
                                                 <option value="policy">📋 Nội quy / Chính sách</option>
@@ -230,8 +263,11 @@
                                             <label for="notifContent" class="form-label small fw-semibold"
                                                    style="color: var(--on-surface-variant);">Nội dung <span class="text-danger">*</span></label>
                                             <textarea class="form-control rounded-3" id="notifContent" name="content"
-                                                      rows="6" placeholder="Mô tả chi tiết nội dung thông báo..." required></textarea>
-<small class="text-secondary d-block mt-1" style="font-size:12px;"><i class="bi bi-markdown"></i> Hỗ trợ định dạng Markdown (**in đậm**, *in nghiêng*, - danh sách, # tiêu đề)</small>
+                                                      rows="8" placeholder="Nhập nội dung thông báo. Xuống dòng sẽ được giữ nguyên khi hiển thị." required
+                                                      style="white-space: pre-line;"></textarea>
+                                            <small class="text-secondary d-block mt-1" style="font-size:12px;">
+                                                ✏️ Nhập văn bản thường. Xuống dòng và khoảng trắng sẽ được giữ nguyên.
+                                            </small>
                                         </div>
 
                                         <div class="mb-3">
@@ -252,6 +288,28 @@
                                                 <span class="material-symbols-outlined align-middle me-1" style="font-size: 16px;">push_pin</span>
                                                 Ghim thông báo lên đầu
                                             </label>
+                                        </div>
+
+                                        <!-- Ghi chú công khai (hiển thị khi type != urgent & policy) -->
+                                        <div id="publicNoteCreate" class="mb-3 p-2 rounded-3"
+                                             style="background: rgba(22,163,74,0.06); border: 1px dashed rgba(22,163,74,0.3); display:none;">
+                                            <small style="color: #15803d; font-size: 12px;">
+                                                🌐 Bài đăng này sẽ tự động hiển thị trên <strong>trang Tin tức công khai</strong> cho tất cả khách truy cập.
+                                            </small>
+                                        </div>
+
+                                        <!-- URL ảnh minh họa (chỉ hiện khi type = general hoặc event) -->
+                                        <div class="mb-3" id="thumbnailSectionCreate" style="display:none;">
+                                            <label for="notifThumbnail" class="form-label small fw-semibold"
+                                                   style="color: var(--on-surface-variant);">
+                                                Ảnh minh họa (URL) <span class="text-muted fw-normal">— không bắt buộc</span>
+                                            </label>
+                                            <input type="url" class="form-control rounded-3" id="notifThumbnail"
+                                                   name="thumbnailUrl"
+                                                   placeholder="https://example.com/hinh-su-kien.jpg">
+                                            <small class="text-muted" style="font-size:12px;">
+                                                📸 Dán link ảnh từ Internet. Ảnh sẽ hiển thị trên trang Tin tức công khai.
+                                            </small>
                                         </div>
 
                                         <div class="mb-1" style="background: rgba(22,163,74,0.05); border: 1px solid rgba(22,163,74,0.2); border-radius: 8px; padding: 10px 12px;">
@@ -726,31 +784,26 @@
         .target-student { background: rgba(59,130,246,0.10);      color: #1d4ed8; }
         .target-lecturer { background: rgba(139,92,246,0.10);     color: #6d28d9; }
 
-        /* ─── Modal Markdown Rendering ─── */
-        #modalContent { color: #333; }
-        #modalContent p { margin-bottom: 1rem; }
-        #modalContent ul, #modalContent ol { padding-left: 1.5rem; margin-bottom: 1rem; }
-        #modalContent li { margin-bottom: 0.5rem; }
-        #modalContent h1, #modalContent h2, #modalContent h3, #modalContent h4 { color: #191c1e; margin-top: 1.5rem; margin-bottom: 1rem; font-weight: bold; }
-        #modalContent blockquote { border-left: 4px solid #e5e5e5; padding-left: 1rem; color: #555; font-style: italic; }
-        #modalContent img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem; }
+        /* ─── Modal plain text rendering ─── */
+        #modalContent { color: #333; white-space: pre-line; }
         #modalContent a { color: var(--primary); text-decoration: none; }
         #modalContent a:hover { text-decoration: underline; }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if (typeof marked !== 'undefined') {
-                document.querySelectorAll('.notif-content-text').forEach(el => {
-                    let rawText = el.textContent || '';
-                    let tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = marked.parse(rawText);
-                    let plainText = tempDiv.textContent || tempDiv.innerText || "";
-                    el.textContent = plainText.replace(/\s+/g, ' ').trim();
-                });
-            }
-        });
+        // Toggle hiện/ẩn thumbnail & ghi chú công khai khi chọn type (form tạo mới)
+        function onTypeChangeCreate(selectEl) {
+            const val = selectEl.value;
+            const isPublic = (val === 'general' || val === 'event');
+            document.getElementById('thumbnailSectionCreate').style.display = isPublic ? 'block' : 'none';
+            document.getElementById('publicNoteCreate').style.display = isPublic ? 'block' : 'none';
+        }
+        // Khởi tạo trạng thái ban đầu
+        (function() {
+            const sel = document.getElementById('notifType');
+            if (sel) onTypeChangeCreate(sel);
+        })();
+
 
 const typeIconMap = {
             urgent:  { symbol: 'error',       cls: 'icon-urgent',  badgeCls: 'type-urgent',  label: 'Khẩn cấp' },
@@ -774,7 +827,8 @@ const typeIconMap = {
             const meta = typeIconMap[type] || typeIconMap.general;
 
             document.getElementById('notifDetailModalLabel').textContent = title;
-            document.getElementById('modalContent').innerHTML = marked.parse(content);
+            // Hiển thị nội dung plain text, giữ xuống dòng (white-space: pre-line đã khai báo trong CSS)
+            document.getElementById('modalContent').textContent = content;
             document.getElementById('modalTime').textContent = time;
             document.getElementById('modalAuthor').textContent = author;
 

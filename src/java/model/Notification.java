@@ -48,6 +48,9 @@ public class Notification {
     /** Nhóm đối tượng (Tất cả / Sinh viên / Giảng viên) */
     private String targetRole;
 
+    /** URL ảnh minh họa cho tin tức công khai (nullable) */
+    private String thumbnailUrl;
+
     public Notification() {
     }
 
@@ -152,5 +155,13 @@ public class Notification {
 
     public void setTargetRole(String targetRole) {
         this.targetRole = targetRole;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 }

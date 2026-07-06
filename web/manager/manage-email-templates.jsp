@@ -336,7 +336,7 @@
                                                               oninput="syncPreview()"><c:out value="${editTemplate.bodyContent}" /></textarea>
                                                     <div class="form-text d-flex align-items-center gap-1 mt-2" style="font-size: 11px;">
                                                         <span class="material-symbols-outlined" style="font-size: 13px;">info</span>
-                                                        Nhập HTML hoặc văn bản có Placeholder dạng <code>{{tenBien}}</code>. Khi gửi, Markdown trong nội dung thông báo sẽ được tự động chuyển sang HTML.
+                                                        Nhập HTML hoặc văn bản có Placeholder dạng <code>{{tenBien}}</code>. Khi gửi, dấu xuống dòng trong nội dung thông báo sẽ tự động được chuyển thành thẻ &lt;br&gt;.
                                                     </div>
                                                 </div>
                                             </div>

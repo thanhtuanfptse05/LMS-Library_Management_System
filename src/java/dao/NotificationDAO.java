@@ -38,7 +38,7 @@ public class NotificationDAO {
      */
     public List<Notification> getAll() {
         String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
-                + "n.createdBy, n.createdAt, n.updatedAt, "
+                + "n.thumbnailUrl, n.createdBy, n.createdAt, n.updatedAt, "
                 + "mp.fullName AS createdByName "
                 + "FROM Notification n "
                 + "LEFT JOIN MemberProfile mp ON n.createdBy = mp.userId "
@@ -70,7 +70,7 @@ public class NotificationDAO {
     public List<Notification> getAllPaged(String keyword, String typeFilter, int page, int pageSize) {
         StringBuilder sql = new StringBuilder(
                 "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
-                + "n.createdBy, n.createdAt, n.updatedAt, "
+                + "n.thumbnailUrl, n.createdBy, n.createdAt, n.updatedAt, "
                 + "mp.fullName AS createdByName "
                 + "FROM Notification n "
                 + "LEFT JOIN MemberProfile mp ON n.createdBy = mp.userId "
@@ -157,7 +157,7 @@ public class NotificationDAO {
     public List<Notification> getAllForUser(int userId, String keyword, String typeFilter, int page, int pageSize) {
         StringBuilder sql = new StringBuilder(
                 "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
-                + "n.createdBy, n.createdAt, n.updatedAt, "
+                + "n.thumbnailUrl, n.createdBy, n.createdAt, n.updatedAt, "
                 + "mp.fullName AS createdByName, "
                 + "CASE WHEN uns.userId IS NOT NULL THEN 1 ELSE 0 END AS isRead "
                 + "FROM Notification n "
@@ -236,7 +236,7 @@ public class NotificationDAO {
      */
     public Notification findById(int notificationId) {
         String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
-                + "n.createdBy, n.createdAt, n.updatedAt, "
+                + "n.thumbnailUrl, n.createdBy, n.createdAt, n.updatedAt, "
                 + "mp.fullName AS createdByName "
                 + "FROM Notification n "
                 + "LEFT JOIN MemberProfile mp ON n.createdBy = mp.userId "
@@ -287,8 +287,8 @@ public class NotificationDAO {
      * @return ID tự động tăng vừa được tạo, -1 nếu thất bại
      */
     public int insert(Notification notification) {
-        String sql = "INSERT INTO Notification (title, content, type, targetRole, isPinned, createdBy, createdAt) "
-                + "VALUES (?, ?, ?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO Notification (title, content, type, targetRole, isPinned, thumbnailUrl, createdBy, createdAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -298,7 +298,13 @@ public class NotificationDAO {
             ps.setString(3, notification.getType() != null ? notification.getType() : "general");
             ps.setString(4, notification.getTargetRole() != null ? notification.getTargetRole() : "ALL");
             ps.setBoolean(5, notification.isPinned());
-            ps.setInt(6, notification.getCreatedBy());
+            String thumb = notification.getThumbnailUrl();
+            if (thumb != null && !thumb.trim().isEmpty()) {
+                ps.setString(6, thumb.trim());
+            } else {
+                ps.setNull(6, java.sql.Types.VARCHAR);
+            }
+            ps.setInt(7, notification.getCreatedBy());
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
@@ -322,7 +328,7 @@ public class NotificationDAO {
      */
     public boolean update(Notification notification) {
         String sql = "UPDATE Notification SET title = ?, content = ?, type = ?, targetRole = ?, isPinned = ?, "
-                + "updatedAt = NOW() WHERE notificationId = ?";
+                + "thumbnailUrl = ?, updatedAt = NOW() WHERE notificationId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -332,7 +338,13 @@ public class NotificationDAO {
             ps.setString(3, notification.getType() != null ? notification.getType() : "general");
             ps.setString(4, notification.getTargetRole() != null ? notification.getTargetRole() : "ALL");
             ps.setBoolean(5, notification.isPinned());
-            ps.setInt(6, notification.getNotificationId());
+            String thumb = notification.getThumbnailUrl();
+            if (thumb != null && !thumb.trim().isEmpty()) {
+                ps.setString(6, thumb.trim());
+            } else {
+                ps.setNull(6, java.sql.Types.VARCHAR);
+            }
+            ps.setInt(7, notification.getNotificationId());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -454,6 +466,115 @@ public class NotificationDAO {
     }
 
     // ═══════════════════════════════════════════════════════════
+    // PUBLIC NEWS — Truy vấn tin tức công khai (type: general/event)
+    // ═══════════════════════════════════════════════════════════
+
+    /**
+     * Lấy tin tức công khai có phân trang — chỉ lấy type IN ('general','event').
+     *
+     * @param typeFilter null = tất cả, "general" hoặc "event" = lọc theo tab
+     * @param page       Số trang (1-indexed)
+     * @param pageSize   Số bản ghi mỗi trang
+     * @return Danh sách Notification công khai
+     */
+    public List<Notification> getPublicNewsPaged(String typeFilter, int page, int pageSize) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
+                + "n.thumbnailUrl, n.createdBy, n.createdAt, n.updatedAt, "
+                + "mp.fullName AS createdByName "
+                + "FROM Notification n "
+                + "LEFT JOIN MemberProfile mp ON n.createdBy = mp.userId "
+                + "WHERE n.type IN ('general','event') ");
+
+        List<Object> params = new ArrayList<>();
+        if (typeFilter != null && !typeFilter.trim().isEmpty()) {
+            sql.append("AND n.type = ? ");
+            params.add(typeFilter.trim());
+        }
+        sql.append("ORDER BY n.isPinned DESC, n.createdAt DESC "
+                + "LIMIT ? OFFSET ?");
+        params.add(pageSize);
+        params.add((page - 1) * pageSize);
+
+        List<Notification> list = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching public news paged", e);
+        }
+        return list;
+    }
+
+    /**
+     * Đếm tổng tin tức công khai (type IN 'general','event') — dùng để tính số trang.
+     *
+     * @param typeFilter null = tất cả, "general" hoặc "event" = lọc theo tab
+     * @return Tổng số bản ghi
+     */
+    public int countPublicNews(String typeFilter) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) FROM Notification WHERE type IN ('general','event') ");
+        List<Object> params = new ArrayList<>();
+        if (typeFilter != null && !typeFilter.trim().isEmpty()) {
+            sql.append("AND type = ? ");
+            params.add(typeFilter.trim());
+        }
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error counting public news", e);
+        }
+        return 0;
+    }
+
+    /**
+     * Lấy N tin tức mới nhất (type IN 'general','event') cho trang chủ.
+     *
+     * @param limit Số bản ghi tối đa cần lấy
+     * @return Danh sách Notification mới nhất
+     */
+    public List<Notification> getRecentNews(int limit) {
+        String sql = "SELECT n.notificationId, n.title, n.content, n.type, n.targetRole, n.isPinned, "
+                + "n.thumbnailUrl, n.createdBy, n.createdAt, n.updatedAt, "
+                + "mp.fullName AS createdByName "
+                + "FROM Notification n "
+                + "LEFT JOIN MemberProfile mp ON n.createdBy = mp.userId "
+                + "WHERE n.type IN ('general','event') "
+                + "ORDER BY n.createdAt DESC "
+                + "LIMIT ?";
+
+        List<Notification> list = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching recent news", e);
+        }
+        return list;
+    }
+
+    // ═══════════════════════════════════════════════════════════
     // MAPPING — Ánh xạ ResultSet thành đối tượng
     // ═══════════════════════════════════════════════════════════
 
@@ -472,6 +593,7 @@ public class NotificationDAO {
         n.setType(rs.getString("type"));
         n.setTargetRole(rs.getString("targetRole"));
         n.setPinned(rs.getBoolean("isPinned"));
+        n.setThumbnailUrl(rs.getString("thumbnailUrl"));
         n.setCreatedBy(rs.getInt("createdBy"));
         n.setCreatedAt(rs.getTimestamp("createdAt"));
         n.setUpdatedAt(rs.getTimestamp("updatedAt"));

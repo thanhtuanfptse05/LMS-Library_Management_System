@@ -275,11 +275,15 @@ CREATE TABLE Notification (
     type VARCHAR(50) NOT NULL DEFAULT 'general',
     targetRole VARCHAR(50) DEFAULT 'ALL',
     isPinned BOOLEAN NOT NULL DEFAULT FALSE,
+    thumbnailUrl VARCHAR(500) NULL,
     createdBy INT NOT NULL,
     createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
     updatedAt TIMESTAMP NULL,
     CONSTRAINT FK_Notification_User FOREIGN KEY (createdBy) REFERENCES "User"(userId)
 );
+
+-- Migration: Thêm cột thumbnailUrl cho bảng Notification (chạy trên DB đã tồn tại)
+-- ALTER TABLE Notification ADD COLUMN IF NOT EXISTS thumbnailUrl VARCHAR(500) NULL;
 
 -- 22. Bảng UserNotificationStatus
 CREATE TABLE UserNotificationStatus (

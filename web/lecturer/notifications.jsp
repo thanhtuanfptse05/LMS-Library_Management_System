@@ -396,17 +396,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if (typeof marked !== 'undefined') {
-                document.querySelectorAll('.notif-summary').forEach(el => {
-                    let rawText = el.textContent || '';
-                    let tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = marked.parse(rawText);
-                    let plainText = tempDiv.textContent || tempDiv.innerText || "";
-                    el.textContent = plainText.replace(/\s+/g, ' ').trim();
-                });
-            }
-        });
+
 
         const CTX_PATH = '${pageContext.request.contextPath}';
 
@@ -508,7 +498,7 @@
             const meta = typeIconMap[type] || typeIconMap.general;
 
             document.getElementById('notifDetailModalLabel').textContent = title;
-            document.getElementById('modalContent').innerHTML             = marked.parse(content);
+            document.getElementById('modalContent').textContent           = content;
             document.getElementById('modalTime').textContent              = time;
             document.getElementById('modalAuthor').textContent            = author.replace(/^person/, '').trim();
 
@@ -638,18 +628,10 @@
         /* ─── Read-more button hover ─── */
         .btn-read-more:hover { color: #7a2e00 !important; text-decoration: underline; }
 
-        /* ─── Modal Markdown Rendering ─── */
-        #modalContent { color: #333; }
-        #modalContent p { margin-bottom: 1rem; }
-        #modalContent ul, #modalContent ol { padding-left: 1.5rem; margin-bottom: 1rem; }
-        #modalContent li { margin-bottom: 0.5rem; }
-        #modalContent h1, #modalContent h2, #modalContent h3, #modalContent h4 { color: #191c1e; margin-top: 1.5rem; margin-bottom: 1rem; font-weight: bold; }
-        #modalContent blockquote { border-left: 4px solid #e5e5e5; padding-left: 1rem; color: #555; font-style: italic; }
-        #modalContent img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem; }
+        /* ─── Modal Plain Text Rendering ─── */
+        #modalContent { color: #333; white-space: pre-line; }
         #modalContent a { color: var(--primary); text-decoration: none; }
         #modalContent a:hover { text-decoration: underline; }
     </style>
-
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
