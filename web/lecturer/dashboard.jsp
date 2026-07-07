@@ -44,7 +44,7 @@
                         <div class="col-12 col-md-8">
                             <p class="text-on-surface-variant fw-semibold mb-1" style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;">Thư viện Đại học LMS</p>
                             <h2 class="fw-bold mb-1" style="font-size: 24px; color: var(--on-primary-container);">
-                                Chào mừng trở lại, <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Giảng viên'}" />!
+                                Chào mừng trở lại, <c:out value="${not empty sessionScope.fullName ? sessionScope.fullName : sessionScope.email}" default="Giảng viên" />!
                             </h2>
                             <p class="mb-0" style="font-size: 14px; color: var(--on-secondary-fixed-variant);">
                                 Quản lý danh sách tài liệu môn học, hoạt động mượn sách và tài liệu nghiên cứu của bạn.
