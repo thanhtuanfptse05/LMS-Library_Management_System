@@ -89,9 +89,6 @@
                                     <div class="profile-img-container rounded-circle overflow-hidden mx-auto bg-primary-fixed d-flex align-items-center justify-content-center text-primary" style="font-size: 48px; font-weight: bold;">
                                         <c:out value="${not empty profile.fullName ? profile.fullName.substring(0,1).toUpperCase() : 'L'}" />
                                     </div>
-                                    <button class="btn-camera d-flex align-items-center justify-content-center" title="Thay đổi ảnh đại diện">
-                                        <span class="material-symbols-outlined style-icon" style="font-size: 20px;">photo_camera</span>
-                                    </button>
                                 </div>
                                 <h3 class="font-headline-md mb-1" style="color: var(--on-surface);">
                                     <c:out value="${not empty profile.fullName ? profile.fullName : 'Giảng viên khách mời'}" />

@@ -159,13 +159,10 @@
                             <!-- Avatar & Actions -->
                             <div class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant text-center">
                                 <div class="relative d-inline-block mb-3 position-relative">
-                                    <div class="profile-img-container rounded-circle overflow-hidden mx-auto">
-                                        <img alt="Profile Picture" class="w-100 h-100 object-fit-cover"
-                                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6l7g8WPfzCAEa3aHpjxWS6DJXd-8zhl61UEXxpK7fAfzGj3BBHipMgYolqJkcyWb7x9l0lEjVmzfU-lqfWRCE0X-_WRJUtKaNrVai81L5yMIky4Ad8mf02N8GfHXJQ4d9gjaBN50z7T6o6zNdSTkU1jbUE64QGHVsWcCVYnbQQWNYdP-gh6qW9RLpT50fT8yJTTzcjkV9PtWSrLTF6lh9hM2tXSyJnuXSDjHu4sHwcO4bHkxMZ0K-sZmoF_9liZ96_MHqiwsGhsVF">
+                                    <div class="profile-img-container rounded-circle overflow-hidden mx-auto bg-primary-fixed d-flex align-items-center justify-content-center text-primary"
+                                         style="font-size: 48px; font-weight: bold;">
+                                        <c:out value="${not empty profile.fullName ? profile.fullName.substring(0,1).toUpperCase() : 'S'}" />
                                     </div>
-                                    <button class="btn-camera d-flex align-items-center justify-content-center" title="Đổi ảnh đại diện">
-                                        <span class="material-symbols-outlined style-icon" style="font-size: 20px;">photo_camera</span>
-                                    </button>
                                 </div>
                                 <h3 class="font-headline-md mb-1">
                                     <c:out value="${not empty profile.fullName ? profile.fullName : 'Sinh viên khách'}" />
