@@ -55,8 +55,11 @@
         <a href="${pageContext.request.contextPath}/student/profile"
            class="d-flex align-items-center gap-2 text-decoration-none"
            title="Xem Hồ sơ">
-            <div class="header-avatar" title="${sessionScope.email}">
+            <div class="header-avatar" title="${not empty sessionScope.fullName ? sessionScope.fullName : sessionScope.email}">
                 <c:choose>
+                    <c:when test="${not empty sessionScope.fullName}">
+                        <c:out value="${fn:toUpperCase(fn:substring(sessionScope.fullName,0,2))}" />
+                    </c:when>
                     <c:when test="${not empty sessionScope.email}">
                         <c:out value="${fn:toUpperCase(fn:substring(sessionScope.email,0,2))}" />
                     </c:when>
@@ -65,7 +68,7 @@
             </div>
             <div class="d-none d-sm-block" style="max-width: 140px;">
                 <p class="mb-0 fw-bold text-truncate" style="font-size: 13px; color: var(--on-surface);">
-                    <c:out value="${sessionScope.email}" default="Sinh viên"/>
+                    <c:out value="${not empty sessionScope.fullName ? sessionScope.fullName : sessionScope.email}" default="Sinh viên"/>
                 </p>
                 <p class="mb-0 text-uppercase text-on-surface-variant text-truncate" style="font-size: 10px; letter-spacing: 0.1em;">
                     <c:out value="${sessionScope.role}" default="SINH VIÊN"/>

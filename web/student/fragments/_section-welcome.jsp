@@ -9,7 +9,7 @@
             </p>
             <h1 class="fw-bold mb-2" style="font-size: 26px; color: var(--on-primary-container);">
                 Chào mừng trở lại,
-                <c:out value="${not empty sessionScope.email ? sessionScope.email : 'Sinh viên'}" />!
+                <c:out value="${not empty sessionScope.fullName ? sessionScope.fullName : (not empty sessionScope.email ? sessionScope.email : 'Sinh viên')}" />!
             </h1>
             <p class="mb-4" style="font-size: 16px; color: var(--on-secondary-fixed-variant);">
                 <c:choose>

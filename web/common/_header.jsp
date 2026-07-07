@@ -69,7 +69,7 @@
                             </c:otherwise>
                         </c:choose>
                         <span class="small fw-medium d-none d-lg-inline" style="color: var(--text-muted-custom);">
-                            Chào mừng, <strong><c:out value="${sessionScope.email}"/></strong>
+                            Chào mừng, <strong><c:out value="${not empty sessionScope.fullName ? sessionScope.fullName : sessionScope.email}"/></strong>
                         </span>
                         <a href="${dashboardUrl}"
                             class="btn btn-primary-custom px-3 py-2 rounded-3 fw-semibold d-inline-flex align-items-center gap-1"

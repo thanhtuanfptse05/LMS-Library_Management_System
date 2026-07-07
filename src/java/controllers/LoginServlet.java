@@ -124,6 +124,17 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("role", user.getRole());
             session.setAttribute("email", user.getEmail());
 
+            // Fetch and set user's full name in session (if available)
+            dao.MemberProfileDAO profileDAO = new dao.MemberProfileDAO();
+            model.MemberProfile profile = profileDAO.findByUserId(user.getUserId());
+            if (profile != null && profile.getFullName() != null && !profile.getFullName().trim().isEmpty()) {
+                session.setAttribute("fullName", profile.getFullName());
+            } else {
+                // Fallback to name part of email
+                String emailName = user.getEmail().contains("@") ? user.getEmail().substring(0, user.getEmail().indexOf('@')) : user.getEmail();
+                session.setAttribute("fullName", emailName);
+            }
+
             // Nếu tài khoản bị khóa chỉ do 'unpaid', chuyển flag cảnh báo vào session
             if (Boolean.TRUE.equals(request.getAttribute("unpaidWarning"))) {
                 session.setAttribute("unpaidWarning", true);
