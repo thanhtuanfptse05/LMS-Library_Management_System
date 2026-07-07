@@ -103,11 +103,11 @@
         </div>
     </div>
 
-    <!-- Recommended Books (4 cols) -->
+    <!-- Popular Books (4 cols) -->
     <div class="col-12 col-lg-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <h2 class="fs-4 fw-bold mb-0 text-dark" id="dash-rec-title">
-                ✨ Đang tải gợi ý...
+            <h2 class="fs-4 fw-bold mb-0 text-dark">
+                🔥 Sách phổ biến
             </h2>
             <a href="${pageContext.request.contextPath}/book-search"
                class="btn btn-link text-primary-custom text-decoration-none fw-semibold p-0 small">
@@ -116,18 +116,53 @@
         </div>
 
         <div class="raised-card p-4 d-flex flex-column" style="min-height: 400px;">
-            <p class="text-on-surface-variant small mb-4" id="dash-rec-subtitle">
-                Hệ thống đang tìm những cuốn sách phù hợp nhất cho bạn...
+            <p class="text-on-surface-variant small mb-4">
+                Top những sách được mượn nhiều nhất tại thư viện.
             </p>
 
-            <div class="d-flex flex-column gap-3 flex-grow-1" id="dash-rec-container">
-                <!-- Loader placeholder -->
-                <div class="d-flex justify-content-center align-items-center flex-grow-1">
-                    <div class="spinner-border text-primary-custom" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
+            <div class="d-flex flex-column gap-3 flex-grow-1">
+                <c:choose>
+                    <c:when test="${not empty topBooks}">
+                        <c:forEach var="book" items="${topBooks}" varStatus="status" end="4">
+                            <div class="d-flex gap-3 align-items-start pb-2" style="border-bottom: 1px dashed var(--outline-variant); <c:if test='${status.last}'>border-bottom: none;</c:if>">
+                                <!-- Book Cover -->
+                                <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="flex-shrink-0" style="width: 60px; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                                    <c:choose>
+                                        <c:when test="${not empty book.imagePath}">
+                                            <c:choose>
+                                                <c:when test="${fn:startsWith(book.imagePath, 'http://') or fn:startsWith(book.imagePath, 'https://')}">
+                                                    <img class="w-100 h-100" style="object-fit: cover;" src="<c:out value='${book.imagePath}'/>" alt="Bìa sách" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <img class="w-100 h-100" style="object-fit: cover;" src="${pageContext.request.contextPath}/book-images/<c:out value='${book.imagePath}'/>" alt="Bìa sách" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img class="w-100 h-100" style="object-fit: cover;" src="${pageContext.request.contextPath}/assets/images/book-placeholder.jpg" alt="Bìa sách">
+                                        </c:otherwise>
+                                    </c:choose>
+                                </a>
+                                <!-- Book Details -->
+                                <div class="flex-grow-1" style="min-width: 0;">
+                                    <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="text-decoration-none">
+                                        <h4 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 13px; line-height: 1.4;" title="<c:out value='${book.title}'/>">
+                                            <c:out value="${book.title}"/>
+                                        </h4>
+                                    </a>
+                                    <p class="text-on-surface-variant mb-0 text-truncate" style="font-size: 11px;">
+                                        bởi <c:out value="${book.author}"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <p class="text-muted small">Chưa có dữ liệu sách phổ biến.</p>
+                    </c:otherwise>
+                </c:choose>
             </div>
+            
             <a href="${pageContext.request.contextPath}/book-search"
                class="btn btn-outline-primary-custom w-100 rounded-3 py-2 mt-4 text-decoration-none d-block text-center">
                 Khám phá thêm
