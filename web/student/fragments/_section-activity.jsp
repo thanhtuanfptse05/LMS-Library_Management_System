@@ -83,33 +83,12 @@
                             </c:forEach>
                         </c:when>
                         <c:otherwise>
-                            <!-- Static demo rows when no backend data -->
+                            <%-- Trạng thái rỗng: chưa có lịch sử mượn sách --%>
                             <tr>
-                                <td class="px-4 py-3">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="overflow-hidden rounded flex-shrink-0" style="width: 32px; height: 40px; background: var(--surface-container-high);"></div>
-                                        <span class="fw-normal text-dark small">Digital Minimalism</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-on-surface-variant small">Cal Newport</td>
-                                <td class="px-4 py-3 text-on-surface-variant small">Sep 15, 2024</td>
-                                <td class="px-4 py-3 text-on-surface-variant small">Sep 29, 2024</td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="badge badge-returned text-uppercase px-3 py-1" style="font-size: 10px;">Đã trả</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="overflow-hidden rounded flex-shrink-0" style="width: 32px; height: 40px; background: var(--surface-container-high);"></div>
-                                        <span class="fw-normal text-dark small">The Lean Startup</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-on-surface-variant small">Eric Ries</td>
-                                <td class="px-4 py-3 text-on-surface-variant small">Aug 28, 2024</td>
-                                <td class="px-4 py-3 text-on-surface-variant small">Sep 11, 2024</td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="badge badge-returned text-uppercase px-3 py-1" style="font-size: 10px;">Đã trả</span>
+                                <td colspan="5" class="text-center py-5">
+                                    <span class="material-symbols-outlined d-block mb-2"
+                                          style="font-size: 40px; color: var(--outline);">menu_book</span>
+                                    <p class="mb-0 text-on-surface-variant small">Bạn chưa có lịch sử mượn sách nào.</p>
                                 </td>
                             </tr>
                         </c:otherwise>
