@@ -365,36 +365,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="row g-3">
-                                            <div class="col-12 col-md-4">
-                                                <div class="p-3 rounded-xl text-white h-100"
-                                                    style="background-color: var(--bs-primary);">
-                                                    <span
-                                                        class="material-symbols-outlined display-6 mb-2">auto_stories</span>
-                                                    <div class="font-display mb-1">124K</div>
-                                                    <p class="font-label-md mb-0 text-white-50">Tổng số Sách Đang quản
-                                                        lý</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-md-4">
-                                                <div class="bg-surface-container-high p-3 rounded-xl h-100">
-                                                    <span
-                                                        class="material-symbols-outlined text-primary display-6 mb-2">assignment</span>
-                                                    <div class="font-display mb-1 text-on-surface">18</div>
-                                                    <p class="font-label-md mb-0 text-on-surface-variant">Chính sách Đã
-                                                        cập nhật</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-md-4">
-                                                <div class="bg-secondary-container p-3 rounded-xl h-100">
-                                                    <span
-                                                        class="material-symbols-outlined text-on-secondary-container display-6 mb-2">mark_email_read</span>
-                                                    <div class="font-display text-on-secondary-container mb-1">5</div>
-                                                    <p
-                                                        class="font-label-md mb-0 text-on-secondary-container text-opacity-75">
-                                                        Mẫu Đã quản lý</p>
-                                                </div>
-                                            </div>
                                         </div>
 
                                     </div>

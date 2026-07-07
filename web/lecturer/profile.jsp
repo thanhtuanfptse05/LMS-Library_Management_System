@@ -251,30 +251,6 @@
                                 </div>
                             </div>
 
-                            <div class="row g-3">
-                                <div class="col-12 col-md-4">
-                                    <div class="p-3 rounded-xl text-white h-100" style="background-color: var(--bs-primary);">
-                                        <span class="material-symbols-outlined display-6 mb-2">history_edu</span>
-                                        <div class="font-display mb-1">24</div>
-                                        <p class="font-label-md mb-0 text-white-50">Ấn phẩm đã đọc</p>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="bg-surface-container-high p-3 rounded-xl h-100">
-                                        <span class="material-symbols-outlined text-primary display-6 mb-2">article</span>
-                                        <div class="font-display mb-1 text-on-surface">15</div>
-                                        <p class="font-label-md mb-0 text-on-surface-variant">Bài báo đề xuất</p>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="bg-secondary-container p-3 rounded-xl h-100">
-                                        <span class="material-symbols-outlined text-on-secondary-container display-6 mb-2">workspace_premium</span>
-                                        <div class="font-display text-on-secondary-container mb-1">Top</div>
-                                        <p class="font-label-md mb-0 text-on-secondary-container text-opacity-75">10% Giảng viên đọc nhiều nhất</p>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>

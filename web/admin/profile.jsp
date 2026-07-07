@@ -253,31 +253,6 @@
                                 </div>
                             </div>
 
-                            <!-- Bottom Badges / Metrics (Mock Data for UI) -->
-                            <div class="row g-3">
-                                <div class="col-12 col-md-4">
-                                    <div class="p-3 rounded-xl text-white h-100" style="background-color: var(--bs-primary);">
-                                        <span class="material-symbols-outlined display-6 mb-2">dns</span>
-                                        <div class="font-display mb-1">99%</div>
-                                        <p class="font-label-md mb-0 text-white-50">System Uptime</p>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="bg-surface-container-high p-3 rounded-xl h-100">
-                                        <span class="material-symbols-outlined text-primary display-6 mb-2">policy</span>
-                                        <div class="font-display mb-1 text-on-surface">1,204</div>
-                                        <p class="font-label-md mb-0 text-on-surface-variant">Audits Logged</p>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="bg-secondary-container p-3 rounded-xl h-100">
-                                        <span class="material-symbols-outlined text-on-secondary-container display-6 mb-2">manage_accounts</span>
-                                        <div class="font-display text-on-secondary-container mb-1">12K</div>
-                                        <p class="font-label-md mb-0 text-on-secondary-container text-opacity-75">Users Managed</p>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
