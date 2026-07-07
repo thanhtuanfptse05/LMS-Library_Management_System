@@ -297,6 +297,17 @@
 </div><!-- /.d-flex.main-wrapper -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if(window.location.hash) {
+            var triggerEl = document.querySelector('button[data-bs-target="' + window.location.hash + '"]');
+            if (triggerEl) {
+                var tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
