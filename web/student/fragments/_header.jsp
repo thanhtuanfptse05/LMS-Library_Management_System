@@ -13,14 +13,6 @@
             LMS Thư viện
         </a>
 
-        <div class="d-none d-md-block header-search-wrapper">
-            <span class="material-symbols-outlined">search</span>
-            <input class="header-search-input"
-                   placeholder="Tìm kiếm sách, tạp chí, tài liệu..."
-                   type="text"
-                   aria-label="Tìm kiếm danh mục thư viện"
-                   id="globalSearchInput" />
-        </div>
     </div>
 
     <!-- Center Nav (desktop only) -->
@@ -33,21 +25,12 @@
            onmouseover="this.style.background='var(--surface-container-high)'"
            onmouseout="this.style.background=''"
            href="${pageContext.request.contextPath}/book-search">Danh mục</a>
-        <a class="px-3 py-1 rounded-pill fw-semibold text-decoration-none text-on-surface-variant"
-           style="font-size: 13px; transition: background 0.2s ease;"
-           onmouseover="this.style.background='var(--surface-container-high)'"
-           onmouseout="this.style.background=''"
-           href="${pageContext.request.contextPath}/#contact">Hỗ trợ</a>
     </nav>
 
     <!-- Right: Notifications + User -->
     <div class="d-flex align-items-center gap-2 flex-shrink-0">
         <!-- Notification bell -->
         <jsp:include page="/components/notification-bell" />
-
-        <button class="header-icon-btn" aria-label="Trợ giúp" title="Trung tâm Trợ giúp">
-            <span class="material-symbols-outlined">help</span>
-        </button>
 
         <div style="width: 1px; height: 24px; background: var(--outline-variant);"></div>
 
