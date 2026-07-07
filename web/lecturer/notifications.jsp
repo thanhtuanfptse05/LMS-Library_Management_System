@@ -424,6 +424,17 @@
                     sidebarRow.classList.add('d-none');
                 }
             }
+            
+            // Update sidebar navigation unread badge
+            const sidebarNavBadge = document.getElementById('sidebarNavUnreadBadge');
+            if (sidebarNavBadge) {
+                if (currentUnreadCount > 0) {
+                    sidebarNavBadge.textContent = currentUnreadCount > 99 ? '99+' : currentUnreadCount;
+                    sidebarNavBadge.style.display = 'inline-block';
+                } else {
+                    sidebarNavBadge.style.display = 'none';
+                }
+            }
         }
 
         // ── Mark single notification as read ─────────────────────

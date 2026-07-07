@@ -306,5 +306,17 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closePanel();
     });
+    
+    // Sync the sidebar unread badge
+    var unreadCount = parseInt('${not empty unreadNotificationCount ? unreadNotificationCount : 0}');
+    var sidebarNavBadge = document.getElementById('sidebarNavUnreadBadge');
+    if (sidebarNavBadge) {
+        if (unreadCount > 0) {
+            sidebarNavBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            sidebarNavBadge.style.display = 'inline-block';
+        } else {
+            sidebarNavBadge.style.display = 'none';
+        }
+    }
 })();
 </script>

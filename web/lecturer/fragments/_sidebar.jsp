@@ -41,6 +41,9 @@
         <a class="sidebar-link" href="${pageContext.request.contextPath}/notifications">
             <span class="material-symbols-outlined">campaign</span>
             <span>Bảng tin</span>
+            <span id="sidebarNavUnreadBadge" class="ms-auto badge rounded-pill"
+                  style="background: var(--primary); color: white; font-size: 10px; padding: 2px 7px; min-width: 20px; text-align: center; display: none;">
+            </span>
         </a>
 
 

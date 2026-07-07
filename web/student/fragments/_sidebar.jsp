@@ -42,15 +42,9 @@
         <a class="sidebar-link" href="${pageContext.request.contextPath}/notifications">
             <span class="material-symbols-outlined">campaign</span>
             <span>Bảng tin</span>
-            <c:if test="${not empty sessionScope.unreadNotificationCount and sessionScope.unreadNotificationCount > 0}">
-                <span class="ms-auto badge rounded-pill"
-                      style="background: var(--primary); color: white; font-size: 10px; padding: 2px 7px; min-width: 20px; text-align: center;">
-                    <c:choose>
-                        <c:when test="${sessionScope.unreadNotificationCount > 99}">99+</c:when>
-                        <c:otherwise>${sessionScope.unreadNotificationCount}</c:otherwise>
-                    </c:choose>
-                </span>
-            </c:if>
+            <span id="sidebarNavUnreadBadge" class="ms-auto badge rounded-pill"
+                  style="background: var(--primary); color: white; font-size: 10px; padding: 2px 7px; min-width: 20px; text-align: center; display: none;">
+            </span>
         </a>
 
         <!-- Tài khoản -->
