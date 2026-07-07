@@ -276,9 +276,9 @@
                                 <label class="form-label font-label-md text-on-surface-variant text-uppercase">Giới tính</label>
                                 <select name="gender" class="form-select rounded-3 py-2">
                                     <option value="" ${empty profile.gender ? 'selected' : ''}>Chọn giới tính</option>
-                                    <option value="Male" ${profile.gender == 'Male' ? 'selected' : ''}>Nam</option>
-                                    <option value="Female" ${profile.gender == 'Female' ? 'selected' : ''}>Nữ</option>
-                                    <option value="Other" ${profile.gender == 'Other' ? 'selected' : ''}>Khác</option>
+                                    <option value="Nam" ${profile.gender == 'Nam' ? 'selected' : ''}>Nam</option>
+                                    <option value="Nữ" ${profile.gender == 'Nữ' ? 'selected' : ''}>Nữ</option>
+                                    <option value="Khác" ${profile.gender == 'Khác' ? 'selected' : ''}>Khác</option>
                                 </select>
                             </div>
                             <div>

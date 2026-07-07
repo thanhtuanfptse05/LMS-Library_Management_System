@@ -287,8 +287,7 @@
                                                             class="font-label-md text-on-surface-variant text-uppercase tracking-wider">Giới
                                                             tính</label>
                                                         <p class="font-body-md mb-0 text-on-surface">
-                                                            <c:out
-                                                                value="${not empty profile.gender ? (profile.gender == 'Male' ? 'Nam' : (profile.gender == 'Female' ? 'Nữ' : 'Khác')) : 'Chưa thiết lập'}" />
+                                                            <c:out value="${not empty profile.gender ? profile.gender : 'Chưa thiết lập'}" />
                                                         </p>
                                                     </div>
                                                 </div>
@@ -410,11 +409,11 @@
                                             <select name="gender" class="form-select rounded-3 py-2">
                                                 <option value="" ${empty profile.gender ? 'selected' : '' }>Chọn Giới
                                                     tính</option>
-                                                <option value="Male" ${profile.gender=='Male' ? 'selected' : '' }>Nam
+                                                <option value="Nam" ${profile.gender=='Nam' ? 'selected' : '' }>Nam
                                                 </option>
-                                                <option value="Female" ${profile.gender=='Female' ? 'selected' : '' }>Nữ
+                                                <option value="Nữ" ${profile.gender=='Nữ' ? 'selected' : '' }>Nữ
                                                 </option>
-                                                <option value="Other" ${profile.gender=='Other' ? 'selected' : '' }>Khác
+                                                <option value="Khác" ${profile.gender=='Khác' ? 'selected' : '' }>Khác
                                                 </option>
                                             </select>
                                         </div>

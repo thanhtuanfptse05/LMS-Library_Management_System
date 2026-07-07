@@ -286,16 +286,16 @@
                                        value="<c:out value="${profile.phoneNumber}" />" />
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Gender</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Giới tính</label>
                                 <select name="gender" class="form-select rounded-3 py-2">
-                                    <option value="" ${empty profile.gender ? 'selected' : ''}>Select Gender</option>
-                                    <option value="Male" ${profile.gender == 'Male' ? 'selected' : ''}>Male</option>
-                                    <option value="Female" ${profile.gender == 'Female' ? 'selected' : ''}>Female</option>
-                                    <option value="Other" ${profile.gender == 'Other' ? 'selected' : ''}>Other</option>
+                                    <option value="" ${empty profile.gender ? 'selected' : ''}>Chọn giới tính</option>
+                                    <option value="Nam" ${profile.gender == 'Nam' ? 'selected' : ''}>Nam</option>
+                                    <option value="Nữ" ${profile.gender == 'Nữ' ? 'selected' : ''}>Nữ</option>
+                                    <option value="Khác" ${profile.gender == 'Khác' ? 'selected' : ''}>Khác</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Date of Birth</label>
+                                <label class="form-label font-label-md text-on-surface-variant text-uppercase">Ngày sinh</label>
                                 <input type="date" name="dateOfBirth" class="form-control rounded-3 py-2" 
                                        value="<c:out value="${profile.dateOfBirth}" />" />
                             </div>
