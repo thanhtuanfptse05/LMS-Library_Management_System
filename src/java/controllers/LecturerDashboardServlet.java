@@ -92,6 +92,10 @@ public class LecturerDashboardServlet extends HttpServlet {
                     "Lỗi khi tải dữ liệu Dashboard cho Lecturer userId=" + userId, e);
         }
 
+        // Sách phổ biến
+        List<Book> topBooks = bookDAO.getTopTrendingBooks(5);
+        request.setAttribute("topBooks", topBooks);
+
         request.getRequestDispatcher("/lecturer/dashboard.jsp").forward(request, response);
     }
 }

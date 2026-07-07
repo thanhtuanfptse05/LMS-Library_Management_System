@@ -363,57 +363,68 @@
                     <!-- Right 1/3: Quick Profile Card -->
                     <div class="col-12 col-lg-4 d-flex flex-column gap-4">
 
-                        <!-- Quick Profile Card -->
-                        <div class="raised-card p-4">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="avatar" style="width: 52px; height: 52px; font-size: 18px; background-color: var(--tertiary-fixed); color: var(--on-tertiary-fixed-variant); display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold;">
-                                    <c:choose>
-                                        <c:when test="${not empty profile.fullName}">
-                                            <c:out value="${fn:substring(profile.fullName, 0, 1).toUpperCase()}" />
-                                        </c:when>
-                                        <c:when test="${not empty sessionScope.email}">
-                                            <c:out value="${fn:substring(sessionScope.email, 0, 2).toUpperCase()}" />
-                                        </c:when>
-                                        <c:otherwise>GV</c:otherwise>
-                                    </c:choose>
-                                </div>
-                                <div>
-                                    <p class="fw-bold mb-0" style="font-size: 15px;">
-                                        <c:out value="${not empty profile.fullName ? profile.fullName : 'Giảng viên'}" />
-                                    </p>
-                                    <p class="text-on-surface-variant mb-0" style="font-size: 12px;">
-                                        Giảng viên
-                                        <c:if test="${not empty lecturerInfo.department}">
-                                            · Bộ môn <c:out value="${lecturerInfo.department}" />
-                                        </c:if>
-                                    </p>
-                                </div>
+                        <!-- Popular Books (4 cols) -->
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h2 class="fs-4 fw-bold mb-0 text-dark" style="font-size: 1.25rem !important;">
+                                🔥 Sách phổ biến
+                            </h2>
+                            <a href="${pageContext.request.contextPath}/book-search"
+                               class="btn btn-link text-primary-custom text-decoration-none fw-semibold p-0 small">
+                                Xem tất cả
+                            </a>
+                        </div>
+
+                        <div class="raised-card p-4 d-flex flex-column" style="min-height: 400px;">
+                            <p class="text-on-surface-variant small mb-4">
+                                Top những sách được mượn nhiều nhất tại thư viện.
+                            </p>
+
+                            <div class="d-flex flex-column gap-3 flex-grow-1">
+                                <c:choose>
+                                    <c:when test="${not empty topBooks}">
+                                        <c:forEach var="book" items="${topBooks}" varStatus="status" end="4">
+                                            <div class="d-flex gap-3 align-items-start pb-2" style="border-bottom: 1px dashed var(--outline-variant); <c:if test='${status.last}'>border-bottom: none;</c:if>">
+                                                <!-- Book Cover -->
+                                                <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="flex-shrink-0" style="width: 60px; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                                                    <c:choose>
+                                                        <c:when test="${not empty book.imagePath}">
+                                                            <c:choose>
+                                                                <c:when test="${fn:startsWith(book.imagePath, 'http://') or fn:startsWith(book.imagePath, 'https://')}">
+                                                                    <img class="w-100 h-100" style="object-fit: cover;" src="<c:out value='${book.imagePath}'/>" alt="Bìa sách" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <img class="w-100 h-100" style="object-fit: cover;" src="${pageContext.request.contextPath}/book-images/<c:out value='${book.imagePath}'/>" alt="Bìa sách" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <img class="w-100 h-100" style="object-fit: cover;" src="${pageContext.request.contextPath}/assets/images/book-placeholder.jpg" alt="Bìa sách">
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </a>
+                                                <!-- Book Details -->
+                                                <div class="flex-grow-1" style="min-width: 0;">
+                                                    <a href="${pageContext.request.contextPath}/book-detail?id=${book.bookId}" class="text-decoration-none">
+                                                        <h4 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 13px; line-height: 1.4;" title="<c:out value='${book.title}'/>">
+                                                            <c:out value="${book.title}"/>
+                                                        </h4>
+                                                    </a>
+                                                    <p class="text-on-surface-variant mb-0 text-truncate" style="font-size: 11px;">
+                                                        bởi <c:out value="${book.author}"/>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p class="text-muted small">Chưa có dữ liệu sách phổ biến.</p>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
-                            <div class="d-flex flex-column gap-2">
-                                <c:if test="${not empty lecturerInfo.lecturerCode}">
-                                    <div class="d-flex justify-content-between p-2 rounded-2" style="background-color: var(--surface-container-low);">
-                                        <span style="font-size: 13px; color: var(--on-surface-variant);">Mã giảng viên</span>
-                                        <span style="font-size: 13px; font-weight: 700; color: var(--on-surface);"><c:out value="${lecturerInfo.lecturerCode}" /></span>
-                                    </div>
-                                </c:if>
-                                <div class="d-flex justify-content-between p-2 rounded-2" style="background-color: var(--surface-container-low);">
-                                    <span style="font-size: 13px; color: var(--on-surface-variant);">Hạn mức mượn đã dùng</span>
-                                    <span style="font-size: 13px; font-weight: 700; color: var(--primary);">
-                                        <c:out value="${activeLoansCount != null ? activeLoansCount : '0'}" /> / 10 sách
-                                    </span>
-                                </div>
-                                <div class="d-flex justify-content-between p-2 rounded-2" style="background-color: var(--surface-container-low);">
-                                    <span style="font-size: 13px; color: var(--on-surface-variant);">Trạng thái thư viện</span>
-                                    <span style="font-size: 13px; font-weight: 700; color: var(--success);">Tốt</span>
-                                </div>
-                                <div class="d-flex justify-content-between p-2 rounded-2" style="background-color: var(--surface-container-low);">
-                                    <span style="font-size: 13px; color: var(--on-surface-variant);">Cấp độ tài khoản</span>
-                                    <span style="font-size: 13px; font-weight: 700; color: var(--tertiary);">Nhân viên học thuật</span>
-                                </div>
-                            </div>
-                            <a href="${pageContext.request.contextPath}/lecturer/profile" class="btn btn-sm w-100 mt-3 rounded-3 fw-bold text-decoration-none text-center d-block"
-                               style="background-color: var(--surface-container-high); color: var(--on-surface-variant); border: 1px solid var(--outline-variant); padding: 8px;">
-                                Xem toàn bộ Hồ sơ
+                            
+                            <a href="${pageContext.request.contextPath}/book-search"
+                               class="btn btn-outline-primary-custom w-100 rounded-3 py-2 mt-4 text-decoration-none d-block text-center">
+                                Khám phá thêm
                             </a>
                         </div>
 
