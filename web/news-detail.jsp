@@ -40,9 +40,25 @@
                     </c:if>
 
                     <!-- Article Content -->
-                    <div class="article-content fs-5" style="line-height: 1.8; color: var(--bs-body-color); white-space: pre-line;">
-                        <c:out value="${newsDetail.content}" />
+                    <script type="text/template" id="rawNewsContent"><c:out value="${newsDetail.content}" /></script>
+                    <div class="article-content fs-5" id="newsContentContainer" style="line-height: 1.8; color: var(--bs-body-color);">
                     </div>
+                    
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const rawEl = document.getElementById('rawNewsContent');
+                            if (rawEl) {
+                                let content = rawEl.textContent;
+                                let safeContent = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                                
+                                const imgRegex = /(https?:\/\/[^\s]+?\.(?:png|jpe?g|gif|webp)(?:\?[^\s]*)?)/gi;
+                                safeContent = safeContent.replace(imgRegex, '<img src="$1" style="max-width: 100%; border-radius: 8px; margin: 1.5rem 0; display: block;" alt="Image">');
+                                safeContent = safeContent.replace(/\n/g, '<br>');
+                                
+                                document.getElementById('newsContentContainer').innerHTML = safeContent;
+                            }
+                        });
+                    </script>
 
                     <hr class="my-5 opacity-10">
 
