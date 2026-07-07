@@ -216,29 +216,38 @@
                                     <c:choose>
                                         <c:when test="${not empty sessionScope.userId}">
                                             <c:choose>
-                                                <c:when test="${hasActiveBorrow}">
-                                                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
-                                                        <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Bạn đang mượn cuốn sách này.</span>
-                                                        <a href="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/my-borrowings" class="btn btn-outline-primary fw-bold rounded-3 px-4">Xem hạn trả & Gia hạn</a>
-                                                    </div>
-                                                </c:when>
-                                                <c:when test="${hasActiveReservation}">
-                                                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
-                                                        <span class="fw-bold" style="color: #ea580c;"><i class="bi bi-info-circle-fill"></i> Bạn đã đặt trước cuốn sách này.</span>
-                                                        <a href="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/my-borrowings" class="btn btn-outline-warning fw-bold rounded-3 px-4" style="color: #ea580c; border-color: #ea580c;">Quản lý hàng đợi</a>
-                                                    </div>
+                                                <c:when test="${sessionScope.role == 'STUDENT' or sessionScope.role == 'LECTURER'}">
+                                                    <c:choose>
+                                                        <c:when test="${hasActiveBorrow}">
+                                                            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                                                                <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Bạn đang mượn cuốn sách này.</span>
+                                                                <a href="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/my-borrowings" class="btn btn-outline-primary fw-bold rounded-3 px-4">Xem hạn trả & Gia hạn</a>
+                                                            </div>
+                                                        </c:when>
+                                                        <c:when test="${hasActiveReservation}">
+                                                            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                                                                <span class="fw-bold" style="color: #ea580c;"><i class="bi bi-info-circle-fill"></i> Bạn đã đặt trước cuốn sách này.</span>
+                                                                <a href="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/my-borrowings" class="btn btn-outline-warning fw-bold rounded-3 px-4" style="color: #ea580c; border-color: #ea580c;">Quản lý hàng đợi</a>
+                                                            </div>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <form action="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/reserve" method="POST" class="d-inline-block">
+                                                                <input type="hidden" name="bookId" value="${book.bookId}">
+                                                                <button type="submit" class="btn btn-primary-custom px-5 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
+                                                                    <i class="bi bi-bookmark-plus-fill fs-5"></i> 
+                                                                    <c:choose>
+                                                                        <c:when test="${book.availableQuantity > 0}">Đặt trước (Lấy ngay)</c:when>
+                                                                        <c:otherwise>Đặt trước (Xếp hàng chờ)</c:otherwise>
+                                                                    </c:choose>
+                                                                </button>
+                                                            </form>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <form action="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/reserve" method="POST" class="d-inline-block">
-                                                        <input type="hidden" name="bookId" value="${book.bookId}">
-                                                        <button type="submit" class="btn btn-primary-custom px-5 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
-                                                            <i class="bi bi-bookmark-plus-fill fs-5"></i> 
-                                                            <c:choose>
-                                                                <c:when test="${book.availableQuantity > 0}">Đặt trước (Lấy ngay)</c:when>
-                                                                <c:otherwise>Đặt trước (Xếp hàng chờ)</c:otherwise>
-                                                            </c:choose>
-                                                        </button>
-                                                    </form>
+                                                    <div class="alert alert-secondary mb-0 d-inline-block py-2" style="font-size: 14px;">
+                                                        <i class="bi bi-info-circle-fill me-1"></i> Tính năng đặt mượn sách trực tuyến chỉ dành cho Độc giả.
+                                                    </div>
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:when>

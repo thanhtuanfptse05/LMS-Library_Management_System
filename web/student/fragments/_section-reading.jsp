@@ -74,14 +74,15 @@
 
                                 <!-- Action buttons -->
                                 <div class="d-flex gap-3 mt-4">
-                                    <a href="${pageContext.request.contextPath}/student/loans?action=renew&borrowRecordId=${loan.borrowRecordId}"
-                                       class="btn btn-primary-custom flex-grow-1 btn-sm text-decoration-none d-block text-center rounded-3">
-                                        Gia hạn
-                                    </a>
-                                    <a href="${pageContext.request.contextPath}/student/loans?action=return&borrowRecordId=${loan.borrowRecordId}"
-                                       class="btn btn-light bg-surface-container-high text-dark flex-grow-1 btn-sm border-0 text-decoration-none d-block text-center rounded-3">
+                                    <form action="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/renew" method="post" class="flex-grow-1 m-0">
+                                        <input type="hidden" name="borrowRecordId" value="${loan.borrowRecordId}">
+                                        <button type="submit" class="btn btn-primary-custom w-100 btn-sm text-decoration-none d-block text-center rounded-3" ${loan.extensionCount >= 3 ? 'disabled' : ''}>
+                                            Gia hạn
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-light bg-surface-container-high text-dark flex-grow-1 btn-sm border-0 text-decoration-none d-block text-center rounded-3" onclick="alert('Vui lòng mang sách đến quầy thư viện để thực hiện trả sách.')">
                                         Trả sách
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>

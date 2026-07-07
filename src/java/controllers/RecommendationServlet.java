@@ -61,7 +61,9 @@ public class RecommendationServlet extends HttpServlet {
                 request.setAttribute("recommendedBooks", cached);
                 request.setAttribute("recommendationReasons", cachedReasons != null ? cachedReasons : new java.util.HashMap<>());
                 request.setAttribute("isAiPowered", cachedIsAi != null ? cachedIsAi : false);
-                request.getRequestDispatcher("/common/_recommendation.jsp").forward(request, response);
+                String layout = request.getParameter("layout");
+                String targetJsp = "bento".equals(layout) ? "/common/_recommendation_bento.jsp" : "/common/_recommendation.jsp";
+                request.getRequestDispatcher(targetJsp).forward(request, response);
                 return;
             }
         }
@@ -131,6 +133,8 @@ public class RecommendationServlet extends HttpServlet {
         request.setAttribute("recommendedBooks", recommendedBooks);
         request.setAttribute("recommendationReasons", recommendationReasons);
         request.setAttribute("isAiPowered", isAiPowered);
-        request.getRequestDispatcher("/common/_recommendation.jsp").forward(request, response);
+        String layout = request.getParameter("layout");
+        String targetJsp = "bento".equals(layout) ? "/common/_recommendation_bento.jsp" : "/common/_recommendation.jsp";
+        request.getRequestDispatcher(targetJsp).forward(request, response);
     }
 }
