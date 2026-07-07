@@ -245,7 +245,7 @@
         <div class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
             <div class="text-center text-md-start">
                 <span class="d-block small fw-semibold text-muted" style="color: var(--secondary) !important;">Thư viện Đại học LMS</span>
-                <span class="small text-on-surface-variant">© 2024 Thư viện Đại học LMS</span>
+                <span class="small text-on-surface-variant">© 2026 Thư viện Đại học LMS</span>
             </div>
             <div class="d-flex flex-wrap justify-content-center gap-3">
                 <a class="small text-on-surface-variant text-decoration-underline" href="#">Chính sách bảo mật</a>

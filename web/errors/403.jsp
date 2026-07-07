@@ -250,7 +250,7 @@
         <div class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
             <div class="text-center text-md-start">
                 <span class="text-uppercase text-secondary d-block mb-1 tracking-wider" style="font-size: 12px; font-weight: 600;">Hệ thống Thư viện Đại học LMS</span>
-                <p class="text-muted mb-0" style="font-size: 14px;">&copy; 2024 Thư viện Đại học LMS</p>
+                <p class="text-muted mb-0" style="font-size: 14px;">&copy; 2026 Thư viện Đại học LMS</p>
             </div>
             <div class="d-flex flex-wrap justify-content-center gap-4">
                 <a class="text-muted text-decoration-underline" style="font-size: 14px;" href="#">Chính sách bảo mật</a>

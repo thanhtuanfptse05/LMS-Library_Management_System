@@ -244,7 +244,7 @@
 
     <footer class="w-100 px-4 mt-auto bg-surface-container py-4 border-top">
         <div class="container-max mx-auto d-flex flex-column flex-md-row justify-content-between align-items-center gap-3" style="max-width: 1280px;">
-            <div class="small fw-semibold text-muted">© 2024 Thư viện Đại học LMS System</div>
+            <div class="small fw-semibold text-muted">© 2026 Thư viện Đại học LMS System</div>
             <div class="d-flex flex-wrap justify-content-center gap-4">
                 <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="#">Chính sách bảo mật</a>
                 <a class="small text-on-surface-variant hover-primary text-decoration-underline opacity-90" href="#">Điều khoản Dịch vụ</a>

@@ -258,7 +258,7 @@
                     <a class="footer-link" href="#">Liên hệ Thủ thư</a>
                 </div>
                 <p class="mb-0 text-center text-md-end" style="font-size: 14px; color: var(--on-surface-variant);">
-                    © 2024 Thư viện Đại học LMS. Bản quyền đã được bảo lưu.
+                    © 2026 Thư viện Đại học LMS. Bản quyền đã được bảo lưu.
                 </p>
             </footer>
         </section>
