@@ -127,7 +127,7 @@ public class AiChatbotService {
             root.add("contents", contents);
 
             JsonObject generationConfig = new JsonObject();
-            generationConfig.addProperty("maxOutputTokens", 10);
+            generationConfig.addProperty("maxOutputTokens", 100);
             generationConfig.addProperty("temperature", 0.1);
 
             root.add("generationConfig", generationConfig);
@@ -418,8 +418,18 @@ public class AiChatbotService {
         }
 
         JsonObject content = candidates.get(0).getAsJsonObject().getAsJsonObject("content");
+        if (content == null) {
+            throw new Exception("Gemini response content is null.");
+        }
         JsonArray parts = content.getAsJsonArray("parts");
-        return parts.get(0).getAsJsonObject().get("text").getAsString();
+        if (parts == null || parts.size() == 0) {
+            throw new Exception("Gemini response parts is null or empty.");
+        }
+        JsonObject textObj = parts.get(0).getAsJsonObject();
+        if (textObj == null || !textObj.has("text")) {
+            throw new Exception("Gemini response part does not contain text.");
+        }
+        return textObj.get("text").getAsString();
     }
 
     /**
