@@ -266,16 +266,14 @@
                                     </div>
                                     <span class="fw-bold" style="color: #191c1e;">${totalCount}</span>
                                 </div>
-                                <c:if test="${unreadCount > 0}">
-                                    <div class="stat-row d-flex justify-content-between align-items-center p-3 rounded-3"
-                                         style="background: linear-gradient(135deg, rgba(157,67,0,0.06), rgba(249,115,22,0.04)); border: 1px solid rgba(157,67,0,0.12);">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary); font-variation-settings: 'FILL' 1;">mark_email_unread</span>
-                                            <span class="small fw-semibold" style="color: var(--primary);">Chưa đọc</span>
-                                        </div>
-                                        <span class="fw-bold" style="color: var(--primary);">${unreadCount}</span>
+                                <div id="sidebarUnreadRow" class="stat-row justify-content-between align-items-center p-3 rounded-3 ${unreadCount > 0 ? 'd-flex' : 'd-none'}"
+                                     style="background: linear-gradient(135deg, rgba(157,67,0,0.06), rgba(249,115,22,0.04)); border: 1px solid rgba(157,67,0,0.12);">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary); font-variation-settings: 'FILL' 1;">mark_email_unread</span>
+                                        <span class="small fw-semibold" style="color: var(--primary);">Chưa đọc</span>
                                     </div>
-                                </c:if>
+                                    <span id="sidebarUnreadBadge" class="fw-bold" style="color: var(--primary);">${unreadCount}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -409,6 +407,22 @@
                     badgeEl.classList.remove('d-none');
                 } else {
                     badgeEl.classList.add('d-none');
+                }
+            }
+            
+            // Update sidebar unread count
+            const sidebarBadge = document.getElementById('sidebarUnreadBadge');
+            if (sidebarBadge) {
+                sidebarBadge.textContent = currentUnreadCount;
+            }
+            const sidebarRow = document.getElementById('sidebarUnreadRow');
+            if (sidebarRow) {
+                if (currentUnreadCount > 0) {
+                    sidebarRow.classList.remove('d-none');
+                    sidebarRow.classList.add('d-flex');
+                } else {
+                    sidebarRow.classList.remove('d-flex');
+                    sidebarRow.classList.add('d-none');
                 }
             }
         }
