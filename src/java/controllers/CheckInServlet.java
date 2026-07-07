@@ -33,9 +33,6 @@ public class CheckInServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(CheckInServlet.class.getName());
 
-    private static final String VIEW_PATH    = "/librarian/desk-checkin.jsp";
-    private static final String REDIRECT_URL = "/librarian/checkin";
-
     /** Tập hợp giá trị condition hợp lệ — whitelist phòng SQL Injection qua giá trị lạ */
     private static final Set<String> VALID_CONDITIONS = Set.of("good", "damaged", "lost");
 
@@ -47,14 +44,14 @@ public class CheckInServlet extends HttpServlet {
     }
 
     /**
-     * GET /librarian/checkin — Hiển thị form Nhận Sách.
+     * GET /librarian/checkin — Chuyển hướng về Bảng điều khiển quầy.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         if (!isAuthorized(request, response)) return;
-        request.getRequestDispatcher(VIEW_PATH).forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard");
     }
 
     /**

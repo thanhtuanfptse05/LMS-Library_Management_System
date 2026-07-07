@@ -35,11 +35,6 @@ public class CheckOutServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(CheckOutServlet.class.getName());
 
-    /** View path — tương đối với web root */
-    private static final String VIEW_PATH    = "/librarian/desk-checkout.jsp";
-    /** Redirect path sau POST (PRG pattern) */
-    private static final String REDIRECT_URL = "/librarian/checkout";
-
     private DeskCirculationService service;
 
     @Override
@@ -48,15 +43,14 @@ public class CheckOutServlet extends HttpServlet {
     }
 
     /**
-     * GET /librarian/checkout — Hiển thị form Giao Sách.
-     * Đọc flash messages từ session (nếu có) và forward tới JSP.
+     * GET /librarian/checkout — Chuyển hướng về Bảng điều khiển quầy.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         if (!isAuthorized(request, response)) return;
-        request.getRequestDispatcher(VIEW_PATH).forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard");
     }
 
     /**

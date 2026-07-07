@@ -34,9 +34,6 @@ public class CashPaymentServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(CashPaymentServlet.class.getName());
 
-    private static final String VIEW_PATH    = "/librarian/desk-payment.jsp";
-    private static final String REDIRECT_URL = "/librarian/cash-payment";
-
     private DeskCirculationService service;
 
     @Override
@@ -45,14 +42,14 @@ public class CashPaymentServlet extends HttpServlet {
     }
 
     /**
-     * GET /librarian/cash-payment — Hiển thị form Duyệt Thanh Toán.
+     * GET /librarian/cash-payment — Chuyển hướng về Bảng điều khiển quầy.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         if (!isAuthorized(request, response)) return;
-        request.getRequestDispatcher(VIEW_PATH).forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard");
     }
 
     /**
