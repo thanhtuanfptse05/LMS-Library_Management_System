@@ -1,6 +1,7 @@
 <%-- Fragment: _section-reading.jsp — Currently Reading + Recommended Books (Bento layout) --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!-- ── Currently Reading + Recommended (Bento Layout) ── -->
 <div class="row g-4 mb-5">
 
