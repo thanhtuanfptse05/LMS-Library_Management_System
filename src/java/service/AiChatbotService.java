@@ -45,6 +45,13 @@ public class AiChatbotService {
      * Sử dụng mô hình Gemini với số lượng token nhỏ để đưa ra nhãn phân loại: "Rules", "Books", hoặc "Irrelevant".
      */
     public String classifyIntent(String userMessage) {
+        return classifyIntent(userMessage, null);
+    }
+
+    /**
+     * Phân loại mục đích câu hỏi của người dùng kèm theo lịch sử trò chuyện để giữ ngữ cảnh.
+     */
+    public String classifyIntent(String userMessage, List<ChatMessage> chatHistory) {
         if (userMessage == null || userMessage.trim().isEmpty()) {
             return "Irrelevant";
         }
@@ -62,18 +69,32 @@ public class AiChatbotService {
             return "Irrelevant";
         }
 
-        // Lớp 2: Mơ hồ → gọi Gemini classify
-        return classifyIntentByAI(userMessage);
+        // Lớp 2: Mơ hồ → gọi Gemini classify kèm theo ngữ cảnh lịch sử
+        return classifyIntentByAI(userMessage, chatHistory);
     }
 
     /**
      * Gọi Gemini API để phân loại ý định khi câu hỏi mơ hồ.
      */
-    private String classifyIntentByAI(String userMessage) {
+    private String classifyIntentByAI(String userMessage, List<ChatMessage> chatHistory) {
         String lowerMsg = userMessage.toLowerCase().trim();
+        
+        StringBuilder historyBuilder = new StringBuilder();
+        if (chatHistory != null && chatHistory.size() > 1) {
+            historyBuilder.append("Lịch sử cuộc trò chuyện gần đây để tham khảo ngữ cảnh:\n");
+            // Lấy tối đa 4 tin nhắn gần nhất TRƯỚC tin nhắn hiện tại
+            int startIdx = Math.max(0, chatHistory.size() - 5);
+            for (int i = startIdx; i < chatHistory.size() - 1; i++) {
+                ChatMessage msg = chatHistory.get(i);
+                String roleName = "user".equalsIgnoreCase(msg.getRole()) ? "Người dùng" : "Trợ lý";
+                historyBuilder.append("- ").append(roleName).append(": ").append(msg.getContent()).append("\n");
+            }
+            historyBuilder.append("\n");
+        }
+
         String systemPrompt = "Bạn là bộ phân loại ý định (Intent Classifier) cho trợ lý ảo thư viện.\n"
-                + "Hãy phân loại câu hỏi của người dùng vào một trong 3 nhóm duy nhất:\n"
-                + "- Rules: Nếu hỏi về mức phạt (tiền phạt, trễ hạn, quá hạn), nội quy, giờ mở cửa, chính sách mượn/trả/gia hạn sách.\n"
+                + "Hãy phân loại câu hỏi hiện tại của người dùng vào một trong 3 nhóm duy nhất:\n"
+                + "- Rules: Nếu hỏi về mức phạt (tiền phạt, trễ hạn, quá hạn), nội quy, giờ mở cửa, chính sách mượn/trả/gia hạn sách hoặc các câu hỏi nối tiếp có liên quan đến chính sách/nội quy.\n"
                 + "- Books: CHỈ KHI người dùng muốn TÌM SÁCH để đọc, tra cứu sách, tìm tác giả, hoặc xin gợi ý sách.\n"
                 + "- Irrelevant: Nếu là chào hỏi xã giao, đùa giỡn hoặc các câu hỏi linh tinh không liên quan đến thư viện/sách.\n\n"
                 + "Quy tắc: BẮT BUỘC chỉ trả về đúng 1 từ tiếng Anh duy nhất: 'Rules', 'Books', hoặc 'Irrelevant'. "
@@ -82,7 +103,8 @@ public class AiChatbotService {
         try {
             // Đóng gói JSON Payload cho cuộc gọi Gemini ngắn hạn
             JsonObject textPart = new JsonObject();
-            textPart.addProperty("text", "Câu hỏi: \"" + userMessage + "\"");
+            String promptText = historyBuilder.toString() + "Câu hỏi hiện tại cần phân loại: \"" + userMessage + "\"";
+            textPart.addProperty("text", promptText);
 
             JsonArray parts = new JsonArray();
             parts.add(textPart);

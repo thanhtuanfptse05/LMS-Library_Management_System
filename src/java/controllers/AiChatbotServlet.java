@@ -92,8 +92,8 @@ public class AiChatbotServlet extends HttpServlet {
         // Cắt bớt lịch sử trước khi gọi AI để tránh tràn token (Tối đa 3 lượt = 6 tin nhắn gồm cả tin nhắn user vừa nhập)
         pruneHistory(chatHistory, 5); // Giữ tối đa 5 tin nhắn cũ để thêm tin model thành 6 tin nhắn (3 lượt)
 
-        // 2. Phân loại ý định của người dùng
-        String intent = aiChatbotService.classifyIntent(userMessage);
+        // 2. Phân loại ý định của người dùng (kèm chat history để giữ ngữ cảnh câu hỏi tiếp nối)
+        String intent = aiChatbotService.classifyIntent(userMessage, chatHistory);
 
         // Reset lịch sử hội thoại nếu chuyển hướng ý định (Intent-based reset)
         String lastIntent = (String) session.getAttribute("lastChatIntent");
