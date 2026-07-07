@@ -190,33 +190,7 @@
                                             </div>
                                         </div>
 
-                                        <div
-                                            class="bg-surface-container-lowest p-4 rounded-xl card-shadow border border-surface-variant">
-                                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                                <h4 class="font-title-lg mb-0" style="color: var(--on-surface);">Sức
-                                                    khỏe Thư viện</h4>
-                                                <span
-                                                    class="badge bg-success-subtle text-success rounded-pill px-3 py-2 font-label-md d-flex align-items-center gap-2">
-                                                    <span class="spinner-grow spinner-grow-sm text-success"
-                                                        role="status"
-                                                        style="width: 8px; height: 8px; --bs-spinner-animation-speed: 1.2s;"></span>
-                                                    Tối ưu
-                                                </span>
-                                            </div>
-                                            <div class="d-flex flex-column gap-3">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="font-body-sm text-on-surface-variant">Tổng số Thành
-                                                        viên</span>
-                                                    <span class="font-label-md fw-bold"
-                                                        style="color: #059669;">12,890</span>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="font-body-sm text-on-surface-variant">Tiền phạt hiện
-                                                        tại</span>
-                                                    <span class="font-label-md fw-bold text-danger">3,450,000 ₫</span>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
 

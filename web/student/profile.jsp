@@ -201,13 +201,13 @@
                                 <div class="d-flex flex-column gap-2">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="font-body-sm text-on-surface-variant">Sách đã mượn</span>
-                                        <span class="font-label-md fw-bold"><c:out value="${activeLoansCount}" /> / 10</span>
+                                        <span class="font-label-md fw-bold"><c:out value="${activeLoansCount}" /> / <c:out value="${maxBorrowLimit}" /></span>
                                     </div>
                                     <div class="progress" style="height: 8px; background-color: var(--surface-variant);">
                                         <div class="progress-bar" role="progressbar"
-                                             style="width: <c:out value="${activeLoansCount * 10}" />%; background-color: var(--bs-primary);" 
+                                             style="width: <c:out value="${activeLoansCount * 100 / maxBorrowLimit}" />%; background-color: var(--bs-primary);" 
                                              aria-valuenow="<c:out value="${activeLoansCount}" />"
-                                             aria-valuemin="0" aria-valuemax="10"></div>
+                                             aria-valuemin="0" aria-valuemax="<c:out value="${maxBorrowLimit}" />"></div>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center pt-2">
                                         <span class="font-body-sm text-on-surface-variant">Đặt trước</span>

@@ -127,16 +127,6 @@
                                         Online
                                     </span>
                                 </div>
-                                <div class="d-flex flex-column gap-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="font-body-sm text-on-surface-variant">Database Sync</span>
-                                        <span class="font-label-md fw-bold" style="color: #059669;">Stable</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="font-body-sm text-on-surface-variant">Last Backup</span>
-                                        <span class="font-label-md fw-bold">2 hours ago</span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

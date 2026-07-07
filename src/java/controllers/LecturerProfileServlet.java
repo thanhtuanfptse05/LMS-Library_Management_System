@@ -22,12 +22,14 @@ public class LecturerProfileServlet extends HttpServlet {
     private final UserDAO userDAO;
     private final MemberProfileDAO memberProfileDAO;
     private final LecturerDAO lecturerDAO;
+    private final dao.SystemConfigDAO systemConfigDAO;
 
     public LecturerProfileServlet() {
         this.profileService = new ProfileService();
         this.userDAO = new UserDAO();
         this.memberProfileDAO = new MemberProfileDAO();
         this.lecturerDAO = new LecturerDAO();
+        this.systemConfigDAO = new dao.SystemConfigDAO();
     }
 
     @Override
@@ -46,12 +48,15 @@ public class LecturerProfileServlet extends HttpServlet {
 
         int activeLoansCount = memberProfileDAO.getActiveLoansCount(userId);
         int activeReservationsCount = memberProfileDAO.getActiveReservationsCount(userId);
+        
+        int maxBorrowLimit = systemConfigDAO.getIntValue("LECTURER_MAX_BORROW_LIMIT", 15);
 
         request.setAttribute("user", user);
         request.setAttribute("profile", profile);
         request.setAttribute("lecturer", lecturer);
         request.setAttribute("activeLoansCount", activeLoansCount);
         request.setAttribute("activeReservationsCount", activeReservationsCount);
+        request.setAttribute("maxBorrowLimit", maxBorrowLimit);
 
         request.getRequestDispatcher("/lecturer/profile.jsp").forward(request, response);
     }

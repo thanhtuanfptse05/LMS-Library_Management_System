@@ -120,16 +120,6 @@
                                         Đang trực
                                     </span>
                                 </div>
-                                <div class="d-flex flex-column gap-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="font-body-sm text-on-surface-variant">Lượt cho mượn hôm nay</span>
-                                        <span class="font-label-md fw-bold" style="color: #059669;">124</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="font-body-sm text-on-surface-variant">Chờ duyệt đặt trước</span>
-                                        <span class="font-label-md fw-bold text-danger">15</span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
