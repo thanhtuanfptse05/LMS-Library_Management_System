@@ -8,7 +8,7 @@
     <div class="col-12 col-lg-8">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h2 class="fs-4 fw-bold mb-0 text-dark">Sách đang đọc</h2>
-            <a href="${pageContext.request.contextPath}/student/loans"
+            <a href="${pageContext.request.contextPath}/student/my-borrowings"
                class="btn btn-link text-primary-custom text-decoration-none fw-semibold p-0 small">
                 Xem tất cả
             </a>
@@ -113,8 +113,8 @@
                 </c:choose>
             </h2>
             <a href="${pageContext.request.contextPath}/book-search"
-               class="d-flex align-items-center text-decoration-none text-primary-custom">
-                <span class="material-symbols-outlined">arrow_forward</span>
+               class="btn btn-link text-primary-custom text-decoration-none fw-semibold p-0 small">
+                Xem tất cả
             </a>
         </div>
 
