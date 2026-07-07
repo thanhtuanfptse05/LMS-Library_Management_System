@@ -229,7 +229,13 @@
             const meta = typeIconMap[type] || typeIconMap.general;
 
             document.getElementById('notifDetailModalLabel').textContent = title;
-            document.getElementById('modalContent').textContent = content;
+            
+            let safeContent = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const imgRegex = /(https?:\/\/[^\s]+?\.(?:png|jpe?g|gif|webp)(?:\?[^\s]*)?)/gi;
+            safeContent = safeContent.replace(imgRegex, '<img src="$1" style="max-width: 100%; border-radius: 8px; margin: 10px 0; display: block;" alt="Image">');
+            safeContent = safeContent.replace(/\n/g, '<br>');
+            document.getElementById('modalContent').innerHTML = safeContent;
+            
             document.getElementById('modalTime').textContent = time;
             document.getElementById('modalAuthor').textContent = author;
 
