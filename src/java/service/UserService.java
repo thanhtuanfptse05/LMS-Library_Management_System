@@ -77,8 +77,17 @@ public class UserService {
         profile.setPhoneNumber(dto.getPhoneNumber() != null ? dto.getPhoneNumber().trim() : "");
         profile.setGender(dto.getGender() != null ? dto.getGender().trim() : "Khác");
         profile.setDateOfBirth(dto.getDateOfBirth());
-        profile.setStartDate(dto.getStartDate() != null ? dto.getStartDate() : new Date(System.currentTimeMillis()));
-        profile.setEndDate(dto.getEndDate() != null ? dto.getEndDate() : new Date(System.currentTimeMillis() + 31536000000L));
+        Date currentDate = new Date(System.currentTimeMillis());
+        profile.setStartDate(dto.getStartDate() != null ? dto.getStartDate() : currentDate);
+        
+        if (dto.getEndDate() != null) {
+            profile.setEndDate(dto.getEndDate());
+        } else if ("STUDENT".equalsIgnoreCase(dto.getRole())) {
+            java.time.LocalDate localStartDate = profile.getStartDate().toLocalDate();
+            profile.setEndDate(Date.valueOf(localStartDate.plusYears(4)));
+        } else {
+            profile.setEndDate(new Date(System.currentTimeMillis() + 31536000000L));
+        }
 
         boolean success = userDAO.createUserWithProfile(
                 user, profile, 

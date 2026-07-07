@@ -871,7 +871,12 @@ public class UserDAO {
                         psProfile.setString(4, u.getGender() != null ? u.getGender() : "Khác");
                         psProfile.setDate(5, u.getDateOfBirth() != null ? u.getDateOfBirth() : new java.sql.Date(System.currentTimeMillis()));
                         psProfile.setDate(6, new java.sql.Date(System.currentTimeMillis()));
-                        psProfile.setDate(7, new java.sql.Date(System.currentTimeMillis() + 31536000000L));
+                        if ("STUDENT".equalsIgnoreCase(role)) {
+                            java.time.LocalDate localStartDate = java.time.LocalDate.now();
+                            psProfile.setDate(7, java.sql.Date.valueOf(localStartDate.plusYears(4)));
+                        } else {
+                            psProfile.setDate(7, new java.sql.Date(System.currentTimeMillis() + 31536000000L));
+                        }
                         psProfile.executeUpdate();
 
                         // 3. Insert Role Table
