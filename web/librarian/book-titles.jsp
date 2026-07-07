@@ -64,7 +64,7 @@
                         <c:when test="${selectedSort == 'published_asc'}"><c:set var="selectedSortLabel" value="Xuất bản cũ nhất" /></c:when>
                     </c:choose>
 
-                    <form class="bm-filter-card bm-title-filter mb-4" method="get" action="${pageContext.request.contextPath}/book-management/titles">
+                    <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/book-management/titles">
                         <c:if test="${not empty selectedTagId}"><input type="hidden" name="tagId" value="${selectedTagId}"></c:if>
                             <div class="row g-2">
                                 <div class="col-xl-4 col-lg-6 bm-search">
@@ -141,23 +141,35 @@
                         </div>
                     </c:if>
 
-                    <div class="bm-title-stats mb-3">
-                        <div class="bm-title-stat">
-                            <span class="bm-title-stat__icon material-symbols-outlined">menu_book</span>
-                            <span><small>Tổng đầu sách</small><strong><fmt:formatNumber value="${summary.totalBooks}" /></strong></span>
-                        </div>
-                        <div class="bm-title-stat">
-                            <span class="bm-title-stat__icon material-symbols-outlined">inventory_2</span>
-                            <span><small>Tổng bản sao</small><strong><fmt:formatNumber value="${summary.totalCopies}" /></strong></span>
-                        </div>
-                        <div class="bm-title-stat bm-title-stat--success">
-                            <span class="bm-title-stat__icon material-symbols-outlined">check_circle</span>
-                            <span><small>Sẵn sàng</small><strong><fmt:formatNumber value="${summary.availableCopies}" /></strong></span>
-                        </div>
-                        <div class="bm-title-stat bm-title-stat--warning">
-                            <span class="bm-title-stat__icon material-symbols-outlined">library_add</span>
-                            <span><small>Chưa có bản sao</small><strong><fmt:formatNumber value="${summary.booksWithoutCopies}" /></strong></span>
-                        </div>
+                    <div class="bm-list-stats bm-list-stats--four mb-3">
+                        <article class="bm-list-stat">
+                            <span class="material-symbols-outlined">menu_book</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Tổng đầu sách</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.totalBooks}" /></p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat">
+                            <span class="material-symbols-outlined">inventory_2</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Tổng bản sao</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.totalCopies}" /></p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-list-stat--success">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Sẵn sàng</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.availableCopies}" /></p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-list-stat--warning">
+                            <span class="material-symbols-outlined">library_add</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Chưa có bản sao</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.booksWithoutCopies}" /></p>
+                            </div>
+                        </article>
                     </div>
 
                     <section class="bm-table-card bm-table-card--primary bm-title-table">

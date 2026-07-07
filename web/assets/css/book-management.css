@@ -1004,6 +1004,8 @@ body {
     border-color: var(--outline-variant);
 }
 
+/* [DEPRECATED] .bm-title-filter — Replaced by .bm-list-filter for consistency.
+ * Kept for backward compatibility. Do not use in new pages. */
 /* Book title page: stronger hierarchy for the primary catalog workflow. */
 .bm-title-filter {
     background: var(--surface-container-lowest);
@@ -1040,6 +1042,8 @@ body {
     border: 1px solid transparent;
 }
 
+/* [DEPRECATED] .bm-title-stats, .bm-title-stat — Replaced by .bm-list-stats/.bm-list-stat
+ * pattern for consistency across all Book Management pages. Kept for backward compatibility. */
 .bm-title-stats {
     display: grid;
     gap: 8px;

@@ -46,31 +46,6 @@
                         </c:if>
                     </section>
 
-                    <%-- Khối thống kê nhanh sự cố sách --%>
-                    <div class="bm-list-stats mb-3">
-                        <article class="bm-list-stat bm-list-stat--warning">
-                            <span class="material-symbols-outlined">pending_actions</span>
-                            <div>
-                                <p class="bm-stat-card__label mb-1">Chờ xác minh</p>
-                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.pendingCount}" /></p>
-                            </div>
-                        </article>
-                        <article class="bm-list-stat bm-list-stat--info">
-                            <span class="material-symbols-outlined">manage_search</span>
-                            <div>
-                                <p class="bm-stat-card__label mb-1">Đang xử lý</p>
-                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.investigatingCount}" /></p>
-                            </div>
-                        </article>
-                        <article class="bm-list-stat bm-list-stat--success">
-                            <span class="material-symbols-outlined">task_alt</span>
-                            <div>
-                                <p class="bm-stat-card__label mb-1">Đã xử lý tháng này</p>
-                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.resolvedThisMonthCount}" /></p>
-                            </div>
-                        </article>
-                    </div>
-
                     <%-- Bộ lọc tìm kiếm danh sách sự cố --%>
                     <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/book-management/incidents">
                         <div class="row g-2">
@@ -136,6 +111,31 @@
                         </div>
                     </c:if>
 
+                    <%-- Khối thống kê nhanh sự cố sách --%>
+                    <div class="bm-list-stats mb-3">
+                        <article class="bm-list-stat bm-list-stat--warning">
+                            <span class="material-symbols-outlined">pending_actions</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Chờ xác minh</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.pendingCount}" /></p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-list-stat--info">
+                            <span class="material-symbols-outlined">manage_search</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Đang xử lý</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.investigatingCount}" /></p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-list-stat--success">
+                            <span class="material-symbols-outlined">task_alt</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Đã xử lý tháng này</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.resolvedThisMonthCount}" /></p>
+                            </div>
+                        </article>
+                    </div>
+
                     <div class="bm-rule-note mb-3"><strong>Quy tắc:</strong> Ghi nhận sự cố sẽ tạm ngừng lưu thông bản sao. Tình trạng Hỏng/Mất chỉ được cập nhật sau khi có kết luận.</div>
 
                     <%-- Bảng danh sách các sự cố --%>
@@ -150,7 +150,7 @@
                                         <th>Người báo</th>
                                         <th>Trạng thái</th>
                                         <th>Hướng xử lý</th>
-                                        <th></th>
+                                        <th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

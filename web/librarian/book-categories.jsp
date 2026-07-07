@@ -8,183 +8,183 @@
 
 <!DOCTYPE html>
 <html lang="vi">
-<jsp:include page="fragments/_head.jsp" />
-<body class="d-flex flex-column">
-<jsp:include page="fragments/_sidebar.jsp" />
-<div class="d-flex main-wrapper overflow-hidden">
-    <main class="flex-grow-1 overflow-y-auto main-content-layout">
-        <jsp:include page="fragments/_header.jsp" />
-        <div class="container-fluid px-4 py-4 bm-page">
-            <%-- Thông báo kết quả thao tác thành công/thất bại --%>
-            <c:if test="${not empty sessionScope.successMessage}">
-                <div class="alert alert-success alert-dismissible fade show">
-                    <c:out value="${sessionScope.successMessage}" />
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-                </div>
-                <c:remove var="successMessage" scope="session" />
-            </c:if>
-            <c:if test="${not empty sessionScope.errorMessage}">
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <c:out value="${sessionScope.errorMessage}" />
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-                </div>
-                <c:remove var="errorMessage" scope="session" />
-            </c:if>
-
-            <%-- Tiêu đề trang và nút tạo thể loại mới --%>
-            <section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
-                <div>
-                    <p class="bm-page__eyebrow mb-1">Danh mục sách</p>
-                    <h2 class="bm-page__title mb-1">Thể loại</h2>
-                    <p class="bm-page__subtitle mb-0">Quản lý nhóm phân loại chính dùng cho đầu sách.</p>
-                </div>
-                <c:if test="${canEdit}">
-                    <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-                        <span class="material-symbols-outlined">add</span>Tạo thể loại
-                    </button>
-                </c:if>
-            </section>
-
-            <%-- Bộ lọc tìm kiếm thể loại sách theo từ khóa và trạng thái hoạt động --%>
-            <form class="bm-filter-card bm-list-filter mb-3 bm-auto-filter" method="get" action="${pageContext.request.contextPath}/book-management/categories">
-                <div class="row g-2">
-                    <div class="col-lg-8 bm-search">
-                        <span class="material-symbols-outlined">search</span>
-                        <input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Tìm kiếm thể loại...">
-                    </div>
-                    <div class="col-lg-3">
-                        <select class="form-select" name="status">
-                            <option value="">Mọi trạng thái</option>
-                            <option value="active" ${selectedStatus == 'active' ? 'selected' : ''}>Đang dùng</option>
-                            <option value="hidden" ${selectedStatus == 'hidden' ? 'selected' : ''}>Đã ẩn</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-1">
-                        <a class="btn bm-reset-button w-100" href="${pageContext.request.contextPath}/book-management/categories" title="Đặt lại bộ lọc">
-                            <span class="material-symbols-outlined">refresh</span>
-                        </a>
-                    </div>
-                </div>
-            </form>
-
-            <c:choose>
-                <c:when test="${selectedStatus == 'active'}"><c:set var="selectedStatusLabel" value="Đang dùng" /></c:when>
-                <c:when test="${selectedStatus == 'hidden'}"><c:set var="selectedStatusLabel" value="Đã ẩn" /></c:when>
-            </c:choose>
-            <c:if test="${not empty q or not empty selectedStatus}">
-                <div class="bm-active-filters mb-3" aria-label="Bộ lọc đang áp dụng">
-                    <span class="bm-active-filters__label">Đang lọc:</span>
-                    <c:if test="${not empty q}">
-                        <span class="bm-active-filter-chip">Từ khóa: <strong><c:out value="${q}" /></strong></span>
+    <jsp:include page="fragments/_head.jsp" />
+    <body class="d-flex flex-column">
+        <jsp:include page="fragments/_sidebar.jsp" />
+        <div class="d-flex main-wrapper overflow-hidden">
+            <main class="flex-grow-1 overflow-y-auto main-content-layout">
+                <jsp:include page="fragments/_header.jsp" />
+                <div class="container-fluid px-4 py-4 bm-page">
+                    <%-- Thông báo kết quả thao tác thành công/thất bại --%>
+                    <c:if test="${not empty sessionScope.successMessage}">
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <c:out value="${sessionScope.successMessage}" />
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                        </div>
+                        <c:remove var="successMessage" scope="session" />
                     </c:if>
-                    <c:if test="${not empty selectedStatus}">
-                        <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
+                    <c:if test="${not empty sessionScope.errorMessage}">
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <c:out value="${sessionScope.errorMessage}" />
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                        </div>
+                        <c:remove var="errorMessage" scope="session" />
                     </c:if>
-                    <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/categories">Xóa bộ lọc</a>
-                </div>
-            </c:if>
 
-            <%-- Khối thống kê nhanh về thể loại --%>
-            <div class="bm-list-stats bm-list-stats--four mb-3">
-                <article class="bm-list-stat">
-                    <span class="material-symbols-outlined">category</span>
-                    <div>
-                        <p class="bm-stat-card__label mb-1">Tổng thể loại</p>
-                        <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.totalCount}" /></p>
-                    </div>
-                </article>
-                <article class="bm-list-stat bm-list-stat--success">
-                    <span class="material-symbols-outlined">check_circle</span>
-                    <div>
-                        <p class="bm-stat-card__label mb-1">Đang sử dụng</p>
-                        <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.activeCount}" /></p>
-                    </div>
-                </article>
-                <article class="bm-list-stat bm-list-stat--warning">
-                    <span class="material-symbols-outlined">visibility_off</span>
-                    <div>
-                        <p class="bm-stat-card__label mb-1">Đã ẩn</p>
-                        <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.hiddenCount}" /></p>
-                    </div>
-                </article>
-                <article class="bm-list-stat bm-list-stat--info">
-                    <span class="material-symbols-outlined">library_add</span>
-                    <div>
-                        <p class="bm-stat-card__label mb-1">Chưa có đầu sách</p>
-                        <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.unusedCount}" /></p>
-                    </div>
-                </article>
-            </div>
+                    <%-- Tiêu đề trang và nút tạo thể loại mới --%>
+                    <section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+                        <div>
+                            <p class="bm-page__eyebrow mb-1">Danh mục sách</p>
+                            <h2 class="bm-page__title mb-1">Thể loại</h2>
+                            <p class="bm-page__subtitle mb-0">Quản lý nhóm phân loại chính dùng cho đầu sách.</p>
+                        </div>
+                        <c:if test="${canEdit}">
+                            <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                                <span class="material-symbols-outlined">add</span>Tạo thể loại
+                            </button>
+                        </c:if>
+                    </section>
 
-            <%-- Bảng danh sách thể loại sách --%>
-            <section class="bm-table-card bm-table-card--primary bm-data-table">
-                <div class="table-responsive">
-                    <table class="table table-lms">
-                        <thead>
-                            <tr>
-                                <th>Tên thể loại</th>
-                                <th>Mô tả</th>
-                                <th>Số đầu sách</th>
-                                <th>Trạng thái</th>
-                                <th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="category" items="${categories}">
-                                <tr>
-                                    <td><strong><c:out value="${category.name}" /></strong></td>
-                                    <td><c:out value="${empty category.description ? 'Chưa có mô tả' : category.description}" /></td>
-                                    <td>
-                                        <%-- Liên kết dẫn tới danh sách đầu sách thuộc thể loại này --%>
-                                        <a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=${category.categoryId}">
-                                            Xem <fmt:formatNumber value="${category.bookCount}" /> đầu sách
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <span class="bm-badge ${category.status == 'active' ? 'bm-badge--success' : 'bm-badge--neutral'}">
-                                            ${category.status == 'active' ? 'Đang dùng' : 'Đã ẩn'}
-                                        </span>
-                                    </td>
-                                    <td class="bm-action-column">
-                                        <c:choose>
-                                            <c:when test="${canEdit}">
-                                                <a class="bm-action-icon" href="${pageContext.request.contextPath}/book-management/categories?editId=${category.categoryId}" title="Chỉnh sửa thể loại" aria-label="Chỉnh sửa thể loại">
-                                                    <span class="material-symbols-outlined" aria-hidden="true">edit</span>
-                                                </a>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="bm-badge bm-badge--neutral">Chỉ xem</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            <c:if test="${empty categories}">
-                                <tr>
-                                    <td colspan="5">
-                                        <div class="bm-empty-state">
-                                            <span class="material-symbols-outlined">category</span>
-                                            <strong>Không tìm thấy thể loại</strong>
-                                            <span>Hãy thử thay đổi từ khóa hoặc trạng thái.</span>
-                                        </div>
-                                    </td>
-                                </tr>
+                    <%-- Bộ lọc tìm kiếm thể loại sách theo từ khóa và trạng thái hoạt động --%>
+                    <form class="bm-filter-card bm-list-filter mb-3 bm-auto-filter" method="get" action="${pageContext.request.contextPath}/book-management/categories">
+                        <div class="row g-2">
+                            <div class="col-lg-8 bm-search">
+                                <span class="material-symbols-outlined">search</span>
+                                <input class="form-control" name="q" value="<c:out value="${q}" />" placeholder="Tìm kiếm thể loại...">
+                            </div>
+                            <div class="col-lg-3">
+                                <select class="form-select" name="status">
+                                    <option value="">Mọi trạng thái</option>
+                                    <option value="active" ${selectedStatus == 'active' ? 'selected' : ''}>Đang dùng</option>
+                                    <option value="hidden" ${selectedStatus == 'hidden' ? 'selected' : ''}>Đã ẩn</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-1">
+                                <a class="btn bm-reset-button w-100" href="${pageContext.request.contextPath}/book-management/categories" title="Đặt lại bộ lọc">
+                                    <span class="material-symbols-outlined">refresh</span>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <c:choose>
+                        <c:when test="${selectedStatus == 'active'}"><c:set var="selectedStatusLabel" value="Đang dùng" /></c:when>
+                        <c:when test="${selectedStatus == 'hidden'}"><c:set var="selectedStatusLabel" value="Đã ẩn" /></c:when>
+                    </c:choose>
+                    <c:if test="${not empty q or not empty selectedStatus}">
+                        <div class="bm-active-filters mb-3" aria-label="Bộ lọc đang áp dụng">
+                            <span class="bm-active-filters__label">Đang lọc:</span>
+                            <c:if test="${not empty q}">
+                                <span class="bm-active-filter-chip">Từ khóa: <strong><c:out value="${q}" /></strong></span>
                             </c:if>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                            <c:if test="${not empty selectedStatus}">
+                                <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
+                            </c:if>
+                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/categories">Xóa bộ lọc</a>
+                        </div>
+                    </c:if>
 
-            <jsp:include page="fragments/_book-pagination.jsp">
-                <jsp:param name="label" value="Phân trang thể loại" />
-                <jsp:param name="inputId" value="bookCategoryPageJump" />
-                <jsp:param name="pageSize" value="${pageSize}" />
-            </jsp:include>
+                    <%-- Khối thống kê nhanh về thể loại --%>
+                    <div class="bm-list-stats bm-list-stats--four mb-3">
+                        <article class="bm-list-stat">
+                            <span class="material-symbols-outlined">category</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Tổng thể loại</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.totalCount}" /></p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-list-stat--success">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Đang sử dụng</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.activeCount}" /></p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-list-stat--warning">
+                            <span class="material-symbols-outlined">visibility_off</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Đã ẩn</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.hiddenCount}" /></p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-list-stat--info">
+                            <span class="material-symbols-outlined">library_add</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Chưa có đầu sách</p>
+                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.unusedCount}" /></p>
+                            </div>
+                        </article>
+                    </div>
+
+                    <%-- Bảng danh sách thể loại sách --%>
+                    <section class="bm-table-card bm-table-card--primary bm-data-table">
+                        <div class="table-responsive">
+                            <table class="table table-lms">
+                                <thead>
+                                    <tr>
+                                        <th>Tên thể loại</th>
+                                        <th>Mô tả</th>
+                                        <th>Số đầu sách</th>
+                                        <th>Trạng thái</th>
+                                        <th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="category" items="${categories}">
+                                        <tr>
+                                            <td><strong><c:out value="${category.name}" /></strong></td>
+                                            <td><c:out value="${empty category.description ? 'Chưa có mô tả' : category.description}" /></td>
+                                            <td>
+                                                <%-- Liên kết dẫn tới danh sách đầu sách thuộc thể loại này --%>
+                                                <a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=${category.categoryId}">
+                                                    Xem <fmt:formatNumber value="${category.bookCount}" /> đầu sách
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="bm-badge ${category.status == 'active' ? 'bm-badge--success' : 'bm-badge--neutral'}">
+                                                    ${category.status == 'active' ? 'Đang dùng' : 'Đã ẩn'}
+                                                </span>
+                                            </td>
+                                            <td class="bm-action-column">
+                                                <c:choose>
+                                                    <c:when test="${canEdit}">
+                                                        <a class="bm-action-icon" href="${pageContext.request.contextPath}/book-management/categories?editId=${category.categoryId}" title="Chỉnh sửa thể loại" aria-label="Chỉnh sửa thể loại">
+                                                            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+                                                        </a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="bm-badge bm-badge--neutral">Chỉ xem</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                    <c:if test="${empty categories}">
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="bm-empty-state">
+                                                    <span class="material-symbols-outlined">category</span>
+                                                    <strong>Không tìm thấy thể loại</strong>
+                                                    <span>Hãy thử thay đổi từ khóa hoặc trạng thái.</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <jsp:include page="fragments/_book-pagination.jsp">
+                        <jsp:param name="label" value="Phân trang thể loại" />
+                        <jsp:param name="inputId" value="bookCategoryPageJump" />
+                        <jsp:param name="pageSize" value="${pageSize}" />
+                    </jsp:include>
+                </div>
+                <jsp:include page="fragments/_footer.jsp" />
+                <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
+            </main>
         </div>
-        <jsp:include page="fragments/_footer.jsp" />
-        <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
-    </main>
-</div>
 
 <%-- Modal 1: Tạo mới thể loại --%>
 <c:if test="${canEdit}">
