@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    initBookAutoFilter();
+    initBookTagMergeValidation();
+
     document.querySelectorAll('#createCopyModal select[name="bookId"]').forEach((select) => {
         enhanceRequiredSelectCombobox(select, {
             placeholder: 'Gõ tên sách hoặc ISBN để chọn',
@@ -26,6 +29,59 @@ document.addEventListener('DOMContentLoaded', function () {
         .forEach(enhanceLocationInput);
     initBookManagementPagination();
 });
+
+function initBookAutoFilter() {
+    document.querySelectorAll('.bm-auto-filter').forEach(function (form) {
+        const keywordInput = form.querySelector('[name="q"]');
+        const statusSelect = form.querySelector('[name="status"]');
+        let timer;
+
+        if (keywordInput) {
+            keywordInput.addEventListener('input', function () {
+                window.clearTimeout(timer);
+                timer = window.setTimeout(function () {
+                    form.submit();
+                }, 450);
+            });
+        }
+
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function () {
+                form.submit();
+            });
+        }
+    });
+}
+
+function initBookTagMergeValidation() {
+    const mergeForm = document.querySelector('#mergeTagModal form');
+    if (!mergeForm) {
+        return;
+    }
+    const source = mergeForm.querySelector('[name="sourceTagId"]');
+    const target = mergeForm.querySelector('[name="targetTagId"]');
+
+    mergeForm.addEventListener('submit', function (event) {
+        if (!source || !target || source.value !== target.value) {
+            return;
+        }
+
+        event.preventDefault();
+        target.setCustomValidity('Nhãn đích phải khác nhãn nguồn.');
+        target.reportValidity();
+    });
+
+    mergeForm.querySelectorAll('[name="sourceTagId"], [name="targetTagId"]').forEach(function (field) {
+        field.addEventListener('change', function () {
+            if (source) {
+                source.setCustomValidity('');
+            }
+            if (target) {
+                target.setCustomValidity('');
+            }
+        });
+    });
+}
 
 function enhanceRequiredSelectCombobox(select, config = {}) {
     const form = select.closest('form');

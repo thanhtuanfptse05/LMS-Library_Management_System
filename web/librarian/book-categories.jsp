@@ -183,7 +183,6 @@
         </div>
         <jsp:include page="fragments/_footer.jsp" />
         <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/book-categories.js?v=20260610-1"></script>
     </main>
 </div>
 
