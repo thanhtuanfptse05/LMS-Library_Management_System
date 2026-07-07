@@ -36,22 +36,12 @@
             <span class="material-symbols-outlined">settings</span>
             <span>Cấu hình</span>
         </a>
-        <a class="sidebar-link sidebar-sublink" id="nav-config-edit" href="#"
-           style="padding-left: 38px; font-size: 13px;">
-            <span class="material-symbols-outlined" style="font-size: 17px;">tune</span>
-            <span>Chỉnh sửa Tham số</span>
-        </a>
 
         <!-- Kiểm toán & Giám sát -->
         <p class="sidebar-section-label">Kiểm toán &amp; Giám sát</p>
         <a class="sidebar-link" id="nav-audit-logs" href="${pageContext.request.contextPath}/admin/audit-log">
             <span class="material-symbols-outlined">receipt_long</span>
             <span>Nhật ký Kiểm toán</span>
-        </a>
-        <a class="sidebar-link sidebar-sublink" id="nav-audit-detail" href="#"
-           style="padding-left: 38px; font-size: 13px;">
-            <span class="material-symbols-outlined" style="font-size: 17px;">manage_search</span>
-            <span>Chi tiết nhật ký</span>
         </a>
 
         <!-- Tài khoản -->
@@ -84,14 +74,7 @@
 
 </aside>
 
-<style>
-    /* Admin sidebar sub-links */
-    .sidebar-sublink {
-        display: none !important;
-        opacity: 0.85;
-    }
-    .sidebar-sublink.show { display: flex !important; }
-</style>
+
 
 <script>
 /* Admin Sidebar: auto active state dựa theo URL */
@@ -103,9 +86,7 @@
         'nav-role-assignment': '/admin/role',
         'nav-security':        '/admin/security',
         'nav-config-list':     '/admin/system-config',
-        'nav-config-edit':     'config-edit',
         'nav-audit-logs':      '/admin/audit-log',
-        'nav-audit-detail':    'audit-detail',
         'nav-profile':         '/admin/profile'
     };
 
@@ -118,13 +99,11 @@
         if (path.indexOf(navMap[id]) !== -1) {
             el.classList.add('active');
             matched = true;
-            if (id === 'nav-config-list' || id === 'nav-config-edit') {
-                var sub = document.getElementById('nav-config-edit');
-                if (sub) sub.classList.add('show');
+            if (id === 'nav-config-list') {
+                // No sub-menu anymore
             }
-            if (id === 'nav-audit-logs' || id === 'nav-audit-detail') {
-                var subA = document.getElementById('nav-audit-detail');
-                if (subA) subA.classList.add('show');
+            if (id === 'nav-audit-logs') {
+                // No sub-menu anymore
             }
         }
     });
