@@ -21,7 +21,7 @@ public class BookImageStorageTest {
     @Test
     public void saveStoresValidPngImage() throws Exception {
         Path directory = Files.createTempDirectory("book-image-test");
-        BookImageStorage storage = new BookImageStorage(directory);
+        BookImageStorage storage = localStorage(directory);
         ByteArrayOutputStream content = new ByteArrayOutputStream();
         ImageIO.write(new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB), "png", content);
 
@@ -36,7 +36,7 @@ public class BookImageStorageTest {
     @Test
     public void saveRejectsNonImageFile() throws Exception {
         Path directory = Files.createTempDirectory("book-image-test");
-        BookImageStorage storage = new BookImageStorage(directory);
+        BookImageStorage storage = localStorage(directory);
         Part part = new TestPart("imageFile", "cover.txt", "text/plain", "not an image".getBytes());
 
         try {
@@ -49,13 +49,17 @@ public class BookImageStorageTest {
 
     @Test
     public void resolveRejectsUnsafeFileName() throws Exception {
-        BookImageStorage storage = new BookImageStorage(Files.createTempDirectory("book-image-test"));
+        BookImageStorage storage = localStorage(Files.createTempDirectory("book-image-test"));
         try {
             storage.resolve("../secret.png");
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             assertFalse(e.getMessage().isBlank());
         }
+    }
+
+    private static BookImageStorage localStorage(Path directory) {
+        return new BookImageStorage(directory, new SupabaseStorageClient(null, null, null, null));
     }
 
     private static class TestPart implements Part {
