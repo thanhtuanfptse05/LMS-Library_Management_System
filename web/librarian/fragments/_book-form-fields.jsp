@@ -103,12 +103,20 @@
     
     <%-- 9. Danh mục/Thể loại sách: Hiển thị các danh mục đang dùng, giữ lại danh mục đã ẩn nếu sách đang thuộc danh mục đó --%>
     <div class="col-md-6">
-        <label class="form-label">Thể loại</label>
-        <div class="bm-choice-grid">
+        <div class="bm-choice-picker" data-choice-picker>
+            <div class="bm-choice-picker__top">
+                <label class="form-label mb-0" for="bookCategorySearch-${param.editing == 'true' ? 'edit' : 'create'}">Thể loại</label>
+            </div>
+            <div class="bm-choice-picker__search bm-search">
+                <span class="material-symbols-outlined">search</span>
+                <input id="bookCategorySearch-${param.editing == 'true' ? 'edit' : 'create'}" class="form-control"
+                       type="search" autocomplete="off" placeholder="Tìm thể loại" data-choice-search>
+            </div>
+            <div class="bm-choice-grid" data-choice-list>
             <c:forEach var="category" items="${categories}">
                 <c:set var="categorySelected" value="${param.editing == 'true' and formBook.hasCategory(category.categoryId)}" />
                 <c:if test="${category.status == 'active' or categorySelected}">
-                    <label class="bm-choice ${category.status == 'hidden' ? 'bm-choice--hidden' : ''}">
+                    <label class="bm-choice ${category.status == 'hidden' ? 'bm-choice--hidden' : ''}" data-choice-item>
                         <input type="checkbox" name="categoryIds" value="${category.categoryId}" ${categorySelected ? 'checked' : ''} ${category.status == 'hidden' ? 'disabled' : ''}>
                         <span>
                             <c:out value="${category.name}" />
@@ -123,17 +131,27 @@
             <c:if test="${empty categories}">
                 <span class="bm-empty-note">Chưa có thể loại.</span>
             </c:if>
+            </div>
+            <p class="bm-choice-picker__empty mb-0" data-choice-empty hidden>Không có thể loại phù hợp.</p>
         </div>
     </div>
     
     <%-- 10. Nhãn sách: Quản lý nhãn đa chọn tương tự thể loại --%>
     <div class="col-md-6">
-        <label class="form-label">Nhãn sách</label>
-        <div class="bm-choice-grid">
+        <div class="bm-choice-picker" data-choice-picker>
+            <div class="bm-choice-picker__top">
+                <label class="form-label mb-0" for="bookTagSearch-${param.editing == 'true' ? 'edit' : 'create'}">Nhãn sách</label>
+            </div>
+            <div class="bm-choice-picker__search bm-search">
+                <span class="material-symbols-outlined">search</span>
+                <input id="bookTagSearch-${param.editing == 'true' ? 'edit' : 'create'}" class="form-control"
+                       type="search" autocomplete="off" placeholder="Tìm nhãn sách" data-choice-search>
+            </div>
+            <div class="bm-choice-grid" data-choice-list>
             <c:forEach var="tag" items="${tags}">
                 <c:set var="tagSelected" value="${param.editing == 'true' and formBook.hasTag(tag.tagId)}" />
                 <c:if test="${tag.status == 'active' or tagSelected}">
-                    <label class="bm-choice ${tag.status == 'hidden' ? 'bm-choice--hidden' : ''}">
+                    <label class="bm-choice ${tag.status == 'hidden' ? 'bm-choice--hidden' : ''}" data-choice-item>
                         <input type="checkbox" name="tagIds" value="${tag.tagId}" ${tagSelected ? 'checked' : ''} ${tag.status == 'hidden' ? 'disabled' : ''}>
                         <span>
                             <c:out value="${tag.name}" />
@@ -148,6 +166,8 @@
             <c:if test="${empty tags}">
                 <span class="bm-empty-note">Chưa có nhãn sách.</span>
             </c:if>
+            </div>
+            <p class="bm-choice-picker__empty mb-0" data-choice-empty hidden>Không có nhãn sách phù hợp.</p>
         </div>
     </div>
 </div>

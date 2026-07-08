@@ -288,7 +288,7 @@
                 </div>
                 <jsp:include page="fragments/_footer.jsp" />
                 <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
-                <script src="${pageContext.request.contextPath}/assets/js/book-titles.js?v=20260626-drawer-2"></script>
+                <script src="${pageContext.request.contextPath}/assets/js/book-titles.js?v=20260708-choice-picker-1"></script>
             </main>
         </div>
 

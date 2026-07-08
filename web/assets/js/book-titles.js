@@ -27,8 +27,44 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    initChoicePickers();
     initBookTitleDrawer();
 });
+
+function initChoicePickers() {
+    document.querySelectorAll('[data-choice-picker]').forEach(function (picker) {
+        const search = picker.querySelector('[data-choice-search]');
+        const items = Array.from(picker.querySelectorAll('[data-choice-item]'));
+        const empty = picker.querySelector('[data-choice-empty]');
+
+        function normalize(value) {
+            return value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function filterItems() {
+            const keyword = normalize(search ? search.value.trim() : '');
+            let visibleCount = 0;
+
+            items.forEach(function (item) {
+                const matches = !keyword || normalize(item.textContent).includes(keyword);
+                item.classList.toggle('is-hidden-by-search', !matches);
+                if (matches) {
+                    visibleCount += 1;
+                }
+            });
+
+            if (empty) {
+                empty.hidden = visibleCount > 0;
+            }
+        }
+
+        if (search) {
+            search.addEventListener('input', filterItems);
+        }
+
+        filterItems();
+    });
+}
 
 function initBookTitleDrawer() {
     const drawer = document.querySelector('.bm-book-drawer');
