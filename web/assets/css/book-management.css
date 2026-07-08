@@ -612,17 +612,15 @@ body {
     border-color: rgba(157, 67, 0, 0.22);
 }
 
-.bm-choice:has(input:checked) {
-    background: var(--primary-fixed);
-    border-color: rgba(157, 67, 0, 0.32);
-    color: var(--primary);
-    font-weight: 700;
-}
-
 .bm-choice input {
     accent-color: var(--primary);
     flex: 0 0 auto;
     margin: 0;
+}
+
+.bm-choice input:checked + span {
+    color: var(--primary);
+    font-weight: 700;
 }
 
 .bm-choice span {
