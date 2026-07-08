@@ -453,10 +453,9 @@
                     e.preventDefault();
                     const form = e.target;
                     const btn = form.querySelector('button[type="submit"]');
-                    const originalContent = btn.innerHTML;
 
                     // Phản hồi trực quan loading
-                    btn.innerHTML = '<span class="material-symbols-outlined spinner-border spinner-border-sm me-2" role="status" style="animation: spin 1.5s linear infinite; vertical-align: middle;">progress_activity</span> Đang xác thực...';
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Đang xác thực...';
                     btn.disabled = true;
                     btn.style.opacity = '0.8';
 
