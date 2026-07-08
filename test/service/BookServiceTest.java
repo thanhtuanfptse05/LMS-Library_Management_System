@@ -32,6 +32,21 @@ public class BookServiceTest {
     }
 
     @Test
+    public void validateNormalizesDashedIsbnWhenCreating() throws Exception {
+        Book book = validBook();
+        book.setIsbn("978-0-13-468599-1");
+        bookService.validate(book, true);
+        assertTrue("9780134685991".equals(book.getIsbn()));
+    }
+
+    @Test
+    public void validateRejectsInvalidIsbnChecksumWhenCreating() throws Exception {
+        Book book = validBook();
+        book.setIsbn("9780134685992");
+        assertValidationMessage(book, true, "ISBN không hợp lệ.");
+    }
+
+    @Test
     public void validateRejectsNegativePrice() throws Exception {
         Book book = validBook();
         book.setPrice(new BigDecimal("-1"));
@@ -56,7 +71,7 @@ public class BookServiceTest {
 
     private Book validBook() {
         Book book = new Book();
-        book.setIsbn("978-604-00-0000-1");
+        book.setIsbn("9780134685991");
         book.setTitle("Lập trình Java");
         book.setAuthor("Nguyễn Văn A");
         book.setPublisher("NXB Giáo dục");

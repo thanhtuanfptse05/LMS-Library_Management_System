@@ -52,7 +52,9 @@
     <%-- 3. Mã ISBN: Khóa duy nhất, chỉ cho phép chỉnh sửa khi tạo mới, cấm đổi khi update --%>
     <div class="col-md-6">
         <label class="form-label">ISBN <span class="bm-required">*</span></label>
-        <input class="form-control" name="isbn" required maxlength="20" value="<c:out value="${formBook.isbn}" />" ${param.editing == 'true' ? 'readonly' : ''}>
+        <input class="form-control" name="isbn" required maxlength="20"
+               placeholder="Ví dụ: 9780134685991 hoặc 0134685997"
+               value="<c:out value="${formBook.isbn}" />" ${param.editing == 'true' ? 'readonly' : ''}>
     </div>
     
     <%-- 4. Tác giả --%>

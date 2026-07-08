@@ -153,7 +153,8 @@ public class BookImportWorkbookReader {
     private void validateInternalDuplicates(BookImportPreviewDTO preview) {
         Set<String> isbns = new HashSet<>();
         for (BookImportRowDTO row : preview.getBooks()) {
-            if (!row.getIsbn().isBlank() && !isbns.add(row.getIsbn().toLowerCase())) {
+            String normalizedIsbn = IsbnValidator.normalize(row.getIsbn());
+            if (normalizedIsbn != null && !normalizedIsbn.isBlank() && !isbns.add(normalizedIsbn.toLowerCase())) {
                 preview.getErrors().add(new BookImportError("Books", row.getRowNumber(), "isbn",
                         "ISBN bị trùng trong tệp."));
             }

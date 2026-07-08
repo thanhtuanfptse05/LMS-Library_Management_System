@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.time.Year;
 import model.Book;
 import util.DatabaseConnection;
+import util.IsbnValidator;
 
 public class BookService {
 
@@ -89,8 +90,12 @@ public class BookService {
         if (creating && (book.getIsbn() == null || book.getIsbn().isBlank())) {
             throw new ValidationException("ISBN không được để trống.");
         }
-        if (creating && book.getIsbn().trim().length() > 20) {
-            throw new ValidationException("ISBN không được vượt quá 20 ký tự.");
+        if (creating) {
+            String normalizedIsbn = IsbnValidator.normalize(book.getIsbn());
+            if (!IsbnValidator.isValid(normalizedIsbn)) {
+                throw new ValidationException("ISBN không hợp lệ. Vui lòng nhập ISBN-10 hoặc ISBN-13 đúng chuẩn.");
+            }
+            book.setIsbn(normalizedIsbn);
         }
         if (book.getTitle() == null || book.getTitle().isBlank()) {
             throw new ValidationException("Tên sách không được để trống.");

@@ -13,6 +13,7 @@ import model.BookImportError;
 import dto.BookImportPreviewDTO;
 import dto.BookImportRowDTO;
 import util.DatabaseConnection;
+import util.IsbnValidator;
 
 public class BookImportValidator {
 
@@ -58,6 +59,7 @@ public class BookImportValidator {
         book.setStatus("available");
         try {
             bookService.validate(book, true);
+            row.setIsbn(book.getIsbn());
         } catch (ValidationException e) {
             preview.getErrors().add(new BookImportError("Books", row.getRowNumber(), null, e.getMessage()));
         }
@@ -77,6 +79,12 @@ public class BookImportValidator {
 
     private void validateCopyRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row,
             Set<String> availableIsbns) throws SQLException {
+        row.setIsbn(IsbnValidator.normalize(row.getIsbn()));
+        if (row.getIsbn() != null && !row.getIsbn().isBlank() && !IsbnValidator.isValid(row.getIsbn())) {
+            preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "isbn",
+                    "ISBN không hợp lệ. Vui lòng nhập ISBN-10 hoặc ISBN-13 đúng chuẩn."));
+            return;
+        }
         if (row.getIsbn() != null && !row.getIsbn().isBlank()
                 && !availableIsbns.contains(row.getIsbn().toLowerCase())
                 && bookDAO.findByIsbn(conn, row.getIsbn()) == null) {
