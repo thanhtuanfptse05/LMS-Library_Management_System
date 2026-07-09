@@ -11,15 +11,15 @@ import java.util.regex.Pattern;
 
 public class GoogleSSOUtil {
 
-    // Split strings to prevent GitHub Secret Scanning from blocking the push, or read from Env
-    public static final String CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID") != null ? 
-            System.getenv("GOOGLE_CLIENT_ID") : 
-            "120931044021-stp6360n7" + "4nhd24pvimotu2f4oqpsnsk.apps.googleusercontent.com";
-    
-    public static final String CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET") != null ? 
-            System.getenv("GOOGLE_CLIENT_SECRET") : 
-            "GOCSPX-_oWOb" + "52NA4DIogH652wzAs1zcEss";
-    public static final String REDIRECT_URI = "http://localhost:9999/LMS-Library_Management_System/login-google";
+    // Split strings to prevent GitHub Secret Scanning from blocking the push, or
+    // read from Env
+    public static final String CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID") != null ? System.getenv("GOOGLE_CLIENT_ID")
+            : "120931044021-stp6360n7" + "4nhd24pvimotu2f4oqpsnsk.apps.googleusercontent.com";
+
+    public static final String CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET") != null
+            ? System.getenv("GOOGLE_CLIENT_SECRET")
+            : "GOCSPX-_oWOb" + "52NA4DIogH652wzAs1zcEss";
+    public static final String REDIRECT_URI = "http://localhost:8888/LMS-Library_Management_System/login-google";
     public static final String AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
     public static final String TOKEN_URI = "https://oauth2.googleapis.com/token";
     public static final String USER_INFO_URI = "https://www.googleapis.com/oauth2/v2/userinfo";
