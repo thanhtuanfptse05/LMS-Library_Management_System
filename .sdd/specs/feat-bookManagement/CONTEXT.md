@@ -1,25 +1,36 @@
 # CONTEXT.md — Quản lý Sách và Kho vật lý (Feature 4)
-# Phiên bản: 1.0.0 | Ngày: 2026-06-06
+# Phiên bản: 1.1.0 | Ngày: 2026-07-09
 
 ## 1. PROBLEM STATEMENT
-Thư viện cần quản lý danh mục sách và số lượng bản sao vật lý một cách chính xác. Lỗi đồng bộ giữa dữ liệu ảo và số lượng sách thực tế trong kho gây ra tình trạng độc giả đặt trước trực tuyến nhưng không có sách vật lý đáp ứng. Quá trình nhập kho và cập nhật tình trạng sách phải được theo dõi sát sao.
+Thư viện cần quản lý nhất quán metadata của đầu sách và từng bản sao vật lý. Nếu ISBN/Barcode bị trùng hoặc số lượng tổng hợp trên `Book` lệch với `BookCopy`, người dùng có thể thấy sách còn khả dụng trong khi kho không có bản sao đáp ứng. F4 cung cấp các thao tác danh mục, nhập kho và import hàng loạt để giữ dữ liệu này chính xác và có thể truy vết.
 
 ## 2. DOMAIN KNOWLEDGE
-- **Book (Đầu sách):** Thông tin thư mục chung (ISBN, Tác giả, Tiêu đề, Giá). Không được phép mượn thực thể này.
-- **BookCopy (Bản sao):** Cuốn sách vật lý cụ thể, định danh bằng Barcode duy nhất. Đây là thực thể được mang đi mượn.
-- **Inventory Metrics:** `totalQuantity` (tổng tài sản đã nhập) và `availableQuantity` (sách đang nằm trong kho, sẵn sàng cho mượn).
+- **Book (Đầu sách):** Metadata dùng chung gồm ISBN, tiêu đề, tác giả, nhà xuất bản, năm xuất bản, giá, ảnh bìa và trạng thái. Đây không phải thực thể được mang đi mượn.
+- **BookCopy (Bản sao):** Cuốn sách vật lý, có Barcode duy nhất, vị trí, condition và status. Đây là thực thể được lưu thông.
+- **Category/Tag:** Phân loại nhiều-nhiều cho Book qua `BookCategory` và `BookTag`.
+- **Inventory Metrics:** `totalQuantity` là tổng số BookCopy của Book; `availableQuantity` là số bản sao đang sẵn sàng lưu thông.
+- **Bulk Import:** File `.xlsx` gồm hai sheet `Books` và `BookCopies`; dữ liệu nghiệp vụ được import theo chiến lược all-or-nothing.
+- **Feature Boundary:** Báo hỏng/mất và kiểm kê kho thuộc F13 `feat-bookMaintenance`; F4 chỉ điều hướng các thay đổi condition sang quy trình đó.
 
 ## 3. STAKEHOLDERS
-- **Librarian (Thủ thư):** Người vận hành chính, thêm/sửa Đầu sách và nhập kho Bản sao vật lý.
+- **Librarian (Thủ thư):** Xem tổng quan, quản lý đầu sách, bản sao, thể loại, tag và import dữ liệu.
+- **Borrowers (Độc giả/Giảng viên):** Phụ thuộc vào dữ liệu tồn kho chính xác khi tìm và đặt sách.
+- **Auditor/Administrator:** Cần Audit Log cho mọi thao tác Create/Update quan trọng.
 
 ## 4. CONSTRAINTS (Ràng buộc cứng)
-- **Tech Stack:** Java Servlet, JDBC, JSP.
-- **Data Integrity:** Không cho phép Hard Delete đối với bảng `Book` và `BookCopy`.
-- **Inventory Lock:** Không được phép chỉnh sửa định danh `ISBN` (Book) và `Barcode` (BookCopy) sau khi đã tạo (Tuân thủ BR-18).
+- **Tech Stack:** Java 17, Servlet, JSP/JSTL/EL, JDBC DAO, PostgreSQL; không dùng Spring hoặc ORM.
+- **Schema Source:** Bắt buộc đối chiếu `database/supabase/LMS_Schema_PostgreSQL.sql`.
+- **Access Control:** Toàn bộ `/book-management/*` được `AuthFilter` bảo vệ; chỉ `LIBRARIAN` truy cập F4.
+- **Data Integrity:** Không hard-delete `Book` hoặc `BookCopy`; ISBN và Barcode bất biến sau khi tạo.
+- **Transaction:** Mọi thay đổi gồm nhiều bảng và Audit Log phải dùng cùng một `Connection`.
+- **UI:** Nhãn, lỗi và thông báo thành công phải 100% tiếng Việt.
 
 ## 5. ASSUMPTIONS
-- Dữ liệu mã vạch (Barcode) được hệ thống tự động sinh hoặc quét từ thiết bị phần cứng đảm bảo định dạng chuẩn.
-- Thao tác chuyển đổi tình trạng `Condition` của `BookCopy` từ 'good' sang 'damaged' hoặc 'lost' tại phân hệ F4 xảy ra khi Librarian đi kiểm kho định kỳ, tách biệt với luồng Check-in của F6.
+- Thiết bị quét Barcode hoạt động như bàn phím và không cần SDK riêng.
+- Số lượng tồn kho được đồng bộ tại Service Layer, không dùng database trigger nghiệp vụ.
+- ISBN đã tồn tại trong file import chỉ nhận thêm BookCopy; metadata Book hiện hữu không bị ghi đè.
+- Lịch sử import lỗi được lưu để tra cứu nhưng không làm thay đổi Book/BookCopy.
+- F13 chịu trách nhiệm thay đổi condition sang `damaged/lost`, xử lý sự cố và kiểm kê.
 
 ## 6. OPEN QUESTIONS
 - N/A

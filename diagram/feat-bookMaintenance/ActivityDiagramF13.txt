@@ -1,0 +1,432 @@
+[Initial Node 1.1]
+Actor: System
+Loại: Initial Node
+Tên Action: Start Book Maintenance Flow
+Nội dung Action: Điểm bắt đầu tiến trình F13 xử lý sự cố bản sao và kiểm kê kho.
+Nối tới: Mũi tên đi tới [Decision Node 2.1].
+
+[Decision Node 2.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Authentication And Role
+Nội dung Action: AuthFilter kiểm tra HttpSession và vai trò trước route /book-management/incidents hoặc /book-management/inventory.
+Nối tới:
+Nhánh [Not Authenticated]: rẽ tới [System Action Box 20.1].
+Nhánh [Role Is Not LIBRARIAN]: rẽ tới [System Action Box 20.2].
+Nhánh [LIBRARIAN]: rẽ tới [Manual Action 3.1].
+
+[Manual Action 3.1]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Access Book Maintenance
+Nội dung Action: Thủ thư mở phân hệ Hỏng và mất hoặc Đối chiếu tồn kho.
+Nối tới: Mũi tên đi tới [Decision Node 4.1].
+
+[Decision Node 4.1]
+Actor: Librarian
+Loại: Decision Node
+Tên Action: Choose Main Operation
+Nội dung Action: Chọn quản lý sự cố hoặc kiểm kê.
+Nối tới:
+Nhánh [Manage Incident]: rẽ tới [Decision Node 5.1].
+Nhánh [Manage Inventory Session]: rẽ tới [Decision Node 5.2].
+
+[Decision Node 5.1]
+Actor: Librarian
+Loại: Decision Node
+Tên Action: Choose Incident Operation
+Nội dung Action: Chọn xem danh sách, báo mới, xác minh, kết luận, bác bỏ hoặc khôi phục sau sửa chữa.
+Nối tới:
+Nhánh [View Or Filter]: rẽ tới [System Action Box 6.1].
+Nhánh [Report]: rẽ tới [Manual Action 6.2].
+Nhánh [Investigate]: rẽ tới [Manual Action 6.3].
+Nhánh [Resolve]: rẽ tới [Manual Action 6.4].
+Nhánh [Reject]: rẽ tới [Manual Action 6.5].
+Nhánh [Restore Repaired Copy]: rẽ tới [Manual Action 6.6].
+
+[Decision Node 5.2]
+Actor: Librarian
+Loại: Decision Node
+Tên Action: Choose Inventory Operation
+Nội dung Action: Chọn xem, tạo, bắt đầu, quét, kết thúc kiểm đếm, xử lý chênh lệch, hoàn tất hoặc hủy phiên.
+Nối tới:
+Nhánh [View Session]: rẽ tới [System Action Box 10.1].
+Nhánh [Create]: rẽ tới [Manual Action 10.2].
+Nhánh [Start]: rẽ tới [Manual Action 10.3].
+Nhánh [Scan]: rẽ tới [Manual Action 10.4].
+Nhánh [Finish Counting]: rẽ tới [Manual Action 10.5].
+Nhánh [Resolve Mismatch]: rẽ tới [Decision Node 10.6].
+Nhánh [Complete]: rẽ tới [Manual Action 10.7].
+Nhánh [Cancel]: rẽ tới [Manual Action 10.8].
+
+[System Action Box 6.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query And Render Incidents
+Nội dung Action: Tìm kiếm, lọc type/status, phân trang 20 bản ghi và hiển thị chi tiết sự cố.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[Manual Action 6.2]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Submit Incident Report
+Nội dung Action: Nhập Barcode, loại damaged/lost và mô tả hiện trạng.
+Nối tới: Mũi tên đi tới [Decision Node 7.1].
+
+[Manual Action 6.3]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Start Incident Investigation
+Nội dung Action: Chọn incident pending để bắt đầu xác minh.
+Nối tới: Mũi tên đi tới [Decision Node 7.2].
+
+[Manual Action 6.4]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Submit Incident Resolution
+Nội dung Action: Nhập kết luận cho incident pending hoặc investigating.
+Nối tới: Mũi tên đi tới [Decision Node 7.3].
+
+[Manual Action 6.5]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Reject Incident
+Nội dung Action: Nhập lý do bác bỏ incident pending hoặc investigating.
+Nối tới: Mũi tên đi tới [Decision Node 7.4].
+
+[Manual Action 6.6]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Restore Repaired Book Copy
+Nội dung Action: Nhập ghi chú sửa chữa cho incident damaged đã resolved.
+Nối tới: Mũi tên đi tới [Decision Node 7.5].
+
+[Decision Node 7.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Incident Report
+Nội dung Action: Khóa BookCopy theo Barcode; kiểm tra good/available, type hợp lệ và chưa có incident pending/investigating.
+Nối tới:
+Nhánh [Invalid Or Not Reportable]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 8.1].
+
+[Decision Node 7.2]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Investigation Transition
+Nội dung Action: Khóa incident và chỉ chấp nhận trạng thái pending.
+Nối tới:
+Nhánh [Invalid State]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 8.2].
+
+[Decision Node 7.3]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Resolve Transition
+Nội dung Action: Khóa incident và BookCopy; chỉ chấp nhận pending/investigating và kết luận hợp lệ.
+Nối tới:
+Nhánh [Invalid State Or Resolution]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 8.3].
+
+[Decision Node 7.4]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Reject Transition
+Nội dung Action: Khóa incident và BookCopy; chỉ chấp nhận pending/investigating và lý do hợp lệ.
+Nối tới:
+Nhánh [Invalid State Or Resolution]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 8.4].
+
+[Decision Node 7.5]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Repair Restore
+Nội dung Action: Chỉ chấp nhận incident resolved/damaged có BookCopy damaged/unavailable và ghi chú hợp lệ.
+Nối tới:
+Nhánh [Invalid State Or Note]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 8.5].
+
+[System Action Box 8.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Incident Report Transaction
+Nội dung Action: INSERT incident pending, chuyển BookCopy unavailable, giảm availableQuantity 1, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 8.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Investigation Transition
+Nội dung Action: Chuyển incident pending sang investigating, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 8.3]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Incident Resolution
+Nội dung Action: Chuyển incident resolved, đặt BookCopy.condition thành damaged/lost, giữ unavailable, không giảm số lượng lần hai, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 8.4]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Incident Rejection
+Nội dung Action: Chuyển incident rejected, đưa BookCopy available, tăng availableQuantity 1, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 8.5]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Repair Restore
+Nội dung Action: Đưa BookCopy damaged/unavailable về good/available, tăng availableQuantity 1, nối ghi chú resolution, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 10.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query And Render Inventory Sessions
+Nội dung Action: Hiển thị danh sách phiên, tổng quan và chi tiết InventoryItem của phiên được chọn.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[Manual Action 10.2]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Submit New Inventory Session
+Nội dung Action: Chọn location và nhập ghi chú tối đa 1000 ký tự.
+Nối tới: Mũi tên đi tới [Decision Node 11.1].
+
+[Manual Action 10.3]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Start Inventory Counting
+Nội dung Action: Chọn phiên draft để bắt đầu kiểm đếm.
+Nối tới: Mũi tên đi tới [Decision Node 11.2].
+
+[Manual Action 10.4]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Scan Book Copy Barcode
+Nội dung Action: Quét Barcode trong phiên counting.
+Nối tới: Mũi tên đi tới [Decision Node 11.3].
+
+[Manual Action 10.5]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Finish Inventory Counting
+Nội dung Action: Kết thúc quét của phiên counting để tạo danh sách missing.
+Nối tới: Mũi tên đi tới [Decision Node 11.4].
+
+[Decision Node 10.6]
+Actor: Librarian
+Loại: Decision Node
+Tên Action: Choose Mismatch Resolution
+Nội dung Action: Chọn xử lý BookCopy misplaced hoặc missing.
+Nối tới:
+Nhánh [Misplaced]: rẽ tới [Manual Action 12.1].
+Nhánh [Missing]: rẽ tới [Manual Action 12.2].
+
+[Manual Action 10.7]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Complete Inventory Session
+Nội dung Action: Yêu cầu hoàn tất phiên reviewing.
+Nối tới: Mũi tên đi tới [Decision Node 11.5].
+
+[Manual Action 10.8]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Cancel Inventory Session
+Nội dung Action: Yêu cầu hủy phiên draft, counting hoặc reviewing.
+Nối tới: Mũi tên đi tới [Decision Node 11.6].
+
+[Decision Node 11.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate New Inventory Session
+Nội dung Action: Kiểm tra location bắt buộc và độ dài ghi chú.
+Nối tới:
+Nhánh [Invalid]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 13.1].
+
+[Decision Node 11.2]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Start Transition
+Nội dung Action: Khóa session và chỉ chấp nhận trạng thái draft.
+Nối tới:
+Nhánh [Invalid State]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 13.2].
+
+[Decision Node 11.3]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Scan
+Nội dung Action: Khóa session counting và BookCopy theo Barcode; xác định matched hoặc misplaced từ location.
+Nối tới:
+Nhánh [Invalid Session Or Barcode]: rẽ tới [System Action Box 20.3].
+Nhánh [Matched]: rẽ tới [System Action Box 13.3].
+Nhánh [Misplaced]: rẽ tới [System Action Box 13.4].
+
+[Decision Node 11.4]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Finish Counting
+Nội dung Action: Khóa session và chỉ chấp nhận trạng thái counting.
+Nối tới:
+Nhánh [Invalid State]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 13.5].
+
+[Decision Node 11.5]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Unresolved Mismatches
+Nội dung Action: Khóa session reviewing và đếm item missing/misplaced chưa có resolvedAt.
+Nối tới:
+Nhánh [Still Unresolved]: rẽ tới [System Action Box 20.4].
+Nhánh [None]: rẽ tới [System Action Box 13.8].
+
+[Decision Node 11.6]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Cancel Transition
+Nội dung Action: Chỉ cho hủy phiên chưa completed/cancelled.
+Nối tới:
+Nhánh [Already Finished]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 13.9].
+
+[Manual Action 12.1]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Resolve Misplaced Item
+Nội dung Action: Xác nhận cập nhật vị trí BookCopy theo location của phiên kiểm kê.
+Nối tới: Mũi tên đi tới [Decision Node 12.3].
+
+[Manual Action 12.2]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Resolve Missing Item
+Nội dung Action: Xác nhận tạo sự cố mất cho BookCopy không tìm thấy.
+Nối tới: Mũi tên đi tới [Decision Node 12.4].
+
+[Decision Node 12.3]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Misplaced Item
+Nội dung Action: Chỉ chấp nhận item misplaced chưa xử lý trong session reviewing.
+Nối tới:
+Nhánh [Invalid Or Already Resolved]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 13.6].
+
+[Decision Node 12.4]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate Missing Item
+Nội dung Action: Chỉ chấp nhận item missing chưa xử lý, BookCopy good/available và chưa có incident mở.
+Nối tới:
+Nhánh [Invalid Or Already Resolved]: rẽ tới [System Action Box 20.3].
+Nhánh [Valid]: rẽ tới [System Action Box 13.7].
+
+[System Action Box 13.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Create Inventory Snapshot
+Nội dung Action: Tạo session draft, snapshot BookCopy good tại location thành item pending, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 13.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Start Inventory Session
+Nội dung Action: Chuyển session draft sang counting, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 13.3]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Record Matched Scan
+Nội dung Action: Ghi scannedLocation, result matched, người quét, thời điểm và Audit Log.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 13.4]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Record Misplaced Scan
+Nội dung Action: Ghi scannedLocation, result misplaced, người quét, thời điểm và Audit Log.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 13.5]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Finish Counting And Mark Missing
+Nội dung Action: Đổi item pending thành missing, chuyển session counting sang reviewing, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 13.6]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Misplaced Resolution
+Nội dung Action: Cập nhật BookCopy.location theo scannedLocation, ghi resolution/resolvedAt, Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 13.7]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Missing Resolution
+Nội dung Action: Tạo incident lost/pending, chuyển BookCopy unavailable, giảm availableQuantity 1, resolve item, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 13.8]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Complete Inventory Session
+Nội dung Action: Chuyển session reviewing sang completed, lưu completedBy/completedAt, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 13.9]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Cancel Inventory Session
+Nội dung Action: Chuyển phiên chưa kết thúc sang cancelled, lưu completedBy/completedAt, ghi Audit Log và commit.
+Nối tới: Mũi tên đi tới [System Action Box 21.1].
+
+[System Action Box 20.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Redirect To Login
+Nội dung Action: Chuyển người chưa đăng nhập tới trang đăng nhập.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 20.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Forbidden
+Nội dung Action: Trả HTTP 403 cho vai trò không phải LIBRARIAN.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 20.3]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Validation Error
+Nội dung Action: Rollback nếu transaction đã mở và hiển thị lỗi trạng thái/dữ liệu bằng tiếng Việt.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 20.4]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Require Mismatch Resolution
+Nội dung Action: Giữ session ở reviewing và yêu cầu xử lý toàn bộ missing/misplaced trước khi hoàn tất.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[System Action Box 21.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Result
+Nội dung Action: Render dữ liệu hoặc hiển thị thông báo thành công bằng tiếng Việt.
+Nối tới: Mũi tên đi tới [Final Node 22.1].
+
+[Final Node 22.1]
+Actor: System
+Loại: Final Node
+Tên Action: Complete Book Maintenance Flow
+Nội dung Action: Kết thúc tiến trình F13 Bảo trì sách và Kiểm kê.
+Nối tới: Không có.
