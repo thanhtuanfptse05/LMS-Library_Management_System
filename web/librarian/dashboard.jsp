@@ -73,9 +73,6 @@
                                 </div>
                                 <p class="stat-label">Sách đã mượn</p>
                                 <p class="stat-value"><c:out value="${issuedToday != null ? issuedToday : '0'}" /></p>
-                                <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 70%; background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary));"></div>
-                                </div>
                             </div>
                         </div>
 
@@ -90,9 +87,6 @@
                                 </div>
                                 <p class="stat-label">Sách đã trả</p>
                                 <p class="stat-value"><c:out value="${returnedToday != null ? returnedToday : '0'}" /></p>
-                                <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 50%; background: linear-gradient(90deg, var(--tertiary-fixed), var(--tertiary));"></div>
-                                </div>
                             </div>
                         </div>
 
@@ -107,9 +101,6 @@
                                 </div>
                                 <p class="stat-label">Khoản mượn quá hạn</p>
                                 <p class="stat-value"><c:out value="${overdueCount != null ? overdueCount : '0'}" /></p>
-                                <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 30%; background: linear-gradient(90deg, #fca5a5, var(--error));"></div>
-                                </div>
                             </div>
                         </div>
 
@@ -124,9 +115,6 @@
                                 </div>
                                 <p class="stat-label">Đặt trước chờ duyệt</p>
                                 <p class="stat-value"><c:out value="${pendingReservations != null ? pendingReservations : '0'}" /></p>
-                                <div class="mini-progress">
-                                    <div class="mini-progress-bar" style="width: 60%; background: linear-gradient(90deg, #fde68a, var(--warning));"></div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -146,22 +134,21 @@
                     <!-- ─── Main Split Layout ─── -->
                     <div class="row g-4">
 
-                        <!-- Left 2/3: Active Loans + Quick Issue Form -->
+                        <!-- Left 2/3: My Loans + Overdue Loans -->
                         <div class="col-12 col-lg-8 d-flex flex-column gap-4">
 
-                            <!-- Active Loans Table -->
+                            <!-- Sách tôi đã xử lý (loans do thủ thư này tạo) -->
+                            <c:if test="${not empty myLoans}">
                             <div class="raised-card overflow-hidden">
                                 <div class="card-header-row">
                                     <div>
-                                        <h3 class="card-title">Khoản mượn hoạt động</h3>
-                                        <p class="card-subtitle">Các bản sách đang lưu hành bên ngoài</p>
+                                        <h3 class="card-title">Sách tôi đã xử lý</h3>
+                                        <p class="card-subtitle">Các giao dịch mượn/trả do bạn thực hiện gần đây</p>
                                     </div>
-                                    <div class="d-flex gap-2">
-                                        <a href="${pageContext.request.contextPath}/librarian/desk-dashboard"
-                                           class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
-                                            <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Cho mượn sách
-                                        </a>
-                                    </div>
+                                    <a href="${pageContext.request.contextPath}/librarian/desk-dashboard"
+                                       class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
+                                        <span class="material-symbols-outlined" style="font-size: 15px;">add</span> Cho mượn sách
+                                    </a>
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table table-lms mb-0">
@@ -176,60 +163,54 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <c:choose>
-                                                <c:when test="${not empty activeLoans}">
-                                                    <c:forEach var="loan" items="${activeLoans}">
-                                                        <tr>
-                                                            <td>
-                                                                <div class="d-flex align-items-center gap-2">
-                                                                    <div class="avatar avatar-sm" style="background-color: var(--primary-fixed); color: var(--on-primary-container);">
-                                                                        <c:out value="${fn:toUpperCase(fn:substring(loan.memberName, 0, 2))}" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <span style="font-size: 13px; font-weight: 600;"><c:out value="${loan.memberName}" /></span>
-                                                                        <div class="text-muted" style="font-size: 11px;"><c:out value="${loan.memberCode}" /></div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td style="font-size: 13px;"><c:out value="${loan.bookTitle}" /></td>
-                                                            <td class="text-on-surface-variant" style="font-size: 13px;"><fmt:formatDate value="${loan.startDate}" pattern="dd/MM/yyyy" /></td>
-                                                            <td style="font-size: 13px; <c:if test='${loan.endDate.time < now.time}'>color: var(--error); font-weight: bold;</c:if>">
-                                                                <fmt:formatDate value="${loan.endDate}" pattern="dd/MM/yyyy" />
-                                                            </td>
-                                                            <td>
-                                                                <c:choose>
-                                                                    <c:when test="${loan.endDate.time < now.time}">
-                                                                        <span class="badge-pill badge-error">Quá hạn</span>
-                                                                    </c:when>
-                                                                    <c:when test="${(loan.endDate.time - now.time) < 3 * 24 * 60 * 60 * 1000}">
-                                                                        <span class="badge-pill badge-warning">Sắp đến hạn</span>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <span class="badge-pill badge-info">Hoạt động</span>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </td>
-                                                            <td class="text-end">
-                                                                <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${loan.memberCode}"
-                                                                   class="btn-icon text-decoration-none" title="Trả sách">
-                                                                    <span class="material-symbols-outlined">assignment_return</span>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </c:forEach>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <tr>
-                                                        <td colspan="6" class="text-center text-muted py-5">
-                                                            <span class="material-symbols-outlined d-block fs-2 mb-2 text-secondary" style="font-variation-settings: 'FILL' 0;">inbox</span>
-                                                            <p class="mb-3 text-secondary" style="font-size: 14px;">Không có khoản mượn nào đang hoạt động.</p>
-                                                            <a href="${pageContext.request.contextPath}/librarian/desk-dashboard" class="btn btn-sm btn-primary-custom rounded-3 fw-bold px-3 text-decoration-none">
-                                                                Đến quầy lưu thông
+                                            <c:forEach var="loan" items="${myLoans}">
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="avatar avatar-sm" style="background-color: var(--primary-fixed); color: var(--on-primary-container);">
+                                                                <c:out value="${fn:toUpperCase(fn:substring(loan.memberName, 0, 2))}" />
+                                                            </div>
+                                                            <div>
+                                                                <span style="font-size: 13px; font-weight: 600;"><c:out value="${loan.memberName}" /></span>
+                                                                <div class="text-muted" style="font-size: 11px;"><c:out value="${loan.memberCode}" /></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style="font-size: 13px; max-width: 200px;">
+                                                        <span class="d-block text-truncate" title="${loan.bookTitle}"><c:out value="${loan.bookTitle}" /></span>
+                                                    </td>
+                                                    <td class="text-on-surface-variant" style="font-size: 13px;">
+                                                        <fmt:formatDate value="${loan.startDate}" pattern="dd/MM/yyyy" />
+                                                    </td>
+                                                    <td style="font-size: 13px; <c:if test='${loan.status eq "borrowed" and loan.endDate.time lt now.time}'>color: var(--error); font-weight: bold;</c:if>">
+                                                        <fmt:formatDate value="${loan.endDate}" pattern="dd/MM/yyyy" />
+                                                    </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${loan.status eq 'returned'}">
+                                                                <span class="badge-pill badge-success">Đã trả</span>
+                                                            </c:when>
+                                                            <c:when test="${loan.endDate.time lt now.time}">
+                                                                <span class="badge-pill badge-error">Quá hạn</span>
+                                                            </c:when>
+                                                            <c:when test="${(loan.endDate.time - now.time) lt 3 * 24 * 60 * 60 * 1000}">
+                                                                <span class="badge-pill badge-warning">Sắp đến hạn</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="badge-pill badge-info">Đang mượn</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <c:if test="${loan.status eq 'borrowed'}">
+                                                            <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${loan.memberCode}"
+                                                               class="btn-icon text-decoration-none" title="Trả sách">
+                                                                <span class="material-symbols-outlined">assignment_return</span>
                                                             </a>
-                                                        </td>
-                                                    </tr>
-                                                </c:otherwise>
-                                            </c:choose>
+                                                        </c:if>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
                                         </tbody>
                                     </table>
                                 </div>
@@ -240,186 +221,157 @@
                                     </a>
                                 </div>
                             </div>
+                            </c:if>
 
-                            <!-- Quick Reader Lookup Form -->
-                            <form action="${pageContext.request.contextPath}/librarian/desk-dashboard" method="get" class="raised-card p-4">
-                                <div class="d-flex align-items-center gap-3 mb-4">
-                                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-fixed) 0%, var(--primary-fixed-dim) 100%);">
-                                        <span class="material-symbols-outlined" style="color: var(--primary);">search</span>
-                                    </div>
-                                    <div>
-                                        <h3 class="card-title mb-0">Tra cứu quầy lưu thông nhanh</h3>
-                                        <p class="card-subtitle mb-0">Nhập mã độc giả để bắt đầu mượn/trả sách hoặc thanh toán</p>
-                                    </div>
-                                </div>
-                                <div class="row g-3">
-                                    <div class="col-12 col-md-10">
-                                        <label class="d-block mb-1 fw-bold text-on-surface-variant text-uppercase" style="font-size: 10px; letter-spacing: 0.08em;">
-                                            Mã định danh độc giả (MSSV / MSGV)
-                                        </label>
-                                        <input class="form-control rounded-3" style="border: 1.5px solid var(--outline-variant);"
-                                               type="text" name="memberCode" placeholder="Nhập mã sinh viên hoặc giảng viên..." required />
-                                    </div>
-                                    <div class="col-12 col-md-2 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary-custom w-100 rounded-3 fw-bold py-2">Tra cứu</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                        </div><!-- /col-lg-8 -->
-
-                        <!-- Right 1/3: Pending Reservations + Fine Alerts + Quick Actions -->
-                        <div class="col-12 col-lg-4 d-flex flex-column gap-4">
-
-                            <!-- Pending Reservations -->
+                            <!-- Khoản mượn quá hạn — chỉ hiển thị nếu có data -->
+                            <c:if test="${not empty overdueLoans}">
                             <div class="raised-card overflow-hidden">
                                 <div class="card-header-row">
-                                    <h3 class="card-title mb-0">Chờ duyệt Đặt trước</h3>
-                                    <span class="badge-pill badge-primary">
-                                        <c:out value="${pendingReservations != null ? pendingReservations : '0'}" /> Đang chờ
+                                    <div>
+                                        <h3 class="card-title">Khoản mượn quá hạn</h3>
+                                        <p class="card-subtitle">Danh sách cần nhắc nhở trả sách ngay</p>
+                                    </div>
+                                    <span class="badge-pill badge-error">
+                                        <c:out value="${overdueCount}" /> Quá hạn
                                     </span>
                                 </div>
-                                <div class="p-3 d-flex flex-column gap-2" style="max-height: 400px; overflow-y: auto;">
-                                    <c:choose>
-                                        <c:when test="${not empty pendingReservationsList}">
-                                            <c:forEach var="res" items="${pendingReservationsList}">
-                                                <div class="p-3 rounded-3" style="background-color: var(--surface-container-low); border: 1px solid var(--outline-variant);">
-                                                    <div class="d-flex justify-content-between align-items-start mb-1">
-                                                        <span class="fw-bold" style="font-size: 13px;"><c:out value="${res.memberName}" /></span>
-                                                        <div class="text-muted" style="font-size: 11px;"><c:out value="${res.memberCode}" /></div>
-                                                    </div>
-                                                    <p class="text-on-surface-variant mb-2" style="font-size: 12px; font-weight: 600;"><c:out value="${res.bookTitle}" /></p>
-                                                    <div class="d-flex gap-2">
-                                                        <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${res.memberCode}"
-                                                           class="btn btn-sm btn-primary-custom rounded-2 fw-bold flex-fill text-center text-decoration-none" style="font-size: 12px; line-height: 1.8;">
-                                                            Xác nhận
+                                <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                                    <table class="table table-lms mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Thành viên</th>
+                                                <th>Tên sách</th>
+                                                <th>Hạn trả</th>
+                                                <th class="text-end">Hành động</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach var="overdue" items="${overdueLoans}">
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="avatar avatar-sm" style="background-color: var(--error-container); color: var(--error);">
+                                                                <c:out value="${fn:toUpperCase(fn:substring(overdue.memberName, 0, 2))}" />
+                                                            </div>
+                                                            <div>
+                                                                <span style="font-size: 13px; font-weight: 600;"><c:out value="${overdue.memberName}" /></span>
+                                                                <div class="text-muted" style="font-size: 11px;"><c:out value="${overdue.memberCode}" /></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style="font-size: 13px; max-width: 180px;">
+                                                        <span class="d-block text-truncate" title="${overdue.bookTitle}"><c:out value="${overdue.bookTitle}" /></span>
+                                                    </td>
+                                                    <td style="font-size: 12px; color: var(--error); font-weight: 600;">
+                                                        <fmt:formatDate value="${overdue.endDate}" pattern="dd/MM/yyyy" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${overdue.memberCode}"
+                                                           class="btn-icon text-decoration-none" title="Xử lý trả sách">
+                                                            <span class="material-symbols-outlined">assignment_return</span>
                                                         </a>
-                                                        <form action="${pageContext.request.contextPath}/librarian/dashboard" method="post" class="flex-fill mb-0" onsubmit="return confirm('Bạn có chắc chắn muốn hủy yêu cầu đặt trước này?');">
-                                                            <input type="hidden" name="action" value="cancelReservation" />
-                                                            <input type="hidden" name="reservationId" value="${res.reservationId}" />
-                                                            <button type="submit" class="btn btn-sm btn-secondary-custom rounded-2 fw-bold w-100" style="font-size: 12px;">
-                                                                Từ chối
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
+                                                    </td>
+                                                </tr>
                                             </c:forEach>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <div class="text-center text-muted py-4">
-                                                <span class="material-symbols-outlined d-block fs-2 mb-2 text-secondary" style="font-variation-settings: 'FILL' 0;">bookmark_border</span>
-                                                <p class="mb-2 text-secondary" style="font-size: 13px;">Không có yêu cầu đặt trước nào đang chờ.</p>
-                                                <a href="${pageContext.request.contextPath}/librarian/desk-dashboard" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 text-decoration-none" style="font-size: 12px;">
-                                                    Đến quầy lưu thông
-                                                </a>
-                                            </div>
-                                        </c:otherwise>
-                                    </c:choose>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="p-3 text-center" style="border-top: 1px solid var(--outline-variant); background: var(--surface-container-low);">
+                                <div class="p-3 text-center" style="background: var(--surface-container-low); border-top: 1px solid var(--outline-variant);">
                                     <a href="${pageContext.request.contextPath}/librarian/desk-dashboard" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
-                                        Xử lý tại quầy
+                                        Xử lý trả sách tại quầy
                                         <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
                                     </a>
                                 </div>
                             </div>
+                            </c:if>
 
-                            <!-- Today's Fine Alerts -->
+                        </div><!-- /col-lg-8 -->
+
+                        <!-- Right 1/3: Fine Alerts + Ready Pickup -->
+                        <div class="col-12 col-lg-4 d-flex flex-column gap-4">
+
+                            <!-- Thu tiền phạt — chỉ hiển thị nếu có data -->
+                            <c:if test="${not empty unpaidFinesList}">
                             <div class="raised-card overflow-hidden">
                                 <div class="card-header-row">
                                     <div>
                                         <h3 class="card-title mb-0">Thu tiền phạt</h3>
                                         <p class="card-subtitle mb-0">Các khoản phạt chưa thanh toán</p>
                                     </div>
+                                    <span class="badge-pill badge-error">${fn:length(unpaidFinesList)} Khoản</span>
                                 </div>
                                 <div class="p-3 d-flex flex-column gap-2" style="max-height: 400px; overflow-y: auto;">
-                                    <c:choose>
-                                        <c:when test="${not empty unpaidFinesList}">
-                                            <c:forEach var="fine" items="${unpaidFinesList}">
-                                                <div class="d-flex justify-content-between align-items-center p-3 rounded-3"
-                                                     style="background: linear-gradient(135deg, rgba(186,26,26,0.05) 0%, rgba(186,26,26,0.02) 100%); border: 1px solid rgba(186,26,26,0.15);">
-                                                    <div>
-                                                        <p class="fw-bold mb-0" style="font-size: 13px;"><c:out value="${fine.memberName}" /></p>
-                                                        <p class="text-on-surface-variant mb-0" style="font-size: 11px;"><c:out value="${fine.memberCode}" /></p>
-                                                        <p class="text-on-surface-variant mb-0" style="font-size: 12px; margin-top: 4px;"><c:out value="${fine.reason}" /></p>
-                                                    </div>
-                                                    <div class="text-end">
-                                                        <p class="mb-1" style="font-size: 14px; font-weight: 700; color: var(--error);">
-                                                            <fmt:formatNumber value="${fine.amount}" type="currency" currencySymbol="đ" maxFractionDigits="0" />
-                                                        </p>
-                                                        <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${fine.memberCode}"
-                                                           class="btn btn-sm btn-danger rounded-2 fw-bold px-3 text-decoration-none"
-                                                           style="font-size: 11px; color: var(--error); background-color: var(--error-container); border: none; display: inline-block;">
-                                                            Thu
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </c:forEach>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <div class="text-center text-muted py-4">
-                                                <span class="material-symbols-outlined d-block fs-2 mb-2 text-secondary" style="font-variation-settings: 'FILL' 0;">payments</span>
-                                                <p class="mb-2 text-secondary" style="font-size: 13px;">Không có khoản phạt chưa thanh toán nào.</p>
-                                                <a href="${pageContext.request.contextPath}/librarian/desk-dashboard" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 text-decoration-none" style="font-size: 12px;">
-                                                    Đến quầy thanh toán
+                                    <c:forEach var="fine" items="${unpaidFinesList}">
+                                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3"
+                                             style="background: linear-gradient(135deg, rgba(186,26,26,0.05) 0%, rgba(186,26,26,0.02) 100%); border: 1px solid rgba(186,26,26,0.15);">
+                                            <div>
+                                                <p class="fw-bold mb-0" style="font-size: 13px;"><c:out value="${fine.memberName}" /></p>
+                                                <p class="text-on-surface-variant mb-0" style="font-size: 11px;"><c:out value="${fine.memberCode}" /></p>
+                                                <p class="text-on-surface-variant mb-0" style="font-size: 12px; margin-top: 4px;"><c:out value="${fine.reason}" /></p>
+                                            </div>
+                                            <div class="text-end">
+                                                <p class="mb-1" style="font-size: 14px; font-weight: 700; color: var(--error);">
+                                                    <fmt:formatNumber value="${fine.amount}" type="currency" currencySymbol="đ" maxFractionDigits="0" />
+                                                </p>
+                                                <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${fine.memberCode}"
+                                                   class="btn btn-sm fw-bold px-3 text-decoration-none rounded-2"
+                                                   style="font-size: 11px; color: var(--error); background-color: var(--error-container); border: none; display: inline-block;">
+                                                    Thu
                                                 </a>
                                             </div>
-                                        </c:otherwise>
-                                    </c:choose>
+                                        </div>
+                                    </c:forEach>
                                 </div>
                             </div>
+                            </c:if>
 
-                            <!-- Phím tắt Nghiệp vụ -->
+                            <!-- Sẵn sàng lấy sách — chỉ hiển thị nếu có data -->
+                            <c:if test="${not empty readyPickupList}">
                             <div class="raised-card overflow-hidden">
                                 <div class="card-header-row">
                                     <div>
-                                        <h3 class="card-title mb-0">Nghiệp vụ nhanh</h3>
-                                        <p class="card-subtitle mb-0">Các phím tắt quản lý & vận hành thư viện</p>
+                                        <h3 class="card-title mb-0">Sẵn sàng lấy sách</h3>
+                                        <p class="card-subtitle mb-0">Đặt trước đã được cấp bản sao, chờ độc giả đến nhận</p>
                                     </div>
+                                    <span class="badge-pill badge-warning">
+                                        ${fn:length(readyPickupList)} Chờ lấy
+                                    </span>
                                 </div>
-                                <div class="p-3 d-flex flex-column gap-2">
-                                    <a href="${pageContext.request.contextPath}/book-management/titles"
-                                       class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
-                                       style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
-                                        <span class="material-symbols-outlined text-primary-custom" style="font-size: 24px;">menu_book</span>
-                                        <div>
-                                            <span class="fw-bold d-block" style="font-size: 13px;">Quản lý Đầu sách</span>
-                                            <span class="text-muted" style="font-size: 11px;">Thêm mới và cập nhật danh mục đầu sách</span>
-                                        </div>
-                                    </a>
-                                    <a href="${pageContext.request.contextPath}/book-management/incidents"
-                                       class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
-                                       style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
-                                        <span class="material-symbols-outlined text-primary-custom" style="font-size: 24px;">report</span>
-                                        <div>
-                                            <span class="fw-bold d-block" style="font-size: 13px;">Báo cáo Hỏng & Mất</span>
-                                            <span class="text-muted" style="font-size: 11px;">Cập nhật tình trạng hao mòn và đền bù sách</span>
-                                        </div>
-                                    </a>
-                                    <a href="${pageContext.request.contextPath}/book-management/inventory"
-                                       class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
-                                       style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
-                                        <span class="material-symbols-outlined text-primary-custom" style="font-size: 24px;">fact_check</span>
-                                        <div>
-                                            <span class="fw-bold d-block" style="font-size: 13px;">Đối chiếu tồn kho</span>
-                                            <span class="text-muted" style="font-size: 11px;">Mở phiên kiểm kê sách thực tế tại quầy</span>
-                                        </div>
-                                    </a>
-                                    <c:if test="${sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'librarian'}">
-                                        <a href="${pageContext.request.contextPath}/book-management/import"
-                                           class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none border-hover"
-                                           style="background: var(--surface-container-low); border: 1px solid var(--outline-variant); color: var(--on-surface);">
-                                            <span class="material-symbols-outlined text-primary-custom" style="font-size: 24px;">upload_file</span>
-                                            <div>
-                                                <span class="fw-bold d-block" style="font-size: 13px;">Nhập dữ liệu hàng loạt</span>
-                                                <span class="text-muted" style="font-size: 11px;">Nhập thông tin sách từ file mẫu Excel</span>
+                                <div class="p-3 d-flex flex-column gap-2" style="max-height: 380px; overflow-y: auto;">
+                                    <c:forEach var="pickup" items="${readyPickupList}">
+                                        <div class="p-3 rounded-3" style="background: linear-gradient(135deg, rgba(217,119,6,0.05) 0%, rgba(217,119,6,0.02) 100%); border: 1px solid rgba(217,119,6,0.2);">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <span class="fw-bold" style="font-size: 13px;"><c:out value="${pickup.memberName}" /></span>
+                                                <span class="badge-pill badge-warning" style="font-size: 10px;">Chờ lấy</span>
                                             </div>
-                                        </a>
-                                    </c:if>
+                                            <p class="text-on-surface-variant mb-1" style="font-size: 12px; font-weight: 600;">
+                                                <span class="material-symbols-outlined" style="font-size: 13px; vertical-align: middle;">book</span>
+                                                <c:out value="${pickup.bookTitle}" />
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="text-muted" style="font-size: 11px;">
+                                                    <c:out value="${pickup.memberCode}" /> &bull;
+                                                    Hết hạn: <fmt:formatDate value="${pickup.endDate}" pattern="dd/MM/yyyy" />
+                                                </span>
+                                                <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${pickup.memberCode}"
+                                                   class="btn btn-sm btn-primary-custom rounded-2 fw-bold text-decoration-none" style="font-size: 11px; line-height: 1.8; padding: 2px 10px;">
+                                                    Cho mượn
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                                <div class="p-3 text-center" style="border-top: 1px solid var(--outline-variant); background: var(--surface-container-low);">
+                                    <a href="${pageContext.request.contextPath}/librarian/desk-dashboard" class="text-primary-custom fw-bold text-decoration-none d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                                        Đến quầy lưu thông
+                                        <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+                                    </a>
                                 </div>
                             </div>
+                            </c:if>
 
                         </div><!-- /col-lg-4 -->
+
 
                     </div><!-- /row -->
 

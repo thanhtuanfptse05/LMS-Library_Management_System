@@ -28,6 +28,7 @@
                                         <span class="badge bg-warning text-dark" style="font-size:10px;">Chờ lấy</span>
                                     </div>
                                     <p class="mb-1 small">Mã đầu sách: <strong>${res.bookId}</strong></p>
+                                    <p class="mb-1 small">Tên đầu sách: <strong><c:out value="${res.bookTitle}"/></strong></p>
                                     <p class="mb-2 text-on-surface-variant" style="font-size:11px;">
                                         Hạn nhận sách: <strong><fmt:formatDate value="${res.endDate}" pattern="dd/MM/yyyy" /></strong>
                                     </p>
@@ -63,6 +64,8 @@
                                         <span class="fw-bold small">Mã mượn: #${borrow.borrowRecordId}</span>
                                         <span class="badge bg-info text-white" style="font-size:10px;">Đang mượn</span>
                                     </div>
+                                    <p class="mb-1 small">Mã đầu sách: <strong>${borrow.bookId}</strong></p>
+                                    <p class="mb-1 small">Tên đầu sách: <strong><c:out value="${borrow.bookTitle}"/></strong></p>
                                     <p class="mb-1 small">Mã vạch bản sao (Barcode): <strong>${copyBarcodeMap[borrow.bookCopyId]}</strong></p>
                                     <p class="mb-2 text-on-surface-variant" style="font-size:11px;">
                                         Hạn trả: <strong><fmt:formatDate value="${borrow.endDate}" pattern="dd/MM/yyyy" /></strong>

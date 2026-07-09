@@ -395,18 +395,32 @@ public class ReservationDAO {
      */
     public List<Reservation> findReadyPickupByUserId(Connection conn, int userId) throws SQLException {
         List<Reservation> list = new ArrayList<>();
-        String sql = "SELECT reservationId, userId, bookId, bookCopyId, "
-                   + "       status, queuePosition, startDate, endDate "
-                   + "FROM   Reservation "
-                   + "WHERE  userId   = ? "
-                   + "  AND  status = 'readypickup' "
-                   + "ORDER BY startDate DESC";
+        String sql = "SELECT r.reservationId, r.userId, r.bookId, r.bookCopyId, "
+                   + "       r.status, r.queuePosition, r.startDate, r.endDate, "
+                   + "       b.title AS bookTitle "
+                   + "FROM   Reservation r "
+                   + "JOIN   Book b ON r.bookId = b.bookId "
+                   + "WHERE  r.userId   = ? "
+                   + "  AND  r.status = 'readypickup' "
+                   + "ORDER BY r.startDate DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(mapResultSetToReservation(rs));
+                    Reservation r = new Reservation();
+                    r.setReservationId(rs.getInt("reservationId"));
+                    r.setUserId(rs.getInt("userId"));
+                    r.setBookId(rs.getInt("bookId"));
+                    int rawBookCopyId = rs.getInt("bookCopyId");
+                    r.setBookCopyId(rs.wasNull() ? null : rawBookCopyId);
+                    r.setStatus(rs.getString("status"));
+                    int rawQueuePosition = rs.getInt("queuePosition");
+                    r.setQueuePosition(rs.wasNull() ? null : rawQueuePosition);
+                    r.setStartDate(rs.getTimestamp("startDate"));
+                    r.setEndDate(rs.getTimestamp("endDate"));
+                    r.setBookTitle(rs.getString("bookTitle"));
+                    list.add(r);
                 }
             }
         } catch (SQLException e) {
@@ -943,6 +957,61 @@ public class ReservationDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách đặt trước pending", e);
+            throw e;
+        }
+        return list;
+    }
+
+    // =========================================================================
+    // LIBRARIAN DASHBOARD — READY PICKUP LIST
+    // =========================================================================
+
+    /**
+     * Lấy danh sách đặt trước đã sẵn sàng để lấy sách (status='readypickup')
+     * cho Librarian Dashboard, kèm tên thành viên, mã thành viên, tên sách.
+     *
+     * @param conn  Kết nối DB
+     * @param limit Giới hạn số bản ghi
+     * @return Danh sách Reservation chờ lấy sách
+     * @throws SQLException nếu có lỗi DB
+     */
+    public List<Reservation> findReadyPickupReservations(Connection conn, int limit) throws SQLException {
+        List<Reservation> list = new ArrayList<>();
+        String sql = "SELECT r.reservationId, r.userId, r.bookId, r.bookCopyId, r.status, r.queuePosition, r.startDate, r.endDate, "
+                   + "       mp.fullName AS memberName, "
+                   + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode, "
+                   + "       b.title AS bookTitle "
+                   + "FROM Reservation r "
+                   + "JOIN MemberProfile mp ON r.userId = mp.userId "
+                   + "JOIN Book b ON r.bookId = b.bookId "
+                   + "LEFT JOIN Student s ON r.userId = s.userId "
+                   + "LEFT JOIN Lecturer l ON r.userId = l.userId "
+                   + "WHERE r.status = 'readypickup' "
+                   + "ORDER BY r.endDate ASC "
+                   + "LIMIT ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Reservation r = new Reservation();
+                    r.setReservationId(rs.getInt("reservationId"));
+                    r.setUserId(rs.getInt("userId"));
+                    r.setBookId(rs.getInt("bookId"));
+                    int rawBookCopyId = rs.getInt("bookCopyId");
+                    r.setBookCopyId(rs.wasNull() ? null : rawBookCopyId);
+                    r.setStatus(rs.getString("status"));
+                    int rawQueuePosition = rs.getInt("queuePosition");
+                    r.setQueuePosition(rs.wasNull() ? null : rawQueuePosition);
+                    r.setStartDate(rs.getTimestamp("startDate"));
+                    r.setEndDate(rs.getTimestamp("endDate"));
+                    r.setMemberName(rs.getString("memberName"));
+                    r.setMemberCode(rs.getString("memberCode"));
+                    r.setBookTitle(rs.getString("bookTitle"));
+                    list.add(r);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách Reservation sẵn sàng lấy sách", e);
             throw e;
         }
         return list;

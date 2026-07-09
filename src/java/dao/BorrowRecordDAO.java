@@ -231,13 +231,15 @@ public class BorrowRecordDAO {
      */
     public List<BorrowRecord> findActiveBorrowRecordsByUserId(Connection conn, int userId) throws SQLException {
         List<BorrowRecord> list = new ArrayList<>();
-        String sql = "SELECT borrowRecordId, userId, bookCopyId, bookId, "
-                   + "       startDate, endDate, returnedAt, status, "
-                   + "       extensionCount, createdBy, createdAt "
-                   + "FROM   BorrowRecord "
-                   + "WHERE  userId   = ? "
-                   + "  AND  status   = 'borrowed' "
-                   + "ORDER BY startDate DESC";
+        String sql = "SELECT br.borrowRecordId, br.userId, br.bookCopyId, br.bookId, "
+                   + "       br.startDate, br.endDate, br.returnedAt, br.status, "
+                   + "       br.extensionCount, br.createdBy, br.createdAt, "
+                   + "       b.title AS bookTitle "
+                   + "FROM   BorrowRecord br "
+                   + "JOIN   Book b ON br.bookId = b.bookId "
+                   + "WHERE  br.userId   = ? "
+                   + "  AND  br.status   = 'borrowed' "
+                   + "ORDER BY br.startDate DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -258,6 +260,7 @@ public class BorrowRecordDAO {
                     record.setCreatedBy(rs.wasNull() ? null : rawCreatedBy);
 
                     record.setCreatedAt(rs.getTimestamp("createdAt"));
+                    record.setBookTitle(rs.getString("bookTitle"));
                     list.add(record);
                 }
             }
@@ -585,6 +588,60 @@ public class BorrowRecordDAO {
     }
 
     /**
+     * Lấy danh sách các giao dịch mượn sách do một thủ thư cụ thể xử lý
+     * (WHERE createdBy = librarianId). Bao gồm cả đang mượn ('borrowed') và
+     * đã trả gần đây ('returned'). Dùng cho Librarian Dashboard cá nhân.
+     *
+     * @param conn        Kết nối DB
+     * @param librarianId ID thủ thư cần tra cứu (session userId)
+     * @param limit       Giới hạn số bản ghi
+     * @return Danh sách BorrowRecord kèm thông tin hiển thị
+     * @throws SQLException nếu có lỗi DB
+     */
+    public List<BorrowRecord> findLoansByLibrarian(Connection conn, int librarianId, int limit) throws SQLException {
+        List<BorrowRecord> list = new ArrayList<>();
+        String sql = "SELECT br.borrowRecordId, br.userId, br.bookCopyId, br.bookId, br.startDate, br.endDate, br.returnedAt, br.status, br.extensionCount, "
+                   + "       mp.fullName AS memberName, "
+                   + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode, "
+                   + "       b.title AS bookTitle "
+                   + "FROM BorrowRecord br "
+                   + "JOIN MemberProfile mp ON br.userId = mp.userId "
+                   + "JOIN Book b ON br.bookId = b.bookId "
+                   + "LEFT JOIN Student s ON br.userId = s.userId "
+                   + "LEFT JOIN Lecturer l ON br.userId = l.userId "
+                   + "WHERE br.createdBy = ? "
+                   + "  AND br.status IN ('borrowed', 'returned') "
+                   + "ORDER BY br.startDate DESC "
+                   + "LIMIT ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, librarianId);
+            ps.setInt(2, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    BorrowRecord record = new BorrowRecord();
+                    record.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    record.setUserId(rs.getInt("userId"));
+                    record.setBookCopyId(rs.getInt("bookCopyId"));
+                    record.setBookId(rs.getInt("bookId"));
+                    record.setStartDate(rs.getTimestamp("startDate"));
+                    record.setEndDate(rs.getTimestamp("endDate"));
+                    record.setReturnedAt(rs.getTimestamp("returnedAt"));
+                    record.setStatus(rs.getString("status"));
+                    record.setExtensionCount(rs.getInt("extensionCount"));
+                    record.setMemberName(rs.getString("memberName"));
+                    record.setMemberCode(rs.getString("memberCode"));
+                    record.setBookTitle(rs.getString("bookTitle"));
+                    list.add(record);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách giao dịch của thủ thư librarianId=" + librarianId, e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
      * Tìm kiếm các bản ghi mượn quá hạn (trạng thái 'borrowed' và endDate < NOW()).
      * Dùng cho tiến trình quét quá hạn tự động.
      *
@@ -726,6 +783,60 @@ public class BorrowRecordDAO {
             throw e;
         }
         return 0.0;
+    }
+
+    // =========================================================================
+    // LIBRARIAN DASHBOARD — OVERDUE DETAIL LIST
+    // =========================================================================
+
+    /**
+     * Lấy danh sách khoản mượn quá hạn cho Librarian Dashboard (có JOIN memberName, memberCode, bookTitle).
+     *
+     * @param conn  Kết nối DB
+     * @param limit Giới hạn số bản ghi
+     * @return Danh sách BorrowRecord quá hạn kèm thông tin hiển thị
+     * @throws SQLException nếu có lỗi DB
+     */
+    public List<BorrowRecord> findOverdueLoans(Connection conn, int limit) throws SQLException {
+        List<BorrowRecord> list = new ArrayList<>();
+        String sql = "SELECT br.borrowRecordId, br.userId, br.bookCopyId, br.bookId, br.startDate, br.endDate, "
+                   + "       br.returnedAt, br.status, br.extensionCount, "
+                   + "       mp.fullName AS memberName, "
+                   + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode, "
+                   + "       b.title AS bookTitle "
+                   + "FROM BorrowRecord br "
+                   + "JOIN MemberProfile mp ON br.userId = mp.userId "
+                   + "JOIN Book b ON br.bookId = b.bookId "
+                   + "LEFT JOIN Student s ON br.userId = s.userId "
+                   + "LEFT JOIN Lecturer l ON br.userId = l.userId "
+                   + "WHERE br.status = 'borrowed' AND br.endDate < NOW() "
+                   + "ORDER BY br.endDate ASC "
+                   + "LIMIT ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    BorrowRecord record = new BorrowRecord();
+                    record.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    record.setUserId(rs.getInt("userId"));
+                    record.setBookCopyId(rs.getInt("bookCopyId"));
+                    record.setBookId(rs.getInt("bookId"));
+                    record.setStartDate(rs.getTimestamp("startDate"));
+                    record.setEndDate(rs.getTimestamp("endDate"));
+                    record.setReturnedAt(rs.getTimestamp("returnedAt"));
+                    record.setStatus(rs.getString("status"));
+                    record.setExtensionCount(rs.getInt("extensionCount"));
+                    record.setMemberName(rs.getString("memberName"));
+                    record.setMemberCode(rs.getString("memberCode"));
+                    record.setBookTitle(rs.getString("bookTitle"));
+                    list.add(record);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách khoản mượn quá hạn cho dashboard", e);
+            throw e;
+        }
+        return list;
     }
 }
 

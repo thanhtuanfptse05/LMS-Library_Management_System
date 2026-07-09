@@ -474,12 +474,25 @@ public class DeskCirculationService {
             // [Node 5.16] BƯỚC 3: Rẽ nhánh theo condition
             // ----------------------------------------------------------------
             BigDecimal fineAmount = null;
+            long overdueDays = 0;
             if ("damaged".equals(condition) || "lost".equals(condition)) {
                 fineAmount = calculateCompensationAmount(conn, bookId, condition);
                 processCheckInDamagedOrLost(conn, borrowRecordId, bookCopyId, bookId,
                                              userId, condition, librarianId);
             } else {
                 // condition == "good" — truyền endDate để tính phạt quá hạn
+                long overdueMillis = System.currentTimeMillis() - activeBorrowRecord.getEndDate().getTime();
+                overdueDays = java.util.concurrent.TimeUnit.MILLISECONDS.toDays(overdueMillis);
+                if (overdueDays > 0) {
+                    BigDecimal fineRatePerDay;
+                    try {
+                        String rateStr = systemConfigDAO.getValue(conn, "FINE_RATE_PER_DAY", null);
+                        fineRatePerDay = (rateStr != null) ? new BigDecimal(rateStr) : DEFAULT_FINE_RATE_PER_DAY;
+                    } catch (Exception ex) {
+                        fineRatePerDay = DEFAULT_FINE_RATE_PER_DAY;
+                    }
+                    fineAmount = fineRatePerDay.multiply(BigDecimal.valueOf(overdueDays));
+                }
                 processCheckInGood(conn, borrowRecordId, bookCopyId, bookId,
                                    userId, activeBorrowRecord.getEndDate(), librarianId);
             }
@@ -492,9 +505,11 @@ public class DeskCirculationService {
                     "Check-in thành công: barcode={0}, condition={1}, borrowRecordId={2}",
                     new Object[]{barcode, condition, borrowRecordId});
 
-            // Gửi email thông báo phạt sự cố (bất đồng bộ, ngoài transaction)
+            // Gửi email thông báo phạt sự cố hoặc phạt quá hạn (bất đồng bộ, ngoài transaction)
             if ("damaged".equals(condition) || "lost".equals(condition)) {
                 triggerIncidentFineEmailAsync(userId, bookId, condition, fineAmount);
+            } else if (overdueDays > 0 && fineAmount != null) {
+                triggerOverdueFineEmailAsync(userId, bookId, overdueDays, fineAmount, activeBorrowRecord.getEndDate());
             }
 
         } catch (IllegalStateException e) {
@@ -924,6 +939,45 @@ public class DeskCirculationService {
             LOGGER.log(Level.INFO, "[ASYNC] Đã enqueue email thông báo phạt sự cố INCIDENT_FINE_NOTICE cho userId={0}", userId);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email thông báo phạt sự cố.", e);
+        }
+    }
+
+    private void triggerOverdueFineEmailAsync(int userId, int bookId, long overdueDays, BigDecimal fineAmount, Timestamp dueDate) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            User user = userDAO.findByUserId(userId);
+            if (user == null) return;
+            
+            dao.MemberProfileDAO profileDAO = new dao.MemberProfileDAO();
+            model.MemberProfile profile = profileDAO.findByUserId(userId);
+            String fullName = (profile != null) ? profile.getFullName() : user.getEmail();
+            
+            Book book = bookDAO.findById(conn, bookId);
+            String bookTitle = (book != null) ? book.getTitle() : "Sách mượn thư viện";
+            
+            String formattedDueDate = new java.text.SimpleDateFormat("dd/MM/yyyy").format(dueDate);
+            
+            BigDecimal fineRatePerDay;
+            try {
+                String rateStr = systemConfigDAO.getValue(conn, "FINE_RATE_PER_DAY", null);
+                fineRatePerDay = (rateStr != null) ? new BigDecimal(rateStr) : DEFAULT_FINE_RATE_PER_DAY;
+            } catch (Exception ex) {
+                fineRatePerDay = DEFAULT_FINE_RATE_PER_DAY;
+            }
+
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("userName", fullName);
+            placeholders.put("bookTitle", bookTitle);
+            placeholders.put("dueDate", formattedDueDate);
+            placeholders.put("overdueDays", String.valueOf(overdueDays));
+            placeholders.put("finePerDay", String.format("%,.0f", fineRatePerDay.doubleValue()));
+            placeholders.put("totalFine", String.format("%,.0f", fineAmount.doubleValue()));
+            
+            model.EmailJob job = new model.EmailJob("OVERDUE_NOTICE", user.getEmail(), fullName, placeholders);
+            EmailService.enqueue(job);
+            
+            LOGGER.log(Level.INFO, "[ASYNC] Đã enqueue email thông báo phạt quá hạn OVERDUE_NOTICE cho userId={0}", userId);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email thông báo phạt quá hạn.", e);
         }
     }
 

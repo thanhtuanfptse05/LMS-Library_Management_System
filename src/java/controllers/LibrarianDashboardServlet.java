@@ -40,6 +40,8 @@ public class LibrarianDashboardServlet extends HttpServlet {
             return;
         }
 
+        int librarianId = (int) session.getAttribute("userId");
+
         try (Connection conn = DatabaseConnection.getConnection()) {
             // 1. KPI Counts
             int issuedToday = borrowRecordDAO.countIssuedToday(conn);
@@ -53,17 +55,21 @@ public class LibrarianDashboardServlet extends HttpServlet {
             request.setAttribute("pendingReservations", pendingReservations);
             request.setAttribute("now", new java.util.Date());
 
-            // 2. Active Loans (Top 10)
-            List<BorrowRecord> activeLoans = borrowRecordDAO.findActiveLoans(conn, 10);
-            request.setAttribute("activeLoans", activeLoans);
+            // 2. Giao dịch do thủ thư này xử lý (borrowed + returned gần đây, createdBy = librarianId)
+            List<BorrowRecord> myLoans = borrowRecordDAO.findLoansByLibrarian(conn, librarianId, 15);
+            request.setAttribute("myLoans", myLoans);
 
-            // 3. Pending Reservations (Top 10)
-            List<Reservation> pendingReservationsList = reservationDAO.findPendingReservations(conn, 10);
-            request.setAttribute("pendingReservationsList", pendingReservationsList);
-
-            // 4. Unpaid Fines (Top 10)
+            // 3. Unpaid Fines (Top 10)
             List<Fine> unpaidFinesList = fineDAO.findUnpaidFines(conn, 10);
             request.setAttribute("unpaidFinesList", unpaidFinesList);
+
+            // 4. Overdue Loans detail list (Top 8 — quá hạn lâu nhất ưu tiên trước)
+            List<BorrowRecord> overdueLoans = borrowRecordDAO.findOverdueLoans(conn, 8);
+            request.setAttribute("overdueLoans", overdueLoans);
+
+            // 5. Ready Pickup Reservations (Top 8 — sắp hết hạn ưu tiên trước)
+            List<Reservation> readyPickupList = reservationDAO.findReadyPickupReservations(conn, 8);
+            request.setAttribute("readyPickupList", readyPickupList);
 
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi nạp dữ liệu cho trang chủ quầy thủ thư", e);

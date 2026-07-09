@@ -25,12 +25,8 @@
         </div>
     </div>
 
-    <!-- Right: Search + Notifications + User -->
+    <!-- Right: Notifications + User -->
     <div class="d-flex align-items-center gap-2 flex-shrink-0">
-        <div class="d-none d-md-block header-search-wrapper">
-            <span class="material-symbols-outlined">search</span>
-            <input class="header-search-input" placeholder="Tìm kiếm sách, tạp chí..." type="text" aria-label="Tìm kiếm danh mục thư viện" />
-        </div>
 
         <!-- Notification bell -->
         <jsp:include page="/components/notification-bell" />

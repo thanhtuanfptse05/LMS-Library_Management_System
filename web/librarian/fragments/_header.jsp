@@ -13,12 +13,8 @@
         </h1>
     </div>
 
-    <!-- Right: Search + Notifications + User -->
+    <!-- Right: Notifications + User -->
     <div class="d-flex align-items-center gap-2 flex-shrink-0">
-        <div class="d-none d-md-block header-search-wrapper">
-            <span class="material-symbols-outlined">search</span>
-            <input class="header-search-input" placeholder="Tìm kiếm thành viên hoặc sách..." type="text" aria-label="Tìm kiếm thành viên hoặc sách" />
-        </div>
 
         <div style="width: 1px; height: 24px; background: var(--outline-variant);"></div>
 
