@@ -76,7 +76,7 @@
 //    - Owner: Tuan
 //    - Spec Folder: feat-finePayment (tạo mới)
 //    - UC: UC-31, UC-38, UC-39, UC-40  ← THÊM UC-40
-//    - BR: BR-32                        ← THÊM BR-32
+//    - BR: BR-32                        ← THÊM BR-32, BR-75, BR-80
 //    - FR: FR-53, FR-54, FR-55, FR-56   ← THÊM FR-55, FR-56
 //
 // 5. CHECKLIST TRƯỚC KHI COMMIT
@@ -121,21 +121,21 @@ F3 (User Account Management)
 - Owner: Quyet
 - Spec Folder: feat-userAccountManagement
 - UC: UC-07, UC-08, UC-09, UC-10, UC-11, UC-30
-- BR: BR-10, BR-11, BR-12, BR-13, BR-14, BR-54, BR-55
+- BR: BR-10, BR-11, BR-12, BR-13, BR-14, BR-54, BR-55, BR-71
 - FR: FR-12, FR-13, FR-14, FR-15, FR-17, FR-18, FR-19, FR-20, FR-21, FR-45
 
 F4 (Book Management)
 - Owner: Chuong
 - Spec Folder: feat-bookManagement
 - UC: UC-12, UC-13, UC-14, UC-15, UC-27, UC-52
-- BR: BR-16, BR-17, BR-18, BR-27, BR-59, BR-60, BR-61, BR-62
+- BR: BR-16, BR-17, BR-18, BR-27, BR-59, BR-60, BR-61, BR-62, BR-79
 - FR: FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47, FR-81
 
 F5 (Online Reservation & Renewal)
 - Owner: Bao
 - Spec Folder: feat-Reservation&Renewal
 - UC: UC-16, UC-17, UC-43, UC-49, UC-50
-- BR: BR-19, BR-20, BR-21, BR-36
+- BR: BR-19, BR-20, BR-21, BR-36, BR-63, BR-64, BR-72, BR-78
 - FR: FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68, FR-78, FR-79
 
 F6 (Desk Circulation Operations)
@@ -149,14 +149,14 @@ F7 (Notification Management)
 - Owner: Tuan
 - Spec Folder: feat-notification-management
 - UC: UC-24, UC-25, UC-26
-- BR: (none)
+- BR: BR-67, BR-68, BR-69
 - FR: FR-44, FR-52
 
 F8 (Book Discovery)
 - Owner: Bao
 - Spec Folder: feat-bookDiscovery
 - UC: UC-22, UC-23
-- BR: (none)
+- BR: BR-65, BR-66
 - FR: FR-43
 
 F9 (Fine & Payment Management)
@@ -177,7 +177,7 @@ F11 (System Reports)
 - Owner: Quyet
 - Spec Folder: feat-systemReport
 - UC: UC-34, UC-35, UC-54
-- BR: BR-43, BR-44, BR-45
+- BR: BR-43, BR-44, BR-45, BR-73, BR-81
 - FR: FR-98, FR-99, FR-100, FR-101, FR-102, FR-83
 
 F12 (Audit Log)
@@ -191,14 +191,14 @@ F13 (Book Maintenance)
 - Owner: Chuong
 - Spec Folder: (to be created)
 - UC: UC-28, UC-29
-- BR: BR-28
+- BR: BR-28, BR-70
 - FR: FR-48, FR-49, FR-50, FR-51
 
 F14 (AI Chatbot)
 - Owner: Thai
 - Spec Folder: feat-ai-chatbot
 - UC: UC-36, UC-37
-- BR: BR-37
+- BR: BR-37, BR-74
 - FR: FR-69, FR-70
 
 F15 (Dashboard — Librarian)
@@ -226,7 +226,7 @@ F18 (Public Pages)
 - Owner: Tuan
 - Spec Folder: (standalone)
 - UC: UC-47, UC-48
-- BR: (none)
+- BR: BR-76, BR-77
 - FR: FR-75, FR-76
 
 F19 (Async Email Infrastructure)
@@ -240,7 +240,7 @@ F20 (Book Suggestion)
 - Owner: 
 - Spec Folder: feat-bookSuggestion
 - UC: UC-55, UC-56
-- BR: BR-56, BR-57, BR-58
+- BR: BR-56, BR-57, BR-58, BR-82
 - FR: FR-119, FR-120, FR-121, FR-122, FR-123, FR-124, FR-125, FR-126, FR-127, FR-128, FR-129, FR-130, FR-131, FR-132
 
 
@@ -663,6 +663,67 @@ Mô tả: Khi thực hiện gộp Tag (Merge), hệ thống BẮT BUỘC phải 
 BR-62 (Metadata Name Uniqueness)
 Mô tả: Tên của Category và Tag BẮT BUỘC phải là duy nhất trên toàn hệ thống. Hệ thống SHALL ngăn chặn việc tạo mới hoặc cập nhật nếu tên bị trùng lặp với một bản ghi đang tồn tại (kể cả bản ghi đang bị 'hidden').
 
+
+
+BR-63 (Borrow and Reservation Quota)
+Mô tả: The system SHALL enforce a maximum combined limit for active borrows and pending reservations per user.
+
+BR-64 (Duplicate Title Prevention)
+Mô tả: The system SHALL prevent a user from borrowing or reserving multiple copies of the exact same book title simultaneously.
+
+BR-65 (Book Visibility)
+Mô tả: The system SHALL only display books with status='active' in public search results.
+
+BR-66 (AI Fallback Policy)
+Mô tả: The system SHALL fall back to trending books if the user lacks borrowing history or if the AI is unavailable.
+
+BR-67 (Notification Pinning Limit)
+Mô tả: The system SHALL enforce a maximum limit on the number of concurrently pinned notifications.
+
+BR-68 (Notification Visibility)
+Mô tả: The system SHALL only show read notifications if specifically requested, prioritizing unread notifications.
+
+BR-69 (Template Integrity)
+Mô tả: The system SHALL prevent the removal of mandatory placeholders from system email templates.
+
+BR-70 (Reconciliation Exclusivity)
+Mô tả: The system SHALL ensure that only one active inventory session exists per location at any given time.
+
+BR-71 (Data Export Authorization)
+Mô tả: The system SHALL restrict full user list data exports to the Admin role only.
+
+BR-72 (Borrowing History Privacy)
+Mô tả: The system SHALL restrict users to viewing only their own personal borrowing and reservation records.
+
+BR-73 (Report Export Consistency)
+Mô tả: The system SHALL ensure exported reports exactly match the active filters in the UI.
+
+BR-74 (Chat History Ephemerality)
+Mô tả: The system SHALL NOT persist AI chat history beyond the active user session.
+
+BR-75 (Fine Visibility)
+Mô tả: The system SHALL display the complete history of both paid and unpaid fines to the user.
+
+BR-76 (Homepage Content Priority)
+Mô tả: The system SHALL prioritize pinned system announcements over general news on the public homepage.
+
+BR-77 (Policy Accessibility)
+Mô tả: The system SHALL make library policies publicly accessible without requiring authentication.
+
+BR-78 (Historical Data Immutability)
+Mô tả: The system SHALL NOT allow users to modify or delete their past borrow and return records.
+
+BR-79 (Import Audit Trail)
+Mô tả: The system SHALL permanently retain all book import batch records and their detailed error logs.
+
+BR-80 (Payment Configuration Access)
+Mô tả: The system SHALL strictly isolate payment gateway settings from general system configurations.
+
+BR-81 (Performance Metric Scope)
+Mô tả: The system SHALL calculate staff performance metrics based exclusively on transactions executed by Librarian roles.
+
+BR-82 (Suggestion Status Finality)
+Mô tả: The system SHALL freeze book suggestions from further updates once marked as rejected.
 
 // =============================================================================
 // SECTION 4: FUNCTIONAL REQUIREMENTS (FR)
