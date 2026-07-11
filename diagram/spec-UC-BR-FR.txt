@@ -128,7 +128,7 @@ F4 (Book Management)
 - Owner: Chuong
 - Spec Folder: feat-bookManagement
 - UC: UC-12, UC-13, UC-14, UC-15, UC-27, UC-52
-- BR: BR-16, BR-17, BR-18, BR-27
+- BR: BR-16, BR-17, BR-18, BR-27, BR-59, BR-60, BR-61, BR-62
 - FR: FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47, FR-81
 
 F5 (Online Reservation & Renewal)
@@ -650,6 +650,18 @@ Mô tả: Tính năng vote (+1) và hủy vote CHỈ ĐƯỢC PHÉP thực hiệ
 
 BR-58 (Book Suggestion Edit/Delete Restriction)
 Mô tả: Giảng viên CHỈ ĐƯỢC PHÉP sửa hoặc xóa (soft-delete) đề xuất sách của chính mình KHI VÀ CHỈ KHI status = 'pending' VÀ voteCount = 1 (chỉ có vote của chính mình). Nếu có người khác đã vote hoặc trạng thái đã thay đổi, hệ thống MUST NOT cho phép sửa/xóa.
+
+BR-59 (Book Taxonomy Override)
+Mô tả: Khi cập nhật các danh mục (Category) và thẻ (Tag) của một tựa sách, hệ thống SHALL xóa toàn bộ liên kết cũ và chèn mới liên kết được cung cấp thay vì đồng bộ thủ công từng bản ghi.
+
+BR-60 (Metadata Soft-Deletion Only)
+Mô tả: Category và Tag KHÔNG ĐƯỢC PHÉP xóa cứng (HARD DELETE) khỏi cơ sở dữ liệu để bảo toàn lịch sử. Hệ thống BẮT BUỘC chỉ sử dụng cơ chế xóa mềm bằng cách đổi trạng thái thành 'hidden'.
+
+BR-61 (Tag Consolidation)
+Mô tả: Khi thực hiện gộp Tag (Merge), hệ thống BẮT BUỘC phải re-map tất cả các liên kết sách từ Tag nguồn sang Tag đích, sau đó tự động chuyển Tag nguồn sang trạng thái 'hidden' trong cùng một Database Transaction. Tag đích BẮT BUỘC phải đang ở trạng thái 'active'.
+
+BR-62 (Metadata Name Uniqueness)
+Mô tả: Tên của Category và Tag BẮT BUỘC phải là duy nhất trên toàn hệ thống. Hệ thống SHALL ngăn chặn việc tạo mới hoặc cập nhật nếu tên bị trùng lặp với một bản ghi đang tồn tại (kể cả bản ghi đang bị 'hidden').
 
 
 // =============================================================================
