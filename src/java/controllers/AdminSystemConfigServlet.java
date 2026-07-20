@@ -85,9 +85,6 @@ public class AdminSystemConfigServlet extends HttpServlet {
                 
                 service.create(newConfig, adminId, "ADMIN", getServletContext());
                 session.setAttribute("successMessage", "Thêm cấu hình thành công!");
-            } else if ("delete".equalsIgnoreCase(action)) {
-                service.delete(key, adminId, "ADMIN", getServletContext());
-                session.setAttribute("successMessage", "Xóa cấu hình thành công!");
             } else {
                 service.update(key, value, adminId, "ADMIN", getServletContext());
                 session.setAttribute("successMessage", "Cập nhật cấu hình thành công!");

@@ -167,15 +167,7 @@ public class SystemConfigDAO {
             stmt.executeUpdate();
         }
     }
-
-    public void delete(Connection conn, String key) throws SQLException {
-        String sql = "DELETE FROM SystemConfigurations WHERE configKey = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, key);
-            stmt.executeUpdate();
-        }
-    }
-
+    
     private SystemConfiguration mapRow(ResultSet rs) throws SQLException {
         SystemConfiguration config = new SystemConfiguration();
         config.setConfigKey(rs.getString("configKey"));
