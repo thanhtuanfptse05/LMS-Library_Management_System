@@ -38,6 +38,11 @@ public class BookCopyDAO {
         }
     }
 
+    public List<BookCopy> findForExport(String keyword, String location, String status, int maxRows)
+            throws SQLException {
+        return search(keyword, location, status, 0, maxRows);
+    }
+
     public int count(String keyword, String location, String status) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM BookCopy bc JOIN Book b ON b.bookId = bc.bookId WHERE 1 = 1 ");
         List<Object> parameters = new ArrayList<>();

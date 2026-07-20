@@ -66,6 +66,12 @@ public class BookDAO {
         }
     }
 
+    public List<Book> findForExport(String keyword, Integer categoryId, Integer tagId,
+            String status, String sort, int maxRows) throws SQLException {
+        int[] tagIds = tagId != null ? new int[]{tagId} : null;
+        return search(keyword, categoryId, tagIds, status, sort, 0, maxRows);
+    }
+
     private String resolveSortClause(String sort) {
         switch (sort == null ? "" : sort) {
             case "title_asc":

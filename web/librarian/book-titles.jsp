@@ -32,12 +32,25 @@
                             <h2 class="bm-page__title mb-1">Đầu sách</h2>
                             <p class="bm-page__subtitle mb-0">Quản lý thông tin thư mục; số lượng bản sao được cập nhật qua nghiệp vụ kho vật lý.</p>
                         </div>
-                        <c:if test="${canEdit}">
-                            <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createBookModal">
-                                <span class="material-symbols-outlined">add</span>
-                                Tạo đầu sách
-                            </button>
-                        </c:if>
+                        <div class="bm-actions">
+                            <c:url var="exportTitlesUrl" value="/librarian/book-management/titles/export">
+                                <c:param name="q" value="${q}" />
+                                <c:param name="categoryId" value="${selectedCategoryId}" />
+                                <c:param name="tagId" value="${selectedTagId}" />
+                                <c:param name="status" value="${selectedStatus}" />
+                                <c:param name="sort" value="${selectedSort}" />
+                            </c:url>
+                            <a class="btn bm-btn-secondary" href="${exportTitlesUrl}">
+                                <span class="material-symbols-outlined">download</span>
+                                Xuất CSV
+                            </a>
+                            <c:if test="${canEdit}">
+                                <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createBookModal">
+                                    <span class="material-symbols-outlined">add</span>
+                                    Tạo đầu sách
+                                </button>
+                            </c:if>
+                        </div>
                     </section>
 
                     <c:forEach var="category" items="${categories}">

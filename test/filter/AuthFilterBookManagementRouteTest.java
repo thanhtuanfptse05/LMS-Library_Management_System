@@ -38,6 +38,26 @@ public class AuthFilterBookManagementRouteTest {
     }
 
     @Test
+    public void legacyCirculationHistoryRedirectsToCanonicalAndKeepsCopyId() throws Exception {
+        AuthFilter filter = new AuthFilter();
+        HttpServletRequest request = request("GET", "bookCopyId=15&page=2");
+
+        assertTrue(shouldRedirectLegacy(filter, request));
+        assertEquals("/app/librarian/book-management/circulation-history?bookCopyId=15&page=2",
+                buildRedirect(filter, request, "/app", "/book-management/circulation-history", true));
+    }
+
+    @Test
+    public void legacyExportRedirectsToCanonicalAndKeepsFilters() throws Exception {
+        AuthFilter filter = new AuthFilter();
+        HttpServletRequest request = request("GET", "q=biology&status=available");
+
+        assertTrue(shouldRedirectLegacy(filter, request));
+        assertEquals("/app/librarian/book-management/titles/export?q=biology&status=available",
+                buildRedirect(filter, request, "/app", "/book-management/titles/export", true));
+    }
+
+    @Test
     public void canonicalRootRedirectsToOverview() throws Exception {
         AuthFilter filter = new AuthFilter();
         HttpServletRequest request = request("GET", "tab=summary");

@@ -38,12 +38,23 @@
                             <h2 class="bm-page__title mb-1">Tất cả bản sao</h2>
                             <p class="bm-page__subtitle mb-0">Theo dõi từng cuốn sách vật lý theo mã vạch, vị trí và trạng thái lưu thông.</p>
                         </div>
-                        <c:if test="${canEdit}">
-                            <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCopyModal">
-                                <span class="material-symbols-outlined">add</span>
-                                Thêm bản sao
-                            </button>
-                        </c:if>
+                        <div class="bm-actions">
+                            <c:url var="exportCopiesUrl" value="/librarian/book-management/copies/export">
+                                <c:param name="q" value="${q}" />
+                                <c:param name="location" value="${selectedLocation}" />
+                                <c:param name="status" value="${selectedStatus}" />
+                            </c:url>
+                            <a class="btn bm-btn-secondary" href="${exportCopiesUrl}">
+                                <span class="material-symbols-outlined">download</span>
+                                Xuất CSV
+                            </a>
+                            <c:if test="${canEdit}">
+                                <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCopyModal">
+                                    <span class="material-symbols-outlined">add</span>
+                                    Thêm bản sao
+                                </button>
+                            </c:if>
+                        </div>
                     </section>
 
                     <%-- Bộ lọc tìm kiếm bản sao sách (theo từ khóa/mã vạch, vị trí, trạng thái) --%>
@@ -212,34 +223,44 @@
                                             <td><fmt:formatDate value="${empty copy.updatedAt ? copy.createdAt : copy.updatedAt}" pattern="dd/MM/yyyy" /></td>
                                             <td class="bm-copy-action-column">
                                                 <%-- Hành động dựa trên tình trạng và trạng thái --%>
-                                                <c:choose>
-                                                    <%-- 1. Nếu sách không tốt (Hỏng/Mất), cho phép xem sự cố liên quan --%>
-                                                    <c:when test="${canEdit and copy.condition != 'good'}">
-                                                        <a class="bm-action-icon bm-action-icon--danger" href="${pageContext.request.contextPath}/librarian/book-management/incidents?q=${copy.barcode}" title="Xem sự cố" aria-label="Xem sự cố">
-                                                            <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                                                <div class="dropdown bm-copy-actions">
+                                                    <button class="btn bm-row-action-button dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false" aria-label="Mở menu thao tác">
+                                                        <span class="material-symbols-outlined" aria-hidden="true">more_vert</span>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-end bm-row-action-menu">
+                                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/librarian/book-management/circulation-history?bookCopyId=${copy.bookCopyId}">
+                                                            <span class="material-symbols-outlined" aria-hidden="true">history</span>
+                                                            <span>Xem lịch sử</span>
                                                         </a>
-                                                    </c:when>
-                                                    <%-- 2. Nếu sách tốt & sẵn sàng trong thư viện, cho phép cập nhật vị trí hoặc báo cáo sự cố phát sinh --%>
-                                                    <c:when test="${canEdit and copy.status == 'available' and copy.condition == 'good'}">
-                                                        <div class="bm-copy-actions">
-                                                            <a class="bm-action-icon" href="${pageContext.request.contextPath}/librarian/book-management/copies?editId=${copy.bookCopyId}" title="Cập nhật vị trí" aria-label="Cập nhật vị trí">
+                                                    <c:choose>
+                                                        <%-- 1. Nếu sách không tốt (Hỏng/Mất), cho phép xem sự cố liên quan --%>
+                                                        <c:when test="${canEdit and copy.condition != 'good'}">
+                                                            <a class="dropdown-item" href="${pageContext.request.contextPath}/librarian/book-management/incidents?q=${copy.barcode}">
+                                                                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                                                                <span>Xem sự cố</span>
+                                                            </a>
+                                                        </c:when>
+                                                        <%-- 2. Nếu sách tốt & sẵn sàng trong thư viện, cho phép cập nhật vị trí hoặc báo cáo sự cố phát sinh --%>
+                                                        <c:when test="${canEdit and copy.status == 'available' and copy.condition == 'good'}">
+                                                            <a class="dropdown-item" href="${pageContext.request.contextPath}/librarian/book-management/copies?editId=${copy.bookCopyId}">
                                                                 <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+                                                                <span>Cập nhật vị trí</span>
                                                             </a>
-                                                            <a class="bm-action-icon bm-action-icon--danger" href="${pageContext.request.contextPath}/librarian/book-management/incidents?bookCopyId=${copy.bookCopyId}" title="Ghi nhận sự cố" aria-label="Ghi nhận sự cố">
+                                                            <a class="dropdown-item dropdown-item--danger" href="${pageContext.request.contextPath}/librarian/book-management/incidents?bookCopyId=${copy.bookCopyId}">
                                                                 <span class="material-symbols-outlined" aria-hidden="true">report</span>
+                                                                <span>Ghi nhận sự cố</span>
                                                             </a>
-                                                        </div>
-                                                    </c:when>
-                                                    <%-- 3. Sách ngừng lưu thông, hiển thị nút xem sự cố --%>
-                                                    <c:when test="${canEdit and copy.status == 'unavailable'}">
-                                                        <a class="bm-action-icon bm-action-icon--danger" href="${pageContext.request.contextPath}/librarian/book-management/incidents?q=${copy.barcode}" title="Xem sự cố" aria-label="Xem sự cố">
-                                                            <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
-                                                        </a>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="bm-badge bm-badge--neutral">Chỉ xem</span>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                        </c:when>
+                                                        <%-- 3. Sách ngừng lưu thông, hiển thị nút xem sự cố --%>
+                                                        <c:when test="${canEdit and copy.status == 'unavailable'}">
+                                                            <a class="dropdown-item" href="${pageContext.request.contextPath}/librarian/book-management/incidents?q=${copy.barcode}">
+                                                                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                                                                <span>Xem sự cố</span>
+                                                            </a>
+                                                        </c:when>
+                                                    </c:choose>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                     </c:forEach>
