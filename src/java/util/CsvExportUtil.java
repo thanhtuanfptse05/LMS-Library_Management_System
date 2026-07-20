@@ -25,13 +25,38 @@ public final class CsvExportUtil {
         if (value == null) {
             return "";
         }
-        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
-            return "\"" + value.replace("\"", "\"\"") + "\"";
+        String safeValue = neutralizeFormula(value);
+        if (safeValue.contains(",") || safeValue.contains("\"") || safeValue.contains("\n")
+                || safeValue.contains("\r")) {
+            return "\"" + safeValue.replace("\"", "\"\"") + "\"";
         }
-        return value;
+        return safeValue;
     }
 
     public static String formatTimestamp(Timestamp value) {
         return value == null ? "" : value.toLocalDateTime().format(DATE_TIME_FORMATTER);
+    }
+
+    private static String neutralizeFormula(String value) {
+        return startsLikeFormula(value) ? "'" + value : value;
+    }
+
+    private static boolean startsLikeFormula(String value) {
+        if (value.isEmpty()) {
+            return false;
+        }
+        if (isFormulaTrigger(value.charAt(0))) {
+            return true;
+        }
+        int index = 0;
+        while (index < value.length() && value.charAt(index) == ' ') {
+            index++;
+        }
+        return index < value.length() && isFormulaTrigger(value.charAt(index));
+    }
+
+    private static boolean isFormulaTrigger(char value) {
+        return value == '=' || value == '+' || value == '-' || value == '@'
+                || value == '\t' || value == '\r' || value == '\n';
     }
 }
