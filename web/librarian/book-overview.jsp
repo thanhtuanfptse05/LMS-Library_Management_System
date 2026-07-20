@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:if test="${empty catalogSummary}">
-    <c:redirect url="/book-management/overview" />
+    <c:redirect url="/librarian/book-management/overview" />
 </c:if>
 <!DOCTYPE html>
 <html lang="vi">
@@ -13,7 +13,7 @@
             <main class="flex-grow-1 overflow-y-auto main-content-layout">
                 <jsp:include page="fragments/_header.jsp" />
                 <div class="container-fluid px-4 py-4 bm-page bm-overview-page">
-                    <section class="bm-overview-hero mb-4">
+                    <section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
                         <div>
                             <p class="bm-page__eyebrow mb-1">Quản lý sách</p>
                             <h2 class="bm-page__title mb-1">Tổng quan</h2>
@@ -21,45 +21,38 @@
                                 Theo dõi nhanh tình trạng danh mục, kho vật lý và các việc cần xử lý.
                             </p>
                         </div>
-                        <c:if test="${actionCount > 0}">
-                            <a class="bm-overview-hero__action" href="#overview-actions">
-                                <span class="material-symbols-outlined">priority_high</span>
-                                <span><fmt:formatNumber value="${actionCount}" /> việc cần chú ý</span>
-                            </a>
-                        </c:if>
                     </section>
 
-                    <section class="row g-3 mb-4" aria-label="Chỉ số quản lý sách">
-                        <div class="col-sm-6 col-xl-3">
-                            <article class="raised-card bm-stat-card bm-overview-kpi bm-overview-kpi--catalog p-3">
-                                <span class="bm-stat-card__icon material-symbols-outlined">menu_book</span>
-                                <p class="bm-stat-card__label mt-3 mb-1">Tổng đầu sách</p>
+                    <section class="bm-list-stats bm-list-stats--four bm-overview-stats mb-4" aria-label="Chỉ số quản lý sách">
+                        <article class="bm-list-stat bm-overview-stat bm-overview-stat--catalog">
+                            <span class="material-symbols-outlined">menu_book</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Tổng đầu sách</p>
                                 <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${catalogSummary.totalBooks}" /></p>
-                            </article>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <article class="raised-card bm-stat-card bm-overview-kpi bm-overview-kpi--copies p-3">
-                                <span class="bm-stat-card__icon material-symbols-outlined">inventory_2</span>
-                                <p class="bm-stat-card__label mt-3 mb-1">Tổng bản sao</p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-overview-stat bm-overview-stat--copies">
+                            <span class="material-symbols-outlined">inventory_2</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Tổng bản sao</p>
                                 <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${copySummary.totalCopies}" /></p>
-                            </article>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <article class="raised-card bm-stat-card bm-overview-kpi bm-overview-kpi--healthy p-3">
-                                <span class="bm-stat-card__icon material-symbols-outlined">check_circle</span>
-                                <p class="bm-stat-card__label mt-3 mb-1">Sẵn sàng</p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-overview-stat bm-overview-stat--success">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Sẵn sàng</p>
                                 <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${copySummary.availableCopies}" /></p>
-                            </article>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <article class="raised-card bm-stat-card bm-overview-kpi ${actionCount > 0 ? 'bm-overview-kpi--attention' : 'bm-overview-kpi--healthy'} p-3">
-                                <span class="bm-stat-card__icon material-symbols-outlined">warning</span>
-                                <p class="bm-stat-card__label mt-3 mb-1">Cần xử lý</p>
+                            </div>
+                        </article>
+                        <article class="bm-list-stat bm-overview-stat ${actionCount > 0 ? 'bm-overview-stat--danger' : 'bm-overview-stat--success'}">
+                            <span class="material-symbols-outlined">warning</span>
+                            <div>
+                                <p class="bm-stat-card__label mb-1">Cần xử lý</p>
                                 <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${actionCount}" /></p>
-                            </article>
-                        </div>
+                            </div>
+                        </article>
                     </section>
-
                     <div class="row g-3 mb-4">
                         <section class="col-xl-8">
                             <div class="bm-table-card bm-table-card--primary bm-overview-stock h-100">

@@ -33,19 +33,19 @@
 
         <!-- Quản lý sách -->
         <p class="sidebar-section-label">Quản lý sách</p>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/overview">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/overview">
             <span class="material-symbols-outlined">space_dashboard</span>
             <span>Tổng quan</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/titles">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/titles">
             <span class="material-symbols-outlined">menu_book</span>
             <span>Đầu sách</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/categories">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/categories">
             <span class="material-symbols-outlined">category</span>
             <span>Thể loại</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/tags">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/tags">
             <span class="material-symbols-outlined">sell</span>
             <span>Nhãn sách</span>
         </a>
@@ -53,25 +53,25 @@
             <span class="material-symbols-outlined">approval_delegation</span>
             <span>Đề xuất sách</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/copies">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/copies">
             <span class="material-symbols-outlined">inventory_2</span>
             <span>Tất cả bản sao</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/incidents">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/incidents">
             <span class="material-symbols-outlined">report</span>
             <span>Hỏng và mất</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/inventory">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/inventory">
             <span class="material-symbols-outlined">fact_check</span>
             <span>Đối chiếu tồn kho</span>
         </a>
         <c:if test="${sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'librarian'}">
-            <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import">
+            <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/import">
                 <span class="material-symbols-outlined">upload_file</span>
                 <span>Nhập dữ liệu</span>
             </a>
         </c:if>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/book-management/import-history">
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/book-management/import-history">
             <span class="material-symbols-outlined">history</span>
             <span>Lịch sử xử lý</span>
         </a>

@@ -6,7 +6,7 @@ Cung cấp quy trình cho Thủ thư ghi nhận, xác minh và xử lý bản sa
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Thủ thư (Librarian):** Tác nhân duy nhất được xem và thực hiện nghiệp vụ F13.
-* **Vai trò khác:** `ADMIN`, `MANAGER`, `STUDENT`, `LECTURER` và vai trò khác nhận HTTP 403 tại `/book-management/incidents` và `/book-management/inventory`.
+* **Vai trò khác:** `ADMIN`, `MANAGER`, `STUDENT`, `LECTURER` và vai trò khác nhận HTTP 403 tại `/librarian/book-management/incidents` và `/librarian/book-management/inventory`.
 * **Người chưa đăng nhập:** Được chuyển tới trang đăng nhập.
 
 ## 2.5 Use Cases (Danh sách Use Cases)

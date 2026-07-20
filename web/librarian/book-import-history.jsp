@@ -32,14 +32,14 @@
                             <p class="bm-page__subtitle mb-0">Theo dõi kết quả, người thực hiện và lỗi của từng phiên nhập sách trong một năm.</p>
                         </div>
                         <c:if test="${sessionScope.role == 'LIBRARIAN' or sessionScope.role == 'librarian'}">
-                            <a class="btn btn-primary-custom" href="${pageContext.request.contextPath}/book-management/import">
+                            <a class="btn btn-primary-custom" href="${pageContext.request.contextPath}/librarian/book-management/import">
                                 <span class="material-symbols-outlined">upload_file</span>Nhập mới
                             </a>
                         </c:if>
                     </section>
 
                     <%-- Bộ lọc tìm kiếm các phiên nhập sách trước đây --%>
-                    <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/book-management/import-history">
+                    <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/librarian/book-management/import-history">
                         <div class="row g-2">
                             <div class="col-lg-7 bm-search">
                                 <span class="material-symbols-outlined">search</span>
@@ -60,7 +60,7 @@
                                             <span class="bm-filter-badge">Đang áp dụng</span>
                                         </c:if>
                                     </button>
-                                    <a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/import-history">
+                                    <a class="btn bm-reset-button" href="${pageContext.request.contextPath}/librarian/book-management/import-history">
                                         <span class="material-symbols-outlined">refresh</span>
                                     </a>
                                 </div>
@@ -81,7 +81,7 @@
                             <c:if test="${not empty selectedStatus}">
                                 <span class="bm-active-filter-chip">Kết quả: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
                             </c:if>
-                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/import-history">Xóa bộ lọc</a>
+                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/librarian/book-management/import-history">Xóa bộ lọc</a>
                         </div>
                     </c:if>
 
@@ -121,7 +121,7 @@
                                             <td>${batch.totalRows} / ${batch.successRows} / ${batch.failedRows}</td>
                                             <td>
                                                 <%-- Nút dẫn tới xem lỗi chi tiết nếu thất bại hoặc xem chi tiết đợt nhập thành công --%>
-                                                <a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/import-history?batchId=${batch.importBatchId}">
+                                                <a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/import-history?batchId=${batch.importBatchId}">
                                                     ${batch.status == 'failed' ? 'Xem lỗi' : 'Chi tiết'}
                                                 </a>
                                             </td>

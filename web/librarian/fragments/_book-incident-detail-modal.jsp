@@ -5,7 +5,7 @@
     <div class="modal fade bm-modal" id="incidentDetailModal" tabindex="-1" aria-hidden="true" data-auto-open="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" action="${pageContext.request.contextPath}/book-management/incidents">
+                <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/incidents">
                     <input type="hidden" name="incidentId" value="${selectedIncident.incidentId}">
                     <div class="modal-header">
                         <div>
@@ -52,7 +52,7 @@
                         </c:if>
                     </div>
                     <div class="modal-footer">
-                        <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/incidents">Đóng</a>
+                        <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/incidents">Đóng</a>
                         <c:if test="${canEdit and (selectedIncident.status == 'pending' or selectedIncident.status == 'investigating')}">
                             <button class="btn bm-btn-secondary" type="submit" name="action" value="reject">Báo sai, hoàn kho</button>
                             <button class="btn btn-primary-custom" type="submit" name="action" value="resolve">Xác nhận hỏng/mất</button>

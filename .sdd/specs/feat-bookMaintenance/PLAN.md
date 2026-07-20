@@ -30,7 +30,7 @@
 - InventoryItem.result không có `resolved`; trạng thái đã xử lý được xác định bằng `resolvedAt IS NOT NULL`.
 
 ## 5. ACCESS CONTROL
-- `AuthFilter` bảo vệ `/book-management/incidents` và `/book-management/inventory` qua prefix `/book-management/*`.
+- `AuthFilter` bảo vệ `/librarian/book-management/incidents` và `/librarian/book-management/inventory` qua prefix `/librarian/book-management/*`.
 - Anonymous redirect `/login`; mọi role khác `LIBRARIAN` nhận HTTP 403.
 - Controller kiểm tra lại session/role cho POST.
 

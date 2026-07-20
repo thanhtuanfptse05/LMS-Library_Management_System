@@ -63,12 +63,12 @@
             </div>
 
             <div class="bm-drawer-actions">
-                <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/copies?q=${book.isbn}">
+                <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/copies?q=${book.isbn}">
                     <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
                     Mở kho vật lý
                 </a>
                 <c:if test="${canEdit}">
-                    <a class="btn btn-primary-custom" href="${pageContext.request.contextPath}/book-management/copies">
+                    <a class="btn btn-primary-custom" href="${pageContext.request.contextPath}/librarian/book-management/copies">
                         <span class="material-symbols-outlined" aria-hidden="true">add</span>
                         Thêm bản sao
                     </a>

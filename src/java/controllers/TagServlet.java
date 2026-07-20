@@ -18,7 +18,10 @@ import model.Tag;
 import service.TagService;
 import util.DatabaseConnection;
 
-@WebServlet(name = "TagServlet", urlPatterns = {"/book-management/tags"})
+@WebServlet(name = "TagServlet", urlPatterns = {
+    "/librarian/book-management/tags",
+    "/book-management/tags"
+})
 public class TagServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 20;
@@ -45,7 +48,6 @@ public class TagServlet extends HttpServlet {
 
             request.setAttribute("tags", tagDAO.search(keyword, status,
                     (page - 1) * PAGE_SIZE, PAGE_SIZE));
-            request.setAttribute("allTags", tagDAO.findAll());
             request.setAttribute("summary", tagDAO.getSummary());
             request.setAttribute("canEdit", canEdit);
             request.setAttribute("q", keyword == null ? "" : keyword);
@@ -88,10 +90,6 @@ public class TagServlet extends HttpServlet {
             } else if ("update".equals(action)) {
                 tagService.update(readTag(request, true), actorId);
                 session.setAttribute("successMessage", "Cập nhật tag sách thành công.");
-            } else if ("merge".equals(action)) {
-                tagService.merge(Integer.parseInt(request.getParameter("sourceTagId")),
-                        Integer.parseInt(request.getParameter("targetTagId")), actorId);
-                session.setAttribute("successMessage", "Gộp tag thành công. Tag nguồn đã được ẩn.");
             } else {
                 throw new ValidationException("Thao tác không hợp lệ.");
             }
@@ -101,7 +99,7 @@ public class TagServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể lưu tag sách.", e);
             session.setAttribute("errorMessage", "Không thể lưu tag sách. Vui lòng kiểm tra và thử lại.");
         }
-        response.sendRedirect(request.getContextPath() + "/book-management/tags");
+        response.sendRedirect(request.getContextPath() + "/librarian/book-management/tags");
     }
 
     private Tag readTag(HttpServletRequest request, boolean updating) {

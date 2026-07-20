@@ -18,7 +18,7 @@ Sách vật lý có thể hỏng, mất hoặc nằm sai vị trí. Nếu chỉ 
 
 ## 4. CONSTRAINTS (Ràng buộc cứng)
 - Java 17, Servlet, JSP/JSTL/EL, JDBC DAO, PostgreSQL; không ORM/Spring.
-- Chỉ `LIBRARIAN` truy cập các route F13 dưới `/book-management/*`.
+- Chỉ `LIBRARIAN` truy cập các route F13 dưới `/librarian/book-management/*`.
 - Không hard-delete BookCopy/Incident/InventorySession.
 - Mọi thay đổi nhiều bảng và Audit Log dùng cùng Connection/transaction.
 - Schema chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.

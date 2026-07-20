@@ -79,42 +79,6 @@ public class TagService {
         }
     }
 
-    public void merge(int sourceId, int targetId, int actorId) throws ValidationException, DatabaseException {
-        if (sourceId <= 0 || targetId <= 0 || sourceId == targetId) {
-            throw new ValidationException("Hãy chọn hai tag sách khác nhau để gộp.");
-        }
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            conn.setAutoCommit(false);
-            try {
-                Tag source = tagDAO.findById(conn, sourceId);
-                Tag target = tagDAO.findById(conn, targetId);
-                if (source == null || target == null) {
-                    throw new ValidationException("Tag nguồn hoặc tag đích không tồn tại.");
-                }
-                if (!"active".equals(target.getStatus())) {
-                    throw new ValidationException("Tag đích phải ở trạng thái đang dùng.");
-                }
-                String oldSourceValue = toAuditValue(source);
-                tagDAO.mergeRelations(conn, sourceId, targetId);
-                source.setStatus("hidden");
-                tagDAO.update(conn, source, actorId);
-                auditLogDAO.insert(conn, actorId, "MERGE_TAG", "Tag", sourceId, oldSourceValue,
-                        "{\"targetTagId\":" + targetId + ",\"targetName\":\"" + escape(target.getName()) + "\"}");
-                conn.commit();
-            } catch (ValidationException | SQLException e) {
-                conn.rollback();
-                if (e instanceof ValidationException) {
-                    throw (ValidationException) e;
-                }
-                throw new DatabaseException("Không thể gộp tag sách.", e);
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
-        }
-    }
-
     public void validate(Tag tag) throws ValidationException {
         if (tag.getName() == null || tag.getName().isBlank()) {
             throw new ValidationException("Tên tag sách không được để trống.");

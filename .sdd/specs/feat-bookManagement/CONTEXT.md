@@ -20,7 +20,7 @@ Thư viện cần quản lý nhất quán metadata của đầu sách và từng
 ## 4. CONSTRAINTS (Ràng buộc cứng)
 - **Tech Stack:** Java 17, Servlet, JSP/JSTL/EL, JDBC DAO, PostgreSQL; không dùng Spring hoặc ORM.
 - **Schema Source:** Bắt buộc đối chiếu `database/supabase/LMS_Schema_PostgreSQL.sql`.
-- **Access Control:** Toàn bộ `/book-management/*` được `AuthFilter` bảo vệ; chỉ `LIBRARIAN` truy cập F4.
+- **Access Control:** Toàn bộ `/librarian/book-management/*` được `AuthFilter` bảo vệ; chỉ `LIBRARIAN` truy cập F4.
 - **Data Integrity:** Không hard-delete `Book` hoặc `BookCopy`; ISBN và Barcode bất biến sau khi tạo.
 - **Transaction:** Mọi thay đổi gồm nhiều bảng và Audit Log phải dùng cùng một `Connection`.
 - **UI:** Nhãn, lỗi và thông báo thành công phải 100% tiếng Việt.

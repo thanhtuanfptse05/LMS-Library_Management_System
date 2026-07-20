@@ -3,7 +3,7 @@
 <c:if test="${canEdit}">
     <div class="modal fade bm-modal" id="reportModal" tabindex="-1" aria-hidden="true" data-auto-open="${not empty reportCopy}">
         <div class="modal-dialog"><div class="modal-content">
-            <form method="post" action="${pageContext.request.contextPath}/book-management/incidents">
+            <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/incidents">
                 <input type="hidden" name="action" value="report">
                 <div class="modal-header">
                     <div><h5 class="modal-title">Ghi nhận sự cố bản sao</h5><p class="bm-section-note mb-0">Chỉ bản sao đang tốt và sẵn sàng mới có thể ghi nhận.</p></div>

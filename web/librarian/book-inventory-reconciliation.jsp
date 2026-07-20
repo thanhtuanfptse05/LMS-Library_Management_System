@@ -87,7 +87,7 @@
                             <%-- Thông tin chi tiết phiên và các nút chuyển đổi trạng thái --%>
                             <section class="bm-side-card mb-3 d-flex flex-wrap justify-content-between gap-3">
                                 <div>
-                                    <a class="bm-action-link" href="${pageContext.request.contextPath}/book-management/inventory">← Danh sách phiên</a>
+                                    <a class="bm-action-link" href="${pageContext.request.contextPath}/librarian/book-management/inventory">← Danh sách phiên</a>
                                     <h3 class="bm-section-title mt-2 mb-1">Phiên #${selectedSession.inventorySessionId} · <c:out value="${selectedSession.location}"/></h3>
                                     <p class="bm-section-note mb-0">Dự kiến ${selectedSession.expectedCount} · Khớp ${selectedSession.matchedCount} · Chênh lệch ${selectedSession.discrepancyCount}</p>
                                 </div>
@@ -275,7 +275,7 @@
                                                         </c:choose>
                                                     </td>
                                                     <td>
-                                                        <a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/inventory?sessionId=${item.inventorySessionId}">Chi tiết</a>
+                                                        <a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/inventory?sessionId=${item.inventorySessionId}">Chi tiết</a>
                                                     </td>
                                                 </tr>
                                             </c:forEach>
@@ -306,7 +306,7 @@
             <div class="modal fade bm-modal" id="createInventoryModal" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form method="post" action="${pageContext.request.contextPath}/book-management/inventory">
+                        <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/inventory">
                             <input type="hidden" name="action" value="create">
                             <div class="modal-header">
                                 <h5 class="modal-title">Tạo phiên kiểm kê</h5>

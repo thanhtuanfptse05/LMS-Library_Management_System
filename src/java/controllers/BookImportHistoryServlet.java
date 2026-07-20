@@ -9,7 +9,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@WebServlet(name = "BookImportHistoryServlet", urlPatterns = {"/book-management/import-history"})
+@WebServlet(name = "BookImportHistoryServlet", urlPatterns = {
+    "/librarian/book-management/import-history",
+    "/book-management/import-history"
+})
 public class BookImportHistoryServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 20;

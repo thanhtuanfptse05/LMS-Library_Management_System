@@ -24,7 +24,10 @@ import model.Book;
 import service.BookService;
 import util.BookImageStorage;
 
-@WebServlet(name = "BookServlet", urlPatterns = {"/book-management/titles"})
+@WebServlet(name = "BookServlet", urlPatterns = {
+    "/librarian/book-management/titles",
+    "/book-management/titles"
+})
 @MultipartConfig(maxFileSize = BookImageStorage.MAX_FILE_SIZE, maxRequestSize = BookImageStorage.MAX_FILE_SIZE + 1024 * 1024)
 public class BookServlet extends HttpServlet {
 
@@ -147,7 +150,7 @@ public class BookServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể lưu đầu sách.", e);
             session.setAttribute("errorMessage", "Không thể lưu đầu sách. Vui lòng kiểm tra dữ liệu và thử lại.");
         }
-        response.sendRedirect(request.getContextPath() + "/book-management/titles");
+        response.sendRedirect(request.getContextPath() + "/librarian/book-management/titles");
     }
 
     private Book readBook(HttpServletRequest request, boolean updating) {
