@@ -150,11 +150,7 @@ public class SystemConfigService {
             closeQuietly(conn);
         }
     }
-
-    public void delete(String key, int actorId, String actorRole, ServletContext ctx) throws ValidationException, DatabaseException {
-        throw new ValidationException("Cấm tuyệt đối việc xóa cấu hình khỏi hệ thống.");
-    }
-
+    
     public void validateValue(String key, String value) throws ValidationException {
         if (value == null || value.trim().isEmpty()) {
             throw new ValidationException("Giá trị không được để trống.");

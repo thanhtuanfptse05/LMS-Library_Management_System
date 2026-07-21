@@ -58,11 +58,12 @@ public class PaymentDAO {
     // EARS[Event-driven]: WHEN Librarian approves cash payment,
     // THE LMS System SHALL UPDATE Payment.status = 'completed'
     // WHERE paymentId matches [FR-F6-07, PLAN.md §3]
-    public void updateStatusToCompleted(Connection conn, int paymentId) throws SQLException {
-        String sql = "UPDATE Payment SET status = 'completed' WHERE paymentId = ?";
+    public void updateStatusToCompleted(Connection conn, int paymentId, int processedBy) throws SQLException {
+        String sql = "UPDATE Payment SET status = 'completed', paymentMethod = 'Cash', processedBy = ?, paidAt = NOW() WHERE paymentId = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, paymentId);
+            ps.setInt(1, processedBy);
+            ps.setInt(2, paymentId);
             ps.executeUpdate();
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE,

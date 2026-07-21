@@ -47,7 +47,7 @@
                     </section>
 
                     <%-- Bộ lọc tìm kiếm danh sách sự cố --%>
-                    <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/book-management/incidents">
+                    <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/librarian/book-management/incidents">
                         <div class="row g-2">
                             <div class="col-xl-5 col-lg-6 bm-search">
                                 <span class="material-symbols-outlined">search</span>
@@ -77,7 +77,7 @@
                                             <span class="bm-filter-badge">Đang áp dụng</span>
                                         </c:if>
                                     </button>
-                                    <a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/incidents" title="Đặt lại bộ lọc">
+                                    <a class="btn bm-reset-button" href="${pageContext.request.contextPath}/librarian/book-management/incidents" title="Đặt lại bộ lọc">
                                         <span class="material-symbols-outlined">refresh</span>
                                     </a>
                                 </div>
@@ -107,7 +107,7 @@
                             <c:if test="${not empty selectedStatus}">
                                 <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
                             </c:if>
-                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/incidents">Xóa bộ lọc</a>
+                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/librarian/book-management/incidents">Xóa bộ lọc</a>
                         </div>
                     </c:if>
 
@@ -139,7 +139,7 @@
                     <div class="bm-rule-note mb-3"><strong>Quy tắc:</strong> Ghi nhận sự cố sẽ tạm ngừng lưu thông bản sao. Tình trạng Hỏng/Mất chỉ được cập nhật sau khi có kết luận.</div>
 
                     <%-- Bảng danh sách các sự cố --%>
-                    <section class="bm-table-card bm-table-card--primary bm-data-table">
+                    <section class="bm-table-card bm-table-card--primary bm-data-table bm-incident-table">
                         <div class="table-responsive">
                             <table class="table table-lms">
                                 <thead>
@@ -150,7 +150,7 @@
                                         <th>Người báo</th>
                                         <th>Trạng thái</th>
                                         <th>Hướng xử lý</th>
-                                        <th class="bm-action-column"><span class="visually-hidden">Thao tác</span></th>
+                                        <th class="bm-action-column bm-incident-action-column"><span class="visually-hidden">Thao tác</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -184,11 +184,11 @@
                                                 </c:choose>
                                             </td>
                                             <td><c:choose><c:when test="${empty incident.resolution}">Chưa có kết luận</c:when><c:otherwise><c:out value="${incident.resolution}" /></c:otherwise></c:choose></td>
-                                                    <td>
-                                                        <div class="bm-actions">
+                                            <td class="bm-incident-action-cell">
+                                                <div class="bm-actions bm-incident-actions">
                                                     <%-- Trạng thái chờ: Cho phép Thủ thư bắt đầu xác minh sự cố --%>
                                                     <c:if test="${canEdit and incident.status == 'pending'}">
-                                                        <form method="post" action="${pageContext.request.contextPath}/book-management/incidents">
+                                                        <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/incidents">
                                                             <input type="hidden" name="action" value="investigate">
                                                             <input type="hidden" name="incidentId" value="${incident.incidentId}">
                                                             <button class="btn btn-sm btn-primary-custom" type="submit">Bắt đầu xác minh</button>
@@ -196,10 +196,10 @@
                                                     </c:if>
                                                     <%-- Đối với sách đã xử lý hỏng (nhưng chưa hoàn tất khôi phục): Cho phép khôi phục lưu thông --%>
                                                     <c:if test="${canEdit and incident.status == 'resolved' and incident.incidentType == 'damaged' and not fn:contains(incident.resolution, 'Khôi phục lưu thông:')}">
-                                                        <a class="btn btn-sm btn-primary-custom" href="${pageContext.request.contextPath}/book-management/incidents?incidentId=${incident.incidentId}">Khôi phục</a>
+                                                        <a class="btn btn-sm btn-primary-custom" href="${pageContext.request.contextPath}/librarian/book-management/incidents?incidentId=${incident.incidentId}">Khôi phục</a>
                                                     </c:if>
                                                     <%-- Xem chi tiết hoặc Đưa ra kết luận xử lý bồi thường --%>
-                                                    <a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/incidents?incidentId=${incident.incidentId}">
+                                                    <a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/incidents?incidentId=${incident.incidentId}">
                                                         ${canEdit and (incident.status == 'pending' or incident.status == 'investigating') ? 'Kết luận' : 'Chi tiết'}
                                                     </a>
                                                 </div>

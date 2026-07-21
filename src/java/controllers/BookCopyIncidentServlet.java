@@ -18,7 +18,10 @@ import java.util.logging.Logger;
 import service.BookCopyIncidentService;
 import util.DatabaseConnection;
 
-@WebServlet(name = "BookCopyIncidentServlet", urlPatterns = {"/book-management/incidents"})
+@WebServlet(name = "BookCopyIncidentServlet", urlPatterns = {
+    "/librarian/book-management/incidents",
+    "/book-management/incidents"
+})
 public class BookCopyIncidentServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 20;
@@ -108,7 +111,7 @@ public class BookCopyIncidentServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể xử lý sự cố bản sao.", e);
             session.setAttribute("errorMessage", "Không thể xử lý sự cố. Vui lòng thử lại.");
         }
-        response.sendRedirect(request.getContextPath() + "/book-management/incidents");
+        response.sendRedirect(request.getContextPath() + "/librarian/book-management/incidents");
     }
 
     private void loadRequestedModal(HttpServletRequest request, boolean canEdit) throws SQLException {

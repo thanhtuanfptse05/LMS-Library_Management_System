@@ -6,14 +6,14 @@ Cung cấp công cụ cho Thủ thư quản lý đầu sách, bản sao vật l�
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Thủ thư (Librarian):** Tác nhân duy nhất được truy cập và thay đổi dữ liệu F4.
-* **Vai trò khác:** `ADMIN`, `MANAGER`, `STUDENT`, `LECTURER` và vai trò khác nhận HTTP 403 khi truy cập `/book-management/*`.
+* **Vai trò khác:** `ADMIN`, `MANAGER`, `STUDENT`, `LECTURER` và vai trò khác nhận HTTP 403 khi truy cập `/librarian/book-management/*`.
 * **Người chưa đăng nhập:** Được chuyển tới trang đăng nhập.
 
 ## 2.5 Use Cases (Danh sách Use Cases)
 * **UC-12 (View Book Catalog & Inventory):** Actor: Librarian | Xem tổng quan, tìm kiếm, lọc, sắp xếp và phân trang đầu sách/bản sao cùng số lượng tồn kho.
 * **UC-13 (Manage Book Catalog):** Actor: Librarian | Tạo đầu sách và cập nhật metadata, ảnh bìa, thể loại, tag hoặc trạng thái; không sửa ISBN và số lượng trực tiếp.
 * **UC-14 (Manage Physical Copies):** Actor: Librarian | Nhập bản sao bằng Barcode và cập nhật vị trí của bản sao đang khả dụng; thay đổi condition được chuyển sang F13.
-* **UC-15 (Manage Tags & Categories):** Actor: Librarian | Tạo, cập nhật trạng thái thể loại/tag và gộp tag mà không hard-delete.
+* **UC-15 (Manage Tags & Categories):** Actor: Librarian | Tạo và cập nhật trạng thái thể loại/tag mà không hard-delete.
 * **UC-27 (Import Bulk Books):** Actor: Librarian | Tải file `.xlsx`, xem preview và xác nhận import Book/BookCopy theo all-or-nothing.
 * **UC-52 (View Book Import History):** Actor: Librarian | Tìm kiếm, lọc và xem lỗi chi tiết của từng phiên import.
 
@@ -46,7 +46,7 @@ Cung cấp công cụ cho Thủ thư quản lý đầu sách, bản sao vật l�
   * *Mapping:* UC-52 / BR-27
 
 ## 5. Non-functional Requirements (Yêu cầu phi chức năng)
-* **Bảo mật:** `AuthFilter` bảo vệ toàn bộ `/book-management/*`; chỉ `LIBRARIAN` được truy cập, mọi SQL đầu vào dùng `PreparedStatement`.
+* **Bảo mật:** `AuthFilter` bảo vệ toàn bộ `/librarian/book-management/*`; chỉ `LIBRARIAN` được truy cập, mọi SQL đầu vào dùng `PreparedStatement`.
 * **Toàn vẹn:** Mọi C/U quan trọng và Audit Log dùng cùng transaction/Connection; lỗi phải rollback.
 * **Hiệu năng:** Danh sách có filter đạt P95 dưới 500 ms; validate file gần 5.000 BookCopy trong tối đa 30 giây ở môi trường Milestone 2.
 * **Giao diện:** JSP dùng JSTL/EL, không scriptlet; toàn bộ nhãn và thông báo bằng tiếng Việt.
@@ -87,7 +87,7 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 - [ ] Cập nhật đầu sách không thay đổi ISBN, `totalQuantity` hoặc `availableQuantity`.
 - [ ] Thêm một BookCopy hợp lệ làm cả hai số lượng tăng đúng 1; Barcode trùng không làm thay đổi dữ liệu.
 - [ ] Chỉ BookCopy `available` được cập nhật location; condition hỏng/mất đi qua F13.
-- [ ] Category/Tag được tạo/cập nhật bằng soft state; gộp tag không hard-delete tag nguồn.
+- [ ] Category/Tag được tạo/cập nhật bằng soft state; không hard-delete.
 - [ ] File import lỗi tạo 0 Book/BookCopy và lưu được lỗi theo sheet/dòng/cột.
 - [ ] File import hợp lệ tạo đủ dữ liệu hoặc rollback toàn bộ nếu một bước ghi thất bại.
 - [ ] Lịch sử import tìm kiếm/lọc/phân trang và xem được chi tiết batch.

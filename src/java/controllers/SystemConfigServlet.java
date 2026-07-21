@@ -77,9 +77,6 @@ public class SystemConfigServlet extends HttpServlet {
                 
                 service.create(newConfig, managerId, "MANAGER", getServletContext());
                 session.setAttribute("successMessage", "Thêm cấu hình thành công!");
-            } else if ("delete".equalsIgnoreCase(action)) {
-                service.delete(key, managerId, "MANAGER", getServletContext());
-                session.setAttribute("successMessage", "Xóa cấu hình thành công!");
             } else {
                 service.update(key, value, managerId, "MANAGER", getServletContext());
                 session.setAttribute("successMessage", "Cập nhật cấu hình thành công!");

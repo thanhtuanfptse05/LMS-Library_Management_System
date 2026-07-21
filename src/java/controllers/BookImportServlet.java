@@ -21,7 +21,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import service.BookImportService;
 import util.BookImportWorkbookReader;
 
-@WebServlet(name = "BookImportServlet", urlPatterns = {"/book-management/import"})
+@WebServlet(name = "BookImportServlet", urlPatterns = {
+    "/librarian/book-management/import",
+    "/book-management/import"
+})
 @MultipartConfig(maxFileSize = 10 * 1024 * 1024, maxRequestSize = 11 * 1024 * 1024)
 public class BookImportServlet extends HttpServlet {
 
@@ -85,7 +88,7 @@ public class BookImportServlet extends HttpServlet {
                 int batchId = importService.confirm(preview, actorId);
                 session.removeAttribute("bookImportPreview");
                 session.setAttribute("successMessage", "Import dữ liệu thành công. Mã phiên IMP-" + batchId + ".");
-                response.sendRedirect(request.getContextPath() + "/book-management/import-history?batchId=" + batchId);
+                response.sendRedirect(request.getContextPath() + "/librarian/book-management/import-history?batchId=" + batchId);
                 return;
             } else if ("clear".equals(action)) {
                 session.removeAttribute("bookImportPreview");
@@ -98,7 +101,7 @@ public class BookImportServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể xử lý tệp import.", e);
             session.setAttribute("errorMessage", "Không thể xử lý tệp import. Vui lòng kiểm tra tệp và thử lại.");
         }
-        response.sendRedirect(request.getContextPath() + "/book-management/import");
+        response.sendRedirect(request.getContextPath() + "/librarian/book-management/import");
     }
 
     private HttpSession requireEditor(HttpServletRequest request, HttpServletResponse response) throws IOException {

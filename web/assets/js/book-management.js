@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     initBookAutoFilter();
-    initBookTagMergeValidation();
 
     document.querySelectorAll('#createCopyModal select[name="bookId"]').forEach((select) => {
         enhanceRequiredSelectCombobox(select, {
@@ -50,36 +49,6 @@ function initBookAutoFilter() {
                 form.submit();
             });
         }
-    });
-}
-
-function initBookTagMergeValidation() {
-    const mergeForm = document.querySelector('#mergeTagModal form');
-    if (!mergeForm) {
-        return;
-    }
-    const source = mergeForm.querySelector('[name="sourceTagId"]');
-    const target = mergeForm.querySelector('[name="targetTagId"]');
-
-    mergeForm.addEventListener('submit', function (event) {
-        if (!source || !target || source.value !== target.value) {
-            return;
-        }
-
-        event.preventDefault();
-        target.setCustomValidity('Nhãn đích phải khác nhãn nguồn.');
-        target.reportValidity();
-    });
-
-    mergeForm.querySelectorAll('[name="sourceTagId"], [name="targetTagId"]').forEach(function (field) {
-        field.addEventListener('change', function () {
-            if (source) {
-                source.setCustomValidity('');
-            }
-            if (target) {
-                target.setCustomValidity('');
-            }
-        });
     });
 }
 

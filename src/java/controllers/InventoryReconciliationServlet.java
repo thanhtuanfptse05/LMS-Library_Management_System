@@ -18,7 +18,10 @@ import java.util.logging.Logger;
 import service.InventoryReconciliationService;
 import util.DatabaseConnection;
 
-@WebServlet(name = "InventoryReconciliationServlet", urlPatterns = {"/book-management/inventory"})
+@WebServlet(name = "InventoryReconciliationServlet", urlPatterns = {
+    "/librarian/book-management/inventory",
+    "/book-management/inventory"
+})
 public class InventoryReconciliationServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(InventoryReconciliationServlet.class.getName());
     private final InventoryDAO inventoryDAO = new InventoryDAO();
@@ -88,7 +91,7 @@ public class InventoryReconciliationServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể xử lý đối chiếu tồn kho.", e);
             session.setAttribute("errorMessage", "Không thể xử lý đối chiếu tồn kho. Vui lòng thử lại.");
         }
-        String target = request.getContextPath() + "/book-management/inventory";
+        String target = request.getContextPath() + "/librarian/book-management/inventory";
         if (redirectId != null) target += "?sessionId=" + redirectId;
         response.sendRedirect(target);
     }

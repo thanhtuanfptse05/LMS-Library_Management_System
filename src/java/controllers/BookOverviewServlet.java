@@ -21,7 +21,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "BookOverviewServlet", urlPatterns = {"/book-management/overview"})
+@WebServlet(name = "BookOverviewServlet", urlPatterns = {
+    "/librarian/book-management/overview",
+    "/book-management/overview"
+})
 public class BookOverviewServlet extends HttpServlet {
 
     private final BookDAO bookDAO = new BookDAO();
@@ -68,22 +71,22 @@ public class BookOverviewServlet extends HttpServlet {
         if (openIncidents > 0) {
             tasks.add(new BookOverviewTaskDTO("report", openIncidents + " sự cố hỏng/mất cần xử lý",
                     "Xác minh hoặc kết luận các bản sao đang bị ngừng lưu thông.",
-                    "/book-management/incidents", "Mở danh sách hỏng & mất", "danger"));
+                    "/librarian/book-management/incidents", "Mở danh sách hỏng & mất", "danger"));
         }
         if (unresolvedInventory > 0) {
             tasks.add(new BookOverviewTaskDTO("difference", unresolvedInventory + " lệch kho chưa xác minh",
                     "Đối chiếu lại các bản sao thiếu hoặc sai vị trí trước khi cập nhật kho.",
-                    "/book-management/inventory", "Xem lệch kho", "warning"));
+                    "/librarian/book-management/inventory", "Xem lệch kho", "warning"));
         }
         if (failedImports > 0) {
             tasks.add(new BookOverviewTaskDTO("upload_file", failedImports + " phiên nhập dữ liệu có lỗi",
                     "Kiểm tra file import thất bại để sửa dữ liệu và nhập lại nếu cần.",
-                    "/book-management/import-history?status=failed", "Xem lịch sử xử lý", "warning"));
+                    "/librarian/book-management/import-history?status=failed", "Xem lịch sử xử lý", "warning"));
         }
         if (booksWithoutCopies > 0) {
             tasks.add(new BookOverviewTaskDTO("inventory_2", booksWithoutCopies + " đầu sách chưa có bản sao",
                     "Bổ sung bản sao vật lý để đầu sách có thể đưa vào lưu thông.",
-                    "/book-management/titles?status=noCopies", "Mở danh sách đầu sách", "info"));
+                    "/librarian/book-management/titles?status=noCopies", "Mở danh sách đầu sách", "info"));
         }
         return tasks;
     }

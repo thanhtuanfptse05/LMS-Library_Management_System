@@ -766,7 +766,7 @@ public class DeskCirculationService {
             // ----------------------------------------------------------------
             // [Node 5.25a - Bước 2] UPDATE Payment.status = 'completed'
             // ----------------------------------------------------------------
-            paymentDAO.updateStatusToCompleted(conn, paymentId);
+            paymentDAO.updateStatusToCompleted(conn, paymentId, librarianId);
 
             // ----------------------------------------------------------------
             // [Node 5.25b - Bước 3] UPDATE Fine.status = 'paid'

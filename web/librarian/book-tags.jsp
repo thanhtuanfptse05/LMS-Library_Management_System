@@ -3,8 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%-- Trang: book-tags.jsp - Quản lý Nhãn Sách (Tags) --%>
-<%-- Cho phép Thủ thư tạo nhãn, ẩn nhãn, chỉnh sửa nhãn, --%>
-<%-- và thực hiện thao tác gộp (merge) hai nhãn trùng lặp hoặc tương đương --%>
+<%-- Cho phép Thủ thư tạo nhãn, ẩn nhãn và chỉnh sửa nhãn --%>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -31,7 +30,7 @@
                         <c:remove var="errorMessage" scope="session" />
                     </c:if>
 
-                    <%-- Tiêu đề và Các nút thao tác chính (Gộp nhãn, Tạo nhãn mới) --%>
+                    <%-- Tiêu đề và nút thao tác chính --%>
                     <section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
                         <div>
                             <p class="bm-page__eyebrow mb-1">Danh mục sách</p>
@@ -40,7 +39,6 @@
                         </div>
                         <c:if test="${canEdit}">
                             <div class="bm-actions">
-                                <button class="btn bm-btn-secondary" data-bs-toggle="modal" data-bs-target="#mergeTagModal">Gộp nhãn</button>
                                 <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createTagModal">
                                     <span class="material-symbols-outlined">add</span>Tạo nhãn sách
                                 </button>
@@ -49,7 +47,7 @@
                     </section>
 
                     <%-- Biểu mẫu tìm kiếm và lọc trạng thái nhãn sách --%>
-                    <form class="bm-filter-card bm-list-filter mb-3 bm-auto-filter" method="get" action="${pageContext.request.contextPath}/book-management/tags">
+                    <form class="bm-filter-card bm-list-filter mb-3 bm-auto-filter" method="get" action="${pageContext.request.contextPath}/librarian/book-management/tags">
                         <div class="row g-2">
                             <div class="col-lg-8 bm-search">
                                 <span class="material-symbols-outlined">search</span>
@@ -63,7 +61,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-1">
-                                <a class="btn bm-reset-button w-100" href="${pageContext.request.contextPath}/book-management/tags" title="Đặt lại bộ lọc">
+                                <a class="btn bm-reset-button w-100" href="${pageContext.request.contextPath}/librarian/book-management/tags" title="Đặt lại bộ lọc">
                                     <span class="material-symbols-outlined">refresh</span>
                                 </a>
                             </div>
@@ -83,7 +81,7 @@
                             <c:if test="${not empty selectedStatus}">
                                 <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
                             </c:if>
-                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/tags">Xóa bộ lọc</a>
+                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/librarian/book-management/tags">Xóa bộ lọc</a>
                         </div>
                     </c:if>
 
@@ -141,7 +139,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?tagId=${tag.tagId}">
+                                                <a class="bm-count-link" href="${pageContext.request.contextPath}/librarian/book-management/titles?tagId=${tag.tagId}">
                                                     Xem <fmt:formatNumber value="${tag.bookCount}" /> đầu sách
                                                 </a>
                                             </td>
@@ -153,7 +151,7 @@
                                             <td class="bm-action-column">
                                                 <c:choose>
                                                     <c:when test="${canEdit}">
-                                                        <a class="bm-action-icon" href="${pageContext.request.contextPath}/book-management/tags?editId=${tag.tagId}" title="Chỉnh sửa nhãn sách" aria-label="Chỉnh sửa nhãn sách">
+                                                        <a class="bm-action-icon" href="${pageContext.request.contextPath}/librarian/book-management/tags?editId=${tag.tagId}" title="Chỉnh sửa nhãn sách" aria-label="Chỉnh sửa nhãn sách">
                                                             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
                                                         </a>
                                                     </c:when>
@@ -196,7 +194,7 @@
             <div class="modal fade bm-modal" id="createTagModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form method="post" action="${pageContext.request.contextPath}/book-management/tags">
+                        <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/tags">
                             <input type="hidden" name="action" value="create">
                             <input type="hidden" name="status" value="active">
                             <div class="modal-header">
@@ -218,60 +216,14 @@
                     </div>
                 </div>
             </div>
-
-            <%-- Modal 2: Gộp hai nhãn sách (chuyển toàn bộ sách đang gán nhãn nguồn sang nhãn đích, sau đó ẩn nhãn nguồn) --%>
-            <div class="modal fade bm-modal" id="mergeTagModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form method="post" action="${pageContext.request.contextPath}/book-management/tags">
-                            <input type="hidden" name="action" value="merge">
-                            <div class="modal-header">
-                                <div>
-                                    <h5 class="modal-title">Gộp nhãn sách</h5>
-                                    <p class="bm-section-note mb-0">Nhãn nguồn sẽ được ẩn sau khi chuyển toàn bộ liên kết.</p>
-                                </div>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                            </div>
-                            <div class="modal-body row g-3">
-                                <div class="col-12">
-                                    <label class="form-label">Nhãn nguồn</label>
-                                    <select class="form-select" name="sourceTagId" required>
-                                        <option value="">Chọn nhãn cần gộp</option>
-                                        <c:forEach var="item" items="${allTags}">
-                                            <option value="${item.tagId}">
-                                                <c:out value="${item.name}" />${item.status == 'hidden' ? ' (Đã ẩn)' : ''}
-                                            </option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Nhãn đích đang dùng</label>
-                                    <select class="form-select" name="targetTagId" required>
-                                        <option value="">Chọn nhãn nhận dữ liệu</option>
-                                        <c:forEach var="item" items="${allTags}">
-                                            <c:if test="${item.status == 'active'}">
-                                                <option value="${item.tagId}"><c:out value="${item.name}" /></option>
-                                            </c:if>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn bm-btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                <button class="btn btn-primary-custom" type="submit">Xác nhận gộp</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </c:if>
 
-        <%-- Modal 3: Chỉnh sửa tên / trạng thái ẩn hiện của nhãn sách --%>
+        <%-- Modal 2: Chỉnh sửa tên / trạng thái ẩn hiện của nhãn sách --%>
         <c:if test="${canEdit and not empty editTag}">
             <div class="modal fade bm-modal" id="editTagModal" tabindex="-1" aria-hidden="true" data-auto-open="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form method="post" action="${pageContext.request.contextPath}/book-management/tags">
+                        <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/tags">
                             <input type="hidden" name="action" value="update">
                             <input type="hidden" name="tagId" value="${editTag.tagId}">
                             <div class="modal-header">
@@ -295,7 +247,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/tags">Hủy</a>
+                                <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/tags">Hủy</a>
                                 <button class="btn btn-primary-custom" type="submit">Lưu thay đổi</button>
                             </div>
                         </form>

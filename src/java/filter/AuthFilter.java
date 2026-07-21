@@ -17,7 +17,7 @@ import model.User;
 import service.AuthService;
 
 /**
- * AuthFilter — Bộ lọc xác thực và phân quyền (Role-based Access Control).
+ * AuthFilter - Bộ lọc xác thực và phân quyền (Role-based Access Control).
  * Intercept mọi request để kiểm tra session và quyền truy cập của người dùng.
  */
 @WebFilter("/*")
@@ -45,7 +45,7 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // 0b. Health check endpoint — dùng cho UptimeRobot để giữ Render không sleep
+        // 0b. Health check endpoint dùng cho UptimeRobot để giữ Render không sleep
         if ("/health".equals(path)) {
             chain.doFilter(request, response);
             return;
@@ -56,17 +56,17 @@ public class AuthFilter implements Filter {
                 && session.getAttribute("role") != null);
 
         if (isLoggedIn) {
-            boolean isStaticResource = path.startsWith("/assets/") 
+            boolean isStaticResource = path.startsWith("/assets/")
                     || path.startsWith("/common/")
-                    || path.endsWith(".css") 
-                    || path.endsWith(".js") 
-                    || path.endsWith(".png") 
-                    || path.endsWith(".jpg") 
-                    || path.endsWith(".jpeg") 
-                    || path.endsWith(".gif") 
-                    || path.endsWith(".svg") 
-                    || path.endsWith(".ico") 
-                    || path.endsWith(".woff") 
+                    || path.endsWith(".css")
+                    || path.endsWith(".js")
+                    || path.endsWith(".png")
+                    || path.endsWith(".jpg")
+                    || path.endsWith(".jpeg")
+                    || path.endsWith(".gif")
+                    || path.endsWith(".svg")
+                    || path.endsWith(".ico")
+                    || path.endsWith(".woff")
                     || path.endsWith(".woff2");
 
             if (!isStaticResource) {
@@ -75,7 +75,7 @@ public class AuthFilter implements Filter {
                 User user = userDAO.findByUserId(userId);
 
                 if (user == null) {
-                    // Tài khoản không còn tồn tại trong DB → đá session ra
+                    // Tài khoản không còn tồn tại trong DB thì đá session ra
                     session.invalidate();
                     isLoggedIn = false;
                     session = null;
@@ -89,14 +89,14 @@ public class AuthFilter implements Filter {
                     boolean onlyUnpaid = authService.isLockedOnlyForUnpaid(userId);
 
                     if (!onlyUnpaid) {
-                        // Bị khóa vì lý do bảo mật hoặc admin → đá session ra
+                        // Bị khóa vì lý do bảo mật hoặc admin thì đá session ra
                         session.invalidate();
                         isLoggedIn = false;
                         session = null;
                         httpResponse.sendRedirect(contextPath + "/login?error=locked");
                         return;
                     }
-                    // Nếu chỉ bị khóa vì 'unpaid' → không đá session, cho tiếp tục
+                    // Nếu chỉ bị khóa vì 'unpaid' thì không đá session, cho tiếp tục
                     // (session attribute 'unpaidWarning' đã được gán lúc login)
                 }
             }
@@ -117,7 +117,14 @@ public class AuthFilter implements Filter {
         boolean isManagerRoute = path.startsWith("/manager/") || path.equals("/manager");
         boolean isStudentRoute = path.startsWith("/student/") || path.equals("/student");
         boolean isLecturerRoute = path.startsWith("/lecturer/") || path.equals("/lecturer");
-        boolean isBookManagementRoute = path.startsWith("/book-management/") || path.equals("/book-management");
+        boolean isLegacyBookManagementRoute = path.startsWith("/book-management/")
+                || path.equals("/book-management")
+                || path.equals("/book-management/");
+        boolean isCanonicalBookManagementRoot = path.equals("/librarian/book-management")
+                || path.equals("/librarian/book-management/");
+        boolean isBookManagementRoute = isLegacyBookManagementRoute
+                || isCanonicalBookManagementRoot
+                || path.startsWith("/librarian/book-management/");
 
         if (isBookManagementRoute) {
             if (!isLoggedIn) {
@@ -127,6 +134,12 @@ public class AuthFilter implements Filter {
             if (!"LIBRARIAN".equalsIgnoreCase(role)) {
                 httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
                         "Chức năng quản lý sách chỉ dành cho Thủ thư.");
+                return;
+            }
+            if (isCanonicalBookManagementRoot
+                    || (isLegacyBookManagementRoute && shouldRedirectLegacyBookManagementRoute(httpRequest))) {
+                httpResponse.sendRedirect(buildBookManagementRedirectUrl(httpRequest, contextPath, path,
+                        isLegacyBookManagementRoute));
                 return;
             }
         } else if (isAdminRoute) {
@@ -193,6 +206,27 @@ public class AuthFilter implements Filter {
             return contextPath + "/auth/login.jsp";
         }
         return contextPath + "/";
+    }
+
+    private boolean shouldRedirectLegacyBookManagementRoute(HttpServletRequest request) {
+        String method = request.getMethod();
+        return "GET".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method);
+    }
+
+    private String buildBookManagementRedirectUrl(HttpServletRequest request, String contextPath,
+            String path, boolean legacyRoute) {
+        String targetPath;
+        if (legacyRoute) {
+            if (path.equals("/book-management") || path.equals("/book-management/")) {
+                targetPath = "/librarian/book-management/overview";
+            } else {
+                targetPath = "/librarian" + path;
+            }
+        } else {
+            targetPath = "/librarian/book-management/overview";
+        }
+        String query = request.getQueryString();
+        return contextPath + targetPath + (query == null || query.isBlank() ? "" : "?" + query);
     }
 
     @Override

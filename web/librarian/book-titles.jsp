@@ -32,12 +32,25 @@
                             <h2 class="bm-page__title mb-1">Đầu sách</h2>
                             <p class="bm-page__subtitle mb-0">Quản lý thông tin thư mục; số lượng bản sao được cập nhật qua nghiệp vụ kho vật lý.</p>
                         </div>
-                        <c:if test="${canEdit}">
-                            <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createBookModal">
-                                <span class="material-symbols-outlined">add</span>
-                                Tạo đầu sách
-                            </button>
-                        </c:if>
+                        <div class="bm-actions">
+                            <c:url var="exportTitlesUrl" value="/librarian/book-management/titles/export">
+                                <c:param name="q" value="${q}" />
+                                <c:param name="categoryId" value="${selectedCategoryId}" />
+                                <c:param name="tagId" value="${selectedTagId}" />
+                                <c:param name="status" value="${selectedStatus}" />
+                                <c:param name="sort" value="${selectedSort}" />
+                            </c:url>
+                            <a class="btn bm-btn-secondary" href="${exportTitlesUrl}">
+                                <span class="material-symbols-outlined">download</span>
+                                Xuất CSV
+                            </a>
+                            <c:if test="${canEdit}">
+                                <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createBookModal">
+                                    <span class="material-symbols-outlined">add</span>
+                                    Tạo đầu sách
+                                </button>
+                            </c:if>
+                        </div>
                     </section>
 
                     <c:forEach var="category" items="${categories}">
@@ -64,7 +77,7 @@
                         <c:when test="${selectedSort == 'published_asc'}"><c:set var="selectedSortLabel" value="Xuất bản cũ nhất" /></c:when>
                     </c:choose>
 
-                    <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/book-management/titles">
+                    <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/librarian/book-management/titles">
                         <c:if test="${not empty selectedTagId}"><input type="hidden" name="tagId" value="${selectedTagId}"></c:if>
                             <div class="row g-2">
                                 <div class="col-xl-4 col-lg-6 bm-search">
@@ -110,7 +123,7 @@
                                             <span class="bm-filter-badge">Đang áp dụng</span>
                                         </c:if>
                                     </button>
-                                    <a class="btn bm-reset-button" href="${pageContext.request.contextPath}/book-management/titles"
+                                    <a class="btn bm-reset-button" href="${pageContext.request.contextPath}/librarian/book-management/titles"
                                        title="Đặt lại bộ lọc" aria-label="Đặt lại bộ lọc">
                                         <span class="material-symbols-outlined">refresh</span>
                                     </a>
@@ -137,7 +150,7 @@
                             <c:if test="${selectedSort != 'updated_desc'}">
                                 <span class="bm-active-filter-chip">Sắp xếp: <strong><c:out value="${selectedSortLabel}" /></strong></span>
                             </c:if>
-                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/titles">Xóa bộ lọc</a>
+                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/librarian/book-management/titles">Xóa bộ lọc</a>
                         </div>
                     </c:if>
 
@@ -260,7 +273,7 @@
                                             <td class="bm-action-column">
                                                 <c:choose>
                                                     <c:when test="${canEdit}">
-                                                        <c:url var="editUrl" value="/book-management/titles">
+                                                        <c:url var="editUrl" value="/librarian/book-management/titles">
                                                             <c:param name="editId" value="${book.bookId}" />
                                                         </c:url>
                                                         <a class="bm-action-icon" href="${editUrl}" title="Chỉnh sửa đầu sách"
@@ -297,7 +310,7 @@
         <c:if test="${canEdit}">
             <div class="modal fade bm-modal" id="createBookModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-lg"><div class="modal-content">
-                        <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/book-management/titles">
+                        <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/librarian/book-management/titles">
                             <input type="hidden" name="action" value="create">
                             <div class="modal-header"><div><h5 class="modal-title">Tạo đầu sách</h5><p class="bm-section-note mb-0">Đầu sách mới được khởi tạo với số lượng bằng 0.</p></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>
                             <div class="modal-body"><jsp:include page="fragments/_book-form-fields.jsp" /></div>
@@ -310,12 +323,12 @@
         <c:if test="${canEdit and not empty editBook}">
             <div class="modal fade bm-modal" id="editBookModal" tabindex="-1" aria-hidden="true" data-auto-open="true">
                 <div class="modal-dialog modal-lg"><div class="modal-content">
-                        <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/book-management/titles">
+                        <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/librarian/book-management/titles">
                             <input type="hidden" name="action" value="update">
                             <input type="hidden" name="bookId" value="${editBook.bookId}">
                             <div class="modal-header"><div><h5 class="modal-title">Chỉnh sửa đầu sách</h5><p class="bm-section-note mb-0">ISBN và số lượng tồn kho không thể sửa trực tiếp.</p></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>
                             <div class="modal-body"><jsp:include page="fragments/_book-form-fields.jsp"><jsp:param name="editing" value="true" /></jsp:include></div>
-                            <div class="modal-footer"><a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/titles">Hủy</a><button type="submit" class="btn btn-primary-custom">Lưu thay đổi</button></div>
+                            <div class="modal-footer"><a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/titles">Hủy</a><button type="submit" class="btn btn-primary-custom">Lưu thay đổi</button></div>
                         </form>
                     </div></div>
             </div>

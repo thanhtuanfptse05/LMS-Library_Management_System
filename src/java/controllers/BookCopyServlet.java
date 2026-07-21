@@ -19,7 +19,10 @@ import model.BookCopy;
 import service.BookCopyService;
 import util.DatabaseConnection;
 
-@WebServlet(name = "BookCopyServlet", urlPatterns = {"/book-management/copies"})
+@WebServlet(name = "BookCopyServlet", urlPatterns = {
+    "/librarian/book-management/copies",
+    "/book-management/copies"
+})
 public class BookCopyServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 20;
@@ -101,7 +104,7 @@ public class BookCopyServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể lưu bản sao.", e);
             session.setAttribute("errorMessage", "Không thể lưu bản sao. Vui lòng kiểm tra dữ liệu và thử lại.");
         }
-        response.sendRedirect(request.getContextPath() + "/book-management/copies");
+        response.sendRedirect(request.getContextPath() + "/librarian/book-management/copies");
     }
 
     private BookCopy readCreateCopy(HttpServletRequest request) {

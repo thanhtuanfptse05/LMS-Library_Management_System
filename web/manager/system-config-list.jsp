@@ -215,13 +215,6 @@
                                                         onclick="prefillModal('<c:out value="${cfg.configKey}"/>', '<c:out value="${cfg.configValue}"/>', '<c:out value="${cfg.description}"/>')">
                                                     <span class="material-symbols-outlined" style="font-size: 15px;">edit</span> Sửa
                                                 </button>
-                                                <form action="${pageContext.request.contextPath}/manager/system-config" method="POST" class="m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa cấu hình này không?');">
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="configKey" value="<c:out value="${cfg.configKey}"/>">
-                                                    <button type="submit" class="btn btn-action btn-action-delete">
-                                                        <span class="material-symbols-outlined" style="font-size: 15px;">delete</span> Xóa
-                                                    </button>
-                                                </form>
                                             </div>
                                         </td>
                                     </tr>

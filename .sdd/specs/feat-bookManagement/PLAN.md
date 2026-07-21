@@ -12,12 +12,12 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 | BookOverviewController | Hiển thị số liệu tổng quan và liên kết điều hướng F4. | `BookOverviewServlet.java` |
 | BookController | Tìm/lọc/sắp xếp/phân trang, tạo và cập nhật Book; quản lý ảnh bìa và liên kết phân loại. | `BookServlet.java` |
 | BookCopyController | Tìm/lọc/phân trang, nhập BookCopy và cập nhật location của bản sao khả dụng. | `BookCopyServlet.java` |
-| CategoryController / TagController | Quản lý thể loại, tag và thao tác gộp tag. | `CategoryServlet.java`, `TagServlet.java` |
+| CategoryController / TagController | Quản lý thể loại và tag. | `CategoryServlet.java`, `TagServlet.java` |
 | BookImportController | Tải mẫu, upload, validate, preview, confirm và clear import `.xlsx`. | `BookImportServlet.java` |
 | BookImportHistoryController | Tìm kiếm, lọc, phân trang và xem lỗi từng batch. | `BookImportHistoryServlet.java` |
 | BookService | Transaction tạo/cập nhật Book, liên kết Category/Tag và Audit Log. | `BookService.java` |
 | BookCopyService | Transaction tạo/cập nhật BookCopy và đồng bộ số lượng. | `BookCopyService.java` |
-| CategoryService / TagService | Transaction tạo/cập nhật soft state, Audit Log và gộp tag. | `CategoryService.java`, `TagService.java` |
+| CategoryService / TagService | Transaction tạo/cập nhật soft state và Audit Log. | `CategoryService.java`, `TagService.java` |
 | BookImportService | Validate lại và import all-or-nothing; lưu lịch sử thành công/thất bại. | `BookImportService.java` |
 | BookImportValidator / WorkbookReader | Kiểm tra dữ liệu với DB và đọc đúng hai sheet Excel. | `BookImportValidator.java`, `BookImportWorkbookReader.java` |
 | DAO Layer | Truy cập Book, BookCopy, Category, Tag, import batch/error và AuditLogs. | `BookDAO.java`, `BookCopyDAO.java`, `CategoryDAO.java`, `TagDAO.java`, `BookImportDAO.java`, `AuditLogDAO.java` |
@@ -27,7 +27,7 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 - **Tạo/cập nhật Book:** `BookServlet` validate request và ảnh -> `BookService` mở transaction -> `BookDAO` insert/update + replace Category/Tag -> `AuditLogDAO` -> commit -> flash message.
 - **Nhập BookCopy:** `BookCopyServlet` -> `BookCopyService` -> khóa/kiểm tra Book và Barcode -> insert BookCopy `good/available` -> tăng số lượng -> Audit Log -> commit.
 - **Cập nhật BookCopy:** Chỉ nhận `bookCopyId` và `location`; Service tải bản ghi hiện tại, giữ nguyên Barcode/bookId/condition/status và chỉ cập nhật nếu status `available`.
-- **Quản lý Category/Tag:** Controller -> Service transaction -> DAO create/update/merge -> Audit Log; tag nguồn sau merge chuyển `hidden`.
+- **Quản lý Category/Tag:** Controller -> Service transaction -> DAO create/update -> Audit Log.
 - **Import:** Upload -> WorkbookReader -> Validator -> preview session. Nếu lỗi: lưu batch `failed` + errors, không tạo Book/BookCopy. Nếu hợp lệ và được confirm: validate lại -> một transaction tạo dữ liệu + số lượng + batch `success` + Audit -> commit; lỗi ghi làm rollback toàn bộ.
 - **Lịch sử import:** `BookImportHistoryServlet` -> `BookImportDAO.search/count/findErrors` -> JSP.
 - **Condition hỏng/mất:** F4 chuyển người dùng sang F13; F4 không cập nhật condition trực tiếp.
@@ -44,7 +44,7 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 - Duplicate ISBN trong sheet Books, duplicate Barcode trong file hoặc Database làm fail toàn bộ file.
 
 ## 5. ACCESS CONTROL
-- `AuthFilter` bảo vệ `/book-management` và `/book-management/*`.
+- `AuthFilter` bảo vệ `/librarian/book-management` và `/librarian/book-management/*`.
 - Chưa đăng nhập: redirect `/login`.
 - `LIBRARIAN`: được xem và thực hiện toàn bộ thao tác F4.
 - `ADMIN`, `MANAGER`, `STUDENT`, `LECTURER` và vai trò khác: HTTP 403 trước khi vào servlet/JSP.

@@ -46,7 +46,7 @@
                     </section>
 
                     <%-- Bộ lọc tìm kiếm thể loại sách theo từ khóa và trạng thái hoạt động --%>
-                    <form class="bm-filter-card bm-list-filter mb-3 bm-auto-filter" method="get" action="${pageContext.request.contextPath}/book-management/categories">
+                    <form class="bm-filter-card bm-list-filter mb-3 bm-auto-filter" method="get" action="${pageContext.request.contextPath}/librarian/book-management/categories">
                         <div class="row g-2">
                             <div class="col-lg-8 bm-search">
                                 <span class="material-symbols-outlined">search</span>
@@ -60,7 +60,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-1">
-                                <a class="btn bm-reset-button w-100" href="${pageContext.request.contextPath}/book-management/categories" title="Đặt lại bộ lọc">
+                                <a class="btn bm-reset-button w-100" href="${pageContext.request.contextPath}/librarian/book-management/categories" title="Đặt lại bộ lọc">
                                     <span class="material-symbols-outlined">refresh</span>
                                 </a>
                             </div>
@@ -80,7 +80,7 @@
                             <c:if test="${not empty selectedStatus}">
                                 <span class="bm-active-filter-chip">Trạng thái: <strong><c:out value="${selectedStatusLabel}" /></strong></span>
                             </c:if>
-                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/book-management/categories">Xóa bộ lọc</a>
+                            <a class="bm-active-filters__clear" href="${pageContext.request.contextPath}/librarian/book-management/categories">Xóa bộ lọc</a>
                         </div>
                     </c:if>
 
@@ -136,7 +136,7 @@
                                             <td><c:out value="${empty category.description ? 'Chưa có mô tả' : category.description}" /></td>
                                             <td>
                                                 <%-- Liên kết dẫn tới danh sách đầu sách thuộc thể loại này --%>
-                                                <a class="bm-count-link" href="${pageContext.request.contextPath}/book-management/titles?categoryId=${category.categoryId}">
+                                                <a class="bm-count-link" href="${pageContext.request.contextPath}/librarian/book-management/titles?categoryId=${category.categoryId}">
                                                     Xem <fmt:formatNumber value="${category.bookCount}" /> đầu sách
                                                 </a>
                                             </td>
@@ -148,7 +148,7 @@
                                             <td class="bm-action-column">
                                                 <c:choose>
                                                     <c:when test="${canEdit}">
-                                                        <a class="bm-action-icon" href="${pageContext.request.contextPath}/book-management/categories?editId=${category.categoryId}" title="Chỉnh sửa thể loại" aria-label="Chỉnh sửa thể loại">
+                                                        <a class="bm-action-icon" href="${pageContext.request.contextPath}/librarian/book-management/categories?editId=${category.categoryId}" title="Chỉnh sửa thể loại" aria-label="Chỉnh sửa thể loại">
                                                             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
                                                         </a>
                                                     </c:when>
@@ -191,7 +191,7 @@
     <div class="modal fade bm-modal" id="createCategoryModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" action="${pageContext.request.contextPath}/book-management/categories">
+                <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/categories">
                     <input type="hidden" name="action" value="create">
                     <input type="hidden" name="status" value="active">
                     <div class="modal-header">
@@ -226,7 +226,7 @@
     <div class="modal fade bm-modal" id="editCategoryModal" tabindex="-1" aria-hidden="true" data-auto-open="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" action="${pageContext.request.contextPath}/book-management/categories">
+                <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/categories">
                     <input type="hidden" name="action" value="update">
                     <input type="hidden" name="categoryId" value="${editCategory.categoryId}">
                     <div class="modal-header">
@@ -254,7 +254,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/categories">Hủy</a>
+                        <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/categories">Hủy</a>
                         <button class="btn btn-primary-custom" type="submit">Lưu thay đổi</button>
                     </div>
                 </form>

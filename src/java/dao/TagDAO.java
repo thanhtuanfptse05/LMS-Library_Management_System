@@ -158,22 +158,6 @@ public class TagDAO {
         }
     }
 
-    public void mergeRelations(Connection conn, int sourceId, int targetId) throws SQLException {
-        String insertSql = "INSERT INTO BookTag (bookId, tagId) "
-                + "SELECT bt.bookId, ? FROM BookTag bt WHERE bt.tagId = ? "
-                + "AND NOT EXISTS (SELECT 1 FROM BookTag existing WHERE existing.bookId = bt.bookId AND existing.tagId = ?)";
-        try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
-            ps.setInt(1, targetId);
-            ps.setInt(2, sourceId);
-            ps.setInt(3, targetId);
-            ps.executeUpdate();
-        }
-        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM BookTag WHERE tagId = ?")) {
-            ps.setInt(1, sourceId);
-            ps.executeUpdate();
-        }
-    }
-
     private Tag map(ResultSet rs) throws SQLException {
         Tag tag = new Tag();
         tag.setTagId(rs.getInt("tagId"));

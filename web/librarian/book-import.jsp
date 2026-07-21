@@ -37,7 +37,7 @@
                             <h2 class="bm-page__title mb-1">Nhập dữ liệu sách</h2>
                             <p class="bm-page__subtitle mb-0">Tạo hàng loạt đầu sách và bản sao từ tệp Excel theo mẫu chuẩn.</p>
                         </div>
-                        <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/book-management/import?action=template">
+                        <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/import?action=template">
                             <span class="material-symbols-outlined">download</span>Tải tệp mẫu
                         </a>
                     </section>
@@ -47,7 +47,7 @@
                         <section class="col-xl-8">
                             <%-- Biểu mẫu gửi file Excel lên Server để thực hiện bước Validation --%>
                             <div class="bm-side-card mb-3">
-                                <form class="bm-import-dropzone" method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/book-management/import">
+                                <form class="bm-import-dropzone" method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/librarian/book-management/import">
                                     <input type="hidden" name="action" value="upload">
                                     <span class="material-symbols-outlined bm-import-dropzone__icon">upload_file</span>
                                     <h3 class="bm-section-title mt-3 mb-1">Chọn tệp Excel để kiểm tra</h3>
@@ -188,13 +188,13 @@
 
                             <%-- Nút Xác nhận lưu vào CSDL (chỉ hoạt động khi tệp hợp lệ - không còn lỗi validation) --%>
                             <c:if test="${not empty preview}">
-                                <form method="post" action="${pageContext.request.contextPath}/book-management/import">
+                                <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/import">
                                     <input type="hidden" name="action" value="confirm">
                                     <button class="btn btn-primary-custom w-100 mb-2" type="submit" ${preview.valid ? '' : 'disabled'}>
                                         Xác nhận nhập ${preview.totalRows} dòng
                                     </button>
                                 </form>
-                                <form method="post" action="${pageContext.request.contextPath}/book-management/import">
+                                <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/import">
                                     <input type="hidden" name="action" value="clear">
                                     <button class="btn bm-btn-secondary w-100" type="submit">
                                         Bỏ tệp đang kiểm tra

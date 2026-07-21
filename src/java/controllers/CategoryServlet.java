@@ -18,7 +18,10 @@ import model.Category;
 import service.CategoryService;
 import util.DatabaseConnection;
 
-@WebServlet(name = "CategoryServlet", urlPatterns = {"/book-management/categories"})
+@WebServlet(name = "CategoryServlet", urlPatterns = {
+    "/librarian/book-management/categories",
+    "/book-management/categories"
+})
 public class CategoryServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 20;
@@ -96,7 +99,7 @@ public class CategoryServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể lưu thể loại.", e);
             session.setAttribute("errorMessage", "Không thể lưu thể loại. Vui lòng kiểm tra và thử lại.");
         }
-        response.sendRedirect(request.getContextPath() + "/book-management/categories");
+        response.sendRedirect(request.getContextPath() + "/librarian/book-management/categories");
     }
 
     private Category readCategory(HttpServletRequest request, boolean updating) {
