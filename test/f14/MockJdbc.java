@@ -12,7 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@org.junit.Ignore("This is a utility class, not a test class")
 public class MockJdbc {
+
+    @org.junit.Test
+    public void dummyTest() {
+        // Dummy test để tránh lỗi "No runnable methods" của JUnit
+    }
+
 
     public static Connection createMockConnection(final Map<String, List<Map<String, Object>>> sqlQueries) {
         return (Connection) Proxy.newProxyInstance(

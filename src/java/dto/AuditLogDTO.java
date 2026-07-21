@@ -1,8 +1,7 @@
 package dto;
 
 import java.sql.Timestamp;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -110,34 +109,37 @@ public class AuditLogDTO {
         if (jsonStr == null || jsonStr.trim().isEmpty()) {
             return "";
         }
-        if (!jsonStr.trim().startsWith("{")) {
+        String trimmed = jsonStr.trim();
+        if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
             return jsonStr;
         }
         try {
-            Gson gson = new Gson();
-            Map<String, Object> map = gson.fromJson(jsonStr, new TypeToken<Map<String, Object>>(){}.getType());
-            if (map == null || map.isEmpty()) {
+            String content = trimmed.substring(1, trimmed.length() - 1).trim();
+            if (content.isEmpty()) {
                 return "";
             }
             List<String> entries = new ArrayList<>();
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                String key = entry.getKey();
-                Object val = entry.getValue();
+            // Regex cơ bản bắt "key":"value" hoặc "key":value
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\"([^\"]+)\"\\s*:\\s*(?:\"([^\"]*)\"|([^,}]+))");
+            java.util.regex.Matcher matcher = pattern.matcher(content);
+            while (matcher.find()) {
+                String key = matcher.group(1);
+                String val = matcher.group(2) != null ? matcher.group(2) : matcher.group(3);
+                if (val != null) {
+                    val = val.trim();
+                }
                 
                 String friendlyKey = translateKey(key);
                 String valStr;
                 
-                if (val == null) {
+                if (val == null || val.equals("null")) {
                     valStr = "—";
-                } else if (val instanceof Double) {
-                    double d = (Double) val;
-                    if (d == (long) d) {
-                        valStr = translateValue(String.format("%d", (long) d));
-                    } else {
-                        valStr = translateValue(val.toString());
-                    }
                 } else {
-                    valStr = translateValue(val.toString());
+                    // Loại bỏ phần thập phân .0 nếu là số
+                    if (val.matches("\\d+\\.0")) {
+                        val = val.substring(0, val.length() - 2);
+                    }
+                    valStr = translateValue(val);
                 }
                 
                 entries.add(friendlyKey + ": " + valStr);
