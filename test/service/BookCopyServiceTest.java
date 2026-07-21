@@ -1,6 +1,7 @@
 package service;
 
 import exception.ValidationException;
+import java.sql.SQLException;
 import model.BookCopy;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,38 @@ public class BookCopyServiceTest {
         BookCopy copy = validCreateCopy();
         copy.setBarcode(null);
         assertCreateValidation(copy, "Mã vạch không được để trống.");
+    }
+
+    @Test
+    public void validateCreateAcceptsBarcodeWithCommonPrintableSeparators() throws Exception {
+        BookCopy copy = validCreateCopy();
+        copy.setBarcode("BC9780134093413-02_A/1.3");
+
+        bookCopyService.validateCreate(copy);
+        assertTrue(true);
+    }
+
+    @Test
+    public void validateCreateRejectsBarcodeWithUnsafeCharacters() throws Exception {
+        BookCopy copy = validCreateCopy();
+        copy.setBarcode("BC 978@013#409");
+
+        assertCreateValidation(copy, "Mã vạch chỉ được chứa chữ, số");
+    }
+
+    @Test
+    public void isUniqueConstraintViolationDetectsPostgresqlSqlState() {
+        SQLException e = new SQLException("duplicate key", "23505");
+
+        assertTrue(bookCopyService.isUniqueConstraintViolation(e));
+    }
+
+    @Test
+    public void isUniqueConstraintViolationChecksNestedSqlException() {
+        SQLException root = new SQLException("outer", "08006");
+        root.setNextException(new SQLException("duplicate key", "23505"));
+
+        assertTrue(bookCopyService.isUniqueConstraintViolation(root));
     }
 
     @Test

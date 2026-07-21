@@ -7,11 +7,15 @@ import exception.DatabaseException;
 import exception.ValidationException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 import model.Book;
 import model.BookCopy;
 import util.DatabaseConnection;
 
 public class BookCopyService {
+
+    private static final Pattern BARCODE_PATTERN = Pattern.compile("^[A-Za-z0-9._/-]+$");
+    private static final String UNIQUE_VIOLATION_SQL_STATE = "23505";
 
     private final BookCopyDAO bookCopyDAO;
     private final BookDAO bookDAO;
@@ -48,10 +52,14 @@ public class BookCopyService {
                 auditLogDAO.insert(conn, actorId, "CREATE_BOOK_COPY", "BookCopy", copyId, null, toAuditValue(copy));
                 conn.commit();
                 return copyId;
-            } catch (ValidationException | SQLException e) {
+            } catch (ValidationException e) {
                 conn.rollback();
-                if (e instanceof ValidationException) {
-                    throw (ValidationException) e;
+                throw e;
+            } catch (SQLException e) {
+                conn.rollback();
+                if (isUniqueConstraintViolation(e)) {
+                    throw new ValidationException("Mã vạch " + copy.getBarcode()
+                            + " vừa được sử dụng, vui lòng thử lại.");
                 }
                 throw new DatabaseException("Không thể thêm bản sao do lỗi đồng bộ tồn kho.", e);
             } finally {
@@ -109,6 +117,9 @@ public class BookCopyService {
         if (copy.getBarcode().length() > 50) {
             throw new ValidationException("Mã vạch không được vượt quá 50 ký tự.");
         }
+        if (!BARCODE_PATTERN.matcher(copy.getBarcode()).matches()) {
+            throw new ValidationException("Mã vạch chỉ được chứa chữ, số và các ký tự - _ . /.");
+        }
         validateLocation(copy.getLocation());
     }
 
@@ -126,6 +137,17 @@ public class BookCopyService {
         if (location.length() > 255) {
             throw new ValidationException("Vị trí lưu trữ không được vượt quá 255 ký tự.");
         }
+    }
+
+    boolean isUniqueConstraintViolation(SQLException e) {
+        SQLException current = e;
+        while (current != null) {
+            if (UNIQUE_VIOLATION_SQL_STATE.equals(current.getSQLState())) {
+                return true;
+            }
+            current = current.getNextException();
+        }
+        return false;
     }
 
     private String toAuditValue(BookCopy copy) {
