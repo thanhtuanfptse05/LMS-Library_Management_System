@@ -6,7 +6,7 @@ Thủ thư cần một phân hệ tập trung để xử lý nhanh các giao d�
 
 ## 2. DOMAIN KNOWLEDGE
 - **Check-out (Giao sách):** Có 2 kịch bản: (1) Độc giả đã đặt trước (Reservation queue 0), (2) Độc giả mượn trực tiếp (tự động tạo Reservation queue 0 tại chỗ để chuẩn hóa luồng cấp phát).
-- **Check-in (Nhận sách):** Nếu tình trạng tốt ('good'), đẩy người xếp hàng tiếp theo (queue 1) lên nhận sách. Nếu hỏng/mất ('damaged'/'lost'), loại khỏi tổng tài sản thư viện (`totalQuantity - 1`) và tính phạt đền bù.
+- **Check-in (Nhận sách):** Nếu tình trạng tốt (`good`), đẩy người xếp hàng tiếp theo (queue 1) lên nhận sách. Nếu hỏng/mất (`damaged`/`lost`), ngừng lưu thông bản sao, tạo incident `pending` theo F13 và tính phạt/khóa theo chính sách lưu thông; vòng đời kết luận, bác bỏ hoặc khôi phục thuộc F13.
 - **Locking Mechanism:** Một tài khoản có thể bị khóa bởi nhiều lý do lưu trong bảng `UserLockReason`. Xóa nợ phạt chỉ gỡ lý do 'unpaid', KHÔNG tự động mở khóa nếu đang tồn tại lý do khác (như vi phạm an ninh).
 
 ## 3. STAKEHOLDERS

@@ -1,5 +1,13 @@
 # CHANGELOG.md — Quản lý Sách và Kho vật lý
 
+## [1.2.0] - 2026-07-21
+### Changed
+- Làm rõ Barcode trong file import phải dùng cùng rule validate với Barcode nhập tay.
+- Cập nhật F4 theo quyết định bỏ tự sinh Barcode; Barcode nhập bản sao vẫn là thủ công nhưng phải validate ký tự và bắt lỗi unique constraint thân thiện.
+- Bổ sung UC/FR cho xem lịch sử lưu thông bản sao và export CSV danh sách đầu sách/bản sao.
+- Ghi rõ export CSV phải dùng UTF-8 BOM, escape CSV và trung hòa CSV formula injection.
+- Làm rõ route canonical là `/librarian/book-management/*`; các route legacy `/book-management/*` chỉ phục vụ tương thích/redirect, không dùng trong UI.
+
 ## [1.1.0] - 2026-07-09
 ### Fixed
 - Xóa hai khối Use Case bị lặp, giữ đúng một danh sách UC-12, UC-13, UC-14, UC-15, UC-27, UC-52.

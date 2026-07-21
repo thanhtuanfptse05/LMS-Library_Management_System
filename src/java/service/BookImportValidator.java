@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 import model.Book;
 import model.BookImportError;
 import dto.BookImportPreviewDTO;
@@ -16,6 +17,8 @@ import util.DatabaseConnection;
 import util.IsbnValidator;
 
 public class BookImportValidator {
+
+    private static final Pattern BARCODE_PATTERN = Pattern.compile("^[A-Za-z0-9._/-]+$");
 
     private final BookDAO bookDAO;
     private final BookCopyDAO bookCopyDAO;
@@ -94,6 +97,10 @@ public class BookImportValidator {
         if (row.getBarcode() != null && row.getBarcode().length() > 50) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "barcode",
                     "Mã vạch không được vượt quá 50 ký tự."));
+        } else if (row.getBarcode() != null && !row.getBarcode().isBlank()
+                && !BARCODE_PATTERN.matcher(row.getBarcode()).matches()) {
+            preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "barcode",
+                    "Mã vạch chỉ được chứa chữ, số và các ký tự - _ . /."));
         } else if (row.getBarcode() != null && !row.getBarcode().isBlank()
                 && bookCopyDAO.findByBarcode(conn, row.getBarcode()) != null) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "barcode",

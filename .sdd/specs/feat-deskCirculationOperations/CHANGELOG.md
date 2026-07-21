@@ -1,5 +1,11 @@
 # CHANGELOG.md — Quản lý Luân chuyển tại quầy
 
+## [1.1.0] - 2026-07-21
+### Changed
+- Đồng bộ luồng check-in hỏng/mất với F13 `feat-bookMaintenance`: F6 chỉ ngừng lưu thông và tạo incident `pending`; vòng đời resolve/reject/restore thuộc F13.
+- Loại bỏ mô tả incident status cũ `open` và tránh mâu thuẫn với schema PostgreSQL hiện hành.
+- Làm rõ bản sao hỏng/mất không luân chuyển hàng chờ và không cộng lại `availableQuantity`.
+
 ## [1.0.0] - 2026-06-06
 ### Added
 - Khởi tạo bộ hồ sơ SDD (CONTEXT, SPEC, PLAN, TASKS) cho Feature F6 (Desk Circulation Operations).

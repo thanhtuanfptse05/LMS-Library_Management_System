@@ -1,5 +1,5 @@
 # Feature Specification: Quản lý sách và danh mục (Book Management)
-# Version: 1.1 | Chủ sở hữu: Chuong | Ngày cập nhật: 2026-07-09
+# Version: 1.2 | Chủ sở hữu: Chuong | Ngày cập nhật: 2026-07-21
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
 Cung cấp công cụ cho Thủ thư quản lý đầu sách, bản sao vật lý, thể loại, tag và import sách hàng loạt; bảo đảm ISBN/Barcode duy nhất, số lượng tồn kho đồng bộ, thao tác có Audit Log và giao diện hoàn toàn bằng tiếng Việt.
@@ -16,6 +16,8 @@ Cung cấp công cụ cho Thủ thư quản lý đầu sách, bản sao vật l�
 * **UC-15 (Manage Tags & Categories):** Actor: Librarian | Tạo và cập nhật trạng thái thể loại/tag mà không hard-delete.
 * **UC-27 (Import Bulk Books):** Actor: Librarian | Tải file `.xlsx`, xem preview và xác nhận import Book/BookCopy theo all-or-nothing.
 * **UC-52 (View Book Import History):** Actor: Librarian | Tìm kiếm, lọc và xem lỗi chi tiết của từng phiên import.
+* **UC-53 (View Copy Circulation History):** Actor: Librarian | Xem lịch sử lưu thông read-only của một bản sao vật lý theo Barcode/bookCopyId.
+* **UC-54 (Export Book Management Lists):** Actor: Librarian | Xuất danh sách đầu sách hoặc bản sao vật lý theo bộ lọc hiện tại ra CSV.
 
 ## 3. Business Rules (Quy tắc nghiệp vụ)
 * **BR-16 (Uniqueness of Identifiers):** ISBN của `Book` và Barcode của `BookCopy` BẮT BUỘC duy nhất toàn hệ thống. ISBN được chuẩn hóa trước khi so sánh/lưu.
@@ -28,25 +30,29 @@ Cung cấp công cụ cho Thủ thư quản lý đầu sách, bản sao vật l�
   * *Mapping:* UC-13 / BR-16, BR-17
 * **FR-23 (Validation trùng lặp ISBN):** WHEN tạo Book, THE system SHALL từ chối ISBN đã tồn tại và hiển thị lỗi tiếng Việt. WHEN cập nhật Book, THE system SHALL lấy ISBN hiện tại từ Database và không chấp nhận ISBN từ request làm giá trị cập nhật.
   * *Mapping:* UC-13 / BR-16, BR-18
-* **FR-24 (Nhập Kho Bản sao với đồng bộ số lượng):** WHEN `BookCopyServlet.doPost(action=create)` nhận `bookId`, `barcode`, `location`, THE system SHALL: (1) kiểm tra Book tồn tại, Barcode không trùng và location hợp lệ, (2) mở transaction, (3) INSERT BookCopy với `condition='good'`, `status='available'`, (4) tăng `Book.totalQuantity` và `Book.availableQuantity` mỗi giá trị 1, (5) INSERT `AuditLogs(CREATE_BOOK_COPY)`, (6) commit; WHERE lỗi thì rollback.
+* **FR-24 (Nhập Kho Bản sao với đồng bộ số lượng):** WHEN `BookCopyServlet.doPost(action=create)` nhận `bookId`, `barcode`, `location`, THE system SHALL: (1) kiểm tra Book tồn tại, Barcode không rỗng, tối đa 50 ký tự và chỉ gồm chữ, số hoặc ký tự `- _ . /`, Barcode không trùng và location hợp lệ, (2) mở transaction, (3) INSERT BookCopy với `condition='good'`, `status='available'`, (4) tăng `Book.totalQuantity` và `Book.availableQuantity` mỗi giá trị 1, (5) INSERT `AuditLogs(CREATE_BOOK_COPY)`, (6) commit; WHERE lỗi thì rollback.
   * *Mapping:* UC-14 / BR-16, BR-17
 * **FR-25 (DEPRECATED - Logic merged into FR-24):** Logic đồng bộ số lượng khi thêm bản sao đã được tích hợp vào FR-24; không triển khai luồng độc lập.
   * *Mapping:* UC-14 / BR-17
-* **FR-26 (Validation trùng lặp Barcode):** WHEN tạo BookCopy, THE system SHALL từ chối Barcode đã tồn tại và thông báo đầu sách sở hữu Barcode đó. WHEN cập nhật BookCopy, Barcode hiện tại phải được lấy từ Database và không được nhận từ request.
+* **FR-26 (Validation trùng lặp Barcode):** WHEN tạo BookCopy, THE system SHALL từ chối Barcode đã tồn tại và thông báo đầu sách sở hữu Barcode đó. WHERE hai request đồng thời vượt qua bước kiểm tra trước khi INSERT nhưng DB trả unique constraint cho Barcode, THE system SHALL rollback và hiển thị lỗi tiếng Việt thân thiện thay vì lỗi hệ thống chung. WHEN cập nhật BookCopy, Barcode hiện tại phải được lấy từ Database và không được nhận từ request.
   * *Mapping:* UC-14 / BR-16, BR-18
 * **FR-27 (Chặn sửa đổi Định danh bất biến):** WHEN cập nhật Book hoặc BookCopy, THE system SHALL chỉ cập nhật trường cho phép: metadata/trạng thái/ảnh/phân loại của Book và location của BookCopy đang `available`; ISBN, Barcode, bookId, condition, status và số lượng của BookCopy phải giữ theo bản ghi hiện tại. WHERE BookCopy đang `borrowed`, `reserved` hoặc `unavailable`, THE system SHALL từ chối cập nhật location.
   * *Mapping:* UC-13, UC-14 / BR-18
 * **FR-28 (Điều phối thay đổi condition):** WHEN Thủ thư cần ghi nhận BookCopy hỏng/mất, F4 SHALL không cập nhật condition trực tiếp tại `BookCopyServlet`; hệ thống SHALL điều hướng sang quy trình sự cố của F13 `feat-bookMaintenance`, nơi việc ngừng lưu thông, đồng bộ `availableQuantity` và Audit Log được xử lý nguyên tử.
   * *Mapping:* UC-14 / BR-17
-* **FR-46 (Kiểm định tệp Excel Sách với 2 Phase):** WHEN `BookImportServlet.doPost(action=upload)` nhận file, THE system SHALL: (1) chỉ nhận `.xlsx`, tối đa 10 MB, tên tối đa 255 ký tự, (2) yêu cầu sheet `Books` có cột `isbn,title,author,publisher,publicationYear,price,categories,tags` và sheet `BookCopies` có `isbn,barcode,location`, (3) bỏ dòng trống, giới hạn 5.000 BookCopy, (4) kiểm tra trường bắt buộc, kiểu dữ liệu, ISBN, tham chiếu ISBN, độ dài, duplicate nội bộ và duplicate Barcode trong DB, (5) lưu preview trong session nếu toàn bộ hợp lệ; WHERE có lỗi thì lưu `BookImportBatch(status='failed')` và `BookImportError` theo sheet/dòng/cột, không tạo dữ liệu sách.
+* **FR-46 (Kiểm định tệp Excel Sách với 2 Phase):** WHEN `BookImportServlet.doPost(action=upload)` nhận file, THE system SHALL: (1) chỉ nhận `.xlsx`, tối đa 10 MB, tên tối đa 255 ký tự, (2) yêu cầu sheet `Books` có cột `isbn,title,author,publisher,publicationYear,price,categories,tags` và sheet `BookCopies` có `isbn,barcode,location`, (3) bỏ dòng trống, giới hạn 5.000 BookCopy, (4) kiểm tra trường bắt buộc, kiểu dữ liệu, ISBN, tham chiếu ISBN, độ dài, Barcode dùng cùng rule validate với nhập tay (chỉ chữ, số hoặc ký tự `- _ . /`), duplicate nội bộ và duplicate Barcode trong DB, (5) lưu preview trong session nếu toàn bộ hợp lệ; WHERE có lỗi thì lưu `BookImportBatch(status='failed')` và `BookImportError` theo sheet/dòng/cột, không tạo dữ liệu sách.
   * *Mapping:* UC-27 / BR-16, BR-27
 * **FR-47 (Lưu trữ hàng loạt Sách với đồng bộ số lượng):** WHEN `BookImportServlet.doPost(action=confirm)` nhận preview hợp lệ, THE system SHALL: (1) validate lại preview, (2) mở một transaction, (3) dùng Book hiện hữu theo ISBN hoặc tạo Book mới mà không ghi đè metadata hiện hữu, (4) tự tạo Category/Tag chưa tồn tại và liên kết với Book mới, (5) INSERT mọi BookCopy với Barcode bắt buộc từ file, `good/available`, (6) tăng số lượng Book theo số BookCopy được tạo, (7) INSERT batch `success` và Audit Log tổng hợp, (8) commit; WHERE bất kỳ bước nào lỗi thì rollback toàn bộ dữ liệu nghiệp vụ và lưu batch `failed` bằng transaction riêng.
   * *Mapping:* UC-27 / BR-16, BR-17, BR-27
 * **FR-81 (Xem lịch sử nhập sách hàng loạt):** WHEN `BookImportHistoryServlet.doGet()` được gọi, THE system SHALL tìm theo từ khóa, lọc `success/failed`, phân trang 20 bản ghi; WHERE có `batchId`, hệ thống SHALL hiển thị lỗi chi tiết từ `BookImportError` và forward tới `book-import-history.jsp`.
   * *Mapping:* UC-52 / BR-27
+* **FR-82 (Xem lịch sử lưu thông Bản sao):** WHEN `BookCirculationHistoryServlet.doGet(bookCopyId)` được gọi, THE system SHALL: (1) validate `bookCopyId`, (2) kiểm tra BookCopy tồn tại, (3) truy vấn lịch sử BorrowRecord liên quan theo thứ tự mới nhất, (4) phân trang 15 bản ghi, (5) hiển thị read-only thông tin người mượn, ngày mượn/trả và trạng thái lưu thông; WHERE `bookCopyId` sai hoặc không tồn tại, THE system SHALL redirect về danh sách bản sao với lỗi tiếng Việt.
+  * *Mapping:* UC-53 / BR-18
+* **FR-83 (Xuất CSV Danh sách Đầu sách/Bản sao):** WHEN `BookExportServlet` hoặc `BookCopyExportServlet` được gọi, THE system SHALL xuất tối đa 10.000 dòng theo bộ lọc hiện tại, dùng UTF-8 BOM, escape đúng CSV và trung hòa CSV formula injection cho giá trị bắt đầu bằng `=`, `+`, `-`, `@`, tab hoặc xuống dòng; WHERE lỗi DB, THE system SHALL log server và hiển thị lỗi thân thiện.
+  * *Mapping:* UC-54 / BR-16
 
 ## 5. Non-functional Requirements (Yêu cầu phi chức năng)
-* **Bảo mật:** `AuthFilter` bảo vệ toàn bộ `/librarian/book-management/*`; chỉ `LIBRARIAN` được truy cập, mọi SQL đầu vào dùng `PreparedStatement`.
+* **Bảo mật:** `AuthFilter` bảo vệ toàn bộ `/librarian/book-management/*`; chỉ `LIBRARIAN` được truy cập, mọi SQL đầu vào dùng `PreparedStatement`. Route canonical của F4 là `/librarian/book-management/*`; route legacy `/book-management/*` nếu còn tồn tại chỉ dùng cho tương thích/redirect và không xuất hiện trong UI.
 * **Toàn vẹn:** Mọi C/U quan trọng và Audit Log dùng cùng transaction/Connection; lỗi phải rollback.
 * **Hiệu năng:** Danh sách có filter đạt P95 dưới 500 ms; validate file gần 5.000 BookCopy trong tối đa 30 giây ở môi trường Milestone 2.
 * **Giao diện:** JSP dùng JSTL/EL, không scriptlet; toàn bộ nhãn và thông báo bằng tiếng Việt.
@@ -79,6 +85,7 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 
 ## 7. Error Handling (Xử lý lỗi ngoại lệ)
 * WHERE ISBN/Barcode trùng, entity không tồn tại, action/ID sai hoặc BookCopy không ở trạng thái cho phép, THE system SHALL từ chối lưu và hiển thị lỗi tiếng Việt.
+* WHERE Barcode từ form nhập tay hoặc file import chứa ký tự ngoài chữ, số hoặc `- _ . /`, THE system SHALL từ chối lưu và hiển thị lỗi tiếng Việt.
 * WHERE import có lỗi, THE system SHALL hiển thị lỗi theo sheet/dòng/cột và không commit Book/BookCopy.
 * WHERE lỗi Database/File bất ngờ, THE system SHALL rollback, log chi tiết ở server và chỉ hiển thị thông báo thân thiện; không lộ stack trace.
 
@@ -86,11 +93,14 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 - [ ] Tạo đầu sách với ISBN hợp lệ lưu đúng Book, Category/Tag và Audit Log; ISBN trùng bị từ chối.
 - [ ] Cập nhật đầu sách không thay đổi ISBN, `totalQuantity` hoặc `availableQuantity`.
 - [ ] Thêm một BookCopy hợp lệ làm cả hai số lượng tăng đúng 1; Barcode trùng không làm thay đổi dữ liệu.
+- [ ] Barcode nhập tay và Barcode import có ký tự không được phép bị từ chối; lỗi trùng Barcode do unique constraint đồng thời hiển thị thông báo thân thiện.
 - [ ] Chỉ BookCopy `available` được cập nhật location; condition hỏng/mất đi qua F13.
 - [ ] Category/Tag được tạo/cập nhật bằng soft state; không hard-delete.
 - [ ] File import lỗi tạo 0 Book/BookCopy và lưu được lỗi theo sheet/dòng/cột.
 - [ ] File import hợp lệ tạo đủ dữ liệu hoặc rollback toàn bộ nếu một bước ghi thất bại.
 - [ ] Lịch sử import tìm kiếm/lọc/phân trang và xem được chi tiết batch.
+- [ ] Lịch sử lưu thông của một bản sao hiển thị read-only và phân trang đúng.
+- [ ] Export CSV đầu sách/bản sao theo bộ lọc hiện tại, có UTF-8 BOM và chống CSV formula injection.
 - [ ] Vai trò ngoài `LIBRARIAN` nhận HTTP 403; UI F4 không có nhãn/thông báo tiếng Anh.
 
 ## 9. Out of Scope (Phạm vi không thực hiện)

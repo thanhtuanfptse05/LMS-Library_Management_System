@@ -1,5 +1,5 @@
 # PLAN.md — Kế hoạch Thực thi Quản lý Sách
-# Trạng thái: APPROVED | Cập nhật: 2026-07-09
+# Trạng thái: APPROVED | Cập nhật: 2026-07-21
 
 ## 1. ARCHITECTURAL APPROACH
 Áp dụng Servlet MVC + DAO/Service Pattern theo stack hiện hữu. Controller xử lý request/response; Service chịu validation nghiệp vụ, transaction và Audit Log; DAO chỉ truy cập PostgreSQL bằng `PreparedStatement`; JSP dùng JSTL/EL.
@@ -12,6 +12,8 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 | BookOverviewController | Hiển thị số liệu tổng quan và liên kết điều hướng F4. | `BookOverviewServlet.java` |
 | BookController | Tìm/lọc/sắp xếp/phân trang, tạo và cập nhật Book; quản lý ảnh bìa và liên kết phân loại. | `BookServlet.java` |
 | BookCopyController | Tìm/lọc/phân trang, nhập BookCopy và cập nhật location của bản sao khả dụng. | `BookCopyServlet.java` |
+| BookCirculationHistoryController | Xem lịch sử lưu thông read-only của một bản sao vật lý. | `BookCirculationHistoryServlet.java` |
+| ExportControllers | Xuất CSV danh sách đầu sách và bản sao theo bộ lọc hiện tại. | `BookExportServlet.java`, `BookCopyExportServlet.java` |
 | CategoryController / TagController | Quản lý thể loại và tag. | `CategoryServlet.java`, `TagServlet.java` |
 | BookImportController | Tải mẫu, upload, validate, preview, confirm và clear import `.xlsx`. | `BookImportServlet.java` |
 | BookImportHistoryController | Tìm kiếm, lọc, phân trang và xem lỗi từng batch. | `BookImportHistoryServlet.java` |
@@ -25,8 +27,10 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 ## 3. DATA FLOW
 - **Xem danh mục/tồn kho:** Librarian -> `AuthFilter` -> `BookOverviewServlet`/`BookServlet`/`BookCopyServlet` -> DAO search/count/summary -> JSP tiếng Việt.
 - **Tạo/cập nhật Book:** `BookServlet` validate request và ảnh -> `BookService` mở transaction -> `BookDAO` insert/update + replace Category/Tag -> `AuditLogDAO` -> commit -> flash message.
-- **Nhập BookCopy:** `BookCopyServlet` -> `BookCopyService` -> khóa/kiểm tra Book và Barcode -> insert BookCopy `good/available` -> tăng số lượng -> Audit Log -> commit.
+- **Nhập BookCopy:** `BookCopyServlet` -> `BookCopyService` -> validate Barcode thủ công (`A-Z`, `a-z`, `0-9`, `- _ . /`, tối đa 50 ký tự) -> kiểm tra Book và Barcode -> insert BookCopy `good/available` -> tăng số lượng -> Audit Log -> commit; unique constraint race trả lỗi nghiệp vụ thân thiện.
 - **Cập nhật BookCopy:** Chỉ nhận `bookCopyId` và `location`; Service tải bản ghi hiện tại, giữ nguyên Barcode/bookId/condition/status và chỉ cập nhật nếu status `available`.
+- **Lịch sử lưu thông:** `BookCirculationHistoryServlet` -> `BookCopyDAO.findById` -> `BookCirculationHistoryDAO.count/findByBookCopyId` -> JSP read-only, phân trang 15 dòng.
+- **Export CSV:** `BookExportServlet`/`BookCopyExportServlet` -> DAO export theo filter -> `CsvExportUtil` ghi UTF-8 BOM, escape CSV và trung hòa formula injection.
 - **Quản lý Category/Tag:** Controller -> Service transaction -> DAO create/update -> Audit Log.
 - **Import:** Upload -> WorkbookReader -> Validator -> preview session. Nếu lỗi: lưu batch `failed` + errors, không tạo Book/BookCopy. Nếu hợp lệ và được confirm: validate lại -> một transaction tạo dữ liệu + số lượng + batch `success` + Audit -> commit; lỗi ghi làm rollback toàn bộ.
 - **Lịch sử import:** `BookImportHistoryServlet` -> `BookImportDAO.search/count/findErrors` -> JSP.
@@ -40,6 +44,7 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 - Dòng trống được bỏ qua; `categories`/`tags` tách bằng `;`, trim và loại trùng nội bộ.
 - Tối đa 5.000 dòng BookCopy.
 - Mỗi BookCopy phải có Barcode trong file; không tự sinh Barcode.
+- Barcode từ form nhập bản sao và file import dùng cùng rule: chỉ cho chữ, số và `- _ . /`; không cho khoảng trắng/ký tự đặc biệt khó in hoặc khó quét.
 - ISBN đã tồn tại chỉ nhận thêm BookCopy, không cập nhật metadata Book hiện hữu.
 - Duplicate ISBN trong sheet Books, duplicate Barcode trong file hoặc Database làm fail toàn bộ file.
 
@@ -62,7 +67,9 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 - **Risk:** Lệch số lượng nếu insert BookCopy thành công nhưng update Book thất bại.
   **Mitigation:** Một transaction và cùng Connection cho BookCopy, Book và Audit Log.
 - **Risk:** Hai request đồng thời tạo ISBN/Barcode/Category trùng.
-  **Mitigation:** Validate ở Service kết hợp unique constraint tại DB; rollback và trả lỗi thân thiện.
+  **Mitigation:** Validate ở Service kết hợp unique constraint tại DB; rollback và trả lỗi thân thiện, riêng Barcode bắt SQLState `23505`.
+- **Risk:** Export CSV bị CSV formula injection khi dữ liệu bắt đầu bằng ký tự công thức.
+  **Mitigation:** Mọi giá trị export đi qua `CsvExportUtil.escape` để thêm prefix an toàn và escape CSV chuẩn.
 - **Risk:** Mô tả import partial success trái BR-27.
   **Mitigation:** Chỉ có hai batch status `success/failed`; không skip row khi confirm.
 - **Risk:** BookCopy update vô tình sửa condition hoặc Barcode.

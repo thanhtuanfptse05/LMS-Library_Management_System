@@ -59,7 +59,7 @@ public class BookImportServiceTest {
         
         BookImportRowDTO row = new BookImportRowDTO();
         row.setRowNumber(1);
-        row.setIsbn("1234567890");
+        row.setIsbn("9780134093413");
         row.setTitle("Valid Book");
         row.setBarcode("BC123");
         preview.getBooks().add(row);
@@ -94,13 +94,41 @@ public class BookImportServiceTest {
     }
 
     @Test
+    public void testValidate_Fail_UnsafeBarcodeCharacters() throws Exception {
+        BookImportPreviewDTO preview = new BookImportPreviewDTO();
+        preview.setFileName("test.xlsx");
+
+        BookImportRowDTO bookRow = new BookImportRowDTO();
+        bookRow.setRowNumber(1);
+        bookRow.setIsbn("9780134093413");
+        bookRow.setTitle("Valid Book");
+        preview.getBooks().add(bookRow);
+
+        BookImportRowDTO copyRow = new BookImportRowDTO();
+        copyRow.setRowNumber(2);
+        copyRow.setIsbn("9780134093413");
+        copyRow.setBarcode("BC 978@013#409");
+        copyRow.setLocation("Kho A");
+        preview.getBookCopies().add(copyRow);
+
+        importService.validate(preview, 99);
+
+        assertFalse("Phải validation fail khi barcode import có ký tự không hợp lệ", preview.isValid());
+        assertTrue(preview.getErrors().stream().anyMatch(error ->
+                "barcode".equals(error.getColumnName())
+                        && error.getErrorMessage().contains("Mã vạch chỉ được chứa chữ, số")));
+        assertTrue("Phải lưu lịch sử import lỗi", mockImportDAO.insertBatchCalled);
+        assertEquals("failed", mockImportDAO.batchInserted.getStatus());
+    }
+
+    @Test
     public void testConfirm_Success() throws Exception {
         BookImportPreviewDTO preview = new BookImportPreviewDTO();
         preview.setFileName("test.xlsx");
         
         BookImportRowDTO row = new BookImportRowDTO();
         row.setRowNumber(1);
-        row.setIsbn("1234567890123");
+        row.setIsbn("9780134093413");
         row.setTitle("Valid Book");
         row.setBarcode("BC123");
         row.getCategories().add("IT");
@@ -125,7 +153,7 @@ public class BookImportServiceTest {
         
         BookImportRowDTO row = new BookImportRowDTO();
         row.setRowNumber(1);
-        row.setIsbn("1234567890123");
+        row.setIsbn("9780134093413");
         row.setTitle("Valid Book");
         row.setBarcode("BC123");
         preview.getBooks().add(row);
