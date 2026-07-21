@@ -1,47 +1,50 @@
-# PLAN.md — Kế hoạch Thực thi Nhật ký Kiểm toán
-# Trạng thái: APPROVED
+# Implementation Plan: Audit Log (Nhật ký hoạt động và Dashboard Admin)
 
-## 1. ARCHITECTURAL APPROACH
-Áp dụng mô hình Servlet MVC + DAO Pattern. F12 là tính năng **chỉ đọc** (read-only) — toàn bộ logic nằm trong 1 Servlet duy nhất gọi trực tiếp DAO, không cần tầng Service riêng vì không có logic nghiệp vụ phức tạp (không có transaction ghi).
+**Branch**: `main` | **Date**: 2026-07-21 | **Spec**: [SPEC.md](file:///d:/LMS-Library_Management_System/.sdd/specs/feat-auditLog/SPEC.md)
 
-Modal chi tiết sử dụng JavaScript client-side để parse JSON từ data attributes và render cards so sánh, không gọi thêm AJAX request.
+## Summary (Tóm tắt)
+Triển khai giao diện quản lý Nhật ký Kiểm toán (Audit Log) và Bảng điều khiển dành riêng cho Quản trị viên (Admin Dashboard). Hệ thống hỗ trợ truy vấn danh sách log thay đổi dữ liệu có phân trang, lọc nâng cao theo 7 tiêu chí, xem so sánh trực quan giá trị cũ/mới dạng card 1-1 trên giao diện Modal (phía client), và kết xuất tệp Excel (.xlsx) báo cáo nhật ký bằng thư viện Apache POI. Dashboard Admin tổng hợp nhanh sức khỏe hệ thống và hiển thị các thông số cấu hình quan trọng từ Cache RAM.
 
-## 2. COMPONENTS
-| Component | Trách nhiệm | Interface/Class |
-| --- | --- | --- |
-| AuditLogModel | Entity thuần map 1:1 bảng AuditLogs (7 trường) | `AuditLog.java` |
-| AuditLogDTO | Mở rộng AuditLog thêm userEmail từ JOIN | `AuditLogDTO.java` |
-| AuditLogDAO | Truy vấn: list + filter + count + detail + distinct values | `AuditLogDAO.java` (bổ sung methods) |
-| AuditLogController | Router GET: nhánh list/filter hoặc nhánh export CSV | `AuditLogServlet.java` |
-| AuditLogView | Trang danh sách + filter + phân trang + modal + JS | `audit-log-list.jsp` |
+## Technical Context (Bối cảnh kỹ thuật)
+* **Backend:** Java 17, Java Servlet (Servlet 4.0/5.0)
+* **Database:** PostgreSQL (JDBC + DAO Pattern)
+* **Libraries:** Apache POI 5.2.5 (Excel Export)
+* **Auth & Authorization:** Session-based authentication và `@WebFilter` bảo vệ nghiêm ngặt đường dẫn `/admin/*` (chỉ role `ADMIN` được phép truy cập)
 
-## 3. DATA FLOW
-- **Luồng Xem danh sách:** SysAdmin → `GET /admin/audit-log` → `AuthFilter` (check ADMIN) → `AuditLogServlet.doGet()` → parse filter params → `AuditLogDAO.countWithFilters()` + `AuditLogDAO.findWithFilters()` → set attributes → forward `audit-log-list.jsp`.
-- **Luồng Xem chi tiết:** Click [🔍] trên `<tr>` → JavaScript đọc `data-old`, `data-new` → `JSON.parse()` → render cards trong modal (client-side, không gọi server).
-- **Luồng Xuất CSV:** SysAdmin → `GET /admin/audit-log?action=export&...filters` → `AuditLogServlet.doGet()` → `AuditLogDAO.findWithFilters(max=10000)` → set response headers CSV → ghi BOM + header + data rows → flush.
+## Project Structure (Cấu trúc dự án thực tế)
+### Source Code
+```text
+src/java/
+├── controllers/
+│   ├── AuditLogServlet.java        # Controller quản lý danh sách lọc, xem chi tiết, và xuất Excel nhật ký (UC-40, UC-41)
+│   └── AdminDashboardServlet.java   # Controller cho Dashboard của Admin (UC-46, FR-73, FR-74)
+├── dao/
+│   ├── AuditLogDAO.java            # Thực thi SELECT đọc nhật ký kiểm toán với bộ lọc động
+│   ├── UserDAO.java                # JOIN lấy thông tin email của tài khoản thực hiện
+│   └── BookCopyDAO.java            # Đếm tổng số lượng bản sao vật lý cho Dashboard Admin
+├── model/
+│   └── AuditLog.java               # Model đại diện cho bảng AuditLogs
+├── dto/
+│   └── AuditLogDTO.java            # DTO kết hợp dữ liệu AuditLog cùng email người thực hiện
+web/admin/                          # Giao diện dành riêng cho Admin
+├── dashboard.jsp                   # Trang Dashboard tổng hợp KPI toàn thư viện
+├── audit-log-list.jsp              # Trang xem danh sách lọc, phân trang và chứa modal so sánh JSON
+└── fragments/                      # Các fragment JSP dùng chung (head, sidebar, header)
+```
 
-## 4. DATABASE IMPACT
-- Bảng `AuditLogs`: SELECT only (list, count, detail, distinct).
-- Bảng `"User"`: SELECT only (LEFT JOIN lấy email).
-- KHÔNG thay đổi schema (không thêm cột, bảng, index).
-- KHÔNG Insert/Update/Delete bất kỳ bảng nào.
+## Technical Decisions & Implementation Details (Chi tiết kỹ thuật & Quyết định thiết kế)
 
-## 5. ACCESS CONTROL
-- `ADMIN`: được truy cập route `/admin/audit-log` để xem, lọc, xuất CSV.
-- Các vai trò khác: bị từ chối bởi `AuthFilter` (đã bảo vệ `/admin/*` sẵn).
+### 1. Chỉ đọc và Bảo mật dữ liệu (BR-32)
+* Tính năng Audit Log là **Read-Only** thông qua giao diện. `AuditLogDAO` chỉ thực thi các truy vấn `SELECT` dữ liệu, tuyệt đối không chứa bất kỳ logic `INSERT`, `UPDATE` hay `DELETE` nào để ngăn chặn hành vi xóa dấu vết pháhoại.
 
-## 6. CHUẨN HÓA JSON (Tác động lên các tính năng khác)
-Để modal card-based hiển thị nhất quán, cần chuẩn hóa 2 file ngoài F12:
-- `DeskCirculationService.java` (F6): 6 chỗ ghi audit log (CHECK_OUT, CHECK_IN_*, CASH_PAYMENT) từ plain text → JSON.
-- `ForgotPasswordServlet.java` (F1): CHANGE_PASSWORD từ `old=null, new="text"` → `old="{}", new="{}"`.
+### 2. So sánh Trực quan 1-1 phía Client (FR-57, FR-58)
+* Để giảm tải xử lý cho server, các trường `oldValues` và `newValues` dạng JSON string được nạp vào HTML data attributes trên thẻ `<tr>` của bảng hiển thị.
+* Khi Admin click "Xem chi tiết", mã JavaScript phía client sẽ thực hiện `JSON.parse()`, lặp qua các cặp key-value thay đổi và render động lên Modal thành dạng so sánh 2 cột đối xứng: Cột trái (Cũ - nền đỏ/hồng nhạt), Cột phải (Mới - nền xanh lá nhạt).
+* Đối với hành động đổi mật khẩu (`actionType = CHANGE_PASSWORD`), hệ thống ẩn toàn bộ giá trị thô và hiển thị nhãn: "Mật khẩu đã thay đổi (bảo mật)".
 
-## 7. RISKS & MITIGATIONS
-- **Risk:** Bảng AuditLogs quá lớn (>100K rows) gây chậm truy vấn.
-  **Mitigation:** Phân trang bắt buộc (20/trang), giới hạn export 10,000. Cân nhắc index trên timestamp nếu cần.
-- **Risk:** oldValues/newValues cũ vẫn còn plain text (trước khi chuẩn hóa).
-  **Mitigation:** Modal JS có fallback hiển thị raw text trong card đơn khi parse JSON thất bại.
-- **Risk:** CSV export file quá lớn.
-  **Mitigation:** Giới hạn cứng 10,000 bản ghi, stream trực tiếp vào OutputStream.
+### 3. Phân trang và Giới hạn hiệu năng (BR-34, FR-59)
+* Để bảo vệ bộ nhớ RAM và hiệu năng cơ sở dữ liệu khi bảng `AuditLogs` phình to trong production, hệ thống bắt buộc phân trang ở tầng database sử dụng `LIMIT 20 OFFSET (page-1)*20` trên PostgreSQL.
+* Khi kết xuất Excel, hệ thống giới hạn cứng tối đa 10.000 dòng ghi gần nhất tương ứng với bộ lọc để tránh tràn bộ nhớ máy chủ (Out Of Memory).
 
-## 8. QUESTIONS FOR HUMAN
-- N/A (Đã giải quyết toàn bộ)
+### 4. Badge Màu sắc nhóm Hành động (FR-60)
+* Cột loại hành động (`actionType`) được phủ màu badge CSS tương ứng để Admin dễ dàng phân biệt bằng mắt thường (Ví dụ: nhóm Tạo mới = Green, nhóm Cập nhật = Yellow, nhóm Xóa/Hủy = Red, nhóm Giao dịch mượn trả = Blue, nhóm Bảo mật = Purple).

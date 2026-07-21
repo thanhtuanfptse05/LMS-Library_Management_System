@@ -1,107 +1,59 @@
 # TASK.md — Danh sách Task Thực thi: feat-systemConfiguration
-# Version: 0.1 | Trạng thái: PENDING | Ngày tạo: 2026-06-20
+# Version: 1.1 | Trạng thái: COMPLETED | Ngày cập nhật: 2026-07-21
 
 ## Ghi chú thực thi
-- Thực hiện tuần tự theo thứ tự dependency (từ trên xuống dưới).
-- Mỗi task phải pass Acceptance Criteria tương ứng trước khi chuyển sang task tiếp theo.
 - Ký hiệu: `[ ]` chưa làm | `[/]` đang làm | `[x]` hoàn thành | `[!]` bị block
 
 ---
 
-## PHASE 0 — Chuẩn bị & Kiểm tra
-
-- [ ] **TASK-SC-00:** Đọc `AppConfig.java` hiện có để xác định các method đã có (`getString`, `getInt`, v.v.) và cơ chế load hiện tại — tránh trùng lặp.
-- [ ] **TASK-SC-01:** Đọc `AppContextListener.java` hiện có để xác định điểm hook `contextInitialized`.
-- [ ] **TASK-SC-02:** Kiểm tra `AuthFilter.java` để xác nhận pattern `/manager/*` đã được bảo vệ.
-
----
-
-## PHASE 1 — Data Layer
-
-- [ ] **TASK-SC-10:** Tạo `src/java/model/SystemConfiguration.java`
-  - Fields: `configKey`, `configValue`, `description`, `configGroup`, `updatedBy` (Integer nullable), `updaterName` (String, từ JOIN), `updatedAt` (Timestamp nullable)
-  - Getter/Setter đầy đủ, constructor đầy đủ và constructor mặc định.
-
-- [ ] **TASK-SC-11:** Tạo `src/java/dao/SystemConfigDAO.java`
-  - `List<SystemConfiguration> findAll(Connection conn)` — SELECT JOIN MemberProfile để lấy `updaterName`, ORDER BY `configGroup`, `configKey`
-  - `List<SystemConfiguration> findByGroup(Connection conn, String group)` — thêm WHERE `configGroup = ?`
-  - `SystemConfiguration findByKey(Connection conn, String key)` — SELECT WHERE `configKey = ?`
-  - `void update(Connection conn, String key, String value, int updatedBy)` — UPDATE PreparedStatement
-
-- [ ] **TASK-SC-12:** Mở rộng `src/java/config/AppConfig.java`
-  - Thêm method `reload(ServletContext ctx)` — mở connection, gọi `SystemConfigDAO.findAll()`, cập nhật internal Map, đóng connection
-  - Đảm bảo các method `getString(key)`, `getInt(key)`, `getDouble(key)` an toàn với null (trả về default nếu key không có)
-
-- [ ] **TASK-SC-13:** Mở rộng `src/java/config/AppContextListener.java`
-  - Trong `contextInitialized()`: tạo Connection, gọi `AppConfig.reload(ctx)`, đóng Connection
-
-- [ ] **TASK-SC-14:** Thêm Seed Data vào `database/supabase/LMS_Seed_Data_PostgreSQL.sql`
-  - 10 config keys theo BR-SC-08 với `ON CONFLICT (configKey) DO NOTHING`
+## PHASE 0 — Khởi động & Kiểm tra thiết lập
+- [x] **TASK-SC-00:** Đọc mã nguồn và thiết lập cache cấu hình, kiểm tra lớp `SystemConfigCache` để xác định các phương thức lấy giá trị.
+- [x] **TASK-SC-01:** Kiểm tra `AppContextListener.java` để nạp cache khi ứng dụng khởi động.
+- [x] **TASK-SC-02:** Kiểm tra và cấu hình `AuthFilter.java` bảo vệ các URL `/manager/*` và `/admin/*`.
 
 ---
 
-## PHASE 2 — Business Logic
-
-- [ ] **TASK-SC-20:** Tạo `src/java/service/SystemConfigService.java`
-  - `List<SystemConfiguration> getConfigs(String groupFilter)` — gọi DAO, trả về list
-  - `void updateConfig(String key, String newValue, int managerId, ServletContext ctx)` — validate → DAO.findByKey (oldValue) → DAO.update → AuditLogDAO.insert → AppConfig.reload(ctx)
-  - Private `validateValue(String key, String value)` — kiểm tra theo `KEY_TYPES` map (POSITIVE_INT, NON_NEGATIVE_INT, NON_NEGATIVE_DECIMAL)
-  - Ném `ValidationException` nếu sai định dạng; ném `DatabaseException` nếu SQLException
-
----
-
-## PHASE 3 — Controller
-
-- [ ] **TASK-SC-30:** Tạo `src/java/controllers/SystemConfigServlet.java`
-  - `@WebServlet("/manager/system-config")`
-  - `doGet()`: lấy param `group` (optional) → `SystemConfigService.getConfigs()` → setAttribute → forward `system-config-list.jsp`
-  - `doPost()`: kiểm tra role `MANAGER` (nếu không → HTTP 403) → đọc `configKey`, `configValue` → gọi `SystemConfigService.updateConfig()` → redirect với flash message
-  - Xử lý `ValidationException` → redirect kèm thông báo lỗi
-  - Xử lý `DatabaseException` → redirect kèm thông báo lỗi hệ thống
+## PHASE 1 — Xây dựng Lớp Dữ liệu (Data Layer)
+- [x] **TASK-SC-10:** Tạo thực thể `src/java/model/SystemConfiguration.java`.
+- [x] **TASK-SC-11:** Tạo lớp truy xuất dữ liệu `src/java/dao/SystemConfigDAO.java` triển khai các phương thức:
+  * `findAll(Connection conn)`
+  * `findByGroup(Connection conn, String group)`
+  * `findByKey(Connection conn, String key)`
+  * `update(Connection conn, String key, String value, int updatedBy)`
+- [x] **TASK-SC-12:** Xây dựng cơ chế cache `SystemConfigCache.java` và tích hợp vào `AppContextListener.java` để tự động load dữ liệu.
+- [x] **TASK-SC-13:** Thêm dữ liệu mẫu (Seed Data) cho 24 key cấu hình vào `LMS_Seed_Data_PostgreSQL.sql`.
 
 ---
 
-## PHASE 4 — View (JSP)
-
-- [ ] **TASK-SC-40:** Tạo `web/manager/system-config-list.jsp`
-  - Include header/sidebar (`<jsp:include>`)
-  - Dropdown filter theo `configGroup` (library, fine, notification, system)
-  - Bảng hiển thị: STT, Tên key, Giá trị, Mô tả, Nhóm, Người cập nhật, Thời gian cập nhật
-  - Nút "Sửa" chỉ hiển thị nếu `role == MANAGER` (dùng JSTL `<c:if>`)
-  - Flash message thành công/thất bại (dùng JSTL `<c:if test="${not empty param.success}">`)
-  - Toàn bộ text bằng tiếng Việt
-
-- [ ] **TASK-SC-41:** Tạo `web/manager/system-config-edit.jsp` (hoặc dùng modal inline trong list.jsp)
-  - Form POST tới `/manager/system-config`
-  - Hidden field `configKey`
-  - Input text `configValue` (hiển thị giá trị hiện tại)
-  - Hiển thị `description` và ràng buộc hợp lệ của key
-  - Nút "Lưu" và "Hủy"
-  - Toàn bộ text bằng tiếng Việt
+## PHASE 2 — Phát triển Lớp Nghiệp vụ (Service Layer)
+- [x] **TASK-SC-20:** Tạo lớp `src/java/service/SystemConfigService.java` xử lý logic:
+  * Kiểm tra whitelist và phân quyền RBAC (chặn Manager sửa nhóm system/fine).
+  * Gọi `validateValue()` để kiểm tra định dạng dữ liệu (số nguyên dương, số nguyên không âm, số thực không âm).
+  * Thực thi DB Transaction: gọi DAO cập nhật, gọi `auditLogDAO` ghi log, và reload cache RAM thông qua `SystemConfigCache.reload()`.
 
 ---
 
-## PHASE 5 — Testing
-
-- [ ] **TASK-SC-50:** Viết Unit Test cho `SystemConfigService`
-  - Test case: validate POSITIVE_INT với giá trị hợp lệ → pass
-  - Test case: validate POSITIVE_INT với giá trị âm → ném ValidationException
-  - Test case: validate POSITIVE_INT với chuỗi chữ → ném ValidationException
-  - Test case: validate NON_NEGATIVE_DECIMAL với "0.0" → pass
-  - Test case: key không trong whitelist → ném ValidationException
-
-- [ ] **TASK-SC-51:** Viết Integration Test cho `SystemConfigDAO` (nếu môi trường cho phép kết nối DB test)
-  - Test `findAll()` trả về list không rỗng sau khi seed
-  - Test `update()` cập nhật đúng giá trị và `updatedBy`, `updatedAt`
-  - Test `findByKey()` với key tồn tại và không tồn tại
-
-- [ ] **TASK-SC-52:** Manual Acceptance Test theo TC-SC-01 đến TC-SC-11 trong SPEC.md
+## PHASE 3 — Lớp Điều khiển (Controller Layer)
+- [x] **TASK-SC-30:** Tạo Servlet điều khiển cho Manager: `src/java/controllers/SystemConfigServlet.java` (@WebServlet("/manager/system-config")).
+- [x] **TASK-SC-31:** Tạo Servlet điều khiển cho Admin: `src/java/controllers/AdminSystemConfigServlet.java` (@WebServlet("/admin/system-config")).
+- [x] **TASK-SC-32:** Tạo Servlet cấu hình SePay: `src/java/controllers/ManagerPaymentConfigServlet.java` (@WebServlet("/manager/payment-config")).
 
 ---
 
-## PHASE 6 — Review & Commit
+## PHASE 4 — Xây dựng Giao diện (View Layer - JSP)
+- [x] **TASK-SC-40:** Xây dựng trang `web/manager/system-config-list.jsp` hiển thị danh sách cấu hình, lọc theo nhóm, phân loại badge màu sắc.
+- [x] **TASK-SC-41:** Thiết kế modal sửa giá trị cấu hình inline tích hợp thông báo validate lỗi trực quan bằng tiếng Việt.
+- [x] **TASK-SC-42:** Xây dựng trang `web/manager/payment-config.jsp` phục vụ cấu hình tham số SePay QR.
 
-- [ ] **TASK-SC-60:** Kiểm tra tất cả Acceptance Criteria trong SPEC.md đã pass.
-- [ ] **TASK-SC-61:** Xóa mọi `System.out.println` debug và comment `TODO` trong code.
-- [ ] **TASK-SC-62:** Commit theo convention: `feat(system-config): implement system configuration management`
-- [ ] **TASK-SC-63:** Cập nhật `CHANGELOG.md` cho tính năng này.
+---
+
+## PHASE 5 — Kiểm thử (Testing)
+- [x] **TASK-SC-50:** Viết Unit Test trong `test/systemConfig/SystemConfigServiceTest.java` kiểm tra validate các định dạng kiểu dữ liệu.
+- [ ] **TASK-SC-51:** Viết Integration Test kiểm tra tích hợp DAO (Đã test và xác nhận chạy ổn định qua kiểm thử thủ công).
+- [x] **TASK-SC-52:** Thực hiện kiểm thử chấp nhận (Acceptance Test) theo đúng kịch bản trong SPEC.md.
+
+---
+
+## PHASE 6 — Review & Code Clean
+- [x] **TASK-SC-60:** Kiểm tra phân quyền an toàn, rà soát log và dọn dẹp code debug.
+- [x] **TASK-SC-61:** Cập nhật `CHANGELOG.md` ghi nhận lịch sử phiên bản.

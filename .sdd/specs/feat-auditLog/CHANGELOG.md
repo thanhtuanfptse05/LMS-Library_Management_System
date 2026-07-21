@@ -1,10 +1,27 @@
-# CHANGELOG.md — Nhật ký Kiểm toán (Audit Log)
+# Changelog: Audit Log
 
-## [1.0.0] - 2026-06-24
+Tất cả các thay đổi đáng chú ý của tính năng này sẽ được ghi nhận tại đây.
+
+## [1.1.0] - 2026-07-21
+
+### Changed
+- Cập nhật `SPEC.md`:
+  - Khắc phục lỗi lặp lại danh sách Use Cases.
+  - Đồng bộ hóa 5 quy tắc nghiệp vụ (`BR-14`, `BR-32`, `BR-33`, `BR-34`, `BR-38`) và 8 yêu cầu chức năng (`FR-55` -> `FR-60`, `FR-73`, `FR-74`) khớp với tài liệu tổng thể.
+  - Làm rõ lược đồ bảng `AuditLogs`, logic so sánh 1-1 dạng card trong modal, và kịch bản nghiệm thu.
+- Cập nhật `PLAN.md`:
+  - Thay đổi tính năng xuất báo cáo từ định dạng CSV sang định dạng Excel (.xlsx) thông qua Apache POI khớp với đặc tả yêu cầu.
+  - Đồng bộ hóa danh sách các components, mô tả chi tiết luồng xử lý và tối ưu hóa phân trang database.
+- Cập nhật `TASK.md`:
+  - Thay đổi cấu trúc bảng cũ sang dạng checklist phân nhóm chuyên nghiệp.
+  - Đánh dấu hoàn thành (`[x]`) các task liên quan đến model, DTO, DAO, Servlet và các trang JSP đã được cài đặt thành công.
+
+## [1.0.0] - 2026-06-22
+
 ### Added
-- Khởi tạo bộ hồ sơ SDD (CONTEXT, SPEC, PLAN, TASKS) cho Feature F12.
-- Định nghĩa UC-40 (Xem Nhật ký Kiểm toán), UC-41 (Xuất Nhật ký Kiểm toán).
-- Định nghĩa BR-32 (Audit Log Read-Only), BR-33 (Audit Log JSON Format), BR-34 (Audit Log Pagination).
-- Xác lập 43 actionType đã có trong hệ thống, phân thành 9 nhóm.
-- Áp dụng EARS Notation chuẩn hóa các Functional Requirements FR-55 đến FR-60.
-- Thiết kế modal card-based so sánh Old ↔ New với nền hồng nhạt/xanh nhạt.
+- Khởi tạo cấu trúc tài liệu quy chuẩn cho tính năng Nhật ký hoạt động.
+- Thêm `SPEC.md`: Định nghĩa yêu cầu chức năng (FR), yêu cầu phi chức năng (NFR) và tiêu chí nghiệm thu (Acceptance Criteria).
+- Thêm `Swimlane-auditLog.txt` (Diagram) mô tả luồng xem và lọc log.
+- Thêm `CONTEXT.md`: Xác định bối cảnh nghiệp vụ của tính năng.
+- Thêm `PLAN.md`: Mô tả kế hoạch triển khai kiến trúc.
+- Thêm `TASK.md`: Phân rã các task công việc.

@@ -1,28 +1,22 @@
 # Feature Specification: Cấu hình hệ thống (System Configuration)
-# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
+# Version: 1.1 | Chủ sở hữu: @antigravity | Ngày cập nhật: 2026-07-21
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
-Cho phép thay đổi các thông số vận hành của hệ thống như chính sách mượn sách, tiền phạt, giới hạn gia hạn và thông tin cổng thanh toán SePay trực tiếp thông qua giao diện quản trị.
+Cho phép thay đổi các thông số vận hành của hệ thống như chính sách mượn sách, tiền phạt, giới hạn số sách mượn, số lần gia hạn, thời hạn giữ sách đặt trước, và thông tin tích hợp cổng thanh toán SePay trực tiếp thông qua giao diện quản trị mà không cần can thiệp mã nguồn.
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
-* **Quản lý Thư viện (Library Manager):** Xem và cập nhật các cấu hình nghiệp vụ thư viện và SePay.
-* **Quản trị viên (Admin):** Có toàn quyền xem và cập nhật tất cả các cấu hình hệ thống.
-
-## 2.5 Use Cases (Danh sách Use Cases)
-* **UC-32 (View System Configuration):** Actor: Library Manager, Admin | (Xem cấu hình hệ thống): Quản lý thư viện hoặc quản trị viên xem các thông số vận hành của hệ thống như chính sách mượn sách, tiền phạt, giới hạn.
-* **UC-33 (Update System Configuration):** Actor: Library Manager, Admin | (Cập nhật cấu hình hệ thống): Thay đổi các thông số vận hành thông qua giao diện quản trị mà không cần can thiệp mã nguồn.
-
-## 2.5 Use Cases (Danh sách Use Cases)
-* **UC-32 (View System Configuration):** Actor: Library Manager, Admin | (Xem cấu hình hệ thống): Quản lý thư viện hoặc quản trị viên xem các thông số vận hành của hệ thống như chính sách mượn sách, tiền phạt, giới hạn.
-* **UC-33 (Update System Configuration):** Actor: Library Manager, Admin | (Cập nhật cấu hình hệ thống): Thay đổi các thông số vận hành thông qua giao diện quản trị mà không cần can thiệp mã nguồn.
+* **Quản lý Thư viện (Library Manager):** Xem và cập nhật các cấu hình thuộc nhóm nghiệp vụ thư viện (`configGroup = 'library'`) và các cấu hình cổng thanh toán SePay.
+* **Quản trị viên (Admin):** Có toàn quyền xem và cập nhật tất cả các cấu hình thuộc mọi nhóm trong hệ thống.
 
 ## 2.5 Use Cases (Danh sách Use Cases)
 * **UC-32 (View System Configuration):** Actor: Library Manager, Admin | (Xem cấu hình hệ thống): Quản lý thư viện hoặc quản trị viên xem các thông số vận hành của hệ thống như chính sách mượn sách, tiền phạt, giới hạn.
 * **UC-33 (Update System Configuration):** Actor: Library Manager, Admin | (Cập nhật cấu hình hệ thống): Thay đổi các thông số vận hành thông qua giao diện quản trị mà không cần can thiệp mã nguồn.
 
 ## 3. Business Rules (Quy tắc nghiệp vụ)
-* **BR-30 (System Config Immutability):** Cấm tuyệt đối việc xóa cấu hình (delete configKey) thông qua UI hoặc hệ thống dưới mọi hình thức. Hệ thống chỉ cho phép cập nhật (UPDATE) giá trị configValue của các key đã tồn tại, hoặc thêm mới (INSERT) đối với các key thuộc whitelist (KEY_TYPES) chưa tồn tại trong CSDL.
+* **BR-30 (System Config Immutability):** Cấm tuyệt đối việc xóa cấu hình (`configKey`) thông qua UI hoặc hệ thống dưới mọi hình thức. Hệ thống chỉ cho phép cập nhật (UPDATE) giá trị `configValue` của các key đã tồn tại, hoặc thêm mới (INSERT) đối với các key thuộc whitelist (`KEY_TYPES`) chưa tồn tại trong CSDL.
 * **BR-31 (System Config Authorization):** Library Manager chỉ được phép xem và cập nhật các config thuộc nhóm 'library' hoặc cấu hình tích hợp SePay. Admin có toàn quyền với mọi nhóm config.
+* **BR-40 (System Config Whitelist & Validation):** Cập nhật cấu hình hệ thống chỉ được áp dụng với các key cấu hình nằm trong whitelist (`KEY_TYPES`) định nghĩa sẵn trong mã nguồn. Mọi thao tác cập nhật phải được kiểm tra kiểu dữ liệu (số nguyên dương, số nguyên không âm, số thực không âm) trước khi lưu DB.
+* **BR-53 (Payment Config Group Access):** Library Manager chỉ có quyền xem và sửa các cấu hình có prefix `SEPAY_`. Việc phân quyền sửa cấu hình SePay được kiểm soát nghiêm ngặt ở tầng Service.
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
 * **FR-84 (Xem cấu hình nhóm library của Manager):** WHEN SystemConfigServlet.doGet() được gọi bởi MANAGER, THE system SHALL truy vấn SystemConfigDAO.findByGroup(conn, "library") để lấy danh sách các cấu hình chính sách mượn/trả và đặt trước, sau đó forward sang manager/system-config-list.jsp.
@@ -55,29 +49,34 @@ Cho phép thay đổi các thông số vận hành của hệ thống như chín
   * *Mapping:* UC-33 / BR-40
 
 ## 5. Non-functional Requirements (Yêu cầu phi chức năng)
-* Hiệu năng: Đọc cấu hình từ cache RAM nên thời gian đáp ứng gần như bằng 0ms.
-* Ràng buộc dữ liệu: Thực hiện kiểm tra kiểu dữ liệu nghiêm ngặt trước khi cập nhật DB.
+* **Hiệu năng:** Đọc cấu hình từ cache RAM (ServletContext) giúp thời gian truy xuất thông số cấu hình tại các Servlet nghiệp vụ (như khi tính tiền phạt, gia hạn) đạt hiệu năng tối đa (gần như 0ms).
+* **Ràng buộc bảo mật dữ liệu:** Bắt buộc áp dụng kiểm tra kiểu dữ liệu nghiêm ngặt và kiểm tra phân quyền (RBAC) ở cả tầng Filter và Service trước khi ghi dữ liệu xuống DB.
+* **Ngôn ngữ:** Giao diện quản lý cấu hình và các thông báo lỗi/thành công bắt buộc viết hoàn toàn bằng tiếng Việt.
 
 ## 6. Database Schema & Data Models (Lược đồ dữ liệu)
 ### Bảng SystemConfigurations
-* `configKey` (VARCHAR(100), PK)
-* `configValue` (TEXT)
-* `description` (TEXT)
-* `configGroup` (VARCHAR(50))
-* `updatedBy` (INT)
-* `updatedAt` (TIMESTAMP)
-
-
+* `configKey` (VARCHAR(100), PK) - Khóa cấu hình (ví dụ: 'FINE_RATE_PER_DAY')
+* `configValue` (TEXT) - Giá trị cấu hình lưu dưới dạng chuỗi
+* `description` (TEXT) - Mô tả ý nghĩa cấu hình
+* `configGroup` (VARCHAR(50)) - Nhóm cấu hình ('library', 'fine', 'notification', 'system')
+* `updatedBy` (INT, FK) - ID người dùng cập nhật cuối cùng (trỏ đến bảng `"User"`)
+* `updatedAt` (TIMESTAMP) - Thời điểm cập nhật cuối cùng
 
 ## 7. Error Handling (Xử lý lỗi ngoại lệ)
-* WHERE giá trị cấu hình nhập vào sai định dạng kiểu dữ liệu (ví dụ: chữ thay vì số), THE system SHALL hiển thị lỗi báo đỏ trên form.
+* WHERE giá trị cấu hình nhập vào sai định dạng kiểu dữ liệu (chữ thay vì số, số âm cho cấu hình số nguyên dương...), THE system SHALL chặn đứng giao dịch và ném lỗi `ValidationException` hiển thị thông báo lỗi chi tiết bằng tiếng Việt trên giao diện (ví dụ: "Giá trị cấu hình phải là số nguyên dương").
+* WHERE có hành động cố tình xóa cấu hình qua request giả lập, THE system SHALL ném lỗi `ValidationException` với thông báo: "Cấm tuyệt đối việc xóa cấu hình khỏi hệ thống".
+* WHERE xảy ra lỗi SQLException khi ghi dữ liệu, hệ thống SHALL rollback transaction, ghi nhận log và hiển thị thông báo lỗi chung thân thiện.
 
 ## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
-- [ ] Cập nhật phí phạt ngày: Thay đổi giá trị FINE_RATE_PER_DAY từ 5000 thành 10000 -> Lưu thành công, hệ thống tính phạt mới lập tức.
-- [ ] Manager sửa cấu hình hệ thống bảo mật: Manager cố tình sửa cấu hình ngoài nhóm cho phép -> Hệ thống báo lỗi từ chối phân quyền.
+- [ ] **Xem danh sách cấu hình:** Giao diện hiển thị đúng các cấu hình hệ thống, phân loại badge màu sắc tương ứng theo nhóm cấu hình.
+- [ ] **Phân quyền truy cập:** Quản lý thư viện đăng nhập chỉ xem được nhóm 'library' và cấu hình SePay; Admin đăng nhập xem được toàn bộ. Người dùng vai trò khác bị AuthFilter chặn (trả về lỗi 403 SC_FORBIDDEN).
+- [ ] **Cập nhật & Đồng bộ Cache:** Cập nhật phí phạt ngày `FINE_RATE_PER_DAY` từ 5000 thành 10000 -> Hệ thống cập nhật DB thành công, reload cache RAM tức thì, các giao dịch phạt trễ hạn phát sinh ngay sau đó áp dụng mức phạt mới 10000 VNĐ/ngày.
+- [ ] **Bảo mật chặn sửa đổi chéo:** Quản lý thư viện cố tình gửi request giả lập sửa key cấu hình thuộc nhóm `system` -> Hệ thống phát hiện ở Service Layer và trả về thông báo lỗi phân quyền bằng tiếng Việt.
+- [ ] **Chống xóa dữ liệu:** Thao tác xóa cấu hình bị chặn đứng 100%, ném ra ngoại lệ và hiển thị thông báo cấm xóa.
 
 ## 9. Out of Scope (Phạm vi không thực hiện)
-* Xóa các tham số cấu hình hệ thống ra khỏi DB thông qua giao diện quản trị.
+* Xóa các cấu hình hệ thống đã thiết lập thông qua giao diện UI.
+* Tạo mới các cấu hình nằm ngoài whitelist (`KEY_TYPES`) quy định trong mã nguồn.
 
-## Notes & Open Questions (Ghi chú & Câu hỏi mở)
-* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.
+## 10. Notes & Open Questions (Ghi chú & Câu hỏi mở)
+* Toàn bộ hệ thống cấu hình động đã được nạp thành công vào bộ nhớ cache RAM ServletContext khi khởi động ứng dụng và hoạt động trơn tru.

@@ -1,12 +1,47 @@
-# TASKS.md — Task Breakdown Nhật ký Kiểm toán
+# TASK.md — Danh sách Task Thực thi: feat-auditLog
+# Version: 1.1 | Trạng thái: COMPLETED (Except Tests) | Ngày cập nhật: 2026-07-21
 
-| ID | Task | Files liên quan | Est | Deps | DoD / Spec Refs |
-|---|---|---|---|---|---|
-| **T-F12-01** | Tạo Model AuditLog | `src/java/model/AuditLog.java` | 1h | None | Entity thuần map 1:1 bảng AuditLogs: auditLogId, userId, actionType, entityName, entityId, oldValues, newValues, timestamp. Getter/setter. |
-| **T-F12-02** | Tạo DTO AuditLogDTO | `src/java/dto/AuditLogDTO.java` | 1h | T-F12-01 | Chứa tất cả trường AuditLog + userEmail (String) từ LEFT JOIN "User". |
-| **T-F12-03** | Bổ sung methods đọc cho AuditLogDAO | `src/java/dao/AuditLogDAO.java` | 3h | T-F12-01, T-F12-02 | Thêm 5 methods: findWithFilters(filters, page, pageSize) → List\<AuditLogDTO\>, countWithFilters(filters) → int, findById(auditLogId) → AuditLogDTO, getDistinctActionTypes() → List\<String\>, getDistinctEntityNames() → List\<String\>. Xây WHERE động an toàn bằng PreparedStatement. Giữ nguyên insert() hiện có. Refs: FR-F12-01, FR-F12-04, FR-F12-05. |
-| **T-F12-04** | Tạo AuditLogServlet | `src/java/controllers/AuditLogServlet.java` | 3h | T-F12-03 | @WebServlet("/admin/audit-log"). doGet(): parse params (page, actionType, entityName, email, fromDate, toDate, keyword, action). Nhánh action=export → CSV. Nhánh mặc định → gọi DAO count + find → set attributes → forward JSP. Refs: FR-F12-01, FR-F12-04, FR-F12-06, FR-F12-12. |
-| **T-F12-05** | Tạo JSP audit-log-list.jsp | `web/admin/audit-log-list.jsp` | 5h | T-F12-04 | Include _head, _sidebar, _header, _footer. Filter bar (2 dropdown + 3 input + 2 button). Bảng 7 cột với badge màu. Phân trang giữ filter. Modal card-based: JS parse JSON → render cards hồng/xanh đối xứng. Fallback raw text. CHANGE_PASSWORD → text bảo mật. 100% tiếng Việt. Refs: FR-F12-01..11. |
-| **T-F12-06** | Cập nhật Sidebar | `web/admin/fragments/_sidebar.jsp` | 0.5h | T-F12-05 | Sửa href "Nhật ký Kiểm toán" từ # → ${pageContext.request.contextPath}/admin/audit-log. Cập nhật navMap JS. |
-| **T-F12-07** | Chuẩn hóa JSON — DeskCirculationService | `src/java/service/DeskCirculationService.java` | 2h | None | Sửa 6 chỗ ghi audit log: CHECK_OUT, CHECK_IN_GOOD, CHECK_IN_GOOD_QUEUE, CHECK_IN_DAMAGED, CHECK_IN_LOST, CASH_PAYMENT. Từ plain text ("key=value") sang JSON ({"key":"value"}). Refs: BR-33. |
-| **T-F12-08** | Chuẩn hóa JSON — ForgotPasswordServlet | `src/java/controllers/ForgotPasswordServlet.java` | 0.5h | None | Sửa CHANGE_PASSWORD audit: từ old=null, new="text" sang old="{}", new="{}". Nhất quán với ProfileService. Refs: BR-33. |
+## Ghi chú thực thi
+- Ký hiệu: `[ ]` chưa làm | `[/]` đang làm | `[x]` hoàn thành | `[!]` bị block
+
+---
+
+## PHASE 0 — Khởi động & Kiểm tra thiết lập
+- [x] **TASK-AL-00:** Kiểm tra bảng CSDL `AuditLogs` và cơ chế ghi log thô đã được kích hoạt tại tầng Service/Servlet nghiệp vụ (F1-F14).
+- [x] **TASK-AL-01:** Kiểm tra cấu hình bảo mật `AuthFilter.java` bảo vệ nghiêm ngặt các URL `/admin/*`.
+
+---
+
+## PHASE 1 — Xây dựng Lớp Dữ liệu (Data Layer)
+- [x] **TASK-AL-10:** Tạo thực thể model `src/java/model/AuditLog.java` tương ứng bảng CSDL.
+- [x] **TASK-AL-11:** Tạo DTO `src/java/dto/AuditLogDTO.java` gộp thông tin email người thực hiện.
+- [x] **TASK-AL-12:** Mở rộng `src/java/dao/AuditLogDAO.java` triển khai các phương thức đọc:
+  * `findWithFilters(filters, page, pageSize)`
+  * `countWithFilters(filters)`
+  * `getDistinctActionTypes()`
+  * `getDistinctEntityNames()`
+
+---
+
+## PHASE 2 — Phát triển Lớp Điều khiển (Controller Layer)
+- [x] **TASK-AL-20:** Tạo Servlet `src/java/controllers/AuditLogServlet.java` (@WebServlet("/admin/audit-log")) xử lý:
+  * Nhận các param lọc động và phân trang.
+  * Phân nhánh `action=export` để xuất Excel (.xlsx) thông qua Apache POI (FR-59).
+  * Phân nhánh mặc định truy vấn danh sách, forward sang `audit-log-list.jsp`.
+- [x] **TASK-AL-21:** Phát triển Servlet `src/java/controllers/AdminDashboardServlet.java` (@WebServlet("/admin/dashboard")) phục vụ tổng hợp chỉ số KPI toàn hệ thống (UC-46).
+
+---
+
+## PHASE 3 — Thiết kế Giao diện (View Layer - JSP)
+- [x] **TASK-AL-30:** Xây dựng trang `web/admin/audit-log-list.jsp` chứa:
+  * Form lọc nâng cao 7 tiêu chí.
+  * Bảng hiển thị kết quả phân trang, badge màu sắc theo nhóm hành động.
+  * Script JavaScript client-side: parse JSON từ data-attribute, render so sánh 1-1 dạng cột màu hồng/xanh trong Modal.
+- [x] **TASK-AL-31:** Xây dựng trang `web/admin/dashboard.jsp` hiển thị panel KPI tổng hợp, panel cấu hình quan trọng và bảng hiển thị 5 log hoạt động gần nhất.
+- [x] **TASK-AL-32:** Cập nhật liên kết menu thanh Sidebar `web/admin/fragments/_sidebar.jsp` trỏ đến đúng trang Audit Log.
+
+---
+
+## PHASE 4 — Kiểm thử (Testing)
+- [ ] **TASK-AL-40:** Viết Unit Test (JUnit 5) kiểm tra các câu lệnh truy vấn lọc động và đếm số lượng của `AuditLogDAO` (Đang chờ thực hiện).
+- [x] **TASK-AL-41:** Thực hiện kiểm thử chấp nhận thủ công (Manual Acceptance Test) xác nhận parse JSON modal, xuất file Excel và phân trang hoạt động hoàn hảo.

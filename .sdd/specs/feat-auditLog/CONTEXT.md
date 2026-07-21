@@ -1,26 +1,15 @@
-# CONTEXT.md — Nhật ký Kiểm toán (Audit Log)
-# Phiên bản: 1.0.0 | Ngày: 2026-06-24
+# Context: Audit Log (Nhật ký hoạt động và Dashboard Admin)
 
-## 1. PROBLEM STATEMENT
-Hệ thống thư viện có nhiều vai trò (Admin, Librarian, Manager, Student, Lecturer) thực hiện các thao tác thay đổi dữ liệu trên nhiều phân hệ khác nhau. Khi xảy ra phá hoại, sai lầm hoặc tranh chấp, SysAdmin cần truy vết ai đã làm gì, lên đối tượng nào, và giá trị cũ/mới là gì. Hiện tại dữ liệu audit đã được ghi sẵn bởi các tính năng F1-F14 nhưng chưa có giao diện để xem và phân tích.
+## Problem Statement (Mô tả vấn đề)
+Hệ thống thư viện LMS có nhiều vai trò người dùng (Admin, Librarian, Manager, Student, Lecturer) cùng tương tác và thực hiện các thao tác thay đổi dữ liệu cốt lõi trên CSDL. Khi xảy ra sự cố, phá hoại dữ liệu, sai sót hoặc tranh chấp nghiệp vụ, Quản trị viên (`SysAdmin`) cần một công cụ giám sát tập trung để truy vết ai đã làm gì, tác động lên đối tượng nào, vào thời điểm nào và giá trị thay đổi cụ thể ra sao. Hiện tại, dữ liệu nhật ký kiểm toán đã được ghi lại tự động từ các dịch vụ nghiệp vụ nền, nhưng cần một giao diện quản trị an toàn để truy vấn, phân tích, và kết xuất.
 
-## 2. DOMAIN KNOWLEDGE
-- **Audit Log (Nhật ký Kiểm toán):** Bản ghi ghi lại mỗi hành động C/U/D (Tạo/Sửa/Xóa) do con người thực hiện lên dữ liệu hệ thống. Gồm: người thực hiện, loại hành động, đối tượng bị tác động, giá trị cũ, giá trị mới, thời điểm.
-- **Tiến trình ngầm GHI (Hệ thống con A):** Các Service/Controller của các tính năng khác đã ghi audit log vào bảng AuditLogs khi thao tác thành công. F12 KHÔNG tạo thêm logic ghi.
-- **Giao diện ĐỌC (Hệ thống con B):** Trang web cho SysAdmin xem, lọc, tìm kiếm, và xuất CSV dữ liệu audit log đã được ghi.
+## Business Drivers (Động lực kinh doanh)
+* **Truy vết sự cố & Minh bạch:** Hỗ trợ SysAdmin truy vết nguyên nhân gây lỗi hoặc thay đổi bất thường đối với các thực thể cốt lõi (như thông tin tài khoản, cấu hình hệ thống, sách và giao dịch mượn trả).
+* **Bảo mật và Tuân thủ:** Đảm bảo toàn bộ nhật ký thay đổi dữ liệu không thể bị chỉnh sửa hay xóa bỏ từ ứng dụng web (Read-Only).
+* **Hỗ trợ kiểm toán:** Cho phép kết xuất dữ liệu nhật ký ra tệp Excel (.xlsx) chuẩn phục vụ việc lưu trữ độc lập hoặc báo cáo cấp trên.
+* **Giám sát trực quan:** Cung cấp Dashboard Admin tích hợp biểu đồ và thông số đo lường sức khỏe toàn hệ thống (tổng số tài khoản, giao dịch quá hạn, hoạt động gần đây).
 
-## 3. STAKEHOLDERS
-- **SysAdmin (Quản trị viên):** Người duy nhất được quyền truy cập trang Nhật ký Kiểm toán để giám sát và truy vết hành vi người dùng.
-
-## 4. CONSTRAINTS (Ràng buộc cứng)
-- **Tech Stack:** Java Servlet, JDBC, JSP.
-- **Read-only:** F12 chỉ SELECT dữ liệu từ bảng AuditLogs và "User". Không Insert/Update/Delete bất kỳ bảng nào.
-- **Schema:** Không thay đổi cấu trúc bảng đã có.
-
-## 5. ASSUMPTIONS
-- Dữ liệu audit log đã được ghi đầy đủ bởi các tính năng khác (F1, F3, F4, F5, F6, F7, F10, F13, F14...).
-- oldValues và newValues sẽ được chuẩn hóa sang JSON bởi các tính năng liên quan (F6 DeskCirculationService, F1 ForgotPasswordServlet) để modal hiển thị cards nhất quán.
-- Bảng AuditLogs có thể chứa >100K rows trong production, yêu cầu phân trang bắt buộc.
-
-## 6. OPEN QUESTIONS
-- N/A (Đã giải quyết toàn bộ 7 case đặc biệt trong quá trình lập kế hoạch)
+## Associated Use Cases (Các Use Cases liên quan)
+* **UC-40 (View Audit Log):** Xem nhật ký kiểm toán, lọc và xem chi tiết so sánh.
+* **UC-41 (Export Audit Log):** Xuất tệp Excel nhật ký kiểm toán.
+* **UC-46 (View Admin Dashboard):** Xem bảng điều khiển Admin tổng quan.
