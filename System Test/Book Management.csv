@@ -1,0 +1,74 @@
+Suite/Test/Step Name,Browser,Description,Tag,Start time,End time,Duration,Status
+TS Book Management,Chrome 150.0.7871.101,,,14-07-2026 02:53:49,14-07-2026 03:00:45,"6m - 56,083s",PASSED
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:53:50,14-07-2026 02:54:06,"16,720s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn Tác Giả"",""price"":""150000"",""isbn"":""978-1-56619-909-4 "",""expected"":""PASS"",""publisher"":""NXB Trẻ"",""publicationYear"":""2024"",""title"":""Sách Test Tự Động""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:54:06,14-07-2026 02:54:20,"13,432s",PASSED
+"DATA BINDING - {""author"":""Trần Tác Giả"",""price"":""120000"",""isbn"":""978-1-56619-909-4 "",""expected"":""FAIL"",""publisher"":""NXB Kim Đồng"",""publicationYear"":""2023"",""title"":""Sách Trùng ISBN""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:54:20,14-07-2026 02:54:32,"11,848s",PASSED
+"DATA BINDING - {""author"":""Thiếu Tiêu Đề"",""price"":""100000"",""isbn"":""978-1-4028-9462-6 "",""expected"":""FAIL"",""publisher"":""NXB ABC"",""publicationYear"":""2022"",""title"":""""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:54:32,14-07-2026 02:54:43,"11,122s",PASSED
+"DATA BINDING - {""author"":""Thiếu Mã ISBN"",""price"":""100000"",""isbn"":"""",""expected"":""FAIL"",""publisher"":""NXB ABC"",""publicationYear"":""2022"",""title"":""Thiếu ISBN""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:54:43,14-07-2026 02:54:56,"13,455s",PASSED
+"DATA BINDING - {""author"":""Sai Định Dạng"",""price"":""100000"",""isbn"":""123456789"",""expected"":""FAIL"",""publisher"":""NXB XYZ"",""publicationYear"":""2020"",""title"":""Sai Định Dạng ISBN""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:54:56,14-07-2026 02:55:11,"14,286s",PASSED
+"DATA BINDING - {""author"":""Lỗi Độ Dài Tên Sách"",""price"":""50000"",""isbn"":""978-0-306-40615-7 "",""expected"":""PASS"",""publisher"":""NXB Test"",""publicationYear"":""2021"",""title"":""AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:55:11,14-07-2026 02:55:25,"13,761s",PASSED
+"DATA BINDING - {""author"":""Tác Giả Bình Thường"",""price"":""50000"",""isbn"":""978-3-16-148410-0 "",""expected"":""PASS"",""publisher"":""AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "",""publicationYear"":""2021"",""title"":""Lỗi Tên NXB""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:55:25,14-07-2026 02:55:36,"11,202s",PASSED
+"DATA BINDING - {""author"":""Lỗi Giá Tiền"",""price"":""-10000"",""isbn"":""978-0-13-110362-7 "",""expected"":""FAIL"",""publisher"":""NXB Test"",""publicationYear"":""2021"",""title"":""Sách Giá Âm""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:55:36,14-07-2026 02:55:47,"11,165s",PASSED
+"DATA BINDING - {""author"":""Lỗi Năm XB"",""price"":""50000"",""isbn"":""978-0-201-63361-0 "",""expected"":""FAIL"",""publisher"":""NXB Test"",""publicationYear"":""999"",""title"":""Năm XB Quá Khứ""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:55:47,14-07-2026 02:56:01,"14,066s",PASSED
+"DATA BINDING - {""author"":""Lỗi Năm XB"",""price"":""50000"",""isbn"":""978-0-13-235088-4 "",""expected"":""FAIL"",""publisher"":""NXB Test"",""publicationYear"":""2030"",""title"":""Năm XB Tương Lai""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add New Book Title,Chrome 150.0.7871.101,,,14-07-2026 02:56:01,14-07-2026 02:56:14,"13,400s",PASSED
+"DATA BINDING - {""author"":""Test Giá Bằng 0"",""price"":""0"",""isbn"":""978-0-321-12521-7 "",""expected"":""PASS"",""publisher"":""NXB Test"",""publicationYear"":""2021"",""title"":""Sách Miễn Phí""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add Book Copy,Chrome 150.0.7871.101,,,14-07-2026 02:56:14,14-07-2026 02:56:39,"24,604s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""isbn_search"":""9781566199094"",""location"":""Kệ CS-01"",""barcode"":""BC-TEST-01""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add Book Copy,Chrome 150.0.7871.101,,,14-07-2026 02:56:39,14-07-2026 02:56:53,"13,722s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""isbn_search"":""9781566199094"",""location"":""Kệ CS-02"",""barcode"":""BC-TEST-01""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add Book Copy,Chrome 150.0.7871.101,,,14-07-2026 02:56:53,14-07-2026 02:57:03,"10,154s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""isbn_search"":"""",""location"":""Kệ CS-03"",""barcode"":""BC-TEST-02""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add Book Copy,Chrome 150.0.7871.101,,,14-07-2026 02:57:03,14-07-2026 02:57:15,"11,548s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""isbn_search"":""9781566199094"",""location"":""Kệ CS-04"",""barcode"":""""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add Book Copy,Chrome 150.0.7871.101,,,14-07-2026 02:57:39,14-07-2026 02:57:53,"13,752s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""isbn_search"":""9781566199094"",""location"":""Kệ CS-05"",""barcode"":""AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add Book Copy,Chrome 150.0.7871.101,,,14-07-2026 02:57:53,14-07-2026 02:58:03,"10,325s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""isbn_search"":""9781566199094"",""location"":"""",""barcode"":""BC-TEST-03""}",,,,,,,
+,,,,,,,
+Test Cases/TC Add Book Copy,Chrome 150.0.7871.101,,,14-07-2026 02:58:27,14-07-2026 02:58:41,"13,683s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""isbn_search"":""9781566199094"",""location"":""AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "",""barcode"":""BC-TEST-04""}",,,,,,,
+,,,,,,,
+Test Cases/TC Update Book Info,Chrome 150.0.7871.101,,,14-07-2026 02:58:41,14-07-2026 02:59:05,"24,280s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn A"",""price"":""150000"",""expected"":""PASS"",""isbn_search"":""9781566199094"",""publisher"":""NXB Kim Đồng"",""publicationYear"":""2024"",""title"":""Sách Update Test"",""status"":""available""}",,,,,,,
+,,,,,,,
+Test Cases/TC Update Book Info,Chrome 150.0.7871.101,,,14-07-2026 02:59:05,14-07-2026 02:59:25,"19,583s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn A"",""price"":""150000"",""expected"":""FAIL"",""isbn_search"":""9781566199094"",""publisher"":""NXB Kim Đồng"",""publicationYear"":""2024"",""title"":"""",""status"":""available""}",,,,,,,
+,,,,,,,
+Test Cases/TC Update Book Info,Chrome 150.0.7871.101,,,14-07-2026 02:59:25,14-07-2026 02:59:45,"20,894s",PASSED
+"DATA BINDING - {""author"":"""",""price"":""150000"",""expected"":""PASS"",""isbn_search"":""9781566199094"",""publisher"":""NXB Kim Đồng"",""publicationYear"":""2024"",""title"":""Sách Update Test"",""status"":""available""}",,,,,,,
+,,,,,,,
+Test Cases/TC Update Book Info,Chrome 150.0.7871.101,,,14-07-2026 02:59:45,14-07-2026 03:00:08,"22,234s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn A"",""price"":""150000"",""expected"":""PASS"",""isbn_search"":""9781566199094"",""publisher"":"""",""publicationYear"":""2024"",""title"":""Sách Update Test"",""status"":""available""}",,,,,,,
+,,,,,,,
+Test Cases/TC Update Book Info,Chrome 150.0.7871.101,,,14-07-2026 03:00:08,14-07-2026 03:00:27,"19,718s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn A"",""price"":""150000"",""expected"":""FAIL"",""isbn_search"":""9781566199094"",""publisher"":""NXB Kim Đồng"",""publicationYear"":""999"",""title"":""Sách Update Test"",""status"":""available""}",,,,,,,
+,,,,,,,
+Test Cases/TC Update Book Info,Chrome 150.0.7871.101,,,14-07-2026 03:00:27,14-07-2026 03:00:45,"17,840s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn A"",""price"":""-10000"",""expected"":""FAIL"",""isbn_search"":""9781566199094"",""publisher"":""NXB Kim Đồng"",""publicationYear"":""2024"",""title"":""Sách Update Test"",""status"":""available""}",,,,,,,
