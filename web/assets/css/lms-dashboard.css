@@ -137,9 +137,18 @@ body {
     .main-content-layout { margin-left: 0 !important; }
     .header-layout { left: 0 !important; width: 100% !important; }
     .offcanvas-lg.lms-sidebar,
-    .offcanvas.lms-sidebar {
+    .offcanvas.lms-sidebar,
+    .offcanvas-lg.sidebar-layout,
+    .offcanvas.sidebar-layout {
         width: 280px !important;
-        z-index: 1045 !important;
+        max-width: 85vw !important;
+        background-color: #ffffff !important;
+    }
+    .offcanvas-lg.show,
+    .offcanvas.show {
+        z-index: 1055 !important;
+        position: fixed !important;
+        visibility: visible !important;
     }
 }
 
