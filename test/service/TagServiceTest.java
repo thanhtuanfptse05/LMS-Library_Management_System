@@ -4,8 +4,6 @@ import exception.ValidationException;
 import model.Tag;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class TagServiceTest {
 
@@ -13,28 +11,80 @@ public class TagServiceTest {
 
     @Before
     public void setUp() {
-        tagService = new TagService(null, null);
+        tagService = new TagService();
     }
 
-    @Test
-    public void validateAcceptsValidTag() throws Exception {
+    private Tag createValidTag() {
         Tag tag = new Tag();
-        tag.setName("Java");
+        tag.setName("Java17");
         tag.setStatus("active");
+        return tag;
+    }
+
+    // ==========================================
+    // NORMAL (N) TEST CASES - Happy Path
+    // ==========================================
+
+    @Test
+    public void testValidateValidActiveTag() throws ValidationException {
+        Tag tag = createValidTag();
         tagService.validate(tag);
-        assertTrue(true);
     }
 
     @Test
-    public void validateRejectsInvalidStatus() throws Exception {
-        Tag tag = new Tag();
-        tag.setName("Java");
+    public void testValidateValidHiddenTag() throws ValidationException {
+        Tag tag = createValidTag();
+        tag.setStatus("hidden");
+        tagService.validate(tag);
+    }
+
+    // ==========================================
+    // BOUNDARY (B) TEST CASES - Edge Cases
+    // ==========================================
+
+    @Test
+    public void testValidateBoundaryNameLength100() throws ValidationException {
+        Tag tag = createValidTag();
+        tag.setName("T".repeat(100));
+        tagService.validate(tag);
+    }
+
+    @Test
+    public void testValidateBoundaryNameLength1() throws ValidationException {
+        Tag tag = createValidTag();
+        tag.setName("X");
+        tagService.validate(tag);
+    }
+
+    // ==========================================
+    // ABNORMAL (A) TEST CASES - Invalid / Exception
+    // ==========================================
+
+    @Test(expected = ValidationException.class)
+    public void testValidateNullName() throws ValidationException {
+        Tag tag = createValidTag();
+        tag.setName(null);
+        tagService.validate(tag);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateBlankName() throws ValidationException {
+        Tag tag = createValidTag();
+        tag.setName("   ");
+        tagService.validate(tag);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateNameExceeds100Chars() throws ValidationException {
+        Tag tag = createValidTag();
+        tag.setName("T".repeat(101));
+        tagService.validate(tag);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateInvalidStatus() throws ValidationException {
+        Tag tag = createValidTag();
         tag.setStatus("deleted");
-        try {
-            tagService.validate(tag);
-            fail("Expected ValidationException");
-        } catch (ValidationException e) {
-            assertTrue(e.getMessage().contains("Trạng thái tag sách không hợp lệ."));
-        }
+        tagService.validate(tag);
     }
 }

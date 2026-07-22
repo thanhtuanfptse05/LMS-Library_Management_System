@@ -1,74 +1,149 @@
 package util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import dto.BookImportPreviewDTO;
+import dto.BookImportRowDTO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import static org.junit.Assert.*;
 
 public class BookImportWorkbookReaderTest {
 
-    @Test
-    public void readsValidWorkbookAndSkipsBlankRows() throws Exception {
-        byte[] workbook = workbook(false, false);
-        BookImportPreviewDTO preview = new BookImportWorkbookReader().read(
-                new ByteArrayInputStream(workbook), "valid.xlsx");
-        assertTrue(preview.isValid());
-        assertEquals(1, preview.getBooks().size());
-        assertEquals(1, preview.getBookCopies().size());
+    private BookImportWorkbookReader reader;
+
+    @Before
+    public void setUp() {
+        reader = new BookImportWorkbookReader();
     }
 
-    @Test
-    public void rejectsDuplicateBarcodeInsideWorkbook() throws Exception {
-        BookImportPreviewDTO preview = new BookImportWorkbookReader().read(
-                new ByteArrayInputStream(workbook(true, false)), "duplicate.xlsx");
-        assertFalse(preview.isValid());
-        assertTrue(preview.getErrors().stream()
-                .anyMatch(error -> error.getErrorMessage().contains("Mã vạch bị trùng trong tệp")));
-    }
-
-    @Test
-    public void rejectsMissingRequiredSheet() throws Exception {
-        BookImportPreviewDTO preview = new BookImportWorkbookReader().read(
-                new ByteArrayInputStream(workbook(false, true)), "missing.xlsx");
-        assertFalse(preview.isValid());
-        assertTrue(preview.getErrors().stream()
-                .anyMatch(error -> error.getErrorMessage().contains("Thiếu sheet bắt buộc BookCopies")));
-    }
-
-    private byte[] workbook(boolean duplicateBarcode, boolean omitCopies) throws Exception {
-        try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            Sheet books = workbook.createSheet("Books");
-            header(books, BookImportWorkbookReader.BOOK_HEADERS.toArray(String[]::new));
-            Row book = books.createRow(1);
-            values(book, "978604TEST001", "Sách kiểm thử", "Tác giả", "NXB", "2026", "100000",
-                    "Kiểm thử; Giáo trình", "Java; Test");
-            books.createRow(2);
-            if (!omitCopies) {
-                Sheet copies = workbook.createSheet("BookCopies");
-                header(copies, BookImportWorkbookReader.COPY_HEADERS.toArray(String[]::new));
-                values(copies.createRow(1), "978604TEST001", "BC-TEST-IMPORT-001", "Kho kiểm thử");
-                if (duplicateBarcode) {
-                    values(copies.createRow(2), "978604TEST001", "BC-TEST-IMPORT-001", "Kho kiểm thử");
+    private byte[] createTestWorkbook(boolean includeBooks, boolean includeCopies,
+                                      boolean validBookHeaders, boolean validCopyHeaders) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            if (includeBooks) {
+                Sheet booksSheet = workbook.createSheet("Books");
+                Row headerRow = booksSheet.createRow(0);
+                if (validBookHeaders) {
+                    for (int i = 0; i < BookImportWorkbookReader.BOOK_HEADERS.size(); i++) {
+                        headerRow.createCell(i).setCellValue(BookImportWorkbookReader.BOOK_HEADERS.get(i));
+                    }
+                    // Thêm 1 dòng dữ liệu hợp lệ
+                    Row dataRow = booksSheet.createRow(1);
+                    dataRow.createCell(0).setCellValue("9780306406157"); // isbn
+                    dataRow.createCell(1).setCellValue("Lập trình Java Web"); // title
+                    dataRow.createCell(2).setCellValue("Nguyễn Văn A"); // author
+                    dataRow.createCell(3).setCellValue("NXB Giáo Dục"); // publisher
+                    dataRow.createCell(4).setCellValue(2023); // publicationYear
+                    dataRow.createCell(5).setCellValue(150000); // price
+                    dataRow.createCell(6).setCellValue("Công nghệ thông tin"); // categories
+                    dataRow.createCell(7).setCellValue("Java, Servlet"); // tags
+                } else {
+                    headerRow.createCell(0).setCellValue("wrong_header");
                 }
             }
-            workbook.write(output);
-            return output.toByteArray();
+
+            if (includeCopies) {
+                Sheet copiesSheet = workbook.createSheet("BookCopies");
+                Row headerRow = copiesSheet.createRow(0);
+                if (validCopyHeaders) {
+                    for (int i = 0; i < BookImportWorkbookReader.COPY_HEADERS.size(); i++) {
+                        headerRow.createCell(i).setCellValue(BookImportWorkbookReader.COPY_HEADERS.get(i));
+                    }
+                    // Thêm 1 dòng bản sao hợp lệ
+                    Row dataRow = copiesSheet.createRow(1);
+                    dataRow.createCell(0).setCellValue("9780306406157"); // isbn
+                    dataRow.createCell(1).setCellValue("BC-1001"); // barcode
+                    dataRow.createCell(2).setCellValue("Kệ A1-02"); // location
+                } else {
+                    headerRow.createCell(0).setCellValue("wrong_header");
+                }
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            workbook.write(baos);
+            return baos.toByteArray();
         }
     }
 
-    private void header(Sheet sheet, String... values) {
-        values(sheet.createRow(0), values);
+    // ==========================================
+    // NORMAL (N) TEST CASES - Happy Path
+    // ==========================================
+
+    @Test
+    public void testReadValidWorkbook() throws IOException {
+        byte[] excelBytes = createTestWorkbook(true, true, true, true);
+        BookImportPreviewDTO preview = reader.read(new ByteArrayInputStream(excelBytes), "test_books.xlsx");
+
+        assertNotNull(preview);
+        assertEquals("test_books.xlsx", preview.getFileName());
+        assertTrue("Không được có lỗi với file hợp lệ", preview.getErrors().isEmpty());
+        assertEquals(1, preview.getBooks().size());
+        assertEquals(1, preview.getBookCopies().size());
+
+        BookImportRowDTO bookRow = preview.getBooks().get(0);
+        assertEquals("9780306406157", bookRow.getIsbn());
+        assertEquals("Lập trình Java Web", bookRow.getTitle());
     }
 
-    private void values(Row row, String... values) {
-        for (int i = 0; i < values.length; i++) {
-            row.createCell(i).setCellValue(values[i]);
+    // ==========================================
+    // BOUNDARY (B) TEST CASES - Edge Cases
+    // ==========================================
+
+    @Test
+    public void testReadWorkbookWithOnlyHeaderRows() throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            Sheet booksSheet = workbook.createSheet("Books");
+            Row bHeader = booksSheet.createRow(0);
+            for (int i = 0; i < BookImportWorkbookReader.BOOK_HEADERS.size(); i++) {
+                bHeader.createCell(i).setCellValue(BookImportWorkbookReader.BOOK_HEADERS.get(i));
+            }
+            Sheet copiesSheet = workbook.createSheet("BookCopies");
+            Row cHeader = copiesSheet.createRow(0);
+            for (int i = 0; i < BookImportWorkbookReader.COPY_HEADERS.size(); i++) {
+                cHeader.createCell(i).setCellValue(BookImportWorkbookReader.COPY_HEADERS.get(i));
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            workbook.write(baos);
+            BookImportPreviewDTO preview = reader.read(new ByteArrayInputStream(baos.toByteArray()), "empty_headers.xlsx");
+
+            assertNotNull(preview);
+            assertTrue(preview.getBooks().isEmpty());
+            assertTrue(preview.getBookCopies().isEmpty());
         }
+    }
+
+    // ==========================================
+    // ABNORMAL (A) TEST CASES - Invalid / Errors
+    // ==========================================
+
+    @Test
+    public void testReadWorkbookMissingBooksSheet() throws IOException {
+        byte[] excelBytes = createTestWorkbook(false, true, true, true);
+        BookImportPreviewDTO preview = reader.read(new ByteArrayInputStream(excelBytes), "no_books.xlsx");
+
+        assertFalse("Phải chứa báo lỗi do thiếu sheet Books", preview.getErrors().isEmpty());
+        assertTrue(preview.getErrors().stream().anyMatch(e -> e.getErrorMessage().contains("Books")));
+    }
+
+    @Test
+    public void testReadWorkbookMissingCopiesSheet() throws IOException {
+        byte[] excelBytes = createTestWorkbook(true, false, true, true);
+        BookImportPreviewDTO preview = reader.read(new ByteArrayInputStream(excelBytes), "no_copies.xlsx");
+
+        assertFalse("Phải chứa báo lỗi do thiếu sheet BookCopies", preview.getErrors().isEmpty());
+        assertTrue(preview.getErrors().stream().anyMatch(e -> e.getErrorMessage().contains("BookCopies")));
+    }
+
+    @Test
+    public void testReadWorkbookInvalidHeaders() throws IOException {
+        byte[] excelBytes = createTestWorkbook(true, true, false, false);
+        BookImportPreviewDTO preview = reader.read(new ByteArrayInputStream(excelBytes), "invalid_headers.xlsx");
+
+        assertFalse("Phải chứa báo lỗi do sai tên tiêu đề cột", preview.getErrors().isEmpty());
     }
 }

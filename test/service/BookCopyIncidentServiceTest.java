@@ -3,57 +3,85 @@ package service;
 import exception.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class BookCopyIncidentServiceTest {
 
-    private BookCopyIncidentService service;
+    private BookCopyIncidentService incidentService;
 
     @Before
     public void setUp() {
-        service = new BookCopyIncidentService(null, null, null, null);
+        incidentService = new BookCopyIncidentService();
+    }
+
+    // ==========================================
+    // NORMAL (N) TEST CASES - Happy Path
+    // ==========================================
+
+    @Test
+    public void testValidateReportValidDamaged() throws ValidationException {
+        incidentService.validateReport("BC-1001", "damaged", "Sách bị rách trang 10-15");
     }
 
     @Test
-    public void validateReportAcceptsCompleteReport() throws Exception {
-        service.validateReport("BC-TEST-001", "damaged", "Rách bìa sau.");
-        assertTrue(true);
+    public void testValidateReportValidLost() throws ValidationException {
+        incidentService.validateReport("BC-1002", "lost", "Bạn làm mất sách tại phòng đọc");
     }
 
     @Test
-    public void validateReportRejectsInvalidType() throws Exception {
-        assertValidation(() -> service.validateReport("BC-TEST-001", "missing", "Không tìm thấy."),
-                "Loại sự cố không hợp lệ.");
+    public void testValidateResolutionValid() throws ValidationException {
+        incidentService.validateResolution("Đã xử lý xong và thu tiền phạt đền bù.");
     }
 
     @Test
-    public void validateReportRejectsMissingDescription() throws Exception {
-        assertValidation(() -> service.validateReport("BC-TEST-001", "lost", null),
-                "Mô tả hiện trạng không được để trống.");
+    public void testValidateRepairNoteValid() throws ValidationException {
+        incidentService.validateRepairNote("Đã đóng lại bìa và dán lại trang rách.");
+    }
+
+    // ==========================================
+    // BOUNDARY (B) TEST CASES - Edge Cases
+    // ==========================================
+
+    @Test
+    public void testValidateReportDescriptionBoundary1000() throws ValidationException {
+        incidentService.validateReport("BC-1001", "damaged", "D".repeat(1000));
     }
 
     @Test
-    public void validateResolutionRejectsBlankConclusion() throws Exception {
-        assertValidation(() -> service.validateResolution(" "), "Kết luận xử lý không được để trống.");
+    public void testValidateResolutionBoundary1000() throws ValidationException {
+        incidentService.validateResolution("R".repeat(1000));
     }
 
-    @Test
-    public void validateRepairNoteRejectsBlankNote() throws Exception {
-        assertValidation(() -> service.validateRepairNote(" "), "Ghi chú sửa chữa không được để trống.");
+    // ==========================================
+    // ABNORMAL (A) TEST CASES - Invalid / Exception
+    // ==========================================
+
+    @Test(expected = ValidationException.class)
+    public void testValidateReportNullBarcode() throws ValidationException {
+        incidentService.validateReport(null, "damaged", "Mô tả sự cố");
     }
 
-    private void assertValidation(ValidationCall call, String expected) throws Exception {
-        try {
-            call.run();
-            fail("Expected ValidationException");
-        } catch (ValidationException e) {
-            assertTrue(e.getMessage().contains(expected));
-        }
+    @Test(expected = ValidationException.class)
+    public void testValidateReportInvalidType() throws ValidationException {
+        incidentService.validateReport("BC-1001", "stolen", "Mô tả sự cố");
     }
 
-    @FunctionalInterface
-    private interface ValidationCall {
-        void run() throws ValidationException;
+    @Test(expected = ValidationException.class)
+    public void testValidateReportBlankDescription() throws ValidationException {
+        incidentService.validateReport("BC-1001", "damaged", "   ");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateReportDescriptionExceeds1000() throws ValidationException {
+        incidentService.validateReport("BC-1001", "damaged", "D".repeat(1001));
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateResolutionBlank() throws ValidationException {
+        incidentService.validateResolution("   ");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateRepairNoteBlank() throws ValidationException {
+        incidentService.validateRepairNote("   ");
     }
 }

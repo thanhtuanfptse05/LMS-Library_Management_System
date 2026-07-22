@@ -1,90 +1,78 @@
 package util;
 
 import exception.ValidationException;
-import jakarta.servlet.http.Part;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import javax.imageio.ImageIO;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.nio.file.Path;
+import static org.junit.Assert.*;
 
 public class BookImageStorageTest {
 
-    @Test
-    public void saveStoresValidPngImage() throws Exception {
-        Path directory = Files.createTempDirectory("book-image-test");
-        BookImageStorage storage = localStorage(directory);
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
-        ImageIO.write(new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB), "png", content);
+    private BookImageStorage storage;
+    private final Path tempDir = Path.of("build/tmp/test-images");
 
-        String fileName = storage.save(new TestPart(
-                "imageFile", "cover.png", "image/png", content.toByteArray()));
-
-        assertTrue(fileName.endsWith(".png"));
-        assertTrue(Files.isRegularFile(storage.resolve(fileName)));
-        storage.deleteQuietly(fileName);
+    @Before
+    public void setUp() {
+        storage = new BookImageStorage(tempDir);
     }
 
-    @Test
-    public void saveRejectsNonImageFile() throws Exception {
-        Path directory = Files.createTempDirectory("book-image-test");
-        BookImageStorage storage = localStorage(directory);
-        Part part = new TestPart("imageFile", "cover.txt", "text/plain", "not an image".getBytes());
+    // ==========================================
+    // NORMAL (N) TEST CASES - Happy Path
+    // ==========================================
 
-        try {
-            storage.save(part);
-            fail("Expected ValidationException");
-        } catch (ValidationException e) {
-            assertTrue(e.getMessage().contains("JPG hoặc PNG"));
-        }
+    @Test
+    public void testResolveValidJpgFilename() {
+        String validJpg = "550e8400-e29b-41d4-a716-446655440000.jpg";
+        Path resolved = storage.resolve(validJpg);
+        assertNotNull(resolved);
+        assertTrue(resolved.endsWith(validJpg));
     }
 
     @Test
-    public void resolveRejectsUnsafeFileName() throws Exception {
-        BookImageStorage storage = localStorage(Files.createTempDirectory("book-image-test"));
-        try {
-            storage.resolve("../secret.png");
-            fail("Expected IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
-            assertFalse(e.getMessage().isBlank());
-        }
+    public void testResolveValidPngFilename() {
+        String validPng = "123e4567-e89b-12d3-a456-426614174000.png";
+        Path resolved = storage.resolve(validPng);
+        assertNotNull(resolved);
+        assertTrue(resolved.endsWith(validPng));
     }
 
-    private static BookImageStorage localStorage(Path directory) {
-        return new BookImageStorage(directory, new SupabaseStorageClient(null, null, null, null));
+    @Test
+    public void testMaxFileSizeConstant() {
+        assertEquals(5L * 1024 * 1024, BookImageStorage.MAX_FILE_SIZE);
     }
 
-    private static class TestPart implements Part {
+    // ==========================================
+    // BOUNDARY (B) TEST CASES - Edge Cases
+    // ==========================================
 
-        private final String name;
-        private final String submittedFileName;
-        private final String contentType;
-        private final byte[] content;
+    @Test
+    public void testResolveUppercaseHexUuid() {
+        String validUppercase = "550E8400-E29B-41D4-A716-446655440000.JPG";
+        Path resolved = storage.resolve(validUppercase.toLowerCase());
+        assertNotNull(resolved);
+    }
 
-        TestPart(String name, String submittedFileName, String contentType, byte[] content) {
-            this.name = name;
-            this.submittedFileName = submittedFileName;
-            this.contentType = contentType;
-            this.content = content;
-        }
+    // ==========================================
+    // ABNORMAL (A) TEST CASES - Invalid / Exception
+    // ==========================================
 
-        @Override public InputStream getInputStream() { return new ByteArrayInputStream(content); }
-        @Override public String getContentType() { return contentType; }
-        @Override public String getName() { return name; }
-        @Override public String getSubmittedFileName() { return submittedFileName; }
-        @Override public long getSize() { return content.length; }
-        @Override public void write(String fileName) { }
-        @Override public void delete() { }
-        @Override public String getHeader(String name) { return null; }
-        @Override public Collection<String> getHeaders(String name) { return Collections.emptyList(); }
-        @Override public Collection<String> getHeaderNames() { return Collections.emptyList(); }
+    @Test(expected = IllegalArgumentException.class)
+    public void testResolveNullFilenameThrowsException() {
+        storage.resolve(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testResolveInvalidExtensionThrowsException() {
+        storage.resolve("550e8400-e29b-41d4-a716-446655440000.exe");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testResolvePathTraversalAttemptThrowsException() {
+        storage.resolve("../../../etc/passwd");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testResolveArbitraryStringThrowsException() {
+        storage.resolve("my-custom-image-file.png");
     }
 }

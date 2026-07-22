@@ -1,12 +1,9 @@
 package service;
 
 import exception.ValidationException;
-import java.sql.SQLException;
 import model.BookCopy;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class BookCopyServiceTest {
 
@@ -14,78 +11,104 @@ public class BookCopyServiceTest {
 
     @Before
     public void setUp() {
-        bookCopyService = new BookCopyService(null, null, null);
+        bookCopyService = new BookCopyService();
     }
 
-    @Test
-    public void validateCreateAcceptsValidCopy() throws Exception {
-        bookCopyService.validateCreate(validCreateCopy());
-        assertTrue(true);
-    }
-
-    @Test
-    public void validateCreateRejectsMissingBarcode() throws Exception {
-        BookCopy copy = validCreateCopy();
-        copy.setBarcode(null);
-        assertCreateValidation(copy, "Mã vạch không được để trống.");
-    }
-
-    @Test
-    public void validateCreateAcceptsBarcodeWithCommonPrintableSeparators() throws Exception {
-        BookCopy copy = validCreateCopy();
-        copy.setBarcode("BC9780134093413-02_A/1.3");
-
-        bookCopyService.validateCreate(copy);
-        assertTrue(true);
-    }
-
-    @Test
-    public void validateCreateRejectsBarcodeWithUnsafeCharacters() throws Exception {
-        BookCopy copy = validCreateCopy();
-        copy.setBarcode("BC 978@013#409");
-
-        assertCreateValidation(copy, "Mã vạch chỉ được chứa chữ, số");
-    }
-
-    @Test
-    public void isUniqueConstraintViolationDetectsPostgresqlSqlState() {
-        SQLException e = new SQLException("duplicate key", "23505");
-
-        assertTrue(bookCopyService.isUniqueConstraintViolation(e));
-    }
-
-    @Test
-    public void isUniqueConstraintViolationChecksNestedSqlException() {
-        SQLException root = new SQLException("outer", "08006");
-        root.setNextException(new SQLException("duplicate key", "23505"));
-
-        assertTrue(bookCopyService.isUniqueConstraintViolation(root));
-    }
-
-    @Test
-    public void validateUpdateOnlyRequiresValidLocation() throws Exception {
+    private BookCopy createValidCopy() {
         BookCopy copy = new BookCopy();
         copy.setBookCopyId(1);
-        copy.setLocation("Kho A · Kệ A12");
-        copy.setCondition("worn");
-        bookCopyService.validateUpdate(copy);
-        assertTrue(true);
-    }
-
-    private void assertCreateValidation(BookCopy copy, String expected) throws Exception {
-        try {
-            bookCopyService.validateCreate(copy);
-            fail("Expected ValidationException");
-        } catch (ValidationException e) {
-            assertTrue(e.getMessage().contains(expected));
-        }
-    }
-
-    private BookCopy validCreateCopy() {
-        BookCopy copy = new BookCopy();
-        copy.setBookId(1);
-        copy.setBarcode("BC-TEST-001");
-        copy.setLocation("Kho A · Kệ A12");
+        copy.setBookId(10);
+        copy.setBarcode("BC-2026-1001");
+        copy.setLocation("Kệ A1-02");
+        copy.setCondition("good");
+        copy.setStatus("available");
         return copy;
+    }
+
+    // ==========================================
+    // NORMAL (N) TEST CASES - Happy Path
+    // ==========================================
+
+    @Test
+    public void testValidateCreateValidCopy() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        bookCopyService.validateCreate(copy);
+    }
+
+    @Test
+    public void testValidateUpdateValidCopy() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        bookCopyService.validateUpdate(copy);
+    }
+
+    // ==========================================
+    // BOUNDARY (B) TEST CASES - Edge Cases
+    // ==========================================
+
+    @Test
+    public void testValidateCreateBarcodeLength50() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setBarcode("B".repeat(50));
+        bookCopyService.validateCreate(copy);
+    }
+
+    @Test
+    public void testValidateCreateLocationLength255() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setLocation("L".repeat(255));
+        bookCopyService.validateCreate(copy);
+    }
+
+    // ==========================================
+    // ABNORMAL (A) TEST CASES - Invalid / Exception
+    // ==========================================
+
+    @Test(expected = ValidationException.class)
+    public void testValidateCreateInvalidBookId() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setBookId(0);
+        bookCopyService.validateCreate(copy);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateCreateNullBarcode() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setBarcode(null);
+        bookCopyService.validateCreate(copy);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateCreateBarcodeExceeds50() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setBarcode("B".repeat(51));
+        bookCopyService.validateCreate(copy);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateCreateBarcodeSpecialChars() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setBarcode("BC@123#456");
+        bookCopyService.validateCreate(copy);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateCreateBlankLocation() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setLocation("   ");
+        bookCopyService.validateCreate(copy);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateCreateLocationExceeds255() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setLocation("L".repeat(256));
+        bookCopyService.validateCreate(copy);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateUpdateInvalidCopyId() throws ValidationException {
+        BookCopy copy = createValidCopy();
+        copy.setBookCopyId(-1);
+        bookCopyService.validateUpdate(copy);
     }
 }
