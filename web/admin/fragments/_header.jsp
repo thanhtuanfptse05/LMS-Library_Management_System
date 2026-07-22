@@ -4,9 +4,14 @@
 <!-- ════════════════ HEADER ════════════════ -->
 <header class="lms-header header-layout">
 
+    <!-- Mobile Sidebar Toggle -->
+    <button class="btn btn-icon d-lg-none me-2 text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas" aria-label="Mở menu">
+        <span class="material-symbols-outlined fs-3">menu</span>
+    </button>
+
     <!-- Left: Title + Breadcrumb -->
     <div class="d-flex align-items-center gap-3 flex-grow-1 text-nowrap overflow-hidden me-3">
-        <div class="d-none d-md-block">
+        <div>
             <h1 class="mb-0 fw-bold text-primary-custom" style="font-size: 16px; white-space: nowrap;">
                 <span class="material-symbols-outlined me-1" style="font-size: 18px; font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;">admin_panel_settings</span>
                 Quản trị viên

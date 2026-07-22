@@ -4,10 +4,15 @@
 <!-- ════════════════ HEADER ════════════════ -->
 <header class="lms-header header-layout">
 
+    <!-- Mobile Sidebar Toggle -->
+    <button class="btn btn-icon d-lg-none me-2 text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#studentSidebarOffcanvas" aria-controls="studentSidebarOffcanvas" aria-label="Mở menu">
+        <span class="material-symbols-outlined fs-3">menu</span>
+    </button>
+
     <!-- Left: Logo + Search -->
     <div class="d-flex align-items-center gap-3 flex-grow-1 overflow-hidden me-3">
         <a href="${pageContext.request.contextPath}/"
-           class="fw-bold text-decoration-none text-primary-custom d-none d-md-block text-nowrap"
+           class="fw-bold text-decoration-none text-primary-custom text-nowrap"
            style="font-size: 15px; white-space: nowrap;">
             <span class="material-symbols-outlined me-1" style="font-size: 18px; font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;">local_library</span>
             LMS Thư viện

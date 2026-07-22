@@ -35,13 +35,38 @@
         <!-- Row 2: Navigation & Auth CTA -->
         <nav class="d-flex justify-content-between align-items-center py-2">
 
-            <!-- Main Nav Links -->
+            <!-- Mobile Hamburger Toggle -->
+            <button class="btn btn-icon d-md-none me-2 text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#publicNavOffcanvas" aria-controls="publicNavOffcanvas" aria-label="Mở menu">
+                <span class="material-symbols-outlined fs-3">menu</span>
+            </button>
+
+            <!-- Main Nav Links (Desktop) -->
             <div class="d-none d-md-flex gap-4">
                 <a class="nav-link-custom" href="${pageContext.request.contextPath}/">Trang chủ</a>
                 <a class="nav-link-custom" href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
                 <a class="nav-link-custom" href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
                 <a class="nav-link-custom" href="${pageContext.request.contextPath}/news">Tin tức</a>
-                <a class="nav-link-custom" href="#contact">Liên hệ</a>
+                <a class="nav-link-custom" href="${pageContext.request.contextPath}/#contact">Liên hệ</a>
+            </div>
+
+            <!-- Mobile Offcanvas Menu -->
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="publicNavOffcanvas" aria-labelledby="publicNavOffcanvasLabel">
+                <div class="offcanvas-header border-bottom">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-book-half" style="font-size: 22px; color: var(--primary-color);"></i>
+                        <h5 class="offcanvas-title fw-bold text-primary-custom m-0" id="publicNavOffcanvasLabel" style="font-size: 16px;">UniLib LMS</h5>
+                    </div>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="d-flex flex-column gap-2">
+                        <a class="nav-link-custom py-2 px-3 rounded text-dark text-decoration-none fw-semibold" href="${pageContext.request.contextPath}/">Trang chủ</a>
+                        <a class="nav-link-custom py-2 px-3 rounded text-dark text-decoration-none fw-semibold" href="${pageContext.request.contextPath}/services.jsp">Dịch vụ</a>
+                        <a class="nav-link-custom py-2 px-3 rounded text-dark text-decoration-none fw-semibold" href="${pageContext.request.contextPath}/policies.jsp">Chính sách</a>
+                        <a class="nav-link-custom py-2 px-3 rounded text-dark text-decoration-none fw-semibold" href="${pageContext.request.contextPath}/news">Tin tức</a>
+                        <a class="nav-link-custom py-2 px-3 rounded text-dark text-decoration-none fw-semibold" href="${pageContext.request.contextPath}/#contact">Liên hệ</a>
+                    </div>
+                </div>
             </div>
 
             <!-- Auth CTA -->

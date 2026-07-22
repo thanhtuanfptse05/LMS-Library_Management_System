@@ -40,23 +40,23 @@
                 </c:if>
 
                 <!-- ─── Section Header ─── -->
-                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
                     <div>
                         <h2 class="fw-bold mb-0 text-primary-custom" style="font-size: 22px;">Quản lý tài khoản người dùng</h2>
                         <p class="text-on-surface-variant mb-0" style="font-size: 13px;">Tra cứu, thêm mới, cập nhật thông tin và kiểm soát trạng thái hoạt động của độc giả/nhân viên.</p>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-outline-secondary rounded-3 fw-bold px-3 d-flex align-items-center gap-1" 
+                    <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+                        <button class="btn btn-outline-secondary rounded-3 fw-bold px-3 d-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-md-grow-0" 
                                 style="font-size: 14px; border: 1px solid var(--outline-variant);"
                                 onclick="exportUsers()">
                             <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Xuất Excel
                         </button>
-                        <button class="btn btn-outline-secondary rounded-3 fw-bold px-3 d-flex align-items-center gap-1" 
+                        <button class="btn btn-outline-secondary rounded-3 fw-bold px-3 d-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-md-grow-0" 
                                 style="font-size: 14px; border: 1px solid var(--outline-variant);"
                                 data-bs-toggle="modal" data-bs-target="#importUserModal">
                             <span class="material-symbols-outlined" style="font-size: 18px;">upload_file</span> Nhập từ Excel/CSV
                         </button>
-                        <button class="btn btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1" 
+                        <button class="btn btn-primary-custom rounded-3 fw-bold px-3 d-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-md-grow-0" 
                                 style="font-size: 14px;"
                                 data-bs-toggle="modal" data-bs-target="#createUserModal">
                             <span class="material-symbols-outlined" style="font-size: 18px;">person_add</span> Thêm người dùng
