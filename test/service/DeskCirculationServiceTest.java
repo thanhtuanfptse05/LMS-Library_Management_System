@@ -54,4 +54,9 @@ public class DeskCirculationServiceTest {
     public void testCheckInBlankBarcode() throws Exception {
         service.processCheckIn(1, "   ", "good");
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testCheckInInvalidCondition() throws Exception {
+        service.processCheckIn(1, "BC-1001", "invalid_condition");
+    }
 }

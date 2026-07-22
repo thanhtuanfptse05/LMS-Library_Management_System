@@ -10,8 +10,10 @@ import dao.SystemConfigDAO;
 import dao.UserDAO;
 import dao.UserLockReasonDAO;
 import dao.UserLookupDAO;
+import dao.BookCopyIncidentDAO;
 import model.Book;
 import model.BookCopy;
+import model.BookCopyIncident;
 import model.BorrowRecord;
 import model.Reservation;
 import model.User;
@@ -80,6 +82,7 @@ public class DeskCirculationService {
     private final PaymentDAO        paymentDAO;
     private final UserLookupDAO     userLookupDAO;
     private final SystemConfigDAO   systemConfigDAO;
+    private final BookCopyIncidentDAO bookCopyIncidentDAO;
 
     /**
      * Constructor mặc định — khởi tạo tất cả DAO dependencies.
@@ -97,6 +100,7 @@ public class DeskCirculationService {
         this.paymentDAO        = new PaymentDAO();
         this.userLookupDAO     = new UserLookupDAO();
         this.systemConfigDAO   = new SystemConfigDAO();
+        this.bookCopyIncidentDAO = new BookCopyIncidentDAO();
     }
 
     /**
@@ -113,7 +117,8 @@ public class DeskCirculationService {
     DeskCirculationService(UserLockReasonDAO userLockReasonDAO, ReservationDAO reservationDAO,
                            BookCopyDAO bookCopyDAO, BorrowRecordDAO borrowRecordDAO,
                            BookDAO bookDAO, FineDAO fineDAO, UserDAO userDAO,
-                           PaymentDAO paymentDAO, UserLookupDAO userLookupDAO) {
+                           PaymentDAO paymentDAO, UserLookupDAO userLookupDAO,
+                           BookCopyIncidentDAO bookCopyIncidentDAO) {
         this.userLockReasonDAO = userLockReasonDAO;
         this.reservationDAO    = reservationDAO;
         this.bookCopyDAO       = bookCopyDAO;
@@ -124,6 +129,7 @@ public class DeskCirculationService {
         this.paymentDAO        = paymentDAO;
         this.userLookupDAO     = userLookupDAO;
         this.systemConfigDAO   = new SystemConfigDAO();
+        this.bookCopyIncidentDAO = bookCopyIncidentDAO;
     }
 
     // =========================================================================
@@ -548,8 +554,9 @@ public class DeskCirculationService {
      * @throws SQLException nếu bất kỳ bước nào thất bại (Service sẽ rollback)
      */
     // EARS[Condition-driven]: WHERE condition IN ('damaged', 'lost'),
-    // THE LMS System SHALL execute 6-step atomic write: BorrowRecord + BookCopy +
-    // Book.totalQuantity + Fine + UserLockReason + User.status [Node 6.17, FR-F6-04, BR-24]
+    // THE LMS System SHALL execute 8-step atomic write: BorrowRecord + BookCopy +
+    // Book.totalQuantity + BookCopyIncident + Fine + UserLockReason + User.status + AuditLog
+    // [Node 6.17, FR-37 bước 1-9, BR-24]
     private void processCheckInDamagedOrLost(Connection conn, int borrowRecordId,
                                              int bookCopyId, int bookId,
                                              int userId, String condition, int librarianId) throws SQLException {
@@ -561,6 +568,15 @@ public class DeskCirculationService {
 
         // Bước 3: UPDATE Book.totalQuantity - 1 (BR-24 — loại khỏi tổng tài sản)
         bookDAO.decrementTotalQuantity(conn, bookId);
+
+        // Bước 3.5 [FR-37 bước 6]: Tự động tạo BookCopyIncident (BR-24)
+        // Ghi nhận sự cố hỏng/mất phát hiện tại quầy — hiển thị trên trang "Hỏng và mất"
+        BookCopyIncident incident = new BookCopyIncident();
+        incident.setBookCopyId(bookCopyId);
+        incident.setIncidentType(condition);
+        incident.setDescription("Phát hiện khi trả sách — Mã mượn: BR-" + borrowRecordId);
+        incident.setReportedBy(librarianId);
+        int incidentId = bookCopyIncidentDAO.insert(conn, incident);
 
         // Bước 4: Tính tiền phạt đền bù và INSERT Fine
         BigDecimal fineAmount = calculateCompensationAmount(conn, bookId, condition);
@@ -585,11 +601,11 @@ public class DeskCirculationService {
 
         // Bước 7: Ghi Audit Log cho Check-in hỏng/mất (ARCH-02)
         userDAO.insertAuditLog(librarianId, "CHECK_IN_" + condition.toUpperCase(), "BorrowRecord", borrowRecordId,
-                "status=borrowed", "status=" + condition + ", fineId=" + fineId);
+                "status=borrowed", "status=" + condition + ", fineId=" + fineId + ", incidentId=" + incidentId);
 
         LOGGER.log(Level.WARNING,
-                "Check-in [BR-24]: Sách {0} — userId={1} bị phạt, bookId={2} trừ totalQuantity, đã tạo Payment pending",
-                new Object[]{condition, userId, bookId});
+                "Check-in [BR-24]: Sách {0} — userId={1} bị phạt, bookId={2} trừ totalQuantity, incidentId={3}",
+                new Object[]{condition, userId, bookId, incidentId});
     }
 
     /**

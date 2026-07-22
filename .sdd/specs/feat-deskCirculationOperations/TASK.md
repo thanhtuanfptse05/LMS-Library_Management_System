@@ -8,3 +8,4 @@
 | **T-F6-04** | Service Layer (Cash Payment) | `DeskCirculationService.java` | 2h | T-F6-01 | Transaction update Payment/Fine, xóa 'unpaid' lock, trigger Auto-Unlock dựa trên đếm COUNT. |
 | **T-F6-05** | Controller (Servlets) | `CheckOutServlet.java`, `CheckInServlet.java`, `CashPaymentServlet.java` | 2h | T-F6-02,03,04 | Bắt Exception và trả Flash messages (thành công/lỗi) cho giao diện. |
 | **T-F6-06** | View (Librarian Dashboard UI) | `desk-checkout.jsp`, `desk-checkin.jsp`, `desk-payment.jsp` | 3h | T-F6-05 | Xây dựng UI form nhập mã Sinh viên, quét mã Barcode, chọn Condition. Nút duyệt Payment. |
+| **T-F6-07** | **[HOÀN THÀNH] Tự động tạo BookCopyIncident khi check-in hỏng/mất** | `DeskCirculationService.java`, `BookCopyIncidentDAO.java` | 1.5h | T-F6-03 | **GAP FIX (FR-37 bước 6):** Đã bổ sung bước INSERT `BookCopyIncident` (bước 3.5 trong `processCheckInDamagedOrLost()`) cùng 2 import, 1 field, 2 constructor và unit test. |
