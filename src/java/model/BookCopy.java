@@ -12,6 +12,9 @@ public class BookCopy {
     private String condition;
     private String status;
     private String barcode;
+    private boolean removedFromInventory;
+    private Timestamp removedFromInventoryAt;
+    private Integer removedFromInventoryBy;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
@@ -46,6 +49,12 @@ public class BookCopy {
     public void setStatus(String status) { this.status = status; }
     public String getBarcode() { return barcode; }
     public void setBarcode(String barcode) { this.barcode = barcode; }
+    public boolean isRemovedFromInventory() { return removedFromInventory; }
+    public void setRemovedFromInventory(boolean removedFromInventory) { this.removedFromInventory = removedFromInventory; }
+    public Timestamp getRemovedFromInventoryAt() { return removedFromInventoryAt; }
+    public void setRemovedFromInventoryAt(Timestamp removedFromInventoryAt) { this.removedFromInventoryAt = removedFromInventoryAt; }
+    public Integer getRemovedFromInventoryBy() { return removedFromInventoryBy; }
+    public void setRemovedFromInventoryBy(Integer removedFromInventoryBy) { this.removedFromInventoryBy = removedFromInventoryBy; }
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public Timestamp getUpdatedAt() { return updatedAt; }

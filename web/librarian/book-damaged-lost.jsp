@@ -176,7 +176,9 @@
                                                         <span class="bm-badge bm-badge--info">Đang xử lý</span>
                                                     </c:when>
                                                     <c:when test="${incident.status == 'resolved'}">
-                                                        <span class="bm-badge bm-badge--success">Đã xử lý</span>
+                                                        <span class="bm-badge bm-badge--success">
+                                                            ${incident.removedFromInventory ? 'Đã loại khỏi kho' : 'Đã xử lý'}
+                                                        </span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span class="bm-badge bm-badge--neutral">Báo sai</span>
@@ -195,8 +197,8 @@
                                                         </form>
                                                     </c:if>
                                                     <%-- Đối với sách đã xử lý hỏng (nhưng chưa hoàn tất khôi phục): Cho phép khôi phục lưu thông --%>
-                                                    <c:if test="${canEdit and incident.status == 'resolved' and incident.incidentType == 'damaged' and not fn:contains(incident.resolution, 'Khôi phục lưu thông:')}">
-                                                        <a class="btn btn-sm btn-primary-custom" href="${pageContext.request.contextPath}/librarian/book-management/incidents?incidentId=${incident.incidentId}">Khôi phục</a>
+                                                    <c:if test="${canEdit and incident.status == 'resolved' and incident.incidentType == 'damaged' and not incident.removedFromInventory and not fn:contains(incident.resolution, 'Khôi phục lưu thông:')}">
+                                                        <a class="btn btn-sm btn-primary-custom" href="${pageContext.request.contextPath}/librarian/book-management/incidents?incidentId=${incident.incidentId}">Xử lý sau kết luận</a>
                                                     </c:if>
                                                     <%-- Xem chi tiết hoặc Đưa ra kết luận xử lý bồi thường --%>
                                                     <a class="btn btn-sm bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/incidents?incidentId=${incident.incidentId}">

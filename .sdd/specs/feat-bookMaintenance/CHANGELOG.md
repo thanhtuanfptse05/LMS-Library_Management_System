@@ -1,5 +1,14 @@
 # CHANGELOG.md — Bảo trì sách và Kiểm kê
 
+## [1.2.0] - 2026-07-23
+### Added
+- Bổ sung luồng loại bản sao hỏng nặng khỏi tổng kho bằng `BookCopy.removedFromInventory`, `removedFromInventoryAt`, `removedFromInventoryBy`; giữ record BookCopy để tra cứu lịch sử, không hard-delete.
+- Thêm action F13 `removeFromInventory` cho incident `damaged/resolved` chưa bị loại khỏi kho.
+
+### Changed
+- Kết luận sự cố `lost` trong F13 sẽ loại khỏi tổng kho và giảm `Book.totalQuantity` đúng một lần.
+- F13 tiếp nhận incident `resolved` từ F6 và cho phép bản sao `damaged` được khôi phục hoặc loại khỏi kho tùy khả năng sửa chữa.
+
 ## [1.1.0] - 2026-07-09
 ### Fixed
 - Xóa hai khối Use Case bị lặp.

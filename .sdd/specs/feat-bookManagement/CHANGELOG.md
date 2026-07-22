@@ -15,7 +15,7 @@
 - Loại bỏ field/trạng thái không có trong schema: `acquisitionDate`, `quantity`, batch `processing/completed`.
 - Chốt import all-or-nothing; loại bỏ mô tả skip row/partial success và tự sinh Barcode.
 - Sửa đường dẫn schema trong TASK thành `database/supabase/LMS_Schema_PostgreSQL.sql`.
-- Tách đúng boundary: sự cố hỏng/mất và kiểm kê thuộc F13 `feat-bookMaintenance`.
+- Tách đúng boundary: F4 không sửa condition/removedFromInventory trực tiếp; sự cố hỏng/mất phát hiện từ màn bản sao thuộc F13, còn hỏng/mất phát hiện khi nhận trả sách thuộc F6.
 - Sửa PLAN/TASK để dùng đúng class/service/DAO hiện hữu và mã FR toàn cục, không dùng hệ `FR-F4-*` song song.
 
 ### Changed

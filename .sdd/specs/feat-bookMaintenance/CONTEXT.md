@@ -5,9 +5,10 @@
 Sách vật lý có thể hỏng, mất hoặc nằm sai vị trí. Nếu chỉ sửa BookCopy mà không đồng bộ `availableQuantity`, hệ thống sẽ công bố sai khả năng phục vụ. F13 cung cấp quy trình có trạng thái, khóa bản ghi, transaction và Audit Log để xử lý sự cố và kiểm kê an toàn.
 
 ## 2. DOMAIN KNOWLEDGE
-- **Incident:** Báo cáo `damaged/lost` có vòng đời `pending -> investigating -> resolved/rejected`.
+- **Incident:** Báo cáo `damaged/lost` do F13 tạo có vòng đời `pending -> investigating -> resolved/rejected`; incident do F6 tạo khi nhận trả hỏng/mất đã ở `resolved`.
 - **Immediate Suspension:** Báo cáo hợp lệ làm BookCopy ngừng lưu thông và giảm tồn khả dụng ngay; condition chỉ chốt khi resolve.
-- **Repair Restore:** Chỉ bản sao `damaged` đã resolved mới có thể trở lại `good/available`.
+- **Repair Restore:** Chỉ bản sao `damaged` đã resolved mới có thể trở lại `good/available`; bản sao `lost` không được restore.
+- **Inventory Removal:** Bản sao `damaged` không còn khả năng sửa hoặc `lost` đã kết luận được loại khỏi tổng kho bằng `removedFromInventory`, nhưng record BookCopy vẫn được giữ để tra cứu lịch sử.
 - **Inventory Session:** Phiên theo một location với vòng đời `draft -> counting -> reviewing -> completed`, hoặc `cancelled`.
 - **Inventory Item:** Snapshot/scan của BookCopy, có kết quả `pending/matched/missing/misplaced`; resolution được ghi bằng `resolvedAt`.
 
@@ -27,7 +28,7 @@ Sách vật lý có thể hỏng, mất hoặc nằm sai vị trí. Nếu chỉ 
 ## 5. ASSUMPTIONS
 - Barcode scanner hoạt động như bàn phím.
 - F4 tạo Book/BookCopy; F13 chỉ xử lý tình trạng vật lý và kiểm kê.
-- F6 có thể phát hiện hỏng/mất khi trả sách nhưng phải tuân theo cùng bất biến tồn kho.
+- F6 có thể phát hiện hỏng/mất khi trả sách và kết luận ngay tại quầy: tạo incident `resolved`, `lost` trừ `totalQuantity` và set `removedFromInventory`, `damaged` giữ `totalQuantity` để có thể sửa hoặc loại khỏi kho qua F13.
 - Mỗi BookCopy chỉ có một incident `pending/investigating`.
 
 ## 6. OPEN QUESTIONS

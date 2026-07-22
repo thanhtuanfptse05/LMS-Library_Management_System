@@ -101,6 +101,28 @@ public class BookCopyIncidentDAO {
         throw new SQLException("Không thể lấy mã sự cố vừa tạo.");
     }
 
+    public int insertResolvedFromCheckIn(Connection conn, BookCopyIncident incident, String resolution, int resolvedBy)
+            throws SQLException {
+        String sql = "INSERT INTO BookCopyIncident (bookCopyId, incidentType, description, status, "
+                + "resolution, reportedBy, reportedAt, resolvedBy, resolvedAt) "
+                + "VALUES (?, ?, ?, 'resolved', ?, ?, NOW(), ?, NOW())";
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, incident.getBookCopyId());
+            ps.setString(2, incident.getIncidentType());
+            ps.setString(3, incident.getDescription());
+            ps.setString(4, resolution);
+            ps.setInt(5, incident.getReportedBy());
+            ps.setInt(6, resolvedBy);
+            ps.executeUpdate();
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+        }
+        throw new SQLException("Không thể lấy mã sự cố vừa tạo.");
+    }
+
     public void startInvestigating(Connection conn, int incidentId) throws SQLException {
         String sql = "UPDATE BookCopyIncident SET status = 'investigating' "
                 + "WHERE incidentId = ? AND status = 'pending'";
@@ -175,12 +197,16 @@ public class BookCopyIncidentDAO {
         return "SELECT i.incidentId, i.bookCopyId, bc.barcode, b.title AS bookTitle, i.incidentType, "
                 + "i.description, i.status, i.resolution, i.reportedBy, "
                 + "COALESCE(reporter.fullName, ru.email) reportedByName, i.reportedAt, i.resolvedBy, "
-                + "COALESCE(resolver.fullName, xu.email) resolvedByName, i.resolvedAt FROM "
+                + "COALESCE(resolver.fullName, xu.email) resolvedByName, i.resolvedAt, "
+                + "bc.removedFromInventory, bc.removedFromInventoryAt, bc.removedFromInventoryBy, "
+                + "COALESCE(remover.fullName, remu.email) removedFromInventoryByName FROM "
                 + incidentTable + " JOIN BookCopy bc ON bc.bookCopyId = i.bookCopyId "
                 + "JOIN Book b ON b.bookId = bc.bookId JOIN \"User\" ru ON ru.userId = i.reportedBy "
                 + "LEFT JOIN MemberProfile reporter ON reporter.userId = i.reportedBy "
                 + "LEFT JOIN \"User\" xu ON xu.userId = i.resolvedBy "
-                + "LEFT JOIN MemberProfile resolver ON resolver.userId = i.resolvedBy";
+                + "LEFT JOIN MemberProfile resolver ON resolver.userId = i.resolvedBy "
+                + "LEFT JOIN \"User\" remu ON remu.userId = bc.removedFromInventoryBy "
+                + "LEFT JOIN MemberProfile remover ON remover.userId = bc.removedFromInventoryBy";
     }
 
     private void appendFilters(StringBuilder sql, List<Object> parameters, String keyword,
@@ -229,6 +255,11 @@ public class BookCopyIncidentDAO {
         incident.setResolvedBy(rs.wasNull() ? null : resolvedBy);
         incident.setResolvedByName(rs.getString("resolvedByName"));
         incident.setResolvedAt(rs.getTimestamp("resolvedAt"));
+        incident.setRemovedFromInventory(rs.getBoolean("removedFromInventory"));
+        incident.setRemovedFromInventoryAt(rs.getTimestamp("removedFromInventoryAt"));
+        int removedBy = rs.getInt("removedFromInventoryBy");
+        incident.setRemovedFromInventoryBy(rs.wasNull() ? null : removedBy);
+        incident.setRemovedFromInventoryByName(rs.getString("removedFromInventoryByName"));
         return incident;
     }
 }

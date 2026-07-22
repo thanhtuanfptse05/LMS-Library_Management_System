@@ -37,6 +37,11 @@ public class BookCopyIncidentServiceTest {
         incidentService.validateRepairNote("Đã đóng lại bìa và dán lại trang rách.");
     }
 
+    @Test
+    public void testValidateRemovalNoteValid() throws ValidationException {
+        incidentService.validateRemovalNote("Sách hỏng nặng, không còn khả năng sửa chữa.");
+    }
+
     // ==========================================
     // BOUNDARY (B) TEST CASES - Edge Cases
     // ==========================================
@@ -49,6 +54,11 @@ public class BookCopyIncidentServiceTest {
     @Test
     public void testValidateResolutionBoundary1000() throws ValidationException {
         incidentService.validateResolution("R".repeat(1000));
+    }
+
+    @Test
+    public void testValidateRemovalNoteBoundary1000() throws ValidationException {
+        incidentService.validateRemovalNote("R".repeat(1000));
     }
 
     // ==========================================
@@ -83,5 +93,15 @@ public class BookCopyIncidentServiceTest {
     @Test(expected = ValidationException.class)
     public void testValidateRepairNoteBlank() throws ValidationException {
         incidentService.validateRepairNote("   ");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateRemovalNoteBlank() throws ValidationException {
+        incidentService.validateRemovalNote("   ");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testValidateRemovalNoteExceeds1000() throws ValidationException {
+        incidentService.validateRemovalNote("R".repeat(1001));
     }
 }

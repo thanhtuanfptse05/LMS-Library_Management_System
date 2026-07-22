@@ -12,7 +12,7 @@ Cung cấp công cụ cho Thủ thư quản lý đầu sách, bản sao vật l�
 ## 2.5 Use Cases (Danh sách Use Cases)
 * **UC-12 (View Book Catalog & Inventory):** Actor: Librarian | Xem tổng quan, tìm kiếm, lọc, sắp xếp và phân trang đầu sách/bản sao cùng số lượng tồn kho.
 * **UC-13 (Manage Book Catalog):** Actor: Librarian | Tạo đầu sách và cập nhật metadata, ảnh bìa, thể loại, tag hoặc trạng thái; không sửa ISBN và số lượng trực tiếp.
-* **UC-14 (Manage Physical Copies):** Actor: Librarian | Nhập bản sao bằng Barcode và cập nhật vị trí của bản sao đang khả dụng; thay đổi condition được chuyển sang F13.
+* **UC-14 (Manage Physical Copies):** Actor: Librarian | Nhập bản sao bằng Barcode và cập nhật vị trí của bản sao đang khả dụng; F4 không sửa condition trực tiếp, sự cố hỏng/mất được xử lý qua F13 hoặc qua F6 khi nhận trả sách.
 * **UC-15 (Manage Tags & Categories):** Actor: Librarian | Tạo và cập nhật trạng thái thể loại/tag mà không hard-delete.
 * **UC-27 (Import Bulk Books):** Actor: Librarian | Tải file `.xlsx`, xem preview và xác nhận import Book/BookCopy theo all-or-nothing.
 * **UC-52 (View Book Import History):** Actor: Librarian | Tìm kiếm, lọc và xem lỗi chi tiết của từng phiên import.
@@ -21,7 +21,7 @@ Cung cấp công cụ cho Thủ thư quản lý đầu sách, bản sao vật l�
 
 ## 3. Business Rules (Quy tắc nghiệp vụ)
 * **BR-16 (Uniqueness of Identifiers):** ISBN của `Book` và Barcode của `BookCopy` BẮT BUỘC duy nhất toàn hệ thống. ISBN được chuẩn hóa trước khi so sánh/lưu.
-* **BR-17 (Inventory Synchronization):** `totalQuantity` và `availableQuantity` BẮT BUỘC đồng bộ với BookCopy. Tạo BookCopy `good/available` cộng 1 vào cả hai; các thay đổi khả dụng khác do F13/F6 cập nhật trong transaction tương ứng.
+* **BR-17 (Inventory Synchronization):** `totalQuantity` và `availableQuantity` BẮT BUỘC đồng bộ với BookCopy. Tạo BookCopy `good/available` cộng 1 vào cả hai; các thay đổi khả dụng khác do F13/F6 cập nhật trong transaction tương ứng. BookCopy bị loại khỏi tổng kho phải giữ record và set `removedFromInventory=true`, không hard-delete.
 * **BR-18 (Immutable Core Identifiers):** ISBN và Barcode KHÔNG ĐƯỢC thay đổi sau khi bản ghi được tạo thành công.
 * **BR-27 (Book Import Transaction):** Import sách BẮT BUỘC all-or-nothing. Có bất kỳ lỗi validation hoặc lỗi ghi dữ liệu nào thì không Book/BookCopy nào của phiên được commit.
 
@@ -38,7 +38,7 @@ Cung cấp công cụ cho Thủ thư quản lý đầu sách, bản sao vật l�
   * *Mapping:* UC-14 / BR-16, BR-18
 * **FR-27 (Chặn sửa đổi Định danh bất biến):** WHEN cập nhật Book hoặc BookCopy, THE system SHALL chỉ cập nhật trường cho phép: metadata/trạng thái/ảnh/phân loại của Book và location của BookCopy đang `available`; ISBN, Barcode, bookId, condition, status và số lượng của BookCopy phải giữ theo bản ghi hiện tại. WHERE BookCopy đang `borrowed`, `reserved` hoặc `unavailable`, THE system SHALL từ chối cập nhật location.
   * *Mapping:* UC-13, UC-14 / BR-18
-* **FR-28 (Điều phối thay đổi condition):** WHEN Thủ thư cần ghi nhận BookCopy hỏng/mất, F4 SHALL không cập nhật condition trực tiếp tại `BookCopyServlet`; hệ thống SHALL điều hướng sang quy trình sự cố của F13 `feat-bookMaintenance`, nơi việc ngừng lưu thông, đồng bộ `availableQuantity` và Audit Log được xử lý nguyên tử.
+* **FR-28 (Điều phối thay đổi condition):** WHEN Thủ thư cần ghi nhận BookCopy hỏng/mất từ màn quản lý bản sao, F4 SHALL không cập nhật condition trực tiếp tại `BookCopyServlet`; hệ thống SHALL điều hướng sang quy trình sự cố của F13 `feat-bookMaintenance`, nơi việc ngừng lưu thông, đồng bộ `availableQuantity` và Audit Log được xử lý nguyên tử. WHERE hỏng/mất được phát hiện khi nhận trả sách tại quầy, F6 xử lý trong transaction check-in và tạo incident `resolved`.
   * *Mapping:* UC-14 / BR-17
 * **FR-46 (Kiểm định tệp Excel Sách với 2 Phase):** WHEN `BookImportServlet.doPost(action=upload)` nhận file, THE system SHALL: (1) chỉ nhận `.xlsx`, tối đa 10 MB, tên tối đa 255 ký tự, (2) yêu cầu sheet `Books` có cột `isbn,title,author,publisher,publicationYear,price,categories,tags` và sheet `BookCopies` có `isbn,barcode,location`, (3) bỏ dòng trống, giới hạn 5.000 BookCopy, (4) kiểm tra trường bắt buộc, kiểu dữ liệu, ISBN, tham chiếu ISBN, độ dài, Barcode dùng cùng rule validate với nhập tay (chỉ chữ, số hoặc ký tự `- _ . /`), duplicate nội bộ và duplicate Barcode trong DB, (5) lưu preview trong session nếu toàn bộ hợp lệ; WHERE có lỗi thì lưu `BookImportBatch(status='failed')` và `BookImportError` theo sheet/dòng/cột, không tạo dữ liệu sách.
   * *Mapping:* UC-27 / BR-16, BR-27
@@ -72,6 +72,7 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 * `bookCopyId` (INT, PK), `bookId` (INT, FK), `barcode` (VARCHAR(50), UNIQUE)
 * `location` (VARCHAR(255)), `condition` (`good`, `damaged`, `lost`)
 * `status` (`available`, `unavailable`, `borrowed`, `reserved`), `createdAt`, `updatedAt`
+* `removedFromInventory` (BOOLEAN), `removedFromInventoryAt`, `removedFromInventoryBy` — dùng bởi F13/F6 để loại bản sao khỏi tổng kho nhưng vẫn giữ lịch sử.
 
 ### Bảng Category, Tag và bảng liên kết
 * `Category(categoryId, name, description, status, updatedAt, updatedBy)`
@@ -94,7 +95,7 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 - [ ] Cập nhật đầu sách không thay đổi ISBN, `totalQuantity` hoặc `availableQuantity`.
 - [ ] Thêm một BookCopy hợp lệ làm cả hai số lượng tăng đúng 1; Barcode trùng không làm thay đổi dữ liệu.
 - [ ] Barcode nhập tay và Barcode import có ký tự không được phép bị từ chối; lỗi trùng Barcode do unique constraint đồng thời hiển thị thông báo thân thiện.
-- [ ] Chỉ BookCopy `available` được cập nhật location; condition hỏng/mất đi qua F13.
+- [ ] Chỉ BookCopy `available` được cập nhật location; condition hỏng/mất không được sửa trực tiếp trong F4, mà đi qua F13 hoặc F6 tùy điểm phát hiện nghiệp vụ.
 - [ ] Category/Tag được tạo/cập nhật bằng soft state; không hard-delete.
 - [ ] File import lỗi tạo 0 Book/BookCopy và lưu được lỗi theo sheet/dòng/cột.
 - [ ] File import hợp lệ tạo đủ dữ liệu hoặc rollback toàn bộ nếu một bước ghi thất bại.
@@ -105,9 +106,9 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 
 ## 9. Out of Scope (Phạm vi không thực hiện)
 * Báo cáo/xử lý sự cố hỏng mất và kiểm kê kho (F13 `feat-bookMaintenance`).
-* Mượn, trả, đặt trước, phạt và thanh toán (F5/F6/F9).
+* Mượn, trả, đặt trước, phạt và thanh toán; bao gồm luồng F6 tự tạo incident `resolved` khi nhận trả sách hỏng/mất tại quầy (F5/F6/F9).
 * Tìm kiếm sách công khai (F8) và đề xuất mua sách (F20).
-* Hard-delete Book/BookCopy hoặc tự động sửa tồn kho không có transaction nghiệp vụ.
+* Hard-delete Book/BookCopy hoặc tự động sửa tồn kho không có transaction nghiệp vụ; loại khỏi tổng kho chỉ được thực hiện bởi F13/F6 qua `removedFromInventory`.
 
 ## Notes & Open Questions (Ghi chú & Câu hỏi mở)
 * F4 giữ nguyên mã UC/BR/FR trong `diagram/spec-UC-BR-FR.txt`; không tạo hệ mã song song.

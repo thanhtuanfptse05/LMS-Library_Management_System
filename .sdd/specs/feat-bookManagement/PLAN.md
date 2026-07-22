@@ -4,7 +4,7 @@
 ## 1. ARCHITECTURAL APPROACH
 Áp dụng Servlet MVC + DAO/Service Pattern theo stack hiện hữu. Controller xử lý request/response; Service chịu validation nghiệp vụ, transaction và Audit Log; DAO chỉ truy cập PostgreSQL bằng `PreparedStatement`; JSP dùng JSTL/EL.
 
-Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Service, `setAutoCommit(false)` và truyền cùng Connection vào mọi DAO. F4 không dùng database trigger để đồng bộ tồn kho. Thay đổi condition hỏng/mất không thực hiện trong BookCopy update mà chuyển sang F13 `feat-bookMaintenance`.
+Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Service, `setAutoCommit(false)` và truyền cùng Connection vào mọi DAO. F4 không dùng database trigger để đồng bộ tồn kho. Thay đổi condition hỏng/mất không thực hiện trong BookCopy update; nếu phát hiện từ màn quản lý bản sao thì chuyển sang F13 `feat-bookMaintenance`, nếu phát hiện khi nhận trả sách thì thuộc F6 check-in.
 
 ## 2. COMPONENTS
 | Component | Trách nhiệm | Interface/Class |
@@ -34,7 +34,7 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 - **Quản lý Category/Tag:** Controller -> Service transaction -> DAO create/update -> Audit Log.
 - **Import:** Upload -> WorkbookReader -> Validator -> preview session. Nếu lỗi: lưu batch `failed` + errors, không tạo Book/BookCopy. Nếu hợp lệ và được confirm: validate lại -> một transaction tạo dữ liệu + số lượng + batch `success` + Audit -> commit; lỗi ghi làm rollback toàn bộ.
 - **Lịch sử import:** `BookImportHistoryServlet` -> `BookImportDAO.search/count/findErrors` -> JSP.
-- **Condition hỏng/mất:** F4 chuyển người dùng sang F13; F4 không cập nhật condition trực tiếp.
+- **Condition hỏng/mất:** F4 chuyển người dùng sang F13 khi phát hiện từ màn quản lý bản sao; F4 không cập nhật condition hoặc `removedFromInventory` trực tiếp. Luồng phát hiện khi nhận trả sách thuộc F6 và tạo incident `resolved`.
 
 ## 4. IMPORT TEMPLATE
 - Chỉ nhận Excel `.xlsx`, dung lượng tối đa 10 MB, tên file tối đa 255 ký tự.
@@ -58,6 +58,7 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 ## 6. DATABASE CHANGES
 - Nguồn chuẩn là `database/supabase/LMS_Schema_PostgreSQL.sql`; không tham chiếu schema SQL Server hoặc đường dẫn cũ.
 - Giữ CHECK constraint: số lượng không âm, `availableQuantity <= totalQuantity`, giá không âm, status/condition theo tập giá trị schema.
+- Giữ cột `BookCopy.removedFromInventory*` để F13/F6 loại bản sao khỏi tổng kho mà không hard-delete.
 - Giữ unique constraint cho `Book.isbn`, `BookCopy.barcode`, `Tag.name`; xác minh/bổ sung unique không phân biệt hoa thường cho `Category.name` nếu import đồng thời có thể tạo trùng.
 - Giữ `BookImportBatch.status IN ('success','failed')`, `BookImportError.sheetName IN ('Books','BookCopies')`, và thời hạn lịch sử 1 năm.
 - Xác minh index cho ISBN, Barcode, `BookCopy.bookId/status`, import history theo `createdAt`.
@@ -76,8 +77,8 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
   **Mitigation:** Controller không nhận các trường này; Service nạp và giữ giá trị từ DB.
 - **Risk:** File import lớn giữ transaction lâu.
   **Mitigation:** Validate toàn bộ trước transaction, giới hạn 5.000 BookCopy và 10 MB.
-- **Risk:** F4 và F13 chồng lấn nghiệp vụ hỏng/mất.
-  **Mitigation:** F4 chỉ cập nhật location; mọi condition/incident/inventory thuộc F13.
+- **Risk:** F4, F6 và F13 chồng lấn nghiệp vụ hỏng/mất.
+  **Mitigation:** F4 chỉ cập nhật location; F13 xử lý manual/inventory incident; F6 chỉ xử lý hỏng/mất tại thời điểm check-in và tạo incident `resolved`.
 
 ## 8. QUESTIONS FOR HUMAN
 - N/A

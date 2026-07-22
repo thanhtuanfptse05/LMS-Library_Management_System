@@ -109,6 +109,9 @@ public class BookCopyIncidentService {
                 if (!"damaged".equals(copy.getCondition()) || !"unavailable".equals(copy.getStatus())) {
                     throw new ValidationException("Bản sao không ở trạng thái hỏng cần khôi phục.");
                 }
+                if (copy.isRemovedFromInventory()) {
+                    throw new ValidationException("Bản sao đã bị loại khỏi kho nên không thể khôi phục lưu thông.");
+                }
 
                 bookCopyDAO.restoreAfterRepair(conn, copy.getBookCopyId());
                 bookDAO.updateQuantities(conn, copy.getBookId(), 0, 1);
@@ -129,6 +132,61 @@ public class BookCopyIncidentService {
                     throw (ValidationException) e;
                 }
                 throw new DatabaseException("Không thể khôi phục bản sao sau sửa chữa.", e);
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
+        }
+    }
+
+    public void removeDamagedCopyFromInventory(int incidentId, String removalNote, int actorId)
+            throws ValidationException, DatabaseException {
+        validateRemovalNote(removalNote);
+        if (incidentId <= 0) {
+            throw new ValidationException("Sự cố không hợp lệ.");
+        }
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                BookCopyIncident incident = incidentDAO.findByIdForUpdate(conn, incidentId);
+                if (incident == null) {
+                    throw new ValidationException("Sự cố không tồn tại.");
+                }
+                if (!"resolved".equals(incident.getStatus()) || !"damaged".equals(incident.getIncidentType())) {
+                    throw new ValidationException("Chỉ có thể loại khỏi kho bản sao hỏng đã được xử lý.");
+                }
+                BookCopy copy = bookCopyDAO.findByIdForUpdate(conn, incident.getBookCopyId());
+                if (copy == null) {
+                    throw new ValidationException("Bản sao của sự cố không còn tồn tại.");
+                }
+                if (!"damaged".equals(copy.getCondition()) || !"unavailable".equals(copy.getStatus())) {
+                    throw new ValidationException("Bản sao không ở trạng thái hỏng cần loại khỏi kho.");
+                }
+                if (copy.isRemovedFromInventory()) {
+                    throw new ValidationException("Bản sao đã được loại khỏi kho trước đó.");
+                }
+
+                bookCopyDAO.markRemovedFromInventory(conn, copy.getBookCopyId(), actorId);
+                bookDAO.updateQuantities(conn, copy.getBookId(), -1, 0);
+                String trimmedNote = removalNote.trim();
+                incidentDAO.appendResolutionNote(conn, incidentId, "Loại khỏi kho: " + trimmedNote);
+                auditLogDAO.insert(conn, actorId, "REMOVE_DAMAGED_BOOK_COPY_FROM_INVENTORY",
+                        "BookCopy", copy.getBookCopyId(),
+                        copyAuditValue(copy, "unavailable"),
+                        "{\"barcode\":\"" + escape(copy.getBarcode())
+                        + "\",\"condition\":\"damaged\",\"status\":\"unavailable\","
+                        + "\"removedFromInventory\":true,\"note\":\"" + escape(trimmedNote) + "\"}");
+                auditLogDAO.insert(conn, actorId, "UPDATE_BOOK_COPY_INCIDENT_RESOLUTION",
+                        "BookCopyIncident", incidentId, toAuditValue(incident, incident.getStatus()),
+                        "{\"removalNote\":\"" + escape(trimmedNote) + "\"}");
+                conn.commit();
+            } catch (ValidationException | SQLException e) {
+                conn.rollback();
+                if (e instanceof ValidationException) {
+                    throw (ValidationException) e;
+                }
+                throw new DatabaseException("Không thể loại bản sao hỏng khỏi kho.", e);
             } finally {
                 conn.setAutoCommit(true);
             }
@@ -174,6 +232,15 @@ public class BookCopyIncidentService {
         }
     }
 
+    public void validateRemovalNote(String removalNote) throws ValidationException {
+        if (removalNote == null || removalNote.isBlank()) {
+            throw new ValidationException("Ghi chú loại khỏi kho không được để trống.");
+        }
+        if (removalNote.length() > 1000) {
+            throw new ValidationException("Ghi chú loại khỏi kho không được vượt quá 1000 ký tự.");
+        }
+    }
+
     private void executeIncidentAction(int incidentId, int actorId, String action, String resolution)
             throws ValidationException, DatabaseException {
         if (incidentId <= 0) {
@@ -204,6 +271,11 @@ public class BookCopyIncidentService {
                     }
                     if ("resolve".equals(action)) {
                         bookCopyDAO.resolveCondition(conn, copy.getBookCopyId(), incident.getIncidentType());
+                        boolean removedAsLost = "lost".equals(incident.getIncidentType());
+                        if (removedAsLost) {
+                            bookCopyDAO.markRemovedFromInventory(conn, copy.getBookCopyId(), actorId);
+                            bookDAO.updateQuantities(conn, copy.getBookId(), -1, 0);
+                        }
                         incidentDAO.finish(conn, incidentId, "resolved", resolution, actorId);
                         auditLogDAO.insert(conn, actorId, "RESOLVE_BOOK_COPY_INCIDENT",
                                 "BookCopyIncident", incidentId, toAuditValue(incident, incident.getStatus()),
@@ -211,7 +283,8 @@ public class BookCopyIncidentService {
                         auditLogDAO.insert(conn, actorId, "UPDATE_BOOK_COPY_CONDITION", "BookCopy",
                                 copy.getBookCopyId(), copyAuditValue(copy, "unavailable"),
                                 "{\"condition\":\"" + incident.getIncidentType()
-                                + "\",\"status\":\"unavailable\"}");
+                                + "\",\"status\":\"unavailable\",\"removedFromInventory\":"
+                                + removedAsLost + "}");
                     } else {
                         bookCopyDAO.restoreAvailable(conn, copy.getBookCopyId());
                         bookDAO.updateQuantities(conn, copy.getBookId(), 0, 1);

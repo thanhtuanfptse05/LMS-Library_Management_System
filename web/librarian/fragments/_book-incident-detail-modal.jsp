@@ -41,14 +41,24 @@
                         </c:choose>
 
                         <c:if test="${canEdit and selectedIncident.status == 'resolved' and selectedIncident.incidentType == 'damaged' and not fn:contains(selectedIncident.resolution, 'Khôi phục lưu thông:')}">
-                            <div class="mt-3">
-                                <label class="form-label">Ghi chú sửa chữa <span class="bm-required">*</span></label>
-                                <textarea class="form-control" name="repairNote" required maxlength="1000" rows="3"
-                                          placeholder="Ví dụ: Đã đóng lại gáy sách, bọc lại bìa và kiểm tra đủ trang."></textarea>
-                                <p class="bm-section-note mt-2 mb-0">
-                                    Chỉ khôi phục khi bản sao đã được sửa xong và đủ điều kiện cho mượn lại.
-                                </p>
-                            </div>
+                            <c:choose>
+                                <c:when test="${selectedIncident.removedFromInventory}">
+                                    <div class="bm-rule-note mt-3">
+                                        <strong>Đã loại khỏi kho:</strong>
+                                        Bản sao này không còn được tính vào tổng kho phục vụ.
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="mt-3">
+                                        <label class="form-label">Ghi chú xử lý sau kết luận <span class="bm-required">*</span></label>
+                                        <textarea class="form-control" name="postResolutionNote" required maxlength="1000" rows="3"
+                                                  placeholder="Ghi chú sửa chữa nếu khôi phục, hoặc lý do loại khỏi kho nếu hỏng nặng."></textarea>
+                                        <p class="bm-section-note mt-2 mb-0">
+                                            Khôi phục khi bản sao đã sửa xong; loại khỏi kho khi bản sao hỏng nặng không còn khả năng sửa.
+                                        </p>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </c:if>
                     </div>
                     <div class="modal-footer">
@@ -57,8 +67,9 @@
                             <button class="btn bm-btn-secondary" type="submit" name="action" value="reject">Báo sai, hoàn kho</button>
                             <button class="btn btn-primary-custom" type="submit" name="action" value="resolve">Xác nhận hỏng/mất</button>
                         </c:if>
-                        <c:if test="${canEdit and selectedIncident.status == 'resolved' and selectedIncident.incidentType == 'damaged' and not fn:contains(selectedIncident.resolution, 'Khôi phục lưu thông:')}">
+                        <c:if test="${canEdit and selectedIncident.status == 'resolved' and selectedIncident.incidentType == 'damaged' and not selectedIncident.removedFromInventory and not fn:contains(selectedIncident.resolution, 'Khôi phục lưu thông:')}">
                             <button class="btn btn-primary-custom" type="submit" name="action" value="restore">Khôi phục lưu thông</button>
+                            <button class="btn bm-btn-secondary" type="submit" name="action" value="removeFromInventory">Loại khỏi kho</button>
                         </c:if>
                     </div>
                 </form>

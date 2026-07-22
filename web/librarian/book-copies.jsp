@@ -206,6 +206,9 @@
                                             <td>
                                                 <%-- Trạng thái lưu thông/giao dịch (Sẵn sàng, Đang mượn, Đặt trước, Ngừng lưu thông) --%>
                                                 <c:choose>
+                                                    <c:when test="${copy.removedFromInventory}">
+                                                        <span class="bm-badge bm-badge--neutral">Đã loại khỏi kho</span>
+                                                    </c:when>
                                                     <c:when test="${copy.status == 'available'}">
                                                         <span class="bm-badge bm-badge--success">Sẵn sàng</span>
                                                     </c:when>

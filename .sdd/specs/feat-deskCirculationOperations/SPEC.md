@@ -28,7 +28,7 @@ Hỗ trợ Thủ thư (Librarian) xử lý trực tiếp các nghiệp vụ giao
 ## 3. Business Rules (Quy tắc nghiệp vụ)
 * **BR-22 (Strict Fine Enforcement):** Hệ thống BẮT BUỘC chặn giao dịch mượn sách nếu tồn tại bất kỳ bản ghi nào có reason = 'unpaid' trong bảng UserLockReason của người dùng. KHÔNG trực tiếp kiểm tra bảng Fine để quyết định chặn giao dịch nhằm giữ tính độc lập dữ liệu.
 * **BR-23 (Direct Borrow Queue Policy):** Độc giả mượn sách trực tiếp tại quầy KHÔNG ĐƯỢC PHÉP mượn đầu sách đang có người xếp hàng chờ (tồn tại Reservation với status='pending' VÀ queuePosition > 0). Để chuẩn hóa dữ liệu, mọi giao dịch mượn trực tiếp đều BẮT BUỘC phải tự động sinh ra một Reservation ảo với queuePosition = 0 tại chỗ trước khi insert BorrowRecord.
-* **BR-24 (Damaged/Lost Check-in Handoff):** Khi nhận sách trả với tình trạng `damaged` hoặc `lost`, hệ thống BẮT BUỘC ngừng lưu thông bản sao và tạo sự cố theo cùng bất biến F13/BR-28: BookCopy chuyển `unavailable`, **INSERT bản ghi `BookCopyIncident`** (incidentType = condition, status = 'pending', description tự sinh, reportedBy = librarianId) trong **cùng một DB Transaction** với các bước cập nhật BorrowRecord/BookCopy/Fine. Tồn kho khả dụng không được cộng lại. F6 chỉ xử lý phần trả sách, phạt/khóa theo chính sách lưu thông; vòng đời xác minh, kết luận, bác bỏ hoặc khôi phục bản sao thuộc F13. **Lưu ý: Code hiện tại (`DeskCirculationService.processCheckInDamagedOrLost()`) đang THIẾU bước INSERT `BookCopyIncident` — cần bổ sung.**
+* **BR-24 (Damaged/Lost Check-in Handoff):** Khi nhận sách trả với tình trạng `damaged` hoặc `lost`, Thủ thư đã kiểm tra bản sao tại quầy nên hệ thống BẮT BUỘC kết luận sự cố ngay trong luồng F6: BookCopy chuyển `unavailable`, condition = `damaged/lost`, INSERT `BookCopyIncident(status='resolved')` với `reportedBy/resolvedBy = librarianId` trong cùng DB Transaction với BorrowRecord/Fine/Payment/Audit. `damaged` giữ nguyên `Book.totalQuantity` để có thể sửa, khôi phục hoặc loại khỏi kho qua F13; `lost` giảm `Book.totalQuantity` đúng 1 và set `BookCopy.removedFromInventory=true`. `availableQuantity` không được cộng lại và bản sao không luân chuyển cho hàng chờ. F13 tiếp nhận bản ghi đã resolved để tra cứu và khôi phục/loại khỏi kho nếu là `damaged`.
 * **BR-25 (Conditional Auto-Unlock):** Sau khi thanh toán tiền phạt (xóa reason 'unpaid'), hệ thống BẮT BUỘC đếm số lượng lý do khóa còn lại trong UserLockReason. CHỈ KHỞI ĐỘNG quy trình mở khóa (Update User.status = 'active') NẾU COUNT == 0. Tuyệt đối không mở khóa nếu tài khoản đang bị 'adminban' hoặc 'securitybreach'.
 * **BR-29 (Walk-in vs Pre-reservation Checkout Policy):** Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity (vì đã trừ khi đặt trước online).
 * **BR-41 (Desk Reservation Rules):** Khi Thủ thư đăng ký đặt trước tại quầy thay cho độc giả (UC-51), hệ thống BẮT BUỘC phải tuân thủ đầy đủ các giới hạn về chặn nợ phạt (BR-22) và hạn mức mượn sách (BR-19, BR-21).
@@ -40,28 +40,20 @@ Hỗ trợ Thủ thư (Librarian) xử lý trực tiếp các nghiệp vụ giao
   * *Mapping:* UC-18 / BR-23
 * **FR-36 (Thực thi Giao sách với DB Transaction):** WHERE tất cả điều kiện FR-34, FR-35 thỏa mãn, THE system SHALL mở DB Transaction (conn.setAutoCommit(false)) và thực thi tuần tự: (1) INSERT BorrowRecord(userId, bookCopyId, status='borrowed', startDate=NOW(), endDate=NOW()+LoanDays theo role, extensionCount=0), (2) UPDATE Reservation SET status='fulfilled', borrowRecordId=? WHERE reservationId=?, (3) UPDATE BookCopy SET status='borrowed', (4) **PHÂN NHÁNH**: IF BookCopy trước đó status='available' (Walk-in): UPDATE Book.availableQuantity = availableQuantity - 1, ELSE IF BookCopy status='reserved' (Pre-reservation): SKIP (đã trừ khi đặt trước), (5) INSERT AuditLog(CHECKOUT, actorId=librarianId), (6) conn.commit(). WHERE SQLException: conn.rollback() + throw. (7) EmailService.enqueue(CHECKOUT_CONFIRMATION, userId) [async, ngoài transaction].
   * *Mapping:* UC-18 / BR-29
-* **FR-37 (Nhận sách Hỏng/Mất và tự động tạo Incident):** WHEN `CheckInServlet.doPost(barcode, condition='damaged'|'lost', memberCode)` được gọi, THE system SHALL mở DB Transaction và thực thi tuần tự:
-  1. `BookCopyDAO.findByBarcode()` → xác định `bookCopyId`, `bookId`
-  2. `BorrowRecordDAO.findActiveBorrowByBookCopyId()` → xác định `borrowRecordId`, `userId`
+* **FR-37 (Nhận sách Hỏng/Mất và tự động kết luận Incident):** WHEN `CheckInServlet.doPost(barcode, condition='damaged'|'lost', memberCode)` được gọi, THE system SHALL mở DB Transaction và thực thi tuần tự:
+  1. `BookCopyDAO.findByBarcode()` -> xác định `bookCopyId`, `bookId`
+  2. `BorrowRecordDAO.findActiveBorrowByBookCopyId()` -> xác định `borrowRecordId`, `userId`
   3. UPDATE `BorrowRecord.status` = condition (`damaged`/`lost`), `returnedAt` = NOW()
   4. UPDATE `BookCopy.status='unavailable'`, `BookCopy.condition` = condition
-  5. UPDATE `Book.totalQuantity - 1` (loại bản sao khỏi tổng tài sản)
-  6. **[BẮT BUỘC — ĐANG THIẾU TRONG CODE]** INSERT `BookCopyIncident` với các trường:
-     - `bookCopyId` = bookCopyId của bản sao đang xử lý
-     - `incidentType` = condition (`'damaged'` hoặc `'lost'`)
-     - `description` = Chuỗi tự sinh theo mẫu: `"Phát hiện khi trả sách — Mã mượn: BR-{borrowRecordId}"`
-     - `status` = `'pending'` (giá trị mặc định theo schema)
-     - `reportedBy` = `librarianId` (Thủ thư đang thực hiện check-in)
-     - `reportedAt` = NOW() (giá trị mặc định theo schema)
-     - Gọi qua: `BookCopyIncidentDAO.insert(conn, incident)` — hàm này đã tồn tại sẵn
-  7. Tính tiền phạt đền bù: `calculateCompensationAmount(conn, bookId, condition)` → INSERT `Fine` + INSERT `Payment(status='pending')`
+  5. IF condition = `lost`, UPDATE `Book.totalQuantity = totalQuantity - 1` và set `BookCopy.removedFromInventory=true`; IF condition = `damaged`, giữ nguyên `totalQuantity`
+  6. INSERT `BookCopyIncident` đã kết luận với các trường: `bookCopyId`, `incidentType` = condition, `description` tự sinh theo mã mượn, `status='resolved'`, `reportedBy=librarianId`, `reportedAt=NOW()`, `resolvedBy=librarianId`, `resolvedAt=NOW()`, `resolution` ghi rõ Thủ thư xác nhận khi nhận trả tại quầy
+  7. Tính tiền phạt đền bù: `calculateCompensationAmount(conn, bookId, condition)` -> INSERT `Fine` + INSERT `Payment(status='pending')`
   8. INSERT `UserLockReason(reason='unpaid')` nếu chưa có + UPDATE `User.status='locked'`
   9. INSERT `AuditLog` cho CHECK_IN_DAMAGED/CHECK_IN_LOST
-  10. `conn.commit()`; WHERE `SQLException` → `conn.rollback()`
-  11. Async: `triggerIncidentFineEmailAsync()` — gửi email thông báo phạt (ngoài transaction)
+  10. `conn.commit()`; WHERE `SQLException` -> `conn.rollback()`
+  11. Async: `triggerIncidentFineEmailAsync()` gửi email thông báo phạt ngoài transaction
   * WHERE có người chờ: SKIP FR-39 vì bản sao không được luân chuyển.
-  * Việc resolve/reject/restore incident sau đó tuân theo F13 FR-48..50.
-  * **⚠️ GAP hiện tại:** Hàm `processCheckInDamagedOrLost()` tại `DeskCirculationService.java:553-593` đã thực hiện bước 1-5 và 7-9, nhưng **bỏ qua hoàn toàn bước 6** (INSERT `BookCopyIncident`). Cần bổ sung ngay.
+  * Incident do F6 tạo đã ở trạng thái `resolved`; F13 chỉ tra cứu và cho phép khôi phục sau sửa chữa hoặc loại khỏi kho nếu incidentType = `damaged`.
   * *Mapping:* UC-19 / BR-24
 * **FR-38 (Nhận sách Nguyên vẹn với tính phạt trễ hạn):** WHEN CheckInServlet.doPost(barcode, condition='good', memberCode) được gọi, THE system SHALL mở DB Transaction: (1) BookCopyDAO.findByBarcode(), (2) BorrowRecordDAO.findActiveBorrowByBookCopyId(), (3) Tính số ngày trễ = (NOW() - BorrowRecord.endDate), WHERE số ngày > 0: amount = FINE_RATE_PER_DAY × số ngày trễ, INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue'), INSERT UserLockReason(userId, reason='unpaid'), UPDATE User.status='locked', (4) UPDATE BorrowRecord SET status='returned', returnedAt=NOW(), (5) UPDATE BookCopy SET condition='good', status='available' (tạm thời, sẽ đổi nếu có người chờ ở FR-39), (6) INSERT AuditLog(CHECKIN), (7) THEN gọi FR-39 để điều phối hàng chờ, (8) conn.commit(). (9) EmailService.enqueue(CHECKIN_CONFIRMATION) [async].
   * *Mapping:* UC-19
@@ -118,8 +110,8 @@ Hỗ trợ Thủ thư (Librarian) xử lý trực tiếp các nghiệp vụ giao
 - [ ] Check-out hợp lệ: Độc giả không nợ phạt, sách có sẵn -> Tạo BorrowRecord thành công.
 - [ ] Check-in trễ hạn: Trả sách trễ 3 ngày -> Tự động sinh khoản phạt 15,000đ, khóa tài khoản độc giả với lý do 'unpaid'.
 - [ ] Trả sách hỏng/mất: bản sao ngừng lưu thông, không luân chuyển cho hàng chờ.
-- [ ] **[MỚI] Tự động tạo BookCopyIncident:** Khi check-in với condition='damaged' hoặc 'lost', hệ thống phải tự động INSERT 1 bản ghi vào bảng `BookCopyIncident` với: `incidentType` = condition, `status` = 'pending', `reportedBy` = librarianId, `description` chứa mã mượn. Kiểm chứng bằng truy vấn DB sau check-in: `SELECT * FROM BookCopyIncident WHERE bookCopyId = ? AND status = 'pending'` phải trả về đúng 1 dòng.
-- [ ] **[MỚI] Hiển thị incident trên trang Hỏng và mất:** Sau check-in hỏng/mất, bản ghi incident mới phải xuất hiện ngay trên trang `/librarian/book-management/incidents` với trạng thái 'Chờ xử lý'.
+- [ ] Tự động tạo BookCopyIncident resolved: Khi check-in với condition=`damaged` hoặc `lost`, hệ thống INSERT đúng 1 bản ghi với `incidentType` = condition, `status` = `resolved`, `reportedBy/resolvedBy` = librarianId và `description` chứa mã mượn. Kiểm chứng bằng DB: `SELECT * FROM BookCopyIncident WHERE bookCopyId = ? AND status = 'resolved'` trả về đúng 1 dòng.
+- [ ] Hiển thị incident trên trang Hỏng và mất: Sau check-in hỏng/mất, bản ghi incident mới xuất hiện tại /librarian/book-management/incidents với trạng thái 'Đã xử lý'.
 
 ## 9. Out of Scope (Phạm vi không thực hiện)
 * Thanh toán trả góp khoản phạt (phải thanh toán toàn bộ nợ mới được mở khóa mượn sách).

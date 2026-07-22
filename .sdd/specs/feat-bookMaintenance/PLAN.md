@@ -7,7 +7,7 @@
 ## 2. COMPONENTS
 | Component | Trách nhiệm | Interface/Class |
 | --- | --- | --- |
-| IncidentController | Danh sách/filter/detail và action report/investigate/resolve/reject/restore. | `BookCopyIncidentServlet.java` |
+| IncidentController | Danh sách/filter/detail và action report/investigate/resolve/reject/restore/removeFromInventory. | `BookCopyIncidentServlet.java` |
 | InventoryController | Danh sách/chi tiết phiên và 8 action kiểm kê. | `InventoryReconciliationServlet.java` |
 | IncidentService | State machine incident, BookCopy, tồn kho và Audit Log. | `BookCopyIncidentService.java` |
 | InventoryService | State machine session/item, scan và xử lý mismatch. | `InventoryReconciliationService.java` |
@@ -18,14 +18,16 @@
 
 ## 3. DATA FLOW
 - **Report Incident:** Barcode -> lock BookCopy -> validate good/available/no open incident -> insert pending -> copy unavailable -> availableQuantity -1 -> Audit -> commit.
-- **Resolve/Reject:** Lock incident + copy -> validate pending/investigating -> resolve condition hoặc reject và phục hồi số lượng -> Audit -> commit.
+- **Resolve/Reject:** Lock incident + copy -> validate pending/investigating -> resolve condition hoặc reject và phục hồi số lượng -> nếu resolve `lost` thì mark removed + totalQuantity -1 -> Audit -> commit.
+- **F6 Check-in Incident:** F6 tạo sẵn incident `resolved` khi nhận trả bản sao `damaged/lost`; F13 không resolve/reject lại, chỉ hiển thị và cho phép restore hoặc remove khỏi kho nếu incidentType=`damaged`.
 - **Restore Repair:** Lock resolved damaged incident + damaged/unavailable copy -> copy good/available -> availableQuantity +1 -> append note + Audit -> commit.
+- **Remove Damaged From Inventory:** Lock resolved damaged incident + damaged/unavailable copy -> validate `removedFromInventory=false` -> set removed flag/At/By -> totalQuantity -1 -> append note + Audit -> commit.
 - **Inventory:** Create snapshot -> start counting -> scan matched/misplaced -> finish marks pending as missing -> review/resolve -> complete when no unresolved.
 - **Resolve Missing:** Lock item/session/copy -> create lost pending incident -> copy unavailable -> availableQuantity -1 -> resolve item + Audit -> commit.
 
 ## 4. STATE MACHINES
-- Incident: `pending -> investigating -> resolved|rejected`; `pending -> resolved|rejected` cũng hợp lệ.
-- Restore không đổi incident status; chỉ append resolution note cho incident `resolved/damaged`.
+- Incident F13: `pending -> investigating -> resolved|rejected`; `pending -> resolved|rejected` cũng hợp lệ. Incident do F6 tạo đi thẳng vào `resolved` vì đã được kết luận tại quầy.
+- Restore/remove khỏi kho không đổi incident status; chỉ append resolution note cho incident `resolved/damaged`.
 - InventorySession: `draft -> counting -> reviewing -> completed`; `draft|counting|reviewing -> cancelled`.
 - InventoryItem.result không có `resolved`; trạng thái đã xử lý được xác định bằng `resolvedAt IS NOT NULL`.
 
@@ -35,22 +37,22 @@
 - Controller kiểm tra lại session/role cho POST.
 
 ## 6. DATABASE CHANGES
-- Dùng đúng schema PostgreSQL cho `BookCopyIncident`, `InventorySession`, `InventoryItem`.
+- Dùng đúng schema PostgreSQL cho `BookCopyIncident`, `BookCopy.removedFromInventory*`, `InventorySession`, `InventoryItem`.
 - Giữ partial unique index cho incident chưa kết thúc và unique `(inventorySessionId, bookCopyId)`.
 - Giữ CHECK constraint đúng từng miền: Incident không dùng type `missing` hoặc status `open/disposed`; Session không dùng `created/in_progress/counting_complete`; Item không dùng result `scanned/resolved`.
-- Không thêm `disposed` vì `BookCopy.status` không hỗ trợ và trái soft-delete hiện hành.
+- Không thêm `disposed` vì `BookCopy.status` không hỗ trợ và trái soft-delete hiện hành; dùng `removedFromInventory` để loại khỏi tổng kho mà vẫn giữ record.
 
 ## 7. RISKS & MITIGATIONS
 - **Risk:** Hai request cùng báo sự cố hoặc resolve hai lần.
   **Mitigation:** Row lock + unique partial index + kiểm tra trạng thái nguồn.
 - **Risk:** Tồn kho cộng/trừ lặp.
-  **Mitigation:** Chỉ report/reject/restore thay số lượng; resolve không trừ lần hai.
+  **Mitigation:** Dùng `removedFromInventory=false` trong điều kiện update khi loại khỏi kho; mọi nhánh số lượng chạy trong cùng transaction.
 - **Risk:** Complete khi còn mismatch.
   **Mitigation:** `countUnresolved` trong cùng transaction trước transition.
 - **Risk:** Scan đồng thời làm trùng item.
   **Mitigation:** Unique session-copy và upsert/update có khóa phù hợp.
 - **Risk:** F4/F6 cập nhật condition trực tiếp làm lệch state.
-  **Mitigation:** Mọi thay đổi hỏng/mất phải tái sử dụng quy tắc BR-28.
+  **Mitigation:** F4 không cập nhật condition; F6 chỉ cập nhật trong transaction check-in và tạo incident `resolved`; F13 xử lý manual/inventory incident theo BR-28.
 
 ## 8. QUESTIONS FOR HUMAN
 - N/A

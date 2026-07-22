@@ -83,8 +83,13 @@ public class BookCopyIncidentServlet extends HttpServlet {
             String action = request.getParameter("action");
             if ("restore".equals(action)) {
                 incidentService.restoreAfterRepair(parseRequiredInt(request.getParameter("incidentId")),
-                        trimToNull(request.getParameter("repairNote")), actorId);
+                        trimToNull(request.getParameter("postResolutionNote")), actorId);
                 session.setAttribute("successMessage", "Đã khôi phục bản sao về trạng thái sẵn sàng lưu thông.");
+            } else if ("removeFromInventory".equals(action)) {
+                incidentService.removeDamagedCopyFromInventory(
+                        parseRequiredInt(request.getParameter("incidentId")),
+                        trimToNull(request.getParameter("postResolutionNote")), actorId);
+                session.setAttribute("successMessage", "Đã loại bản sao hỏng khỏi tổng kho.");
             } else if ("report".equals(action)) {
                 incidentService.report(trimToNull(request.getParameter("barcode")),
                         request.getParameter("incidentType"), trimToNull(request.getParameter("description")),

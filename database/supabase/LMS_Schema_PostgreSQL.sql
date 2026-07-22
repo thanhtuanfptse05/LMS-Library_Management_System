@@ -201,10 +201,18 @@ CREATE TABLE BookCopy (
     condition VARCHAR(100) NOT NULL DEFAULT 'good',
     status VARCHAR(50) NOT NULL DEFAULT 'available',
     barcode VARCHAR(50) NOT NULL UNIQUE,
+    removedFromInventory BOOLEAN NOT NULL DEFAULT FALSE,
+    removedFromInventoryAt TIMESTAMP NULL,
+    removedFromInventoryBy INT NULL,
     createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
     updatedAt TIMESTAMP NULL,
     CONSTRAINT CK_BookCopy_Condition CHECK (condition IN ('good', 'damaged', 'lost')),
     CONSTRAINT CK_BookCopy_Status CHECK (status IN ('available', 'unavailable', 'borrowed', 'reserved')),
+    CONSTRAINT CK_BookCopy_RemovedInventory CHECK (
+        removedFromInventory = FALSE
+        OR (status = 'unavailable' AND condition IN ('damaged', 'lost') AND removedFromInventoryAt IS NOT NULL)
+    ),
+    CONSTRAINT FK_BookCopy_RemovedBy FOREIGN KEY (removedFromInventoryBy) REFERENCES "User"(userId),
     CONSTRAINT FK_BookCopy_Book FOREIGN KEY (bookId) REFERENCES Book(bookId) ON DELETE CASCADE
 );
 

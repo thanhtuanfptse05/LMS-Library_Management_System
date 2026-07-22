@@ -408,7 +408,7 @@ public class DeskCirculationService {
      * <ol>
      *   <li>UPDATE {@code BorrowRecord.status} = condition, {@code returnedAt} = NOW</li>
      *   <li>UPDATE {@code BookCopy.status} = 'unavailable', {@code condition} = condition</li>
-     *   <li>UPDATE {@code Book.totalQuantity} - 1 (loại khỏi tổng tài sản)</li>
+     *   <li>Chỉ khi condition='lost': UPDATE {@code Book.totalQuantity} - 1</li>
      *   <li>INSERT {@code Fine} với số tiền đền bù (tính từ giá sách × hệ số)</li>
      *   <li>INSERT {@code UserLockReason(reason='unpaid')}</li>
      *   <li>UPDATE {@code [User].status} = 'locked'</li>
@@ -548,14 +548,14 @@ public class DeskCirculationService {
      * @param conn           Connection trong Transaction
      * @param borrowRecordId ID bản ghi mượn đang active
      * @param bookCopyId     ID bản sao sách bị hỏng/mất
-     * @param bookId         ID đầu sách để trừ totalQuantity
+     * @param bookId         ID đầu sách; chỉ sách mất mới bị trừ totalQuantity
      * @param userId         ID người dùng bị phạt và bị khóa
      * @param condition      'damaged' hoặc 'lost'
      * @throws SQLException nếu bất kỳ bước nào thất bại (Service sẽ rollback)
      */
     // EARS[Condition-driven]: WHERE condition IN ('damaged', 'lost'),
-    // THE LMS System SHALL execute 8-step atomic write: BorrowRecord + BookCopy +
-    // Book.totalQuantity + BookCopyIncident + Fine + UserLockReason + User.status + AuditLog
+    // THE LMS System SHALL execute atomic write: BorrowRecord + BookCopy +
+    // resolved BookCopyIncident + Fine + UserLockReason + User.status + AuditLog
     // [Node 6.17, FR-37 bước 1-9, BR-24]
     private void processCheckInDamagedOrLost(Connection conn, int borrowRecordId,
                                              int bookCopyId, int bookId,
@@ -566,17 +566,24 @@ public class DeskCirculationService {
         // Bước 2: UPDATE BookCopy → 'unavailable' và ghi nhận condition vật lý
         bookCopyDAO.updateStatusToUnavailable(conn, bookCopyId, condition);
 
-        // Bước 3: UPDATE Book.totalQuantity - 1 (BR-24 — loại khỏi tổng tài sản)
-        bookDAO.decrementTotalQuantity(conn, bookId);
+        // Bước 3: Chỉ sách mất mới bị loại khỏi tổng tài sản; sách hỏng vẫn có thể sửa.
+        boolean removedFromTotal = "lost".equals(condition);
+        if (removedFromTotal) {
+            bookDAO.updateQuantities(conn, bookId, -1, 0);
+            bookCopyDAO.markRemovedFromInventory(conn, bookCopyId, librarianId);
+        }
 
-        // Bước 3.5 [FR-37 bước 6]: Tự động tạo BookCopyIncident (BR-24)
-        // Ghi nhận sự cố hỏng/mất phát hiện tại quầy — hiển thị trên trang "Hỏng và mất"
+        // Bước 3.5 [FR-37]: Tự động tạo BookCopyIncident đã kết luận tại quầy.
         BookCopyIncident incident = new BookCopyIncident();
         incident.setBookCopyId(bookCopyId);
         incident.setIncidentType(condition);
         incident.setDescription("Phát hiện khi trả sách — Mã mượn: BR-" + borrowRecordId);
         incident.setReportedBy(librarianId);
-        int incidentId = bookCopyIncidentDAO.insert(conn, incident);
+        String incidentResolution = "Thủ thư xác nhận "
+                + ("damaged".equals(condition) ? "sách hỏng" : "sách mất")
+                + " khi nhận trả sách tại quầy.";
+        int incidentId = bookCopyIncidentDAO.insertResolvedFromCheckIn(conn, incident,
+                incidentResolution, librarianId);
 
         // Bước 4: Tính tiền phạt đền bù và INSERT Fine
         BigDecimal fineAmount = calculateCompensationAmount(conn, bookId, condition);
@@ -604,8 +611,8 @@ public class DeskCirculationService {
                 "status=borrowed", "status=" + condition + ", fineId=" + fineId + ", incidentId=" + incidentId);
 
         LOGGER.log(Level.WARNING,
-                "Check-in [BR-24]: Sách {0} — userId={1} bị phạt, bookId={2} trừ totalQuantity, incidentId={3}",
-                new Object[]{condition, userId, bookId, incidentId});
+                "Check-in [BR-24]: Sách {0} — userId={1} bị phạt, bookId={2}, removedFromTotal={3}, incidentId={4}",
+                new Object[]{condition, userId, bookId, removedFromTotal, incidentId});
     }
 
     /**

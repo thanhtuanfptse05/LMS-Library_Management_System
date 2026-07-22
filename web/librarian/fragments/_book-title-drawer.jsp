@@ -94,6 +94,7 @@
                                     <c:otherwise><span class="bm-badge bm-badge--danger">Mất</span></c:otherwise>
                                 </c:choose>
                                 <c:choose>
+                                    <c:when test="${copy.removedFromInventory}"><span class="bm-badge bm-badge--neutral">Đã loại khỏi kho</span></c:when>
                                     <c:when test="${copy.status == 'available'}"><span class="bm-badge bm-badge--success">Sẵn sàng</span></c:when>
                                     <c:when test="${copy.status == 'borrowed'}"><span class="bm-badge bm-badge--info">Đang mượn</span></c:when>
                                     <c:when test="${copy.status == 'reserved'}"><span class="bm-badge bm-badge--warning">Đặt trước</span></c:when>

@@ -259,7 +259,21 @@ public class BookCopyDAO {
     public void restoreAfterRepair(Connection conn, int bookCopyId) throws SQLException {
         updateIncidentState(conn, bookCopyId,
                 "SET status = 'available', condition = 'good', updatedAt = NOW()",
-                "status = 'unavailable' AND condition = 'damaged'");
+                "status = 'unavailable' AND condition = 'damaged' AND removedFromInventory = FALSE");
+    }
+
+    public void markRemovedFromInventory(Connection conn, int bookCopyId, int actorId) throws SQLException {
+        String sql = "UPDATE BookCopy SET removedFromInventory = TRUE, "
+                + "removedFromInventoryAt = NOW(), removedFromInventoryBy = ?, updatedAt = NOW() "
+                + "WHERE bookCopyId = ? AND status = 'unavailable' "
+                + "AND condition IN ('damaged', 'lost') AND removedFromInventory = FALSE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, actorId);
+            ps.setInt(2, bookCopyId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không còn ở trạng thái có thể loại khỏi kho.");
+            }
+        }
     }
 
     public void resolveCondition(Connection conn, int bookCopyId, String condition) throws SQLException {
@@ -347,7 +361,8 @@ public class BookCopyDAO {
 
     public void updateStatusToAvailable(Connection conn, int bookCopyId) throws SQLException {
         String sql = "UPDATE BookCopy SET status = 'available', condition = 'good', updatedAt = NOW() "
-                + "WHERE bookCopyId = ? AND status IN ('borrowed', 'reserved', 'unavailable')";
+                + "WHERE bookCopyId = ? AND status IN ('borrowed', 'reserved', 'unavailable') "
+                + "AND removedFromInventory = FALSE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookCopyId);
             if (ps.executeUpdate() != 1) {
@@ -376,7 +391,8 @@ public class BookCopyDAO {
 
     private BookCopy findForUpdate(Connection conn, String predicate, Object value) throws SQLException {
         String sql = "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.location, "
-                + "bc.condition, bc.status, bc.barcode, bc.createdAt, bc.updatedAt "
+                + "bc.condition, bc.status, bc.barcode, bc.removedFromInventory, "
+                + "bc.removedFromInventoryAt, bc.removedFromInventoryBy, bc.createdAt, bc.updatedAt "
                 + "FROM BookCopy bc JOIN Book b ON b.bookId = bc.bookId WHERE " + predicate + " FOR UPDATE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             if (value instanceof Integer) {
@@ -403,7 +419,8 @@ public class BookCopyDAO {
 
     private String baseSelect() {
         return "SELECT bc.bookCopyId, bc.bookId, b.title AS bookTitle, b.isbn, bc.location, "
-                + "bc.condition, bc.status, bc.barcode, bc.createdAt, bc.updatedAt "
+                + "bc.condition, bc.status, bc.barcode, bc.removedFromInventory, "
+                + "bc.removedFromInventoryAt, bc.removedFromInventoryBy, bc.createdAt, bc.updatedAt "
                 + "FROM BookCopy bc JOIN Book b ON b.bookId = bc.bookId";
     }
 
@@ -448,6 +465,10 @@ public class BookCopyDAO {
         copy.setCondition(rs.getString("condition"));
         copy.setStatus(rs.getString("status"));
         copy.setBarcode(rs.getString("barcode"));
+        copy.setRemovedFromInventory(rs.getBoolean("removedFromInventory"));
+        copy.setRemovedFromInventoryAt(rs.getTimestamp("removedFromInventoryAt"));
+        int removedBy = rs.getInt("removedFromInventoryBy");
+        copy.setRemovedFromInventoryBy(rs.wasNull() ? null : removedBy);
         copy.setCreatedAt(rs.getTimestamp("createdAt"));
         copy.setUpdatedAt(rs.getTimestamp("updatedAt"));
         return copy;

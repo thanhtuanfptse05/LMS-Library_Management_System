@@ -18,6 +18,10 @@ public class BookCopyIncident {
     private Integer resolvedBy;
     private String resolvedByName;
     private Timestamp resolvedAt;
+    private boolean removedFromInventory;
+    private Timestamp removedFromInventoryAt;
+    private Integer removedFromInventoryBy;
+    private String removedFromInventoryByName;
 
     public int getIncidentId() { return incidentId; }
     public void setIncidentId(int incidentId) { this.incidentId = incidentId; }
@@ -47,4 +51,12 @@ public class BookCopyIncident {
     public void setResolvedByName(String resolvedByName) { this.resolvedByName = resolvedByName; }
     public Timestamp getResolvedAt() { return resolvedAt; }
     public void setResolvedAt(Timestamp resolvedAt) { this.resolvedAt = resolvedAt; }
+    public boolean isRemovedFromInventory() { return removedFromInventory; }
+    public void setRemovedFromInventory(boolean removedFromInventory) { this.removedFromInventory = removedFromInventory; }
+    public Timestamp getRemovedFromInventoryAt() { return removedFromInventoryAt; }
+    public void setRemovedFromInventoryAt(Timestamp removedFromInventoryAt) { this.removedFromInventoryAt = removedFromInventoryAt; }
+    public Integer getRemovedFromInventoryBy() { return removedFromInventoryBy; }
+    public void setRemovedFromInventoryBy(Integer removedFromInventoryBy) { this.removedFromInventoryBy = removedFromInventoryBy; }
+    public String getRemovedFromInventoryByName() { return removedFromInventoryByName; }
+    public void setRemovedFromInventoryByName(String removedFromInventoryByName) { this.removedFromInventoryByName = removedFromInventoryByName; }
 }
