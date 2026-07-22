@@ -4,7 +4,7 @@
 <c:set var="currentRolePath" value="${fn:toLowerCase(sessionScope.role)}" />
 
 <!-- ════════════════ UNIFIED SIDEBAR & MOBILE OFFCANVAS ════════════════ -->
-<aside class="offcanvas-lg offcanvas-start lms-sidebar sidebar-layout" tabindex="-1" id="librarianSidebarOffcanvas" aria-labelledby="librarianSidebarOffcanvasLabel">
+<aside class="offcanvas offcanvas-start lms-sidebar sidebar-layout" tabindex="-1" id="librarianSidebarOffcanvas" aria-labelledby="librarianSidebarOffcanvasLabel">
 
     <!-- ── Mobile Offcanvas Header ── -->
     <div class="offcanvas-header sidebar-brand border-bottom d-lg-none py-2 px-3">
@@ -17,7 +17,7 @@
                 <p class="sidebar-brand-role m-0">Nghiệp vụ Thủ thư</p>
             </div>
         </div>
-        <button type="button" class="btn-close text-reset ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#librarianSidebarOffcanvas" aria-label="Đóng"></button>
+        <button type="button" class="btn-close text-reset ms-auto" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
     </div>
 
     <!-- ── Desktop Brand ── -->

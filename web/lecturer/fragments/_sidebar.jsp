@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!-- ════════════════ UNIFIED SIDEBAR & MOBILE OFFCANVAS ════════════════ -->
-<aside class="offcanvas-lg offcanvas-start lms-sidebar sidebar-layout" tabindex="-1" id="lecturerSidebarOffcanvas" aria-labelledby="lecturerSidebarOffcanvasLabel">
+<aside class="offcanvas offcanvas-start lms-sidebar sidebar-layout" tabindex="-1" id="lecturerSidebarOffcanvas" aria-labelledby="lecturerSidebarOffcanvasLabel">
 
     <!-- ── Mobile Offcanvas Header ── -->
     <div class="offcanvas-header sidebar-brand border-bottom d-lg-none py-2 px-3">
@@ -15,7 +15,7 @@
                 <p class="sidebar-brand-role m-0">Truy cập Giảng viên</p>
             </div>
         </div>
-        <button type="button" class="btn-close text-reset ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#lecturerSidebarOffcanvas" aria-label="Đóng"></button>
+        <button type="button" class="btn-close text-reset ms-auto" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
     </div>
 
     <!-- ── Desktop Brand ── -->
