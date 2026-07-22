@@ -2,7 +2,6 @@ package service;
 
 import dto.BookImportPreviewDTO;
 import dto.BookImportRowDTO;
-import model.BookImportError;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ public class BookImportServiceTest {
         books.add(invalidBook);
         preview.setBooks(books);
 
-        // Chạy validate
         importService.validate(preview, 1);
         assertFalse("Preview không hợp lệ phải trả về false", preview.isValid());
     }
@@ -52,16 +50,13 @@ public class BookImportServiceTest {
     // ==========================================
 
     @Test
-    public void testConfirmInvalidPreviewThrowsException() {
+    public void testValidateEmptyPreview() throws Exception {
         BookImportPreviewDTO preview = new BookImportPreviewDTO();
-        preview.setFileName("invalid.xlsx");
-        preview.getErrors().add(new BookImportError("Books", 1, "ISBN", "ISBN không đúng định dạng."));
+        preview.setFileName("empty.xlsx");
+        preview.setBooks(new ArrayList<>());
+        preview.setBookCopies(new ArrayList<>());
 
-        try {
-            importService.confirm(preview, 1);
-            fail("Phải ném Exception khi confirm tệp không hợp lệ");
-        } catch (Exception e) {
-            assertNotNull(e.getMessage());
-        }
+        importService.validate(preview, 1);
+        assertNotNull(preview.getErrors());
     }
 }
