@@ -1,0 +1,348 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.User (
+  userid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  passwordhash character varying NOT NULL,
+  status character varying NOT NULL DEFAULT 'active'::character varying,
+  role character varying NOT NULL,
+  failedloginattempts integer NOT NULL DEFAULT 0,
+  lockeduntil timestamp without time zone,
+  CONSTRAINT User_pkey PRIMARY KEY (userid)
+);
+CREATE TABLE public.userlockreason (
+  lockreasonid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  userid integer NOT NULL,
+  reason character varying NOT NULL,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT userlockreason_pkey PRIMARY KEY (lockreasonid),
+  CONSTRAINT fk_userlockreason_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.memberprofile (
+  userid integer NOT NULL,
+  fullname character varying NOT NULL,
+  phonenumber character varying NOT NULL,
+  gender character varying NOT NULL,
+  dateofbirth date NOT NULL,
+  startdate date,
+  enddate date,
+  CONSTRAINT memberprofile_pkey PRIMARY KEY (userid),
+  CONSTRAINT fk_memberprofile_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.student (
+  userid integer NOT NULL,
+  studentcode character varying NOT NULL UNIQUE,
+  major character varying,
+  enrollmentyear integer,
+  CONSTRAINT student_pkey PRIMARY KEY (userid),
+  CONSTRAINT fk_student_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.lecturer (
+  userid integer NOT NULL,
+  lecturercode character varying NOT NULL UNIQUE,
+  department character varying,
+  CONSTRAINT lecturer_pkey PRIMARY KEY (userid),
+  CONSTRAINT fk_lecturer_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.librarian (
+  userid integer NOT NULL,
+  staffcode character varying NOT NULL UNIQUE,
+  CONSTRAINT librarian_pkey PRIMARY KEY (userid),
+  CONSTRAINT fk_librarian_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.librarymanager (
+  userid integer NOT NULL,
+  staffcode character varying NOT NULL UNIQUE,
+  CONSTRAINT librarymanager_pkey PRIMARY KEY (userid),
+  CONSTRAINT fk_librarymanager_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.admin (
+  userid integer NOT NULL,
+  staffcode character varying NOT NULL UNIQUE,
+  CONSTRAINT admin_pkey PRIMARY KEY (userid),
+  CONSTRAINT fk_admin_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.systemconfigurations (
+  configkey character varying NOT NULL,
+  configvalue text,
+  description text,
+  configgroup character varying NOT NULL DEFAULT 'system'::character varying,
+  updatedby integer,
+  updatedat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT systemconfigurations_pkey PRIMARY KEY (configkey),
+  CONSTRAINT fk_systemconfigurations_user FOREIGN KEY (updatedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.auditlogs (
+  auditlogid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  userid integer,
+  actiontype character varying NOT NULL,
+  entityname character varying,
+  entityid integer,
+  oldvalues text,
+  newvalues text,
+  timestamp timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT auditlogs_pkey PRIMARY KEY (auditlogid),
+  CONSTRAINT fk_auditlogs_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.category (
+  categoryid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  name character varying NOT NULL,
+  description text,
+  status character varying NOT NULL DEFAULT 'active'::character varying CHECK (status::text = ANY (ARRAY['active'::character varying, 'inactive'::character varying, 'hidden'::character varying]::text[])),
+  updatedat timestamp without time zone DEFAULT now(),
+  updatedby integer,
+  CONSTRAINT category_pkey PRIMARY KEY (categoryid),
+  CONSTRAINT fk_category_updatedby FOREIGN KEY (updatedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.tag (
+  tagid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  name character varying NOT NULL UNIQUE,
+  status character varying NOT NULL DEFAULT 'active'::character varying CHECK (status::text = ANY (ARRAY['active'::character varying, 'inactive'::character varying, 'hidden'::character varying]::text[])),
+  updatedat timestamp without time zone DEFAULT now(),
+  updatedby integer,
+  CONSTRAINT tag_pkey PRIMARY KEY (tagid),
+  CONSTRAINT fk_tag_updatedby FOREIGN KEY (updatedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.book (
+  bookid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  isbn character varying NOT NULL UNIQUE,
+  title character varying NOT NULL,
+  author character varying,
+  publisher character varying,
+  publicationyear integer,
+  price numeric CHECK (price IS NULL OR price >= 0::numeric),
+  imagepath character varying,
+  totalquantity integer NOT NULL DEFAULT 0 CHECK (totalquantity >= 0),
+  availablequantity integer NOT NULL DEFAULT 0 CHECK (availablequantity >= 0),
+  status character varying NOT NULL DEFAULT 'available'::character varying CHECK (status::text = ANY (ARRAY['available'::character varying, 'unavailable'::character varying]::text[])),
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  updatedat timestamp without time zone,
+  CONSTRAINT book_pkey PRIMARY KEY (bookid)
+);
+CREATE TABLE public.bookcategory (
+  bookid integer NOT NULL,
+  categoryid integer NOT NULL,
+  CONSTRAINT bookcategory_pkey PRIMARY KEY (bookid, categoryid),
+  CONSTRAINT fk_bookcategory_book FOREIGN KEY (bookid) REFERENCES public.book(bookid),
+  CONSTRAINT fk_bookcategory_category FOREIGN KEY (categoryid) REFERENCES public.category(categoryid)
+);
+CREATE TABLE public.booktag (
+  bookid integer NOT NULL,
+  tagid integer NOT NULL,
+  CONSTRAINT booktag_pkey PRIMARY KEY (bookid, tagid),
+  CONSTRAINT fk_booktag_book FOREIGN KEY (bookid) REFERENCES public.book(bookid),
+  CONSTRAINT fk_booktag_tag FOREIGN KEY (tagid) REFERENCES public.tag(tagid)
+);
+CREATE TABLE public.bookcopy (
+  bookcopyid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  bookid integer NOT NULL,
+  location character varying,
+  condition character varying NOT NULL DEFAULT 'good'::character varying CHECK (condition::text = ANY (ARRAY['good'::character varying, 'damaged'::character varying, 'lost'::character varying]::text[])),
+  status character varying NOT NULL DEFAULT 'available'::character varying CHECK (status::text = ANY (ARRAY['available'::character varying, 'unavailable'::character varying, 'borrowed'::character varying, 'reserved'::character varying]::text[])),
+  barcode character varying NOT NULL UNIQUE,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  updatedat timestamp without time zone,
+  CONSTRAINT bookcopy_pkey PRIMARY KEY (bookcopyid),
+  CONSTRAINT fk_bookcopy_book FOREIGN KEY (bookid) REFERENCES public.book(bookid)
+);
+CREATE TABLE public.reservation (
+  reservationid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  userid integer NOT NULL,
+  bookid integer NOT NULL,
+  bookcopyid integer,
+  status character varying NOT NULL DEFAULT 'pending'::character varying,
+  queueposition integer,
+  startdate timestamp without time zone DEFAULT now(),
+  enddate timestamp without time zone,
+  CONSTRAINT reservation_pkey PRIMARY KEY (reservationid),
+  CONSTRAINT fk_reservation_user FOREIGN KEY (userid) REFERENCES public.User(userid),
+  CONSTRAINT fk_reservation_book FOREIGN KEY (bookid) REFERENCES public.book(bookid),
+  CONSTRAINT fk_reservation_bookcopy FOREIGN KEY (bookcopyid) REFERENCES public.bookcopy(bookcopyid)
+);
+CREATE TABLE public.borrowrecord (
+  borrowrecordid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  userid integer NOT NULL,
+  bookcopyid integer NOT NULL,
+  bookid integer NOT NULL,
+  startdate timestamp without time zone NOT NULL DEFAULT now(),
+  enddate timestamp without time zone NOT NULL,
+  returnedat timestamp without time zone,
+  status character varying NOT NULL DEFAULT 'borrowed'::character varying,
+  extensioncount integer NOT NULL DEFAULT 0,
+  createdby integer,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT borrowrecord_pkey PRIMARY KEY (borrowrecordid),
+  CONSTRAINT fk_borrowrecord_user FOREIGN KEY (userid) REFERENCES public.User(userid),
+  CONSTRAINT fk_borrowrecord_bookcopy FOREIGN KEY (bookcopyid) REFERENCES public.bookcopy(bookcopyid),
+  CONSTRAINT fk_borrowrecord_book FOREIGN KEY (bookid) REFERENCES public.book(bookid),
+  CONSTRAINT fk_borrowrecord_createdby FOREIGN KEY (createdby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.fine (
+  fineid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  borrowrecordid integer NOT NULL,
+  userid integer NOT NULL,
+  amount numeric NOT NULL DEFAULT 0,
+  reason character varying,
+  status character varying NOT NULL DEFAULT 'unpaid'::character varying,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT fine_pkey PRIMARY KEY (fineid),
+  CONSTRAINT fk_fine_borrowrecord FOREIGN KEY (borrowrecordid) REFERENCES public.borrowrecord(borrowrecordid),
+  CONSTRAINT fk_fine_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
+CREATE TABLE public.payment (
+  paymentid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  fineid integer NOT NULL,
+  paidamount numeric NOT NULL,
+  paymentmethod character varying,
+  transactionreference character varying UNIQUE,
+  processedby integer,
+  status character varying NOT NULL DEFAULT 'pending'::character varying,
+  paidat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT payment_pkey PRIMARY KEY (paymentid),
+  CONSTRAINT fk_payment_fine FOREIGN KEY (fineid) REFERENCES public.fine(fineid),
+  CONSTRAINT fk_payment_processedby FOREIGN KEY (processedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.notification (
+  notificationid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  title character varying NOT NULL,
+  content text,
+  type character varying NOT NULL DEFAULT 'general'::character varying,
+  targetrole character varying DEFAULT 'ALL'::character varying,
+  ispinned boolean NOT NULL DEFAULT false,
+  thumbnailurl character varying,
+  createdby integer NOT NULL,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  updatedat timestamp without time zone,
+  CONSTRAINT notification_pkey PRIMARY KEY (notificationid),
+  CONSTRAINT fk_notification_user FOREIGN KEY (createdby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.usernotificationstatus (
+  userid integer NOT NULL,
+  notificationid integer NOT NULL,
+  readat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT usernotificationstatus_pkey PRIMARY KEY (userid, notificationid),
+  CONSTRAINT fk_uns_user FOREIGN KEY (userid) REFERENCES public.User(userid),
+  CONSTRAINT fk_uns_notification FOREIGN KEY (notificationid) REFERENCES public.notification(notificationid)
+);
+CREATE TABLE public.documenttemp (
+  tempid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  tempname character varying NOT NULL UNIQUE,
+  description character varying,
+  subject character varying NOT NULL,
+  bodycontent text NOT NULL,
+  managerid integer NOT NULL,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  updatedat timestamp without time zone,
+  CONSTRAINT documenttemp_pkey PRIMARY KEY (tempid),
+  CONSTRAINT fk_documenttemp_manager FOREIGN KEY (managerid) REFERENCES public.librarymanager(userid)
+);
+CREATE TABLE public.emailtemplate (
+  templateid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  tempname character varying NOT NULL UNIQUE,
+  description character varying,
+  subject character varying NOT NULL,
+  bodycontent text NOT NULL,
+  updatedby integer,
+  updatedat timestamp without time zone,
+  CONSTRAINT emailtemplate_pkey PRIMARY KEY (templateid),
+  CONSTRAINT fk_emailtemplate_user FOREIGN KEY (updatedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.bookcopyincident (
+  incidentid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  bookcopyid integer NOT NULL,
+  incidenttype character varying NOT NULL CHECK (incidenttype::text = ANY (ARRAY['damaged'::character varying, 'lost'::character varying]::text[])),
+  description character varying NOT NULL,
+  status character varying NOT NULL DEFAULT 'pending'::character varying CHECK (status::text = ANY (ARRAY['pending'::character varying, 'investigating'::character varying, 'resolved'::character varying, 'rejected'::character varying]::text[])),
+  resolution character varying,
+  reportedby integer NOT NULL,
+  reportedat timestamp without time zone NOT NULL DEFAULT now(),
+  resolvedby integer,
+  resolvedat timestamp without time zone,
+  CONSTRAINT bookcopyincident_pkey PRIMARY KEY (incidentid),
+  CONSTRAINT fk_bookcopyincident_bookcopy FOREIGN KEY (bookcopyid) REFERENCES public.bookcopy(bookcopyid),
+  CONSTRAINT fk_bookcopyincident_reportedby FOREIGN KEY (reportedby) REFERENCES public.User(userid),
+  CONSTRAINT fk_bookcopyincident_resolvedby FOREIGN KEY (resolvedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.bookimportbatch (
+  importbatchid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  importedby integer NOT NULL,
+  filename character varying NOT NULL,
+  totalrows integer NOT NULL DEFAULT 0 CHECK (totalrows >= 0),
+  successrows integer NOT NULL DEFAULT 0 CHECK (successrows >= 0),
+  failedrows integer NOT NULL DEFAULT 0 CHECK (failedrows >= 0),
+  status character varying NOT NULL DEFAULT 'failed'::character varying CHECK (status::text = ANY (ARRAY['success'::character varying, 'failed'::character varying]::text[])),
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  expiresat timestamp without time zone NOT NULL DEFAULT (now() + '1 year'::interval),
+  CONSTRAINT bookimportbatch_pkey PRIMARY KEY (importbatchid),
+  CONSTRAINT fk_bookimportbatch_importedby FOREIGN KEY (importedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.bookimporterror (
+  importerrorid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  importbatchid integer NOT NULL,
+  sheetname character varying NOT NULL CHECK (sheetname::text = ANY (ARRAY['Books'::character varying, 'BookCopies'::character varying]::text[])),
+  rownumber integer NOT NULL CHECK (rownumber >= 1),
+  columnname character varying,
+  errormessage character varying NOT NULL,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT bookimporterror_pkey PRIMARY KEY (importerrorid),
+  CONSTRAINT fk_bookimporterror_batch FOREIGN KEY (importbatchid) REFERENCES public.bookimportbatch(importbatchid)
+);
+CREATE TABLE public.inventorysession (
+  inventorysessionid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  location character varying NOT NULL,
+  status character varying NOT NULL DEFAULT 'draft'::character varying CHECK (status::text = ANY (ARRAY['draft'::character varying, 'counting'::character varying, 'reviewing'::character varying, 'completed'::character varying, 'cancelled'::character varying]::text[])),
+  startedby integer NOT NULL,
+  startedat timestamp without time zone NOT NULL DEFAULT now(),
+  completedby integer,
+  completedat timestamp without time zone,
+  note character varying,
+  CONSTRAINT inventorysession_pkey PRIMARY KEY (inventorysessionid),
+  CONSTRAINT fk_inventorysession_startedby FOREIGN KEY (startedby) REFERENCES public.User(userid),
+  CONSTRAINT fk_inventorysession_completedby FOREIGN KEY (completedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.inventoryitem (
+  inventoryitemid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  inventorysessionid integer NOT NULL,
+  bookcopyid integer NOT NULL,
+  expectedlocation character varying NOT NULL,
+  scannedlocation character varying,
+  result character varying NOT NULL DEFAULT 'pending'::character varying CHECK (result::text = ANY (ARRAY['pending'::character varying, 'matched'::character varying, 'missing'::character varying, 'misplaced'::character varying]::text[])),
+  scannedby integer,
+  scannedat timestamp without time zone,
+  resolution character varying,
+  resolvedby integer,
+  resolvedat timestamp without time zone,
+  CONSTRAINT inventoryitem_pkey PRIMARY KEY (inventoryitemid),
+  CONSTRAINT fk_inventoryitem_session FOREIGN KEY (inventorysessionid) REFERENCES public.inventorysession(inventorysessionid),
+  CONSTRAINT fk_inventoryitem_bookcopy FOREIGN KEY (bookcopyid) REFERENCES public.bookcopy(bookcopyid),
+  CONSTRAINT fk_inventoryitem_scannedby FOREIGN KEY (scannedby) REFERENCES public.User(userid),
+  CONSTRAINT fk_inventoryitem_resolvedby FOREIGN KEY (resolvedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.booksuggestion (
+  suggestionid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  title character varying NOT NULL,
+  author character varying NOT NULL,
+  publisher character varying,
+  isbn character varying,
+  reason text NOT NULL,
+  status character varying NOT NULL DEFAULT 'pending'::character varying CHECK (status::text = ANY (ARRAY['pending'::character varying, 'acknowledged'::character varying, 'rejected'::character varying]::text[])),
+  votecount integer NOT NULL DEFAULT 1 CHECK (votecount >= 0),
+  librariannote text,
+  createdby integer NOT NULL,
+  reviewedby integer,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  updatedat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT booksuggestion_pkey PRIMARY KEY (suggestionid),
+  CONSTRAINT fk_booksuggestion_createdby FOREIGN KEY (createdby) REFERENCES public.User(userid),
+  CONSTRAINT fk_booksuggestion_reviewedby FOREIGN KEY (reviewedby) REFERENCES public.User(userid)
+);
+CREATE TABLE public.suggestionvote (
+  voteid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  suggestionid integer NOT NULL,
+  userid integer NOT NULL,
+  votedat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT suggestionvote_pkey PRIMARY KEY (voteid),
+  CONSTRAINT fk_suggestionvote_suggestion FOREIGN KEY (suggestionid) REFERENCES public.booksuggestion(suggestionid),
+  CONSTRAINT fk_suggestionvote_user FOREIGN KEY (userid) REFERENCES public.User(userid)
+);
