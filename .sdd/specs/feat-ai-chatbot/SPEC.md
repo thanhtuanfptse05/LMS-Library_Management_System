@@ -1,53 +1,43 @@
-# Feature Specification: Trợ lý AI Chatbot (AI Chatbot)
-# Version: 1.0 | Chủ sở hữu: @antigravity | Ngày khởi tạo: 2026-07-03
+# Feature Specification: Trợ lý ảo AI & Chatbot (AI Assistant & Chatbot)
+# Version: 1.2 | Chủ sở hữu: @thai | Ngày cập nhật: 2026-07-24 (Đồng bộ CodeGraph)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
-Cung cấp một chatbot trực tuyến hỏi đáp 24/7 về các nội quy thư viện, chính sách mượn trả sách, và hỗ trợ tra cứu tựa sách sử dụng tích hợp mô hình ngôn ngữ lớn (Gemini API) kết hợp với kỹ thuật RAG.
+Cung cấp Trợ lý ảo AI (hỗ trợ bởi OpenAI / Gemini API) cho độc giả (Sinh viên, Giảng viên, Khách), giải đáp các câu hỏi tự nhiên về quy định thư viện, hướng dẫn thủ tục mượn trả, tìm kiếm sách theo chủ đề tư vấn và tóm tắt nội dung sách.
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
-* **Khách & Độc giả (Guest/User):** Gửi câu hỏi cho chatbot, xem lịch sử chat trong phiên.
+* **Tất cả Người dùng (All Roles) & Khách (Guest):** Tương tác với Widget Trợ lý AI để hỏi đáp thông tin thư viện.
 
 ## 2.5 Use Cases (Danh sách Use Cases)
-* **UC-36 (Ask Chatbot):** Actor: Guest, User | (Hỏi chatbot): Người dùng gửi câu hỏi bằng ngôn ngữ tự nhiên về nội quy thư viện hoặc tìm kiếm sách thông qua giao diện chatbot.
-* **UC-37 (View Chat History):** Actor: User | (Xem lịch sử chat): Người dùng xem lại các câu hỏi và câu trả lời trong phiên làm việc hiện tại.
-
-## 2.5 Use Cases (Danh sách Use Cases)
-* **UC-36 (Ask Chatbot):** Actor: Guest, User | (Hỏi chatbot): Người dùng gửi câu hỏi bằng ngôn ngữ tự nhiên về nội quy thư viện hoặc tìm kiếm sách thông qua giao diện chatbot.
-* **UC-37 (View Chat History):** Actor: User | (Xem lịch sử chat): Người dùng xem lại các câu hỏi và câu trả lời trong phiên làm việc hiện tại.
-
-## 2.5 Use Cases (Danh sách Use Cases)
-* **UC-36 (Ask Chatbot):** Actor: Guest, User | (Hỏi chatbot): Người dùng gửi câu hỏi bằng ngôn ngữ tự nhiên về nội quy thư viện hoặc tìm kiếm sách thông qua giao diện chatbot.
-* **UC-37 (View Chat History):** Actor: User | (Xem lịch sử chat): Người dùng xem lại các câu hỏi và câu trả lời trong phiên làm việc hiện tại.
+* **UC-43 (Interact with AI Chatbot):** Actor: Guest/All Users | Gửi câu hỏi bằng ngôn ngữ tự nhiên và nhận phản hồi tư vấn từ Trợ lý AI.
 
 ## 3. Business Rules (Quy tắc nghiệp vụ)
-* **BR-37 (AI Chatbot Access Control):** Tính năng AI Chatbot SHALL được public cho cả Guest và User đã đăng nhập. Chatbot SHALL chỉ trả lời các câu hỏi liên quan đến nội quy thư viện, chính sách mượn trả, và tra cứu thông tin sách. Chatbot MUST NOT trả lời các yêu cầu thực hiện giao dịch (mượn, trả, thanh toán) thay người dùng.
+* **BR-48 (AI System Context Ingestion):** Trợ lý AI BẮT BUỘC được nạp bối cảnh quy định thư viện (Library Rules & Context) trong System Prompt để đảm bảo trả lời chính xác theo chính sách của thư viện LMS.
+* **BR-49 (API Safety & Timeout Fallback):** Cuộc gọi tới API OpenAI/Gemini BẮT BUỘC có thời gian chờ (Timeout) tối đa 3.0 giây. Nếu vượt quá thời gian chờ hoặc API bị lỗi, hệ thống phải tự động trả về câu trả lời mặc định thân thiện mà không gây treo màn hình.
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
-* **FR-69 (Gửi câu hỏi Chatbot với RAG):** WHEN AiChatbotServlet.doPost() nhận JSON {message:"..."}, THE system SHALL: (1) Validate message không rỗng và ≤ 500 ký tự, (2) Lấy chatHistory từ HttpSession (nếu chưa có: khởi tạo empty list), (3) Gọi AiChatbotService.processMessage(message, chatHistory): Service thực hiện RAG (Retrieval-Augmented Generation): (a) Query relevant context từ DB: NotificationDAO.findPinned() (nội quy), SystemConfigDAO.getAllPublic() (chính sách mượn/phạt), BookDAO.findPopular() (sách hot), (b) Build prompt với context + chatHistory (latest 5 messages) + new message, (c) Gọi Gemini API với prompt, (d) Parse response từ Gemini, (4) Append {role:"user", content:message} và {role:"assistant", content:reply} vào chatHistory, (5) Lưu chatHistory vào session, (6) Trả JSON {status:"success", reply, history}.
-  * *Mapping:* UC-36 / BR-37
-* **FR-70 (Lấy lịch sử Chat từ session):** WHEN AiChatbotServlet.doGet() được gọi, THE system SHALL: (1) Lấy chatHistory từ HttpSession (attribute name: "chatHistory"), (2) WHERE session không tồn tại hoặc chatHistory = NULL: trả JSON {status:"success", history:[]}, (3) WHERE chatHistory tồn tại: trả JSON {status:"success", history:[{role, content, timestamp}...]} với tối đa 50 messages gần nhất, (4) Không ghi AuditLog (read-only operation).
-  * *Mapping:* UC-37
+* **FR-54 (Trợ lý AI tư vấn ngôn ngữ tự nhiên):** WHEN độc giả gửi câu hỏi tại `AiChatbotServlet`, THE system SHALL gọi `AiRecommendationService` gửi câu hỏi kèm System Prompt cấu hình bối cảnh thư viện tới Gemini/OpenAI API. Trả về phản hồi dạng Chat Bubbles.
+  * *Mapping:* UC-43 / BR-48
+* **FR-55 (Xử lý Fallback an toàn khi API lỗi):** WHERE cuộc gọi API AI gặp sự cố ngắt kết nối hoặc Timeout 3s, THE system SHALL catch lỗi, trả về phản hồi mặc định: "Xin lỗi, hiện tại trợ lý AI đang bận. Bạn có thể tra cứu sách trực tiếp tại thanh tìm kiếm hoặc xem trang Quy định thư viện."
+  * *Mapping:* UC-43 / BR-49
 
-## 5. Non-functional Requirements (Yêu cầu phi chức năng)
-* Hiệu năng: Thời gian phản hồi của chatbot AI phải dưới 15 giây (Timeout cấu hình).
-* Bảo mật: Không lộ API Key của Gemini ra phía Client.
+## 4.5 Non-functional Requirements (Yêu cầu phi chức năng)
+* **Bảo mật:** Khóa API (API Key) được lưu trữ bảo mật trong cấu hình môi trường, KHÔNG hardcode trong source code Java hay JSP.
+* **Hiệu năng:** Timeout gọi API AI = 3 giây. Phản hồi mượt mà qua AJAX / Stream.
+* **Giao diện:** Widget Chatbox ở góc dưới màn hình, giao diện 100% tiếng Việt.
 
-## 6. Database Schema & Data Models (Lược đồ dữ liệu)
-### Bảng SystemConfigurations
-* `configKey` (VARCHAR(100), PK)
-* `configValue` (TEXT)
+## 5. Database Schema & Data Models (Lược đồ dữ liệu)
+* Đọc thông tin sách từ `Book`, `Category` để nạp làm context cho AI khi tra cứu.
 
+## 6. Error Handling (Xử lý lỗi ngoại lệ)
+* **WHERE** hết quota API hoặc không có mạng, **THE system SHALL** trả về câu trả lời fallback mặc định mà không làm gián đoạn ứng dụng.
 
+## 7. Acceptance Criteria (Tiêu chí nghiệm thu)
+- [ ] [TC-AI-01] Đặt câu hỏi về giờ mở cửa hoặc nội quy thư viện Trợ lý AI trả lời chính xác.
+- [ ] [TC-AI-02] Nhập yêu cầu gợi ý sách theo chủ đề Trợ lý AI tư vấn các sách phù hợp.
+- [ ] [TC-AI-03] Giả lập ngắt kết nối API AI hệ thống phản hồi câu thông báo fallback thân thiện trong 3 giây.
 
-## 7. Error Handling (Xử lý lỗi ngoại lệ)
-* WHERE kết nối API Gemini bị lỗi hoặc timeout 15 giây, THE system SHALL tự động phản hồi bằng câu trả lời mặc định offline dựa trên bộ câu hỏi thường gặp (FAQ) định nghĩa sẵn.
-
-## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
-- [ ] Hỏi về nội quy: Gửi câu hỏi 'Quy định phạt quá hạn?' -> Chatbot trả lời chính xác mức phạt 5,000đ/ngày dựa trên config.
-- [ ] Yêu cầu thực hiện mượn sách: Gửi 'Mượn hộ tôi quyển sách này' -> Chatbot từ chối thực hiện giao dịch theo quy tắc BR-37.
-
-## 9. Out of Scope (Phạm vi không thực hiện)
-* Lưu trữ lịch sử chat vĩnh viễn vào cơ sở dữ liệu (chỉ lưu tạm thời trong session của trình duyệt).
+## 8. Out of Scope (Phạm vi không thực hiện)
+* Xử lý giọng nói tiếng Việt (Voice-to-Text).
 
 ## Notes & Open Questions (Ghi chú & Câu hỏi mở)
-* Hiện tại toàn bộ chức năng đã được cài đặt khớp với thiết kế mã nguồn thực tế.
+* Đã hoàn thiện cấu hình AiConfig và dịch vụ AiRecommendationService.
