@@ -39,6 +39,26 @@ public class AuthFilter implements Filter {
         String contextPath = httpRequest.getContextPath();
         String path = requestURI.substring(contextPath.length());
 
+        boolean isStaticResource = path.startsWith("/assets/")
+                || path.startsWith("/common/")
+                || path.endsWith(".css")
+                || path.endsWith(".js")
+                || path.endsWith(".png")
+                || path.endsWith(".jpg")
+                || path.endsWith(".jpeg")
+                || path.endsWith(".gif")
+                || path.endsWith(".svg")
+                || path.endsWith(".ico")
+                || path.endsWith(".woff")
+                || path.endsWith(".woff2");
+
+        // Cấm browser caching cho các trang động (chống bấm Back nút quay lại trang cũ/login)
+        if (!isStaticResource) {
+            httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            httpResponse.setHeader("Pragma", "no-cache");
+            httpResponse.setDateHeader("Expires", 0);
+        }
+
         // 0. Cho phép SePay Webhook route bypass AuthFilter (tự xác thực bằng API Key riêng)
         if ("/api/sepay-webhook".equals(path)) {
             chain.doFilter(request, response);
@@ -56,19 +76,6 @@ public class AuthFilter implements Filter {
                 && session.getAttribute("role") != null);
 
         if (isLoggedIn) {
-            boolean isStaticResource = path.startsWith("/assets/")
-                    || path.startsWith("/common/")
-                    || path.endsWith(".css")
-                    || path.endsWith(".js")
-                    || path.endsWith(".png")
-                    || path.endsWith(".jpg")
-                    || path.endsWith(".jpeg")
-                    || path.endsWith(".gif")
-                    || path.endsWith(".svg")
-                    || path.endsWith(".ico")
-                    || path.endsWith(".woff")
-                    || path.endsWith(".woff2");
-
             if (!isStaticResource) {
                 int userId = (Integer) session.getAttribute("userId");
                 UserDAO userDAO = new UserDAO();
