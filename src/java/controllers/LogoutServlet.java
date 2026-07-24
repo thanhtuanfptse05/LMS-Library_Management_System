@@ -55,5 +55,5 @@ public class LogoutServlet extends HttpServlet {
         // Chuyển hướng người dùng về trang đăng nhập [Node 17.28]
         response.sendRedirect(request.getContextPath() + "/login");
     }
-
+    
 }
