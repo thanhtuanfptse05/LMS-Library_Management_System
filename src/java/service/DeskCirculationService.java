@@ -217,8 +217,6 @@ public class DeskCirculationService {
             // [Node 6.6 / FR-F6-01] BƯỚC 1: Xác thực nợ phạt — BR-22
             // Kiểm tra khoản phạt chưa thanh toán (unpaid fines) trước khi làm bất cứ điều gì khác.
             // ----------------------------------------------------------------
-            // EARS[Condition-driven]: WHERE Check-out starts,
-            // THE LMS System SHALL FAIL FAST if unpaid fine exists [BR-22]
             if (fineDAO.hasUnpaidFines(conn, userId)) {
                 throw new IllegalStateException(
                         "Tài khoản đang nợ phạt, không thể mượn sách cho đến khi thanh toán xong.");
@@ -227,8 +225,6 @@ public class DeskCirculationService {
             // ----------------------------------------------------------------
             // [Node 5.5 / SPEC §6] BƯỚC 2: Xác thực barcode — lấy BookCopy
             // ----------------------------------------------------------------
-            // EARS[Event-driven]: WHEN barcode is scanned,
-            // THE LMS System SHALL validate BookCopy existence [Node 5.5]
             BookCopy bookCopy = bookCopyDAO.findByBarcode(conn, barcode);
             if (bookCopy == null) {
                 throw new IllegalStateException(
@@ -246,14 +242,30 @@ public class DeskCirculationService {
             }
 
             // ----------------------------------------------------------------
-            // [Node 7.8 / FR-F6-02] BƯỚC 3: Phân nhánh Reservation
+            // BƯỚC 2.5: Xác thực hạn mức mượn tối đa — BR-21 (Max Quota)
             // ----------------------------------------------------------------
-            // EARS[Condition-driven]: WHERE user is valid,
-            // THE LMS System SHALL route to pre-reservation OR walk-in flow [Node 7.8]
             Reservation reservation = reservationDAO.findReadyPickupByUserAndBook(
                     conn, userId, bookId);
             boolean reservationWasPreExisting = (reservation != null);
 
+            if (!reservationWasPreExisting) {
+                String userRole = userDAO.findRoleByUserId(conn, userId);
+                int maxQuota = "LECTURER".equalsIgnoreCase(userRole) ? 5 : 3;
+                String configQuotaStr = systemConfigDAO.getValue(conn,
+                        "LECTURER".equalsIgnoreCase(userRole) ? "LECTURER_MAX_BORROW_BOOKS" : "STUDENT_MAX_BORROW_BOOKS", null);
+                if (configQuotaStr != null && !configQuotaStr.isBlank()) {
+                    try { maxQuota = Integer.parseInt(configQuotaStr.trim()); } catch (Exception ignored) {}
+                }
+                int activeBorrowCount = borrowRecordDAO.countActiveBorrowsByUserId(conn, userId);
+                if (activeBorrowCount >= maxQuota) {
+                    throw new IllegalStateException(
+                            "Độc giả đã đạt hạn mức mượn sách tối đa (" + maxQuota + " quyển). Không thể mượn thêm.");
+                }
+            }
+
+            // ----------------------------------------------------------------
+            // [Node 7.8 / FR-F6-02] BƯỚC 3: Phân nhánh Reservation
+            // ----------------------------------------------------------------
             if (reservation == null) {
                 // Nhánh Walk-in: người dùng KHÔNG có đơn đặt trước sẵn sàng
                 // Bắt buộc BookCopy phải ở trạng thái 'available'
@@ -263,19 +275,14 @@ public class DeskCirculationService {
                             + bookCopy.getStatus() + "').");
                 }
 
-                // ---------------------------------------------------------------
-                // [Node 8.9 / FR-F6-02] Kiểm tra hàng chờ của người khác — BR-23
-                // EARS[Condition-driven]: WHERE no pre-reservation found,
-                // THE LMS System SHALL check queue for other pending users [Node 8.9]
+                // Kiểm tra hàng chờ của người khác — BR-23
                 if (reservationDAO.hasQueuedReservation(conn, bookId)) {
                     throw new IllegalStateException(
                             "Sách này đã được người khác đặt trước trong hàng đợi. "
                             + "Không thể mượn trực tiếp tại quầy.");
                 }
 
-                // [Node 10.12 / FR-F6-02] Hàng chờ rỗng — tạo Reservation walk-in
-                // EARS[Event-driven]: WHERE queue is empty,
-                // THE LMS System SHALL INSERT walk-in Reservation (queuePosition=0) [Node 10.12]
+                // Hàng chờ rỗng — tạo Reservation walk-in
                 int newReservationId = reservationDAO.insertWalkIn(
                         conn, userId, bookId, bookCopyId);
                 reservation = new Reservation();
@@ -286,8 +293,8 @@ public class DeskCirculationService {
             } else {
                 // Nhánh Pre-reservation: người dùng đã có đơn đặt trước
                 if (reservation.getBookCopyId() != null) {
-                    // Nếu đơn đặt trước đã gắn sẵn bản sao khác
-                    if (!"reserved".equals(bookCopy.getStatus())) {
+                    // Đơn đặt trước đã được gán sẵn bản sao
+                    if (!"reserved".equals(bookCopy.getStatus()) && !"available".equals(bookCopy.getStatus())) {
                         throw new IllegalStateException(
                                 "Bản sao sách này không ở trạng thái được giữ đặt trước (Trạng thái: '" 
                                 + bookCopy.getStatus() + "').");
@@ -298,8 +305,7 @@ public class DeskCirculationService {
                     }
                 } else {
                     // Đơn đặt trước online chưa gán bản sao (bookCopyId == null)
-                    // Bắt buộc BookCopy phải ở trạng thái 'available'
-                    if (!"available".equals(bookCopy.getStatus())) {
+                    if (!"available".equals(bookCopy.getStatus()) && !"reserved".equals(bookCopy.getStatus())) {
                         throw new IllegalStateException(
                                 "Bản sao sách này không sẵn sàng để mượn (Trạng thái: '" 
                                 + bookCopy.getStatus() + "').");

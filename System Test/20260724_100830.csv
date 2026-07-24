@@ -1,0 +1,694 @@
+Suite/Test/Step Name,Browser,Description,Tag,Start time,End time,Duration,Status
+TSDeskCirculation,Chrome 150.0.7871.129,"Quản lý nghiệp vụ lưu thông tại quầy (Check-out, Check-in, Cash Payment)",,24-07-2026 10:08:45,24-07-2026 10:13:42,"4m - 57,589s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:08:45,24-07-2026 10:09:05,"20,225s",PASSED
+"DATA BINDING - {""memberCode"":""ST20230001"",""expected"":""PASS"",""barcode"":""BC_TEST_CHECKOUT""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:08:45,24-07-2026 10:08:46,"0,017s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:08:46,24-07-2026 10:08:46,"0,003s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:08:46,24-07-2026 10:08:46,"0,003s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:08:46,24-07-2026 10:08:49,"3,059s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:08:49,24-07-2026 10:08:49,"0,115s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:08:49,24-07-2026 10:08:51,"2,110s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:08:51,24-07-2026 10:08:52,"1,305s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:08:52,24-07-2026 10:08:52,"0,352s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:08:52,24-07-2026 10:08:53,"0,267s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:08:53,24-07-2026 10:08:53,"0,211s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:08:53,24-07-2026 10:08:53,"0,184s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:08:53,24-07-2026 10:08:57,"3,530s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:08:57,24-07-2026 10:08:57,"0,014s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:08:57,24-07-2026 10:08:57,"0,003s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:08:57,24-07-2026 10:08:57,"0,026s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:08:57,24-07-2026 10:08:57,"0,086s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:08:57,24-07-2026 10:08:57,"0,021s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:08:57,24-07-2026 10:08:58,"1,555s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:08:58,24-07-2026 10:08:58,"0,015s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:08:58,24-07-2026 10:08:58,"0,026s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:08:58,24-07-2026 10:09:00,"1,188s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:00,24-07-2026 10:09:00,"0,022s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:00,24-07-2026 10:09:04,"3,988s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:04,24-07-2026 10:09:05,"1,151s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:09:05,24-07-2026 10:09:05,"0,296s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:09:05,24-07-2026 10:09:19,"13,665s",PASSED
+"DATA BINDING - {""memberCode"":""ST20230001"",""expected"":""FAIL"",""barcode"":""BC_NOT_FOUND""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:09:05,24-07-2026 10:09:05,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:09:05,24-07-2026 10:09:05,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:09:05,24-07-2026 10:09:05,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:09:05,24-07-2026 10:09:06,"1,152s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:09:06,24-07-2026 10:09:06,"0,072s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:06,24-07-2026 10:09:08,"1,807s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:08,24-07-2026 10:09:09,"1,306s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:09,24-07-2026 10:09:10,"0,289s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:10,24-07-2026 10:09:10,"0,253s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:10,24-07-2026 10:09:10,"0,223s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:10,24-07-2026 10:09:10,"0,031s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:10,24-07-2026 10:09:13,"3,177s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:13,24-07-2026 10:09:13,"0,010s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:09:13,24-07-2026 10:09:13,"0,001s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:13,24-07-2026 10:09:13,"0,017s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:13,24-07-2026 10:09:14,"0,069s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:14,24-07-2026 10:09:14,"0,023s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:14,24-07-2026 10:09:14,"0,068s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:14,24-07-2026 10:09:15,"1,389s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:15,24-07-2026 10:09:15,"0,020s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:09:15,24-07-2026 10:09:15,"0,002s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:09:15,24-07-2026 10:09:16,"1,196s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:16,24-07-2026 10:09:16,"0,021s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:16,24-07-2026 10:09:16,"0,208s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:16,24-07-2026 10:09:16,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:09:16,24-07-2026 10:09:19,"2,093s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:09:19,24-07-2026 10:09:19,"0,183s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:09:19,24-07-2026 10:09:34,"14,881s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_QUOTA"",""expected"":""FAIL"",""barcode"":""BC_TEST_CHECKOUT""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:09:19,24-07-2026 10:09:19,"0,001s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:09:19,24-07-2026 10:09:19,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:09:19,24-07-2026 10:09:19,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:09:19,24-07-2026 10:09:20,"1,038s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:09:20,24-07-2026 10:09:20,"0,045s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:20,24-07-2026 10:09:21,"0,876s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:21,24-07-2026 10:09:22,"1,673s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:22,24-07-2026 10:09:23,"0,259s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:23,24-07-2026 10:09:23,"0,267s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:23,24-07-2026 10:09:23,"0,233s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:23,24-07-2026 10:09:23,"0,030s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:23,24-07-2026 10:09:26,"3,075s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:26,24-07-2026 10:09:26,"0,010s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:09:26,24-07-2026 10:09:26,"0,002s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:26,24-07-2026 10:09:26,"0,018s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:26,24-07-2026 10:09:26,"0,110s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:26,24-07-2026 10:09:26,"0,019s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:26,24-07-2026 10:09:28,"1,646s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:28,24-07-2026 10:09:28,"0,007s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:28,24-07-2026 10:09:28,"0,012s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:09:28,24-07-2026 10:09:28,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:09:28,24-07-2026 10:09:29,"1,140s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:29,24-07-2026 10:09:29,"0,000s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:29,24-07-2026 10:09:32,"2,950s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:32,24-07-2026 10:09:32,"0,002s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:09:32,24-07-2026 10:09:33,"1,128s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:09:33,24-07-2026 10:09:34,"0,303s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:09:34,24-07-2026 10:09:46,"12,620s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_FINE"",""expected"":""FAIL"",""barcode"":""BC_TEST_CHECKOUT""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:09:34,24-07-2026 10:09:34,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:09:34,24-07-2026 10:09:34,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:09:34,24-07-2026 10:09:34,"0,008s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:09:34,24-07-2026 10:09:35,"0,982s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:09:35,24-07-2026 10:09:35,"0,059s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:35,24-07-2026 10:09:36,"0,765s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:36,24-07-2026 10:09:36,"0,873s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:36,24-07-2026 10:09:37,"0,230s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:37,24-07-2026 10:09:37,"0,160s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:37,24-07-2026 10:09:37,"0,146s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:37,24-07-2026 10:09:37,"0,028s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:37,24-07-2026 10:09:40,"3,040s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:40,24-07-2026 10:09:40,"0,000s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:09:40,24-07-2026 10:09:40,"0,009s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:40,24-07-2026 10:09:40,"0,011s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:40,24-07-2026 10:09:40,"0,085s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:40,24-07-2026 10:09:40,"0,017s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:40,24-07-2026 10:09:42,"1,791s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:42,24-07-2026 10:09:42,"0,008s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:42,24-07-2026 10:09:42,"0,017s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:09:42,24-07-2026 10:09:42,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:09:42,24-07-2026 10:09:43,"1,107s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:43,24-07-2026 10:09:43,"0,016s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:43,24-07-2026 10:09:45,"2,008s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:45,24-07-2026 10:09:45,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:09:45,24-07-2026 10:09:46,"1,062s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:09:46,24-07-2026 10:09:46,"0,160s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:09:46,24-07-2026 10:10:00,"13,509s",PASSED
+"DATA BINDING - {""memberCode"":""ST20230001"",""expected"":""FAIL"",""barcode"":""BC_TEST_CHECKIN_OVERDUE""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:09:46,24-07-2026 10:09:46,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:09:46,24-07-2026 10:09:46,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:09:46,24-07-2026 10:09:46,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:09:46,24-07-2026 10:09:47,"0,835s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:09:47,24-07-2026 10:09:47,"0,062s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:47,24-07-2026 10:09:48,"0,950s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:48,24-07-2026 10:09:50,"1,674s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:50,24-07-2026 10:09:50,"0,267s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:50,24-07-2026 10:09:50,"0,173s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:50,24-07-2026 10:09:50,"0,137s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:50,24-07-2026 10:09:50,"0,021s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:50,24-07-2026 10:09:54,"3,049s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:54,24-07-2026 10:09:54,"0,008s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:09:54,24-07-2026 10:09:54,"0,001s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:54,24-07-2026 10:09:54,"0,015s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:54,24-07-2026 10:09:54,"0,082s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:54,24-07-2026 10:09:54,"0,016s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:54,24-07-2026 10:09:54,"0,062s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:09:54,24-07-2026 10:09:55,"1,452s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:55,24-07-2026 10:09:55,"0,017s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:09:55,24-07-2026 10:09:55,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:09:55,24-07-2026 10:09:56,"1,115s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:09:56,24-07-2026 10:09:56,"0,000s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:09:56,24-07-2026 10:09:59,"2,264s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:09:59,24-07-2026 10:09:59,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:09:59,24-07-2026 10:10:00,"1,080s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:10:00,24-07-2026 10:10:00,"0,208s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:10:00,24-07-2026 10:10:09,"9,311s",PASSED
+"DATA BINDING - {""memberCode"":""INVALID_CODE"",""expected"":""FAIL"",""barcode"":""BC_TEST_CHECKOUT""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:10:00,24-07-2026 10:10:00,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:10:00,24-07-2026 10:10:00,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:10:00,24-07-2026 10:10:00,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:10:00,24-07-2026 10:10:01,"0,851s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:10:01,24-07-2026 10:10:01,"0,052s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:01,24-07-2026 10:10:02,"1,152s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:02,24-07-2026 10:10:03,"1,424s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:03,24-07-2026 10:10:04,"0,306s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:04,24-07-2026 10:10:04,"0,196s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:04,24-07-2026 10:10:04,"0,152s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:04,24-07-2026 10:10:04,"0,026s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:04,24-07-2026 10:10:07,"3,144s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:07,24-07-2026 10:10:07,"0,011s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:10:07,24-07-2026 10:10:07,"0,001s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:07,24-07-2026 10:10:07,"0,018s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:07,24-07-2026 10:10:07,"0,083s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:07,24-07-2026 10:10:07,"0,023s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:07,24-07-2026 10:10:08,"0,513s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:08,24-07-2026 10:10:08,"0,044s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:08,24-07-2026 10:10:08,"0,019s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:10:08,24-07-2026 10:10:08,"0,005s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:08,24-07-2026 10:10:08,"0,015s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:08,24-07-2026 10:10:08,"0,014s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:08,24-07-2026 10:10:08,"0,000s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:08,24-07-2026 10:10:08,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:08,24-07-2026 10:10:09,"1,048s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:10:09,24-07-2026 10:10:09,"0,175s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:10:09,24-07-2026 10:10:18,"8,680s",PASSED
+"DATA BINDING - {""memberCode"":"""",""expected"":""FAIL"",""barcode"":""BC_TEST_CHECKOUT""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:10:09,24-07-2026 10:10:09,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:10:09,24-07-2026 10:10:09,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:10:09,24-07-2026 10:10:09,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:10:09,24-07-2026 10:10:10,"0,834s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:10:10,24-07-2026 10:10:10,"0,057s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:10,24-07-2026 10:10:12,"1,593s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:12,24-07-2026 10:10:12,"0,813s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:12,24-07-2026 10:10:13,"0,210s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:13,24-07-2026 10:10:13,"0,179s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:13,24-07-2026 10:10:13,"0,184s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:13,24-07-2026 10:10:13,"0,025s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:13,24-07-2026 10:10:16,"3,202s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:16,24-07-2026 10:10:16,"0,013s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:10:16,24-07-2026 10:10:16,"0,000s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:16,24-07-2026 10:10:16,"0,021s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:16,24-07-2026 10:10:16,"0,086s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:16,24-07-2026 10:10:16,"0,015s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:16,24-07-2026 10:10:17,"0,077s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:17,24-07-2026 10:10:17,"0,011s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:17,24-07-2026 10:10:17,"0,019s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:10:17,24-07-2026 10:10:17,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:17,24-07-2026 10:10:17,"0,015s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:17,24-07-2026 10:10:17,"0,016s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:17,24-07-2026 10:10:17,"0,000s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:17,24-07-2026 10:10:17,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:17,24-07-2026 10:10:18,"1,067s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:10:18,24-07-2026 10:10:18,"0,213s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:10:18,24-07-2026 10:10:29,"11,004s",PASSED
+"DATA BINDING - {""memberCode"":""ST20230001"",""expected"":""FAIL"",""barcode"":""""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:10:18,24-07-2026 10:10:18,"0,001s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:10:18,24-07-2026 10:10:18,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:10:18,24-07-2026 10:10:18,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:10:18,24-07-2026 10:10:19,"1,062s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:10:19,24-07-2026 10:10:19,"0,051s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:19,24-07-2026 10:10:20,"0,756s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:20,24-07-2026 10:10:21,"0,927s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:21,24-07-2026 10:10:21,"0,223s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:21,24-07-2026 10:10:21,"0,195s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:21,24-07-2026 10:10:21,"0,158s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:21,24-07-2026 10:10:21,"0,021s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:21,24-07-2026 10:10:25,"3,382s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:25,24-07-2026 10:10:25,"0,015s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:10:25,24-07-2026 10:10:25,"0,000s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:25,24-07-2026 10:10:25,"0,013s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:25,24-07-2026 10:10:25,"0,089s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:25,24-07-2026 10:10:25,"0,014s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:25,24-07-2026 10:10:26,"1,078s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:26,24-07-2026 10:10:26,"0,001s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:26,24-07-2026 10:10:26,"0,018s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:10:26,24-07-2026 10:10:26,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:26,24-07-2026 10:10:27,"1,109s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:27,24-07-2026 10:10:27,"0,016s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:27,24-07-2026 10:10:28,"0,622s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:28,24-07-2026 10:10:28,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:28,24-07-2026 10:10:29,"1,050s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:10:29,24-07-2026 10:10:29,"0,177s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:10:29,24-07-2026 10:10:38,"8,951s",PASSED
+"DATA BINDING - {""memberCode"":""student1@lms.com"",""expected"":""FAIL"",""barcode"":""BC_TEST_CHECKOUT""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:10:29,24-07-2026 10:10:29,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:10:29,24-07-2026 10:10:29,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:10:29,24-07-2026 10:10:29,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:10:29,24-07-2026 10:10:30,"0,871s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:10:30,24-07-2026 10:10:30,"0,052s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:30,24-07-2026 10:10:31,"1,277s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:31,24-07-2026 10:10:32,"0,949s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:32,24-07-2026 10:10:32,"0,213s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:32,24-07-2026 10:10:32,"0,216s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:32,24-07-2026 10:10:33,"0,154s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:33,24-07-2026 10:10:33,"0,026s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:33,24-07-2026 10:10:36,"3,342s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:36,24-07-2026 10:10:36,"0,010s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:10:36,24-07-2026 10:10:36,"0,001s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:36,24-07-2026 10:10:36,"0,018s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:36,24-07-2026 10:10:36,"0,081s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:36,24-07-2026 10:10:36,"0,014s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:36,24-07-2026 10:10:37,"0,437s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:37,24-07-2026 10:10:37,"0,033s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:37,24-07-2026 10:10:37,"0,021s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:10:37,24-07-2026 10:10:37,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:37,24-07-2026 10:10:37,"0,015s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:37,24-07-2026 10:10:37,"0,021s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:37,24-07-2026 10:10:37,"0,000s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:37,24-07-2026 10:10:37,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:37,24-07-2026 10:10:38,"1,040s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:10:38,24-07-2026 10:10:38,"0,142s",PASSED
+,,,,,,,
+Test Cases/TCCheckoutBook,Chrome 150.0.7871.129,Giao sách cho độc giả tại quầy,"DeskCirculation,TS4",24-07-2026 10:10:38,24-07-2026 10:10:51,"12,917s",PASSED
+"DATA BINDING - {""memberCode"":""ST20230001"",""expected"":""FAIL"",""barcode"":""978-604-0-99999-3""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : ST20230001,Chrome 150.0.7871.129,,,24-07-2026 10:10:38,24-07-2026 10:10:38,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKOUT,Chrome 150.0.7871.129,,,24-07-2026 10:10:38,24-07-2026 10:10:38,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:10:38,24-07-2026 10:10:38,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:10:38,24-07-2026 10:10:39,"0,889s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:10:39,24-07-2026 10:10:39,"0,053s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:39,24-07-2026 10:10:40,"1,088s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:40,24-07-2026 10:10:41,"0,891s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:41,24-07-2026 10:10:41,"0,215s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:41,24-07-2026 10:10:41,"0,150s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:41,24-07-2026 10:10:41,"0,118s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:41,24-07-2026 10:10:41,"0,018s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:41,24-07-2026 10:10:44,"3,121s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:44,24-07-2026 10:10:44,"0,000s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:10:44,24-07-2026 10:10:44,"0,000s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:44,24-07-2026 10:10:44,"0,020s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:44,24-07-2026 10:10:45,"0,074s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:45,24-07-2026 10:10:45,"0,016s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:45,24-07-2026 10:10:46,"1,491s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:46,24-07-2026 10:10:46,"0,016s",PASSED
+"chooseCheckoutBtns = driver.findElements(By.xpath(""//button[contains(text(),'Chọn giao sách')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:46,24-07-2026 10:10:46,"0,014s",PASSED
+if (!(chooseCheckoutBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:10:46,24-07-2026 10:10:46,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:46,24-07-2026 10:10:47,"1,108s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkoutBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:47,24-07-2026 10:10:47,"0,000s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:47,24-07-2026 10:10:50,"2,390s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:50,24-07-2026 10:10:50,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:10:50,24-07-2026 10:10:51,"1,064s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:10:51,24-07-2026 10:10:51,"0,159s",PASSED
+,,,,,,,
+Test Cases/TCCheckinBook,Chrome 150.0.7871.129,Nhận trả sách tại quầy,"DeskCirculation,TS4",24-07-2026 10:10:51,24-07-2026 10:11:07,"15,854s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_FINE"",""condition"":""good"",""expected"":""PASS"",""barcode"":""BC_TEST_CHECKIN_OVERDUE ""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:10:51,24-07-2026 10:10:51,"0,002s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKIN_OVERDUE,Chrome 150.0.7871.129,,,24-07-2026 10:10:51,24-07-2026 10:10:51,"0,002s",PASSED
+conditionVal = (binding.hasVariable(condition)) ? (((condition != null) && (condition.toString().trim() != ))) ? condition.toString().trim().toLowerCase() : good : good,Chrome 150.0.7871.129,,,24-07-2026 10:10:51,24-07-2026 10:10:51,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:10:51,24-07-2026 10:10:51,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:10:51,24-07-2026 10:10:52,"0,857s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:10:52,24-07-2026 10:10:52,"0,040s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:52,24-07-2026 10:10:54,"2,116s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:54,24-07-2026 10:10:55,"0,897s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:55,24-07-2026 10:10:55,"0,234s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:10:55,24-07-2026 10:10:55,"0,187s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:55,24-07-2026 10:10:56,"0,160s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:56,24-07-2026 10:10:56,"0,023s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:56,24-07-2026 10:10:59,"3,334s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:10:59,24-07-2026 10:10:59,"0,013s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:10:59,24-07-2026 10:10:59,"0,002s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:59,24-07-2026 10:10:59,"0,018s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:59,24-07-2026 10:10:59,"0,093s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:10:59,24-07-2026 10:10:59,"0,016s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:10:59,24-07-2026 10:11:01,"1,665s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:01,24-07-2026 10:11:01,"0,000s",PASSED
+"checkinFormBtns = driver.findElements(By.xpath(""//button[contains(@onclick, \""showActionForm('checkin')\"")]""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:01,24-07-2026 10:11:01,"0,019s",PASSED
+if (!(checkinFormBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:11:01,24-07-2026 10:11:02,"1,095s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkinBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:02,24-07-2026 10:11:02,"0,015s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:02,24-07-2026 10:11:02,"0,080s",PASSED
+"condSelects = driver.findElements(By.xpath(""//select[@id='checkinCondition']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:02,24-07-2026 10:11:02,"0,012s",PASSED
+if (!(condSelects.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:02,24-07-2026 10:11:02,"0,066s",PASSED
+"submitBtns = driver.findElements(By.xpath(""//div[@id='actionFormCheckin']//button[@type='submit']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:02,24-07-2026 10:11:02,"0,013s",PASSED
+if (!(submitBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:11:02,24-07-2026 10:11:05,"3,379s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:05,24-07-2026 10:11:06,"1,081s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:11:06,24-07-2026 10:11:07,"0,195s",PASSED
+,,,,,,,
+Test Cases/TCCheckinBook,Chrome 150.0.7871.129,Nhận trả sách tại quầy,"DeskCirculation,TS4",24-07-2026 10:11:07,24-07-2026 10:11:34,"27,699s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_FINE"",""condition"":""damaged"",""expected"":""PASS"",""barcode"":""BC_TEST_CHECKIN_DAMAGED ""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:11:07,24-07-2026 10:11:07,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKIN_OVERDUE,Chrome 150.0.7871.129,,,24-07-2026 10:11:07,24-07-2026 10:11:07,"0,000s",PASSED
+conditionVal = (binding.hasVariable(condition)) ? (((condition != null) && (condition.toString().trim() != ))) ? condition.toString().trim().toLowerCase() : good : good,Chrome 150.0.7871.129,,,24-07-2026 10:11:07,24-07-2026 10:11:07,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:11:07,24-07-2026 10:11:07,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:11:07,24-07-2026 10:11:08,"0,841s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:11:08,24-07-2026 10:11:08,"0,063s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:08,24-07-2026 10:11:09,"1,805s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:09,24-07-2026 10:11:11,"1,296s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:11,24-07-2026 10:11:11,"0,191s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:11,24-07-2026 10:11:11,"0,141s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:11,24-07-2026 10:11:11,"0,138s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:11,24-07-2026 10:11:11,"0,022s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:11,24-07-2026 10:11:25,"13,399s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:25,24-07-2026 10:11:25,"0,005s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:11:25,24-07-2026 10:11:25,"0,000s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:25,24-07-2026 10:11:25,"0,019s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:25,24-07-2026 10:11:25,"0,087s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:25,24-07-2026 10:11:25,"0,007s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:25,24-07-2026 10:11:27,"1,986s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:27,24-07-2026 10:11:27,"0,006s",PASSED
+"checkinFormBtns = driver.findElements(By.xpath(""//button[contains(@onclick, \""showActionForm('checkin')\"")]""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:27,24-07-2026 10:11:27,"0,019s",PASSED
+if (!(checkinFormBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:11:27,24-07-2026 10:11:28,"1,139s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkinBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:28,24-07-2026 10:11:28,"0,016s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:28,24-07-2026 10:11:28,"0,097s",PASSED
+"condSelects = driver.findElements(By.xpath(""//select[@id='checkinCondition']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:28,24-07-2026 10:11:28,"0,012s",PASSED
+if (!(condSelects.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:28,24-07-2026 10:11:28,"0,104s",PASSED
+"submitBtns = driver.findElements(By.xpath(""//div[@id='actionFormCheckin']//button[@type='submit']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:28,24-07-2026 10:11:28,"0,014s",PASSED
+if (!(submitBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:11:28,24-07-2026 10:11:33,"4,893s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:33,24-07-2026 10:11:34,"1,096s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:11:34,24-07-2026 10:11:34,"0,260s",PASSED
+,,,,,,,
+Test Cases/TCCheckinBook,Chrome 150.0.7871.129,Nhận trả sách tại quầy,"DeskCirculation,TS4",24-07-2026 10:11:34,24-07-2026 10:11:50,"15,863s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_FINE"",""condition"":""lost"",""expected"":""PASS"",""barcode"":""BC_TEST_CHECKIN_LOST ""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:11:34,24-07-2026 10:11:34,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKIN_OVERDUE,Chrome 150.0.7871.129,,,24-07-2026 10:11:34,24-07-2026 10:11:34,"0,000s",PASSED
+conditionVal = (binding.hasVariable(condition)) ? (((condition != null) && (condition.toString().trim() != ))) ? condition.toString().trim().toLowerCase() : good : good,Chrome 150.0.7871.129,,,24-07-2026 10:11:34,24-07-2026 10:11:34,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:11:34,24-07-2026 10:11:34,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:11:34,24-07-2026 10:11:35,"0,891s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:11:35,24-07-2026 10:11:35,"0,036s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:35,24-07-2026 10:11:36,"0,983s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:36,24-07-2026 10:11:37,"0,953s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:37,24-07-2026 10:11:38,"0,216s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:38,24-07-2026 10:11:38,"0,152s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:38,24-07-2026 10:11:38,"0,120s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:38,24-07-2026 10:11:38,"0,015s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:38,24-07-2026 10:11:41,"3,180s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:41,24-07-2026 10:11:41,"0,009s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:11:41,24-07-2026 10:11:41,"0,001s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:41,24-07-2026 10:11:41,"0,016s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:41,24-07-2026 10:11:41,"0,088s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:41,24-07-2026 10:11:41,"0,015s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:41,24-07-2026 10:11:43,"1,624s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:43,24-07-2026 10:11:43,"0,008s",PASSED
+"checkinFormBtns = driver.findElements(By.xpath(""//button[contains(@onclick, \""showActionForm('checkin')\"")]""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:43,24-07-2026 10:11:43,"0,014s",PASSED
+if (!(checkinFormBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:11:43,24-07-2026 10:11:44,"1,078s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkinBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:44,24-07-2026 10:11:44,"0,011s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:44,24-07-2026 10:11:44,"0,068s",PASSED
+"condSelects = driver.findElements(By.xpath(""//select[@id='checkinCondition']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:44,24-07-2026 10:11:44,"0,013s",PASSED
+if (!(condSelects.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:44,24-07-2026 10:11:44,"0,078s",PASSED
+"submitBtns = driver.findElements(By.xpath(""//div[@id='actionFormCheckin']//button[@type='submit']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:44,24-07-2026 10:11:44,"0,012s",PASSED
+if (!(submitBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:11:44,24-07-2026 10:11:49,"5,035s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:49,24-07-2026 10:11:50,"1,052s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:11:50,24-07-2026 10:11:50,"0,166s",PASSED
+,,,,,,,
+Test Cases/TCCheckinBook,Chrome 150.0.7871.129,Nhận trả sách tại quầy,"DeskCirculation,TS4",24-07-2026 10:11:50,24-07-2026 10:12:04,"14,027s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_FINE"",""condition"":""good"",""expected"":""FAIL"",""barcode"":""BC_NOT_BORROWED""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:11:50,24-07-2026 10:11:50,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKIN_OVERDUE,Chrome 150.0.7871.129,,,24-07-2026 10:11:50,24-07-2026 10:11:50,"0,000s",PASSED
+conditionVal = (binding.hasVariable(condition)) ? (((condition != null) && (condition.toString().trim() != ))) ? condition.toString().trim().toLowerCase() : good : good,Chrome 150.0.7871.129,,,24-07-2026 10:11:50,24-07-2026 10:11:50,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:11:50,24-07-2026 10:11:50,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:11:50,24-07-2026 10:11:51,"0,897s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:11:51,24-07-2026 10:11:51,"0,048s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:51,24-07-2026 10:11:53,"1,639s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:53,24-07-2026 10:11:55,"1,673s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:55,24-07-2026 10:11:55,"0,173s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:11:55,24-07-2026 10:11:55,"0,150s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:55,24-07-2026 10:11:55,"0,118s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:55,24-07-2026 10:11:55,"0,016s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:55,24-07-2026 10:11:58,"2,957s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:11:58,24-07-2026 10:11:58,"0,007s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:11:58,24-07-2026 10:11:58,"0,000s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:58,24-07-2026 10:11:58,"0,013s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:58,24-07-2026 10:11:58,"0,089s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:11:58,24-07-2026 10:11:58,"0,018s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:11:58,24-07-2026 10:12:00,"1,761s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:00,24-07-2026 10:12:00,"0,001s",PASSED
+"checkinFormBtns = driver.findElements(By.xpath(""//button[contains(@onclick, \""showActionForm('checkin')\"")]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:00,24-07-2026 10:12:00,"0,014s",PASSED
+if (!(checkinFormBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:00,24-07-2026 10:12:01,"1,063s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkinBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:01,24-07-2026 10:12:01,"0,013s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:01,24-07-2026 10:12:01,"0,058s",PASSED
+"condSelects = driver.findElements(By.xpath(""//select[@id='checkinCondition']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:01,24-07-2026 10:12:01,"0,010s",PASSED
+if (!(condSelects.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:01,24-07-2026 10:12:01,"0,035s",PASSED
+"submitBtns = driver.findElements(By.xpath(""//div[@id='actionFormCheckin']//button[@type='submit']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:01,24-07-2026 10:12:01,"0,014s",PASSED
+if (!(submitBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:01,24-07-2026 10:12:03,"1,928s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:03,24-07-2026 10:12:03,"0,003s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:12:03,24-07-2026 10:12:04,"1,076s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:12:04,24-07-2026 10:12:04,"0,231s",PASSED
+,,,,,,,
+Test Cases/TCCheckinBook,Chrome 150.0.7871.129,Nhận trả sách tại quầy,"DeskCirculation,TS4",24-07-2026 10:12:04,24-07-2026 10:12:18,"13,752s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_FINE"",""condition"":""good"",""expected"":""FAIL"",""barcode"":""BC_NOT_EXIST""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:12:04,24-07-2026 10:12:04,"0,001s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKIN_OVERDUE,Chrome 150.0.7871.129,,,24-07-2026 10:12:04,24-07-2026 10:12:04,"0,000s",PASSED
+conditionVal = (binding.hasVariable(condition)) ? (((condition != null) && (condition.toString().trim() != ))) ? condition.toString().trim().toLowerCase() : good : good,Chrome 150.0.7871.129,,,24-07-2026 10:12:04,24-07-2026 10:12:04,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:12:04,24-07-2026 10:12:04,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:12:04,24-07-2026 10:12:05,"0,974s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:12:05,24-07-2026 10:12:05,"0,052s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:05,24-07-2026 10:12:07,"1,635s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:07,24-07-2026 10:12:08,"0,996s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:08,24-07-2026 10:12:08,"0,227s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:08,24-07-2026 10:12:08,"0,161s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:08,24-07-2026 10:12:09,"0,123s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:09,24-07-2026 10:12:09,"0,022s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:09,24-07-2026 10:12:12,"3,046s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:12,24-07-2026 10:12:12,"0,008s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:12:12,24-07-2026 10:12:12,"0,000s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:12,24-07-2026 10:12:12,"0,009s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:12,24-07-2026 10:12:12,"0,060s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:12,24-07-2026 10:12:12,"0,014s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:12,24-07-2026 10:12:13,"1,728s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:13,24-07-2026 10:12:13,"0,001s",PASSED
+"checkinFormBtns = driver.findElements(By.xpath(""//button[contains(@onclick, \""showActionForm('checkin')\"")]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:13,24-07-2026 10:12:13,"0,015s",PASSED
+if (!(checkinFormBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:13,24-07-2026 10:12:15,"1,087s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkinBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:15,24-07-2026 10:12:15,"0,001s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:15,24-07-2026 10:12:15,"0,065s",PASSED
+"condSelects = driver.findElements(By.xpath(""//select[@id='checkinCondition']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:15,24-07-2026 10:12:15,"0,005s",PASSED
+if (!(condSelects.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:15,24-07-2026 10:12:15,"0,049s",PASSED
+"submitBtns = driver.findElements(By.xpath(""//div[@id='actionFormCheckin']//button[@type='submit']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:15,24-07-2026 10:12:15,"0,006s",PASSED
+if (!(submitBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:15,24-07-2026 10:12:17,"2,113s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:17,24-07-2026 10:12:17,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:12:17,24-07-2026 10:12:18,"1,078s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:12:18,24-07-2026 10:12:18,"0,259s",PASSED
+,,,,,,,
+Test Cases/TCCheckinBook,Chrome 150.0.7871.129,Nhận trả sách tại quầy,"DeskCirculation,TS4",24-07-2026 10:12:18,24-07-2026 10:12:30,"12,028s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_FINE"",""condition"":""good"",""expected"":""FAIL"",""barcode"":""""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:12:18,24-07-2026 10:12:18,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKIN_OVERDUE,Chrome 150.0.7871.129,,,24-07-2026 10:12:18,24-07-2026 10:12:18,"0,001s",PASSED
+conditionVal = (binding.hasVariable(condition)) ? (((condition != null) && (condition.toString().trim() != ))) ? condition.toString().trim().toLowerCase() : good : good,Chrome 150.0.7871.129,,,24-07-2026 10:12:18,24-07-2026 10:12:18,"0,001s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:12:18,24-07-2026 10:12:18,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:12:18,24-07-2026 10:12:19,"1,044s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:12:19,24-07-2026 10:12:19,"0,032s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:19,24-07-2026 10:12:20,"0,737s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:20,24-07-2026 10:12:21,"1,246s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:21,24-07-2026 10:12:21,"0,191s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:21,24-07-2026 10:12:22,"0,160s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:22,24-07-2026 10:12:22,"0,120s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:22,24-07-2026 10:12:22,"0,026s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:22,24-07-2026 10:12:25,"2,924s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:25,24-07-2026 10:12:25,"0,008s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:12:25,24-07-2026 10:12:25,"0,001s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:25,24-07-2026 10:12:25,"0,005s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:25,24-07-2026 10:12:25,"0,070s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:25,24-07-2026 10:12:25,"0,012s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:25,24-07-2026 10:12:25,"0,048s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:25,24-07-2026 10:12:26,"1,534s",PASSED
+"checkinFormBtns = driver.findElements(By.xpath(""//button[contains(@onclick, \""showActionForm('checkin')\"")]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:26,24-07-2026 10:12:26,"0,015s",PASSED
+if (!(checkinFormBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:26,24-07-2026 10:12:27,"1,064s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkinBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:27,24-07-2026 10:12:27,"0,000s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:27,24-07-2026 10:12:27,"0,025s",PASSED
+"condSelects = driver.findElements(By.xpath(""//select[@id='checkinCondition']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:27,24-07-2026 10:12:27,"0,000s",PASSED
+if (!(condSelects.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:27,24-07-2026 10:12:27,"0,046s",PASSED
+"submitBtns = driver.findElements(By.xpath(""//div[@id='actionFormCheckin']//button[@type='submit']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:27,24-07-2026 10:12:27,"0,000s",PASSED
+if (!(submitBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:27,24-07-2026 10:12:29,"1,490s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:29,24-07-2026 10:12:29,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:12:29,24-07-2026 10:12:30,"1,056s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:12:30,24-07-2026 10:12:30,"0,147s",PASSED
+,,,,,,,
+Test Cases/TCCheckinBook,Chrome 150.0.7871.129,Nhận trả sách tại quầy,"DeskCirculation,TS4",24-07-2026 10:12:30,24-07-2026 10:12:39,"8,923s",PASSED
+"DATA BINDING - {""memberCode"":""INVALID_CODE"",""condition"":""good"",""expected"":""FAIL"",""barcode"":""BC_TEST_CHECKIN_OVERDUE""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:12:30,24-07-2026 10:12:30,"0,001s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKIN_OVERDUE,Chrome 150.0.7871.129,,,24-07-2026 10:12:30,24-07-2026 10:12:30,"0,000s",PASSED
+conditionVal = (binding.hasVariable(condition)) ? (((condition != null) && (condition.toString().trim() != ))) ? condition.toString().trim().toLowerCase() : good : good,Chrome 150.0.7871.129,,,24-07-2026 10:12:30,24-07-2026 10:12:30,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:12:30,24-07-2026 10:12:30,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:12:30,24-07-2026 10:12:31,"0,825s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:12:31,24-07-2026 10:12:31,"0,047s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:31,24-07-2026 10:12:32,"1,236s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:32,24-07-2026 10:12:33,"1,064s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:33,24-07-2026 10:12:34,"0,252s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:34,24-07-2026 10:12:34,"0,232s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:34,24-07-2026 10:12:34,"0,143s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:34,24-07-2026 10:12:34,"0,023s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:34,24-07-2026 10:12:37,"3,149s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:37,24-07-2026 10:12:37,"0,008s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:12:37,24-07-2026 10:12:37,"0,000s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:37,24-07-2026 10:12:37,"0,006s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:37,24-07-2026 10:12:37,"0,069s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:37,24-07-2026 10:12:37,"0,015s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:37,24-07-2026 10:12:37,"0,062s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:37,24-07-2026 10:12:38,"0,529s",PASSED
+"checkinFormBtns = driver.findElements(By.xpath(""//button[contains(@onclick, \""showActionForm('checkin')\"")]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,012s",PASSED
+if (!(checkinFormBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,014s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkinBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,014s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,000s",PASSED
+"condSelects = driver.findElements(By.xpath(""//select[@id='checkinCondition']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,007s",PASSED
+if (!(condSelects.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,000s",PASSED
+"submitBtns = driver.findElements(By.xpath(""//div[@id='actionFormCheckin']//button[@type='submit']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,013s",PASSED
+if (!(submitBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,000s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:38,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:12:38,24-07-2026 10:12:39,"1,034s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:12:39,24-07-2026 10:12:39,"0,154s",PASSED
+,,,,,,,
+Test Cases/TCCheckinBook,Chrome 150.0.7871.129,Nhận trả sách tại quầy,"DeskCirculation,TS4",24-07-2026 10:12:39,24-07-2026 10:12:48,"9,053s",PASSED
+"DATA BINDING - {""memberCode"":"""",""condition"":""good"",""expected"":""FAIL"",""barcode"":""BC_TEST_CHECKIN_OVERDUE""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:12:39,24-07-2026 10:12:39,"0,000s",PASSED
+barcodeVal = (binding.hasVariable(barcode)) ? ((barcode != null)) ? barcode.toString().trim() :  : BC_TEST_CHECKIN_OVERDUE,Chrome 150.0.7871.129,,,24-07-2026 10:12:39,24-07-2026 10:12:39,"0,000s",PASSED
+conditionVal = (binding.hasVariable(condition)) ? (((condition != null) && (condition.toString().trim() != ))) ? condition.toString().trim().toLowerCase() : good : good,Chrome 150.0.7871.129,,,24-07-2026 10:12:39,24-07-2026 10:12:39,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:12:39,24-07-2026 10:12:39,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:12:39,24-07-2026 10:12:40,"0,846s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:12:40,24-07-2026 10:12:40,"0,054s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:40,24-07-2026 10:12:42,"1,862s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:42,24-07-2026 10:12:43,"1,214s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:43,24-07-2026 10:12:43,"0,226s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:43,24-07-2026 10:12:43,"0,157s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:43,24-07-2026 10:12:44,"0,137s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:44,24-07-2026 10:12:44,"0,026s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:44,24-07-2026 10:12:47,"3,003s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,009s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,000s",PASSED
+"searchInputs = driver.findElements(By.xpath(""//input[@id='memberCodeSearch']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,011s",PASSED
+if (!(searchInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,051s",PASSED
+"searchBtns = driver.findElements(By.xpath(""//button[@type='submit' and contains(@class,'btn-primary')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,014s",PASSED
+if (!(searchBtns.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,056s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,010s",PASSED
+"checkinFormBtns = driver.findElements(By.xpath(""//button[contains(@onclick, \""showActionForm('checkin')\"")]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,013s",PASSED
+if (!(checkinFormBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,018s",PASSED
+"barcodeInputs = driver.findElements(By.xpath(""//input[@id='checkinBarcode']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,000s",PASSED
+if (!(barcodeInputs.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,000s",PASSED
+"condSelects = driver.findElements(By.xpath(""//select[@id='checkinCondition']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,004s",PASSED
+if (!(condSelects.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,000s",PASSED
+"submitBtns = driver.findElements(By.xpath(""//div[@id='actionFormCheckin']//button[@type='submit']""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,010s",PASSED
+if (!(submitBtns.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,000s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:47,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:12:47,24-07-2026 10:12:48,"1,058s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:12:48,24-07-2026 10:12:48,"0,236s",PASSED
+,,,,,,,
+Test Cases/TCPayFine,Chrome 150.0.7871.129,Duyệt thu tiền mặt đóng phạt tại quầy,"DeskCirculation,TS4",24-07-2026 10:12:48,24-07-2026 10:13:02,"13,541s",PASSED
+"DATA BINDING - {""memberCode"":""SE_TEST_FINE"",""expected"":""PASS""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:12:48,24-07-2026 10:12:48,"0,002s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:12:48,24-07-2026 10:12:48,"0,002s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:12:48,24-07-2026 10:12:49,"0,980s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:12:49,24-07-2026 10:12:49,"0,059s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:49,24-07-2026 10:12:51,"1,542s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:51,24-07-2026 10:12:52,"1,035s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:52,24-07-2026 10:12:52,"0,166s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:12:52,24-07-2026 10:12:52,"0,148s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:52,24-07-2026 10:12:52,"0,115s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:52,24-07-2026 10:12:52,"0,020s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:52,24-07-2026 10:12:56,"3,246s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:56,24-07-2026 10:12:56,"0,009s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/input_V d_ SE170123, GD12345""), searchCode)",Chrome 150.0.7871.129,,,24-07-2026 10:12:56,24-07-2026 10:12:56,"0,267s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Tra Cu c Gi""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:56,24-07-2026 10:12:57,"1,541s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:12:57,24-07-2026 10:12:57,"0,006s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:12:57,24-07-2026 10:12:57,"0,000s",PASSED
+"cardButtons = driver.findElements(By.xpath(""//button[contains(text(),'DUYỆT THU TIỀN MẶT') or contains(text(),'Duyệt thu tiền mặt')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:12:57,24-07-2026 10:12:57,"0,014s",PASSED
+if (!(cardButtons.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:12:57,24-07-2026 10:13:00,"2,917s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:00,24-07-2026 10:13:01,"1,059s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:13:01,24-07-2026 10:13:02,"0,182s",PASSED
+,,,,,,,
+Test Cases/TCPayFine,Chrome 150.0.7871.129,Duyệt thu tiền mặt đóng phạt tại quầy,"DeskCirculation,TS4",24-07-2026 10:13:02,24-07-2026 10:13:14,"12,193s",PASSED
+"DATA BINDING - {""memberCode"":""ST20230001"",""expected"":""FAIL""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:13:02,24-07-2026 10:13:02,"0,001s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:13:02,24-07-2026 10:13:02,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:13:02,24-07-2026 10:13:03,"0,906s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:13:03,24-07-2026 10:13:03,"0,041s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:03,24-07-2026 10:13:03,"0,812s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:03,24-07-2026 10:13:04,"1,051s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:04,24-07-2026 10:13:05,"0,219s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:05,24-07-2026 10:13:05,"0,214s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:05,24-07-2026 10:13:05,"0,139s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:05,24-07-2026 10:13:05,"0,020s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:05,24-07-2026 10:13:08,"2,908s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:08,24-07-2026 10:13:08,"0,007s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/input_V d_ SE170123, GD12345""), searchCode)",Chrome 150.0.7871.129,,,24-07-2026 10:13:08,24-07-2026 10:13:08,"0,313s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Tra Cu c Gi""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:08,24-07-2026 10:13:08,"0,107s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:08,24-07-2026 10:13:10,"1,478s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:13:10,24-07-2026 10:13:10,"0,001s",PASSED
+"cardButtons = driver.findElements(By.xpath(""//button[contains(text(),'DUYỆT THU TIỀN MẶT') or contains(text(),'Duyệt thu tiền mặt')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:10,24-07-2026 10:13:10,"0,011s",PASSED
+if (!(cardButtons.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:13:10,24-07-2026 10:13:10,"0,016s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:13:10,24-07-2026 10:13:13,"2,743s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:13,24-07-2026 10:13:13,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:13:13,24-07-2026 10:13:14,"1,047s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:13:14,24-07-2026 10:13:14,"0,144s",PASSED
+,,,,,,,
+Test Cases/TCPayFine,Chrome 150.0.7871.129,Duyệt thu tiền mặt đóng phạt tại quầy,"DeskCirculation,TS4",24-07-2026 10:13:14,24-07-2026 10:13:24,"10,097s",PASSED
+"DATA BINDING - {""memberCode"":""INVALID_CODE"",""expected"":""FAIL""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:13:14,24-07-2026 10:13:14,"0,001s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:13:14,24-07-2026 10:13:14,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:13:14,24-07-2026 10:13:15,"1,109s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:13:15,24-07-2026 10:13:15,"0,033s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:15,24-07-2026 10:13:17,"1,706s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:17,24-07-2026 10:13:18,"1,368s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:18,24-07-2026 10:13:18,"0,287s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:18,24-07-2026 10:13:19,"0,228s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:19,24-07-2026 10:13:19,"0,136s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:19,24-07-2026 10:13:19,"0,026s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:19,24-07-2026 10:13:22,"3,103s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:22,24-07-2026 10:13:22,"0,007s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/input_V d_ SE170123, GD12345""), searchCode)",Chrome 150.0.7871.129,,,24-07-2026 10:13:22,24-07-2026 10:13:22,"0,260s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Tra Cu c Gi""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:22,24-07-2026 10:13:23,"0,548s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:23,24-07-2026 10:13:23,"0,027s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:13:23,24-07-2026 10:13:23,"0,000s",PASSED
+"cardButtons = driver.findElements(By.xpath(""//button[contains(text(),'DUYỆT THU TIỀN MẶT') or contains(text(),'Duyệt thu tiền mặt')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:23,24-07-2026 10:13:23,"0,013s",PASSED
+if (!(cardButtons.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:13:23,24-07-2026 10:13:23,"0,003s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:13:23,24-07-2026 10:13:23,"0,013s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:23,24-07-2026 10:13:23,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:13:23,24-07-2026 10:13:24,"1,042s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:13:24,24-07-2026 10:13:24,"0,177s",PASSED
+,,,,,,,
+Test Cases/TCPayFine,Chrome 150.0.7871.129,Duyệt thu tiền mặt đóng phạt tại quầy,"DeskCirculation,TS4",24-07-2026 10:13:24,24-07-2026 10:13:33,"9,013s",PASSED
+"DATA BINDING - {""memberCode"":"""",""expected"":""FAIL""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:13:24,24-07-2026 10:13:24,"0,001s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:13:24,24-07-2026 10:13:24,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:13:24,24-07-2026 10:13:25,"0,888s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:13:25,24-07-2026 10:13:25,"0,043s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:25,24-07-2026 10:13:26,"1,363s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:26,24-07-2026 10:13:27,"0,829s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:27,24-07-2026 10:13:27,"0,180s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:27,24-07-2026 10:13:27,"0,163s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:27,24-07-2026 10:13:28,"0,131s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:28,24-07-2026 10:13:28,"0,030s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:28,24-07-2026 10:13:31,"3,745s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:31,24-07-2026 10:13:31,"0,007s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/input_V d_ SE170123, GD12345""), searchCode)",Chrome 150.0.7871.129,,,24-07-2026 10:13:31,24-07-2026 10:13:32,"0,244s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Tra Cu c Gi""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:32,24-07-2026 10:13:32,"0,087s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:32,24-07-2026 10:13:32,"0,006s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:13:32,24-07-2026 10:13:32,"0,000s",PASSED
+"cardButtons = driver.findElements(By.xpath(""//button[contains(text(),'DUYỆT THU TIỀN MẶT') or contains(text(),'Duyệt thu tiền mặt')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:32,24-07-2026 10:13:32,"0,014s",PASSED
+if (!(cardButtons.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:13:32,24-07-2026 10:13:32,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:13:32,24-07-2026 10:13:32,"0,003s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:32,24-07-2026 10:13:32,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:13:32,24-07-2026 10:13:33,"1,056s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:13:33,24-07-2026 10:13:33,"0,211s",PASSED
+,,,,,,,
+Test Cases/TCPayFine,Chrome 150.0.7871.129,Duyệt thu tiền mặt đóng phạt tại quầy,"DeskCirculation,TS4",24-07-2026 10:13:33,24-07-2026 10:13:42,"9,152s",PASSED
+"DATA BINDING - {""memberCode"":""admin1@lms.com"",""expected"":""FAIL""}",,,,,,,
+searchCode = (binding.hasVariable(memberCode)) ? ((memberCode != null)) ? memberCode.toString().trim() :  : SE_TEST_FINE,Chrome 150.0.7871.129,,,24-07-2026 10:13:33,24-07-2026 10:13:33,"0,000s",PASSED
+expectedResult = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 10:13:33,24-07-2026 10:13:33,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 10:13:33,24-07-2026 10:13:34,"1,030s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 10:13:34,24-07-2026 10:13:34,"0,032s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:34,24-07-2026 10:13:35,"0,970s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:35,24-07-2026 10:13:37,"1,633s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:37,24-07-2026 10:13:37,"0,172s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""9j6ByHUXd4Kxr0By6emyHXXz6rJfZrk1"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:37,24-07-2026 10:13:37,"0,145s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:37,24-07-2026 10:13:37,"0,110s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:37,24-07-2026 10:13:37,"0,014s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_room_service""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:37,24-07-2026 10:13:40,"2,890s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:40,24-07-2026 10:13:40,"0,009s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/input_V d_ SE170123, GD12345""), searchCode)",Chrome 150.0.7871.129,,,24-07-2026 10:13:40,24-07-2026 10:13:40,"0,263s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Tra Cu c Gi""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:40,24-07-2026 10:13:41,"0,651s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 10:13:41,24-07-2026 10:13:41,"0,006s",PASSED
+driver = getWebDriver(),Chrome 150.0.7871.129,,,24-07-2026 10:13:41,24-07-2026 10:13:41,"0,000s",PASSED
+"cardButtons = driver.findElements(By.xpath(""//button[contains(text(),'DUYỆT THU TIỀN MẶT') or contains(text(),'Duyệt thu tiền mặt')]""))",Chrome 150.0.7871.129,,,24-07-2026 10:13:41,24-07-2026 10:13:41,"0,014s",PASSED
+if (!(cardButtons.isEmpty()) && get(0).isDisplayed()),Chrome 150.0.7871.129,,,24-07-2026 10:13:41,24-07-2026 10:13:41,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:13:41,24-07-2026 10:13:41,"0,007s",PASSED
+"if (expectedResult == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 10:13:41,24-07-2026 10:13:41,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 10:13:41,24-07-2026 10:13:42,"1,035s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 10:13:42,24-07-2026 10:13:42,"0,150s",PASSED

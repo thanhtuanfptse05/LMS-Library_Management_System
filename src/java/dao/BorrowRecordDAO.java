@@ -51,6 +51,26 @@ public class BorrowRecordDAO {
         return -1;
     }
 
+    /**
+     * Đếm số lượng sách đang mượn (status = 'borrowed') của một độc giả.
+     * Dùng để kiểm tra hạn mức mượn tối đa (BR-21 / Max Quota).
+     */
+    public int countActiveBorrowsByUserId(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status = 'borrowed'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm số sách đang mượn của userId=" + userId, e);
+            throw e;
+        }
+        return 0;
+    }
+
     // =========================================================================
     // F8 BOOK DISCOVERY / AI RECOMMENDATION METHODS (từ nhánh dev)
     // =========================================================================

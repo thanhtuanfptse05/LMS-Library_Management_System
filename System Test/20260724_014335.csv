@@ -1,0 +1,159 @@
+Suite/Test/Step Name,Browser,Description,Tag,Start time,End time,Duration,Status
+TSAuthentication,Chrome 150.0.7871.129,,,24-07-2026 01:43:42,24-07-2026 01:45:13,"1m - 31,079s",PASSED
+,,,,,,,
+Test Cases/TCLogin,Chrome 150.0.7871.129,"Đăng nhập hệ thống với các vai trò Admin, Librarian, Student, Lecturer, Manager","TS1, Authentication",24-07-2026 01:43:42,24-07-2026 01:43:57,"14,605s",PASSED
+"DATA BINDING - {""password"":""admin1@lms.com"",""role"":""ADMIN"",""expected"":""PASS"",""email"":""admin1@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:43:43,24-07-2026 01:43:46,"3,232s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:43:46,24-07-2026 01:43:46,"0,079s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:43:46,24-07-2026 01:43:50,"3,474s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:43:50,24-07-2026 01:43:51,"1,301s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:43:51,24-07-2026 01:43:51,"0,389s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), password)",Chrome 150.0.7871.129,,,24-07-2026 01:43:51,24-07-2026 01:43:52,"0,546s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:43:52,24-07-2026 01:43:52,"0,349s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:43:52,24-07-2026 01:43:53,"0,265s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:43:53,24-07-2026 01:43:56,"3,759s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:43:56,24-07-2026 01:43:57,"0,320s",PASSED
+,,,,,,,
+Test Cases/TCLogin,Chrome 150.0.7871.129,"Đăng nhập hệ thống với các vai trò Admin, Librarian, Student, Lecturer, Manager","TS1, Authentication",24-07-2026 01:43:57,24-07-2026 01:44:05,"7,820s",PASSED
+"DATA BINDING - {""password"":""librarian1@lms.com"",""role"":""LIBRARIAN"",""expected"":""PASS"",""email"":""librarian1@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:43:57,24-07-2026 01:43:58,"1,526s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:43:58,24-07-2026 01:43:58,"0,070s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:43:58,24-07-2026 01:43:59,"0,667s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:43:59,24-07-2026 01:44:00,"0,811s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:44:00,24-07-2026 01:44:00,"0,313s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), password)",Chrome 150.0.7871.129,,,24-07-2026 01:44:00,24-07-2026 01:44:01,"0,397s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:01,24-07-2026 01:44:01,"0,231s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:01,24-07-2026 01:44:01,"0,033s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:01,24-07-2026 01:44:04,"3,406s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:04,24-07-2026 01:44:05,"0,327s",PASSED
+,,,,,,,
+Test Cases/TCLogin,Chrome 150.0.7871.129,"Đăng nhập hệ thống với các vai trò Admin, Librarian, Student, Lecturer, Manager","TS1, Authentication",24-07-2026 01:44:05,24-07-2026 01:44:16,"11,381s",PASSED
+"DATA BINDING - {""password"":""student1@lms.com"",""role"":""STUDENT"",""expected"":""PASS"",""email"":""student1@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:05,24-07-2026 01:44:06,"1,250s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:44:06,24-07-2026 01:44:06,"0,041s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:06,24-07-2026 01:44:09,"2,838s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:09,24-07-2026 01:44:10,"0,959s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:44:10,24-07-2026 01:44:10,"0,407s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), password)",Chrome 150.0.7871.129,,,24-07-2026 01:44:10,24-07-2026 01:44:11,"0,338s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:11,24-07-2026 01:44:11,"0,201s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:11,24-07-2026 01:44:11,"0,030s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:11,24-07-2026 01:44:16,"5,008s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:16,24-07-2026 01:44:16,"0,271s",PASSED
+,,,,,,,
+Test Cases/TCLogin,Chrome 150.0.7871.129,"Đăng nhập hệ thống với các vai trò Admin, Librarian, Student, Lecturer, Manager","TS1, Authentication",24-07-2026 01:44:16,24-07-2026 01:44:23,"7,367s",PASSED
+"DATA BINDING - {""password"":""lecturer1@lms.com"",""role"":""LECTURER"",""expected"":""PASS"",""email"":""lecturer1@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:16,24-07-2026 01:44:17,"1,290s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:44:17,24-07-2026 01:44:17,"0,064s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:17,24-07-2026 01:44:18,"0,593s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:18,24-07-2026 01:44:19,"0,726s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:44:19,24-07-2026 01:44:19,"0,391s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), password)",Chrome 150.0.7871.129,,,24-07-2026 01:44:19,24-07-2026 01:44:20,"0,446s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:20,24-07-2026 01:44:20,"0,195s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:20,24-07-2026 01:44:20,"0,030s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:20,24-07-2026 01:44:23,"3,382s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:23,24-07-2026 01:44:23,"0,221s",PASSED
+,,,,,,,
+Test Cases/TCLogin,Chrome 150.0.7871.129,"Đăng nhập hệ thống với các vai trò Admin, Librarian, Student, Lecturer, Manager","TS1, Authentication",24-07-2026 01:44:24,24-07-2026 01:44:31,"7,313s",PASSED
+"DATA BINDING - {""password"":""manager1@lms.com"",""role"":""MANAGER"",""expected"":""PASS"",""email"":""manager1@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:24,24-07-2026 01:44:25,"1,057s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:44:25,24-07-2026 01:44:25,"0,044s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:25,24-07-2026 01:44:25,"0,596s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:25,24-07-2026 01:44:26,"0,796s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:44:26,24-07-2026 01:44:26,"0,347s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), password)",Chrome 150.0.7871.129,,,24-07-2026 01:44:26,24-07-2026 01:44:27,"0,373s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:27,24-07-2026 01:44:27,"0,196s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:27,24-07-2026 01:44:27,"0,032s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:27,24-07-2026 01:44:31,"3,641s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:31,24-07-2026 01:44:31,"0,203s",PASSED
+,,,,,,,
+Test Cases/TCLogin,Chrome 150.0.7871.129,"Đăng nhập hệ thống với các vai trò Admin, Librarian, Student, Lecturer, Manager","TS1, Authentication",24-07-2026 01:44:31,24-07-2026 01:44:34,"3,401s",PASSED
+"DATA BINDING - {""(Default) role"":"""",""password"":""WrongPass123"",""expected"":""FAIL"",""email"":""admin1@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:31,24-07-2026 01:44:32,"1,041s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:44:32,24-07-2026 01:44:32,"0,063s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:32,24-07-2026 01:44:32,"0,045s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:32,24-07-2026 01:44:33,"1,181s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:44:33,24-07-2026 01:44:33,"0,233s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), password)",Chrome 150.0.7871.129,,,24-07-2026 01:44:33,24-07-2026 01:44:34,"0,313s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:34,24-07-2026 01:44:34,"0,175s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:34,24-07-2026 01:44:34,"0,029s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:34,24-07-2026 01:44:34,"0,002s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:44:34,24-07-2026 01:44:34,"0,044s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:34,24-07-2026 01:44:34,"0,228s",PASSED
+,,,,,,,
+Test Cases/TCLogin,Chrome 150.0.7871.129,"Đăng nhập hệ thống với các vai trò Admin, Librarian, Student, Lecturer, Manager","TS1, Authentication",24-07-2026 01:44:34,24-07-2026 01:44:40,"5,541s",PASSED
+"DATA BINDING - {""(Default) role"":"""",""password"":""123"",""expected"":""FAIL"",""email"":""""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:34,24-07-2026 01:44:35,"0,971s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:44:35,24-07-2026 01:44:35,"0,040s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:35,24-07-2026 01:44:38,"2,644s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:38,24-07-2026 01:44:39,"0,769s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:44:39,24-07-2026 01:44:39,"0,268s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), password)",Chrome 150.0.7871.129,,,24-07-2026 01:44:39,24-07-2026 01:44:39,"0,303s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:39,24-07-2026 01:44:40,"0,205s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:40,24-07-2026 01:44:40,"0,033s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:40,24-07-2026 01:44:40,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:44:40,24-07-2026 01:44:40,"0,020s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:40,24-07-2026 01:44:40,"0,256s",PASSED
+,,,,,,,
+Test Cases/TCLogin,Chrome 150.0.7871.129,"Đăng nhập hệ thống với các vai trò Admin, Librarian, Student, Lecturer, Manager","TS1, Authentication",24-07-2026 01:44:40,24-07-2026 01:44:43,"3,204s",PASSED
+"DATA BINDING - {""(Default) role"":"""",""password"":""456"",""expected"":""FAIL"",""email"":""notexist@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:40,24-07-2026 01:44:41,"0,971s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:44:41,24-07-2026 01:44:41,"0,036s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:41,24-07-2026 01:44:41,"0,540s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:41,24-07-2026 01:44:42,"0,690s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:44:42,24-07-2026 01:44:42,"0,243s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), password)",Chrome 150.0.7871.129,,,24-07-2026 01:44:42,24-07-2026 01:44:43,"0,283s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:43,24-07-2026 01:44:43,"0,150s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:43,24-07-2026 01:44:43,"0,024s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:43,24-07-2026 01:44:43,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:44:43,24-07-2026 01:44:43,"0,019s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:43,24-07-2026 01:44:43,"0,223s",PASSED
+,,,,,,,
+Test Cases/TCLogout,Chrome 150.0.7871.129,Đăng xuất khỏi hệ thống,"TS1, Authentication",24-07-2026 01:44:43,24-07-2026 01:44:50,"7,375s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:43,24-07-2026 01:44:44,"0,926s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:44,24-07-2026 01:44:45,"0,629s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:45,24-07-2026 01:44:45,"0,597s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:45,24-07-2026 01:44:46,"0,236s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:44:46,24-07-2026 01:44:46,"0,206s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:46,24-07-2026 01:44:46,"0,180s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:46,24-07-2026 01:44:46,"0,030s",PASSED
+"verifyElementPresent(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/p_ADMIN""), 10)",Chrome 150.0.7871.129,,,24-07-2026 01:44:46,24-07-2026 01:44:50,"3,798s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_ng xut""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:50,24-07-2026 01:44:50,"0,472s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:50,24-07-2026 01:44:50,"0,012s",PASSED
+"verifyElementPresent(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:44:50,24-07-2026 01:44:50,"0,019s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:50,24-07-2026 01:44:50,"0,198s",PASSED
+,,,,,,,
+Test Cases/TCForgotPassword,Chrome 150.0.7871.129,Gửi yêu cầu đặt lại mật khẩu khi quên mật khẩu,"TS1, Authentication",24-07-2026 01:44:50,24-07-2026 01:44:58,"7,043s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""email"":""student1@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:51,24-07-2026 01:44:52,"0,944s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:44:52,24-07-2026 01:44:52,"0,046s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:52,24-07-2026 01:44:52,"0,525s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:52,24-07-2026 01:44:53,"0,676s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/a_Qun mt khu""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:53,24-07-2026 01:44:53,"0,338s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:44:53,24-07-2026 01:44:53,"0,028s",PASSED
+"setText(findTestObject(""Page_Th vin i hc LMS - Qun Mt khu/input_Nhp email ca bn""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:44:53,24-07-2026 01:44:53,"0,261s",PASSED
+"click(findTestObject(""Page_Th vin i hc LMS - Qun Mt khu/button_Gi Mt khu mi""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:53,24-07-2026 01:44:54,"0,132s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:54,24-07-2026 01:44:57,"3,781s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:44:57,24-07-2026 01:44:58,"0,205s",PASSED
+,,,,,,,
+Test Cases/TCForgotPassword,Chrome 150.0.7871.129,Gửi yêu cầu đặt lại mật khẩu khi quên mật khẩu,"TS1, Authentication",24-07-2026 01:44:58,24-07-2026 01:45:04,"6,429s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""email"":""test_dole@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:44:58,24-07-2026 01:44:58,"0,933s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:44:58,24-07-2026 01:44:59,"0,033s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:44:59,24-07-2026 01:44:59,"0,559s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:44:59,24-07-2026 01:45:00,"0,717s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/a_Qun mt khu""))",Chrome 150.0.7871.129,,,24-07-2026 01:45:00,24-07-2026 01:45:00,"0,404s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:45:00,24-07-2026 01:45:00,"0,033s",PASSED
+"setText(findTestObject(""Page_Th vin i hc LMS - Qun Mt khu/input_Nhp email ca bn""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:45:00,24-07-2026 01:45:00,"0,253s",PASSED
+"click(findTestObject(""Page_Th vin i hc LMS - Qun Mt khu/button_Gi Mt khu mi""))",Chrome 150.0.7871.129,,,24-07-2026 01:45:00,24-07-2026 01:45:01,"0,127s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:45:01,24-07-2026 01:45:04,"3,141s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:45:04,24-07-2026 01:45:04,"0,209s",PASSED
+,,,,,,,
+Test Cases/TCAccountLockout,Chrome 150.0.7871.129,Tự động khóa tài khoản khi nhập sai mật khẩu 5 lần liên tiếp,"TS1, Authentication",24-07-2026 01:45:04,24-07-2026 01:45:13,"8,762s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:45:04,24-07-2026 01:45:05,"0,950s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:45:05,24-07-2026 01:45:05,"0,040s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:45:05,24-07-2026 01:45:06,"0,517s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:45:06,24-07-2026 01:45:06,"0,695s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:45:06,24-07-2026 01:45:06,"0,022s",PASSED
+"for ([attempt = 1, attempt <= 5, (attempt++)])",Chrome 150.0.7871.129,,,24-07-2026 01:45:06,24-07-2026 01:45:12,"6,054s",PASSED
+"verifyElementPresent(findTestObject(""Page_Th vin Lumina - ng nhp/div_Ti khon ca bn  b kha tm thi trong""), 10)",Chrome 150.0.7871.129,,,24-07-2026 01:45:12,24-07-2026 01:45:12,"0,076s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:45:12,24-07-2026 01:45:13,"0,238s",PASSED

@@ -1,0 +1,291 @@
+Suite/Test/Step Name,Browser,Description,Tag,Start time,End time,Duration,Status
+TSUserManagement,Chrome 150.0.7871.129,,,24-07-2026 01:27:24,24-07-2026 01:31:19,"3m - 54,974s",PASSED
+,,,,,,,
+Test Cases/TCCreateUser,Chrome 150.0.7871.129,Thêm mới tài khoản người dùng bởi Quản trị viên (Admin),"TS2, UserManagement",24-07-2026 01:27:25,24-07-2026 01:27:44,"18,956s",PASSED
+"DATA BINDING - {""role"":""STUDENT"",""code"":""ST202601"",""gender"":""Nam"",""major"":""Software Engineering"",""phone"":""0911000001"",""enrollmentYear"":""2024"",""dob"":""2004-05-15"",""expected"":""PASS"",""fullName"":""Nguyen Van Test Student"",""department"":"""",""email"":""user_st_2026_01@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:27:26,24-07-2026 01:27:30,"3,940s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:27:30,24-07-2026 01:27:30,"0,094s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:27:30,24-07-2026 01:27:31,"0,849s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:31,24-07-2026 01:27:32,"1,153s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:27:32,24-07-2026 01:27:32,"0,442s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:27:32,24-07-2026 01:27:33,"0,334s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:33,24-07-2026 01:27:33,"0,249s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:27:33,24-07-2026 01:27:33,"0,209s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:33,24-07-2026 01:27:38,"4,488s",PASSED
+"waitForElementClickable(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:27:38,24-07-2026 01:27:38,"0,129s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:38,24-07-2026 01:27:38,"0,105s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:27:38,24-07-2026 01:27:39,"0,657s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:27:39,24-07-2026 01:27:39,"0,308s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Nguyn Vn A""), fullName)",Chrome 150.0.7871.129,,,24-07-2026 01:27:39,24-07-2026 01:27:39,"0,341s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_09xxxxxxxx""), phone)",Chrome 150.0.7871.129,,,24-07-2026 01:27:39,24-07-2026 01:27:40,"0,309s",PASSED
+"executeJavaScript(""document.getElementById('createGender').value = arguments[0];"", [gender])",Chrome 150.0.7871.129,,,24-07-2026 01:27:40,24-07-2026 01:27:40,"0,040s",PASSED
+"executeJavaScript(""document.getElementById('createGender').dispatchEvent(new Event('change'));"", null)",Chrome 150.0.7871.129,,,24-07-2026 01:27:40,24-07-2026 01:27:40,"0,018s",PASSED
+"executeJavaScript(""document.querySelector('input[type=\""date\""]').value = arguments[0]"", [dob])",Chrome 150.0.7871.129,,,24-07-2026 01:27:40,24-07-2026 01:27:40,"0,017s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Vai tr h thng _""), role, false)",Chrome 150.0.7871.129,,,24-07-2026 01:27:40,24-07-2026 01:27:40,"0,215s",PASSED
+switch (role),Chrome 150.0.7871.129,,,24-07-2026 01:27:40,24-07-2026 01:27:41,"1,191s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Lu ti khon""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:41,24-07-2026 01:27:43,"2,308s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:27:43,24-07-2026 01:27:43,"0,096s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:27:43,24-07-2026 01:27:44,"0,291s",PASSED
+,,,,,,,
+Test Cases/TCCreateUser,Chrome 150.0.7871.129,Thêm mới tài khoản người dùng bởi Quản trị viên (Admin),"TS2, UserManagement",24-07-2026 01:27:44,24-07-2026 01:28:00,"16,435s",PASSED
+"DATA BINDING - {""role"":""LECTURER"",""code"":""LC202601"",""gender"":""Nu"",""major"":"""",""(Default) enrol..."":"""",""phone"":""0911000002"",""dob"":""1990-08-20"",""expected"":""PASS"",""fullName"":""Tran Thi Test Lecturer"",""department"":""Software Department"",""email"":""user_lc_2026_01@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:27:44,24-07-2026 01:27:45,"1,081s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:27:45,24-07-2026 01:27:45,"0,064s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:27:45,24-07-2026 01:27:47,"2,285s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:47,24-07-2026 01:27:48,"0,909s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:27:48,24-07-2026 01:27:49,"0,471s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:27:49,24-07-2026 01:27:49,"0,448s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:49,24-07-2026 01:27:50,"0,336s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:27:50,24-07-2026 01:27:50,"0,047s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:50,24-07-2026 01:27:55,"4,937s",PASSED
+"waitForElementClickable(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:27:55,24-07-2026 01:27:55,"0,083s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:55,24-07-2026 01:27:55,"0,179s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:27:55,24-07-2026 01:27:55,"0,576s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:27:55,24-07-2026 01:27:56,"0,322s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Nguyn Vn A""), fullName)",Chrome 150.0.7871.129,,,24-07-2026 01:27:56,24-07-2026 01:27:56,"0,319s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_09xxxxxxxx""), phone)",Chrome 150.0.7871.129,,,24-07-2026 01:27:56,24-07-2026 01:27:56,"0,313s",PASSED
+"executeJavaScript(""document.getElementById('createGender').value = arguments[0];"", [gender])",Chrome 150.0.7871.129,,,24-07-2026 01:27:56,24-07-2026 01:27:56,"0,017s",PASSED
+"executeJavaScript(""document.getElementById('createGender').dispatchEvent(new Event('change'));"", null)",Chrome 150.0.7871.129,,,24-07-2026 01:27:56,24-07-2026 01:27:56,"0,014s",PASSED
+"executeJavaScript(""document.querySelector('input[type=\""date\""]').value = arguments[0]"", [dob])",Chrome 150.0.7871.129,,,24-07-2026 01:27:56,24-07-2026 01:27:56,"0,015s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Vai tr h thng _""), role, false)",Chrome 150.0.7871.129,,,24-07-2026 01:27:56,24-07-2026 01:27:57,"0,215s",PASSED
+switch (role),Chrome 150.0.7871.129,,,24-07-2026 01:27:57,24-07-2026 01:27:57,"0,808s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Lu ti khon""))",Chrome 150.0.7871.129,,,24-07-2026 01:27:57,24-07-2026 01:28:00,"2,605s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:00,24-07-2026 01:28:00,"0,068s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:28:00,24-07-2026 01:28:00,"0,267s",PASSED
+,,,,,,,
+Test Cases/TCCreateUser,Chrome 150.0.7871.129,Thêm mới tài khoản người dùng bởi Quản trị viên (Admin),"TS2, UserManagement",24-07-2026 01:28:00,24-07-2026 01:28:13,"12,015s",PASSED
+"DATA BINDING - {""role"":""LIBRARIAN"",""code"":""LB202601"",""gender"":""Nam"",""major"":"""",""(Default) enrol..."":"""",""phone"":""0911000003"",""dob"":""1988-03-10"",""expected"":""PASS"",""fullName"":""Le Van Test Librarian"",""department"":"""",""email"":""user_lb_2026_01@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:28:01,24-07-2026 01:28:02,"1,015s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:28:02,24-07-2026 01:28:02,"0,049s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:02,24-07-2026 01:28:02,"0,537s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:02,24-07-2026 01:28:03,"0,919s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:03,24-07-2026 01:28:03,"0,280s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:28:03,24-07-2026 01:28:04,"0,183s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:04,24-07-2026 01:28:04,"0,169s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:28:04,24-07-2026 01:28:04,"0,027s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:04,24-07-2026 01:28:08,"4,050s",PASSED
+"waitForElementClickable(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:28:08,24-07-2026 01:28:08,"0,080s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:08,24-07-2026 01:28:08,"0,152s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:28:08,24-07-2026 01:28:09,"0,559s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:28:09,24-07-2026 01:28:09,"0,274s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Nguyn Vn A""), fullName)",Chrome 150.0.7871.129,,,24-07-2026 01:28:09,24-07-2026 01:28:09,"0,345s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_09xxxxxxxx""), phone)",Chrome 150.0.7871.129,,,24-07-2026 01:28:09,24-07-2026 01:28:09,"0,323s",PASSED
+"executeJavaScript(""document.getElementById('createGender').value = arguments[0];"", [gender])",Chrome 150.0.7871.129,,,24-07-2026 01:28:09,24-07-2026 01:28:10,"0,019s",PASSED
+"executeJavaScript(""document.getElementById('createGender').dispatchEvent(new Event('change'));"", null)",Chrome 150.0.7871.129,,,24-07-2026 01:28:10,24-07-2026 01:28:10,"0,014s",PASSED
+"executeJavaScript(""document.querySelector('input[type=\""date\""]').value = arguments[0]"", [dob])",Chrome 150.0.7871.129,,,24-07-2026 01:28:10,24-07-2026 01:28:10,"0,013s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Vai tr h thng _""), role, false)",Chrome 150.0.7871.129,,,24-07-2026 01:28:10,24-07-2026 01:28:10,"0,213s",PASSED
+switch (role),Chrome 150.0.7871.129,,,24-07-2026 01:28:10,24-07-2026 01:28:10,"0,364s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Lu ti khon""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:10,24-07-2026 01:28:12,"2,121s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:12,24-07-2026 01:28:12,"0,059s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:28:12,24-07-2026 01:28:13,"0,203s",PASSED
+,,,,,,,
+Test Cases/TCCreateUser,Chrome 150.0.7871.129,Thêm mới tài khoản người dùng bởi Quản trị viên (Admin),"TS2, UserManagement",24-07-2026 01:28:13,24-07-2026 01:28:29,"16,180s",PASSED
+"DATA BINDING - {""role"":""STUDENT"",""code"":""ST202602"",""gender"":""Nam"",""major"":""Software Engineering"",""phone"":""0911000004"",""enrollmentYear"":""2024"",""dob"":""2004-01-01"",""expected"":""FAIL"",""fullName"":""Loi Trung Email"",""department"":"""",""email"":""user_st_2026_01@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:28:13,24-07-2026 01:28:14,"0,985s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:28:14,24-07-2026 01:28:14,"0,036s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:14,24-07-2026 01:28:17,"3,834s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:17,24-07-2026 01:28:18,"0,796s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:18,24-07-2026 01:28:19,"0,310s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:28:19,24-07-2026 01:28:19,"0,247s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:19,24-07-2026 01:28:19,"0,185s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:28:19,24-07-2026 01:28:19,"0,027s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:19,24-07-2026 01:28:24,"5,031s",PASSED
+"waitForElementClickable(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:28:24,24-07-2026 01:28:24,"0,089s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:24,24-07-2026 01:28:24,"0,175s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:28:24,24-07-2026 01:28:25,"0,572s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:28:25,24-07-2026 01:28:25,"0,302s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Nguyn Vn A""), fullName)",Chrome 150.0.7871.129,,,24-07-2026 01:28:25,24-07-2026 01:28:26,"0,365s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_09xxxxxxxx""), phone)",Chrome 150.0.7871.129,,,24-07-2026 01:28:26,24-07-2026 01:28:26,"0,393s",PASSED
+"executeJavaScript(""document.getElementById('createGender').value = arguments[0];"", [gender])",Chrome 150.0.7871.129,,,24-07-2026 01:28:26,24-07-2026 01:28:26,"0,020s",PASSED
+"executeJavaScript(""document.getElementById('createGender').dispatchEvent(new Event('change'));"", null)",Chrome 150.0.7871.129,,,24-07-2026 01:28:26,24-07-2026 01:28:26,"0,015s",PASSED
+"executeJavaScript(""document.querySelector('input[type=\""date\""]').value = arguments[0]"", [dob])",Chrome 150.0.7871.129,,,24-07-2026 01:28:26,24-07-2026 01:28:26,"0,018s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Vai tr h thng _""), role, false)",Chrome 150.0.7871.129,,,24-07-2026 01:28:26,24-07-2026 01:28:26,"0,183s",PASSED
+switch (role),Chrome 150.0.7871.129,,,24-07-2026 01:28:26,24-07-2026 01:28:27,"1,052s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Lu ti khon""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:27,24-07-2026 01:28:29,"1,243s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:29,24-07-2026 01:28:29,"0,002s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:28:29,24-07-2026 01:28:29,"0,069s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:28:29,24-07-2026 01:28:29,"0,195s",PASSED
+,,,,,,,
+Test Cases/TCCreateUser,Chrome 150.0.7871.129,Thêm mới tài khoản người dùng bởi Quản trị viên (Admin),"TS2, UserManagement",24-07-2026 01:28:29,24-07-2026 01:28:40,"11,105s",PASSED
+"DATA BINDING - {""role"":""STUDENT"",""code"":""ST202601"",""gender"":""Nam"",""major"":""Software Engineering"",""phone"":""0911000005"",""enrollmentYear"":""2024"",""dob"":""2004-01-01"",""expected"":""FAIL"",""fullName"":""Loi Trung Ma Sinh Vien"",""department"":"""",""email"":""user_st_2026_05@lms.com""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:28:29,24-07-2026 01:28:30,"0,995s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:28:30,24-07-2026 01:28:30,"0,052s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:30,24-07-2026 01:28:30,"0,589s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:30,24-07-2026 01:28:31,"0,726s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:31,24-07-2026 01:28:32,"0,314s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:28:32,24-07-2026 01:28:32,"0,223s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:32,24-07-2026 01:28:32,"0,301s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:28:32,24-07-2026 01:28:32,"0,029s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:32,24-07-2026 01:28:36,"3,447s",PASSED
+"waitForElementClickable(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:28:36,24-07-2026 01:28:36,"0,085s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_person_add Thm ngi dng""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:36,24-07-2026 01:28:36,"0,169s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:28:36,24-07-2026 01:28:36,"0,574s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_exampleuni.edu.vn""), email)",Chrome 150.0.7871.129,,,24-07-2026 01:28:36,24-07-2026 01:28:37,"0,275s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Nguyn Vn A""), fullName)",Chrome 150.0.7871.129,,,24-07-2026 01:28:37,24-07-2026 01:28:37,"0,301s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_09xxxxxxxx""), phone)",Chrome 150.0.7871.129,,,24-07-2026 01:28:37,24-07-2026 01:28:37,"0,297s",PASSED
+"executeJavaScript(""document.getElementById('createGender').value = arguments[0];"", [gender])",Chrome 150.0.7871.129,,,24-07-2026 01:28:37,24-07-2026 01:28:37,"0,016s",PASSED
+"executeJavaScript(""document.getElementById('createGender').dispatchEvent(new Event('change'));"", null)",Chrome 150.0.7871.129,,,24-07-2026 01:28:37,24-07-2026 01:28:37,"0,013s",PASSED
+"executeJavaScript(""document.querySelector('input[type=\""date\""]').value = arguments[0]"", [dob])",Chrome 150.0.7871.129,,,24-07-2026 01:28:37,24-07-2026 01:28:37,"0,013s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Vai tr h thng _""), role, false)",Chrome 150.0.7871.129,,,24-07-2026 01:28:37,24-07-2026 01:28:37,"0,162s",PASSED
+switch (role),Chrome 150.0.7871.129,,,24-07-2026 01:28:37,24-07-2026 01:28:38,"1,078s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Lu ti khon""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:38,24-07-2026 01:28:40,"1,175s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:40,24-07-2026 01:28:40,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:28:40,24-07-2026 01:28:40,"0,029s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:28:40,24-07-2026 01:28:40,"0,216s",PASSED
+,,,,,,,
+Test Cases/TCUpdateUser,Chrome 150.0.7871.129,Cập nhật thông tin hồ sơ người dùng,"TS2, UserManagement",24-07-2026 01:28:40,24-07-2026 01:29:29,"48,644s",PASSED
+"DATA BINDING - {""code"":""ST202601"",""gender"":""Nữ"",""major"":""Artificial Intelligence"",""targetEmail"":""user_st_2026_01@lms.com"",""phone"":""0911000099"",""enrollmentYear"":""2024"",""dob"":""2004-05-15"",""expected"":""PASS"",""fullName"":""Nguyen Van Test Student Updated"",""department"":"""",""status"":""active""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:28:40,24-07-2026 01:28:41,"1,018s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:28:41,24-07-2026 01:28:41,"0,049s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:41,24-07-2026 01:28:43,"1,789s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:43,24-07-2026 01:28:44,"1,139s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:28:44,24-07-2026 01:28:45,"0,243s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:28:45,24-07-2026 01:28:45,"0,182s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:45,24-07-2026 01:28:45,"0,177s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:28:45,24-07-2026 01:28:45,"0,026s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:45,24-07-2026 01:28:50,"4,965s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:28:50,24-07-2026 01:28:50,"0,043s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), targetEmail)",Chrome 150.0.7871.129,,,24-07-2026 01:28:50,24-07-2026 01:28:50,"0,245s",PASSED
+"sendKeys(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 01:28:50,24-07-2026 01:28:51,"0,691s",PASSED
+"waitForElementClickable(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Chi tit _ Chnh sa""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:28:51,24-07-2026 01:28:56,"5,061s",WARNING
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Chi tit _ Chnh sa""))",Chrome 150.0.7871.129,,,24-07-2026 01:28:56,24-07-2026 01:29:22,"25,777s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:29:22,24-07-2026 01:29:22,"0,566s",PASSED
+"clearText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""))",Chrome 150.0.7871.129,,,24-07-2026 01:29:22,24-07-2026 01:29:22,"0,082s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""), fullName)",Chrome 150.0.7871.129,,,24-07-2026 01:29:22,24-07-2026 01:29:23,"0,290s",PASSED
+"clearText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_S in thoi _""))",Chrome 150.0.7871.129,,,24-07-2026 01:29:23,24-07-2026 01:29:23,"0,084s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_S in thoi _""), phone)",Chrome 150.0.7871.129,,,24-07-2026 01:29:23,24-07-2026 01:29:23,"0,286s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Gii tnh""), gender, false)",Chrome 150.0.7871.129,,,24-07-2026 01:29:23,24-07-2026 01:29:23,"0,214s",PASSED
+"executeJavaScript(""document.querySelector('input[type=\""date\""]').value = arguments[0]"", [dob])",Chrome 150.0.7871.129,,,24-07-2026 01:29:23,24-07-2026 01:29:23,"0,016s",PASSED
+"studentCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M sinh vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:29:23,24-07-2026 01:29:23,"0,070s",PASSED
+if (studentCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:29:23,24-07-2026 01:29:24,"0,392s",PASSED
+"lecturerCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M ging vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:29:24,24-07-2026 01:29:24,"0,042s",PASSED
+if (lecturerCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:29:24,24-07-2026 01:29:24,"0,450s",PASSED
+"staffCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M nhn vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:29:24,24-07-2026 01:29:24,"0,052s",PASSED
+if (staffCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:29:24,24-07-2026 01:29:25,"0,450s",PASSED
+if (major != null && !(major.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:29:25,24-07-2026 01:29:25,"0,398s",PASSED
+if (enrollmentYear != null && !(enrollmentYear.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:29:25,24-07-2026 01:29:26,"0,548s",PASSED
+if (department != null && !(department.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:29:26,24-07-2026 01:29:26,"0,002s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Trng thi ti khon""), status, false)",Chrome 150.0.7871.129,,,24-07-2026 01:29:26,24-07-2026 01:29:26,"0,126s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Cp nht thng tin""))",Chrome 150.0.7871.129,,,24-07-2026 01:29:26,24-07-2026 01:29:28,"2,450s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:29:28,24-07-2026 01:29:28,"0,063s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:29:28,24-07-2026 01:29:29,"0,241s",PASSED
+,,,,,,,
+Test Cases/TCUpdateUser,Chrome 150.0.7871.129,Cập nhật thông tin hồ sơ người dùng,"TS2, UserManagement",24-07-2026 01:29:29,24-07-2026 01:30:14,"45,707s",PASSED
+"DATA BINDING - {""code"":""LC202601"",""gender"":""Nam"",""major"":"""",""(Default) enrol..."":"""",""targetEmail"":""user_lc_2026_01@lms.com"",""phone"":""0911000088"",""dob"":""1990-08-20"",""expected"":""PASS"",""fullName"":""Tran Thi Test Lecturer Updated"",""department"":""Computer Science"",""status"":""active""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:29:29,24-07-2026 01:29:30,"0,993s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:29:30,24-07-2026 01:29:30,"0,038s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:29:30,24-07-2026 01:29:32,"2,583s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:29:32,24-07-2026 01:29:33,"1,011s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:29:33,24-07-2026 01:29:34,"0,254s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:29:34,24-07-2026 01:29:34,"0,218s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:29:34,24-07-2026 01:29:34,"0,195s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:29:34,24-07-2026 01:29:34,"0,027s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:29:34,24-07-2026 01:29:38,"4,107s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:29:38,24-07-2026 01:29:38,"0,038s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), targetEmail)",Chrome 150.0.7871.129,,,24-07-2026 01:29:38,24-07-2026 01:29:38,"0,252s",PASSED
+"sendKeys(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 01:29:38,24-07-2026 01:29:40,"1,089s",PASSED
+"waitForElementClickable(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Chi tit _ Chnh sa""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:29:40,24-07-2026 01:29:45,"5,010s",WARNING
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Chi tit _ Chnh sa""))",Chrome 150.0.7871.129,,,24-07-2026 01:29:45,24-07-2026 01:30:07,"22,443s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:30:07,24-07-2026 01:30:08,"0,554s",PASSED
+"clearText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:08,24-07-2026 01:30:08,"0,050s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""), fullName)",Chrome 150.0.7871.129,,,24-07-2026 01:30:08,24-07-2026 01:30:08,"0,250s",PASSED
+"clearText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_S in thoi _""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:08,24-07-2026 01:30:08,"0,103s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_S in thoi _""), phone)",Chrome 150.0.7871.129,,,24-07-2026 01:30:08,24-07-2026 01:30:08,"0,280s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Gii tnh""), gender, false)",Chrome 150.0.7871.129,,,24-07-2026 01:30:08,24-07-2026 01:30:08,"0,183s",PASSED
+"executeJavaScript(""document.querySelector('input[type=\""date\""]').value = arguments[0]"", [dob])",Chrome 150.0.7871.129,,,24-07-2026 01:30:08,24-07-2026 01:30:08,"0,013s",PASSED
+"studentCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M sinh vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:30:08,24-07-2026 01:30:08,"0,046s",PASSED
+if (studentCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:30:08,24-07-2026 01:30:09,"0,348s",PASSED
+"lecturerCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M ging vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:30:09,24-07-2026 01:30:09,"0,033s",PASSED
+if (lecturerCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:30:09,24-07-2026 01:30:09,"0,426s",PASSED
+"staffCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M nhn vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:30:09,24-07-2026 01:30:09,"0,031s",PASSED
+if (staffCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:30:09,24-07-2026 01:30:10,"0,410s",PASSED
+if (major != null && !(major.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:30:10,24-07-2026 01:30:10,"0,001s",PASSED
+if (enrollmentYear != null && !(enrollmentYear.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:30:10,24-07-2026 01:30:10,"0,001s",PASSED
+if (department != null && !(department.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:30:10,24-07-2026 01:30:10,"0,406s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Trng thi ti khon""), status, false)",Chrome 150.0.7871.129,,,24-07-2026 01:30:10,24-07-2026 01:30:10,"0,148s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Cp nht thng tin""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:10,24-07-2026 01:30:14,"3,809s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:30:14,24-07-2026 01:30:14,"0,078s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:30:14,24-07-2026 01:30:14,"0,242s",PASSED
+,,,,,,,
+Test Cases/TCUpdateUser,Chrome 150.0.7871.129,Cập nhật thông tin hồ sơ người dùng,"TS2, UserManagement",24-07-2026 01:30:14,24-07-2026 01:30:57,"42,071s",PASSED
+"DATA BINDING - {""code"":""ST202601"",""gender"":""Nam"",""major"":""AI"",""targetEmail"":""user_st_2026_01@lms.com"",""phone"":""0911000099"",""enrollmentYear"":""2024"",""dob"":""2004-05-15"",""expected"":""FAIL"",""fullName"":"""",""department"":"""",""status"":""active""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:30:14,24-07-2026 01:30:15,"0,931s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:30:15,24-07-2026 01:30:15,"0,031s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:30:15,24-07-2026 01:30:18,"2,751s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:18,24-07-2026 01:30:19,"0,867s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:30:19,24-07-2026 01:30:19,"0,260s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:30:19,24-07-2026 01:30:20,"0,214s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:20,24-07-2026 01:30:20,"0,172s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:30:20,24-07-2026 01:30:20,"0,020s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:20,24-07-2026 01:30:23,"3,529s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:30:23,24-07-2026 01:30:23,"0,042s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), targetEmail)",Chrome 150.0.7871.129,,,24-07-2026 01:30:23,24-07-2026 01:30:24,"0,270s",PASSED
+"sendKeys(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 01:30:24,24-07-2026 01:30:24,"0,719s",PASSED
+"waitForElementClickable(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Chi tit _ Chnh sa""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:30:24,24-07-2026 01:30:29,"5,019s",WARNING
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Chi tit _ Chnh sa""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:29,24-07-2026 01:30:53,"23,333s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:30:53,24-07-2026 01:30:53,"0,545s",PASSED
+"clearText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:53,24-07-2026 01:30:53,"0,050s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_H v tn _""), fullName)",Chrome 150.0.7871.129,,,24-07-2026 01:30:53,24-07-2026 01:30:53,"0,206s",PASSED
+"clearText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_S in thoi _""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:53,24-07-2026 01:30:53,"0,068s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_S in thoi _""), phone)",Chrome 150.0.7871.129,,,24-07-2026 01:30:53,24-07-2026 01:30:54,"0,258s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Gii tnh""), gender, false)",Chrome 150.0.7871.129,,,24-07-2026 01:30:54,24-07-2026 01:30:54,"0,181s",PASSED
+"executeJavaScript(""document.querySelector('input[type=\""date\""]').value = arguments[0]"", [dob])",Chrome 150.0.7871.129,,,24-07-2026 01:30:54,24-07-2026 01:30:54,"0,010s",PASSED
+"studentCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M sinh vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:30:54,24-07-2026 01:30:54,"0,035s",PASSED
+if (studentCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:30:54,24-07-2026 01:30:54,"0,315s",PASSED
+"lecturerCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M ging vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:30:54,24-07-2026 01:30:54,"0,041s",PASSED
+if (lecturerCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:30:54,24-07-2026 01:30:55,"0,420s",PASSED
+"staffCodeVisible = waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_M nhn vin _""), 1, OPTIONAL)",Chrome 150.0.7871.129,,,24-07-2026 01:30:55,24-07-2026 01:30:55,"0,028s",PASSED
+if (staffCodeVisible),Chrome 150.0.7871.129,,,24-07-2026 01:30:55,24-07-2026 01:30:55,"0,387s",PASSED
+if (major != null && !(major.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:30:55,24-07-2026 01:30:55,"0,312s",PASSED
+if (enrollmentYear != null && !(enrollmentYear.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:30:55,24-07-2026 01:30:56,"0,527s",PASSED
+if (department != null && !(department.isEmpty())),Chrome 150.0.7871.129,,,24-07-2026 01:30:56,24-07-2026 01:30:56,"0,000s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_Trng thi ti khon""), status, false)",Chrome 150.0.7871.129,,,24-07-2026 01:30:56,24-07-2026 01:30:56,"0,100s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Cp nht thng tin""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:56,24-07-2026 01:30:56,"0,127s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:30:56,24-07-2026 01:30:56,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:30:56,24-07-2026 01:30:56,"0,031s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:30:56,24-07-2026 01:30:57,"0,233s",PASSED
+,,,,,,,
+Test Cases/TCLockUser,Chrome 150.0.7871.129,Khóa tài khoản người dùng bởi Quản trị viên,"TS2, UserManagement",24-07-2026 01:30:57,24-07-2026 01:31:08,"11,101s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:30:57,24-07-2026 01:30:58,"0,915s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:30:58,24-07-2026 01:30:58,"0,045s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:30:58,24-07-2026 01:30:59,"1,755s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:30:59,24-07-2026 01:31:00,"0,659s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:31:00,24-07-2026 01:31:00,"0,244s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:31:00,24-07-2026 01:31:00,"0,205s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:00,24-07-2026 01:31:01,"0,171s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:31:01,24-07-2026 01:31:01,"0,029s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:01,24-07-2026 01:31:04,"3,342s",PASSED
+waitForPageLoad(3),Chrome 150.0.7871.129,,,24-07-2026 01:31:04,24-07-2026 01:31:04,"0,009s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), ""user_st_2026_01@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:31:04,24-07-2026 01:31:04,"0,239s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Tm kim""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:04,24-07-2026 01:31:05,"0,635s",PASSED
+waitForPageLoad(3),Chrome 150.0.7871.129,,,24-07-2026 01:31:05,24-07-2026 01:31:05,"0,054s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Kha ti khon""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:05,24-07-2026 01:31:05,"0,161s",PASSED
+waitForPageLoad(2),Chrome 150.0.7871.129,,,24-07-2026 01:31:05,24-07-2026 01:31:05,"0,009s",PASSED
+"selectOptionByValue(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/select_L do kha ti khon _""), ""adminban"", false)",Chrome 150.0.7871.129,,,24-07-2026 01:31:05,24-07-2026 01:31:05,"0,248s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_lock Kha ti khon""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:05,24-07-2026 01:31:07,"2,024s",PASSED
+waitForPageLoad(3),Chrome 150.0.7871.129,,,24-07-2026 01:31:07,24-07-2026 01:31:07,"0,015s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/div_check_circle""), 10)",Chrome 150.0.7871.129,,,24-07-2026 01:31:07,24-07-2026 01:31:07,"0,037s",PASSED
+"verifyElementPresent(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/div_check_circle""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:31:07,24-07-2026 01:31:07,"0,017s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:31:07,24-07-2026 01:31:08,"0,190s",PASSED
+,,,,,,,
+Test Cases/TCUnlockUser,Chrome 150.0.7871.129,Mở khóa tài khoản người dùng bởi Quản trị viên,"TS2, UserManagement",24-07-2026 01:31:08,24-07-2026 01:31:19,"11,415s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:31:08,24-07-2026 01:31:09,"0,977s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:31:09,24-07-2026 01:31:09,"0,034s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:31:09,24-07-2026 01:31:09,"0,610s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:09,24-07-2026 01:31:10,"0,767s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""admin1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:31:10,24-07-2026 01:31:10,"0,268s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:31:10,24-07-2026 01:31:11,"0,343s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:11,24-07-2026 01:31:11,"0,324s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:31:11,24-07-2026 01:31:11,"0,028s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/a_nav-user-management""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:11,24-07-2026 01:31:16,"4,558s",PASSED
+waitForPageLoad(3),Chrome 150.0.7871.129,,,24-07-2026 01:31:16,24-07-2026 01:31:16,"0,018s",PASSED
+"setText(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/input_Tm theo Email, H tn, M s nh danh""), ""user_st_2026_01@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:31:16,24-07-2026 01:31:16,"0,303s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_Tm kim""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:16,24-07-2026 01:31:17,"0,997s",PASSED
+waitForPageLoad(3),Chrome 150.0.7871.129,,,24-07-2026 01:31:17,24-07-2026 01:31:17,"0,008s",PASSED
+"click(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/button_M kha ti khon""))",Chrome 150.0.7871.129,,,24-07-2026 01:31:17,24-07-2026 01:31:17,"0,137s",PASSED
+waitForAlert(5),Chrome 150.0.7871.129,,,24-07-2026 01:31:17,24-07-2026 01:31:17,"0,035s",PASSED
+acceptAlert(),Chrome 150.0.7871.129,,,24-07-2026 01:31:17,24-07-2026 01:31:17,"0,022s",PASSED
+waitForPageLoad(3),Chrome 150.0.7871.129,,,24-07-2026 01:31:17,24-07-2026 01:31:19,"1,616s",PASSED
+"waitForElementVisible(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/div_check_circle""), 10)",Chrome 150.0.7871.129,,,24-07-2026 01:31:19,24-07-2026 01:31:19,"0,033s",PASSED
+"verifyElementPresent(findTestObject(""Page_Bng iu khin Qun tr vin - Th vin i hc LMS/div_check_circle""), 5)",Chrome 150.0.7871.129,,,24-07-2026 01:31:19,24-07-2026 01:31:19,"0,016s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:31:19,24-07-2026 01:31:19,"0,225s",PASSED

@@ -1,0 +1,287 @@
+Suite/Test/Step Name,Browser,Description,Tag,Start time,End time,Duration,Status
+TSBookManagement,Chrome 150.0.7871.129,,,24-07-2026 01:02:12,24-07-2026 01:04:57,"2m - 45,326s",PASSED
+,,,,,,,
+Test Cases/TCAddBook,Chrome 150.0.7871.129,Thêm mới đầu sách vào thư viện bởi Thủ thư,"TS3, BookManagement",24-07-2026 01:02:12,24-07-2026 01:02:35,"22,800s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn Kiểm Thử"",""price"":""150000"",""isbn"":""978-604-0-99999-3"",""expected"":""PASS"",""publisher"":""NXB Đại Học FPT"",""publicationYear"":""2024"",""title"":""Giáo Trình Kiểm Thử Hệ Thống 2026""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:02:13,24-07-2026 01:02:16,"3,225s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:02:16,24-07-2026 01:02:16,"0,068s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:16,24-07-2026 01:02:17,"0,728s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:17,24-07-2026 01:02:18,"0,888s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:18,24-07-2026 01:02:18,"0,380s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:02:18,24-07-2026 01:02:19,"0,247s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:19,24-07-2026 01:02:19,"0,186s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:02:19,24-07-2026 01:02:19,"0,173s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_menu_book""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:19,24-07-2026 01:02:25,"6,513s",PASSED
+"btnAdd = TestObject().addProperty(""xpath"", EQUALS, ""//button[@data-bs-target='#createBookModal']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:25,24-07-2026 01:02:25,"0,024s",PASSED
+"waitForElementClickable(btnAdd, 5)",Chrome 150.0.7871.129,,,24-07-2026 01:02:25,24-07-2026 01:02:26,"0,150s",PASSED
+click(btnAdd),Chrome 150.0.7871.129,,,24-07-2026 01:02:26,24-07-2026 01:02:26,"0,176s",PASSED
+delay(2),Chrome 150.0.7871.129,,,24-07-2026 01:02:26,24-07-2026 01:02:28,"2,057s",PASSED
+"inputTitle = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='title']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:28,"0,004s",PASSED
+"inputIsbn = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='isbn']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:28,"0,003s",PASSED
+"inputAuthor = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='author']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:28,"0,003s",PASSED
+"inputPublisher = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='publisher']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:28,"0,004s",PASSED
+"inputYear = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='publicationYear']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:28,"0,003s",PASSED
+"inputPrice = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='price']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:28,"0,003s",PASSED
+"setText(inputTitle, title)",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:28,"0,317s",PASSED
+"setText(inputIsbn, isbn)",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:28,"0,352s",PASSED
+"setText(inputAuthor, author)",Chrome 150.0.7871.129,,,24-07-2026 01:02:28,24-07-2026 01:02:29,"0,333s",PASSED
+"setText(inputPublisher, publisher)",Chrome 150.0.7871.129,,,24-07-2026 01:02:29,24-07-2026 01:02:29,"0,375s",PASSED
+"setText(inputYear, publicationYear)",Chrome 150.0.7871.129,,,24-07-2026 01:02:29,24-07-2026 01:02:30,"0,415s",PASSED
+"setText(inputPrice, price)",Chrome 150.0.7871.129,,,24-07-2026 01:02:30,24-07-2026 01:02:30,"0,383s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/label_Agriculture""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:30,24-07-2026 01:02:30,"0,196s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/label_Advanced""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:30,24-07-2026 01:02:30,"0,232s",PASSED
+"btnSave = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//button[@type='submit']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:30,24-07-2026 01:02:30,"0,004s",PASSED
+click(btnSave),Chrome 150.0.7871.129,,,24-07-2026 01:02:30,24-07-2026 01:02:33,"2,975s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:33,24-07-2026 01:02:35,"1,232s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:02:35,24-07-2026 01:02:35,"0,271s",PASSED
+,,,,,,,
+Test Cases/TCAddBook,Chrome 150.0.7871.129,Thêm mới đầu sách vào thư viện bởi Thủ thư,"TS3, BookManagement",24-07-2026 01:02:35,24-07-2026 01:02:53,"18,162s",PASSED
+"DATA BINDING - {""author"":""Trần Văn Trùng"",""price"":""120000"",""isbn"":""978-604-0-99999-3"",""expected"":""FAIL"",""publisher"":""NXB Kim Đồng"",""publicationYear"":""2024"",""title"":""Giáo Trình Kiểm Thử Hệ Thống 2026""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:02:35,24-07-2026 01:02:36,"1,031s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:02:36,24-07-2026 01:02:36,"0,051s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:36,24-07-2026 01:02:37,"0,521s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:37,24-07-2026 01:02:37,"0,688s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:37,24-07-2026 01:02:38,"0,286s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:02:38,24-07-2026 01:02:38,"0,252s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:38,24-07-2026 01:02:38,"0,188s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:02:38,24-07-2026 01:02:38,"0,037s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_menu_book""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:38,24-07-2026 01:02:43,"5,054s",PASSED
+"btnAdd = TestObject().addProperty(""xpath"", EQUALS, ""//button[@data-bs-target='#createBookModal']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:43,24-07-2026 01:02:43,"0,001s",PASSED
+"waitForElementClickable(btnAdd, 5)",Chrome 150.0.7871.129,,,24-07-2026 01:02:43,24-07-2026 01:02:43,"0,090s",PASSED
+click(btnAdd),Chrome 150.0.7871.129,,,24-07-2026 01:02:43,24-07-2026 01:02:43,"0,166s",PASSED
+delay(2),Chrome 150.0.7871.129,,,24-07-2026 01:02:43,24-07-2026 01:02:45,"2,016s",PASSED
+"inputTitle = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='title']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:45,24-07-2026 01:02:45,"0,001s",PASSED
+"inputIsbn = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='isbn']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:45,24-07-2026 01:02:45,"0,000s",PASSED
+"inputAuthor = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='author']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:45,24-07-2026 01:02:45,"0,001s",PASSED
+"inputPublisher = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='publisher']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:45,24-07-2026 01:02:45,"0,000s",PASSED
+"inputYear = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='publicationYear']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:45,24-07-2026 01:02:45,"0,001s",PASSED
+"inputPrice = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='price']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:45,24-07-2026 01:02:45,"0,001s",PASSED
+"setText(inputTitle, title)",Chrome 150.0.7871.129,,,24-07-2026 01:02:45,24-07-2026 01:02:46,"0,278s",PASSED
+"setText(inputIsbn, isbn)",Chrome 150.0.7871.129,,,24-07-2026 01:02:46,24-07-2026 01:02:46,"0,325s",PASSED
+"setText(inputAuthor, author)",Chrome 150.0.7871.129,,,24-07-2026 01:02:46,24-07-2026 01:02:46,"0,303s",PASSED
+"setText(inputPublisher, publisher)",Chrome 150.0.7871.129,,,24-07-2026 01:02:46,24-07-2026 01:02:47,"0,326s",PASSED
+"setText(inputYear, publicationYear)",Chrome 150.0.7871.129,,,24-07-2026 01:02:47,24-07-2026 01:02:47,"0,392s",PASSED
+"setText(inputPrice, price)",Chrome 150.0.7871.129,,,24-07-2026 01:02:47,24-07-2026 01:02:47,"0,345s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/label_Agriculture""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:47,24-07-2026 01:02:48,"0,138s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/label_Advanced""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:48,24-07-2026 01:02:48,"0,187s",PASSED
+"btnSave = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//button[@type='submit']"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:48,24-07-2026 01:02:48,"0,001s",PASSED
+click(btnSave),Chrome 150.0.7871.129,,,24-07-2026 01:02:48,24-07-2026 01:02:52,"3,957s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:52,24-07-2026 01:02:52,"0,002s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:02:52,24-07-2026 01:02:53,"1,245s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:02:53,24-07-2026 01:02:53,"0,235s",PASSED
+,,,,,,,
+Test Cases/TCAddBook,Chrome 150.0.7871.129,Thêm mới đầu sách vào thư viện bởi Thủ thư,"TS3, BookManagement",24-07-2026 01:02:53,24-07-2026 01:03:09,"16,171s",PASSED
+"DATA BINDING - {""author"":""Tác Giả ABC"",""price"":""100000"",""isbn"":""978-604-0-88888-2"",""expected"":""FAIL"",""publisher"":""NXB FPT"",""publicationYear"":""2024"",""title"":""""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:02:53,24-07-2026 01:02:54,"0,978s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:02:54,24-07-2026 01:02:54,"0,035s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:54,24-07-2026 01:02:57,"2,526s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:57,24-07-2026 01:02:58,"0,738s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:02:58,24-07-2026 01:02:58,"0,288s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:02:58,24-07-2026 01:02:58,"0,194s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:58,24-07-2026 01:02:58,"0,173s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:02:58,24-07-2026 01:02:58,"0,025s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_menu_book""))",Chrome 150.0.7871.129,,,24-07-2026 01:02:58,24-07-2026 01:03:03,"4,897s",PASSED
+"btnAdd = TestObject().addProperty(""xpath"", EQUALS, ""//button[@data-bs-target='#createBookModal']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:03,24-07-2026 01:03:03,"0,000s",PASSED
+"waitForElementClickable(btnAdd, 5)",Chrome 150.0.7871.129,,,24-07-2026 01:03:03,24-07-2026 01:03:03,"0,073s",PASSED
+click(btnAdd),Chrome 150.0.7871.129,,,24-07-2026 01:03:03,24-07-2026 01:03:03,"0,187s",PASSED
+delay(2),Chrome 150.0.7871.129,,,24-07-2026 01:03:03,24-07-2026 01:03:05,"2,007s",PASSED
+"inputTitle = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='title']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:05,24-07-2026 01:03:05,"0,001s",PASSED
+"inputIsbn = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='isbn']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:05,24-07-2026 01:03:05,"0,000s",PASSED
+"inputAuthor = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='author']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:05,24-07-2026 01:03:05,"0,001s",PASSED
+"inputPublisher = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='publisher']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:05,24-07-2026 01:03:05,"0,000s",PASSED
+"inputYear = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='publicationYear']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:05,24-07-2026 01:03:05,"0,001s",PASSED
+"inputPrice = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='price']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:05,24-07-2026 01:03:05,"0,001s",PASSED
+"setText(inputTitle, title)",Chrome 150.0.7871.129,,,24-07-2026 01:03:05,24-07-2026 01:03:06,"0,249s",PASSED
+"setText(inputIsbn, isbn)",Chrome 150.0.7871.129,,,24-07-2026 01:03:06,24-07-2026 01:03:06,"0,340s",PASSED
+"setText(inputAuthor, author)",Chrome 150.0.7871.129,,,24-07-2026 01:03:06,24-07-2026 01:03:06,"0,300s",PASSED
+"setText(inputPublisher, publisher)",Chrome 150.0.7871.129,,,24-07-2026 01:03:06,24-07-2026 01:03:07,"0,340s",PASSED
+"setText(inputYear, publicationYear)",Chrome 150.0.7871.129,,,24-07-2026 01:03:07,24-07-2026 01:03:07,"0,407s",PASSED
+"setText(inputPrice, price)",Chrome 150.0.7871.129,,,24-07-2026 01:03:07,24-07-2026 01:03:07,"0,357s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/label_Agriculture""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:07,24-07-2026 01:03:08,"0,142s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/label_Advanced""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:08,24-07-2026 01:03:08,"0,215s",PASSED
+"btnSave = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//button[@type='submit']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:08,24-07-2026 01:03:08,"0,001s",PASSED
+click(btnSave),Chrome 150.0.7871.129,,,24-07-2026 01:03:08,24-07-2026 01:03:08,"0,151s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:08,24-07-2026 01:03:08,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:03:08,24-07-2026 01:03:09,"1,252s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:03:09,24-07-2026 01:03:09,"0,247s",PASSED
+,,,,,,,
+Test Cases/TCAddBook,Chrome 150.0.7871.129,Thêm mới đầu sách vào thư viện bởi Thủ thư,"TS3, BookManagement",24-07-2026 01:03:09,24-07-2026 01:03:26,"16,976s",PASSED
+"DATA BINDING - {""author"":""Tác Giả XYZ"",""price"":""100000"",""isbn"":"""",""expected"":""FAIL"",""publisher"":""NXB FPT"",""publicationYear"":""2024"",""title"":""Sách Thiếu ISBN""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:03:10,24-07-2026 01:03:10,"0,985s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:03:10,24-07-2026 01:03:11,"0,049s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:11,24-07-2026 01:03:14,"3,017s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:14,24-07-2026 01:03:14,"0,796s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:14,24-07-2026 01:03:15,"0,293s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:03:15,24-07-2026 01:03:15,"0,209s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:15,24-07-2026 01:03:15,"0,182s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:03:15,24-07-2026 01:03:15,"0,023s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_menu_book""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:15,24-07-2026 01:03:20,"5,044s",PASSED
+"btnAdd = TestObject().addProperty(""xpath"", EQUALS, ""//button[@data-bs-target='#createBookModal']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:20,24-07-2026 01:03:20,"0,000s",PASSED
+"waitForElementClickable(btnAdd, 5)",Chrome 150.0.7871.129,,,24-07-2026 01:03:20,24-07-2026 01:03:20,"0,061s",PASSED
+click(btnAdd),Chrome 150.0.7871.129,,,24-07-2026 01:03:20,24-07-2026 01:03:20,"0,174s",PASSED
+delay(2),Chrome 150.0.7871.129,,,24-07-2026 01:03:20,24-07-2026 01:03:22,"2,004s",PASSED
+"inputTitle = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='title']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:22,24-07-2026 01:03:22,"0,001s",PASSED
+"inputIsbn = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='isbn']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:22,24-07-2026 01:03:22,"0,000s",PASSED
+"inputAuthor = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='author']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:22,24-07-2026 01:03:22,"0,002s",PASSED
+"inputPublisher = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='publisher']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:22,24-07-2026 01:03:22,"0,000s",PASSED
+"inputYear = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='publicationYear']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:22,24-07-2026 01:03:22,"0,001s",PASSED
+"inputPrice = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//input[@name='price']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:22,24-07-2026 01:03:22,"0,000s",PASSED
+"setText(inputTitle, title)",Chrome 150.0.7871.129,,,24-07-2026 01:03:22,24-07-2026 01:03:23,"0,276s",PASSED
+"setText(inputIsbn, isbn)",Chrome 150.0.7871.129,,,24-07-2026 01:03:23,24-07-2026 01:03:23,"0,362s",PASSED
+"setText(inputAuthor, author)",Chrome 150.0.7871.129,,,24-07-2026 01:03:23,24-07-2026 01:03:23,"0,354s",PASSED
+"setText(inputPublisher, publisher)",Chrome 150.0.7871.129,,,24-07-2026 01:03:23,24-07-2026 01:03:24,"0,350s",PASSED
+"setText(inputYear, publicationYear)",Chrome 150.0.7871.129,,,24-07-2026 01:03:24,24-07-2026 01:03:24,"0,419s",PASSED
+"setText(inputPrice, price)",Chrome 150.0.7871.129,,,24-07-2026 01:03:24,24-07-2026 01:03:24,"0,347s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/label_Agriculture""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:24,24-07-2026 01:03:25,"0,144s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/label_Advanced""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:25,24-07-2026 01:03:25,"0,217s",PASSED
+"btnSave = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='createBookModal']//button[@type='submit']"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:25,24-07-2026 01:03:25,"0,001s",PASSED
+click(btnSave),Chrome 150.0.7871.129,,,24-07-2026 01:03:25,24-07-2026 01:03:25,"0,149s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:25,24-07-2026 01:03:25,"0,000s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:03:25,24-07-2026 01:03:26,"1,224s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:03:26,24-07-2026 01:03:26,"0,254s",PASSED
+,,,,,,,
+Test Cases/TCAddBookCopy,Chrome 150.0.7871.129,Khai báo bản sao sách và mã vạch Barcode,"TS3, BookManagement",24-07-2026 01:03:26,24-07-2026 01:03:43,"16,903s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""isbn_search"":""978-604-0-99999-3"",""location"":""Kệ CS-2026-01"",""barcode"":""BC-2026-9901""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:03:27,24-07-2026 01:03:28,"0,967s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:28,24-07-2026 01:03:31,"3,000s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:31,24-07-2026 01:03:31,"0,738s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:31,24-07-2026 01:03:32,"0,294s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:03:32,24-07-2026 01:03:32,"0,193s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:32,24-07-2026 01:03:32,"0,176s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_inventory_2""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:32,24-07-2026 01:03:37,"4,846s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_add""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:37,24-07-2026 01:03:37,"0,149s",PASSED
+"if (isbn_search != """")",Chrome 150.0.7871.129,,,24-07-2026 01:03:37,24-07-2026 01:03:39,"1,898s",PASSED
+"if (barcode != """")",Chrome 150.0.7871.129,,,24-07-2026 01:03:39,24-07-2026 01:03:39,"0,238s",PASSED
+"if (location != """")",Chrome 150.0.7871.129,,,24-07-2026 01:03:39,24-07-2026 01:03:41,"1,645s",PASSED
+"scrollToElement(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Lu bn sao""), 3)",Chrome 150.0.7871.129,,,24-07-2026 01:03:41,24-07-2026 01:03:41,"0,064s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 01:03:41,24-07-2026 01:03:42,"1,017s",PASSED
+try,Chrome 150.0.7871.129,,,24-07-2026 01:03:42,24-07-2026 01:03:42,"0,116s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:42,24-07-2026 01:03:43,"1,054s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:03:43,24-07-2026 01:03:43,"0,249s",PASSED
+,,,,,,,
+Test Cases/TCAddBookCopy,Chrome 150.0.7871.129,Khai báo bản sao sách và mã vạch Barcode,"TS3, BookManagement",24-07-2026 01:03:43,24-07-2026 01:03:56,"12,709s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""isbn_search"":""978-604-0-99999-3"",""location"":""Kệ CS-2026-02"",""barcode"":""BC-2026-9901""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:03:43,24-07-2026 01:03:44,"0,947s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:44,24-07-2026 01:03:45,"0,551s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:45,24-07-2026 01:03:46,"0,724s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:46,24-07-2026 01:03:46,"0,221s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:03:46,24-07-2026 01:03:46,"0,205s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:46,24-07-2026 01:03:46,"0,163s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_inventory_2""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:46,24-07-2026 01:03:50,"3,534s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_add""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:50,24-07-2026 01:03:50,"0,139s",PASSED
+"if (isbn_search != """")",Chrome 150.0.7871.129,,,24-07-2026 01:03:50,24-07-2026 01:03:52,"1,834s",PASSED
+"if (barcode != """")",Chrome 150.0.7871.129,,,24-07-2026 01:03:52,24-07-2026 01:03:52,"0,207s",PASSED
+"if (location != """")",Chrome 150.0.7871.129,,,24-07-2026 01:03:52,24-07-2026 01:03:54,"1,630s",PASSED
+"scrollToElement(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Lu bn sao""), 3)",Chrome 150.0.7871.129,,,24-07-2026 01:03:54,24-07-2026 01:03:54,"0,037s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 01:03:54,24-07-2026 01:03:55,"1,013s",PASSED
+try,Chrome 150.0.7871.129,,,24-07-2026 01:03:55,24-07-2026 01:03:55,"0,090s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:55,24-07-2026 01:03:55,"0,002s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:03:55,24-07-2026 01:03:56,"1,182s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:03:56,24-07-2026 01:03:56,"0,204s",PASSED
+,,,,,,,
+Test Cases/TCAddBookCopy,Chrome 150.0.7871.129,Khai báo bản sao sách và mã vạch Barcode,"TS3, BookManagement",24-07-2026 01:03:56,24-07-2026 01:04:09,"13,242s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""isbn_search"":""978-604-0-99999-3"",""location"":""Kệ CS-2026-03"",""barcode"":""""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:03:56,24-07-2026 01:03:57,"0,934s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:57,24-07-2026 01:03:58,"0,513s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:58,24-07-2026 01:03:58,"0,708s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:03:58,24-07-2026 01:03:59,"0,216s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:03:59,24-07-2026 01:03:59,"0,203s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:59,24-07-2026 01:03:59,"0,164s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_inventory_2""))",Chrome 150.0.7871.129,,,24-07-2026 01:03:59,24-07-2026 01:04:03,"4,356s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_add""))",Chrome 150.0.7871.129,,,24-07-2026 01:04:03,24-07-2026 01:04:03,"0,153s",PASSED
+"if (isbn_search != """")",Chrome 150.0.7871.129,,,24-07-2026 01:04:03,24-07-2026 01:04:05,"1,831s",PASSED
+"if (barcode != """")",Chrome 150.0.7871.129,,,24-07-2026 01:04:05,24-07-2026 01:04:05,"0,000s",PASSED
+"if (location != """")",Chrome 150.0.7871.129,,,24-07-2026 01:04:05,24-07-2026 01:04:07,"1,550s",PASSED
+"scrollToElement(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Lu bn sao""), 3)",Chrome 150.0.7871.129,,,24-07-2026 01:04:07,24-07-2026 01:04:07,"0,035s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 01:04:07,24-07-2026 01:04:08,"1,010s",PASSED
+try,Chrome 150.0.7871.129,,,24-07-2026 01:04:08,24-07-2026 01:04:08,"0,121s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:08,24-07-2026 01:04:08,"0,002s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:04:08,24-07-2026 01:04:09,"1,226s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:04:09,24-07-2026 01:04:09,"0,192s",PASSED
+,,,,,,,
+Test Cases/TCUpdateBook,Chrome 150.0.7871.129,Cập nhật thông tin chi tiết đầu sách,"TS3, BookManagement",24-07-2026 01:04:09,24-07-2026 01:04:36,"26,268s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn Kiểm Thử"",""price"":""175000"",""expected"":""PASS"",""isbn_search"":""978-0134685991"",""publisher"":""NXB Giáo Dục"",""publicationYear"":""2024"",""title"":""Giáo Trình Kiểm Thử LMS 2026 Updated"",""status"":""available""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:04:10,24-07-2026 01:04:11,"0,953s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:04:11,24-07-2026 01:04:11,"0,049s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:11,24-07-2026 01:04:11,"0,634s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:04:11,24-07-2026 01:04:12,"0,692s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:12,24-07-2026 01:04:12,"0,236s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:04:12,24-07-2026 01:04:12,"0,212s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:04:12,24-07-2026 01:04:13,"0,151s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:04:13,24-07-2026 01:04:13,"0,027s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_menu_book""))",Chrome 150.0.7871.129,,,24-07-2026 01:04:13,24-07-2026 01:04:17,"4,852s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:04:17,24-07-2026 01:04:17,"0,009s",PASSED
+"if (isbn_search != """")",Chrome 150.0.7871.129,,,24-07-2026 01:04:17,24-07-2026 01:04:22,"4,760s",PASSED
+"btnEditFirst = TestObject().addProperty(""xpath"", EQUALS, ""//a[contains(@href, 'editId=')]"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:22,24-07-2026 01:04:22,"0,002s",PASSED
+"waitForElementPresent(btnEditFirst, 5)",Chrome 150.0.7871.129,,,24-07-2026 01:04:22,24-07-2026 01:04:22,"0,036s",PASSED
+click(btnEditFirst),Chrome 150.0.7871.129,,,24-07-2026 01:04:22,24-07-2026 01:04:26,"3,934s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:04:26,24-07-2026 01:04:26,"0,011s",PASSED
+"modalEdit = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:26,24-07-2026 01:04:26,"0,002s",PASSED
+"waitForElementVisible(modalEdit, 5)",Chrome 150.0.7871.129,,,24-07-2026 01:04:26,24-07-2026 01:04:27,"0,592s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 01:04:27,24-07-2026 01:04:28,"1,014s",PASSED
+"inputTitle = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='title']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,001s",PASSED
+"inputAuthor = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='author']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,001s",PASSED
+"inputPublisher = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='publisher']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,001s",PASSED
+"inputYear = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='publicationYear']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,001s",PASSED
+"inputPrice = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='price']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,002s",PASSED
+"selectStatus = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//select[@name='bookStatus']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,001s",PASSED
+clearText(inputTitle),Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,054s",PASSED
+"setText(inputTitle, title)",Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,247s",PASSED
+clearText(inputAuthor),Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,063s",PASSED
+"setText(inputAuthor, author)",Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:28,"0,292s",PASSED
+clearText(inputYear),Chrome 150.0.7871.129,,,24-07-2026 01:04:28,24-07-2026 01:04:29,"0,085s",PASSED
+"setText(inputYear, publicationYear)",Chrome 150.0.7871.129,,,24-07-2026 01:04:29,24-07-2026 01:04:29,"0,407s",PASSED
+clearText(inputPublisher),Chrome 150.0.7871.129,,,24-07-2026 01:04:29,24-07-2026 01:04:29,"0,058s",PASSED
+"setText(inputPublisher, publisher)",Chrome 150.0.7871.129,,,24-07-2026 01:04:29,24-07-2026 01:04:29,"0,325s",PASSED
+clearText(inputPrice),Chrome 150.0.7871.129,,,24-07-2026 01:04:29,24-07-2026 01:04:29,"0,094s",PASSED
+"setText(inputPrice, price)",Chrome 150.0.7871.129,,,24-07-2026 01:04:29,24-07-2026 01:04:30,"0,405s",PASSED
+"if (status != """")",Chrome 150.0.7871.129,,,24-07-2026 01:04:30,24-07-2026 01:04:30,"0,176s",PASSED
+"scrollToElement(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Lu thay i""), 3)",Chrome 150.0.7871.129,,,24-07-2026 01:04:30,24-07-2026 01:04:30,"0,034s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 01:04:30,24-07-2026 01:04:31,"1,003s",PASSED
+try,Chrome 150.0.7871.129,,,24-07-2026 01:04:31,24-07-2026 01:04:34,"3,231s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:34,24-07-2026 01:04:35,"1,202s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:04:35,24-07-2026 01:04:36,"0,268s",PASSED
+,,,,,,,
+Test Cases/TCUpdateBook,Chrome 150.0.7871.129,Cập nhật thông tin chi tiết đầu sách,"TS3, BookManagement",24-07-2026 01:04:36,24-07-2026 01:04:57,"21,174s",PASSED
+"DATA BINDING - {""author"":""Nguyễn Văn Kiểm Thử"",""price"":""175000"",""expected"":""FAIL"",""isbn_search"":""978-0134685991"",""publisher"":""NXB Giáo Dục"",""publicationYear"":""2024"",""title"":"""",""status"":""available""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 01:04:36,24-07-2026 01:04:37,"0,956s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 01:04:37,24-07-2026 01:04:37,"0,031s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:37,24-07-2026 01:04:38,"1,528s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:04:38,24-07-2026 01:04:39,"0,781s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""librarian1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:39,24-07-2026 01:04:39,"0,255s",PASSED
+"setEncryptedText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""43jUgf25q5YGNME/04NM0w=="")",Chrome 150.0.7871.129,,,24-07-2026 01:04:39,24-07-2026 01:04:40,"0,200s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 01:04:40,24-07-2026 01:04:40,"0,154s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:04:40,24-07-2026 01:04:40,"0,024s",PASSED
+"click(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/a_menu_book""))",Chrome 150.0.7871.129,,,24-07-2026 01:04:40,24-07-2026 01:04:44,"4,742s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:04:44,24-07-2026 01:04:44,"0,008s",PASSED
+"if (isbn_search != """")",Chrome 150.0.7871.129,,,24-07-2026 01:04:44,24-07-2026 01:04:48,"3,521s",PASSED
+"btnEditFirst = TestObject().addProperty(""xpath"", EQUALS, ""//a[contains(@href, 'editId=')]"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:48,24-07-2026 01:04:48,"0,000s",PASSED
+"waitForElementPresent(btnEditFirst, 5)",Chrome 150.0.7871.129,,,24-07-2026 01:04:48,24-07-2026 01:04:48,"0,014s",PASSED
+click(btnEditFirst),Chrome 150.0.7871.129,,,24-07-2026 01:04:48,24-07-2026 01:04:51,"2,898s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 01:04:51,24-07-2026 01:04:51,"0,008s",PASSED
+"modalEdit = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:51,24-07-2026 01:04:51,"0,001s",PASSED
+"waitForElementVisible(modalEdit, 5)",Chrome 150.0.7871.129,,,24-07-2026 01:04:51,24-07-2026 01:04:51,"0,557s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 01:04:51,24-07-2026 01:04:52,"1,008s",PASSED
+"inputTitle = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='title']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:52,24-07-2026 01:04:52,"0,000s",PASSED
+"inputAuthor = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='author']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:52,24-07-2026 01:04:52,"0,001s",PASSED
+"inputPublisher = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='publisher']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:52,24-07-2026 01:04:52,"0,000s",PASSED
+"inputYear = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='publicationYear']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:52,24-07-2026 01:04:52,"0,001s",PASSED
+"inputPrice = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//input[@name='price']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:52,24-07-2026 01:04:52,"0,000s",PASSED
+"selectStatus = TestObject().addProperty(""xpath"", EQUALS, ""//div[@id='editBookModal']//select[@name='bookStatus']"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:52,24-07-2026 01:04:52,"0,001s",PASSED
+clearText(inputTitle),Chrome 150.0.7871.129,,,24-07-2026 01:04:52,24-07-2026 01:04:52,"0,047s",PASSED
+"setText(inputTitle, title)",Chrome 150.0.7871.129,,,24-07-2026 01:04:52,24-07-2026 01:04:53,"0,201s",PASSED
+clearText(inputAuthor),Chrome 150.0.7871.129,,,24-07-2026 01:04:53,24-07-2026 01:04:53,"0,067s",PASSED
+"setText(inputAuthor, author)",Chrome 150.0.7871.129,,,24-07-2026 01:04:53,24-07-2026 01:04:53,"0,270s",PASSED
+clearText(inputYear),Chrome 150.0.7871.129,,,24-07-2026 01:04:53,24-07-2026 01:04:53,"0,084s",PASSED
+"setText(inputYear, publicationYear)",Chrome 150.0.7871.129,,,24-07-2026 01:04:53,24-07-2026 01:04:54,"0,392s",PASSED
+clearText(inputPublisher),Chrome 150.0.7871.129,,,24-07-2026 01:04:54,24-07-2026 01:04:54,"0,059s",PASSED
+"setText(inputPublisher, publisher)",Chrome 150.0.7871.129,,,24-07-2026 01:04:54,24-07-2026 01:04:54,"0,240s",PASSED
+clearText(inputPrice),Chrome 150.0.7871.129,,,24-07-2026 01:04:54,24-07-2026 01:04:54,"0,060s",PASSED
+"setText(inputPrice, price)",Chrome 150.0.7871.129,,,24-07-2026 01:04:54,24-07-2026 01:04:54,"0,335s",PASSED
+"if (status != """")",Chrome 150.0.7871.129,,,24-07-2026 01:04:54,24-07-2026 01:04:54,"0,126s",PASSED
+"scrollToElement(findTestObject(""Page_Bng iu khin Th th - Th vin i hc LMS/button_Lu thay i""), 3)",Chrome 150.0.7871.129,,,24-07-2026 01:04:54,24-07-2026 01:04:54,"0,033s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 01:04:54,24-07-2026 01:04:55,"1,016s",PASSED
+try,Chrome 150.0.7871.129,,,24-07-2026 01:04:55,24-07-2026 01:04:55,"0,080s",PASSED
+"if (expected == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 01:04:55,24-07-2026 01:04:55,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 01:04:55,24-07-2026 01:04:57,"1,167s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 01:04:57,24-07-2026 01:04:57,"0,281s",PASSED
