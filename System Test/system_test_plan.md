@@ -5,13 +5,15 @@
 
 ## 1. Quy tắc đặt tên đồng bộ (Mapping Rule)
 
-* **Test Case:** Tiền tố `TC` + Tên chức năng (VD: `TCCreateUser`, `TCCheckoutBook`)
-* **Data File:** Tiền tố `Data` + Tên chức năng tương ứng (VD: `DataCreateUser.xlsx`, `DataCheckoutBook.xlsx`)
-* **Test Suite:** Tiền tố `TS` + Tên nhóm chức năng (VD: `TSAuthentication`, `TSDeskCirculation`)
+* **Test Case:** Tiền tố `TC` + Tên chức năng (VD: `TCCreateUser`, `TCCheckoutBook`, `TCSearchBook`)
+* **Data File:** Tiền tố `Data` + Tên chức năng tương ứng (VD: `DataCreateUser.xlsx`, `DataSearchBook.xlsx`)
+* **Test Suite:** Tiền tố `TS` + Tên nhóm chức năng (VD: `TSAuthentication`, `TSBookDiscovery`)
 
 ---
 
 ## 2. Danh sách các Test Case (Mapping 1-1 với Data Files)
+
+### 🟢 Đã hoàn thành 100% (TS1 - TS4: 54 Test Cases)
 
 | Test Case Name | Mapping Data File | Số lượng TCs | Luồng thực thi (Test Flow) | Kết quả kỳ vọng (Expected Result) |
 |---|---|---|---|---|
@@ -32,28 +34,53 @@
 
 ---
 
-## 3. Tổ chức các Test Suites
+### 🟡 Các Test Suite Mới Đã Chốt Kiến Trúc (TS5 - TS7)
 
-### 🟢 Test Suite 1: `TSAuthentication` (12 Test Cases)
-* **Mục tiêu:** Kiểm thử toàn bộ chức năng Xác thực, Phân quyền, Khôi phục mật khẩu & Khóa tài khoản tự động.
-* **Tập hợp TC:** `TCLogin` (4 TCs) ➔ `TCLogout` (1 TC) ➔ `TCForgotPassword` (3 TCs) ➔ `TCAccountLockout` (4 TCs).
-
-### 🟢 Test Suite 2: `TSUserManagement` (10 Test Cases)
-* **Mục tiêu:** Kiểm thử Quản lý tài khoản người dùng bởi Quản trị viên (Admin).
-* **Tập hợp TC:** `TCCreateUser` (4 TCs) ➔ `TCUpdateUser` (4 TCs) ➔ `TCLockUser` (1 TC) ➔ `TCUnlockUser` (1 TC).
-
-### 🟢 Test Suite 3: `TSBookManagement` (9 Test Cases)
-* **Mục tiêu:** Kiểm thử Quản lý Kho sách & Bản sao bởi Thủ thư.
-* **Tập hợp TC:** `TCAddBook` (4 TCs) ➔ `TCAddBookCopy` (3 TCs) ➔ `TCUpdateBook` (2 TCs).
-
-### 🟢 Test Suite 4: `TSDeskCirculation` (23 Test Cases)
-* **Mục tiêu:** Kiểm thử nghiệp vụ Mượn sách, Trả sách và Thu tiền phạt tại quầy của Thủ thư (Phủ 100% tất cả các nhánh điều hướng logic).
-* **Tập hợp TC:** `TCCheckoutBook` (10 TCs) ➔ `TCCheckinBook` (8 TCs) ➔ `TCPayFine` (5 TCs).
+| Test Case Name | Mapping Data File | Luồng thực thi (Test Flow) | Kết quả kỳ vọng (Expected Result) |
+|---|---|---|---|
+| **TCSearchBook** | `DataSearchBook.xlsx` | Nhập từ khóa (Tên sách, Tác giả, ISBN) ➔ Bấm Tìm kiếm | Danh sách sách hiển thị chính xác các kết quả khớp từ khóa. |
+| **TCFilterByCategory** | `DataFilterByCategory.xlsx` | Chọn 1 hoặc nhiều Danh mục sách ➔ Lọc | Chỉ hiển thị các đầu sách thuộc danh mục đã chọn. |
+| **TCFilterByTag** | `DataFilterByTag.xlsx` | Chọn Thẻ Tag (Java, AI, Giáo trình) ➔ Lọc | Chỉ hiển thị các đầu sách có gắn thẻ Tag tương ứng. |
+| **TCFilterByAvailability** | `DataFilterByAvailability.xlsx` | Lọc theo trạng thái sách có sẵn trong kho | Loại bỏ các đầu sách đã hết bản sao mượn. |
+| **TCViewBookDetail** | `DataViewBookDetail.xlsx` | Click vào một đầu sách bất kỳ trong danh sách | Hiển thị chi tiết sách, ảnh bìa, vị trí kệ & các bản sao. |
+| **TCReserveBookOnline** | `DataReserveBookOnline.xlsx` | Độc giả bấm Đặt trước sách trực tuyến | Tạo đơn đặt trước thành công (trạng thái `readypickup` / `pending`). |
+| **TCRenewBookOnline** | `DataRenewBookOnline.xlsx` | Độc giả gửi Yêu cầu gia hạn sách đang mượn | Hệ thống tự động gia hạn thêm ngày trả sách mới nếu đủ điều kiện. |
+| **TCCancelReservation** | `DataCancelReservation.xlsx` | Độc giả bấm Hủy đơn đặt trước | Chuyển trạng thái đơn sang `cancelled`, giải phóng bản sao sách. |
+| **TCCreateNotification** | `DataCreateNotification.xlsx` | Manager đăng thông báo hệ thống mới | Thông báo xuất hiện trên bảng tin toàn hệ thống. |
+| **TCViewNotifications** | `DataViewNotifications.xlsx` | Student/Lecturer xem bảng tin & lọc loại thông báo | Hiển thị danh sách thông báo kèm số thông báo chưa đọc. |
+| **TCMarkAsRead** | `DataMarkAsRead.xlsx` | Bấm "Đánh dấu tất cả đã đọc" | Cập nhật `readAt`, badge thông báo giảm về 0. |
 
 ---
 
-## 4. Kết quả Kiểm thử & Báo cáo Xuất bản
+## 3. Tổ chức các Test Suites
 
-* **Tổng số kịch bản kiểm thử toàn hệ thống:** **54 Test Cases**
-* **Kết quả thực thi tự động (Automated Execution):** **54/54 Passed (100% Pass Rate)**
+### 🟢 Test Suite 1: `TSAuthentication` (12 Test Cases) — PASSED
+* **Mục tiêu:** Kiểm thử toàn bộ chức năng Xác thực, Phân quyền, Khôi phục mật khẩu & Khóa tài khoản tự động.
+
+### 🟢 Test Suite 2: `TSUserManagement` (10 Test Cases) — PASSED
+* **Mục tiêu:** Kiểm thử Quản lý tài khoản người dùng bởi Quản trị viên (Admin).
+
+### 🟢 Test Suite 3: `TSBookManagement` (9 Test Cases) — PASSED
+* **Mục tiêu:** Kiểm thử Quản lý Kho sách & Bản sao bởi Thủ thư.
+
+### 🟢 Test Suite 4: `TSDeskCirculation` (23 Test Cases) — PASSED
+* **Mục tiêu:** Kiểm thử nghiệp vụ Mượn sách, Trả sách và Thu tiền phạt tại quầy của Thủ thư.
+
+### 🟡 Test Suite 5: `TSBookDiscovery` (Chốt kiến trúc - Chuẩn bị triển khai)
+* **Mục tiêu:** Kiểm thử Tra cứu và Lọc tìm kiếm sách nâng cao (từ khóa, danh mục, tag, trạng thái kho).
+* **Tập hợp TC:** `TCSearchBook` ➔ `TCFilterByCategory` ➔ `TCFilterByTag` ➔ `TCFilterByAvailability` ➔ `TCViewBookDetail`.
+
+### 🟡 Test Suite 6: `TSSelfService` (Chốt kiến trúc - Chuẩn bị triển khai)
+* **Mục tiêu:** Kiểm thử Dịch vụ Độc giả tự phục vụ trực tuyến (Đặt trước, Gia hạn, Hủy đặt trước).
+* **Tập hợp TC:** `TCReserveBookOnline` ➔ `TCRenewBookOnline` ➔ `TCCancelReservation`.
+
+### 🟡 Test Suite 7: `TSNotifications` (Chốt kiến trúc - Chuẩn bị triển khai)
+* **Mục tiêu:** Kiểm thử Đăng thông báo, Bảng tin người dùng & Đánh dấu đã đọc.
+* **Tập hợp TC:** `TCCreateNotification` ➔ `TCViewNotifications` ➔ `TCMarkAsRead`.
+
+---
+
+## 4. Báo cáo Xuất bản & Lưu trữ
+
 * **File Báo cáo Tổng hợp (Template3 Standard):** [LMS_System_Test_Report.xlsx](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/System%20Test/LMS_System_Test_Report.xlsx)
+* **Script tạo báo cáo tự động:** [generate_report.py](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/System%20Test/generate_report.py)

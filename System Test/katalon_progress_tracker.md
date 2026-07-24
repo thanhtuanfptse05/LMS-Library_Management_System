@@ -16,7 +16,10 @@
 | 2 | **TSUserManagement** | CreateUser, UpdateUser, LockUser, UnlockUser | **10 TCs** | 🟢 PASSED (10/10) |
 | 3 | **TSBookManagement** | AddBook, AddBookCopy, UpdateBook | **9 TCs** | 🟢 PASSED (9/9) |
 | 4 | **TSDeskCirculation** | CheckoutBook, CheckinBook, PayFine | **23 TCs** | 🟢 PASSED (23/23) |
-| **TỔNG** | **4 Test Suites** | **14 Test Case Groups** | **54 TCs** | **100% PASSED** |
+| 5 | **TSBookDiscovery** | SearchBook, FilterByCategory, FilterByTag, FilterByAvailability, ViewBookDetail | *Đã chốt kiến trúc* | 🟡 PLAN / READY |
+| 6 | **TSSelfService** | ReserveBookOnline, RenewBookOnline, CancelReservation | *Đã chốt kiến trúc* | 🟡 PLAN / READY |
+| 7 | **TSNotifications** | CreateNotification, ViewNotifications, MarkAsRead | *Đã chốt kiến trúc* | 🟡 PLAN / READY |
+| **TỔNG** | **7 Test Suites** | **17 Test Case Groups** | **54+ TCs** | **54 PASSED (100%)** |
 
 ---
 

@@ -120,6 +120,9 @@ public class OnlineCirculationService {
                 if (!"available".equals(book.getStatus())) {
                     throw new ValidationException("Sách này hiện không khả dụng để đặt trước.");
                 }
+                if (!bookCopyDAO.hasActiveAvailableCopy(conn, bookId) && book.getAvailableQuantity() > 0) {
+                    throw new ValidationException("Không tìm thấy bản sao sách khả dụng thực tế để đặt trước.");
+                }
 
                 int reservationId;
                 boolean isReady = false;
@@ -457,6 +460,12 @@ public class OnlineCirculationService {
                 }
                 if (!"borrowed".equals(br.getStatus())) {
                     throw new ValidationException("Sách này không còn ở trạng thái đang mượn.");
+                }
+
+                // 2.1. Kiểm tra trạng thái Đầu sách cha (Book)
+                Book parentBook = bookDAO.findById(conn, br.getBookId());
+                if (parentBook == null || !"available".equals(parentBook.getStatus())) {
+                    throw new ValidationException("Đầu sách này hiện đang bị ngưng lưu thông/phục vụ, không thể gia hạn.");
                 }
 
                 // 3. Kiểm tra ngưỡng thời gian (RENEW_THRESHOLD_PERCENT)

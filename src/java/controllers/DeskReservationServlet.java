@@ -128,6 +128,13 @@ public class DeskReservationServlet extends HttpServlet {
                 return;
             }
 
+            Book targetBook = bookDAO.findById(bookId);
+            if (targetBook != null && "unavailable".equals(targetBook.getStatus())) {
+                session.setAttribute("errorMessage", "Đầu sách này hiện đang ngưng lưu thông/phục vụ (unavailable), không thể đặt trước.");
+                response.sendRedirect(request.getContextPath() + "/librarian/desk-dashboard?memberCode=" + memberCode);
+                return;
+            }
+
             // 4. Gọi Service thực hiện nghiệp vụ đặt trước sách
             onlineCirculationService.reserveBook(userId, bookId, role);
 

@@ -415,6 +415,9 @@
                                                                             class="badge rounded-pill bg-warning px-3 py-1 text-dark">Đang
                                                                             chờ</span>
                                                                     </c:when>
+                                                                    <c:when test="${book.status eq 'unavailable'}">
+                                                                        <span class="badge rounded-pill bg-secondary px-3 py-1 text-white">Ngừng phục vụ</span>
+                                                                    </c:when>
                                                                     <c:when test="${book.availableQuantity > 0}">
                                                                         <span
                                                                             class="badge rounded-pill badge-status-available px-3 py-1">Còn

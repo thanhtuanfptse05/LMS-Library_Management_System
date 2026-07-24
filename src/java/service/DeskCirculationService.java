@@ -234,6 +234,17 @@ public class DeskCirculationService {
             int bookCopyId = bookCopy.getBookCopyId();
             int bookId     = bookCopy.getBookId();
 
+            // Kiểm tra trạng thái Đầu sách cha (Book)
+            Book parentBook = bookDAO.findById(conn, bookId);
+            if (parentBook == null || !"available".equals(parentBook.getStatus())) {
+                throw new IllegalStateException("Đầu sách này hiện đang ngưng lưu thông/phục vụ (unavailable). Không thể giao sách.");
+            }
+
+            // Kiểm tra trạng thái thanh lý kiểm kê (removedFromInventory)
+            if (bookCopy.isRemovedFromInventory()) {
+                throw new IllegalStateException("Bản sao sách này đã bị loại khỏi kho kiểm kê. Không thể giao mượn.");
+            }
+
             // Kiểm tra nếu có yêu cầu bookId cụ thể (ví dụ từ danh sách đặt trước)
             if (targetBookId != null && targetBookId != bookId) {
                 throw new IllegalStateException(
@@ -267,29 +278,7 @@ public class DeskCirculationService {
             // [Node 7.8 / FR-F6-02] BƯỚC 3: Phân nhánh Reservation
             // ----------------------------------------------------------------
             if (reservation == null) {
-                // Nhánh Walk-in: người dùng KHÔNG có đơn đặt trước sẵn sàng
-                // Bắt buộc BookCopy phải ở trạng thái 'available'
-                if (!"available".equals(bookCopy.getStatus())) {
-                    throw new IllegalStateException(
-                            "Bản sao sách này không sẵn sàng để mượn trực tiếp (Trạng thái: '" 
-                            + bookCopy.getStatus() + "').");
-                }
-
-                // Kiểm tra hàng chờ của người khác — BR-23
-                if (reservationDAO.hasQueuedReservation(conn, bookId)) {
-                    throw new IllegalStateException(
-                            "Sách này đã được người khác đặt trước trong hàng đợi. "
-                            + "Không thể mượn trực tiếp tại quầy.");
-                }
-
-                // Hàng chờ rỗng — tạo Reservation walk-in
-                int newReservationId = reservationDAO.insertWalkIn(
-                        conn, userId, bookId, bookCopyId);
-                reservation = new Reservation();
-                reservation.setReservationId(newReservationId);
-                reservation.setUserId(userId);
-                reservation.setBookId(bookId);
-                reservation.setBookCopyId(bookCopyId);
+                throw new IllegalStateException("Độc giả chưa có đơn đặt mượn sách (Reservation) khả dụng cho đầu sách này. Bắt buộc độc giả hoặc thủ thư phải đăng ký Đặt trước sách trước khi thực hiện giao sách.");
             } else {
                 // Nhánh Pre-reservation: người dùng đã có đơn đặt trước
                 if (reservation.getBookCopyId() != null) {
@@ -680,8 +669,15 @@ public class DeskCirculationService {
                     new Object[]{borrowRecordId, userId, overdueDays, fineAmount, fineId});
         }
 
-        // Bước 3: UPDATE BookCopy → 'available' (tạm, sẽ override nếu có queue)
-        bookCopyDAO.updateStatusToAvailable(conn, bookCopyId);
+        // Bước 3: UPDATE BookCopy → 'available' (hoặc 'unavailable' nếu Đầu sách bị ngưng phục vụ)
+        Book parentBook = bookDAO.findById(conn, bookId);
+        boolean isParentUnavailable = (parentBook != null && "unavailable".equals(parentBook.getStatus()));
+
+        if (isParentUnavailable) {
+            bookCopyDAO.updateStatusToUnavailable(conn, bookCopyId, "good");
+        } else {
+            bookCopyDAO.updateStatusToAvailable(conn, bookCopyId);
+        }
 
         // Bước 4: Kiểm tra hàng chờ — tìm người kế tiếp (queuePosition=1, status='pending')
         Reservation nextInQueue = reservationDAO.findNextInQueue(conn, bookId);

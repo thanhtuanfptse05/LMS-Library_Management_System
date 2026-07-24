@@ -8,6 +8,7 @@ import exception.DatabaseException;
 import exception.ValidationException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import model.Book;
 import model.BookCopy;
 import model.BookCopyIncident;
 import util.DatabaseConnection;
@@ -111,6 +112,10 @@ public class BookCopyIncidentService {
                 }
                 if (copy.isRemovedFromInventory()) {
                     throw new ValidationException("Bản sao đã bị loại khỏi kho nên không thể khôi phục lưu thông.");
+                }
+                Book parentBook = bookDAO.findById(conn, copy.getBookId());
+                if (parentBook != null && "unavailable".equals(parentBook.getStatus())) {
+                    throw new ValidationException("Đầu sách của bản sao này hiện đang ngưng phục vụ (unavailable). Không thể khôi phục bản sao về trạng thái sẵn sàng.");
                 }
 
                 bookCopyDAO.restoreAfterRepair(conn, copy.getBookCopyId());

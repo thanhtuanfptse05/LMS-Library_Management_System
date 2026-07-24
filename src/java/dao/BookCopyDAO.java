@@ -161,11 +161,21 @@ public class BookCopyDAO {
     }
 
     public BookCopy findAvailableCopyByBookId(Connection conn, int bookId) throws SQLException {
-        String sql = baseSelect() + " WHERE bc.bookId = ? AND bc.status = 'available' AND bc.condition = 'good' LIMIT 1 FOR UPDATE";
+        String sql = baseSelect() + " WHERE bc.bookId = ? AND bc.status = 'available' AND bc.condition = 'good' AND bc.removedFromInventory = FALSE LIMIT 1 FOR UPDATE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? map(rs) : null;
+            }
+        }
+    }
+
+    public boolean hasActiveAvailableCopy(Connection conn, int bookId) throws SQLException {
+        String sql = "SELECT 1 FROM BookCopy WHERE bookId = ? AND status = 'available' AND condition = 'good' AND removedFromInventory = FALSE LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
             }
         }
     }

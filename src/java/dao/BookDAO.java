@@ -276,7 +276,7 @@ public class BookDAO {
         int offset = Math.max(0, page - 1) * pageSize;
         Integer category = categoryId > 0 ? categoryId : null;
         try {
-            return search(keyword, category, tagIds, availableOnly ? "available" : null, offset, pageSize);
+            return search(keyword, category, tagIds, availableOnly ? "availableQty" : "catalog_active", offset, pageSize);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Không thể tìm kiếm sách cho Book Discovery", e);
             return new ArrayList<>();
@@ -286,7 +286,7 @@ public class BookDAO {
     public int countSearchBooks(String keyword, int categoryId, int[] tagIds, boolean availableOnly) {
         Integer category = categoryId > 0 ? categoryId : null;
         try {
-            return count(keyword, category, tagIds, availableOnly ? "available" : null);
+            return count(keyword, category, tagIds, availableOnly ? "availableQty" : "catalog_active");
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Không thể đếm số lượng sách cho Book Discovery", e);
             return 0;
@@ -531,6 +531,10 @@ public class BookDAO {
         }
         if ("noCopies".equals(status)) {
             sql.append("AND b.totalQuantity = 0 ");
+        } else if ("availableQty".equals(status)) {
+            sql.append("AND b.status = 'available' AND b.availableQuantity > 0 ");
+        } else if ("catalog_active".equals(status)) {
+            sql.append("AND b.status = 'available' ");
         } else if ("available".equals(status) || "unavailable".equals(status)) {
             sql.append("AND b.status = ? ");
             parameters.add(status);

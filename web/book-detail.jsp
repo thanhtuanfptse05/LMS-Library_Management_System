@@ -154,18 +154,23 @@
                             <div class="p-4 p-md-5 d-flex flex-column h-100">
                                 
                                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
-                                     <c:choose>
-                                         <c:when test="${book.availableQuantity > 0}">
-                                             <span class="badge rounded-pill badge-status-available px-3 py-2 fw-bold" style="font-size: 13px;">
-                                                 <i class="bi bi-check-circle me-1"></i> Còn sách (<c:out value="${book.availableQuantity}"/>/<c:out value="${book.totalQuantity}"/>)
-                                             </span>
-                                         </c:when>
-                                         <c:otherwise>
-                                             <span class="badge rounded-pill badge-status-borrowed px-3 py-2 fw-bold" style="font-size: 13px;">
-                                                 <i class="bi bi-hourglass-split me-1"></i> Hết sách (0/<c:out value="${book.totalQuantity}"/>) — Có thể xếp hàng chờ
-                                             </span>
-                                         </c:otherwise>
-                                     </c:choose>
+                                      <c:choose>
+                                          <c:when test="${isBookUnavailable or book.status eq 'unavailable'}">
+                                              <span class="badge rounded-pill bg-secondary px-3 py-2 fw-bold" style="font-size: 13px;">
+                                                  <i class="bi bi-slash-circle me-1"></i> Ngừng phục vụ (0/<c:out value="${book.totalQuantity}"/>)
+                                              </span>
+                                          </c:when>
+                                          <c:when test="${book.availableQuantity > 0}">
+                                              <span class="badge rounded-pill badge-status-available px-3 py-2 fw-bold" style="font-size: 13px;">
+                                                  <i class="bi bi-check-circle me-1"></i> Còn sách (<c:out value="${book.availableQuantity}"/>/<c:out value="${book.totalQuantity}"/>)
+                                              </span>
+                                          </c:when>
+                                          <c:otherwise>
+                                              <span class="badge rounded-pill badge-status-borrowed px-3 py-2 fw-bold" style="font-size: 13px;">
+                                                  <i class="bi bi-hourglass-split me-1"></i> Hết sách (0/<c:out value="${book.totalQuantity}"/>) — Có thể xếp hàng chờ
+                                              </span>
+                                          </c:otherwise>
+                                      </c:choose>
                                      <span style="font-size: 13px; color: var(--text-muted-custom); font-weight: 600;">Mã tài liệu: <c:out value="${book.bookId}"/></span>
                                  </div>
 
@@ -230,18 +235,23 @@
                                                                 <a href="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/my-borrowings" class="btn btn-outline-warning fw-bold rounded-3 px-4" style="color: #ea580c; border-color: #ea580c;">Quản lý hàng đợi</a>
                                                             </div>
                                                         </c:when>
-                                                        <c:otherwise>
-                                                            <form action="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/reserve" method="POST" class="d-inline-block">
-                                                                <input type="hidden" name="bookId" value="${book.bookId}">
-                                                                <button type="submit" class="btn btn-primary-custom px-5 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
-                                                                    <i class="bi bi-bookmark-plus-fill fs-5"></i> 
-                                                                    <c:choose>
-                                                                        <c:when test="${book.availableQuantity > 0}">Đặt trước (Lấy ngay)</c:when>
-                                                                        <c:otherwise>Đặt trước (Xếp hàng chờ)</c:otherwise>
-                                                                    </c:choose>
-                                                                </button>
-                                                            </form>
-                                                        </c:otherwise>
+                                                        <c:when test="${isBookUnavailable or book.status eq 'unavailable'}">
+                                                             <div class="alert alert-warning mb-0 d-inline-flex align-items-center gap-2 py-2 px-3 fw-medium" style="font-size: 14px;">
+                                                                 <i class="bi bi-exclamation-triangle-fill fs-5 text-warning"></i> Tài liệu này hiện đang tạm ngưng phục vụ tại Thư viện.
+                                                             </div>
+                                                         </c:when>
+                                                         <c:otherwise>
+                                                             <form action="${pageContext.request.contextPath}/${sessionScope.role.toLowerCase()}/reserve" method="POST" class="d-inline-block">
+                                                                 <input type="hidden" name="bookId" value="${book.bookId}">
+                                                                 <button type="submit" class="btn btn-primary-custom px-5 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
+                                                                     <i class="bi bi-bookmark-plus-fill fs-5"></i> 
+                                                                     <c:choose>
+                                                                         <c:when test="${book.availableQuantity > 0}">Đặt trước (Lấy ngay)</c:when>
+                                                                         <c:otherwise>Đặt trước (Xếp hàng chờ)</c:otherwise>
+                                                                     </c:choose>
+                                                                 </button>
+                                                             </form>
+                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:when>
                                                 <c:otherwise>

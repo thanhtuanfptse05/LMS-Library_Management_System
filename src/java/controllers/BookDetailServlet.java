@@ -72,9 +72,11 @@ public class BookDetailServlet extends HttpServlet {
                 java.util.logging.Logger.getLogger(BookDetailServlet.class.getName()).log(Level.SEVERE, "Lỗi kiểm tra trạng thái mượn/đặt của người dùng", e);
             }
 
-            boolean isBorrowButtonEnabled = true;
+            boolean isBookUnavailable = "unavailable".equals(book.getStatus());
+            boolean isBorrowButtonEnabled = !isBookUnavailable;
 
             request.setAttribute("book", book);
+            request.setAttribute("isBookUnavailable", isBookUnavailable);
             request.setAttribute("isBorrowButtonEnabled", isBorrowButtonEnabled);
             request.setAttribute("hasActiveBorrow", hasActiveBorrow);
             request.setAttribute("hasActiveReservation", hasActiveReservation);
