@@ -1,0 +1,1287 @@
+{
+  ".specify/feature.json": {
+    "mtime": 1783347786.162106,
+    "ast_hash": "58f83d4cdeda77dd9927e9b9c62a1d55",
+    "semantic_hash": "58f83d4cdeda77dd9927e9b9c62a1d55"
+  },
+  ".specify/init-options.json": {
+    "mtime": 1783333801.3140175,
+    "ast_hash": "b33cb353eb6f1dc43fc0a81e50ef243d",
+    "semantic_hash": "b33cb353eb6f1dc43fc0a81e50ef243d"
+  },
+  ".specify/integration.json": {
+    "mtime": 1783333801.3150709,
+    "ast_hash": "8819ab00a0304d5cb5c102c63f2f24b6",
+    "semantic_hash": "8819ab00a0304d5cb5c102c63f2f24b6"
+  },
+  ".specify/integrations/agy.manifest.json": {
+    "mtime": 1783333801.3150709,
+    "ast_hash": "e5aed889fa1fe7adcb098beda25d6d7e",
+    "semantic_hash": "e5aed889fa1fe7adcb098beda25d6d7e"
+  },
+  ".specify/integrations/speckit.manifest.json": {
+    "mtime": 1783333801.3160975,
+    "ast_hash": "2174d05f78e44aa82663c1d4b2382e10",
+    "semantic_hash": "2174d05f78e44aa82663c1d4b2382e10"
+  },
+  ".specify/scripts/powershell/check-prerequisites.ps1": {
+    "mtime": 1783333801.3191102,
+    "ast_hash": "05f811077dd9edd91b1033111183b7d8",
+    "semantic_hash": "05f811077dd9edd91b1033111183b7d8"
+  },
+  ".specify/scripts/powershell/common.ps1": {
+    "mtime": 1783333801.321099,
+    "ast_hash": "e8b32b95d0d144b535266e287d696788",
+    "semantic_hash": "e8b32b95d0d144b535266e287d696788"
+  },
+  ".specify/scripts/powershell/create-new-feature.ps1": {
+    "mtime": 1783333801.3225627,
+    "ast_hash": "2913d04d76c6b179e5b671b401d1dd93",
+    "semantic_hash": "2913d04d76c6b179e5b671b401d1dd93"
+  },
+  ".specify/scripts/powershell/setup-plan.ps1": {
+    "mtime": 1783333801.3225627,
+    "ast_hash": "09699a74f7790944d5ab3207a4acebef",
+    "semantic_hash": "09699a74f7790944d5ab3207a4acebef"
+  },
+  ".specify/scripts/powershell/setup-tasks.ps1": {
+    "mtime": 1783333801.3240328,
+    "ast_hash": "4a79fc3111a2143440619c8ffcbd31c0",
+    "semantic_hash": "4a79fc3111a2143440619c8ffcbd31c0"
+  },
+  ".specify/workflows/workflow-registry.json": {
+    "mtime": 1783333801.3240328,
+    "ast_hash": "31d6c9700cdfa269e7d65ceb992cde20",
+    "semantic_hash": "31d6c9700cdfa269e7d65ceb992cde20"
+  },
+  ".vscode/settings.json": {
+    "mtime": 1781708972.7970774,
+    "ast_hash": "108ac4cfebbcea310e565f22826af138",
+    "semantic_hash": "108ac4cfebbcea310e565f22826af138"
+  },
+  "System Test/generate_report.py": {
+    "mtime": 1784869564.6189744,
+    "ast_hash": "2a47a1e2cb4b1b8feaaf0254477ef1b3",
+    "semantic_hash": "2a47a1e2cb4b1b8feaaf0254477ef1b3"
+  },
+  "database/supabase/LMS_Schema_PostgreSQL.sql": {
+    "mtime": 1784802506.1056824,
+    "ast_hash": "1762cc0e9375d0c2917b79687d179a06",
+    "semantic_hash": "1762cc0e9375d0c2917b79687d179a06"
+  },
+  "database/supabase/LMS_SystemTest_SeedData.sql": {
+    "mtime": 1784869564.6212816,
+    "ast_hash": "c902f36898033a48bde6aada890d0c21",
+    "semantic_hash": "c902f36898033a48bde6aada890d0c21"
+  },
+  "database/supabase/generate_templates.py": {
+    "mtime": 1782403325.9212537,
+    "ast_hash": "c2c14fab884184b5c5ed2e6c9f59e6fe",
+    "semantic_hash": "c2c14fab884184b5c5ed2e6c9f59e6fe"
+  },
+  "database/supabase/migrations/20260723_add_bookcopy_removed_from_inventory.sql": {
+    "mtime": 1784802506.107813,
+    "ast_hash": "b861c583a610b52a3136641a9dc68e81",
+    "semantic_hash": "b861c583a610b52a3136641a9dc68e81"
+  },
+  "database/supabase/seeds/00_truncate_all.sql": {
+    "mtime": 1783400127.0858693,
+    "ast_hash": "3b422becfc30b180fd0a6ed373fec5ee",
+    "semantic_hash": "3b422becfc30b180fd0a6ed373fec5ee"
+  },
+  "database/supabase/seeds/01_users.sql": {
+    "mtime": 1783400127.088017,
+    "ast_hash": "a97676b4649a4aa1ebd35b6ef118f84e",
+    "semantic_hash": "a97676b4649a4aa1ebd35b6ef118f84e"
+  },
+  "database/supabase/seeds/02_system_configurations.sql": {
+    "mtime": 1783400127.0897849,
+    "ast_hash": "3a44980a9e1c3bee15f216b2af6f08dc",
+    "semantic_hash": "3a44980a9e1c3bee15f216b2af6f08dc"
+  },
+  "database/supabase/seeds/03_categories_and_tags.sql": {
+    "mtime": 1783400127.0908062,
+    "ast_hash": "cb1a681f0a72d99283f01214a4eb200e",
+    "semantic_hash": "cb1a681f0a72d99283f01214a4eb200e"
+  },
+  "database/supabase/seeds/04_email_templates.sql": {
+    "mtime": 1783400127.0937898,
+    "ast_hash": "844c1ddfa0f945d9bc12e1ba35cc0dc2",
+    "semantic_hash": "844c1ddfa0f945d9bc12e1ba35cc0dc2"
+  },
+  "database/supabase/seeds/05_sync_sequences.sql": {
+    "mtime": 1783400127.0947905,
+    "ast_hash": "d955f808bdb3049406420a5419b949b9",
+    "semantic_hash": "d955f808bdb3049406420a5419b949b9"
+  },
+  "database/supabase/seeds/06_demo_circulation.sql": {
+    "mtime": 1784600492.9377725,
+    "ast_hash": "9a38372a9956da7561e175303e2c1514",
+    "semantic_hash": "9a38372a9956da7561e175303e2c1514"
+  },
+  "scratch/run_f8_tests.ps1": {
+    "mtime": 1782483061.8085794,
+    "ast_hash": "3a3b3614abab7ff8c40c8869c8fc88f7",
+    "semantic_hash": "3a3b3614abab7ff8c40c8869c8fc88f7"
+  },
+  "scratch/update_runners.py": {
+    "mtime": 1783333801.3431947,
+    "ast_hash": "1df2b41c336045a2163b30a6e7028e0a",
+    "semantic_hash": "1df2b41c336045a2163b30a6e7028e0a"
+  },
+  "scripts/setup-supabase-env.ps1": {
+    "mtime": 1782292167.068064,
+    "ast_hash": "3e30e6bfa30371558929469e5b8917db",
+    "semantic_hash": "3e30e6bfa30371558929469e5b8917db"
+  },
+  "src/java/config/AiConfig.java": {
+    "mtime": 1782285812.521993,
+    "ast_hash": "3819c57e2a4c69f17d349d93e476c850",
+    "semantic_hash": "3819c57e2a4c69f17d349d93e476c850"
+  },
+  "src/java/config/AppConfig.java": {
+    "mtime": 1782294166.2299733,
+    "ast_hash": "3185637988685d1ba815622d5f07fa68",
+    "semantic_hash": "3185637988685d1ba815622d5f07fa68"
+  },
+  "src/java/config/AppContextListener.java": {
+    "mtime": 1782483061.8110611,
+    "ast_hash": "ead548942e80c4a7a0b1fccf31727b43",
+    "semantic_hash": "ead548942e80c4a7a0b1fccf31727b43"
+  },
+  "src/java/config/SystemConfigCache.java": {
+    "mtime": 1781971827.4423435,
+    "ast_hash": "472f5014b61c4a840c4e3d8a08c6e66a",
+    "semantic_hash": "472f5014b61c4a840c4e3d8a08c6e66a"
+  },
+  "src/java/controllers/AdminDashboardServlet.java": {
+    "mtime": 1784891916.5735686,
+    "ast_hash": "f6f33f9c37ea172ae83825fa7ad81f69",
+    "semantic_hash": "f6f33f9c37ea172ae83825fa7ad81f69"
+  },
+  "src/java/controllers/AdminProfileServlet.java": {
+    "mtime": 1781708928.4442327,
+    "ast_hash": "8f890b929eff6f76af45e80be98f62d1",
+    "semantic_hash": "8f890b929eff6f76af45e80be98f62d1"
+  },
+  "src/java/controllers/AdminSystemConfigServlet.java": {
+    "mtime": 1784597596.3345275,
+    "ast_hash": "6511f5b0c0c98923aba6ac825b80cd00",
+    "semantic_hash": "6511f5b0c0c98923aba6ac825b80cd00"
+  },
+  "src/java/controllers/AiChatbotServlet.java": {
+    "mtime": 1783611050.247325,
+    "ast_hash": "f5496dbc993f2facea624ab3e8f55375",
+    "semantic_hash": "f5496dbc993f2facea624ab3e8f55375"
+  },
+  "src/java/controllers/AuditLogServlet.java": {
+    "mtime": 1782380640.402111,
+    "ast_hash": "980ba2af3801e453ac10778bbba0af74",
+    "semantic_hash": "980ba2af3801e453ac10778bbba0af74"
+  },
+  "src/java/controllers/BookCirculationHistoryServlet.java": {
+    "mtime": 1784597596.3356004,
+    "ast_hash": "b22bd5febec06b40d7472785db7d7d34",
+    "semantic_hash": "b22bd5febec06b40d7472785db7d7d34"
+  },
+  "src/java/controllers/BookCopyExportServlet.java": {
+    "mtime": 1784597596.3356004,
+    "ast_hash": "3e3bdd9f807e5652a5c455b09cdf5753",
+    "semantic_hash": "3e3bdd9f807e5652a5c455b09cdf5753"
+  },
+  "src/java/controllers/BookCopyIncidentServlet.java": {
+    "mtime": 1784802506.1181784,
+    "ast_hash": "a56c69b0d72f0c7380b46169ab79edbc",
+    "semantic_hash": "a56c69b0d72f0c7380b46169ab79edbc"
+  },
+  "src/java/controllers/BookCopyServlet.java": {
+    "mtime": 1784597596.3396678,
+    "ast_hash": "e16224a2b077a51f7fedea8a5941bbe2",
+    "semantic_hash": "e16224a2b077a51f7fedea8a5941bbe2"
+  },
+  "src/java/controllers/BookDetailServlet.java": {
+    "mtime": 1784869564.6248777,
+    "ast_hash": "ed40e1a194f1d1dafc80f3bac616c7a4",
+    "semantic_hash": "ed40e1a194f1d1dafc80f3bac616c7a4"
+  },
+  "src/java/controllers/BookExportServlet.java": {
+    "mtime": 1784597596.3396678,
+    "ast_hash": "69c0c553201935693195345503c6dd9d",
+    "semantic_hash": "69c0c553201935693195345503c6dd9d"
+  },
+  "src/java/controllers/BookImageServlet.java": {
+    "mtime": 1781708945.0421946,
+    "ast_hash": "49e6820107b0ff7f893940e4ff862553",
+    "semantic_hash": "49e6820107b0ff7f893940e4ff862553"
+  },
+  "src/java/controllers/BookImportHistoryServlet.java": {
+    "mtime": 1784597596.341733,
+    "ast_hash": "6a1a7ca0679476c4f2212cf3d9466281",
+    "semantic_hash": "6a1a7ca0679476c4f2212cf3d9466281"
+  },
+  "src/java/controllers/BookImportServlet.java": {
+    "mtime": 1784597596.3432424,
+    "ast_hash": "27de91a4d8b2049917416845a62caa02",
+    "semantic_hash": "27de91a4d8b2049917416845a62caa02"
+  },
+  "src/java/controllers/BookOverviewServlet.java": {
+    "mtime": 1784597596.3444023,
+    "ast_hash": "09a0f90122d356fc4063a536c9c89fb0",
+    "semantic_hash": "09a0f90122d356fc4063a536c9c89fb0"
+  },
+  "src/java/controllers/BookSearchServlet.java": {
+    "mtime": 1782483061.8143044,
+    "ast_hash": "f890249ea488f4e5cace684173031e36",
+    "semantic_hash": "f890249ea488f4e5cace684173031e36"
+  },
+  "src/java/controllers/BookServlet.java": {
+    "mtime": 1784597596.3463087,
+    "ast_hash": "f9fe3602d6df20786a7f920d3fb4f3dc",
+    "semantic_hash": "f9fe3602d6df20786a7f920d3fb4f3dc"
+  },
+  "src/java/controllers/BookSuggestionServlet.java": {
+    "mtime": 1783333801.3441951,
+    "ast_hash": "c8b110b8eda89899041afa120284e017",
+    "semantic_hash": "c8b110b8eda89899041afa120284e017"
+  },
+  "src/java/controllers/BorrowHistoryServlet.java": {
+    "mtime": 1782151250.732925,
+    "ast_hash": "ba4a16cc1d7fd5ac8664b4e11a9770e1",
+    "semantic_hash": "ba4a16cc1d7fd5ac8664b4e11a9770e1"
+  },
+  "src/java/controllers/CancelReservationServlet.java": {
+    "mtime": 1781943853.9158707,
+    "ast_hash": "7d60bc490e5561aac837b18fe4f02e8d",
+    "semantic_hash": "7d60bc490e5561aac837b18fe4f02e8d"
+  },
+  "src/java/controllers/CashPaymentServlet.java": {
+    "mtime": 1783611050.2576334,
+    "ast_hash": "2a1aed6e684823f56706a9f8bb854657",
+    "semantic_hash": "2a1aed6e684823f56706a9f8bb854657"
+  },
+  "src/java/controllers/CategoryServlet.java": {
+    "mtime": 1784597596.3483233,
+    "ast_hash": "e8b735039fa04e5088680a201c831a06",
+    "semantic_hash": "e8b735039fa04e5088680a201c831a06"
+  },
+  "src/java/controllers/CheckInServlet.java": {
+    "mtime": 1783611050.2707996,
+    "ast_hash": "729d17b31f82fe401bf230f657e2333f",
+    "semantic_hash": "729d17b31f82fe401bf230f657e2333f"
+  },
+  "src/java/controllers/CheckOutServlet.java": {
+    "mtime": 1783611050.2808652,
+    "ast_hash": "d84c78e9046601b22d1d0d3ed3707f17",
+    "semantic_hash": "d84c78e9046601b22d1d0d3ed3707f17"
+  },
+  "src/java/controllers/CreateUserServlet.java": {
+    "mtime": 1784891913.3566444,
+    "ast_hash": "a8dff02889431e81c2a473a083a2a771",
+    "semantic_hash": "a8dff02889431e81c2a473a083a2a771"
+  },
+  "src/java/controllers/DeskDashboardServlet.java": {
+    "mtime": 1782051410.194739,
+    "ast_hash": "8c22c3584c8b480977a899d81ad8b33f",
+    "semantic_hash": "8c22c3584c8b480977a899d81ad8b33f"
+  },
+  "src/java/controllers/DeskReservationServlet.java": {
+    "mtime": 1784869564.6315997,
+    "ast_hash": "f2343f26acdc635a70ed2525419ec743",
+    "semantic_hash": "f2343f26acdc635a70ed2525419ec743"
+  },
+  "src/java/controllers/DocumentTempManagerServlet.java": {
+    "mtime": 1782383978.549545,
+    "ast_hash": "108f18b51aa5f3793d5fa9b26e7bd71d",
+    "semantic_hash": "108f18b51aa5f3793d5fa9b26e7bd71d"
+  },
+  "src/java/controllers/ExportReportServlet.java": {
+    "mtime": 1782146089.905129,
+    "ast_hash": "3d3e6e738ad9510ccc8648a45d4f9127",
+    "semantic_hash": "3d3e6e738ad9510ccc8648a45d4f9127"
+  },
+  "src/java/controllers/ExportUserServlet.java": {
+    "mtime": 1784891898.614631,
+    "ast_hash": "8427976cb06d39b0a6349336686d3b65",
+    "semantic_hash": "8427976cb06d39b0a6349336686d3b65"
+  },
+  "src/java/controllers/ForgotPasswordServlet.java": {
+    "mtime": 1782483061.816312,
+    "ast_hash": "8f1bbcd2b4700b290b9decd7f6e5707a",
+    "semantic_hash": "8f1bbcd2b4700b290b9decd7f6e5707a"
+  },
+  "src/java/controllers/GoogleLoginServlet.java": {
+    "mtime": 1783612847.2016358,
+    "ast_hash": "f8fc09a075b3f8534f06d605375d0137",
+    "semantic_hash": "f8fc09a075b3f8534f06d605375d0137"
+  },
+  "src/java/controllers/HealthCheckServlet.java": {
+    "mtime": 1782095257.9319532,
+    "ast_hash": "e6b11b3f20f055aff43365929cd24918",
+    "semantic_hash": "e6b11b3f20f055aff43365929cd24918"
+  },
+  "src/java/controllers/ImportUserServlet.java": {
+    "mtime": 1784891902.1765678,
+    "ast_hash": "14a4ba61619059ad92c7569ff9a0b77c",
+    "semantic_hash": "14a4ba61619059ad92c7569ff9a0b77c"
+  },
+  "src/java/controllers/InventoryReconciliationServlet.java": {
+    "mtime": 1784597596.3506227,
+    "ast_hash": "8362ff720e18835b18f725269dfedef6",
+    "semantic_hash": "8362ff720e18835b18f725269dfedef6"
+  },
+  "src/java/controllers/LecturerDashboardServlet.java": {
+    "mtime": 1784895130.7133703,
+    "ast_hash": "4e6ac14566446f9e92849ce42a68cf9c",
+    "semantic_hash": "4e6ac14566446f9e92849ce42a68cf9c"
+  },
+  "src/java/controllers/LecturerProfileServlet.java": {
+    "mtime": 1783412705.1942918,
+    "ast_hash": "32bd576232fb297524c39497a3a014c4",
+    "semantic_hash": "32bd576232fb297524c39497a3a014c4"
+  },
+  "src/java/controllers/LibrarianBookSuggestionServlet.java": {
+    "mtime": 1783333801.3452342,
+    "ast_hash": "2f8269a1b06ffd8536d1fff319181b4a",
+    "semantic_hash": "2f8269a1b06ffd8536d1fff319181b4a"
+  },
+  "src/java/controllers/LibrarianDashboardServlet.java": {
+    "mtime": 1783765837.3871982,
+    "ast_hash": "09dcb9acd6f36e39fdab95a4e5efd6e9",
+    "semantic_hash": "09dcb9acd6f36e39fdab95a4e5efd6e9"
+  },
+  "src/java/controllers/LibrarianProfileServlet.java": {
+    "mtime": 1781708928.4543507,
+    "ast_hash": "f2a61ee7e4d653f432aaf26207202fd5",
+    "semantic_hash": "f2a61ee7e4d653f432aaf26207202fd5"
+  },
+  "src/java/controllers/LoginServlet.java": {
+    "mtime": 1783403300.0623097,
+    "ast_hash": "f63128f2b99dced0617459ff9fbef7f5",
+    "semantic_hash": "f63128f2b99dced0617459ff9fbef7f5"
+  },
+  "src/java/controllers/LogoutServlet.java": {
+    "mtime": 1784895877.3361514,
+    "ast_hash": "a95ce7a79279a7034c38bea13548db8d",
+    "semantic_hash": "a95ce7a79279a7034c38bea13548db8d"
+  },
+  "src/java/controllers/ManagerDashboardServlet.java": {
+    "mtime": 1782619095.4787009,
+    "ast_hash": "4c452e34c6e66d13607f1248803cadb7",
+    "semantic_hash": "4c452e34c6e66d13607f1248803cadb7"
+  },
+  "src/java/controllers/ManagerPaymentConfigServlet.java": {
+    "mtime": 1782036139.4633093,
+    "ast_hash": "669d024c1125492dc8f43acedd55e529",
+    "semantic_hash": "669d024c1125492dc8f43acedd55e529"
+  },
+  "src/java/controllers/ManagerProfileServlet.java": {
+    "mtime": 1781708928.4558427,
+    "ast_hash": "24f1945d1d36fe52c9f96a2feeb2b4b4",
+    "semantic_hash": "24f1945d1d36fe52c9f96a2feeb2b4b4"
+  },
+  "src/java/controllers/MemberFinesServlet.java": {
+    "mtime": 1782406615.4002812,
+    "ast_hash": "b9326e8adc6b43861628145398eb7013",
+    "semantic_hash": "b9326e8adc6b43861628145398eb7013"
+  },
+  "src/java/controllers/MyBorrowingsServlet.java": {
+    "mtime": 1781943853.9275155,
+    "ast_hash": "aaa2c81066efe91f9f8f508e6402e619",
+    "semantic_hash": "aaa2c81066efe91f9f8f508e6402e619"
+  },
+  "src/java/controllers/NewsServlet.java": {
+    "mtime": 1782322003.8241167,
+    "ast_hash": "88303a4cb1500d6f9dd87ce35264d026",
+    "semantic_hash": "88303a4cb1500d6f9dd87ce35264d026"
+  },
+  "src/java/controllers/NotificationManagerServlet.java": {
+    "mtime": 1784891895.1577055,
+    "ast_hash": "392d5581598b1839586a425c2a3c91ff",
+    "semantic_hash": "392d5581598b1839586a425c2a3c91ff"
+  },
+  "src/java/controllers/NotificationStatusServlet.java": {
+    "mtime": 1781715386.217258,
+    "ast_hash": "f56340ef786607acad344a9e0ef6f7dc",
+    "semantic_hash": "f56340ef786607acad344a9e0ef6f7dc"
+  },
+  "src/java/controllers/NotificationWidgetServlet.java": {
+    "mtime": 1781715386.218829,
+    "ast_hash": "dac6ad8ba76eb37b6322a0d6ea1f749b",
+    "semantic_hash": "dac6ad8ba76eb37b6322a0d6ea1f749b"
+  },
+  "src/java/controllers/PaymentApiServlet.java": {
+    "mtime": 1781947334.5330179,
+    "ast_hash": "8d0b56cede825b705e630782c5bf1037",
+    "semantic_hash": "8d0b56cede825b705e630782c5bf1037"
+  },
+  "src/java/controllers/PublicNewsServlet.java": {
+    "mtime": 1783335041.929983,
+    "ast_hash": "f5282a8702274572ead2fb98801b23fe",
+    "semantic_hash": "f5282a8702274572ead2fb98801b23fe"
+  },
+  "src/java/controllers/RecommendationServlet.java": {
+    "mtime": 1784891892.030596,
+    "ast_hash": "f7f5225be06923693f28532abd0c5ab9",
+    "semantic_hash": "f7f5225be06923693f28532abd0c5ab9"
+  },
+  "src/java/controllers/RenewalServlet.java": {
+    "mtime": 1781943853.930516,
+    "ast_hash": "a59eda2caf56aac9798b8f2ec7331514",
+    "semantic_hash": "a59eda2caf56aac9798b8f2ec7331514"
+  },
+  "src/java/controllers/ReservationServlet.java": {
+    "mtime": 1781943853.930516,
+    "ast_hash": "5b6ab666b7f6e9011656965b2f96223b",
+    "semantic_hash": "5b6ab666b7f6e9011656965b2f96223b"
+  },
+  "src/java/controllers/SePayWebhookServlet.java": {
+    "mtime": 1782483061.8198228,
+    "ast_hash": "0654ecbcf9b6563369c0b1469f1b8671",
+    "semantic_hash": "0654ecbcf9b6563369c0b1469f1b8671"
+  },
+  "src/java/controllers/StaffPerformanceServlet.java": {
+    "mtime": 1782618932.650063,
+    "ast_hash": "9ce013f5ed852c3a1991a07eff1beb60",
+    "semantic_hash": "9ce013f5ed852c3a1991a07eff1beb60"
+  },
+  "src/java/controllers/StudentDashboardServlet.java": {
+    "mtime": 1784895130.7143857,
+    "ast_hash": "486112db8a931911196987d1bbb5cae7",
+    "semantic_hash": "486112db8a931911196987d1bbb5cae7"
+  },
+  "src/java/controllers/StudentProfileServlet.java": {
+    "mtime": 1783412689.781032,
+    "ast_hash": "436d57a943be3d2c81aece7b37c2cb67",
+    "semantic_hash": "436d57a943be3d2c81aece7b37c2cb67"
+  },
+  "src/java/controllers/SystemConfigServlet.java": {
+    "mtime": 1784597596.356448,
+    "ast_hash": "2645b7a48ed9126b0b381a8a8a667819",
+    "semantic_hash": "2645b7a48ed9126b0b381a8a8a667819"
+  },
+  "src/java/controllers/SystemReportServlet.java": {
+    "mtime": 1782146150.1382642,
+    "ast_hash": "7ab586c166acb4d643cbe40d7d63f8ac",
+    "semantic_hash": "7ab586c166acb4d643cbe40d7d63f8ac"
+  },
+  "src/java/controllers/TagServlet.java": {
+    "mtime": 1784597596.3578882,
+    "ast_hash": "080272270ab4ddc6b0c4a8996d6bfb46",
+    "semantic_hash": "080272270ab4ddc6b0c4a8996d6bfb46"
+  },
+  "src/java/controllers/TriggerOverdueServlet.java": {
+    "mtime": 1782404229.9510744,
+    "ast_hash": "25e6725a7c499f85783f02716d51980b",
+    "semantic_hash": "25e6725a7c499f85783f02716d51980b"
+  },
+  "src/java/controllers/TriggerReservationExpirationServlet.java": {
+    "mtime": 1782403325.9306643,
+    "ast_hash": "a23c27bd05d368f98e2626283a462df3",
+    "semantic_hash": "a23c27bd05d368f98e2626283a462df3"
+  },
+  "src/java/controllers/UpdateUserServlet.java": {
+    "mtime": 1784891907.2160673,
+    "ast_hash": "199c0b983781061802cf69d3d21b0136",
+    "semantic_hash": "199c0b983781061802cf69d3d21b0136"
+  },
+  "src/java/controllers/UserListServlet.java": {
+    "mtime": 1784891910.2513468,
+    "ast_hash": "cec00766fdd0fc9b7acf44640de87387",
+    "semantic_hash": "cec00766fdd0fc9b7acf44640de87387"
+  },
+  "src/java/dao/AdminDAO.java": {
+    "mtime": 1782286591.6883318,
+    "ast_hash": "5a924999691626b376bfa2eda1393e92",
+    "semantic_hash": "5a924999691626b376bfa2eda1393e92"
+  },
+  "src/java/dao/AuditLogDAO.java": {
+    "mtime": 1782380640.4043663,
+    "ast_hash": "b603559601ba033907bcc1c75f4edcd6",
+    "semantic_hash": "b603559601ba033907bcc1c75f4edcd6"
+  },
+  "src/java/dao/BookCirculationHistoryDAO.java": {
+    "mtime": 1784597596.3589127,
+    "ast_hash": "0c4bd480c5826ba3c212b6f776eb93fc",
+    "semantic_hash": "0c4bd480c5826ba3c212b6f776eb93fc"
+  },
+  "src/java/dao/BookCopyDAO.java": {
+    "mtime": 1784869564.6358898,
+    "ast_hash": "522bbe652e18c30034d9cb0f8d92fd8c",
+    "semantic_hash": "522bbe652e18c30034d9cb0f8d92fd8c"
+  },
+  "src/java/dao/BookCopyIncidentDAO.java": {
+    "mtime": 1784802506.1214488,
+    "ast_hash": "27fd5673d38b2d0970db112d5173a95e",
+    "semantic_hash": "27fd5673d38b2d0970db112d5173a95e"
+  },
+  "src/java/dao/BookDAO.java": {
+    "mtime": 1784895130.7107835,
+    "ast_hash": "6f6d9724071d9810abb21b6bcde931e1",
+    "semantic_hash": "6f6d9724071d9810abb21b6bcde931e1"
+  },
+  "src/java/dao/BookImportDAO.java": {
+    "mtime": 1781708972.8453085,
+    "ast_hash": "fe84bb392b046223dc78ce242109cc59",
+    "semantic_hash": "fe84bb392b046223dc78ce242109cc59"
+  },
+  "src/java/dao/BookSuggestionDAO.java": {
+    "mtime": 1783333801.3452342,
+    "ast_hash": "ae4c912ae69bcfed57fbb512c0c552e2",
+    "semantic_hash": "ae4c912ae69bcfed57fbb512c0c552e2"
+  },
+  "src/java/dao/BorrowRecordDAO.java": {
+    "mtime": 1784869564.6407402,
+    "ast_hash": "cb55f27676cdbd91d93b3890835a8666",
+    "semantic_hash": "cb55f27676cdbd91d93b3890835a8666"
+  },
+  "src/java/dao/CategoryDAO.java": {
+    "mtime": 1782582487.6307807,
+    "ast_hash": "351087890bfb18cbd98e548458659104",
+    "semantic_hash": "351087890bfb18cbd98e548458659104"
+  },
+  "src/java/dao/DocumentTempDAO.java": {
+    "mtime": 1782383978.5515475,
+    "ast_hash": "654f4c95c4253e34eef1db8b0ff1b84d",
+    "semantic_hash": "654f4c95c4253e34eef1db8b0ff1b84d"
+  },
+  "src/java/dao/EmailTemplateDAO.java": {
+    "mtime": 1782483061.8208814,
+    "ast_hash": "b409d4c8b7158aac8f533fab40f2fbd0",
+    "semantic_hash": "b409d4c8b7158aac8f533fab40f2fbd0"
+  },
+  "src/java/dao/FineDAO.java": {
+    "mtime": 1782619051.000323,
+    "ast_hash": "6c11e38f40ba1e24829b6570615a8cf2",
+    "semantic_hash": "6c11e38f40ba1e24829b6570615a8cf2"
+  },
+  "src/java/dao/InventoryDAO.java": {
+    "mtime": 1781943853.9467165,
+    "ast_hash": "f5198147c28fb66958f1410039f28860",
+    "semantic_hash": "f5198147c28fb66958f1410039f28860"
+  },
+  "src/java/dao/InventoryReportDAO.java": {
+    "mtime": 1782146089.908233,
+    "ast_hash": "94702277e5fea7c0a994c47f015242b2",
+    "semantic_hash": "94702277e5fea7c0a994c47f015242b2"
+  },
+  "src/java/dao/LecturerDAO.java": {
+    "mtime": 1782286580.810354,
+    "ast_hash": "acc743b8a184e7ea63ca41e8d94ffb8f",
+    "semantic_hash": "acc743b8a184e7ea63ca41e8d94ffb8f"
+  },
+  "src/java/dao/LibrarianDAO.java": {
+    "mtime": 1782286568.170398,
+    "ast_hash": "2e80b8d2449b89b9dd370df687fe9947",
+    "semantic_hash": "2e80b8d2449b89b9dd370df687fe9947"
+  },
+  "src/java/dao/LibraryManagerDAO.java": {
+    "mtime": 1782286521.6113164,
+    "ast_hash": "d0987d0ffd0b329c18af6229997e4f51",
+    "semantic_hash": "d0987d0ffd0b329c18af6229997e4f51"
+  },
+  "src/java/dao/MemberProfileDAO.java": {
+    "mtime": 1782286604.4122677,
+    "ast_hash": "2b6f76f6382aa75689217d7f9eab3b49",
+    "semantic_hash": "2b6f76f6382aa75689217d7f9eab3b49"
+  },
+  "src/java/dao/NotificationDAO.java": {
+    "mtime": 1783334913.9630275,
+    "ast_hash": "e30c7e6f09240ea26a170dcbf9cbea21",
+    "semantic_hash": "e30c7e6f09240ea26a170dcbf9cbea21"
+  },
+  "src/java/dao/PaymentDAO.java": {
+    "mtime": 1784597596.363105,
+    "ast_hash": "113a45589f3fd558d8a935418e0b6c75",
+    "semantic_hash": "113a45589f3fd558d8a935418e0b6c75"
+  },
+  "src/java/dao/ReportDAO.java": {
+    "mtime": 1782578095.0612612,
+    "ast_hash": "0ca0e1074435ba5f151e5b0dce76ca74",
+    "semantic_hash": "0ca0e1074435ba5f151e5b0dce76ca74"
+  },
+  "src/java/dao/ReservationDAO.java": {
+    "mtime": 1783765837.3926854,
+    "ast_hash": "d7eecda98519d563ac65d0c7f94ab02f",
+    "semantic_hash": "d7eecda98519d563ac65d0c7f94ab02f"
+  },
+  "src/java/dao/StaffPerformanceDAO.java": {
+    "mtime": 1782618914.1321375,
+    "ast_hash": "57339680470922b4725049cc7ad57ab0",
+    "semantic_hash": "57339680470922b4725049cc7ad57ab0"
+  },
+  "src/java/dao/StudentDAO.java": {
+    "mtime": 1782286555.5293775,
+    "ast_hash": "0c0d277bfdb0143185c77150ae7d5ff9",
+    "semantic_hash": "0c0d277bfdb0143185c77150ae7d5ff9"
+  },
+  "src/java/dao/SuggestionVoteDAO.java": {
+    "mtime": 1783333801.3452342,
+    "ast_hash": "8e5d233ebe7cd199cb1ea8603f4d762d",
+    "semantic_hash": "8e5d233ebe7cd199cb1ea8603f4d762d"
+  },
+  "src/java/dao/SystemConfigDAO.java": {
+    "mtime": 1784597596.365446,
+    "ast_hash": "22c0cbc731cad4ac303cd40ba1a3c530",
+    "semantic_hash": "22c0cbc731cad4ac303cd40ba1a3c530"
+  },
+  "src/java/dao/SystemConfigurationsDAO.java": {
+    "mtime": 1781944273.0796158,
+    "ast_hash": "ab66258ca5a12196d4acc45529e5023c",
+    "semantic_hash": "ab66258ca5a12196d4acc45529e5023c"
+  },
+  "src/java/dao/TagDAO.java": {
+    "mtime": 1784597596.3675008,
+    "ast_hash": "3207fda6e10d95f27ae8c1d27d70c960",
+    "semantic_hash": "3207fda6e10d95f27ae8c1d27d70c960"
+  },
+  "src/java/dao/UserDAO.java": {
+    "mtime": 1784891876.5155108,
+    "ast_hash": "a42ac770799094ed9ec797f9141e9173",
+    "semantic_hash": "a42ac770799094ed9ec797f9141e9173"
+  },
+  "src/java/dao/UserLockReasonDAO.java": {
+    "mtime": 1782404229.9567156,
+    "ast_hash": "9f1be5cc6ff40fae07a408c885a487cf",
+    "semantic_hash": "9f1be5cc6ff40fae07a408c885a487cf"
+  },
+  "src/java/dao/UserLookupDAO.java": {
+    "mtime": 1781708972.862079,
+    "ast_hash": "59b09e57f9826afca9d664524a9f06cd",
+    "semantic_hash": "59b09e57f9826afca9d664524a9f06cd"
+  },
+  "src/java/dto/AuditLogDTO.java": {
+    "mtime": 1783821874.513059,
+    "ast_hash": "af18d7eefdfed9a082a25420c48045cc",
+    "semantic_hash": "af18d7eefdfed9a082a25420c48045cc"
+  },
+  "src/java/dto/BookCatalogSummaryDTO.java": {
+    "mtime": 1781708945.0755017,
+    "ast_hash": "a3a3160a062ae9ef74de59640cc9f422",
+    "semantic_hash": "a3a3160a062ae9ef74de59640cc9f422"
+  },
+  "src/java/dto/BookCirculationHistoryDTO.java": {
+    "mtime": 1784597596.3685105,
+    "ast_hash": "649b646bd14d4536d18555d0ca9522c3",
+    "semantic_hash": "649b646bd14d4536d18555d0ca9522c3"
+  },
+  "src/java/dto/BookCopyIncidentSummaryDTO.java": {
+    "mtime": 1781708945.0769827,
+    "ast_hash": "9e033234b125aad8dc790648009ed459",
+    "semantic_hash": "9e033234b125aad8dc790648009ed459"
+  },
+  "src/java/dto/BookCopySummaryDTO.java": {
+    "mtime": 1782292167.0749578,
+    "ast_hash": "35a20f1f37ddda5465cb1ce3aa2ad8ce",
+    "semantic_hash": "35a20f1f37ddda5465cb1ce3aa2ad8ce"
+  },
+  "src/java/dto/BookImportPreviewDTO.java": {
+    "mtime": 1781708945.0769827,
+    "ast_hash": "010a5a6e9a7061f412875bef051ccd1a",
+    "semantic_hash": "010a5a6e9a7061f412875bef051ccd1a"
+  },
+  "src/java/dto/BookImportRowDTO.java": {
+    "mtime": 1781708945.0769827,
+    "ast_hash": "fe07abf18d99f208fa8461d5fa879eda",
+    "semantic_hash": "fe07abf18d99f208fa8461d5fa879eda"
+  },
+  "src/java/dto/BookLocationSummaryDTO.java": {
+    "mtime": 1782962377.4783733,
+    "ast_hash": "ff89534324763d70aa35f98e5a2b967a",
+    "semantic_hash": "ff89534324763d70aa35f98e5a2b967a"
+  },
+  "src/java/dto/BookOverviewTaskDTO.java": {
+    "mtime": 1782962377.4783733,
+    "ast_hash": "d404602ec25c1b6d0d987bb1dcd4fe54",
+    "semantic_hash": "d404602ec25c1b6d0d987bb1dcd4fe54"
+  },
+  "src/java/dto/BookSummaryDTO.java": {
+    "mtime": 1784891830.2195086,
+    "ast_hash": "0b8b44627e75a745cb9e7164972bacc7",
+    "semantic_hash": "0b8b44627e75a745cb9e7164972bacc7"
+  },
+  "src/java/dto/BorrowDetailDTO.java": {
+    "mtime": 1782146089.9094894,
+    "ast_hash": "dc156362662982a4a1a6237778d99845",
+    "semantic_hash": "dc156362662982a4a1a6237778d99845"
+  },
+  "src/java/dto/BorrowTrendDTO.java": {
+    "mtime": 1782146089.9094894,
+    "ast_hash": "4893868caecd7e391b78929d6d10665e",
+    "semantic_hash": "4893868caecd7e391b78929d6d10665e"
+  },
+  "src/java/dto/FinancialDetailDTO.java": {
+    "mtime": 1782146089.9094894,
+    "ast_hash": "c8630b4697072df13cb1ea56985ba4d8",
+    "semantic_hash": "c8630b4697072df13cb1ea56985ba4d8"
+  },
+  "src/java/dto/FinancialTrendDTO.java": {
+    "mtime": 1782146089.9094894,
+    "ast_hash": "9fbc7900628f34cac86c55a23d7fde31",
+    "semantic_hash": "9fbc7900628f34cac86c55a23d7fde31"
+  },
+  "src/java/dto/InventoryResultDTO.java": {
+    "mtime": 1782146089.910492,
+    "ast_hash": "2874671034c1b9adae4880157a63417b",
+    "semantic_hash": "2874671034c1b9adae4880157a63417b"
+  },
+  "src/java/dto/InventorySummaryDTO.java": {
+    "mtime": 1781708945.0785046,
+    "ast_hash": "445f0936284eb933330ec067875589ce",
+    "semantic_hash": "445f0936284eb933330ec067875589ce"
+  },
+  "src/java/dto/ManagementSummaryDTO.java": {
+    "mtime": 1781708945.0785046,
+    "ast_hash": "9117f72d2ffdff8f54b8454b5d65956f",
+    "semantic_hash": "9117f72d2ffdff8f54b8454b5d65956f"
+  },
+  "src/java/dto/StaffPerformanceDTO.java": {
+    "mtime": 1782618876.917572,
+    "ast_hash": "b4749d1d57d57bbc4a3bc851bcf45b30",
+    "semantic_hash": "b4749d1d57d57bbc4a3bc851bcf45b30"
+  },
+  "src/java/dto/UserContactDTO.java": {
+    "mtime": 1784891835.4827373,
+    "ast_hash": "e64f8be516f7aa711cd7af754956e8fa",
+    "semantic_hash": "e64f8be516f7aa711cd7af754956e8fa"
+  },
+  "src/java/dto/UserDTO.java": {
+    "mtime": 1784891840.0989606,
+    "ast_hash": "90ffc68f51548858bf9f3c4c9841b79a",
+    "semantic_hash": "90ffc68f51548858bf9f3c4c9841b79a"
+  },
+  "src/java/exception/DatabaseException.java": {
+    "mtime": 1781708945.079572,
+    "ast_hash": "2d1c60e1c86efe0966acba7a64cc50c0",
+    "semantic_hash": "2d1c60e1c86efe0966acba7a64cc50c0"
+  },
+  "src/java/exception/ValidationException.java": {
+    "mtime": 1781708945.079572,
+    "ast_hash": "0a49627a4fe5a4e65eeb0e3d880011ed",
+    "semantic_hash": "0a49627a4fe5a4e65eeb0e3d880011ed"
+  },
+  "src/java/filter/AuthFilter.java": {
+    "mtime": 1784895839.4944613,
+    "ast_hash": "485ffc582e47effa82a07ddc7af38c2a",
+    "semantic_hash": "485ffc582e47effa82a07ddc7af38c2a"
+  },
+  "src/java/model/Admin.java": {
+    "mtime": 1781708928.47237,
+    "ast_hash": "403fcac8e7f0cf5c683edfe0e47c7435",
+    "semantic_hash": "403fcac8e7f0cf5c683edfe0e47c7435"
+  },
+  "src/java/model/AuditLog.java": {
+    "mtime": 1782380640.4055882,
+    "ast_hash": "7fb7c0b704981ee518c7b12f2fb3451e",
+    "semantic_hash": "7fb7c0b704981ee518c7b12f2fb3451e"
+  },
+  "src/java/model/Book.java": {
+    "mtime": 1781708972.8643258,
+    "ast_hash": "1296be1c88bd3439330b970be52a5d86",
+    "semantic_hash": "1296be1c88bd3439330b970be52a5d86"
+  },
+  "src/java/model/BookCopy.java": {
+    "mtime": 1784802506.1235135,
+    "ast_hash": "55c6dfd9a916ba68447d56dd3c861e9a",
+    "semantic_hash": "55c6dfd9a916ba68447d56dd3c861e9a"
+  },
+  "src/java/model/BookCopyIncident.java": {
+    "mtime": 1784802506.1245298,
+    "ast_hash": "72d81a9bd29fecce9e4bfca79b9269b5",
+    "semantic_hash": "72d81a9bd29fecce9e4bfca79b9269b5"
+  },
+  "src/java/model/BookImportBatch.java": {
+    "mtime": 1781708945.0819423,
+    "ast_hash": "c521f3fece194f05bf924a13bbbf9430",
+    "semantic_hash": "c521f3fece194f05bf924a13bbbf9430"
+  },
+  "src/java/model/BookImportError.java": {
+    "mtime": 1781708945.0819423,
+    "ast_hash": "df21b3e4191791d1cf55b1c7b6102ea7",
+    "semantic_hash": "df21b3e4191791d1cf55b1c7b6102ea7"
+  },
+  "src/java/model/BookSuggestion.java": {
+    "mtime": 1783333801.3462312,
+    "ast_hash": "7abd190278c8f6f5d0dea4d3eda6ba55",
+    "semantic_hash": "7abd190278c8f6f5d0dea4d3eda6ba55"
+  },
+  "src/java/model/BorrowRecord.java": {
+    "mtime": 1782151250.75549,
+    "ast_hash": "93764ab0588277a9c024e97743e27499",
+    "semantic_hash": "93764ab0588277a9c024e97743e27499"
+  },
+  "src/java/model/Category.java": {
+    "mtime": 1781708972.8699381,
+    "ast_hash": "bbecda7419b3f0e3e26cc2f326d43fa1",
+    "semantic_hash": "bbecda7419b3f0e3e26cc2f326d43fa1"
+  },
+  "src/java/model/ChatMessage.java": {
+    "mtime": 1781944273.0796158,
+    "ast_hash": "de8d6fc833b462b1b81c7ff595eadaf2",
+    "semantic_hash": "de8d6fc833b462b1b81c7ff595eadaf2"
+  },
+  "src/java/model/DocumentTemp.java": {
+    "mtime": 1782383978.5535452,
+    "ast_hash": "eeb5839b0ab7089edb54830eca49bb15",
+    "semantic_hash": "eeb5839b0ab7089edb54830eca49bb15"
+  },
+  "src/java/model/EmailJob.java": {
+    "mtime": 1782483061.8229923,
+    "ast_hash": "f990c6e77317fa8b02cb546c8af8e915",
+    "semantic_hash": "f990c6e77317fa8b02cb546c8af8e915"
+  },
+  "src/java/model/EmailTemplate.java": {
+    "mtime": 1782483061.8240402,
+    "ast_hash": "fad51c6c70cefe01f5a4008acd3bf82d",
+    "semantic_hash": "fad51c6c70cefe01f5a4008acd3bf82d"
+  },
+  "src/java/model/Fine.java": {
+    "mtime": 1782151250.7574804,
+    "ast_hash": "ac9412e76b00ad63f82ea9b62e0652a2",
+    "semantic_hash": "ac9412e76b00ad63f82ea9b62e0652a2"
+  },
+  "src/java/model/InventoryItem.java": {
+    "mtime": 1781708945.0845501,
+    "ast_hash": "cbe157fcaece4dbe3c27cb15cd0a7616",
+    "semantic_hash": "cbe157fcaece4dbe3c27cb15cd0a7616"
+  },
+  "src/java/model/InventorySession.java": {
+    "mtime": 1781708945.0845501,
+    "ast_hash": "25cdff425c162511b841a23c23f1d753",
+    "semantic_hash": "25cdff425c162511b841a23c23f1d753"
+  },
+  "src/java/model/Lecturer.java": {
+    "mtime": 1781708928.4761004,
+    "ast_hash": "721de1a4c4c822c0b40bedcc90d89d9b",
+    "semantic_hash": "721de1a4c4c822c0b40bedcc90d89d9b"
+  },
+  "src/java/model/Librarian.java": {
+    "mtime": 1781708928.4761004,
+    "ast_hash": "759a79ec54a19fc879b7907aad3813df",
+    "semantic_hash": "759a79ec54a19fc879b7907aad3813df"
+  },
+  "src/java/model/LibraryManager.java": {
+    "mtime": 1781708928.4761004,
+    "ast_hash": "0cedf79d1f2dcc657c1ba2221c7c83f5",
+    "semantic_hash": "0cedf79d1f2dcc657c1ba2221c7c83f5"
+  },
+  "src/java/model/MemberProfile.java": {
+    "mtime": 1781708928.4774735,
+    "ast_hash": "a40e95e82bda9bf86f66f30a5ab9e014",
+    "semantic_hash": "a40e95e82bda9bf86f66f30a5ab9e014"
+  },
+  "src/java/model/Notification.java": {
+    "mtime": 1783334850.490326,
+    "ast_hash": "6c4375010f9da00a20651fdd931c79dd",
+    "semantic_hash": "6c4375010f9da00a20651fdd931c79dd"
+  },
+  "src/java/model/Payment.java": {
+    "mtime": 1781708972.8712065,
+    "ast_hash": "d1d1183bb37adbc8ac1404e8038c6b6c",
+    "semantic_hash": "d1d1183bb37adbc8ac1404e8038c6b6c"
+  },
+  "src/java/model/Reservation.java": {
+    "mtime": 1782151250.758476,
+    "ast_hash": "aa48896c1e482ae2636390158fec5135",
+    "semantic_hash": "aa48896c1e482ae2636390158fec5135"
+  },
+  "src/java/model/Student.java": {
+    "mtime": 1781708928.4784873,
+    "ast_hash": "50d3e2532dbfc08b6f1e49cce704de3c",
+    "semantic_hash": "50d3e2532dbfc08b6f1e49cce704de3c"
+  },
+  "src/java/model/SuggestionVote.java": {
+    "mtime": 1783333801.3462312,
+    "ast_hash": "6e13ef3c609d7cb0da4d5e5728ab60a4",
+    "semantic_hash": "6e13ef3c609d7cb0da4d5e5728ab60a4"
+  },
+  "src/java/model/SystemConfiguration.java": {
+    "mtime": 1781971827.4444034,
+    "ast_hash": "9ab7e6393f1bc083df9cc0a42e8fb0cc",
+    "semantic_hash": "9ab7e6393f1bc083df9cc0a42e8fb0cc"
+  },
+  "src/java/model/Tag.java": {
+    "mtime": 1781708972.8737304,
+    "ast_hash": "2c9e2854b91c6fd941e2398c97242a9a",
+    "semantic_hash": "2c9e2854b91c6fd941e2398c97242a9a"
+  },
+  "src/java/model/User.java": {
+    "mtime": 1781708972.8761554,
+    "ast_hash": "47c4e8ff46085c59ae50817ee7e79ceb",
+    "semantic_hash": "47c4e8ff46085c59ae50817ee7e79ceb"
+  },
+  "src/java/service/AiChatbotService.java": {
+    "mtime": 1784891868.33739,
+    "ast_hash": "82cc4bc7efa41dd056db2001db5b2edc",
+    "semantic_hash": "82cc4bc7efa41dd056db2001db5b2edc"
+  },
+  "src/java/service/AiRecommendationService.java": {
+    "mtime": 1784891859.8674614,
+    "ast_hash": "25955bd49e8bcf511cab42e37b0d0e72",
+    "semantic_hash": "25955bd49e8bcf511cab42e37b0d0e72"
+  },
+  "src/java/service/AuthService.java": {
+    "mtime": 1782406190.307799,
+    "ast_hash": "ee5e7da64a10e0884065a09d47df4c4e",
+    "semantic_hash": "ee5e7da64a10e0884065a09d47df4c4e"
+  },
+  "src/java/service/BookCopyIncidentService.java": {
+    "mtime": 1784869564.6435487,
+    "ast_hash": "6dcc9961482564cc97be627c3e479dfd",
+    "semantic_hash": "6dcc9961482564cc97be627c3e479dfd"
+  },
+  "src/java/service/BookCopyService.java": {
+    "mtime": 1784706524.660542,
+    "ast_hash": "534d86bdefc503afe7d483434562a00d",
+    "semantic_hash": "534d86bdefc503afe7d483434562a00d"
+  },
+  "src/java/service/BookImportService.java": {
+    "mtime": 1782448307.8715706,
+    "ast_hash": "86d1bb72cba2c0c18f12707b64c42f4e",
+    "semantic_hash": "86d1bb72cba2c0c18f12707b64c42f4e"
+  },
+  "src/java/service/BookImportValidator.java": {
+    "mtime": 1784706524.6615868,
+    "ast_hash": "11581683f23e2daebd043151c79f7d1e",
+    "semantic_hash": "11581683f23e2daebd043151c79f7d1e"
+  },
+  "src/java/service/BookService.java": {
+    "mtime": 1783611050.3086166,
+    "ast_hash": "03fbcc332c863674fb603c284c352fb1",
+    "semantic_hash": "03fbcc332c863674fb603c284c352fb1"
+  },
+  "src/java/service/BookSuggestionService.java": {
+    "mtime": 1783333801.347228,
+    "ast_hash": "b377be4be2b0142cc874a1b9834a7def",
+    "semantic_hash": "b377be4be2b0142cc874a1b9834a7def"
+  },
+  "src/java/service/CategoryService.java": {
+    "mtime": 1781708945.094213,
+    "ast_hash": "ec35361bde49cb356d6cc114f96c8d96",
+    "semantic_hash": "ec35361bde49cb356d6cc114f96c8d96"
+  },
+  "src/java/service/DeskCirculationService.java": {
+    "mtime": 1784869564.6456194,
+    "ast_hash": "0decf48b81fa6a1fe62dd36a089597f8",
+    "semantic_hash": "0decf48b81fa6a1fe62dd36a089597f8"
+  },
+  "src/java/service/EmailService.java": {
+    "mtime": 1782483061.8295536,
+    "ast_hash": "41b79bda973a90bcf54aab8829e58bdf",
+    "semantic_hash": "41b79bda973a90bcf54aab8829e58bdf"
+  },
+  "src/java/service/EmailWorker.java": {
+    "mtime": 1782483061.8305695,
+    "ast_hash": "0449417d521f78aafcea44a2cfe75436",
+    "semantic_hash": "0449417d521f78aafcea44a2cfe75436"
+  },
+  "src/java/service/ExcelExportService.java": {
+    "mtime": 1782146089.910492,
+    "ast_hash": "00d0b09376c06b1a5693b5c4c4cdbcb7",
+    "semantic_hash": "00d0b09376c06b1a5693b5c4c4cdbcb7"
+  },
+  "src/java/service/InventoryReconciliationService.java": {
+    "mtime": 1781708945.0973678,
+    "ast_hash": "3c4af3a5c3fb117eb4a1a17e38862a66",
+    "semantic_hash": "3c4af3a5c3fb117eb4a1a17e38862a66"
+  },
+  "src/java/service/OnlineCirculationService.java": {
+    "mtime": 1784869564.6478288,
+    "ast_hash": "8b66ef21e590c343951d930fd1e88329",
+    "semantic_hash": "8b66ef21e590c343951d930fd1e88329"
+  },
+  "src/java/service/OverdueProcessor.java": {
+    "mtime": 1782489337.862769,
+    "ast_hash": "4591bbd206b59fe32613bc05287ea2e7",
+    "semantic_hash": "4591bbd206b59fe32613bc05287ea2e7"
+  },
+  "src/java/service/ProfileService.java": {
+    "mtime": 1781708945.1008759,
+    "ast_hash": "347ad0dda18644f625092d0ce048f8f5",
+    "semantic_hash": "347ad0dda18644f625092d0ce048f8f5"
+  },
+  "src/java/service/ReportService.java": {
+    "mtime": 1782146089.910492,
+    "ast_hash": "f8b1738bda7a2a6b354b01c648cae6a8",
+    "semantic_hash": "f8b1738bda7a2a6b354b01c648cae6a8"
+  },
+  "src/java/service/ReservationExpirationProcessor.java": {
+    "mtime": 1782483061.8406909,
+    "ast_hash": "22ec6af343c8c5bf19be0819ca023c9e",
+    "semantic_hash": "22ec6af343c8c5bf19be0819ca023c9e"
+  },
+  "src/java/service/SystemConfigService.java": {
+    "mtime": 1784597596.37478,
+    "ast_hash": "c03f3d14da426df306d21c9708f2b655",
+    "semantic_hash": "c03f3d14da426df306d21c9708f2b655"
+  },
+  "src/java/service/TagService.java": {
+    "mtime": 1784597596.3757987,
+    "ast_hash": "d4d834bb6e81ef9a3abc137c89485dc2",
+    "semantic_hash": "d4d834bb6e81ef9a3abc137c89485dc2"
+  },
+  "src/java/service/UserService.java": {
+    "mtime": 1784891880.39409,
+    "ast_hash": "c53c2a1f4e5c8f1900d60dc541e82ebe",
+    "semantic_hash": "c53c2a1f4e5c8f1900d60dc541e82ebe"
+  },
+  "src/java/util/BookCoverFetcher.java": {
+    "mtime": 1782448307.8725853,
+    "ast_hash": "f2ba350b2b20cb03f10fdf8ad20eba93",
+    "semantic_hash": "f2ba350b2b20cb03f10fdf8ad20eba93"
+  },
+  "src/java/util/BookImageStorage.java": {
+    "mtime": 1782093874.6903543,
+    "ast_hash": "e167e7a0bc5d2ce615f8cf1f334bfae3",
+    "semantic_hash": "e167e7a0bc5d2ce615f8cf1f334bfae3"
+  },
+  "src/java/util/BookImportWorkbookReader.java": {
+    "mtime": 1783611050.3306844,
+    "ast_hash": "248b682623a2667df189ebcbb2e175ee",
+    "semantic_hash": "248b682623a2667df189ebcbb2e175ee"
+  },
+  "src/java/util/CsvExportUtil.java": {
+    "mtime": 1784597596.3757987,
+    "ast_hash": "c741f8edad974f21cfb9320d8f5f6283",
+    "semantic_hash": "c741f8edad974f21cfb9320d8f5f6283"
+  },
+  "src/java/util/DatabaseConnection.java": {
+    "mtime": 1782578095.0648332,
+    "ast_hash": "49f77d90ba886bdd78399cfd97333b87",
+    "semantic_hash": "49f77d90ba886bdd78399cfd97333b87"
+  },
+  "src/java/util/GoogleSSOUtil.java": {
+    "mtime": 1784887753.6222122,
+    "ast_hash": "49adc4d92d018720bbee8b84d398af25",
+    "semantic_hash": "49adc4d92d018720bbee8b84d398af25"
+  },
+  "src/java/util/IsbnValidator.java": {
+    "mtime": 1783611050.3306844,
+    "ast_hash": "18e93243e7ee453ea017c964e5790398",
+    "semantic_hash": "18e93243e7ee453ea017c964e5790398"
+  },
+  "src/java/util/SupabaseStorageClient.java": {
+    "mtime": 1782448307.8757632,
+    "ast_hash": "6889c37e1b8af3f20172445cc96780a1",
+    "semantic_hash": "6889c37e1b8af3f20172445cc96780a1"
+  },
+  "test/dao/BookCopyIncidentDAOTest.java": {
+    "mtime": 1784802506.12857,
+    "ast_hash": "ddc27218929e9f88037828834552dc41",
+    "semantic_hash": "ddc27218929e9f88037828834552dc41"
+  },
+  "test/dao/BookDAOTest.java": {
+    "mtime": 1784710314.976545,
+    "ast_hash": "fdbc8a8c90dfa5868111b81026c0c206",
+    "semantic_hash": "fdbc8a8c90dfa5868111b81026c0c206"
+  },
+  "test/dao/BorrowRecordDAOTest.java": {
+    "mtime": 1784710319.1272597,
+    "ast_hash": "5bd35d517e5504699ff5c7eb31655aaf",
+    "semantic_hash": "5bd35d517e5504699ff5c7eb31655aaf"
+  },
+  "test/dao/FineDAOTest.java": {
+    "mtime": 1784710348.4803078,
+    "ast_hash": "b167d615513b30055a4420483bfa1e8e",
+    "semantic_hash": "b167d615513b30055a4420483bfa1e8e"
+  },
+  "test/dao/MockJdbc.java": {
+    "mtime": 1784710393.111754,
+    "ast_hash": "4a924b829acafb5b5e5accf28bfed4f3",
+    "semantic_hash": "4a924b829acafb5b5e5accf28bfed4f3"
+  },
+  "test/dao/NotificationDAOTest.java": {
+    "mtime": 1784710322.808208,
+    "ast_hash": "7a31fc4c22e56a9396907a7ece206780",
+    "semantic_hash": "7a31fc4c22e56a9396907a7ece206780"
+  },
+  "test/dao/PaymentDAOTest.java": {
+    "mtime": 1784710331.9663835,
+    "ast_hash": "629cc36c4a169bb9ef71f6b66b7aca16",
+    "semantic_hash": "629cc36c4a169bb9ef71f6b66b7aca16"
+  },
+  "test/dao/SystemConfigurationsDAOTest.java": {
+    "mtime": 1784710306.7206078,
+    "ast_hash": "9724fbdc4be7385e8652ad5dff2a4289",
+    "semantic_hash": "9724fbdc4be7385e8652ad5dff2a4289"
+  },
+  "test/dao/UserDAOTest.java": {
+    "mtime": 1784710310.9843369,
+    "ast_hash": "de9540afe41e49b875c15e05912170f0",
+    "semantic_hash": "de9540afe41e49b875c15e05912170f0"
+  },
+  "test/filter/AuthFilterTest.java": {
+    "mtime": 1784709594.4850187,
+    "ast_hash": "33523c822442617e8f62a81ceb771fba",
+    "semantic_hash": "33523c822442617e8f62a81ceb771fba"
+  },
+  "test/service/AiChatbotServiceTest.java": {
+    "mtime": 1784709280.0887907,
+    "ast_hash": "aee7acff007accbb212150d79b126f6a",
+    "semantic_hash": "aee7acff007accbb212150d79b126f6a"
+  },
+  "test/service/AiRecommendationServiceTest.java": {
+    "mtime": 1784709285.3384826,
+    "ast_hash": "f31af3681efe85bd64693233dc796c24",
+    "semantic_hash": "f31af3681efe85bd64693233dc796c24"
+  },
+  "test/service/AuthServiceTest.java": {
+    "mtime": 1784708961.5960484,
+    "ast_hash": "fa1e233c3bd1756bdcadac85907e0044",
+    "semantic_hash": "fa1e233c3bd1756bdcadac85907e0044"
+  },
+  "test/service/BookCopyIncidentServiceTest.java": {
+    "mtime": 1784802506.132662,
+    "ast_hash": "6ed128649d2ef222b5bf97736e825c06",
+    "semantic_hash": "6ed128649d2ef222b5bf97736e825c06"
+  },
+  "test/service/BookCopyServiceTest.java": {
+    "mtime": 1784708987.224918,
+    "ast_hash": "387e9dd4fabcf5bdb65eeace037cfb26",
+    "semantic_hash": "387e9dd4fabcf5bdb65eeace037cfb26"
+  },
+  "test/service/BookImportServiceTest.java": {
+    "mtime": 1784709924.4769537,
+    "ast_hash": "ddb853e25d48fbec0cf0adc4d901a2b2",
+    "semantic_hash": "ddb853e25d48fbec0cf0adc4d901a2b2"
+  },
+  "test/service/BookImportValidatorTest.java": {
+    "mtime": 1784709014.3884568,
+    "ast_hash": "1af3b86ff455542c3e5e37cafdbd09b7",
+    "semantic_hash": "1af3b86ff455542c3e5e37cafdbd09b7"
+  },
+  "test/service/BookServiceTest.java": {
+    "mtime": 1784708969.323576,
+    "ast_hash": "ba38117aef8d1c0bcc2e462c1be55070",
+    "semantic_hash": "ba38117aef8d1c0bcc2e462c1be55070"
+  },
+  "test/service/BookSuggestionServiceTest.java": {
+    "mtime": 1784709274.9962676,
+    "ast_hash": "68408989a667d8c2fd9a5cb55aefcdb1",
+    "semantic_hash": "68408989a667d8c2fd9a5cb55aefcdb1"
+  },
+  "test/service/CategoryServiceTest.java": {
+    "mtime": 1784708976.353125,
+    "ast_hash": "0c950c95fce29985a9b74ade1896bc21",
+    "semantic_hash": "0c950c95fce29985a9b74ade1896bc21"
+  },
+  "test/service/DeskCirculationServiceTest.java": {
+    "mtime": 1784802506.1341858,
+    "ast_hash": "cece757562b5bedbcf11aad43d4106d7",
+    "semantic_hash": "cece757562b5bedbcf11aad43d4106d7"
+  },
+  "test/service/EmailServiceTest.java": {
+    "mtime": 1784709291.2628572,
+    "ast_hash": "7b24b79d3fc529e504817dbadd14fbf5",
+    "semantic_hash": "7b24b79d3fc529e504817dbadd14fbf5"
+  },
+  "test/service/EmailWorkerTest.java": {
+    "mtime": 1784709834.1833475,
+    "ast_hash": "d4b309373f2719cf48a8539cc6eeabad",
+    "semantic_hash": "d4b309373f2719cf48a8539cc6eeabad"
+  },
+  "test/service/ExcelExportServiceTest.java": {
+    "mtime": 1784709839.517193,
+    "ast_hash": "fec2f58b33f331865b2921bbdb476f59",
+    "semantic_hash": "fec2f58b33f331865b2921bbdb476f59"
+  },
+  "test/service/InventoryReconciliationServiceTest.java": {
+    "mtime": 1784709265.3236752,
+    "ast_hash": "85d83af6bcbdf2c653bd46cf9ba3e5d3",
+    "semantic_hash": "85d83af6bcbdf2c653bd46cf9ba3e5d3"
+  },
+  "test/service/OnlineCirculationServiceTest.java": {
+    "mtime": 1784709249.6556623,
+    "ast_hash": "d5bef08173c3dd7de498a9f5adc894b9",
+    "semantic_hash": "d5bef08173c3dd7de498a9f5adc894b9"
+  },
+  "test/service/ProcessorTest.java": {
+    "mtime": 1784709324.975385,
+    "ast_hash": "bf9bc2ba75afd8987d655f3a3f92f536",
+    "semantic_hash": "bf9bc2ba75afd8987d655f3a3f92f536"
+  },
+  "test/service/ProfileServiceTest.java": {
+    "mtime": 1784709300.0728037,
+    "ast_hash": "9e85997ed27d104caca96996a85c39ab",
+    "semantic_hash": "9e85997ed27d104caca96996a85c39ab"
+  },
+  "test/service/ReportServiceTest.java": {
+    "mtime": 1784709306.8544853,
+    "ast_hash": "e7d7f6d1254158ad16897d6c13036de8",
+    "semantic_hash": "e7d7f6d1254158ad16897d6c13036de8"
+  },
+  "test/service/ReservationExpirationProcessorTest.java": {
+    "mtime": 1784709845.4541743,
+    "ast_hash": "e712b6f19f12fc2be036a83bb08c50b8",
+    "semantic_hash": "e712b6f19f12fc2be036a83bb08c50b8"
+  },
+  "test/service/SystemConfigServiceTest.java": {
+    "mtime": 1784709008.7521207,
+    "ast_hash": "634af05597c6aaa86c6c75786435b8ae",
+    "semantic_hash": "634af05597c6aaa86c6c75786435b8ae"
+  },
+  "test/service/TagServiceTest.java": {
+    "mtime": 1784708979.1620767,
+    "ast_hash": "9646d88830ba908f02596469032f5b23",
+    "semantic_hash": "9646d88830ba908f02596469032f5b23"
+  },
+  "test/service/UserServiceTest.java": {
+    "mtime": 1784891919.7046843,
+    "ast_hash": "afca6ce2f8a3382f7b3b993844557350",
+    "semantic_hash": "afca6ce2f8a3382f7b3b993844557350"
+  },
+  "test/util/BookCoverFetcherTest.java": {
+    "mtime": 1784709828.2582078,
+    "ast_hash": "69dd25bbed205eb6a59f386b69ef64b5",
+    "semantic_hash": "69dd25bbed205eb6a59f386b69ef64b5"
+  },
+  "test/util/BookImageStorageTest.java": {
+    "mtime": 1784708949.500976,
+    "ast_hash": "4962454638a5fe54e086ed7480086c63",
+    "semantic_hash": "4962454638a5fe54e086ed7480086c63"
+  },
+  "test/util/BookImportWorkbookReaderTest.java": {
+    "mtime": 1784708954.493786,
+    "ast_hash": "f5fbfbf45d0c14f10db0a9c70ba926b2",
+    "semantic_hash": "f5fbfbf45d0c14f10db0a9c70ba926b2"
+  },
+  "test/util/CsvExportUtilTest.java": {
+    "mtime": 1784709052.932618,
+    "ast_hash": "89984ae19828c05a1075ce5ad688b328",
+    "semantic_hash": "89984ae19828c05a1075ce5ad688b328"
+  },
+  "test/util/GoogleSSOUtilTest.java": {
+    "mtime": 1784709438.9124725,
+    "ast_hash": "e9a8aa87ba1504e7330ea721649b2d9f",
+    "semantic_hash": "e9a8aa87ba1504e7330ea721649b2d9f"
+  },
+  "test/util/IsbnValidatorTest.java": {
+    "mtime": 1784708935.243772,
+    "ast_hash": "d45843232b38d41efa6ed77160c73c27",
+    "semantic_hash": "d45843232b38d41efa6ed77160c73c27"
+  },
+  "test/util/SupabaseStorageClientTest.java": {
+    "mtime": 1784709446.7493474,
+    "ast_hash": "72f0257a1be97a9c8590015b7067e8f4",
+    "semantic_hash": "72f0257a1be97a9c8590015b7067e8f4"
+  },
+  "web/assets/js/book-management.js": {
+    "mtime": 1784597596.3850522,
+    "ast_hash": "f43a7125907dcc6fd4010aef04a89812",
+    "semantic_hash": "f43a7125907dcc6fd4010aef04a89812"
+  },
+  "web/assets/js/book-titles.js": {
+    "mtime": 1783611050.38398,
+    "ast_hash": "3ea2ee6c3aa8cf3ed8ef1a1e29642d9f",
+    "semantic_hash": "3ea2ee6c3aa8cf3ed8ef1a1e29642d9f"
+  },
+  "web/assets/js/chatbot.js": {
+    "mtime": 1781944273.0816154,
+    "ast_hash": "091d6faa8e4f2f850d2395bc617b5216",
+    "semantic_hash": "091d6faa8e4f2f850d2395bc617b5216"
+  },
+  "web/assets/js/recommendation.js": {
+    "mtime": 1782285812.616018,
+    "ast_hash": "007254ce33c53a1b9da6604c084258c7",
+    "semantic_hash": "007254ce33c53a1b9da6604c084258c7"
+  }
+}

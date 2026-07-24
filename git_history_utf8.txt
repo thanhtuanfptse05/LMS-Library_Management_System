@@ -1,0 +1,811 @@
+﻿2026-05-28: first commit
+2026-05-28: add constraints/
+2026-05-28: update bussines.md
+2026-05-28: update db
+2026-05-28: update khung
+2026-05-28: update .agents/ & specs/_template.md
+2026-05-28: update AGENTS, CONTEXT
+2026-05-29: update template.md
+2026-05-29: update feature
+2026-05-29: update plan.md root folder
+2026-05-29: update sdd
+2026-05-29: update all spec
+2026-05-29: update full md 10/10
+2026-05-29: update database
+2026-05-29: fix full spec
+2026-05-29: add .agents
+2026-05-30: update database
+2026-05-30: set up spec-kit, create ui rule
+2026-05-31: design ui for guest
+2026-05-31: design ui login
+2026-05-31: design ui forgot pw
+2026-05-31: design ui reset-pw
+2026-05-31: Add authentication pages and styling
+2026-05-31: add swimlane txt
+2026-05-31: update swimlane feature 2-profileManagement
+2026-05-31: add swimlane userAccountManagement
+2026-05-31: update swimlane Feature userAccountManagemnet txt
+2026-05-31: update and fix db, swimlane txt
+2026-05-31: add .sdd/specs/feat-authentication
+2026-06-01: fix folder structure
+2026-06-01: update diagram, specs/feat-authentication
+2026-06-01: feat(auth): implement authentication data layer ΓÇö DatabaseConnection, User, UserDAO
+2026-06-01: update db
+2026-06-01: insert data
+2026-06-01: feat(auth): implement verifyPassword in AuthService
+2026-06-01: feat(auth): implement isAccountLocked in AuthService
+2026-06-01: feat(auth): implement handleFailedLogin in AuthService
+2026-06-01: feat(auth): implement generateRandomPassword in AuthService
+2026-06-01: feat(auth): implement resetPassword in AuthService
+2026-06-01: feat(auth): implement runDummyVerify in AuthService
+2026-06-01: feat(auth): implement sendAsyncPasswordReset in EmailService
+2026-06-01: test(auth): implement JUnit 4 unit tests for AuthService using mock stubbing
+2026-06-01: use junit4 test
+2026-06-01: feat(auth): create AuthFilter skeleton with init and destroy methods
+2026-06-01: feat(auth): implement doFilter method with role-based access control and login redirection in AuthFilter
+2026-06-01: feat(auth): implement doFilter in AuthFilter to redirect to /login for unauthenticated users
+2026-06-01: feat(auth): update getRedirectByRole in AuthFilter to return /login route
+2026-06-01: docs(plan): update progress tracking for T-AUTH-04
+2026-06-01: feat(auth): implement LoginServlet with secure login flow, timing attack prevention and role-based redirecting
+2026-06-01: feat(auth): implement ForgotPasswordServlet with fake success, async reset, and update forgot-password.jsp with real AJAX fetch
+2026-06-01: feat(auth): implement LogoutServlet to invalidate HttpSession and redirect to /login
+2026-06-01: docs(plan): update progress tracking for Web Layer Servlets T-AUTH-05, T-AUTH-06, and T-AUTH-07
+2026-06-01: feat(auth): update login.jsp forgot password link to use servlet route /forgot-password
+2026-06-01: feat(auth): update forgot-password.jsp links to point to LoginServlet /login instead of direct JSP
+2026-06-01: docs(plan): update progress tracking for View Layer T-AUTH-08
+2026-06-01: style(login): remove Microsoft login and convert Google SSO into styled Google+ button
+2026-06-01: feat(auth): update Google SSO button UI in login.jsp
+2026-06-01: feat(auth): add GoogleSSOUtil for OAuth 2.0 integration with obfuscated keys
+2026-06-01: feat(auth): implement GoogleLoginServlet for handling OAuth 2.0 callback
+2026-06-01: chore(database): add seed data for Google SSO test users
+2026-06-01: fix(database): fix corrupted BCrypt hashes in LMS_Seed_Data.sql
+2026-06-01: update feat profileManagement spec & feat userAccountManagement spec
+2026-06-01: update ui dashboard draft
+2026-06-01: Resolve merge conflict
+2026-06-02: update ui dashboard admin, librarian
+2026-06-02: fix login ui
+2026-06-02: fix index.jsp
+2026-06-02: fix reset pw
+2026-06-02: feat(errors): convert error pages to JSTL and configure web.xml
+2026-06-02: update logic resetpw
+2026-06-02: update dashboard student
+2026-06-03: support multi-language
+2026-06-03: update policy
+2026-06-03: feat(services): implement library services section with borrowing and renewal guidelines
+2026-06-03: feat(news): divide latest news section into activity, library, and event news categories
+2026-06-03: feat(pages): separate policies and services into standalone pages and restructure home page layout
+2026-06-03: feat(news): implement separate news page and homepage news preview card grid layout
+2026-06-03: feat(ui): redesign home page, services, policies based on fix.html reference
+2026-06-03: feat(profile): add MemberProfile and Student models and MemberProfileDAO
+2026-06-03: feat(profile): add StudentDAO
+2026-06-03: feat(profile): add findByUserId to UserDAO
+2026-06-03: feat(profile): add ProfileService
+2026-06-03: feat(profile): add active loans and reservations counts to MemberProfileDAO
+2026-06-03: feat(profile): add StudentProfileServlet
+2026-06-03: feat(profile): add profile.jsp view
+2026-06-03: fix(profile): use DB values for membership dates fallback to 'Not set' and 'Unlimited'
+2026-06-03: fix(db): update MemberProfile table schema to NOT NULL and update LMS_Seed_Data to supply non-null endDate values
+2026-06-03: feat(admin): add admin dashboard JSP with fragments (head, header, sidebar, footer)
+2026-06-03: feat(librarian): add librarian dashboard JSP with fragments (circulation, loans, fines)
+2026-06-03: feat(manager): add library manager dashboard JSP with KPIs, staff performance, policies
+2026-06-03: feat(lecturer): add lecturer dashboard JSP with course lists, active loans, book requests
+2026-06-03: fix(dashboard): add missing jstl functions taglib to fix 500 error
+2026-06-03: feat(profile): implement profile pages for admin, librarian, lecturer, manager
+2026-06-03: fix(dashboard): link sidebar and header avatar to profile pages
+2026-06-03: feat(auth): redirect all roles to homepage after login and link brand to home
+2026-06-03: fix(auth): fix case sensitivity in role checks for dashboard URL mapping
+2026-06-03: fix(db): set nullable membership dates for staff roles in seed data
+2026-06-04: screen: librarian book-detail.jsp - add book detail view with inventory table and copy management modals
+2026-06-04: screen: librarian book-register.jsp - add register new book form with cover upload, category pills, and client-side validation
+2026-06-04: screen: librarian copy-detail.jsp - add copy detail view with logistics card, borrowing history table, and condition/status modals
+2026-06-04: screen: librarian copy-edit.jsp - add focused copy edit form with book banner, barcode readonly field, and condition notes
+2026-06-04: screen: librarian copy-list.jsp - add physical copies inventory list with stats, search, filter modal, and server-side pagination
+2026-06-04: screen: librarian category-list.jsp - add category management table with add/edit/delete Bootstrap modals and server-side pagination
+2026-06-04: screen: librarian tag-list.jsp - add tag management table with quick-add inline form, sort, edit/delete modals, and pagination
+2026-06-04: screen: librarian catalog.jsp - add catalog management table with search, category filter, tag filter pills, and server-side pagination
+2026-06-04: screen: librarian copy-register.jsp - add form for importing new physical book copy with barcode scanning and auto-generation UX
+2026-06-04: screen: librarian book-edit.jsp - add form for updating master book record with readonly ISBN validation
+2026-06-04: screen: update _sidebar.jsp to map links to newly created book management screens (catalog, physical inventory, categories, tags)
+2026-06-04: fix: librarian dashboard.jsp missing bootstrap js bundle causing unresponsive dropdowns
+2026-06-04: fix: update sidebar links to append .jsp extension for UI preview routing without backend servlets
+2026-06-04: fix: map internal links across all 8 book management jsp screens to append .jsp extension, replacing mock modals with direct page routes for seamless UI preview
+2026-06-04: fix: convert static dummy buttons to clickable links across UI screens (catalog, book detail, copy list, copy detail) to enable end-to-end frontend navigation flow
+2026-06-04: feat(notifications): add student notifications inbox UI
+2026-06-04: feat(notifications): add lecturer notifications inbox UI
+2026-06-04: feat(notifications): link notifications page from sidebar and header bell
+2026-06-04: fix(notifications): align lecturer notification layout with student layout to include sidebar
+2026-06-04: revert: restore dashboard.jsp and _sidebar.jsp to original state as requested
+2026-06-04: feat(manager): add notification-broadcast.jsp ΓÇö broadcast form with audience selector, type chips, live preview, and history table
+2026-06-04: revert: restore _sidebar.jsp exactly to commit 95a8def before book management branch as requested
+2026-06-04: feat(manager): add notification-detail.jsp ΓÇö notification detail view with delivery stats, recipient table with filter tabs, activity timeline, and delete modal
+2026-06-04: fix(manager): integrate notification pages into project ΓÇö add sidebar links, header link, active state JS, fix responsive CSS
+2026-06-04: feat(admin): add config-list.jsp ΓÇö system configuration management with categorized parameters, search/filter, and stats overview
+2026-06-04: feat(admin): add config-edit.jsp ΓÇö config parameter edit form with validation, audit reason field, reset-to-default modal, and change history side panel
+2026-06-04: feat(admin): add audit-logs.jsp ΓÇö full operator activity log with KPI strip, multi-filter (action/severity/date), severity indicators, and export
+2026-06-04: feat(admin): add audit-detail.jsp ΓÇö diff viewer (old/new JSON), technical metadata, related logs, tab switcher; fix _sidebar links for config-list and audit-logs
+2026-06-04: fix(admin): rebuild _sidebar.jsp ΓÇö full nav with section groups (Overview/Users/Config/Audit/Account), real links to all pages, sub-links for config-edit & audit-detail, auto active state JS
+2026-06-04: Merge remote-tracking branch 'origin/Screen-Book-Management' into dev
+2026-06-04: feat(ui): implement student my-fines.jsp
+2026-06-04: feat(ui): implement lecturer my-fines.jsp
+2026-06-04: feat(ui): implement student payment-checkout.jsp
+2026-06-04: feat(ui): implement student payment-success.jsp
+2026-06-04: feat(ui): implement student payment-cancel.jsp
+2026-06-04: feat(ui): implement librarian fine-list.jsp
+2026-06-04: feat(ui): implement librarian fine-create.jsp
+2026-06-04: feat(ui): implement librarian payment-receipt.jsp
+2026-06-04: feat(ui): implement admin user-list.jsp
+2026-06-04: feat(ui): implement admin user-add.jsp
+2026-06-04: feat(ui): implement admin user-edit.jsp
+2026-06-04: feat(ui): implement admin user-detail.jsp
+2026-06-04: feat(ui): link student fine history sidebar item to my-fines.jsp
+2026-06-04: feat(ui): add fines and billing link to lecturer sidebar
+2026-06-04: feat(ui): link librarian fines collection sidebar item to fine-list.jsp
+2026-06-04: feat(ui): link admin user management sidebar item to user-list.jsp
+2026-06-04: merge(fine-payment): merge feat/fine-payment-ui into dev
+2026-06-04: feat(librarian): convert librarianborrow_list.html to borrow-list.jsp with _borrow-list-table.jsp fragment
+2026-06-04: feat(librarian): convert librarianborrow_create.html to borrow-create.jsp with _borrow-create-form.jsp fragment
+2026-06-04: feat(librarian): convert librarianreturn_create.html to return-create.jsp
+2026-06-04: feat: update _sidebar.jsp with book management links (catalog, inventory, categories, tags) and fix dashboard.jsp (Bootstrap JS + Issue Book link)
+2026-06-04: feat(librarian): convert reservation_list and reservation_detail HTML files to JSP
+2026-06-04: fix(lecturer): correct payment checkout action path in my-fines
+2026-06-04: feat(lecturer): create payment checkout screen for fines
+2026-06-04: feat(lecturer): create payment success screen for fines
+2026-06-04: feat(lecturer): create payment cancel screen for fines
+2026-06-04: fix(librarian): fix layout clipping and footer alignment on desktop and mobile
+2026-06-04: feat(librarian): create stats summary cards fragment for fine directory
+2026-06-04: feat(librarian): create filters bento grid fragment for fine directory
+2026-06-04: feat(librarian): create detail side drawer fragment for fine directory
+2026-06-04: feat(librarian): create scripts event handler fragment for fine directory
+2026-06-04: feat(librarian): integrate stats, filters, drawer, and scripts fragments into fine list
+2026-06-04: feat(lecturer): convert my-borrows and my-reservations HTML files to JSP
+2026-06-04: fix(jsp): resolve EL syntax errors with escaped quotes in recently created JSPs
+2026-06-04: fix(jsp): add missing fn taglib to reservation-detail.jsp
+2026-06-04: Add report and template pages
+2026-06-04: merge(borrow-reserve): merge branch Quyet into dev
+2026-06-04: fix(layout): fix footer positioning across admin, librarian, and student pages
+2026-06-04: fix(layout): fix footer and sidebar offset for admin user pages
+2026-06-05: Merge remote-tracking branch 'origin/feat/fine-payment-ui' into dev
+2026-06-05: new
+2026-06-05: change language
+2026-06-06: fix(auth): fix SMTP config from address, add jakarta.activation deps, fix password validation regex
+2026-06-06: feat(design): update design specifications and remove proposed mockup screens
+2026-06-06: feat(rule): enforce 100% Vietnamese language for all user interfaces
+2026-06-06: feat(student): implement notifications page and update sidebar link
+2026-06-06: fix(ui): adjust sidebar and header widths to 280px and prevent text wrapping
+2026-06-06: fix(ui): resolve text wrapping and container width on headers
+2026-06-06: chore: clean up garbage python scripts and text outputs
+2026-06-06: cap nhat Activity Diagram v├á Specs F4,F5,F6
+2026-06-06: cap nhat Activity Diagram v├á Specs F4,F5,F6
+2026-06-06: cap nhat Activity Diagram v├á Specs F4,F5,F6
+2026-06-06: cap nhat db
+2026-06-08: spec(book-management): define bulk import and inventory monitoring
+2026-06-10: feat(book-management): add librarian management prototypes
+2026-06-10: feat(book-management): refine catalog and inventory views
+2026-06-10: feat(book-management): implement book catalog workflow
+2026-06-10: feat(database): extend category and tag schema
+2026-06-10: feat(database): add category and tag migration
+2026-06-10: feat(category): extend category model
+2026-06-10: feat(tag): extend tag model
+2026-06-10: feat(category): implement category data access
+2026-06-10: feat(tag): implement tag data access
+2026-06-10: feat(book-management): load metadata status
+2026-06-10: feat(category): implement category service
+2026-06-10: feat(tag): implement tag service
+2026-06-10: feat(category): implement category controller
+2026-06-10: feat(tag): implement tag controller
+2026-06-10: test(book-management): add category and tag dao test
+2026-06-10: test(category): add category service tests
+2026-06-10: test(tag): add tag service tests
+2026-06-10: style(book-management): support metadata management views
+2026-06-10: feat(category): add category view interactions
+2026-06-10: feat(tag): add tag view interactions
+2026-06-10: feat(category): add category management view
+2026-06-10: feat(tag): add tag management view
+2026-06-10: refactor(book-management): remove combined taxonomy view
+2026-06-10: feat(book-management): protect hidden metadata relations
+2026-06-10: chore(book-management): refresh stylesheet version
+2026-06-10: feat(book-management): split category and tag navigation
+2026-06-10: feat(book-copy): add physical copy model
+2026-06-10: feat(book-copy): add inventory summary model
+2026-06-10: feat(book-copy): implement physical copy data access
+2026-06-10: feat(book-management): support inventory quantity updates
+2026-06-10: feat(book-copy): implement inventory synchronization service
+2026-06-10: feat(book-copy): implement physical copy controller
+2026-06-10: test(book-copy): verify copy insert and inventory sync
+2026-06-10: test(book-copy): add copy validation tests
+2026-06-10: feat(book-copy): add physical copy view interactions
+2026-06-10: feat(book-copy): connect physical inventory view
+2026-06-10: feat(book-management): link physical copy inventory route
+2026-06-11: feat(notifications): simplify student notifications.jsp to a notice board, remove read/delete UI
+2026-06-11: feat(notifications): add lecturer notifications.jsp notice board and clean sidebar badge
+2026-06-11: feat(notifications): add Notification and DocumentTemp entity models
+2026-06-11: feat(notifications): add NotificationDAO and DocumentTempDAO with full JDBC PreparedStatement
+2026-06-11: feat(notifications): add NewsServlet to serve notice board for Student and Lecturer roles
+2026-06-11: feat(notifications): add manager servlets for notification board and email template management
+2026-06-11: feat(notifications): add manager JSP pages for notification board and email template management
+2026-06-11: feat(notifications): update manager sidebar links to notification board and email templates
+2026-06-12: feat: database - add book copy incident migration
+2026-06-12: feat: book-management - implement damaged and lost copy workflow
+2026-06-12: feat: book-management - implement bulk book import and history
+2026-06-12: feat: book-management - add cover images and refine management UI
+2026-06-12: feat: book-management - improve management UI hierarchy
+2026-06-12: fix: database - align schema constraint names with migrations
+2026-06-12: refactor: book-management - standardize DTOs and add management KPIs
+2026-06-12: feat: book-management - implement inventory reconciliation
+2026-06-12: feat(admin): implement user management with CRUD, lock/unlock, import, export
+2026-06-12: Merge branch 'Quyet' into dev
+2026-06-13: feat(merge): manually integrate Tuan branch into dev
+2026-06-13: fix(notification): do not send urgent email on pin/unpin
+2026-06-13: feat(merge): integrate book-discovery & AI recommendation from Bao branch
+2026-06-14: refactor(user): remove lockReason from User model to sync with DB schema
+2026-06-14: feat(merge): manual merge Thai branch F6 Desk Circulation into dev
+2026-06-14: fix(f6): fix encoding issues from Thai branch, resolve errors, and add AppContextListener to prevent memory leak
+2026-06-15: feat: book-management - merge complete feature into dev
+2026-06-15: fix(routing): replace book-search.jsp link with servlet URL in _footer.jsp
+2026-06-15: fix(routing): replace book-search.jsp link with servlet URL in student _header.jsp
+2026-06-15: feat(ui): convert book search container to full width container-fluid and display 4 books per row
+2026-06-15: feat(ui): implement independent scrolling and responsive sticky positioning for search filter sidebar
+2026-06-15: fix(ui): adjust sidebar sticky top and max-height to avoid overlap with fixed navbar
+2026-06-15: test(db): add DAOMigrationTest snapshot tool
+2026-06-15: chore(db): replace sqljdbc42 with postgresql JDBC driver
+2026-06-15: feat(db): add PostgreSQL schema for Supabase migration
+2026-06-15: feat(db): switch DatabaseConnection to Supabase PostgreSQL
+2026-06-15: refactor(dao): migrate AdminDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate LibraryManagerDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate LibrarianDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate LecturerDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate StudentDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate AuditLogDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate UserLockReasonDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate MemberProfileDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate UserLookupDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate BorrowRecordDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate DocumentTempDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate CategoryDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate TagDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate FineDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate PaymentDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate BookDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate BookCopyDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate BookImportDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate NotificationDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate UserDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate ReservationDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate InventoryDAO to PostgreSQL syntax
+2026-06-15: refactor(dao): migrate BookCopyIncidentDAO to PostgreSQL syntax
+2026-06-15: feat(db): add PostgreSQL seed data for Supabase
+2026-06-15: chore(db): update project properties classpath to use postgresql driver
+2026-06-15: chore(db): update build-impl and project xml configuration from sqljdbc to postgresql
+2026-06-15: test(db): print full stacktrace on connection failure in DAOMigrationTest
+2026-06-15: feat(db): add sslmode query parameter to PostgreSQL connection URL
+2026-06-15: chore(db): update NetBeans XML and properties project configurations after IDE auto-regeneration
+2026-06-15: refactor(dao): remove invalid double quotes around Reservation, BookCopy and Book in ReservationDAO
+2026-06-16: refactor(db): switch connection to Supavisor session pooler (port 5432) for IPv4 support
+2026-06-16: feat(db): switch database connection to Supavisor Pooler on port 6543
+2026-06-16: update and fix F5
+2026-06-16: chore(db): remove obsolete SQL Server schema, seed data, and migration files
+2026-06-16: docs(architecture): rename CLAUDE.md to GEMINI.md, update project tree and PostgreSQL schema description
+2026-06-16: fix(db): update connection string to Singapore Supabase instance
+2026-06-16: perf(test): optimize DAOMigrationTest to check connection read-only by default, support init param
+2026-06-16: docs(agent): update db tech stack to PostgreSQL, add DB-01 constraint for schema verification
+2026-06-17: feat(ui): add shared premium design system CSS for all dashboards
+2026-06-17: feat(ui): redesign admin dashboard - premium layout, stat cards, audit timeline
+2026-06-17: feat(ui): redesign librarian dashboard - premium stats, reservation cards, quick issue form
+2026-06-17: feat(ui): redesign manager dashboard - premium KPI cards, gradient bar chart, staff table
+2026-06-17: feat(ui): redesign student dashboard - premium stat cards, welcome banner, glassmorphism header
+2026-06-17: feat(ui): redesign lecturer dashboard - premium stat cards, welcome banner, course chips
+2026-06-17: fix(ui): restore missing email-templates link in manager sidebar
+2026-06-17: feat(ui): add premium notification dropdown panel to manager header
+2026-06-17: fix(ui): fix sidebar active-state JS (indexOf -> pathname exact match); add mark-as-read on notification detail view
+2026-06-17: refactor(ui): extract notification bell to shared fragment, fix sidebar JS active state logic
+2026-06-17: fix(ui): dynamic notification bell via NotificationWidgetServlet
+2026-06-17: style(ui): differentiate read and unread notifications in bell dropdown
+2026-06-17: style(ui): remove notification bell from Admin, Librarian, Manager headers
+2026-06-17: docs(spec): update spec-UC-BR-FR.txt with newly implemented features
+2026-06-17: docs(spec): add detailed FRs and BRs for Book Import, Incidents, Inventory and Document Temp
+2026-06-17: docs(specs): sync SPEC.md templates and add missing features (Google SSO, User Export)
+2026-06-17: Bao[spec]: feat-Reservation&Renewal - Revise F5 implementation plan for PostgreSQL and RBAC
+2026-06-17: fix(controller): sua loi encoding tieng Viet bi loi chu trong CashPaymentServlet - Sua tat ca comment, Javadoc va thong bao loi tu ky tu loan sang tieng Viet chuan UTF-8
+2026-06-17: fix(ui): resolve layout issues in student pages and complete manager header
+2026-06-17: fix(user): resolve conflicts and fix case-insensitive filter in UserDAO
+2026-06-17: update notification
+2026-06-18: fix(desk-circulation): fix encoding, improve check-in error message and enhance scanner control on desk dashboard
+2026-06-18: merge: merge branch 'Thai' and resolve conflicts in private properties
+2026-06-18: feat(notification): add dynamic email template dropdown and fix hardcoded template mapping
+2026-06-18: fix(book-management): restore db locks and polish Vietnamese UI
+2026-06-18: fix(checkin): disable server-side prepared statements to prevent prepared statement already exists error
+2026-06-18: Merge branch 'main' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System
+2026-06-18: Merge branch 'Bao' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System into Bao
+2026-06-18: Merge branch 'Bao' # Please enter a commit message to explain why this merge is necessary, # especially if it merges an updated upstream into a topic branch. # # Lines starting with '#' will be ignored, and an empty message aborts # the commit.
+2026-06-18: feat(desk-dashboard): hien thi barcode cua ban sao sach thay vi copy id trong danh sach sach dang muon
+2026-06-18: fix(connection): cap nhat chuoi ket noi jdbc tat hoan toan cache prepared statement de sua triet de loi pgbouncer
+2026-06-18: fix(test): configure shared test libraries
+2026-06-19: Merge branch 'main' of origin into main
+2026-06-19: Merge branch 'Thai'
+2026-06-19: Merge branch 'main' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System
+2026-06-19: Bao[feat](seed): add configurations and email template for F5
+2026-06-19: Bao[feat](dao): add F5 query and mutation methods to ReservationDAO
+2026-06-19: Bao[feat](dao): add F5 helper methods to BorrowRecordDAO
+2026-06-19: Bao[feat](dao): add SystemConfigDAO to load system configurations
+2026-06-19: Bao[feat](dao): add findByIdForUpdate to BookDAO for concurrency control
+2026-06-19: Bao[feat](dao): add findAvailableCopyByBookId to BookCopyDAO
+2026-06-19: Bao[feat](dao): overload insertOnlineReservation to accept bookCopyId
+2026-06-19: Bao[feat](service): add OnlineCirculationService for F5 reservation, cancellation, and renewal
+2026-06-19: Bao[feat](model): add book and bookCopy helper fields to BorrowRecord
+2026-06-19: Bao[feat](model): add book and bookCopy helper fields to Reservation
+2026-06-19: Bao[feat](controller): add F5 Servlets for Reservation, Renewal, and MyBorrowings
+2026-06-19: Bao[feat](controller): pass hasActiveBorrow and hasActiveReservation to book-detail view
+2026-06-19: Bao[feat](view): update book-detail.jsp for F5 Reservation flow
+2026-06-19: Bao[feat](view): add my-borrowings.jsp views for student and lecturer
+2026-06-19: Bao[fix](util): add testConnection static override to DatabaseConnection for testing
+2026-06-19: Bao[feat](dao): delegate reservation queries from service to ReservationDAO
+2026-06-19: Bao[feat](service): refactor OnlineCirculationService to decoupled design
+2026-06-19: Bao[test]: add unit tests for OnlineCirculationService
+2026-06-19: Bao[spec]: update PLAN.md and TASK.md for F5 specification details
+2026-06-19: Bao[feat](circulation): patch availableQuantity logic, checkout validation, dashboard, sidebars, and test compatibility
+2026-06-19: Bao[spec](circulation): Update spec-UC-BR-FR.txt with F5-PATCH specifications
+2026-06-19: fix(db): switch connection port to 5432 to use Session Pooler over IPv4
+2026-06-19: perf(sql): optimize query performance with ILIKE and core database indexes
+2026-06-19: spec(chatbot-ai): add initial design and specification documents for chatbot AI feature
+2026-06-19: Revert "perf(sql): optimize query performance with ILIKE and core database indexes"
+2026-06-19: feat(db): configure Tomcat JNDI Connection Pool (DataSource) with fallback
+2026-06-20: spec(chatbot): migrate and update feature specification documents
+2026-06-20: feat(chatbot): implement ChatMessage JavaBean model
+2026-06-20: feat(chatbot): implement SystemConfigurationsDAO query methods
+2026-06-20: feat(chatbot): configure separate GEMINI_CHATBOT_API_KEY static field
+2026-06-20: feat(chatbot): implement classifyIntent method in AiChatbotService
+2026-06-20: feat(chatbot): implement retrieveRulesContext and retrieveBooksContext methods in AiChatbotService
+2026-06-20: feat(chatbot): implement callGeminiChat method and finalize AiChatbotService
+2026-06-20: feat(chatbot): implement doGet method in AiChatbotServlet
+2026-06-20: feat(chatbot): implement doPost skeleton in AiChatbotServlet
+2026-06-20: feat(chatbot): implement intent routing in doPost
+2026-06-20: feat(chatbot): implement RAG context integration in doPost
+2026-06-20: feat(chatbot): complete doPost servlet logic in AiChatbotServlet
+2026-06-20: feat(chatbot): implement chatbot UI float button and widget HTML
+2026-06-20: feat(chatbot): implement chatbot widget styling and animations
+2026-06-20: feat(chatbot): implement chatbot JS AJAX handler and Markdown parser
+2026-06-20: feat(chatbot): integrate chatbot widget into global footer
+2026-06-20: test(chatbot): implement AiChatbotServiceTest unit test suite
+2026-06-20: docs(chatbot): add ActivityDiagramF14.txt diagram
+2026-06-20: feat(chatbot): refine AiChatbotServlet implementation
+2026-06-20: Merge branch 'main' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System into Thai
+2026-06-20: fix(chatbot): customize chatbot prompt when books context is empty
+2026-06-20: feat(chatbot): integrate F8 personalized book recommendations into F14 chatbot
+2026-06-20: spec(fine): update specs to use SePay instead of VNPAY and split database seed SQL
+2026-06-20: feat(fine): add fine rate and SePay integration seed configurations
+2026-06-20: feat(fine): add bookTitle field to Fine model for JSP display
+2026-06-20: feat(fine): add hasUnpaidFines, findFinesByUserId, insertOverdueFine to FineDAO
+2026-06-20: feat(fine): add updatePaymentOnlineSuccess and getPaymentStatus to PaymentDAO
+2026-06-20: feat(fine): create MemberFinesServlet for student/lecturer fine listing with SePay QR config
+2026-06-20: feat(fine): create PaymentApiServlet (AJAX polling) and SePayWebhookServlet (bank transfer webhook)
+2026-06-20: feat(fine): allow /api/sepay-webhook to bypass AuthFilter for bank webhook access
+2026-06-20: feat(fine): connect sidebar menu links to /student/fines and /lecturer/fines routes
+2026-06-20: feat(fine): create student fines.jsp with VietQR modal, AJAX polling, and premium UI
+2026-06-20: feat(fine): create lecturer fines.jsp with VietQR modal and premium UI matching lecturer layout
+2026-06-20: refactor(fine): replace Gson with manual regex JSON parser in SePayWebhookServlet (Gson not in allowed libs)
+2026-06-20: chore(config): update SePay API Key in seed file
+2026-06-20: chore(config): revert SePay API Key to mock value for security
+2026-06-20: fix(seed): add ON CONFLICT DO UPDATE to system configs and document temp to prevent duplicate key errors
+2026-06-20: feat(auth): allow users with unpaid fines to login and route to payment pages
+2026-06-20: feat(borrow): decouple fine from user lock reason, use FineDAO for fine block
+2026-06-20: fix(borrow): prevent rollback exception from swallowing ValidationException in online circulation service
+2026-06-20: feat(systemConfig): update seed data with new config keys
+2026-06-20: feat(systemConfig): add SystemConfiguration model
+2026-06-20: feat(systemConfig): update SystemConfigDAO with CRUD methods
+2026-06-20: feat(systemConfig): add SystemConfigCache for in-memory config storage
+2026-06-20: feat(systemConfig): load SystemConfigCache on application startup
+2026-06-20: feat(systemConfig): add SystemConfigService for business logic and validation
+2026-06-20: test(systemConfig): add unit tests for SystemConfigService validation
+2026-06-20: feat(systemConfig): add SystemConfigServlet for MANAGER
+2026-06-20: feat(systemConfig): add AdminSystemConfigServlet for ADMIN
+2026-06-20: feat(systemConfig): add JSP view for MANAGER configuration
+2026-06-20: feat(systemConfig): add JSP view for ADMIN configuration
+2026-06-20: feat(systemConfig): update manager sidebar link
+2026-06-20: feat(systemConfig): update admin sidebar link
+2026-06-20: fix(systemConfig): use equalsIgnoreCase for role checks to prevent false rejections
+2026-06-20: fix(systemConfig): correct JSP layout structure for manager and admin to match dashboard
+2026-06-20: feat(system-config): implement 2-column layout and update history logs
+2026-06-20: fix(system-config): prevent JS syntax error on modal open to ensure configKey is sent correctly
+2026-06-20: fix(systemConfig): synchronize layout with existing UI templates
+2026-06-20: chore(systemConfig): commit remaining spec and config files
+2026-06-20: fix(system-config): fix sidebar overlapping layout and sync controller with JSP for admin and manager
+2026-06-20: fix(system-config): correct configGroup to only library/system, remove fake filter from manager
+2026-06-21: feat(system-config): add insert, exists, delete methods to SystemConfigDAO + SEPAY_QR_URL seed
+2026-06-21: feat(system-config): add create/delete/isHardConfig to SystemConfigService, expand KEY_TYPES with SEPAY_QR_URL and GEMINI keys
+2026-06-21: feat(system-config): refactor AdminSystemConfigServlet to handle create/delete/update actions
+2026-06-21: feat(system-config): redesign manager JSP to inline form by section (library + fine groups)
+2026-06-21: feat(system-config): redesign admin JSP to section-based inline form with create modal, delete button (locked for hard configs), sepay QR preview
+2026-06-21: Deploy to Render
+2026-06-21: Fix Supabase connection hang by using direct port 5432
+2026-06-21: Bao[doc](circulation): Add beautiful AI work logs and summaries for F5-PATCH
+2026-06-21: fix(payment): append template=compact to sepay qr url
+2026-06-21: fix(payment): update SePay webhook auth check to allow bare API key without prefix
+2026-06-21: chore: remove debug scripts and files
+2026-06-21: fix(payment): rewrite SePay webhook - make auth optional, support both content and code fields, add detailed logging
+2026-06-21: fix(payment): remove accented characters in comments to prevent Render build encoding failures
+2026-06-21: fix(ui): add credentials to payment polling fetch to send session cookie
+2026-06-21: fix(sepay): update QR code url to include showinfo, fullacc, holder
+2026-06-21: fix(ai): update Gemini API to 1.5-flash and remove invalid thinkingConfig
+2026-06-21: cap nhat ai log va gitignore
+2026-06-21: Merge branch 'main' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System
+2026-06-21: feat(config): add insert and delete methods to SystemConfigDAO
+2026-06-21: Merge branch 'main' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System
+2026-06-21: feat(config): add create and delete methods to SystemConfigService
+2026-06-21: feat(config): support create and delete actions in servlets
+2026-06-21: feat(config): add create and delete UI for system configs
+2026-06-21: refactor(config): fetch configs dynamically from database instead of hardcoding
+2026-06-21: fix(config): remove obsolete config groups from admin filter dropdown
+2026-06-21: fix(sepay): display SePay configs for Manager on payment config page and allow them to update it
+2026-06-21: fix(test): resolve compilation errors after UserLockReasonDAO removal and tune AiChatbot prompt
+2026-06-21: fix(payment): remove extra sepay qr code parameters
+2026-06-21: fix(desk): do not pre-fill barcode with bookCopyId on check-out
+2026-06-21: fix(desk): auto-fill barcode instead of bookCopyId for check-out
+2026-06-20: feat(book-maintenance): restore repaired damaged copies
+2026-06-20: feat(book-copies): add searchable book and location inputs
+2026-06-20: fix(db): align PostgreSQL pooler connection settings
+2026-06-20: fix(desk): escape member code form values
+2026-06-20: feat(book-ui): improve filters and pagination
+2026-06-21: feat(book-titles): add catalog sorting
+2026-06-21: feat(book): upload cover images to Supabase Storage
+2026-06-22: fix up images
+2026-06-22: fix(payment): update SePay config default bank code and seeds to BIDV
+2026-06-22: fix(payment): fix API Key trim, Authorization check format, transactionRef null handling for VA accounts
+2026-06-22: fix(infra): add /health endpoint to keep Render awake for SePay webhook
+2026-06-22: fix(payment): add GET debug endpoint to test webhook regex parsing
+2026-06-22: fix(email): read SMTP credentials from env vars instead of hardcode
+2026-06-22: bat dau sua code neu pull thi pull tu commit nay. Thai
+2026-06-22: fix(desk): auto-trim whitespace from inputs in desk-dashboard.jsp
+2026-06-22: fix(desk): auto-trim whitespace from inputs in desk-checkout.jsp
+2026-06-22: fix(desk): auto-trim whitespace from barcode input in desk-checkin.jsp
+2026-06-22: fix(desk): auto-trim whitespace from memberCode input in desk-payment.jsp
+2026-06-22: refactor(desk): xoa 3 link sidebar rieng biet (Muon sach, Tra sach, Thanh toan) - gop vao Bang dieu khien quay
+2026-06-22: feat(desk): implement summary stats cards and remove old quick forms
+2026-06-22: feat(desk): implement action buttons, inline forms, and update javascript helpers
+2026-06-22: tam fix
+2026-06-22: chore: ignore .gemini/ directory in .gitignore
+2026-06-22: chore: remove .gemini/ from .gitignore after deleting the folder
+2026-06-22: docs(systemReport): update plan and specs based on user feedback
+2026-06-22: feat(systemReport): add DTOs for system report trends
+2026-06-22: feat(systemReport): add getBorrowTrends to ReportDAO
+2026-06-22: feat(systemReport): add getFinancialTrends to ReportDAO
+2026-06-22: feat(systemReport): add getLatestInventoryStats to InventoryReportDAO
+2026-06-22: feat(systemReport): add ReportService and ExcelExportService
+2026-06-22: feat(systemReport): add controllers for system report
+2026-06-22: feat(systemReport): add system-report.jsp view
+2026-06-22: docs(systemReport): update tasks checklist
+2026-06-22: fix(systemReport): update sidebar link for reports
+2026-06-22: fix(systemReport): fix SQL parameter inference for to_char function
+2026-06-22: chore(database): add mock data script for system report testing
+2026-06-22: test(systemReport): add MockDataSeeder utility to generate financial test data
+2026-06-22: feat(systemReport): add detailed Excel export for borrow and financial records
+2026-06-22: fix(systemReport): remove duplicate bootstrap js that breaks dropdown
+2026-06-22: fix(systemReport): correct jsp path and remove MockDataSeeder
+2026-06-22: fix ui
+2026-06-22: feat(borrow): add findAllBorrowRecordsByUserId to BorrowRecordDAO
+2026-06-23: test(borrow): add test assertion for findAllBorrowRecordsByUserId
+2026-06-23: feat(borrow): add BorrowHistoryServlet to handle historical borrow records
+2026-06-23: feat(sidebar): add Lich su muon tra link to Student and Lecturer sidebars
+2026-06-23: feat(view): add borrow-history.jsp for Student and Lecturer views
+2026-06-23: feat(dashboard): link Overdue Fines stat card to student fines page
+2026-06-23: feat(dashboard): change student loans link to borrow-history
+2026-06-23: feat(dashboard): wrap lecturer outstanding fines card, fix format, and link to borrow-history
+2026-06-23: feat(dashboard): t├¡ch hß╗úp activeLoans v├á recommendedBooks v├áo StudentDashboardServlet
+2026-06-23: fix(dashboard): sß╗¡a link s├ích gß╗úi ├╜ trß╗Å ─æ├║ng sang book-detail thay v├¼ book-search
+2026-06-23: feat(dao): add findRecentBorrowRecordsByUserId method to BorrowRecordDAO
+2026-06-23: feat(controllers): load recent loans in StudentDashboardServlet
+2026-06-23: feat(controllers): load active loans, recent loans, and active reservations in LecturerDashboardServlet
+2026-06-23: feat(views): replace mockup lecturer dashboard components with activeLoans, activeReservations, and recentLoans
+2026-06-23: feat(controllers): load active loans, recent activity, lecturer info and profile in LecturerDashboardServlet
+2026-06-23: feat(views): update stats cards on Lecturer Dashboard to use real CSDL metrics
+2026-06-23: feat(views): overhaul Lecturer Dashboard main layout to show real active loans, recent activities, and profile details
+2026-06-23: feat(model): add helper fields for librarian dashboard to BorrowRecord
+2026-06-23: feat(dao): add stats and active loan queries to BorrowRecordDAO
+2026-06-23: feat(model): add helper fields for librarian dashboard to Reservation
+2026-06-23: feat(dao): add stats and pending reservation queries to ReservationDAO
+2026-06-23: feat(model): add helper fields for librarian dashboard to Fine
+2026-06-23: feat(dao): add findUnpaidFines to FineDAO
+2026-06-23: feat(service): add cancelReservationByLibrarian to OnlineCirculationService
+2026-06-23: feat(controller): update LibrarianDashboardServlet to fetch stats and lists and handle cancelReservation
+2026-06-23: feat(controller): set now attribute in LibrarianDashboardServlet for date comparison
+2026-06-23: feat(view): overhaul Librarian Dashboard homepage to use real database-driven counts and lists
+2026-06-23: feat(ui): override librarian dashboard colors to match ui_rule.md brand palette
+2026-06-23: feat(ui): overhaul librarian dashboard homepage layout, remove mock links, and add quick operations shortcuts
+2026-06-23: fix(ui): remove invalid long suffix L from EL expression in librarian dashboard
+2026-06-23: feat(ui): make librarian dashboard styling darker, sharper, and higher contrast
+2026-06-23: fix(notification): skip dummy emails to prevent SMTP block
+2026-06-24: Bao[feat](recommendation): add title field to BookSummaryDTO
+2026-06-24: Bao[feat](recommendation): update SQL query for candidate pool in BookDAO
+2026-06-24: Bao[feat](recommendation): add reasons-enabled recommendation method in AiRecommendationService
+2026-06-24: Bao[feat](recommendation): pass recommendation reasons into chatbot context in AiChatbotService
+2026-06-24: Bao[feat](recommendation): pass reasons and isAiPowered status in RecommendationServlet
+2026-06-24: Bao[feat](recommendation): pass reasons and isAiPowered status in StudentDashboardServlet
+2026-06-24: Bao[feat](recommendation): add recommendation reason display and metadata to _recommendation.jsp
+2026-06-24: Bao[feat](recommendation): add IDs to header and icon in index.jsp for dynamic recommendation section updates
+2026-06-24: Bao[feat](recommendation): dynamically update title and icon based on AI response in recommendation.js
+2026-06-24: Bao[feat](recommendation): display dynamic title, subtitle, and reasons on Student Dashboard section-reading
+2026-06-24: Bao[test](recommendation): override getRecommendationsWithReasons in MockAiRecommendationService in RecommendationServletTest
+2026-06-24: Bao[feat](recommendation): change API key lookup to GEMINI_RECOMMEN_API_KEY in AiConfig
+2026-06-24: Bao[feat](recommendation): add GEMINI_RECOMMEN_API_KEY to SystemConfigService whitelist
+2026-06-24: Bao[feat](search): make search case-insensitive and support multiple tags in SQL
+2026-06-24: Bao[feat](recommendation): redesign recommended books to vertical list on Student Dashboard
+2026-06-24: Bao[fix](recommendation): change Gemini model to gemini-2.5-flash to prevent 503 errors
+2026-06-24: Bao[fix](recommendation): filter out out-of-stock books (availableQuantity <= 0) from candidate pool and trending list
+2026-06-24: Bao[fix](database): change database port to 6543 in DatabaseConnection and context.xml to use Supabase Pooler
+2026-06-24: loc file rac
+2026-06-24: bat dau sua
+2026-06-24: feat(chatbot): implement Regex-first Intent Classification (TD1)
+2026-06-24: feat(chatbot): configure Cache Rules Context (TD3)
+2026-06-24: feat(chatbot): implement FAQ Template in Java Service (TD7)
+2026-06-24: feat(chatbot): optimize history size and intent reset (TD4)
+2026-06-24: feat(chatbot): split direct search and advice for books (TD2)
+2026-06-24: fix(chatbot): initialize responseText to fix compile error in servlet
+2026-06-24: docs: add comments to _book-form-fields.jsp fragment for code control
+2026-06-24: docs: add comments to book-inventory-reconciliation.jsp for code control
+2026-06-24: docs: add comments to book-copies.jsp for code control
+2026-06-24: docs: add comments to book-tags.jsp for code control
+2026-06-24: docs: add comments to book-import.jsp for code control
+2026-06-24: docs: add comments to book-import-history.jsp for code control
+2026-06-24: docs: translate comments to Vietnamese in LibraryManagerDAO.java
+2026-06-24: docs: translate comments to Vietnamese in StudentDAO.java
+2026-06-24: docs: translate comments to Vietnamese in LibrarianDAO.java
+2026-06-24: docs: translate comments to Vietnamese in LecturerDAO.java
+2026-06-24: docs: translate comments to Vietnamese in AdminDAO.java
+2026-06-24: docs: translate comments to Vietnamese in MemberProfileDAO.java
+2026-06-24: docs: add comments to book-categories.jsp for code control
+2026-06-24: docs: add comments to book-damaged-lost.jsp for code control
+2026-06-22: chore(book): add Supabase environment setup script
+2026-06-22: feat(book-ui): show copy reservation KPI and active filters
+2026-06-24: feat(notification): add dynamic required attribute to template select on frontend
+2026-06-24: feat(notification): add backend validation for empty templateName when isSendEmail is checked
+2026-06-24: fix(notification): skip sending notification email to mock @lms.com addresses
+2026-06-24: chore(config): update default SMTP credentials for local environment
+2026-06-24: fix(email): globally filter out @lms.com mock emails to prevent SMTP spam blocks
+2026-06-24: fix(config): correct typo in SMTP_PASSWORD
+2026-06-24: update notification
+2026-06-24: spec F12
+2026-06-25: fix(notification): add targetRole to DB and fix target user filtering logic for dashboard and emails
+2026-06-25: fix bug
+2026-06-25: feat(audit-log): add AuditLog model entity mapping AuditLogs table
+2026-06-25: feat(audit-log): add AuditLogDTO with userEmail from LEFT JOIN User
+2026-06-25: feat(audit-log): enable findWithFilters, findById, mapResultSetToDTO read methods in AuditLogDAO
+2026-06-25: feat(audit-log): add AuditLogServlet with list/filter/pagination and CSV export
+2026-06-25: feat(audit-log): add audit-log-list.jsp with filter, badge colors, pagination and detail modal
+2026-06-25: feat(audit-log): wire sidebar nav link to /admin/audit-log and update navMap auto-active
+2026-06-25: feat(audit-log): save timestamp in Vietnam timezone (GMT+7)
+2026-06-25: feat(audit-log): format oldValues and newValues nicely in exported CSV
+2026-06-25: feat(timezone): configure JVM and database connection sessions to Asia/Ho_Chi_Minh timezone
+2026-06-25: feat(db): reorganize seed files, update schema and replace secrets with placeholders
+2026-06-25: Bao[spec](bookImport): populate book import Excel template with 25 realistic books and copies
+2026-06-25: Bao[spec](bookImport): update import template to generate 2 copies per book
+2026-06-25: Bao[spec](seed): update seed user roles to uppercase for consistency
+2026-06-25: Bao[spec](bookImport): fix separator to semicolon and remove thousand separator format to resolve import error
+2026-06-25: style(book-discovery): update search UI, badge colors and filter options for user specific statuses
+2026-06-25: style(chatbot): format code indentation in chatbot fragment
+2026-06-25: style(footer): format code indentation in footer
+2026-06-25: feat(book): add BookCoverFetcher standalone tool for batch cover image download
+2026-06-25: feat(reservation): overload updateToReadyPickup to support dynamic holdDays
+2026-06-25: feat(reservation): add findExpiredReservations, findReservationByIdForUpdate, and updateStatusToCancelled to ReservationDAO
+2026-06-25: feat(service): dynamic reservation hold days for first updateToReadyPickup in OnlineCirculationService
+2026-06-25: feat(service): dynamic reservation hold days for second updateToReadyPickup in OnlineCirculationService
+2026-06-25: feat(service): dynamic reservation hold days for updateToReadyPickup in DeskCirculationService
+2026-06-25: feat(reservation): create ReservationExpirationProcessor background task logic
+2026-06-25: feat(config): integrate ReservationExpirationProcessor scheduler into AppContextListener
+2026-06-25: feat(controller): create TriggerReservationExpirationServlet for manual trigger
+2026-06-25: feat(view): add trigger-expiration button and JS handler to admin dashboard.jsp
+2026-06-25: test(service): create JUnit test suite for ReservationExpirationProcessor
+2026-06-25: fix(service): correct signature calls to insertAuditLog and EmailService
+2026-06-25: fix(dao): correct mapRowToReservation to mapResultSetToReservation in ReservationDAO
+2026-06-25: fix(controller): change authorization check to use session attributes directly
+2026-06-25: fix(service): fallback to retrieve reserved copy by bookId if reservation.bookCopyId is null
+2026-06-25: test(service): align JUnit tests to expect null bookCopyId in Reservation
+2026-06-25: feat: Reservation&Renewal
+2026-06-25: Merge branch 'main' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System
+2026-06-25: feat(dao): add findOverdueRecords to BorrowRecordDAO
+2026-06-25: feat(dao): add transaction support methods to UserLockReasonDAO
+2026-06-25: fix(service): restore automatic unlock logic in DeskCirculationService
+2026-06-25: fix(controller): restore automatic unlock logic in SePayWebhookServlet
+2026-06-25: feat(service): implement OverdueProcessor background task
+2026-06-25: feat(config): register OverdueProcessor scheduler in AppContextListener
+2026-06-25: feat(controller): implement TriggerOverdueServlet for manual scanning
+2026-06-25: feat(view): add F9 Overdue trigger button to admin dashboard
+2026-06-25: test(service): add integration tests for OverdueProcessor
+2026-06-25: report payfine
+2026-06-25: feat(auth): add isLockedOnlyForUnpaid and hasNonUnpaidLockReason helpers to AuthService
+2026-06-25: fix(auth): allow login when account locked only for unpaid fines, block other lock reasons
+2026-06-25: fix(auth): keep session for users locked only for unpaid fines in AuthFilter
+2026-06-26: fix auth lock reason unpaid
+2026-06-26: feat(desk-reserve): add desk-side reservation for librarian
+2026-06-26: chore: update local netbeans properties
+2026-06-26: docs(finePayment): update CHANGELOG for Overdue Processor implementation
+2026-06-26: docs: book-management - restrict plan to librarian
+2026-06-26: docs: book-management - restrict spec to librarian
+2026-06-26: docs: book-management - restrict tasks to librarian
+2026-06-26: docs: book-management - update activity diagram role access
+2026-06-26: fix: book-management - restrict incident controller to librarian
+2026-06-26: fix: book-management - restrict copy controller to librarian
+2026-06-26: fix: book-management - restrict import controller to librarian
+2026-06-26: fix: book-management - restrict book controller to librarian
+2026-06-26: fix: book-management - restrict category controller to librarian
+2026-06-26: fix: book-management - restrict inventory controller to librarian
+2026-06-26: fix: book-management - restrict tag controller to librarian
+2026-06-26: fix: auth - restrict book-management routes to librarian
+2026-06-26: fix: book-management - restrict import history actions to librarian
+2026-06-26: fix: book-management - restrict dashboard import action to librarian
+2026-06-26: fix: book-management - restrict sidebar import action to librarian
+2026-06-26: feat: book-cover - improve cover fetch fallbacks
+2026-06-26: fix: storage - make Supabase upload idempotent
+2026-06-26: feat(user): update ImportUserServlet to support two-step upload-preview-confirm flow
+2026-06-26: ui(user): update import user modal layout to support preview and confirm states
+2026-06-26: style(ui): update profile, system config layouts and project configurations
+2026-06-26: feat(audit): optimize batch book import to record exactly one audit log
+2026-06-26:  fix AI LOG
+2026-06-26: fix AI LOG
+2026-06-26: chore: untrack NetBeans private configuration folder
+2026-06-26: feat(email-template): add EmailTemplate table DDL to schema
+2026-06-26: feat(email-template): create EmailTemplate.java model
+2026-06-26: feat(email-template): create EmailTemplateDAO with findByTempName and update
+2026-06-26: refactor(seed): replace 04_document_templates with 04_email_templates for EmailTemplate table
+2026-06-26: feat(seed): add 04_email_templates.sql with 6 system email templates
+2026-06-26: fix(seed): update 05_sync_sequences to sync EmailTemplate instead of DocumentTemp
+2026-06-26: fix(async-email): correct line endings in EmailTemplate and EmailTemplateDAO
+2026-06-26: feat(async-email): create EmailJob DTO to hold email payloads in the queue
+2026-06-26: refactor(async-email): replace executor thread pool with LinkedBlockingQueue in EmailService
+2026-06-26: feat(async-email): create EmailWorker background consumer thread for async processing
+2026-06-26: feat(async-email): integrate EmailWorker lifecycle into AppContextListener
+2026-06-26: feat(seed): add email configurations to 02_system_configurations.sql
+2026-06-26: feat(async-email): integrate RESERVATION_READY and RENEWAL_CONFIRMATION emails in OnlineCirculationService
+2026-06-26: test(async-email): add unit tests for EmailService queue behavior and overflow protection
+2026-06-26: fix(async-email): pass pickupDeadline to RESERVATION_READY email placeholder
+2026-06-26: feat(async-email): integrate RESET_PASSWORD queue email in ForgotPasswordServlet
+2026-06-26: feat(async-email): integrate RESERVATION_READY queue email and INCIDENT_FINE_NOTICE queue email in DeskCirculationService
+2026-06-26: feat(seed): truncate EmailTemplate table before insertion in 04_email_templates.sql
+2026-06-26: feat(async-email): integrate OVERDUE_NOTICE queue email in OverdueProcessor
+2026-06-26: feat(async-email): integrate RESERVATION_READY queue email in ReservationExpirationProcessor
+2026-06-26: feat(async-email): integrate PAYMENT_CONFIRMATION queue email in CashPaymentServlet and SePayWebhookServlet
+2026-06-26: feat(async-email): integrate PAYMENT_CONFIRMATION cash payment email in DeskCirculationService
+2026-06-26: feat(async-email): add CHECKOUT_CONFIRMATION template and integrate checkout email in DeskCirculationService
+2026-06-26: chore: untrack NetBeans private configuration folder
+2026-06-26: chore: clean up test files, update email service and AI logs
+2026-06-26: Tuan[test](f8): add 200 JUnit test cases with mock JDBC and export test report
+2026-06-26: updata file test
+2026-06-26: feat(async-email): only enqueue and send to real emails ending with @gmail.com
+2026-06-26: fix(desk-checkout): add targetBookId verification in processCheckOut
+2026-06-26: fix(desk-checkout): read and pass targetBookId parameter in CheckOutServlet
+2026-06-26: fix(desk-checkout): pass and clear targetBookId on checkout form in desk-dashboard.jsp
+2026-06-26: fix F5
+2026-06-26: feat(fine): auto-create pending payment in OverdueProcessor
+2026-06-26: test(fine): assert pending payment creation in OverdueProcessorTest
+2026-06-26: style(audit-log): color SYSTEM_EMAIL and other unstyled actions in audit log list
+2026-06-26: feat(desk-reserve): add barcode lookup support in DeskReservationServlet
+2026-06-26: feat(desk-reserve): add barcode scanner UI to reservation form in desk-dashboard.jsp
+2026-06-26: fix(report): reconcile cash and online payments in financial report by checking for completed status
+2026-06-26: style(report): change financial trend chart type from line to bar for better readability
+2026-06-26: docs(fine): document payment creation logic in OverdueProcessor processSingleRecord
+2026-06-26: docs(test): add comments to pending payment assertions in OverdueProcessorTest
+2026-06-26: docs(report): add comment explaining payment status check in ReportDAO
+2026-06-26: style(report): add comment in system-report.jsp about bar chart choice
+2026-06-26: refactor(fine): simplify comments and restore line chart layout in financial reports
+2026-06-27: chore: update netbeans project properties
+2026-06-27: feat(admin): load actual KPI values and recent audit logs on dashboard
+2026-06-27: fix(admin): redirect back to dashboard after quick lock/unlock actions
+2026-06-27: feat(dao): add method to calculate total unpaid fines
+2026-06-27: feat(dao): add method to count pending payments
+2026-06-27: feat(admin): render real KPI and dynamically styled audit log on dashboard
+2026-06-27: feat(admin-dashboard): remove user and permission management section
+2026-06-27: fix(admin-dashboard): restore user accounts table on dashboard
+2026-06-27: feat(admin-sidebar): restore user management link in sidebar
+2026-06-27: feat(timezone): set system-wide timezone to Asia/Ho_Chi_Minh
+2026-06-27: feat(audit-log): display user-friendly translated labels instead of raw json
+2026-06-27: feat(audit-log): translate json data into friendly text in dashboard security panel
+2026-06-27: fix spec
+2026-06-28: test: f6 and f14 - implement 200+ test cases and export report
+2026-06-28: test: f6 and f14 - remove old test files
+2026-06-27: feat(book-management): add book detail drawer
+2026-06-27: feat(book-management): paginate categories and tags
+2026-06-28: feat(manager): add staff performance page and sync dashboard with real DB data
+2026-06-28: fix(manager): remove all hardcoded fallback data from dashboard - replace with proper empty states
+2026-06-28: fix(manager): update footer copyright year 2024 -> 2026
+2026-06-28: fix(manager): fix overdue rate to include historically returned-late records, not just active borrows
+2026-06-28: fix(manager): explicitly include status = 'overdue' in overdue rate calculation
+2026-06-28: style(manager): remove library policies block from dashboard
+2026-06-28: fix(manager): pad missing months in monthly trend chart to guarantee 8 columns
+2026-06-28: fix(manager): update routing links in dashboard, sidebar, and footer
+2026-06-28: fix(manager): change help center link to target #contact id of guest footer
+2026-06-28: style: synchronize librarian UI theme with manager and update global footers
+2026-06-28: fix(audit-log): fix default badge css selector and colorize new action types
+2026-06-28: update spec
+2026-06-28: feat(book-management): add inventory location combobox
+2026-06-28: feat(book-management): implement librarian overview dashboard
+2026-06-29: update spec
+2026-06-29: ui(lecturer): remove academic resources from sidebar menu
+2026-06-29: ui(lecturer): update header title to lecturer workspace
+2026-07-02: fix spec
+2026-07-02: feat(user): implement BR-41 to prevent admin self-locking
+2026-07-02: spec(user): add BR-54 and BR-55 for User Account Management
+2026-07-02: Merge branch 'main' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System
+2026-07-03: update gitignore
+2026-07-03: fix specs
+2026-07-03: fix specs UC
+2026-07-05: feat(bookSuggestion): implementing book suggestion feature and update database schemas
+2026-07-05: chore: update test runners script and generated code
+2026-07-06: feat(notification): implement public news and remove markdown dependency
+2026-07-06: fix(notification): remove 'policy' option as requested
+2026-07-06: finish news
+2026-07-06: docs(notification): update spec and converge with implementation
+2026-07-06: docs(diagram): update spec-UC-BR-FR.txt for notification management
+2026-07-06: fix data seed
+2026-07-06: feat(chatbot): implement AI Chatbot service, unit tests, and update desk dashboard
+2026-07-07: refactor(desk-dashboard): split 1490-line JSP into 3 fragments for maintainability
+2026-07-07: refactor(manage-notifications): split 867-line JSP into 3 fragments for maintainability
+2026-07-07: refactor(admin-dashboard): split 790-line JSP into 3 fragments for maintainability
+2026-07-07: fix(student-dashboard): remove hardcoded demo book rows, replace with proper empty state
+2026-07-07: feat(ui): display user full name instead of email in dashboard and headers
+2026-07-07: fix(student-dashboard): fix 404 links for Xem tß║Ñt cß║ú buttons
+2026-07-07: fix(student-dashboard): restore AJAX loading for AI recommendations
+2026-07-07: feat(student-dashboard): change AI recommendation to static Top 5 trending books
+2026-07-07: fix(student-dashboard): fix missing fn taglib import in reading fragment
+2026-07-07: feat(notifications): replace markdown with auto-image URL parsing & remove unused MarkdownUtil
+2026-07-07: fix(news): parse image URLs and render as img tag in public news page
+2026-07-07: fix(notifications): update sidebar unread count dynamically when reading notifications
+2026-07-07: fix(notifications): sync sidebar navigation unread badge with notification bell widget state
+2026-07-07: feat(profile): remove avatar image upload and use default letter avatar for all roles
+2026-07-07: feat(profile): remove mock statistics badges from all profile pages
+2026-07-07: feat(user): set endDate to 4 years from now for student roles on creation
+2026-07-07: chore(ui): update footer copyright year from 2024 to 2026 across pages
+2026-07-07: feat(admin): remove extra sublinks from sidebar for audit and config
+2026-07-07: fix(ui): use vietnamese values for gender selection across all profiles
+2026-07-07: feat(ui): update admin header to remove search bar and show full name
+2026-07-07: fix(ui): correct help center link in admin sidebar
+2026-07-07: style(ui): remove search bar, support link and help icon from student header
+2026-07-07: feat(ui): display full name instead of email in lecturer, librarian and manager roles
+2026-07-07: fix(ui): add script to switch tabs based on url hash in lecturer my-borrowings
+2026-07-07: feat(ui): replace profile card with popular books in lecturer dashboard
+2026-07-07: chore(db): clean up and format SQL schema file with drops for fresh run
+2026-07-07: fix(ui): fix 404 error on renew and return buttons in student dashboard, apply minor UI fixes
+2026-07-07: fix(profile): fetch max borrow limit from config and remove dummy stats from all profiles
+2026-07-07: fix(chatbot): add chat history context to intent classification
+2026-07-07: fix(chatbot): increase maxOutputTokens and make JSON parsing safer for intent classification
+2026-07-07: refactor(librarian): clean up unused F6 JSPs and redirect doGet in servlets
+2026-07-07: test(book-management): isolate book image storage test
+2026-07-07: refactor(book-management): consolidate category and tag scripts
+2026-07-07: feat(book-management): add book title drawer
+2026-07-07: style(book-management): refine librarian management pages
+2026-07-08: style(book-management): align catalog page layout patterns
+2026-07-08: feat(book-management): validate ISBN checksums
+2026-07-08: feat(book): improve category and tag picker UX
+2026-07-08: fix(book): avoid unsupported css selector
+2026-07-08: fix(auth): correct login loading spinner
+2026-07-09: chore: netbeans - update Tomcat platform classpath
+2026-07-09: docs: book management - standardize SDD and activity diagrams
+2026-07-09: change port 8888
+2026-07-09: feat(librarian): Cß║úi tiß║┐n Dashboard thß╗º th╞░ v├á luß╗ông xß╗¡ l├╜ email h├áng ─æß╗úi
+2026-07-11: docs: update spec UC-15 and BR-59 to BR-62
+2026-07-11: update spec
+2026-07-20: feat(book-management): align librarian routes and simplify tag management
+2026-07-20: feat(system-config): remove delete configuration feature
+2026-07-20: fix(payment): update processedBy and paymentMethod when approving cash payment
+2026-07-20: feat(book-management): add circulation history and csv export
+2026-07-21: fix(book-management): neutralize csv formulas in exports
+2026-07-21: system test
+2026-07-21: Merge branch 'main' of https://github.com/thanhtuanfptse05/LMS-Library_Management_System # Please enter a commit message to explain why this merge is necessary, # especially if it merges an updated upstream into a topic branch. # # Lines starting with '#' will be ignored, and an empty message aborts # the commit.
+2026-07-21: fix(ui): resolve FOUT issue and preconnect fonts in login.jsp, add missing test files
+2026-07-21: docs(specs): standardize and sync spec, plan, and task files for reports, config, and auditLog
+2026-07-21: fix(book-management): validate manual barcode input
+2026-07-21: fix(book-management): align import barcode validation
+2026-07-22: feat(ui): implement system-wide mobile responsive layout and offcanvas navigation
+2026-07-22: fix(ui): resolve offcanvas z-index layering bug and refactor sidebar using Bootstrap offcanvas-lg
+2026-07-22: fix(ui): scope sidebar-layout z-index to desktop media query and set offcanvas show z-index to 1055
+2026-07-22: fix(ui): use standard Bootstrap 5 offcanvas class and enforce z-index 1090 over backdrop 1080
+2026-07-22: fix(ui): ensure desktop sidebar visibility and layout alignment
+2026-07-22: feat(ui): refine sidebar layout and CSS styles for desktop and mobile offcanvas drawer
+2026-07-22: fix(ui): resolve offcanvas backdrop overlay bug and enhance mobile menu responsiveness
+2026-07-22: test(all): standardize unit test suite for Service, Utility and Filter layers using JUnit 4
+2026-07-22: test(service,util): expand unit test suite to 31 files covering 100% of methods
+2026-07-22: fix(test): resolve inner class and assertion edge cases in BookImportServiceTest
+2026-07-22: feat(service): add NotificationService and PaymentService with 100% unit test coverage
+2026-07-22: sync: match remote main with local working directory state
+2026-07-22: test(dao): add safe offline DAO unit tests using MockJdbc proxy pattern
+2026-07-22: docs(test): aggregate all 39 unit test files into ALL_UNIT_TESTS.md
+2026-07-22: feat(desk): auto-create BookCopyIncident when checking in damaged or lost books
+2026-07-23: feat(book-maintenance): support removing damaged copies from inventory
+2026-07-23: Bao[docs](diagram): update UC & BR specifications and clean up scripts

@@ -17,7 +17,7 @@
 * **Testing:** JUnit 5
 * **Integrations:** SendGrid/SMTP (Email), SePay (Payment API), OpenAI/Gemini API (AI Service)
 
-## 3. ARCHITECTURE PRINCIPLES
+## 3. ARCHITECTURE PRINCIPLES 
 * **Model-View-Controller (MVC) Pattern:**
   * **Model:** Chứa các entity thuần và DTO (Data Transfer Objects).
   * **View:** Sử dụng các file JSP kết hợp JSTL và EL. Cấm viết Scriptlet Java `<% %>` trong JSP.

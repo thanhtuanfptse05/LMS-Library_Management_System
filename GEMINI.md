@@ -1,6 +1,6 @@
 # CLAUDE.md — LMS Project DNA & Architecture
 # Phiên bản: 1.2.0 | Đọc file AGENTS.md trước để hiểu các quy tắc kỹ thuật bắt buộc
-
+ 
 ## 1. TL;DR (Đọc nhanh trong 60 giây)
 > Đây là hệ thống Quản lý Thư viện Đại học (LMS) - SWP391 Milestone 2.
 > **Kiến trúc:** Monolith Java Web. Servlet điều khiển, JDBC thuần tương tác CSDL, JSP hiển thị giao diện.
