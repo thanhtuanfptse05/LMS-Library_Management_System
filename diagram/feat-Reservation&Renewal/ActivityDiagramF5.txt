@@ -43,14 +43,30 @@ Nhánh [Status == 'active' AND Under Limit]: rẽ tới [Decision Node 6.8].
 Actor: LMS System
 Loại: System Action Box
 Tên Action: Return Eligibility Error
-Nội dung Action: Trả về thông báo từ chối giao dịch kèm lý do cụ thể (Bị khóa do nợ phạt, vi phạm an ninh, hoặc đã đạt giới hạn mượn/đặt trước).
+Nội dung Action: Trả về thông báo từ chối giao dịch kèm lý do cụ thể (Tài khoản bị khóa do nợ phạt, vi phạm an ninh, hoặc đã đạt giới hạn mượn/đặt trước).
 Nối tới: Mũi tên đi tới [Final Node 9.20].
 
 [Decision Node 6.8]
 Actor: LMS System
 Loại: Decision Node
-Tên Action: Check Book Availability
-Nội dung Action: Kiểm tra số lượng bản sao vật lý đang khả dụng (Book.availableQuantity).
+Tên Action: Validate Book Status
+Nội dung Action: Đọc thông tin và trạng thái lưu thông của đầu sách trong CSDL (Book.status).
+Nối tới:
+Nhánh [Book.status != 'available']: rẽ tới [System Action Box 6.9].
+Nhánh [Book.status == 'available']: rẽ tới [Decision Node 7.8].
+
+[System Action Box 6.9]
+Actor: LMS System
+Loại: System Action Box
+Tên Action:     
+Nội dung Action: Trả về thông báo lỗi từ chối đặt trước: "Sách này hiện đang bị ngưng lưu thông/bảo trì, không thể đặt trước."
+Nối tới: Mũi tên đi tới [Final Node 9.20].
+
+[Decision Node 7.8]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Book Available Quantity
+Nội dung Action: Kiểm tra số lượng bản sao vật lý đang khả dụng của đầu sách (Book.availableQuantity).
 Nối tới:
 Nhánh [availableQuantity > 0]: rẽ tới [System Action Box 7.9].
 Nhánh [availableQuantity == 0]: rẽ tới [System Action Box 7.10].
