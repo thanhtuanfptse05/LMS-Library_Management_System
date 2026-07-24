@@ -2,6 +2,7 @@ package controllers;
 
 import dao.BookDAO;
 import dao.BorrowRecordDAO;
+import dto.BookSummaryDTO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,8 +83,8 @@ public class RecommendationServlet extends HttpServlet {
             if (borrowCount >= 3) {
                 // Đủ điều kiện: Gọi AI
                 java.util.Map<String, java.util.Map<String, Integer>> freqProfile = bookDAO.getUserTagCategoryFrequency(userId);
-                List<model.BookSummaryDTO> recentHistory = bookDAO.getRecentBorrowedSummary(userId, 3);
-                List<model.BookSummaryDTO> candidatePool = bookDAO.getCandidatePoolWithTagsAndCategories(userId, 30);
+                List<BookSummaryDTO> recentHistory = bookDAO.getRecentBorrowedSummary(userId, 3);
+                List<BookSummaryDTO> candidatePool = bookDAO.getCandidatePoolWithTagsAndCategories(userId, 30);
                 
                 LOGGER.log(Level.FINE, "[AI-REC] Preparing context... CandidatePool size={0}", candidatePool.size());
 

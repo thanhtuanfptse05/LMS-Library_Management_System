@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Book;
-import model.BookSummaryDTO;
+import dto.BookSummaryDTO;
 import dto.BookCatalogSummaryDTO;
 import model.Category;
 import model.Tag;

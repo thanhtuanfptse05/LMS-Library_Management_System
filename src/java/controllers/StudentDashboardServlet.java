@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Book;
 import model.BorrowRecord;
-import model.BookSummaryDTO;
+import dto.BookSummaryDTO;
 import util.DatabaseConnection;
 
 @WebServlet(name = "StudentDashboardServlet", urlPatterns = {"/student/dashboard"})

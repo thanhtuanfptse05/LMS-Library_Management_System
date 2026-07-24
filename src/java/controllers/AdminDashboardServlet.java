@@ -20,7 +20,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import model.UserDTO;
+import dto.UserDTO;
 import service.UserService;
 
 @WebServlet(name = "AdminDashboardServlet", urlPatterns = {"/admin/dashboard"})

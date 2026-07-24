@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.DocumentTemp;
 import model.Notification;
-import model.UserContactDTO;
+import dto.UserContactDTO;
 import service.EmailService;
 
 /**

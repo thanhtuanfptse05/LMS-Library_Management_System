@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import model.MemberProfile;
 import model.User;
-import model.UserDTO;
+import dto.UserDTO;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**

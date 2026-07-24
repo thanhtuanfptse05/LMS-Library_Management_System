@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import config.AiConfig;
+import dto.BookSummaryDTO;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -41,8 +42,8 @@ public class AiRecommendationService {
      */
     public List<Integer> getRecommendations(
             java.util.Map<String, java.util.Map<String, Integer>> frequencyProfile,
-            List<model.BookSummaryDTO> recentHistory,
-            List<model.BookSummaryDTO> candidatePool) {
+            List<BookSummaryDTO> recentHistory,
+            List<BookSummaryDTO> candidatePool) {
         java.util.Map<Integer, String> recs = getRecommendationsWithReasons(frequencyProfile, recentHistory, candidatePool);
         if (recs == null) {
             return null;
@@ -55,8 +56,8 @@ public class AiRecommendationService {
      */
     public java.util.Map<Integer, String> getRecommendationsWithReasons(
             java.util.Map<String, java.util.Map<String, Integer>> frequencyProfile,
-            List<model.BookSummaryDTO> recentHistory,
-            List<model.BookSummaryDTO> candidatePool) {
+            List<BookSummaryDTO> recentHistory,
+            List<BookSummaryDTO> candidatePool) {
             
         if (candidatePool == null || candidatePool.isEmpty()) {
             LOGGER.log(Level.WARNING, "[AI-SVC] CandidatePool is empty or null, skipping AI call.");
@@ -87,8 +88,8 @@ public class AiRecommendationService {
      */
     private String buildPromptWithReasons(
             java.util.Map<String, java.util.Map<String, Integer>> frequencyProfile,
-            List<model.BookSummaryDTO> recentHistory,
-            List<model.BookSummaryDTO> candidatePool) {
+            List<BookSummaryDTO> recentHistory,
+            List<BookSummaryDTO> candidatePool) {
             
         StringBuilder prompt = new StringBuilder();
         prompt.append("You are an expert AI librarian.\n\n");
@@ -108,7 +109,7 @@ public class AiRecommendationService {
         // Phần 2: Sách mượn gần nhất
         prompt.append("=== RECENTLY BORROWED (Last 3 books) ===\n");
         if (recentHistory != null && !recentHistory.isEmpty()) {
-            for (model.BookSummaryDTO dto : recentHistory) {
+            for (BookSummaryDTO dto : recentHistory) {
                 prompt.append("- ").append(dto.toString()).append("\n");
             }
         } else {
@@ -118,7 +119,7 @@ public class AiRecommendationService {
         
         // Phần 3: Candidate pool
         prompt.append("=== CANDIDATE BOOKS (Not yet borrowed, sorted by popularity) ===\n");
-        for (model.BookSummaryDTO dto : candidatePool) {
+        for (BookSummaryDTO dto : candidatePool) {
             prompt.append(dto.toString()).append("\n");
         }
         prompt.append("\n");
@@ -255,9 +256,9 @@ public class AiRecommendationService {
     /**
      * Lọc ảo giác trên bản đồ gợi ý.
      */
-    private java.util.Map<Integer, String> filterHallucinationWithReasons(java.util.Map<Integer, String> aiRecommended, List<model.BookSummaryDTO> pool) {
+    private java.util.Map<Integer, String> filterHallucinationWithReasons(java.util.Map<Integer, String> aiRecommended, List<BookSummaryDTO> pool) {
         java.util.Map<Integer, String> safeMap = new java.util.LinkedHashMap<>();
-        java.util.Set<Integer> validIds = pool.stream().map(model.BookSummaryDTO::getBookId).collect(java.util.stream.Collectors.toSet());
+        java.util.Set<Integer> validIds = pool.stream().map(BookSummaryDTO::getBookId).collect(java.util.stream.Collectors.toSet());
         
         for (java.util.Map.Entry<Integer, String> entry : aiRecommended.entrySet()) {
             int id = entry.getKey();

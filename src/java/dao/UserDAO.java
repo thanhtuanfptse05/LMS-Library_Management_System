@@ -11,8 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.MemberProfile;
 import model.User;
-import model.UserContactDTO;
-import model.UserDTO;
+import dto.UserContactDTO;
+import dto.UserDTO;
 import util.DatabaseConnection;
 
 /**

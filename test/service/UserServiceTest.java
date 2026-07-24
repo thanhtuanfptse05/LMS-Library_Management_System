@@ -1,6 +1,6 @@
 package service;
 
-import model.UserDTO;
+import dto.UserDTO;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;

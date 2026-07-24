@@ -1,4 +1,4 @@
-package model;
+package dto;
 
 import java.util.List;
 
@@ -68,4 +68,3 @@ public class BookSummaryDTO {
                " | tags: " + (tags != null ? String.join(", ", tags) : "");
     }
 }
-

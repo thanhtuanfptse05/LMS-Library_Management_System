@@ -9,6 +9,7 @@ import dao.BookDAO;
 import dao.SystemConfigurationsDAO;
 import model.Book;
 import model.ChatMessage;
+import dto.BookSummaryDTO;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -233,8 +234,8 @@ public class AiChatbotService {
                 int borrowCount = new dao.BorrowRecordDAO().countUserBorrowHistory(userId);
                 if (borrowCount >= 3) {
                     java.util.Map<String, java.util.Map<String, Integer>> freqProfile = bookDAO.getUserTagCategoryFrequency(userId);
-                    List<model.BookSummaryDTO> recentHistory = bookDAO.getRecentBorrowedSummary(userId, 3);
-                    List<model.BookSummaryDTO> candidatePool = bookDAO.getCandidatePoolWithTagsAndCategories(userId, 30);
+                    List<BookSummaryDTO> recentHistory = bookDAO.getRecentBorrowedSummary(userId, 3);
+                    List<BookSummaryDTO> candidatePool = bookDAO.getCandidatePoolWithTagsAndCategories(userId, 30);
                     
                     AiRecommendationService recommendationService = new AiRecommendationService();
                     java.util.Map<Integer, String> aiRecommendations = recommendationService.getRecommendationsWithReasons(freqProfile, recentHistory, candidatePool);

@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import model.UserDTO;
+import dto.UserDTO;
 import service.UserService;
 import dao.UserDAO;
 import java.util.HashSet;
