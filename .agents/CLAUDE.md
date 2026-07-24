@@ -26,6 +26,8 @@
   * Bảng sách thực tế là `Book` (số ít), nhưng các bảng khác tham chiếu ngoại tới `Books(bookId)`. Bắt buộc dùng tên bảng thực tế `Book`, class entity là `Book.java` và DAO là `BookDAO.java`.
   * Cột trong bảng `Payment` thực tế là `processedBy`, nhưng khóa ngoại viết nhầm là `processBy`. Bắt buộc dùng `processedBy` trong Java.
   * Bảng `DocumentTemp` (21 bảng) dùng để quản lý các mẫu email thông báo, được quản lý bởi `LibraryManager`.
+* **LESSON-005: Quy tắc bắt buộc dùng CodeGraph (CG-01)**
+  * AI Agent BẮT BUỘC phải dùng `codegraph_explore` (hoặc lệnh CLI `codegraph explore`) đầu tiên trước khi grep/read file mỗi khi cần tra cứu symbol, phương thức, lớp hay phân tích luồng logic cross-module.
 
 ### Current Sprint Notes
 * **Sprint:** Milestone 2 (Core Transaction Flow).

@@ -7,13 +7,13 @@
 
 * **Test Case:** Tiền tố `TC` + Tên chức năng (VD: `TCCreateUser`, `TCCheckoutBook`, `TCSearchBook`)
 * **Data File:** Tiền tố `Data` + Tên chức năng tương ứng (VD: `DataCreateUser.xlsx`, `DataSearchBook.xlsx`)
-* **Test Suite:** Tiền tố `TS` + Tên nhóm chức năng (VD: `TSAuthentication`, `TSBookDiscovery`)
+* **Test Suite:** Tiền tố `TS` + Tên nhóm chức năng (VD: `TSAuthentication`, `TSBookDiscovery`, `TSSelfService`)
 
 ---
 
 ## 2. Danh sách các Test Case (Mapping 1-1 với Data Files)
 
-### 🟢 Đã hoàn thành 100% (TS1 - TS4: 54 Test Cases)
+### 🟢 Đã hoàn thành 100% Toàn bộ Hệ thống (TS1 - TS6: 76 Test Cases)
 
 | Test Case Name | Mapping Data File | Số lượng TCs | Luồng thực thi (Test Flow) | Kết quả kỳ vọng (Expected Result) |
 |---|---|---|---|---|
@@ -31,52 +31,38 @@
 | **TCCheckoutBook** | `DataCheckoutBook.xlsx` | 10 TCs | Tra cứu Mã SV (`memberCode`) ➔ Bấm 'Chọn giao sách' ➔ Nhập Barcode ➔ Bấm 'Xác nhận giao sách' | Giao sách thành công, BorrowRecord trạng thái borrowed. Từ chối nếu nợ phạt / quá hạn mức. |
 | **TCCheckinBook** | `DataCheckinBook.xlsx` | 8 TCs | Tra cứu Mã SV (`memberCode`) ➔ Bấm 'Chọn trả sách' ➔ Nhập Barcode & Tình trạng (`good`/`damaged`/`lost`) ➔ Bấm 'Xác nhận nhận trả sách' | Nhận trả sách thành công, tự động tính phạt trễ/hỏng/mất. Báo lỗi nếu bản sao chưa mượn / không tồn tại. |
 | **TCPayFine** | `DataPayFine.xlsx` | 5 TCs | Tra cứu Mã SV (`memberCode`) ➔ Bấm 'DUYỆT THU TIỀN MẶT' | Đóng khoản phạt, xóa cờ nợ phạt và tự động mở khóa tài khoản. |
-
----
-
-### 🟡 Các Test Suite Mới Đã Chốt Kiến Trúc (TS5 - TS7)
-
-| Test Case Name | Mapping Data File | Luồng thực thi (Test Flow) | Kết quả kỳ vọng (Expected Result) |
-|---|---|---|---|
-| **TCSearchBook** | `DataSearchBook.xlsx` | Nhập từ khóa (Tên sách, Tác giả, ISBN) ➔ Bấm Tìm kiếm | Danh sách sách hiển thị chính xác các kết quả khớp từ khóa. |
-| **TCFilterByCategory** | `DataFilterByCategory.xlsx` | Chọn 1 hoặc nhiều Danh mục sách ➔ Lọc | Chỉ hiển thị các đầu sách thuộc danh mục đã chọn. |
-| **TCFilterByTag** | `DataFilterByTag.xlsx` | Chọn Thẻ Tag (Java, AI, Giáo trình) ➔ Lọc | Chỉ hiển thị các đầu sách có gắn thẻ Tag tương ứng. |
-| **TCFilterByAvailability** | `DataFilterByAvailability.xlsx` | Lọc theo trạng thái sách có sẵn trong kho | Loại bỏ các đầu sách đã hết bản sao mượn. |
-| **TCViewBookDetail** | `DataViewBookDetail.xlsx` | Click vào một đầu sách bất kỳ trong danh sách | Hiển thị chi tiết sách, ảnh bìa, vị trí kệ & các bản sao. |
-| **TCReserveBookOnline** | `DataReserveBookOnline.xlsx` | Độc giả bấm Đặt trước sách trực tuyến | Tạo đơn đặt trước thành công (trạng thái `readypickup` / `pending`). |
-| **TCRenewBookOnline** | `DataRenewBookOnline.xlsx` | Độc giả gửi Yêu cầu gia hạn sách đang mượn | Hệ thống tự động gia hạn thêm ngày trả sách mới nếu đủ điều kiện. |
-| **TCCancelReservation** | `DataCancelReservation.xlsx` | Độc giả bấm Hủy đơn đặt trước | Chuyển trạng thái đơn sang `cancelled`, giải phóng bản sao sách. |
-| **TCCreateNotification** | `DataCreateNotification.xlsx` | Manager đăng thông báo hệ thống mới | Thông báo xuất hiện trên bảng tin toàn hệ thống. |
-| **TCViewNotifications** | `DataViewNotifications.xlsx` | Student/Lecturer xem bảng tin & lọc loại thông báo | Hiển thị danh sách thông báo kèm số thông báo chưa đọc. |
-| **TCMarkAsRead** | `DataMarkAsRead.xlsx` | Bấm "Đánh dấu tất cả đã đọc" | Cập nhật `readAt`, badge thông báo giảm về 0. |
+| **TCSearchBook** | `DataSearchBook.xlsx` | 2 TCs | Nhập từ khóa (Tên sách, Tác giả, ISBN) ➔ Bấm Tìm kiếm | Danh sách sách hiển thị chính xác các kết quả khớp từ khóa. |
+| **TCFilterByCategory** | `DataFilterByCategory.xlsx` | 2 TCs | Chọn 1 hoặc nhiều Danh mục sách ➔ Lọc | Chỉ hiển thị các đầu sách thuộc danh mục đã chọn. |
+| **TCFilterByTag** | `DataFilterByTag.xlsx` | 2 TCs | Chọn Thẻ Tag (Java, AI, Giáo trình) ➔ Lọc | Chỉ hiển thị các đầu sách có gắn thẻ Tag tương ứng. |
+| **TCFilterByAvailability** | `DataFilterByAvailability.xlsx` | 2 TCs | Lọc theo trạng thái sách có sẵn trong kho | Loại bỏ các đầu sách đã hết bản sao mượn. |
+| **TCViewBookDetail** | `DataViewBookDetail.xlsx` | 1 TC | Click vào một đầu sách bất kỳ trong danh sách | Hiển thị chi tiết sách, ảnh bìa, vị trí kệ & các bản sao. |
+| **TCReserveBookOnline** | `DataReserveBookOnline.xlsx` | 5 TCs | Độc giả bấm Đặt trước sách trực tuyến | Tạo đơn đặt trước thành công (trạng thái `readypickup` / `pending`). |
+| **TCRenewBookOnline** | `DataRenewBookOnline.xlsx` | 4 TCs | Độc giả gửi Yêu cầu gia hạn sách đang mượn | Hệ thống tự động gia hạn thêm ngày trả sách mới nếu đủ điều kiện. |
+| **TCCancelReservation** | `DataCancelReservation.xlsx` | 4 TCs | Độc giả bấm Hủy đơn đặt trước | Chuyển trạng thái đơn sang `cancelled`, giải phóng bản sao sách. |
 
 ---
 
 ## 3. Tổ chức các Test Suites
 
-### 🟢 Test Suite 1: `TSAuthentication` (12 Test Cases) — PASSED
+### 🟢 Test Suite 1: `TSAuthentication` (12 Test Cases) — PASSED (100%)
 * **Mục tiêu:** Kiểm thử toàn bộ chức năng Xác thực, Phân quyền, Khôi phục mật khẩu & Khóa tài khoản tự động.
 
-### 🟢 Test Suite 2: `TSUserManagement` (10 Test Cases) — PASSED
+### 🟢 Test Suite 2: `TSUserManagement` (10 Test Cases) — PASSED (100%)
 * **Mục tiêu:** Kiểm thử Quản lý tài khoản người dùng bởi Quản trị viên (Admin).
 
-### 🟢 Test Suite 3: `TSBookManagement` (9 Test Cases) — PASSED
+### 🟢 Test Suite 3: `TSBookManagement` (9 Test Cases) — PASSED (100%)
 * **Mục tiêu:** Kiểm thử Quản lý Kho sách & Bản sao bởi Thủ thư.
 
-### 🟢 Test Suite 4: `TSDeskCirculation` (23 Test Cases) — PASSED
+### 🟢 Test Suite 4: `TSDeskCirculation` (23 Test Cases) — PASSED (100%)
 * **Mục tiêu:** Kiểm thử nghiệp vụ Mượn sách, Trả sách và Thu tiền phạt tại quầy của Thủ thư.
 
-### 🟡 Test Suite 5: `TSBookDiscovery` (Chốt kiến trúc - Chuẩn bị triển khai)
+### 🟢 Test Suite 5: `TSBookDiscovery` (9 Test Cases) — PASSED (100%)
 * **Mục tiêu:** Kiểm thử Tra cứu và Lọc tìm kiếm sách nâng cao (từ khóa, danh mục, tag, trạng thái kho).
 * **Tập hợp TC:** `TCSearchBook` ➔ `TCFilterByCategory` ➔ `TCFilterByTag` ➔ `TCFilterByAvailability` ➔ `TCViewBookDetail`.
 
-### 🟡 Test Suite 6: `TSSelfService` (Chốt kiến trúc - Chuẩn bị triển khai)
+### 🟢 Test Suite 6: `TSSelfService` (13 Test Cases) — PASSED (100%)
 * **Mục tiêu:** Kiểm thử Dịch vụ Độc giả tự phục vụ trực tuyến (Đặt trước, Gia hạn, Hủy đặt trước).
 * **Tập hợp TC:** `TCReserveBookOnline` ➔ `TCRenewBookOnline` ➔ `TCCancelReservation`.
-
-### 🟡 Test Suite 7: `TSNotifications` (Chốt kiến trúc - Chuẩn bị triển khai)
-* **Mục tiêu:** Kiểm thử Đăng thông báo, Bảng tin người dùng & Đánh dấu đã đọc.
-* **Tập hợp TC:** `TCCreateNotification` ➔ `TCViewNotifications` ➔ `TCMarkAsRead`.
 
 ---
 

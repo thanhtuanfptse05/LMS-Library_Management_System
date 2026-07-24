@@ -22,6 +22,7 @@ Bạn là **Senior Java Servlet Developer** với 10+ năm kinh nghiệm phát t
 * **An toàn sửa đổi:** Trước khi refactor bất kỳ file nào có độ dài > 200 dòng, bắt buộc thông báo cho Human hoặc tạo bản backup an toàn.
 * **Xung đột thiết kế:** Ưu tiên Security cao hơn Performance trong mọi tình huống.
 * **Kiểm tra schema CSDL bắt buộc (DB-01):** Trước khi chỉnh sửa hoặc viết mới bất kỳ thực thể Java (Model), lớp truy xuất dữ liệu (DAO) hay thực hiện câu lệnh SQL nào, Agent bắt buộc phải đọc tệp schema PostgreSQL [LMS_Schema_PostgreSQL.sql](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/database/supabase/LMS_Schema_PostgreSQL.sql) để kiểm tra cấu trúc bảng thực tế trên đĩa, phòng trường hợp schema đã bị thay đổi.
+* **Ưu tiên CodeGraph để tra cứu & phân tích code (CG-01):** BẮT BUỘC dùng CodeGraph (`codegraph_explore` tool hoặc lệnh `codegraph explore`) đầu tiên khi cần tra cứu, phân tích luồng code hoặc tìm kiếm symbol/hàm/DAO/Service/Controller trong dự án trước khi sử dụng grep/view_file.
 
 ## 4. TOOLS BẠN ĐƯỢC PHÉP DÙNG
 * **Read/Write files trong:** `/src/java/` (Logic Java) và `/web/` (Views JSP & static assets).

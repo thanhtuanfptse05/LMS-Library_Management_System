@@ -87,6 +87,38 @@ def build_expected_result(tc_id, desc, exp_val, data_dict):
         else:
             return "Hệ thống kiểm tra không có khoản nợ phạt, giữ nguyên trạng thái tài khoản và không thực hiện duyệt thu."
 
+    # 10. TS5 Book Discovery TCs
+    if 'SEARCHBOOK' in tc_upper:
+        if exp_val_upper == 'PASS':
+            return "Hệ thống lọc và hiển thị danh sách các đầu sách khớp từ khóa tìm kiếm."
+        else:
+            return "Hệ thống báo không tìm thấy kết quả hoặc hiển thị danh sách rỗng."
+    elif 'FILTERBYCATEGORY' in tc_upper:
+        return "Hệ thống lọc danh sách sách chỉ thuộc các Danh mục được chọn."
+    elif 'FILTERBYTAG' in tc_upper:
+        return "Hệ thống lọc danh sách sách gắn các thẻ Tag tương ứng."
+    elif 'FILTERBYAVAILABILITY' in tc_upper:
+        return "Hệ thống lọc đúng các đầu sách theo trạng thái khả dụng trong kho."
+    elif 'VIEWBOOKDETAIL' in tc_upper:
+        return "Hệ thống hiển thị đầy đủ thông tin chi tiết đầu sách, vị trí kệ và các bản sao."
+
+    # 11. TS6 Self Service TCs
+    if 'RESERVEBOOKONLINE' in tc_upper:
+        if exp_val_upper == 'PASS':
+            return "Hệ thống ghi nhận đơn đặt trước trực tuyến thành công và cập nhật hàng đợi."
+        else:
+            return "Hệ thống từ chối đặt trước, hiển thị thông báo sách đã được mượn/đặt trước hoặc vượt giới hạn."
+    elif 'RENEWBOOKONLINE' in tc_upper:
+        if exp_val_upper == 'PASS':
+            return "Hệ thống tự động gia hạn thêm thời hạn mượn sách thành công."
+        else:
+            return "Hệ thống từ chối gia hạn do chưa đạt ngưỡng thời hạn mượn (ít nhất 50%) hoặc vượt số lần cho phép."
+    elif 'CANCELRESERVATION' in tc_upper:
+        if exp_val_upper == 'PASS':
+            return "Hệ thống chuyển trạng thái đơn đặt trước sang 'cancelled' và hoàn trả vị trí kho/hàng đợi."
+        else:
+            return "Hệ thống từ chối hủy đơn đặt trước không tồn tại hoặc không thuộc quyền sở hữu."
+
     # Generic fallback
     if exp_val_upper == 'FAIL':
         return "Hệ thống kiểm tra dữ liệu đầu vào, từ chối xử lý và hiển thị thông báo lỗi."
@@ -118,7 +150,7 @@ def parse_katalon_details_csv(csv_path):
                 
             # New Test Case row
             if first_col.startswith('Test Cases/') or (first_col.startswith('TC') and '/' in first_col):
-                tc_id = first_col.replace('Test Cases/', '')
+                tc_id = os.path.basename(first_col)
                 desc = row[2].strip() if len(row) > 2 else ''
                 tag = row[3].strip() if len(row) > 3 else ''
                 
@@ -187,12 +219,14 @@ def build_template3_report(system_test_dir):
     if not os.path.exists(template_path):
         raise FileNotFoundError(f"Template file not found at {template_path}")
 
-    # Explicit 4 CSV module files in project
+    # Explicit 6 CSV module files in project
     module_files = [
         (os.path.join(system_test_dir, "20260724_014335.csv"), "TSAuthentication", "Xác thực & Bảo mật", "Xác minh luồng Đăng nhập, Đăng xuất, Quên mật khẩu & Khóa tài khoản"),
         (os.path.join(system_test_dir, "20260724_012717.csv"), "TSUserManagement", "Quản lý Người dùng", "Xác minh luồng Quản lý người dùng, Thêm/Sửa/Khóa/Mở khóa tài khoản"),
         (os.path.join(system_test_dir, "20260724_010205.csv"), "TSBookManagement", "Quản lý Sách & Kho", "Xác minh luồng Quản lý sách, Thêm đầu sách, Khai báo bản sao Barcode & Sửa sách"),
-        (os.path.join(system_test_dir, "20260724_100830.csv"), "TSDeskCirculation", "Quầy Lưu Thông", "Xác minh luồng Quầy lưu thông, Giao sách, Nhận trả sách & Duyệt thu tiền mặt")
+        (os.path.join(system_test_dir, "20260724_100830.csv"), "TSDeskCirculation", "Quầy Lưu Thông", "Xác minh luồng Quầy lưu thông, Giao sách, Nhận trả sách & Duyệt thu tiền mặt"),
+        (os.path.join(system_test_dir, "20260724_151531.csv"), "TSBookDiscovery", "Tra cứu & Khám phá Sách", "Xác minh luồng Tìm kiếm sách, Lọc theo Danh mục, Tag, Trạng thái & Xem chi tiết"),
+        (os.path.join(system_test_dir, "20260724_193607.csv"), "TSSelfService", "Tự phục vụ Độc giả", "Xác minh luồng Đặt trước sách trực tuyến, Gia hạn mượn & Hủy đơn đặt trước")
     ]
 
     wb = openpyxl.load_workbook(template_path)
@@ -204,13 +238,13 @@ def build_template3_report(system_test_dir):
         cover_ws["B5"] = "LMS_SWP391"
         cover_ws["F4"] = "Quality Assurance Team"
         cover_ws["F5"] = "2026-07-24"
-        cover_ws["F6"] = "v1.2.0"
+        cover_ws["F6"] = "v1.3.0"
         cover_ws["A11"] = "2026-07-24"
-        cover_ws["B11"] = "v1.2.0"
-        cover_ws["C11"] = "Hoàn thành System Testing 4 phân hệ"
+        cover_ws["B11"] = "v1.3.0"
+        cover_ws["C11"] = "Hoàn thành System Testing 6 phân hệ"
         cover_ws["D11"] = "M"
-        cover_ws["E11"] = "Báo cáo kết quả kiểm thử tự động 54 test cases trên Katalon Studio"
-        cover_ws["F11"] = "LMS_SWP391_SRS_v1.2.0"
+        cover_ws["E11"] = "Báo cáo kết quả kiểm thử tự động 76 test cases trên Katalon Studio"
+        cover_ws["F11"] = "LMS_SWP391_SRS_v1.3.0"
 
     # 2. Update Test Cases Sheet Overview
     if "Test Cases" in wb.sheetnames:
@@ -218,6 +252,11 @@ def build_template3_report(system_test_dir):
         tc_summary_ws["D3"] = "LMS - Library Management System"
         tc_summary_ws["D4"] = "LMS_SWP391"
         tc_summary_ws["D5"] = "1. Application Server: Java JDK 17, Apache Tomcat 10, Java Servlet 5.0\n2. Database: PostgreSQL (Supabase / Supavisor)\n3. Testing Tool: Katalon Studio v9.x (Web Automation)\n4. Web Browser: Google Chrome"
+
+        # Clear existing summary rows
+        for r in range(9, tc_summary_ws.max_row + 1):
+            for c in range(2, 7):
+                tc_summary_ws.cell(row=r, column=c).value = None
 
         # Populate Test Case List table starting at Row 9
         for i, (csv_file, suite_code, func_name, desc) in enumerate(module_files, start=1):
@@ -314,11 +353,16 @@ def build_template3_report(system_test_dir):
         stat_ws = wb["Test Statistics"]
         stat_ws["C3"] = "LMS - Library Management System"
         stat_ws["C4"] = "LMS_SWP391"
-        stat_ws["C5"] = '=C4&"_Test_Report_v1.2.0"'
+        stat_ws["C5"] = '=C4&"_Test_Report_v1.3.0"'
         stat_ws["G3"] = "Quality Assurance Team"
         stat_ws["G4"] = "Lead QA"
         stat_ws["H5"] = "2026-07-24"
-        stat_ws["C6"] = "Báo cáo tổng hợp kết quả System Testing 4 phân hệ hệ thống LMS (Tổng số 54 kịch bản kiểm thử)"
+        stat_ws["C6"] = "Báo cáo tổng hợp kết quả System Testing 6 phân hệ hệ thống LMS (Tổng số 76 kịch bản kiểm thử)"
+
+        # Clear existing table rows
+        for r in range(11, stat_ws.max_row + 1):
+            for c in range(2, 9):
+                stat_ws.cell(row=r, column=c).value = None
 
         # Populate Statistics Table starting at Row 11
         for i, (suite_code, count) in enumerate(module_stats, start=1):
@@ -331,7 +375,7 @@ def build_template3_report(system_test_dir):
             stat_ws.cell(row=r, column=7, value=f"='{suite_code}'!E6")
             stat_ws.cell(row=r, column=8, value=f"='{suite_code}'!B4")
 
-        # Subtotal Row 15
+        # Subtotal Row
         sub_row = 11 + len(module_stats)
         stat_ws.cell(row=sub_row, column=3, value="Sub total")
         stat_ws.cell(row=sub_row, column=4, value=f"=SUM(D11:D{sub_row-1})")

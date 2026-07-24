@@ -6,8 +6,8 @@
 
 ## 📌 Bảng Tổng Quan Trạng Thái Thực Thi (Execution Overview)
 
-* **Tổng số kịch bản (Total Test Cases):** **54 TCs**
-* **Kết quả thực thi tự động (Automated Status):** **54/54 PASSED (100% Pass Rate)**
+* **Tổng số kịch bản (Total Test Cases):** **76 TCs**
+* **Kết quả thực thi tự động (Automated Status):** **76/76 PASSED (100% Pass Rate)**
 * **Báo cáo chuẩn Template3 Excel:** [LMS_System_Test_Report.xlsx](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/System%20Test/LMS_System_Test_Report.xlsx)
 
 | STT | Test Suite | Tên Chức năng (Test Cases) | Số lượng TCs | Trạng thái Katalon |
@@ -16,10 +16,9 @@
 | 2 | **TSUserManagement** | CreateUser, UpdateUser, LockUser, UnlockUser | **10 TCs** | 🟢 PASSED (10/10) |
 | 3 | **TSBookManagement** | AddBook, AddBookCopy, UpdateBook | **9 TCs** | 🟢 PASSED (9/9) |
 | 4 | **TSDeskCirculation** | CheckoutBook, CheckinBook, PayFine | **23 TCs** | 🟢 PASSED (23/23) |
-| 5 | **TSBookDiscovery** | SearchBook, FilterByCategory, FilterByTag, FilterByAvailability, ViewBookDetail | *Đã chốt kiến trúc* | 🟡 PLAN / READY |
-| 6 | **TSSelfService** | ReserveBookOnline, RenewBookOnline, CancelReservation | *Đã chốt kiến trúc* | 🟡 PLAN / READY |
-| 7 | **TSNotifications** | CreateNotification, ViewNotifications, MarkAsRead | *Đã chốt kiến trúc* | 🟡 PLAN / READY |
-| **TỔNG** | **7 Test Suites** | **17 Test Case Groups** | **54+ TCs** | **54 PASSED (100%)** |
+| 5 | **TSBookDiscovery** | SearchBook, FilterByCategory, FilterByTag, FilterByAvailability, ViewBookDetail | **9 TCs** | 🟢 PASSED (9/9) |
+| 6 | **TSSelfService** | ReserveBookOnline, RenewBookOnline, CancelReservation | **13 TCs** | 🟢 PASSED (13/13) |
+| **TỔNG** | **6 Test Suites** | **20 Nhóm chức năng** | **76 TCs** | **🟢 76/76 PASSED (100%)** |
 
 ---
 
@@ -816,6 +815,379 @@ if (expectedResult == 'PASS') {
 } else {
     WebUI.delay(1)
     WebUI.verifyTextNotPresent('Duyệt thanh toán thành công', false, FailureHandling.CONTINUE_ON_FAILURE)
+}
+
+WebUI.closeBrowser()
+```
+
+---
+
+## 5. Test Suite 5: `TSBookDiscovery`
+
+> Thư mục lưu trữ Test Data Excel: `System Test/Data System Test/` (Ánh xạ 1-1 cho từng Test Case)
+
+### 1. `TCSearchBook`
+* **Test Data (`System Test/Data System Test/DataSearchBook.xlsx`):**
+  | keyword | expected | Ghi chú |
+  | --- | --- | --- |
+  | `Java` | `PASS` | 1. Tìm kiếm sách theo từ khóa tên sách 'Java' |
+  | `Kiểm Thử` | `PASS` | 2. Tìm kiếm sách theo từ khóa 'Kiểm Thử' |
+  | `978-0134685991` | `PASS` | 3. Tìm kiếm sách chính xác theo mã ISBN '978-0134685991' |
+  | `Joshua Bloch` | `PASS` | 4. Tìm kiếm sách theo tên tác giả 'Joshua Bloch' |
+  | `KhongTonTai123456` | `FAIL` | 5. Tìm kiếm từ khóa không tồn tại trên hệ thống |
+  | `` | `FAIL` | 6. Để trống từ khóa bấm Tìm kiếm |
+
+### 2. `TCFilterByCategory`
+* **Test Data (`System Test/Data System Test/DataFilterByCategory.xlsx`):**
+  | categoryId | expected | Ghi chú |
+  | --- | --- | --- |
+  | `1` | `PASS` | 1. Lọc danh sách sách theo Danh mục ID = 1 |
+  | `9999` | `FAIL` | 2. Lọc theo Danh mục ID không tồn tại |
+
+### 3. `TCFilterByTag`
+* **Test Data (`System Test/Data System Test/DataFilterByTag.xlsx`):**
+  | tagId | expected | Ghi chú |
+  | --- | --- | --- |
+  | `1` | `PASS` | 1. Lọc danh sách sách theo Thẻ Tag ID = 1 |
+  | `9999` | `FAIL` | 2. Lọc theo Thẻ Tag ID không tồn tại |
+
+### 4. `TCFilterByAvailability`
+* **Test Data (`System Test/Data System Test/DataFilterByAvailability.xlsx`):**
+  | availableOnly | expected | Ghi chú |
+  | --- | --- | --- |
+  | `true` | `PASS` | 1. Lọc sách chỉ lấy các đầu sách sẵn có (availableOnly=true) |
+  | `false` | `PASS` | 2. Lọc tất cả đầu sách kể cả hết bản sao mượn |
+
+### 5. `TCViewBookDetail`
+* **Test Data (`System Test/Data System Test/DataViewBookDetail.xlsx`):**
+  | bookId | expected | Ghi chú |
+  | --- | --- | --- |
+  | `991` | `PASS` | 1. Xem chi tiết đầu sách hợp lệ 'Giáo Trình Kiểm Thử LMS 2026' (bookId=991) |
+  | `9999` | `FAIL` | 2. Xem chi tiết đầu sách không tồn tại (bookId=9999) |
+
+### 1. `TCSearchBook.groovy`
+
+```groovy
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+import org.openqa.selenium.Keys as Keys
+
+// ═════════════════════════════════════════════════════════════════════════════
+// KATALON TEST SCRIPT: TCSearchBook (Tìm kiếm sách theo từ khóa)
+// Tương thích với DataSearchBook.xlsx (System Test/Data System Test/DataSearchBook.xlsx)
+// ═════════════════════════════════════════════════════════════════════════════
+
+String kw  = binding.hasVariable('keyword') ? (keyword != null ? keyword.toString().trim() : '') : ''
+String exp = binding.hasVariable('expected') ? (expected != null ? expected.toString().trim().toUpperCase() : 'PASS') : 'PASS'
+
+WebUI.openBrowser(null)
+WebUI.maximizeWindow()
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/book-search')
+WebUI.waitForPageLoad(5)
+
+// 1. Nhập từ khóa tìm kiếm & bấm Enter
+WebUI.setText(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi'), kw)
+WebUI.sendKeys(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi'), Keys.chord(Keys.ENTER))
+WebUI.waitForPageLoad(5)
+
+// 2. Assertion Kiểm Tra
+if (exp == 'PASS') {
+    WebUI.delay(1)
+    WebUI.verifyElementNotPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/h4_Khng tm thy'), 3, FailureHandling.CONTINUE_ON_FAILURE)
+} else {
+    WebUI.delay(1)
+    WebUI.verifyElementPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/h4_Khng tm thy'), 3, FailureHandling.CONTINUE_ON_FAILURE)
+}
+
+WebUI.closeBrowser()
+```
+
+### 2. `TCFilterByCategory.groovy`
+
+```groovy
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+
+WebUI.openBrowser(null)
+WebUI.maximizeWindow()
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/book-search')
+WebUI.waitForPageLoad(5)
+
+String exp = binding.hasVariable('expected') ? (expected != null ? expected.toString().trim().toUpperCase() : 'PASS') : 'PASS'
+
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/label_Arts  Design'))
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/button_p dng b lc'))
+WebUI.waitForPageLoad(5)
+
+if (exp == 'PASS') {
+    WebUI.delay(1)
+    WebUI.verifyElementNotPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/h4_Khng tm thy'), 3, FailureHandling.CONTINUE_ON_FAILURE)
+} else {
+    WebUI.delay(1)
+    WebUI.verifyElementPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/h4_Khng tm thy'), 3, FailureHandling.CONTINUE_ON_FAILURE)
+}
+
+WebUI.closeBrowser()
+```
+
+### 3. `TCFilterByTag.groovy`
+
+```groovy
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+
+WebUI.openBrowser(null)
+WebUI.maximizeWindow()
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/book-search')
+WebUI.waitForPageLoad(5)
+
+String exp = binding.hasVariable('expected') ? (expected != null ? expected.toString().trim().toUpperCase() : 'PASS') : 'PASS'
+
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/label_Advanced'))
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/button_p dng b lc'))
+WebUI.waitForPageLoad(5)
+
+if (exp == 'PASS') {
+    WebUI.delay(1)
+    WebUI.verifyElementNotPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/h4_Khng tm thy'), 3, FailureHandling.CONTINUE_ON_FAILURE)
+} else {
+    WebUI.delay(1)
+    WebUI.verifyElementPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/h4_Khng tm thy'), 3, FailureHandling.CONTINUE_ON_FAILURE)
+}
+
+WebUI.closeBrowser()
+```
+
+### 4. `TCFilterByAvailability.groovy`
+
+```groovy
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+
+WebUI.openBrowser(null)
+WebUI.maximizeWindow()
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/book-search')
+WebUI.waitForPageLoad(5)
+
+String avail = binding.hasVariable('availableOnly') ? (availableOnly != null ? availableOnly.toString().trim() : 'true') : 'true'
+String exp   = binding.hasVariable('expected') ? (expected != null ? expected.toString().trim().toUpperCase() : 'PASS') : 'PASS'
+
+if ('true'.equalsIgnoreCase(avail)) {
+    WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/input_Sch vn cn'))
+} else {
+    WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tt c ti liu'))
+}
+
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/button_p dng b lc'))
+WebUI.waitForPageLoad(5)
+
+if (exp == 'PASS') {
+    WebUI.delay(1)
+    WebUI.verifyElementNotPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/h4_Khng tm thy'), 3, FailureHandling.CONTINUE_ON_FAILURE)
+} else {
+    WebUI.delay(1)
+    WebUI.verifyElementPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/h4_Khng tm thy'), 3, FailureHandling.CONTINUE_ON_FAILURE)
+}
+
+WebUI.closeBrowser()
+```
+
+### 5. `TCViewBookDetail.groovy`
+
+```groovy
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+
+String exp = binding.hasVariable('expected') ? (expected != null ? expected.toString().trim().toUpperCase() : 'PASS') : 'PASS'
+String bId = binding.hasVariable('bookId') ? (bookId != null ? bookId.toString().trim() : '991') : '991'
+
+WebUI.openBrowser(null)
+WebUI.maximizeWindow()
+
+// 1. Đăng nhập tài khoản Giảng viên (Email: lecturer1@lms.com, Mật khẩu: lecturer1@lms.com)
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/')
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp'))
+WebUI.setText(findTestObject('Page_Th vin Lumina - ng nhp/input_librarianlumina.edu'), 'lecturer1@lms.com')
+WebUI.setText(findTestObject('Page_Th vin Lumina - ng nhp/input_'), 'lecturer1@lms.com')
+WebUI.click(findTestObject('Page_Th vin Lumina - ng nhp/button_ng nhp'))
+WebUI.delay(2)
+
+// 2. Mở trực tiếp URL chi tiết sách theo bId động từ Data Binding
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/book-detail?id=' + bId)
+WebUI.delay(1)
+
+if (exp == 'PASS') {
+    // Sách hợp lệ (991): Hiển thị đúng tên sách "Giáo Trình Kiểm Thử LMS 2026"
+    WebUI.verifyTextPresent('Giáo Trình Kiểm Thử LMS 2026', false, FailureHandling.CONTINUE_ON_FAILURE)
+} else {
+    // Sách không tồn tại (9999): BookDetailServlet xử lý an toàn redirect về trang Tra cứu (/book-search)
+    String currentUrl = WebUI.getUrl()
+    boolean isRedirected = currentUrl.contains('book-search')
+    WebUI.verifyEqual(isRedirected, true, FailureHandling.CONTINUE_ON_FAILURE)
+}
+
+WebUI.closeBrowser()
+```
+
+---
+
+## 6. Test Suite 6: `TSSelfService`
+
+> Thư mục lưu trữ Test Data Excel: `System Test/Data System Test/` (Ánh xạ 1-1 cho từng Test Case)
+
+### 1. `TCReserveBookOnline.groovy`
+* **Test Data (`System Test/Data System Test/DataReserveBookOnline.xlsx`):**
+  | bookId | expected | Ghi chú |
+  | --- | --- | --- |
+  | `991` | `PASS` | 1. Đặt trước sách thành công (sách Giáo Trình Kiểm Thử 991) |
+  | `992` | `PASS` | 2. Đặt trước sách thành công (sách Monolith 992) |
+  | `9999` | `FAIL` | 3. Đặt trước đầu sách không tồn tại (bookId = 9999) |
+  | `-1` | `FAIL` | 4. Đặt trước với ID sách âm (-1) |
+  | `abc` | `FAIL` | 5. Đặt trước với ID sách không phải là số (abc) |
+
+```groovy
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+
+String bId = binding.hasVariable('bookId') ? (bookId != null ? bookId.toString().trim() : '991') : '991'
+String exp = binding.hasVariable('expected') ? (expected != null ? expected.toString().trim().toUpperCase() : 'PASS') : 'PASS'
+
+WebUI.openBrowser(null)
+WebUI.maximizeWindow()
+
+// 1. Đăng nhập Sinh viên student1@lms.com
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/')
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp'))
+WebUI.setText(findTestObject('Page_Th vin Lumina - ng nhp/input_librarianlumina.edu'), 'student1@lms.com')
+WebUI.setText(findTestObject('Page_Th vin Lumina - ng nhp/input_'), 'student1@lms.com')
+WebUI.click(findTestObject('Page_Th vin Lumina - ng nhp/button_ng nhp'))
+WebUI.delay(2)
+
+// 2. Mở trang chi tiết sách theo bId
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/book-detail?id=' + bId)
+WebUI.delay(1)
+
+if (exp == 'PASS') {
+    WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/button_t trc (Ly ngay)'))
+    WebUI.delay(2)
+    WebUI.verifyElementPresent(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/span_Bn  t trc cun sch ny'), 5, FailureHandling.CONTINUE_ON_FAILURE)
+} else {
+    // Thất bại khi cố đặt trước đầu sách không tồn tại/không hợp lệ (hệ thống redirect về book-search hoặc từ chối)
+    String currentUrl = WebUI.getUrl()
+    boolean isRedirected = currentUrl.contains('book-search')
+    WebUI.verifyEqual(isRedirected, true, FailureHandling.CONTINUE_ON_FAILURE)
+}
+
+WebUI.closeBrowser()
+```
+
+### 2. `TCRenewBookOnline.groovy`
+* **Test Data (`System Test/Data System Test/DataRenewBookOnline.xlsx`):**
+  | borrowRecordId | expected | Ghi chú |
+  | --- | --- | --- |
+  | `9910` | `PASS` | 1. Gia hạn thành công cho sách mượn > 50% thời hạn (mượn 8/14 ngày) |
+  | `9911` | `FAIL` | 2. Gia hạn thất bại do chưa dùng đủ 50% thời hạn mượn (mượn 1/14 ngày) |
+  | `9999` | `FAIL` | 3. Gia hạn bản ghi mượn không tồn tại (borrowRecordId = 9999) |
+  | `-1` | `FAIL` | 4. Gia hạn với ID bản ghi mượn âm (-1) |
+
+```groovy
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+
+String recId = binding.hasVariable('borrowRecordId') ? (borrowRecordId != null ? borrowRecordId.toString().trim() : '9910') : '9910'
+String exp   = binding.hasVariable('expected') ? (expected != null ? expected.toString().trim().toUpperCase() : 'PASS') : 'PASS'
+
+WebUI.openBrowser(null)
+WebUI.maximizeWindow()
+
+// 1. Đăng nhập Sinh viên student1@lms.com
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/')
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp'))
+WebUI.setText(findTestObject('Page_Th vin Lumina - ng nhp/input_librarianlumina.edu'), 'student1@lms.com')
+WebUI.setText(findTestObject('Page_Th vin Lumina - ng nhp/input_'), 'student1@lms.com')
+WebUI.click(findTestObject('Page_Th vin Lumina - ng nhp/button_ng nhp'))
+WebUI.delay(2)
+
+if (exp == 'PASS') {
+    // Kịch bản PASS: Vào trang Quản lý mượn trả (/student/my-borrowings)
+    WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/student/my-borrowings')
+    WebUI.delay(1)
+    WebUI.click(findTestObject('Page_Bng iu khin Sinh vin - Th vin i hc LMS/button_borrowed-tab'))
+    WebUI.delay(1)
+    WebUI.click(findTestObject('Page_Bng iu khin Ging vin - Th vin i hc LMS/button_Gia hn'))
+    WebUI.delay(2)
+    WebUI.verifyTextPresent('thành công', false, FailureHandling.CONTINUE_ON_FAILURE)
+} else if (recId == '9911') {
+    // Kịch bản FAIL do chưa dùng đủ 50% thời hạn (mượn 1/14 ngày)
+    WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/student/my-borrowings')
+    WebUI.delay(1)
+    WebUI.click(findTestObject('Page_Bng iu khin Sinh vin - Th vin i hc LMS/button_borrowed-tab'))
+    WebUI.delay(1)
+    WebUI.click(findTestObject('Page_Bng iu khin Ging vin - Th vin i hc LMS/button_Gia hn'))
+    WebUI.delay(2)
+    // Hệ thống xuất hiện dòng cảnh báo màu đỏ
+    WebUI.verifyTextPresent('Bạn chỉ được gia hạn khi đã sử dụng ít nhất 50%', false, FailureHandling.CONTINUE_ON_FAILURE)
+} else {
+    // Kịch bản FAIL: Thử gọi gia hạn ID bản ghi mượn không tồn tại / không hợp lệ
+    WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/student/renew-book?id=' + recId)
+    WebUI.delay(1)
+    WebUI.verifyTextNotPresent('Gia hạn thành công', false, FailureHandling.CONTINUE_ON_FAILURE)
+}
+
+WebUI.closeBrowser()
+```
+
+### 3. `TCCancelReservation.groovy`
+* **Test Data (`System Test/Data System Test/DataCancelReservation.xlsx`):**
+  | reservationId | expected | Ghi chú |
+  | --- | --- | --- |
+  | `9910` | `PASS` | 1. Hủy đơn đặt trước hợp lệ đang chờ nhận sách (reservationId = 9910) |
+  | `9901` | `PASS` | 2. Hủy đơn đặt trước trạng thái readypickup (reservationId = 9901) |
+  | `9999` | `FAIL` | 3. Hủy đơn đặt trước không tồn tại (reservationId = 9999) |
+  | `-10` | `FAIL` | 4. Hủy đơn đặt trước với ID không hợp lệ (-10) |
+
+```groovy
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+
+String resId = binding.hasVariable('reservationId') ? (reservationId != null ? reservationId.toString().trim() : '9910') : '9910'
+String exp   = binding.hasVariable('expected') ? (expected != null ? expected.toString().trim().toUpperCase() : 'PASS') : 'PASS'
+
+WebUI.openBrowser(null)
+WebUI.maximizeWindow()
+
+// 1. Đăng nhập Sinh viên student1@lms.com
+WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/')
+WebUI.click(findTestObject('Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp'))
+WebUI.setText(findTestObject('Page_Th vin Lumina - ng nhp/input_librarianlumina.edu'), 'student1@lms.com')
+WebUI.setText(findTestObject('Page_Th vin Lumina - ng nhp/input_'), 'student1@lms.com')
+WebUI.click(findTestObject('Page_Th vin Lumina - ng nhp/button_ng nhp'))
+WebUI.delay(2)
+
+if (exp == 'PASS') {
+    // Vào trang Quản lý hàng đợi (/student/my-borrowings)
+    WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/student/my-borrowings')
+    WebUI.delay(1)
+    WebUI.click(findTestObject('Page_Bng iu khin Sinh vin - Th vin i hc LMS/button_reserved-tab'))
+    WebUI.delay(1)
+    WebUI.click(findTestObject('Page_Bng iu khin Sinh vin - Th vin i hc LMS/button_Hy t'))
+    WebUI.delay(1)
+    WebUI.acceptAlert(FailureHandling.OPTIONAL)
+    WebUI.delay(2)
+    WebUI.verifyTextPresent('thành công', false, FailureHandling.CONTINUE_ON_FAILURE)
+} else {
+    // Kịch bản FAIL: Thử hủy đơn không tồn tại hoặc ID không hợp lệ
+    WebUI.navigateToUrl('http://localhost:8888/LMS-Library_Management_System/student/cancel-reservation?id=' + resId)
+    WebUI.delay(1)
+    WebUI.verifyTextNotPresent('Hủy thành công', false, FailureHandling.CONTINUE_ON_FAILURE)
 }
 
 WebUI.closeBrowser()

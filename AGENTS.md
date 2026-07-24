@@ -43,6 +43,7 @@
 * **ARCH-02 (Ghi nhật ký):** KHÔNG bỏ qua Audit Log cho các thao tác C/U/D (Create/Update/Delete) quan trọng.
 * **UI-01 (Ngôn ngữ giao diện):** KHÔNG viết giao diện người dùng bằng tiếng Anh hoặc ngôn ngữ khác. Bắt buộc sinh giao diện (JSP, HTML, thông báo lỗi, thông báo thành công, nhãn) hoàn toàn bằng **tiếng Việt (100% Vietnamese)**.
 * **DB-01 (Kiểm tra Schema CSDL):** Bắt buộc đọc và kiểm tra tệp schema CSDL mới tại [LMS_Schema_PostgreSQL.sql](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/database/supabase/LMS_Schema_PostgreSQL.sql) trước khi thao tác viết/sửa code Java Model và DAO để đảm bảo cấu trúc bảng và kiểu dữ liệu chính xác, tránh các giả định sai lệch nếu schema có sự thay đổi.
+* **CG-01 (Ưu tiên CodeGraph để truy xuất & phân tích code):** BẤT CỨ KHI NÀO nhận yêu cầu tra cứu, phân tích luồng code, tìm kiếm hàm/lớp/DAO/Service/Controller hoặc truy vết mối quan hệ giữa các module, AI Agent **BẮT BUỘC PHẢI DÙNG CODEGRAPH ĐẦU TIÊN** (`codegraph_explore` tool hoặc lệnh shell `codegraph explore`) trước khi đọc file hoặc grep thủ công để bảo đảm không bỏ sót side-effects và hiểu đúng luồng liên thông.
 
 ## 6. DEFINITION OF DONE (per task)
 - [ ] Logic Java biên dịch thành công, không có Warning hoặc Error nghiêm trọng.

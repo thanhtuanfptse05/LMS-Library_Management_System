@@ -1,0 +1,189 @@
+Suite/Test/Step Name,Browser,Description,Tag,Start time,End time,Duration,Status
+TSBookDiscovery,Chrome 150.0.7871.129,"Tra cứu & Khám phá Kho Sách (Search, Category, Tag, Availability, View Detail)",,24-07-2026 15:15:36,24-07-2026 15:16:55,"1m - 19,217s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCSearchBook,Chrome 150.0.7871.129,TCSearchBook,"Discovery,TS5",24-07-2026 15:15:37,24-07-2026 15:15:45,"8,154s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""keyword"":""Java""}",,,,,,,
+kw = (binding.hasVariable(keyword)) ? ((keyword != null)) ? keyword.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:15:37,24-07-2026 15:15:37,"0,016s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:15:37,24-07-2026 15:15:37,"0,003s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:15:37,24-07-2026 15:15:39,"2,631s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:15:39,24-07-2026 15:15:40,"0,056s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-search"")",Chrome 150.0.7871.129,,,24-07-2026 15:15:40,24-07-2026 15:15:41,"1,774s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:15:41,24-07-2026 15:15:41,"0,175s",PASSED
+"setText(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), kw)",Chrome 150.0.7871.129,,,24-07-2026 15:15:41,24-07-2026 15:15:42,"0,444s",PASSED
+"sendKeys(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 15:15:42,24-07-2026 15:15:43,"1,363s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:15:43,24-07-2026 15:15:43,"0,014s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:15:43,24-07-2026 15:15:45,"1,201s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:15:45,24-07-2026 15:15:45,"0,206s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCSearchBook,Chrome 150.0.7871.129,TCSearchBook,"Discovery,TS5",24-07-2026 15:15:45,24-07-2026 15:15:50,"5,300s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""keyword"":""Kiểm Thử""}",,,,,,,
+kw = (binding.hasVariable(keyword)) ? ((keyword != null)) ? keyword.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:15:45,24-07-2026 15:15:45,"0,001s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:15:45,24-07-2026 15:15:45,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:15:45,24-07-2026 15:15:46,"1,006s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:15:46,24-07-2026 15:15:46,"0,047s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-search"")",Chrome 150.0.7871.129,,,24-07-2026 15:15:46,24-07-2026 15:15:47,"1,595s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:15:47,24-07-2026 15:15:47,"0,026s",PASSED
+"setText(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), kw)",Chrome 150.0.7871.129,,,24-07-2026 15:15:47,24-07-2026 15:15:48,"0,329s",PASSED
+"sendKeys(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 15:15:48,24-07-2026 15:15:49,"1,077s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:15:49,24-07-2026 15:15:49,"0,009s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:15:49,24-07-2026 15:15:50,"1,032s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:15:50,24-07-2026 15:15:50,"0,155s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCSearchBook,Chrome 150.0.7871.129,TCSearchBook,"Discovery,TS5",24-07-2026 15:15:50,24-07-2026 15:15:55,"4,940s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""keyword"":""978-0134685991""}",,,,,,,
+kw = (binding.hasVariable(keyword)) ? ((keyword != null)) ? keyword.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:15:50,24-07-2026 15:15:50,"0,000s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:15:50,24-07-2026 15:15:50,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:15:50,24-07-2026 15:15:51,"0,889s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:15:51,24-07-2026 15:15:51,"0,036s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-search"")",Chrome 150.0.7871.129,,,24-07-2026 15:15:51,24-07-2026 15:15:52,"1,436s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:15:52,24-07-2026 15:15:52,"0,023s",PASSED
+"setText(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), kw)",Chrome 150.0.7871.129,,,24-07-2026 15:15:52,24-07-2026 15:15:53,"0,248s",PASSED
+"sendKeys(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 15:15:53,24-07-2026 15:15:54,"1,104s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:15:54,24-07-2026 15:15:54,"0,009s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:15:54,24-07-2026 15:15:55,"1,035s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:15:55,24-07-2026 15:15:55,"0,141s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCSearchBook,Chrome 150.0.7871.129,TCSearchBook,"Discovery,TS5",24-07-2026 15:15:55,24-07-2026 15:16:00,"5,249s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""keyword"":""Joshua Bloch""}",,,,,,,
+kw = (binding.hasVariable(keyword)) ? ((keyword != null)) ? keyword.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:15:55,24-07-2026 15:15:55,"0,001s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:15:55,24-07-2026 15:15:55,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:15:55,24-07-2026 15:15:56,"0,910s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:15:56,24-07-2026 15:15:56,"0,046s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-search"")",Chrome 150.0.7871.129,,,24-07-2026 15:15:56,24-07-2026 15:15:57,"1,499s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:15:57,24-07-2026 15:15:58,"0,025s",PASSED
+"setText(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), kw)",Chrome 150.0.7871.129,,,24-07-2026 15:15:58,24-07-2026 15:15:58,"0,308s",PASSED
+"sendKeys(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 15:15:58,24-07-2026 15:15:58,"0,092s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:15:58,24-07-2026 15:15:59,"1,150s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:15:59,24-07-2026 15:16:00,"1,037s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:00,24-07-2026 15:16:00,"0,163s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCSearchBook,Chrome 150.0.7871.129,TCSearchBook,"Discovery,TS5",24-07-2026 15:16:00,24-07-2026 15:16:05,"4,960s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""keyword"":""KhongTonTai123456""}",,,,,,,
+kw = (binding.hasVariable(keyword)) ? ((keyword != null)) ? keyword.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:16:00,24-07-2026 15:16:00,"0,001s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:00,24-07-2026 15:16:00,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:00,24-07-2026 15:16:01,"0,969s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:01,24-07-2026 15:16:01,"0,044s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-search"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:01,24-07-2026 15:16:03,"1,504s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:16:03,24-07-2026 15:16:03,"0,023s",PASSED
+"setText(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), kw)",Chrome 150.0.7871.129,,,24-07-2026 15:16:03,24-07-2026 15:16:03,"0,261s",PASSED
+"sendKeys(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 15:16:03,24-07-2026 15:16:04,"0,950s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:16:04,24-07-2026 15:16:04,"0,008s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:04,24-07-2026 15:16:04,"0,003s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 15:16:04,24-07-2026 15:16:05,"1,044s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:05,24-07-2026 15:16:05,"0,135s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCSearchBook,Chrome 150.0.7871.129,TCSearchBook,"Discovery,TS5",24-07-2026 15:16:05,24-07-2026 15:16:10,"4,945s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""keyword"":""""}",,,,,,,
+kw = (binding.hasVariable(keyword)) ? ((keyword != null)) ? keyword.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:16:05,24-07-2026 15:16:05,"0,001s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:05,24-07-2026 15:16:05,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:05,24-07-2026 15:16:06,"0,836s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:06,24-07-2026 15:16:06,"0,039s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-search"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:06,24-07-2026 15:16:08,"1,529s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:16:08,24-07-2026 15:16:08,"0,023s",PASSED
+"setText(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), kw)",Chrome 150.0.7871.129,,,24-07-2026 15:16:08,24-07-2026 15:16:08,"0,255s",PASSED
+"sendKeys(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/input_Tn sch, tc gi""), Keys.chord(ENTER))",Chrome 150.0.7871.129,,,24-07-2026 15:16:08,24-07-2026 15:16:08,"0,087s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:16:08,24-07-2026 15:16:09,"0,999s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:09,24-07-2026 15:16:10,"1,023s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:10,24-07-2026 15:16:10,"0,138s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCFilterByCategory,Chrome 150.0.7871.129,TCFilterByCategory,"Discovery,TS5",24-07-2026 15:16:10,24-07-2026 15:16:15,"4,307s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""categoryId"":""1""}",,,,,,,
+catId = (binding.hasVariable(categoryId)) ? ((categoryId != null)) ? categoryId.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:16:10,24-07-2026 15:16:10,"0,002s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:10,24-07-2026 15:16:10,"0,002s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:10,24-07-2026 15:16:11,"0,959s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:11,24-07-2026 15:16:11,"0,048s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:11,24-07-2026 15:16:14,"3,003s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:14,24-07-2026 15:16:15,"0,205s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCFilterByCategory,Chrome 150.0.7871.129,TCFilterByCategory,"Discovery,TS5",24-07-2026 15:16:15,24-07-2026 15:16:17,"2,599s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""categoryId"":""9999""}",,,,,,,
+catId = (binding.hasVariable(categoryId)) ? ((categoryId != null)) ? categoryId.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:16:15,24-07-2026 15:16:15,"0,001s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:15,24-07-2026 15:16:15,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:15,24-07-2026 15:16:16,"0,966s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:16,24-07-2026 15:16:16,"0,037s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:16,24-07-2026 15:16:16,"0,002s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 15:16:16,24-07-2026 15:16:17,"1,441s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:17,24-07-2026 15:16:17,"0,134s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCFilterByTag,Chrome 150.0.7871.129,TCFilterByTag,"Discovery,TS5",24-07-2026 15:16:17,24-07-2026 15:16:21,"4,230s",PASSED
+"DATA BINDING - {""tagId"":""1"",""expected"":""PASS""}",,,,,,,
+tagIdVal = (binding.hasVariable(tagId)) ? ((tagId != null)) ? tagId.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:16:17,24-07-2026 15:16:17,"0,001s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:17,24-07-2026 15:16:17,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:17,24-07-2026 15:16:18,"0,840s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:18,24-07-2026 15:16:18,"0,038s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:18,24-07-2026 15:16:21,"3,100s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:21,24-07-2026 15:16:21,"0,166s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCFilterByTag,Chrome 150.0.7871.129,TCFilterByTag,"Discovery,TS5",24-07-2026 15:16:21,24-07-2026 15:16:24,"2,455s",PASSED
+"DATA BINDING - {""tagId"":""9999"",""expected"":""FAIL""}",,,,,,,
+tagIdVal = (binding.hasVariable(tagId)) ? ((tagId != null)) ? tagId.toString().trim() :  : ,Chrome 150.0.7871.129,,,24-07-2026 15:16:21,24-07-2026 15:16:21,"0,000s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:21,24-07-2026 15:16:21,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:21,24-07-2026 15:16:22,"0,932s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:22,24-07-2026 15:16:22,"0,042s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:22,24-07-2026 15:16:22,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 15:16:22,24-07-2026 15:16:24,"1,320s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:24,24-07-2026 15:16:24,"0,148s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCFilterByAvailability,Chrome 150.0.7871.129,TCFilterByAvailability,"Discovery,TS5",24-07-2026 15:16:24,24-07-2026 15:16:30,"5,661s",PASSED
+"DATA BINDING - {""availableOnly"":""true"",""expected"":""PASS""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:24,24-07-2026 15:16:25,"0,864s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:25,24-07-2026 15:16:25,"0,034s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-search"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:25,24-07-2026 15:16:26,"1,529s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:16:26,24-07-2026 15:16:26,"0,024s",PASSED
+avail = (binding.hasVariable(availableOnly)) ? ((availableOnly != null)) ? availableOnly.toString().trim() : true : true,Chrome 150.0.7871.129,,,24-07-2026 15:16:26,24-07-2026 15:16:26,"0,003s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:26,24-07-2026 15:16:26,"0,003s",PASSED
+"if (""true"".equalsIgnoreCase(avail))",Chrome 150.0.7871.129,,,24-07-2026 15:16:26,24-07-2026 15:16:27,"0,168s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/button_p dng b lc""))",Chrome 150.0.7871.129,,,24-07-2026 15:16:27,24-07-2026 15:16:28,"1,729s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:16:28,24-07-2026 15:16:28,"0,009s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:28,24-07-2026 15:16:29,"1,027s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:29,24-07-2026 15:16:30,"0,197s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCFilterByAvailability,Chrome 150.0.7871.129,TCFilterByAvailability,"Discovery,TS5",24-07-2026 15:16:30,24-07-2026 15:16:35,"5,251s",PASSED
+"DATA BINDING - {""availableOnly"":""false"",""expected"":""PASS""}",,,,,,,
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:30,24-07-2026 15:16:31,"0,976s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:31,24-07-2026 15:16:31,"0,053s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-search"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:31,24-07-2026 15:16:32,"1,751s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:16:32,24-07-2026 15:16:32,"0,020s",PASSED
+avail = (binding.hasVariable(availableOnly)) ? ((availableOnly != null)) ? availableOnly.toString().trim() : true : true,Chrome 150.0.7871.129,,,24-07-2026 15:16:32,24-07-2026 15:16:32,"0,000s",PASSED
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:32,24-07-2026 15:16:32,"0,001s",PASSED
+"if (""true"".equalsIgnoreCase(avail))",Chrome 150.0.7871.129,,,24-07-2026 15:16:32,24-07-2026 15:16:32,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 15:16:32,24-07-2026 15:16:32,"0,155s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/button_p dng b lc""))",Chrome 150.0.7871.129,,,24-07-2026 15:16:32,24-07-2026 15:16:33,"0,125s",PASSED
+waitForPageLoad(5),Chrome 150.0.7871.129,,,24-07-2026 15:16:33,24-07-2026 15:16:34,"0,998s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:34,24-07-2026 15:16:35,"1,031s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:35,24-07-2026 15:16:35,"0,126s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCViewBookDetail,Chrome 150.0.7871.129,TCViewBookDetail,"Discovery,TS5",24-07-2026 15:16:35,24-07-2026 15:16:45,"9,888s",PASSED
+"DATA BINDING - {""expected"":""PASS"",""bookId"":""991""}",,,,,,,
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:35,24-07-2026 15:16:35,"0,001s",PASSED
+bId = (binding.hasVariable(bookId)) ? ((bookId != null)) ? bookId.toString().trim() : 991 : 991,Chrome 150.0.7871.129,,,24-07-2026 15:16:35,24-07-2026 15:16:35,"0,001s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:35,24-07-2026 15:16:36,"0,919s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:36,24-07-2026 15:16:36,"0,048s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:36,24-07-2026 15:16:37,"1,020s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 15:16:37,24-07-2026 15:16:38,"0,681s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""lecturer1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:38,24-07-2026 15:16:38,"0,207s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""lecturer1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:38,24-07-2026 15:16:38,"0,231s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 15:16:38,24-07-2026 15:16:38,"0,130s",PASSED
+delay(2),Chrome 150.0.7871.129,,,24-07-2026 15:16:38,24-07-2026 15:16:40,"2,019s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-detail?id="" + bId)",Chrome 150.0.7871.129,,,24-07-2026 15:16:40,24-07-2026 15:16:43,"3,290s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 15:16:43,24-07-2026 15:16:44,"1,009s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:44,24-07-2026 15:16:44,"0,065s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:44,24-07-2026 15:16:45,"0,183s",PASSED
+,,,,,,,
+Test Cases/Discovery/TCViewBookDetail,Chrome 150.0.7871.129,TCViewBookDetail,"Discovery,TS5",24-07-2026 15:16:45,24-07-2026 15:16:55,"10,570s",PASSED
+"DATA BINDING - {""expected"":""FAIL"",""bookId"":""9999""}",,,,,,,
+exp = (binding.hasVariable(expected)) ? ((expected != null)) ? expected.toString().trim().toUpperCase() : PASS : PASS,Chrome 150.0.7871.129,,,24-07-2026 15:16:45,24-07-2026 15:16:45,"0,000s",PASSED
+bId = (binding.hasVariable(bookId)) ? ((bookId != null)) ? bookId.toString().trim() : 991 : 991,Chrome 150.0.7871.129,,,24-07-2026 15:16:45,24-07-2026 15:16:45,"0,000s",PASSED
+openBrowser(null),Chrome 150.0.7871.129,,,24-07-2026 15:16:45,24-07-2026 15:16:46,"0,963s",PASSED
+maximizeWindow(),Chrome 150.0.7871.129,,,24-07-2026 15:16:46,24-07-2026 15:16:46,"0,043s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:46,24-07-2026 15:16:46,"0,630s",PASSED
+"click(findTestObject(""Page_UniLib LMS - Cng thng tin Th vin i hc/a_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 15:16:46,24-07-2026 15:16:47,"0,631s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_librarianlumina.edu""), ""lecturer1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:47,24-07-2026 15:16:47,"0,207s",PASSED
+"setText(findTestObject(""Page_Th vin Lumina - ng nhp/input_""), ""lecturer1@lms.com"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:47,24-07-2026 15:16:47,"0,245s",PASSED
+"click(findTestObject(""Page_Th vin Lumina - ng nhp/button_ng nhp""))",Chrome 150.0.7871.129,,,24-07-2026 15:16:47,24-07-2026 15:16:48,"0,149s",PASSED
+delay(2),Chrome 150.0.7871.129,,,24-07-2026 15:16:48,24-07-2026 15:16:50,"2,010s",PASSED
+"navigateToUrl(""http://localhost:8888/LMS-Library_Management_System/book-detail?id="" + bId)",Chrome 150.0.7871.129,,,24-07-2026 15:16:50,24-07-2026 15:16:54,"4,443s",PASSED
+delay(1),Chrome 150.0.7871.129,,,24-07-2026 15:16:54,24-07-2026 15:16:55,"1,009s",PASSED
+"if (exp == ""PASS"")",Chrome 150.0.7871.129,,,24-07-2026 15:16:55,24-07-2026 15:16:55,"0,001s",PASSED
+else,Chrome 150.0.7871.129,,,24-07-2026 15:16:55,24-07-2026 15:16:55,"0,036s",PASSED
+closeBrowser(),Chrome 150.0.7871.129,,,24-07-2026 15:16:55,24-07-2026 15:16:55,"0,181s",PASSED
