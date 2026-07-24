@@ -126,10 +126,10 @@
                                                                         <c:when test="${not empty br.book.imagePath}">
                                                                             <c:choose>
                                                                                 <c:when test="${fn:startsWith(br.book.imagePath, 'http://') or fn:startsWith(br.book.imagePath, 'https://')}">
-                                                                                    <img src="${br.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                                    <img src="${br.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
                                                                                 </c:when>
                                                                                 <c:otherwise>
-                                                                                    <img src="${pageContext.request.contextPath}/book-images/${br.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                                    <img src="${pageContext.request.contextPath}/book-images/${br.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
                                                                                 </c:otherwise>
                                                                             </c:choose>
                                                                         </c:when>
@@ -220,10 +220,10 @@
                                                                         <c:when test="${not empty res.book.imagePath}">
                                                                             <c:choose>
                                                                                 <c:when test="${fn:startsWith(res.book.imagePath, 'http://') or fn:startsWith(res.book.imagePath, 'https://')}">
-                                                                                    <img src="${res.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                                    <img src="${res.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
                                                                                 </c:when>
                                                                                 <c:otherwise>
-                                                                                    <img src="${pageContext.request.contextPath}/book-images/${res.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                                                    <img src="${pageContext.request.contextPath}/book-images/${res.book.imagePath}" alt="Bìa" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
                                                                                 </c:otherwise>
                                                                             </c:choose>
                                                                         </c:when>

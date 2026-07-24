@@ -21,10 +21,21 @@
                     <c:forEach var="loan" items="${activeLoans}" end="2">
                         <div class="raised-card p-4 d-flex flex-column flex-sm-row gap-4">
                             <!-- Book Cover -->
-                            <img class="book-cover-img"
-                                 src="${not empty loan.book.imagePath ? loan.book.imagePath : 'https://via.placeholder.com/96x144?text=No+Cover'}"
-                                 alt="<c:out value='${loan.book.title}'/>"
-                                 onerror="this.src='https://via.placeholder.com/96x144?text=Không+Cover'" />
+                            <c:choose>
+                                <c:when test="${not empty loan.book.imagePath}">
+                                    <c:choose>
+                                        <c:when test="${fn:startsWith(loan.book.imagePath, 'http://') or fn:startsWith(loan.book.imagePath, 'https://')}">
+                                            <img class="book-cover-img" src="<c:out value='${loan.book.imagePath}'/>" alt="<c:out value='${loan.book.title}'/>" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg';" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img class="book-cover-img" src="${pageContext.request.contextPath}/book-images/<c:out value='${loan.book.imagePath}'/>" alt="<c:out value='${loan.book.title}'/>" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg';" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:when>
+                                <c:otherwise>
+                                    <img class="book-cover-img" src="${pageContext.request.contextPath}/assets/images/book-placeholder.jpg" alt="<c:out value='${loan.book.title}'/>" />
+                                </c:otherwise>
+                            </c:choose>
 
                             <div class="flex-grow-1 d-flex flex-column justify-content-between">
                                 <div>
@@ -133,10 +144,10 @@
                                         <c:when test="${not empty book.imagePath}">
                                             <c:choose>
                                                 <c:when test="${fn:startsWith(book.imagePath, 'http://') or fn:startsWith(book.imagePath, 'https://')}">
-                                                    <img class="w-100 h-100" style="object-fit: cover;" src="<c:out value='${book.imagePath}'/>" alt="Bìa sách" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                    <img class="w-100 h-100" style="object-fit: cover;" src="<c:out value='${book.imagePath}'/>" alt="Bìa sách" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <img class="w-100 h-100" style="object-fit: cover;" src="${pageContext.request.contextPath}/book-images/<c:out value='${book.imagePath}'/>" alt="Bìa sách" onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
+                                                    <img class="w-100 h-100" style="object-fit: cover;" src="${pageContext.request.contextPath}/book-images/<c:out value='${book.imagePath}'/>" alt="Bìa sách" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:when>

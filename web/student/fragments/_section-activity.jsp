@@ -1,6 +1,7 @@
 <%-- Fragment: _section-activity.jsp — Recent Activity table (borrow history) --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!-- ── Recent Activity Table ── -->
 <section class="mb-5">
     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -41,11 +42,18 @@
                                         <div class="d-flex align-items-center gap-3">
                                             <div class="overflow-hidden rounded flex-shrink-0"
                                                  style="width: 32px; height: 40px; background: var(--surface-container-high);">
-                                                <img alt=""
-                                                     class="w-100 h-100"
-                                                     style="object-fit: cover;"
-                                                     src="${not empty loan.book.imagePath ? loan.book.imagePath : ''}"
-                                                     onerror="this.style.display='none'" />
+                                                <c:choose>
+                                                    <c:when test="${not empty loan.book.imagePath}">
+                                                        <c:choose>
+                                                            <c:when test="${fn:startsWith(loan.book.imagePath, 'http://') or fn:startsWith(loan.book.imagePath, 'https://')}">
+                                                                <img alt="" class="w-100 h-100" style="object-fit: cover;" src="<c:out value='${loan.book.imagePath}'/>" onerror="this.onerror=null; this.style.display='none';" />
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <img alt="" class="w-100 h-100" style="object-fit: cover;" src="${pageContext.request.contextPath}/book-images/<c:out value='${loan.book.imagePath}'/>" onerror="this.onerror=null; this.style.display='none';" />
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </c:when>
+                                                </c:choose>
                                             </div>
                                             <span class="fw-normal text-dark small">
                                                 <c:out value="${loan.book.title}"/>
