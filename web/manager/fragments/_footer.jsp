@@ -1,21 +1,35 @@
 <%-- Fragment: _footer.jsp — Footer content + Bootstrap JS for Manager --%>
+<style>
+    .lms-footer-link {
+        color: var(--on-surface-variant);
+        text-decoration: none;
+        font-size: 13px;
+        transition: color 0.2s ease, opacity 0.2s ease;
+        opacity: 0.8;
+    }
+    .lms-footer-link:hover {
+        color: var(--primary) !important;
+        opacity: 1;
+    }
+    .lms-footer-sep {
+        color: var(--outline-variant);
+        font-size: 12px;
+        opacity: 0.6;
+    }
+</style>
+
 <!-- ── Footer ── -->
-<footer class="w-100 px-4 py-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
-        style="background-color: var(--surface-container-low); border-top: 1px solid var(--outline-variant);">
-    <div class="d-flex flex-column flex-md-row align-items-center gap-4">
-        <span class="text-on-surface-variant small">&copy; 2026 Thư viện Đại học LMS System</span>
-        <div class="d-flex gap-3">
-            <a class="text-on-surface-variant small text-decoration-underline" href="#">Chính sách bảo mật</a>
-            <a class="text-on-surface-variant small text-decoration-underline" href="#">Điều khoản Dịch vụ</a>
-            <a class="text-on-surface-variant small text-decoration-underline" href="#">Lưu trữ Báo cáo</a>
-        </div>
+<footer class="w-100 px-4 py-3 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
+        style="background-color: var(--surface-container-low); border-top: 1px solid var(--outline-variant); min-height: 56px;">
+    <div class="d-flex flex-column flex-md-row align-items-center gap-2">
+        <span class="text-on-surface-variant small" style="opacity: 0.7; font-size: 13px;">&copy; 2026 Thư viện Đại học LMS System</span>
     </div>
     <div class="d-flex align-items-center gap-3">
-        <p class="text-on-surface-variant small mb-0">Xuất dữ liệu:</p>
-        <a href="${pageContext.request.contextPath}/manager/reports/dashboard" class="btn btn-sm px-3 rounded-3 text-decoration-none"
-           style="background-color: var(--primary); color: #fff;">
-            <span class="material-symbols-outlined" style="font-size: 15px;">download</span> Báo cáo Hàng tháng
-        </a>
+        <a class="lms-footer-link" href="#">Chính sách bảo mật</a>
+        <span class="lms-footer-sep">|</span>
+        <a class="lms-footer-link" href="#">Điều khoản Dịch vụ</a>
+        <span class="lms-footer-sep">|</span>
+        <a class="lms-footer-link" href="#">Lưu trữ Báo cáo</a>
     </div>
 </footer>
 
