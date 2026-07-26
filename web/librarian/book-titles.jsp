@@ -501,7 +501,7 @@
                             <script
                                 src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
                             <script
-                                src="${pageContext.request.contextPath}/assets/js/book-titles.js?v=20260708-choice-picker-1"></script>
+                                src="${pageContext.request.contextPath}/assets/js/book-titles.js?v=20260726-price-format-1"></script>
                         </main>
                     </div>
 

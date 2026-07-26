@@ -14,7 +14,7 @@
         <%-- Font icon ligature: bắt buộc display=block. Dùng swap sẽ lòi chữ nguồn ("menu_book") ra màn hình. --%>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/lms-dashboard.css" rel="stylesheet" />
-        <link href="${pageContext.request.contextPath}/assets/css/book-management.css?v=20260708-choice-picker-1" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/assets/css/book-management.css?v=20260726-price-format-1" rel="stylesheet" />
 
         <style>
             /* Librarian-specific token overrides (warm library brand matching manager) */

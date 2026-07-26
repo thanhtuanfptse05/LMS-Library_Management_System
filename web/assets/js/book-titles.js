@@ -29,7 +29,70 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initChoicePickers();
     initBookTitleDrawer();
+    initPriceInputs();
 });
+
+/**
+ * Ô nhập giá sách (VNĐ) hiển thị dấu chấm phân cách hàng nghìn để thủ thư không phải
+ * đếm từng số 0. Máy chủ vẫn nhận số thuần: dấu chấm được gỡ ngay trước khi form submit.
+ *
+ * Giá tiền Việt Nam không dùng phần thập phân nên ô này chỉ nhận số nguyên. Nếu giá trị
+ * lấy từ CSDL lại có phần lẻ khác 0, ô được giữ nguyên dạng thô để không làm mất dữ liệu.
+ */
+function initPriceInputs() {
+    document.querySelectorAll('[data-price-input]').forEach(function (input) {
+        const raw = (input.value || '').trim();
+        const parsed = raw.match(/^(\d+)(?:\.(\d+))?$/);
+
+        if (raw && (!parsed || Number(parsed[2] || 0) !== 0)) {
+            return; // giá trị lạ hoặc có phần lẻ khác 0: không đụng vào
+        }
+        if (parsed) {
+            input.value = groupThousands(parsed[1]);
+        }
+
+        input.addEventListener('input', function () {
+            const digitsBeforeCaret = onlyDigits(input.value.slice(0, input.selectionStart)).length;
+            input.value = groupThousands(onlyDigits(input.value));
+            const caret = caretAfterNthDigit(input.value, digitsBeforeCaret);
+            input.setSelectionRange(caret, caret);
+        });
+
+        const form = input.closest('form');
+        if (form) {
+            form.addEventListener('submit', function () {
+                input.value = onlyDigits(input.value);
+            });
+        }
+    });
+}
+
+function onlyDigits(value) {
+    return (value || '').replace(/\D/g, '');
+}
+
+/** "1300000" -> "1.300.000" */
+function groupThousands(digits) {
+    const trimmed = digits.replace(/^0+(?=\d)/, '');
+    return trimmed.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+/** Vị trí con trỏ sao cho phía trước nó có đúng "count" chữ số. */
+function caretAfterNthDigit(text, count) {
+    if (count <= 0) {
+        return 0;
+    }
+    let seen = 0;
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] >= '0' && text[i] <= '9') {
+            seen++;
+            if (seen === count) {
+                return i + 1;
+            }
+        }
+    }
+    return text.length;
+}
 
 function initChoicePickers() {
     document.querySelectorAll('[data-choice-picker]').forEach(function (picker) {

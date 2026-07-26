@@ -200,9 +200,22 @@ public class BookServlet extends HttpServlet {
         book.setPublisher(trimToNull(request.getParameter("publisher")));
         book.setPublicationYear(parseOptionalInt(request.getParameter("publicationYear")));
         String price = trimToNull(request.getParameter("price"));
-        book.setPrice(price == null ? null : new BigDecimal(price));
+        book.setPrice(price == null ? null : new BigDecimal(stripGroupingSeparators(price)));
         book.setStatus(normalizeBookStatus(request.getParameter("bookStatus")));
         return book;
+    }
+
+    /**
+     * Gỡ dấu chấm phân cách hàng nghìn khỏi giá sách trước khi chuyển sang {@link BigDecimal}.
+     *
+     * <p>Ô nhập giá hiển thị dạng "1.300.000" cho dễ đọc và JavaScript đã gỡ dấu chấm trước
+     * khi submit; hàm này chỉ là lớp phòng vệ khi JavaScript không chạy.</p>
+     *
+     * <p>Chỉ gỡ khi chuỗi đúng dạng nhóm ba chữ số, nên giá trị có phần thập phân như
+     * "1300000.00" được giữ nguyên chứ không bị hiểu nhầm thành 130000000.</p>
+     */
+    private String stripGroupingSeparators(String value) {
+        return value.matches("\\d{1,3}(\\.\\d{3})+") ? value.replace(".", "") : value;
     }
 
     private int[] parseIds(String[] values) {
