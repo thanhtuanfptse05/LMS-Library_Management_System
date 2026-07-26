@@ -60,6 +60,7 @@ public class BookCirculationHistoryServlet extends HttpServlet {
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalItems", totalItems);
+            request.setAttribute("pageSize", PAGE_SIZE);
 
             request.getRequestDispatcher("/librarian/book-circulation-history.jsp").forward(request, response);
         } catch (SQLException e) {

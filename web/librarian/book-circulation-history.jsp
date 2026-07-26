@@ -147,7 +147,6 @@
                     <jsp:include page="fragments/_book-pagination.jsp">
                         <jsp:param name="label" value="Phân trang lịch sử lưu thông" />
                         <jsp:param name="inputId" value="bookCirculationHistoryPageJump" />
-                        <jsp:param name="pageSize" value="15" />
                     </jsp:include>
                 </div>
                 <jsp:include page="fragments/_footer.jsp" />

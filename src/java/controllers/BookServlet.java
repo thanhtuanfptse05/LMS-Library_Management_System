@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,8 @@ import util.BookImageStorage;
 public class BookServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 20;
+    /** Các tham số lọc/sắp xếp/phân trang cần giữ lại khi quay về danh sách. */
+    private static final String[] LIST_FILTER_PARAMS = {"q", "categoryId", "tagId", "status", "sort", "page"};
     private static final Logger LOGGER = Logger.getLogger(BookServlet.class.getName());
 
     private final BookDAO bookDAO = new BookDAO();
@@ -85,6 +89,7 @@ public class BookServlet extends HttpServlet {
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalItems", totalItems);
+            request.setAttribute("pageSize", PAGE_SIZE);
 
             Integer editId = parseOptionalInt(request.getParameter("editId"));
             if (editId != null && canEdit) {
@@ -114,6 +119,7 @@ public class BookServlet extends HttpServlet {
         String action = null;
         String newImagePath = null;
         String oldImagePath = null;
+        boolean keepPage = true;
         try {
             action = request.getParameter("action");
             Book book = readBook(request, "update".equals(action));
@@ -142,6 +148,9 @@ public class BookServlet extends HttpServlet {
             if (newImagePath != null && oldImagePath != null) {
                 imageStorage.deleteQuietly(oldImagePath);
             }
+            // Sau khi tạo mới thì bỏ số trang: đầu sách vừa tạo nằm ở trang đầu với
+            // sắp xếp mặc định, giữ nguyên trang cũ sẽ khiến thủ thư không thấy nó.
+            keepPage = !"create".equals(action);
         } catch (ValidationException e) {
             imageStorage.deleteQuietly(newImagePath);
             session.setAttribute("errorMessage", e.getMessage());
@@ -150,7 +159,34 @@ public class BookServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể lưu đầu sách.", e);
             session.setAttribute("errorMessage", "Không thể lưu đầu sách. Vui lòng kiểm tra dữ liệu và thử lại.");
         }
-        response.sendRedirect(request.getContextPath() + "/librarian/book-management/titles");
+        response.sendRedirect(request.getContextPath() + "/librarian/book-management/titles"
+                + buildListQuery(request, keepPage));
+    }
+
+    /**
+     * Dựng lại query string của danh sách từ chính request đang xử lý.
+     *
+     * <p>Form gửi lên {@code listUrl} đã mang sẵn bộ lọc trong query string, nên sau khi lưu
+     * ta chỉ cần chép lại để đưa thủ thư về đúng trang, đúng bộ lọc đã áp dụng.</p>
+     *
+     * <p>Giá trị được URL-encode nên không thể chèn ký tự xuống dòng vào header redirect.</p>
+     */
+    private String buildListQuery(HttpServletRequest request, boolean keepPage) {
+        StringBuilder query = new StringBuilder();
+        for (String name : LIST_FILTER_PARAMS) {
+            if (!keepPage && "page".equals(name)) {
+                continue;
+            }
+            String value = trimToNull(request.getParameter(name));
+            if (value == null) {
+                continue;
+            }
+            query.append(query.length() == 0 ? '?' : '&')
+                    .append(name)
+                    .append('=')
+                    .append(URLEncoder.encode(value, StandardCharsets.UTF_8));
+        }
+        return query.toString();
     }
 
     private Book readBook(HttpServletRequest request, boolean updating) {

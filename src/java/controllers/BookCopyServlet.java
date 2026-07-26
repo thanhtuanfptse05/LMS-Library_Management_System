@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -26,6 +28,8 @@ import util.DatabaseConnection;
 public class BookCopyServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 20;
+    /** Các tham số lọc/phân trang cần giữ lại khi quay về danh sách. */
+    private static final String[] LIST_FILTER_PARAMS = {"q", "location", "status", "page"};
     private static final Logger LOGGER = Logger.getLogger(BookCopyServlet.class.getName());
     private final BookCopyDAO bookCopyDAO = new BookCopyDAO();
     private final BookDAO bookDAO = new BookDAO();
@@ -60,6 +64,7 @@ public class BookCopyServlet extends HttpServlet {
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalItems", totalItems);
+            request.setAttribute("pageSize", PAGE_SIZE);
 
             Integer editId = parseOptionalInt(request.getParameter("editId"));
             if (canEdit && editId != null) {
@@ -86,11 +91,14 @@ public class BookCopyServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn chỉ có quyền xem kho vật lý.");
             return;
         }
+        boolean keepPage = true;
         try {
             String action = request.getParameter("action");
             int actorId = (Integer) session.getAttribute("userId");
             if ("create".equals(action)) {
                 bookCopyService.create(readCreateCopy(request), actorId);
+                // Bản sao vừa tạo nằm ở trang đầu theo sắp xếp mặc định nên bỏ số trang cũ.
+                keepPage = false;
                 session.setAttribute("successMessage", "Thêm bản sao và đồng bộ tồn kho thành công.");
             } else if ("update".equals(action)) {
                 bookCopyService.update(readUpdateCopy(request), actorId);
@@ -104,7 +112,32 @@ public class BookCopyServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Không thể lưu bản sao.", e);
             session.setAttribute("errorMessage", "Không thể lưu bản sao. Vui lòng kiểm tra dữ liệu và thử lại.");
         }
-        response.sendRedirect(request.getContextPath() + "/librarian/book-management/copies");
+        response.sendRedirect(request.getContextPath() + "/librarian/book-management/copies"
+                + buildListQuery(request, keepPage));
+    }
+
+    /**
+     * Dựng lại query string của danh sách từ chính request đang xử lý, để sau khi lưu
+     * thủ thư quay về đúng trang và đúng bộ lọc đã áp dụng.
+     *
+     * <p>Giá trị được URL-encode nên không thể chèn ký tự xuống dòng vào header redirect.</p>
+     */
+    private String buildListQuery(HttpServletRequest request, boolean keepPage) {
+        StringBuilder query = new StringBuilder();
+        for (String name : LIST_FILTER_PARAMS) {
+            if (!keepPage && "page".equals(name)) {
+                continue;
+            }
+            String value = trimToNull(request.getParameter(name));
+            if (value == null) {
+                continue;
+            }
+            query.append(query.length() == 0 ? '?' : '&')
+                    .append(name)
+                    .append('=')
+                    .append(URLEncoder.encode(value, StandardCharsets.UTF_8));
+        }
+        return query.toString();
     }
 
     private BookCopy readCreateCopy(HttpServletRequest request) {

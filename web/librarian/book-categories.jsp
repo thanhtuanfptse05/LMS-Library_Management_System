@@ -178,7 +178,6 @@
                     <jsp:include page="fragments/_book-pagination.jsp">
                         <jsp:param name="label" value="Phân trang thể loại" />
                         <jsp:param name="inputId" value="bookCategoryPageJump" />
-                        <jsp:param name="pageSize" value="${pageSize}" />
                     </jsp:include>
                 </div>
                 <jsp:include page="fragments/_footer.jsp" />
