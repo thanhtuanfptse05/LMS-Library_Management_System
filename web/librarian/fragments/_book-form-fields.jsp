@@ -76,9 +76,14 @@
     </div>
     
     <%-- 7. Giá trị sách (dùng làm cơ sở tính tiền phạt nếu làm hỏng/mất) --%>
+    <%-- Dùng type="text" thay vì type="number": input số của HTML không cho phép hiển thị --%>
+    <%-- dấu phân cách hàng nghìn. JavaScript định dạng "1.300.000" khi gõ và gỡ dấu chấm --%>
+    <%-- trước khi gửi lên máy chủ. --%>
     <div class="col-md-3">
-        <label class="form-label">Giá sách</label>
-        <input class="form-control" name="price" type="number" min="0" step="1000" value="${formBook.price}">
+        <label class="form-label">Giá sách <span class="bm-unit-hint">(VNĐ)</span></label>
+        <input class="form-control" name="price" type="text" inputmode="numeric" autocomplete="off"
+               maxlength="21" placeholder="Ví dụ: 1.300.000" data-price-input
+               value="${formBook.price}">
     </div>
     
     <%-- 8. Trạng thái và Số lượng kho: Chỉ hiển thị khi đang sửa (không cho chỉnh sửa trực tiếp số lượng kho) --%>

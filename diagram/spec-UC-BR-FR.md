@@ -409,331 +409,331 @@ F9 (Fine & Payment Management)
 
 ## Section 3. Business Rules (BR)
 
-### BR-01 - Authentication
+### BR-01 - Constraints
 
 Hệ thống SHALL tạm đình chỉ quyền truy cập nếu người dùng cung cấp thông tin xác thực sai 5 lần liên tiếp.
 
-### BR-02 - Authentication
+### BR-02 - Facts
 
 Thời gian đình chỉ quyền truy cập mặc định cho các vi phạm bảo mật SHALL là 30 phút kể từ lần cuối.
 
-### BR-03 - Security
+### BR-03 - Definition
 
 Hệ thống SHALL cung cấp thông báo lỗi chung cho xác thực thất bại để ngăn chặn việc dò quét thông tin.
 
-### BR-04 - Security
+### BR-04 - Definition
 
 Đối với yêu cầu khôi phục mật khẩu, hệ thống SHALL trả về thông báo giả định chung bất kể định danh tồn tại hay không.
 
-### BR-05 - Authentication
+### BR-05 - Constraints
 
 Việc tự động khôi phục quyền truy cập SHALL chỉ áp dụng cho tài khoản bị đình chỉ do sai sót thông tin xác thực.
 
-### BR-06 - Authentication
+### BR-06 - Constraints
 
 Tài khoản bị đình chỉ do vi phạm hành chính hoặc nợ phạt SHALL KHÔNG được tự động khôi phục theo thời gian.
 
-### BR-07 - Security
+### BR-07 - Definition
 
 Thông tin xác thực tạm thời được cấp tự động (khi quên mật khẩu) SHALL bao gồm đúng 8 ký tự ngẫu nhiên.
 
-### BR-08 - Data Integrity
+### BR-08 - Constraints
 
 Cập nhật hồ sơ cá nhân KHÔNG ĐƯỢC PHÉP thay đổi các trường định danh hệ thống (mã số, vai trò, trạng thái).
 
-### BR-09 - Security
+### BR-09 - Definition
 
 Mật khẩu mới BẮT BUỘC đáp ứng tiêu chuẩn bảo mật.
 
-### BR-10 - Data Validation
+### BR-10 - Constraints
 
 Dữ liệu định danh gồm Email và Mã số (MSSV, MSGV...) BẮT BUỘC là duy nhất trên toàn hệ thống.
 
-### BR-11 - Transaction
+### BR-11 - Constraints
 
 Quy trình nhập danh sách tài khoản khối lượng lớn BẮT BUỘC tuân thủ chiến lược "Thành công toàn bộ hoặc Hủy bỏ toàn bộ".
 
-### BR-12 - Provisioning
+### BR-12 - Facts
 
 Tài khoản khi khởi tạo BẮT BUỘC dùng Email làm mật khẩu mặc định.
 
-### BR-13 - Role Assignment
+### BR-13 - Constraints
 
 File Excel dùng để Import khối lượng lớn KHÔNG ĐƯỢC chứa định nghĩa phân quyền. Quản trị viên BẮT BUỘC phải cấu hình Role chung từ giao diện trước khi thực thi tải tệp.
 
-### BR-14 - Mandatory Audit
+### BR-14 - Constraints
 
 Mọi thao tác làm thay đổi dữ liệu tài khoản (Thêm, Sửa, Khóa, Mở khóa, Import) từ Quản trị viên BẮT BUỘC phải được lưu vết vào hệ thống Audit Log.
 
-### BR-15 - UPSERT Mechanism
+### BR-15 - Constraints
 
 Tiến trình cập nhật hồ sơ cá nhân của người dùng BẮT BUỘC sử dụng cơ chế UPSERT (Cập nhật hoặc Chèn mới) để đảm bảo không đứt gãy dữ liệu đối với các tài khoản chưa có profile gốc.
 
-### BR-16 - Uniqueness of Identifiers
+### BR-16 - Constraints
 
 Định danh sách gồm ISBN (Bảng Book) và Barcode (Bảng BookCopy) BẮT BUỘC phải là duy nhất trên toàn hệ thống.
 
-### BR-17 - Inventory Synchronization
+### BR-17 - Derivation
 
 Số lượng totalQuantity và availableQuantity của bảng Book BẮT BUỘC đồng bộ với BookCopy. Tạo BookCopy good/available cộng 1 vào cả hai; các thay đổi khả dụng khác do F13/F6 xử lý trong transaction tương ứng.
 
-### BR-18 - Immutable Core Identifiers
+### BR-18 - Constraints
 
 KHÔNG ĐƯỢC PHÉP thay đổi thông tin định danh hệ thống (ISBN, Barcode) sau khi bản ghi sách hoặc bản sao đã được lưu thành công.
 
-### BR-19 - Reservation Eligibility
+### BR-19 - Constraints
 
 Độc giả BẮT BUỘC chỉ được phép thực hiện Đặt trước hoặc Gia hạn trực tuyến nếu tài khoản đang ở trạng thái hoạt động (status = 'active') VÀ không bị khóa vì bất kỳ lý do nợ phạt nào.
 
-### BR-20 - Queue Positioning Strategy
+### BR-20 - Definition
 
 Vị trí hàng đợi queuePosition = 0 DÀNH RIÊNG cho việc giữ sách đã sẵn sàng lấy (status = 'readypickup'). Mọi yêu cầu chờ sách (khi availableQuantity = 0) BẮT BUỘC phải có queuePosition > 0 và trạng thái 'pending'.
 
-### BR-21 - Renewal Constraints
+### BR-21 - Constraints
 
 Giao dịch mượn (BorrowRecord) chỉ được phép gia hạn nếu thỏa mãn ĐỒNG THỜI 3 điều kiện: (1) Thời gian mượn đã qua % quy định, (2) extensionCount chưa vượt mức tối đa trong SystemConfigurations, (3) KHÔNG có bất kỳ Reservation nào có queuePosition > 0 đang chờ cho cùng tựa sách đó.
 
-### BR-22 - Strict Fine Enforcement
+### BR-22 - Constraints
 
 Hệ thống BẮT BUỘC chặn giao dịch mượn sách nếu tồn tại bất kỳ bản ghi nào có reason = 'unpaid' trong bảng UserLockReason của người dùng. KHÔNG trực tiếp kiểm tra bảng Fine để quyết định chặn giao dịch nhằm giữ tính độc lập dữ liệu.
 
-### BR-23 - Direct Borrow Queue Policy
+### BR-23 - Constraints
 
 Độc giả mượn sách trực tiếp tại quầy KHÔNG ĐƯỢC PHÉP mượn đầu sách đang có người xếp hàng chờ (tồn tại Reservation với status='pending' VÀ queuePosition > 0). Để chuẩn hóa dữ liệu, mọi giao dịch mượn trực tiếp đều BẮT BUỘC phải tự động sinh ra một Reservation ảo với queuePosition = 0 tại chỗ trước khi insert BorrowRecord.
 
-### BR-24 - Damaged/Lost Inventory Deduction
+### BR-24 - Derivation
 
 Khi nhận sách trả với tình trạng 'damaged' hoặc 'lost', hệ thống BẮT BUỘC trừ 1 đơn vị vào Book.totalQuantity (vì sách không còn khả năng lưu thông). ĐỒNG THỜI, BẮT BUỘC phải insert tức thời bản ghi 'unpaid' vào UserLockReason và đổi status User thành 'locked' mà không chờ Background Job chạy ngầm, tránh lỗ hổng bảo mật.
 
-### BR-25 - Conditional Auto-Unlock
+### BR-25 - Derivation
 
 Sau khi thanh toán tiền phạt (xóa reason 'unpaid'), hệ thống BẮT BUỘC đếm số lượng lý do khóa còn lại trong UserLockReason. CHỈ KHỞI ĐỘNG quy trình mở khóa (Update User.status = 'active') NẾU COUNT == 0. Tuyệt đối không mở khóa nếu tài khoản đang bị 'adminban' hoặc 'securitybreach'.
 
-### BR-26 - Google SSO Registration Policy
+### BR-26 - Constraints
 
 Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước.
 
-### BR-27 - Book Import Transaction
+### BR-27 - Constraints
 
 Tính năng Import khối lượng lớn Sách BẮT BUỘC tuân thủ chiến lược All-or-Nothing. Tệp dữ liệu chỉ được lưu vào DB khi toàn bộ thông tin Sách và Bản sao đều hợp lệ.
 
-### BR-28 - Incident Resolution Sync
+### BR-28 - Derivation
 
 Khi báo sự cố hợp lệ trong F13, hệ thống BẮT BUỘC chuyển BookCopy sang status='unavailable' và giảm Book.availableQuantity đúng 1 trong cùng transaction. Khi bác bỏ báo cáo hoặc khôi phục bản sao hỏng sau sửa chữa, hệ thống BẮT BUỘC chuyển BookCopy về good/available và tăng availableQuantity đúng 1. Khi kết luận lost hoặc khi bản sao damaged/resolved không còn khả năng sửa, hệ thống BẮT BUỘC đánh dấu removedFromInventory=true và giảm Book.totalQuantity đúng 1 trong transaction; không được xóa record BookCopy.
 
-### BR-29 - Walk-in vs Pre-reservation Checkout Policy
+### BR-29 - Constraints
 
 Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity (vì đã trừ khi đặt trước online).
 
-### BR-30 - System Config Immutability
+### BR-30 - Constraints
 
 Cấm tuyệt đối việc xóa cấu hình (delete configKey) thông qua UI hoặc hệ thống dưới mọi hình thức. Hệ thống chỉ cho phép cập nhật (UPDATE) giá trị configValue của các key đã tồn tại, hoặc thêm mới (INSERT) đối với các key thuộc whitelist (KEY_TYPES) chưa tồn tại trong CSDL.
 
-### BR-31 - System Config Authorization
+### BR-31 - Constraints
 
 Library Manager chỉ được phép xem và cập nhật các config thuộc nhóm 'library' hoặc cấu hình tích hợp SePay. Admin có toàn quyền với mọi nhóm config.
 
-### BR-32 - Audit Log Read-Only
+### BR-32 - Constraints
 
 Tính năng Nhật ký Kiểm toán (F12) KHÔNG ĐƯỢC PHÉP Insert, Update hoặc Delete dữ liệu trong bất kỳ bảng nào. Chỉ được thực hiện SELECT.
 
-### BR-33 - Audit Log JSON Format
+### BR-33 - Definition
 
 Tất cả oldValues và newValues trong bảng AuditLogs BẮT BUỘC được ghi ở dạng JSON hợp lệ (hoặc NULL). KHÔNG sử dụng plain text để đảm bảo giao diện hiển thị nhất quán.
 
-### BR-34 - Audit Log Pagination
+### BR-34 - Constraints
 
 Danh sách Nhật ký Kiểm toán BẮT BUỘC phải phân trang (20 bản ghi/trang) để bảo vệ hiệu năng hệ thống. KHÔNG ĐƯỢC PHÉP tải toàn bộ dữ liệu trong một request.
 
-### BR-35 - Overdue Policy
+### BR-35 - Facts
 
 Giao dịch mượn (BorrowRecord) ở trạng thái 'borrowed' có endDate nhỏ hơn thời điểm quét phải được coi là quá hạn. Hệ thống SHALL phạt 5,000 VND (hoặc theo cấu hình FINE_RATE_PER_DAY) cho mỗi ngày trễ hạn và khóa tài khoản độc giả cho tới khi thanh toán xong.
 
-### BR-36 - Reservation Pickup Limit
+### BR-36 - Facts
 
 Đơn đặt trước ở trạng thái 'readypickup' chỉ được giữ tại quầy trong một khoảng thời gian giới hạn được xác định bởi cấu hình RESERVATION_HOLD_DAYS trong bảng SystemConfigurations (mặc định là 3 ngày). Nếu quá thời hạn này (endDate < NOW()), đơn hàng sẽ tự động bị hủy và giải phóng bản sao sách.
 
-### BR-37 - AI Chatbot Access Control
+### BR-37 - Constraints
 
 Tính năng AI Chatbot SHALL được public cho cả Guest và User đã đăng nhập. Chatbot SHALL chỉ trả lời các câu hỏi liên quan đến nội quy thư viện, chính sách mượn trả, và tra cứu thông tin sách. Chatbot MUST NOT trả lời các yêu cầu thực hiện giao dịch (mượn, trả, thanh toán) thay người dùng.
 
-### BR-38 - Dashboard Data Isolation
+### BR-38 - Constraints
 
 Mỗi Dashboard (Admin/Manager/Librarian/Student/Lecturer) BẮT BUỘC chỉ hiển thị dữ liệu và chỉ số phù hợp với role của người dùng. Dashboard KHÔNG ĐƯỢC PHÉP truy xuất hoặc hiển thị dữ liệu ngoài phạm vi quyền hạn của role.
 
-### BR-39 - Session Management
+### BR-39 - Constraints
 
 Hệ thống BẮT BUỘC kiểm tra trạng thái tài khoản từ database cho mỗi request (ngoại trừ static resources). Nếu tài khoản bị xóa hoặc status thay đổi thành 'locked', session BẮT BUỘC phải bị invalidate ngay lập tức và redirect về trang login.
 
-### BR-40 - SePay Whitelist Modification
+### BR-40 - Constraints
 
 Cập nhật cấu hình hệ thống chỉ được áp dụng với các key cấu hình nằm trong whitelist (KEY_TYPES) định nghĩa sẵn trong mã nguồn. Mọi thao tác cập nhật phải được kiểm tra kiểu dữ liệu (số nguyên dương, số nguyên không âm, số thực không âm) trước khi lưu DB.
 
-### BR-41 - Desk Reservation Rules
+### BR-41 - Constraints
 
 Khi Thủ thư đăng ký đặt trước tại quầy thay cho độc giả (UC-51), hệ thống BẮT BUỘC phải tuân thủ đầy đủ các giới hạn về chặn nợ phạt (BR-22) và hạn mức mượn sách (BR-19, BR-21).
 
-### BR-42 - Graceful Shutdown Email Queue
+### BR-42 - Constraints
 
 Khi ứng dụng shutdown, hệ thống PHẢI dừng tiếp nhận email mới vào hàng đợi, chờ tối đa 5 giây để gửi nốt các email còn tồn đọng trong queue rồi mới ngắt luồng Consumer.
 
-### BR-43 - System Report Integrity
+### BR-43 - Constraints
 
 Dữ liệu thống kê tài chính BẮT BUỘC hiển thị song song cả 2 chiều: tiền phạt đã thu (paid) và tiền phạt chưa thu (unpaid) để phục vụ đối chiếu minh bạch.
 
-### BR-44 - Inventory Reconciliation Data
+### BR-44 - Derivation
 
 Dữ liệu kiểm kê gần nhất phải đủ để đối chiếu số lượng/vị trí bản sao trong báo cáo quản lý. Trong F13, quy tắc này được đáp ứng bằng InventorySession và InventoryItem; việc hiển thị báo cáo quản trị tổng hợp thuộc feature báo cáo nếu có.
 
-### BR-45 - System Report Granularity
+### BR-45 - Definition
 
 Hệ thống phải cung cấp dữ liệu báo cáo phân nhóm linh hoạt theo Ngày, Tháng, Năm để hỗ trợ phân tích chiều hướng phát triển (tăng/giảm) của thư viện.
 
-### BR-46 - Email SMTP Configurations
+### BR-46 - Facts
 
 Các tham số cấu hình SMTP (Host, Port, Username, Password) BẮT BUỘC phải được đọc trực tiếp từ bảng SystemConfigurations.
 
-### BR-47 - Email Template Protection
+### BR-47 - Facts
 
 Các mẫu email hệ thống (RESET_PASSWORD, RESERVATION_READY, RENEWAL_CONFIRMATION, OVERDUE_NOTICE, INCIDENT_FINE_NOTICE, PAYMENT_CONFIRMATION) cấm tuyệt đối xóa khỏi hệ thống.
 
-### BR-48 - Email Worker Error Recovery
+### BR-48 - Constraints
 
 Lỗi kết nối SMTP không được phép làm crash thread Consumer; hệ thống phải tự động retry tối đa số lần cấu hình (EMAIL_MAX_RETRIES) trước khi bỏ qua job.
 
-### BR-49 - Email Job Queue Limits
+### BR-49 - Facts
 
 Hàng đợi email bất đồng bộ BẮT BUỘC giới hạn dung lượng tối đa (EMAIL_QUEUE_CAPACITY). Khi hàng đợi đầy, hệ thống SHALL ghi log cảnh báo và bỏ qua (drop) email mới nhất để bảo vệ tính ổn định hệ thống.
 
-### BR-50 - Email Temp Password Exclusion
+### BR-50 - Constraints
 
 Tiến trình ngầm gửi mail TUYỆT ĐỐI KHÔNG ĐƯỢC log mật khẩu tạm thời (tempPassword) dưới dạng thô nhằm đảm bảo an toàn bảo mật.
 
-### BR-51 - Email Template Rendering
+### BR-51 - Definition
 
 Hệ thống hỗ trợ định dạng Markdown và render ra HTML trước khi gửi đi. Placeholders trong email template phải ở định dạng `{{key}}`.
 
-### BR-52 - Librarian Performance Isolation
+### BR-52 - Constraints
 
 Báo cáo hiệu suất nhân viên chỉ thống kê các giao dịch được thực hiện bởi các tài khoản có vai trò là LIBRARIAN.
 
-### BR-53 - Payment Config Group Access
+### BR-53 - Constraints
 
 Library Manager chỉ có quyền xem và sửa các cấu hình có prefix `SEPAY_`. Việc phân quyền sửa cấu hình SePay được kiểm soát nghiêm ngặt ở tầng Service.
 
-### BR-54 - User List Pagination
+### BR-54 - Constraints
 
 Tính năng xem danh sách tài khoản BẮT BUỘC phải phân trang và hỗ trợ bộ lọc (Filter) theo Role/Status để chống tràn bộ nhớ.
 
-### BR-55 - Self-Lock Prevention
+### BR-55 - Constraints
 
 Quản trị viên (Admin) KHÔNG ĐƯỢC PHÉP thực hiện thao tác Khóa (Lock), Xóa (Delete), hoặc thay đổi Role trên chính tài khoản mà họ đang đăng nhập để tránh tình trạng hệ thống bị vô chủ (orphaned system).
 
-### BR-56 - Book Suggestion Vote Uniqueness
+### BR-56 - Constraints
 
 Mỗi Giảng viên SHALL chỉ được vote tối đa 1 lần cho mỗi đề xuất sách. Hệ thống BẮT BUỘC kiểm tra tính duy nhất trước khi ghi nhận vote.
 
-### BR-57 - Book Suggestion Vote Restriction
+### BR-57 - Constraints
 
 Tính năng vote (+1) và hủy vote CHỈ ĐƯỢC PHÉP thực hiện khi đề xuất sách còn ở trạng thái 'pending'. Khi status = 'acknowledged' hoặc 'rejected', hệ thống MUST NOT cho phép vote mới hoặc hủy vote.
 
-### BR-58 - Book Suggestion Edit/Delete Restriction
+### BR-58 - Constraints
 
 Giảng viên CHỈ ĐƯỢC PHÉP sửa hoặc xóa (soft-delete) đề xuất sách của chính mình KHI VÀ CHỈ KHI status = 'pending' VÀ voteCount = 1 (chỉ có vote của chính mình). Nếu có người khác đã vote hoặc trạng thái đã thay đổi, hệ thống MUST NOT cho phép sửa/xóa.
 
-### BR-59 - Book Taxonomy Override
+### BR-59 - Definition
 
 Khi cập nhật các danh mục (Category) và thẻ (Tag) của một tựa sách, hệ thống SHALL xóa toàn bộ liên kết cũ và chèn mới liên kết được cung cấp thay vì đồng bộ thủ công từng bản ghi.
 
-### BR-60 - Metadata Soft-Deletion Only
+### BR-60 - Constraints
 
 Category và Tag KHÔNG ĐƯỢC PHÉP xóa cứng (HARD DELETE) khỏi cơ sở dữ liệu để bảo toàn lịch sử. Hệ thống BẮT BUỘC chỉ sử dụng cơ chế xóa mềm bằng cách đổi trạng thái thành 'hidden'.
 
-### BR-61 - Tag Consolidation
+### BR-61 - Derivation
 
 Khi thực hiện gộp Tag (Merge), hệ thống BẮT BUỘC phải re-map tất cả các liên kết sách từ Tag nguồn sang Tag đích, sau đó tự động chuyển Tag nguồn sang trạng thái 'hidden' trong cùng một Database Transaction. Tag đích BẮT BUỘC phải đang ở trạng thái 'active'.
 
-### BR-62 - Metadata Name Uniqueness
+### BR-62 - Constraints
 
 Tên của Category và Tag BẮT BUỘC phải là duy nhất trên toàn hệ thống. Hệ thống SHALL ngăn chặn việc tạo mới hoặc cập nhật nếu tên bị trùng lặp với một bản ghi đang tồn tại (kể cả bản ghi đang bị 'hidden').
 
-### BR-63 - Borrow and Reservation Quota
+### BR-63 - Constraints
 
 The system SHALL enforce a maximum combined limit for active borrows and pending reservations per user.
 
-### BR-64 - Duplicate Title Prevention
+### BR-64 - Constraints
 
 The system SHALL prevent a user from borrowing or reserving multiple copies of the exact same book title simultaneously.
 
-### BR-65 - Book Visibility
+### BR-65 - Definition
 
 The system SHALL only display books with status='active' in public search results.
 
-### BR-66 - AI Fallback Policy
+### BR-66 - Derivation
 
 The system SHALL fall back to trending books if the user lacks borrowing history or if the AI is unavailable.
 
-### BR-67 - Notification Pinning Limit
+### BR-67 - Constraints
 
 The system SHALL enforce a maximum limit on the number of concurrently pinned notifications.
 
-### BR-68 - Notification Visibility
+### BR-68 - Constraints
 
 The system SHALL only show read notifications if specifically requested, prioritizing unread notifications.
 
-### BR-69 - Template Integrity
+### BR-69 - Constraints
 
 The system SHALL prevent the removal of mandatory placeholders from system email templates.
 
-### BR-70 - Reconciliation Exclusivity
+### BR-70 - Constraints
 
 The system SHALL ensure that only one active inventory session exists per location at any given time.
 
-### BR-71 - Data Export Authorization
+### BR-71 - Constraints
 
 The system SHALL restrict full user list data exports to the Admin role only.
 
-### BR-72 - Borrowing History Privacy
+### BR-72 - Constraints
 
 The system SHALL restrict users to viewing only their own personal borrowing and reservation records.
 
-### BR-73 - Report Export Consistency
+### BR-73 - Constraints
 
 The system SHALL ensure exported reports exactly match the active filters in the UI.
 
-### BR-74 - Chat History Ephemerality
+### BR-74 - Constraints
 
 The system SHALL NOT persist AI chat history beyond the active user session.
 
-### BR-75 - Fine Visibility
+### BR-75 - Constraints
 
 The system SHALL display the complete history of both paid and unpaid fines to the user.
 
-### BR-76 - Homepage Content Priority
+### BR-76 - Definition
 
 The system SHALL prioritize pinned system announcements over general news on the public homepage.
 
-### BR-77 - Policy Accessibility
+### BR-77 - Facts
 
 The system SHALL make library policies publicly accessible without requiring authentication.
 
-### BR-78 - Historical Data Immutability
+### BR-78 - Constraints
 
 The system SHALL NOT allow users to modify or delete their past borrow and return records.
 
-### BR-79 - Import Audit Trail
+### BR-79 - Facts
 
 The system SHALL permanently retain all book import batch records and their detailed error logs.
 
-### BR-80 - Payment Configuration Access
+### BR-80 - Constraints
 
 The system SHALL strictly isolate payment gateway settings from general system configurations.
 
-### BR-81 - Performance Metric Scope
+### BR-81 - Constraints
 
 The system SHALL calculate staff performance metrics based exclusively on transactions executed by Librarian roles.
 
-### BR-82 - Suggestion Status Finality
+### BR-82 - Constraints
 
 The system SHALL freeze book suggestions from further updates once marked as rejected. =============================================================================
 

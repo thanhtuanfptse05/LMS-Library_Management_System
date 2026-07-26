@@ -77,6 +77,20 @@
                         <c:when test="${selectedSort == 'published_asc'}"><c:set var="selectedSortLabel" value="Xuất bản cũ nhất" /></c:when>
                     </c:choose>
 
+                    <%-- URL quay lại danh sách kèm nguyên bộ lọc, sắp xếp và trang hiện tại. --%>
+                    <%-- Dùng cho link sửa, action của form và nút Hủy để thủ thư không bị văng --%>
+                    <%-- về trang 1 chưa lọc sau mỗi lần chỉnh sửa một đầu sách. --%>
+                    <%-- Lưu ý: sort và page luôn có giá trị nên listUrl luôn chứa dấu "?"; --%>
+                    <%-- nhờ vậy chỗ nối thêm "&editId=..." bên dưới luôn hợp lệ. --%>
+                    <c:url var="listUrl" value="/librarian/book-management/titles">
+                        <c:param name="q" value="${q}" />
+                        <c:param name="categoryId" value="${selectedCategoryId}" />
+                        <c:param name="tagId" value="${selectedTagId}" />
+                        <c:param name="status" value="${selectedStatus}" />
+                        <c:param name="sort" value="${selectedSort}" />
+                        <c:param name="page" value="${currentPage}" />
+                    </c:url>
+
                     <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/librarian/book-management/titles">
                         <c:if test="${not empty selectedTagId}"><input type="hidden" name="tagId" value="${selectedTagId}"></c:if>
                             <div class="row g-2">
@@ -273,9 +287,7 @@
                                             <td class="bm-action-column">
                                                 <c:choose>
                                                     <c:when test="${canEdit}">
-                                                        <c:url var="editUrl" value="/librarian/book-management/titles">
-                                                            <c:param name="editId" value="${book.bookId}" />
-                                                        </c:url>
+                                                        <c:set var="editUrl" value="${listUrl}&editId=${book.bookId}" />
                                                         <a class="bm-action-icon" href="${editUrl}" title="Chỉnh sửa đầu sách"
                                                            aria-label="Chỉnh sửa đầu sách">
                                                             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
@@ -301,7 +313,7 @@
                 </div>
                 <jsp:include page="fragments/_footer.jsp" />
                 <script src="${pageContext.request.contextPath}/assets/js/book-management.js?v=20260620-1"></script>
-                <script src="${pageContext.request.contextPath}/assets/js/book-titles.js?v=20260708-choice-picker-1"></script>
+                <script src="${pageContext.request.contextPath}/assets/js/book-titles.js?v=20260726-price-format-1"></script>
             </main>
         </div>
 
@@ -310,7 +322,7 @@
         <c:if test="${canEdit}">
             <div class="modal fade bm-modal" id="createBookModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-lg"><div class="modal-content">
-                        <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/librarian/book-management/titles">
+                        <form method="post" enctype="multipart/form-data" action="${listUrl}">
                             <input type="hidden" name="action" value="create">
                             <div class="modal-header"><div><h5 class="modal-title">Tạo đầu sách</h5><p class="bm-section-note mb-0">Đầu sách mới được khởi tạo với số lượng bằng 0.</p></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>
                             <div class="modal-body"><jsp:include page="fragments/_book-form-fields.jsp" /></div>
@@ -323,12 +335,12 @@
         <c:if test="${canEdit and not empty editBook}">
             <div class="modal fade bm-modal" id="editBookModal" tabindex="-1" aria-hidden="true" data-auto-open="true">
                 <div class="modal-dialog modal-lg"><div class="modal-content">
-                        <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/librarian/book-management/titles">
+                        <form method="post" enctype="multipart/form-data" action="${listUrl}">
                             <input type="hidden" name="action" value="update">
                             <input type="hidden" name="bookId" value="${editBook.bookId}">
                             <div class="modal-header"><div><h5 class="modal-title">Chỉnh sửa đầu sách</h5><p class="bm-section-note mb-0">ISBN và số lượng tồn kho không thể sửa trực tiếp.</p></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>
                             <div class="modal-body"><jsp:include page="fragments/_book-form-fields.jsp"><jsp:param name="editing" value="true" /></jsp:include></div>
-                            <div class="modal-footer"><a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/titles">Hủy</a><button type="submit" class="btn btn-primary-custom">Lưu thay đổi</button></div>
+                            <div class="modal-footer"><a class="btn bm-btn-secondary" href="${listUrl}">Hủy</a><button type="submit" class="btn btn-primary-custom">Lưu thay đổi</button></div>
                         </form>
                     </div></div>
             </div>

@@ -57,6 +57,7 @@ public class BookCopyIncidentServlet extends HttpServlet {
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalItems", totalItems);
+            request.setAttribute("pageSize", PAGE_SIZE);
             loadRequestedModal(request, canEdit);
             request.getRequestDispatcher("/librarian/book-damaged-lost.jsp").forward(request, response);
         } catch (SQLException e) {

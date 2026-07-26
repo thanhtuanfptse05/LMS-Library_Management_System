@@ -58,6 +58,17 @@
                     </section>
 
                     <%-- Bộ lọc tìm kiếm bản sao sách (theo từ khóa/mã vạch, vị trí, trạng thái) --%>
+                    <%-- URL quay lại danh sách kèm nguyên bộ lọc và trang hiện tại, dùng cho --%>
+                    <%-- link cập nhật vị trí, action của form và nút Hủy. --%>
+                    <%-- Lưu ý: page luôn có giá trị nên listUrl luôn chứa dấu "?"; --%>
+                    <%-- nhờ vậy chỗ nối thêm "&editId=..." bên dưới luôn hợp lệ. --%>
+                    <c:url var="listUrl" value="/librarian/book-management/copies">
+                        <c:param name="q" value="${q}" />
+                        <c:param name="location" value="${selectedLocation}" />
+                        <c:param name="status" value="${selectedStatus}" />
+                        <c:param name="page" value="${currentPage}" />
+                    </c:url>
+
                     <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/librarian/book-management/copies">
                         <div class="row g-2">
                             <div class="col-xl-4 col-lg-6 bm-search">
@@ -245,7 +256,7 @@
                                                         </c:when>
                                                         <%-- 2. Nếu sách tốt & sẵn sàng trong thư viện, cho phép cập nhật vị trí hoặc báo cáo sự cố phát sinh --%>
                                                         <c:when test="${canEdit and copy.status == 'available' and copy.condition == 'good'}">
-                                                            <a class="dropdown-item" href="${pageContext.request.contextPath}/librarian/book-management/copies?editId=${copy.bookCopyId}">
+                                                            <a class="dropdown-item" href="${listUrl}&editId=${copy.bookCopyId}">
                                                                 <span class="material-symbols-outlined" aria-hidden="true">edit</span>
                                                                 <span>Cập nhật vị trí</span>
                                                             </a>
@@ -299,7 +310,7 @@
             <div class="modal fade bm-modal" id="createCopyModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/copies">
+                        <form method="post" action="${listUrl}">
                             <input type="hidden" name="action" value="create">
                             <div class="modal-header">
                                 <div>
@@ -354,7 +365,7 @@
             <div class="modal fade bm-modal" id="editCopyModal" tabindex="-1" aria-hidden="true" data-auto-open="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/copies">
+                        <form method="post" action="${listUrl}">
                             <input type="hidden" name="action" value="update">
                             <input type="hidden" name="bookCopyId" value="${editCopy.bookCopyId}">
                             <div class="modal-header">
@@ -372,7 +383,7 @@
                                 <p class="bm-section-note mt-2 mb-0">Tình trạng Hỏng/Mất phải được ghi nhận và xác minh tại màn Hỏng &amp; mất.</p>
                             </div>
                             <div class="modal-footer">
-                                <a class="btn bm-btn-secondary" href="${pageContext.request.contextPath}/librarian/book-management/copies">Hủy</a>
+                                <a class="btn bm-btn-secondary" href="${listUrl}">Hủy</a>
                                 <button class="btn btn-primary-custom" type="submit">Lưu thay đổi</button>
                             </div>
                         </form>

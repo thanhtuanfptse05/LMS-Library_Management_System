@@ -73,7 +73,11 @@ public class BookImportServlet extends HttpServlet {
                 BookImportPreviewDTO preview = workbookReader.read(file.getInputStream(), fileName);
                 importService.validate(preview, actorId);
                 session.setAttribute("bookImportPreview", preview);
-                if (preview.isValid()) {
+                if (preview.isValid() && preview.hasWarnings()) {
+                    session.setAttribute("successMessage",
+                            "Tệp hợp lệ nhưng có " + preview.getSkippedBookRows()
+                            + " đầu sách đã tồn tại sẽ được bỏ qua. Hãy xem phần cảnh báo trước khi xác nhận.");
+                } else if (preview.isValid()) {
                     session.setAttribute("successMessage",
                             "Tệp hợp lệ. Hãy kiểm tra phần xem trước và xác nhận import.");
                 } else {
@@ -85,9 +89,19 @@ public class BookImportServlet extends HttpServlet {
                 if (preview == null || !preview.isValid()) {
                     throw new ValidationException("Không có tệp hợp lệ đang chờ xác nhận.");
                 }
+                if (preview.getImportableRows() <= 0) {
+                    throw new ValidationException("Tệp không còn dòng nào để lưu vì toàn bộ đầu sách "
+                            + "đã tồn tại trên hệ thống.");
+                }
                 int batchId = importService.confirm(preview, actorId);
+                int skippedBooks = preview.getSkippedBookRows();
                 session.removeAttribute("bookImportPreview");
-                session.setAttribute("successMessage", "Import dữ liệu thành công. Mã phiên IMP-" + batchId + ".");
+                session.setAttribute("successMessage", "Import dữ liệu thành công. Đã lưu "
+                        + (preview.getTotalRows() - skippedBooks) + "/" + preview.getTotalRows() + " dòng"
+                        + (skippedBooks > 0
+                                ? ", bỏ qua " + skippedBooks + " đầu sách đã tồn tại trên hệ thống"
+                                : "")
+                        + ". Mã phiên IMP-" + batchId + ".");
                 response.sendRedirect(request.getContextPath() + "/librarian/book-management/import-history?batchId=" + batchId);
                 return;
             } else if ("clear".equals(action)) {
@@ -132,12 +146,15 @@ public class BookImportServlet extends HttpServlet {
             Sheet books = workbook.createSheet("Books");
             writeHeader(books, BookImportWorkbookReader.BOOK_HEADERS);
             Row book = books.createRow(1);
-            String[] bookExample = {"9786040000001", "Lập trình Java", "Nguyễn Văn A", "NXB Giáo dục",
+            // ISBN mẫu phải qua được IsbnValidator, nếu không thủ thư tải tệp mẫu về rồi
+            // tải lên ngay sẽ nhận lỗi "ISBN không hợp lệ" dù chưa sửa gì.
+            // 978-604 là dải ISBN của Việt Nam; chữ số cuối là số kiểm tra.
+            String[] bookExample = {"9786040000002", "Lập trình Java", "Nguyễn Văn A", "NXB Giáo dục",
                 "2026", "120000", "Công nghệ thông tin;Giáo trình", "Java;Lập trình"};
             writeValues(book, bookExample);
             Sheet copies = workbook.createSheet("BookCopies");
             writeHeader(copies, BookImportWorkbookReader.COPY_HEADERS);
-            writeValues(copies.createRow(1), new String[]{"9786040000001", "BC-000001", "Kho A · Kệ A01"});
+            writeValues(copies.createRow(1), new String[]{"9786040000002", "BC-000001", "Kho A · Kệ A01"});
             workbook.write(output);
         }
     }

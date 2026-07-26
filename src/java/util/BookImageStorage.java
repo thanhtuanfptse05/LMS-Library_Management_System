@@ -100,17 +100,42 @@ public class BookImageStorage {
         return resolved;
     }
 
-    public void deleteQuietly(String fileName) {
-        if (fileName == null || fileName.isBlank()) {
+    public void deleteQuietly(String imagePath) {
+        if (imagePath == null || imagePath.isBlank()) {
             return;
         }
-        if (fileName.startsWith("http://") || fileName.startsWith("https://")) {
+        if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+            deleteRemoteQuietly(imagePath);
             return;
         }
         try {
-            Files.deleteIfExists(resolve(fileName));
+            Files.deleteIfExists(resolve(imagePath));
         } catch (IOException | IllegalArgumentException e) {
-            LOGGER.log(Level.WARNING, "Không thể xóa tệp ảnh bìa cũ: " + fileName, e);
+            LOGGER.log(Level.WARNING, "Không thể xóa tệp ảnh bìa cũ: " + imagePath, e);
+        }
+    }
+
+    /**
+     * Xóa ảnh bìa đã upload lên Supabase Storage. Chỉ xóa những object thuộc bucket
+     * đang cấu hình; các URL ảnh từ nguồn ngoài (ví dụ bìa lấy về từ Google Books)
+     * được bỏ qua vì hệ thống không sở hữu chúng.
+     */
+    private void deleteRemoteQuietly(String imageUrl) {
+        if (!supabaseStorageClient.isConfigured()) {
+            return;
+        }
+        String objectName = supabaseStorageClient.extractObjectName(imageUrl);
+        if (objectName == null) {
+            return;
+        }
+        try {
+            supabaseStorageClient.deleteObject(objectName);
+            LOGGER.log(Level.INFO, "Đã xóa ảnh bìa cũ trên Supabase Storage: {0}", objectName);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.WARNING, "Việc xóa ảnh bìa cũ bị gián đoạn: " + objectName, e);
+        } catch (IOException | RuntimeException e) {
+            LOGGER.log(Level.WARNING, "Không thể xóa ảnh bìa cũ trên Supabase Storage: " + objectName, e);
         }
     }
 }

@@ -2,7 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:if test="${totalItems > 0}">
-    <c:set var="pageSize" value="${empty param.pageSize ? 10 : param.pageSize}" />
+    <%-- Kích thước trang lấy từ hằng PAGE_SIZE của servlet (requestScope) để dòng tóm tắt
+         luôn khớp với số dòng thật trong bảng. Tham số param chỉ còn để tương thích ngược. --%>
+    <c:set var="pageSize" value="${not empty requestScope.pageSize ? requestScope.pageSize
+                                   : (empty param.pageSize ? 10 : param.pageSize)}" />
     <c:set var="startItem" value="${(currentPage - 1) * pageSize + 1}" />
     <c:set var="endItem" value="${currentPage * pageSize}" />
     <c:if test="${endItem > totalItems}">

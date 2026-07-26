@@ -1,4 +1,4 @@
-# CLAUDE.md — Claude Code Project Memory
+# GEMINI.md — Gemini Code Project Memory
 # Đọc file AGENTS.md ở root và .agents/AGENTS.md trước để hiểu full project context
 
 ## 1. MANUAL MEMORY (human-maintained)

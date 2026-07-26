@@ -34,6 +34,7 @@ public class BookImportHistoryServlet extends HttpServlet {
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalItems", totalItems);
+            request.setAttribute("pageSize", PAGE_SIZE);
             Integer batchId = parseOptionalInt(request.getParameter("batchId"));
             if (batchId != null) {
                 request.setAttribute("selectedBatch", importDAO.findById(batchId));

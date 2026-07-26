@@ -36,9 +36,10 @@ public class BookImportValidator {
 
     public void validate(BookImportPreviewDTO preview) throws DatabaseException {
         Set<String> availableIsbns = new HashSet<>();
+        preview.getWarnings().clear();
         try (Connection conn = DatabaseConnection.getConnection()) {
             for (BookImportRowDTO row : preview.getBooks()) {
-                validateBookRow(preview, row);
+                validateBookRow(conn, preview, row);
                 if (row.getIsbn() != null && !row.getIsbn().isBlank()) {
                     availableIsbns.add(row.getIsbn().toLowerCase());
                 }
@@ -51,7 +52,9 @@ public class BookImportValidator {
         }
     }
 
-    private void validateBookRow(BookImportPreviewDTO preview, BookImportRowDTO row) {
+    private void validateBookRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row)
+            throws SQLException {
+        row.setExistingBook(false);
         Book book = new Book();
         book.setIsbn(row.getIsbn());
         book.setTitle(row.getTitle());
@@ -65,6 +68,15 @@ public class BookImportValidator {
             row.setIsbn(book.getIsbn());
         } catch (ValidationException e) {
             preview.getErrors().add(new BookImportError("Books", row.getRowNumber(), null, e.getMessage()));
+        }
+        // Đầu sách đã có trên hệ thống sẽ không bị ghi đè: import chỉ dùng lại bookId sẵn có.
+        // Đây là cảnh báo (không chặn import) để thủ thư biết dòng này không tạo dữ liệu mới.
+        if (row.getIsbn() != null && !row.getIsbn().isBlank()
+                && bookDAO.findByIsbn(conn, row.getIsbn()) != null) {
+            row.setExistingBook(true);
+            preview.getWarnings().add(new BookImportError("Books", row.getRowNumber(), "isbn",
+                    "ISBN đã tồn tại trên hệ thống. Dòng này sẽ được bỏ qua, thông tin đầu sách hiện có "
+                    + "giữ nguyên và không bị cập nhật theo tệp."));
         }
         for (String category : row.getCategories()) {
             if (category.length() > 255) {
@@ -83,12 +95,17 @@ public class BookImportValidator {
     private void validateCopyRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row,
             Set<String> availableIsbns) throws SQLException {
         row.setIsbn(IsbnValidator.normalize(row.getIsbn()));
-        if (row.getIsbn() != null && !row.getIsbn().isBlank() && !IsbnValidator.isValid(row.getIsbn())) {
+        boolean hasIsbn = row.getIsbn() != null && !row.getIsbn().isBlank();
+        boolean isbnValid = hasIsbn && IsbnValidator.isValid(row.getIsbn());
+
+        // Báo tối đa một lỗi ISBN cho mỗi dòng: sai định dạng thì không xét tiếp việc
+        // tham chiếu, vì ISBN sai thì chắc chắn không tìm thấy đầu sách nào.
+        // Không dừng cả hàm ở đây — barcode và vị trí vẫn phải được kiểm tra để thủ thư
+        // thấy đủ lỗi trong một lần xem trước, đúng như giao diện đã hứa.
+        if (hasIsbn && !isbnValid) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "isbn",
                     "ISBN không hợp lệ. Vui lòng nhập ISBN-10 hoặc ISBN-13 đúng chuẩn."));
-            return;
-        }
-        if (row.getIsbn() != null && !row.getIsbn().isBlank()
+        } else if (isbnValid
                 && !availableIsbns.contains(row.getIsbn().toLowerCase())
                 && bookDAO.findByIsbn(conn, row.getIsbn()) == null) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "isbn",

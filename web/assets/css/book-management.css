@@ -700,6 +700,16 @@ body {
     color: #b91c1c;
 }
 
+.bm-text-warning {
+    color: #b45309;
+}
+
+.bm-unit-hint {
+    color: var(--on-surface-variant);
+    font-weight: 400;
+    font-size: 12px;
+}
+
 .bm-action-link {
     color: var(--primary);
     font-size: 12px;

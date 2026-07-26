@@ -43,9 +43,51 @@ public class BookImportValidatorTest {
         assertNotNull("BookImportValidator instance được tạo thành công", validator);
     }
 
+    @Test
+    public void testPreviewWithoutExistingBooksImportsEveryRow() {
+        BookImportPreviewDTO preview = createValidPreview();
+
+        assertFalse("Preview không có cảnh báo nào", preview.hasWarnings());
+        assertEquals("Không dòng nào bị bỏ qua", 0, preview.getSkippedBookRows());
+        assertEquals("Toàn bộ dòng đều được ghi vào CSDL",
+                preview.getTotalRows(), preview.getImportableRows());
+    }
+
     // ==========================================
     // BOUNDARY (B) TEST CASES - Edge Cases
     // ==========================================
+
+    @Test
+    public void testExistingBookRowIsExcludedFromImportableRows() {
+        BookImportPreviewDTO preview = createValidPreview();
+
+        BookImportRowDTO existingRow = new BookImportRowDTO();
+        existingRow.setRowNumber(3);
+        existingRow.setIsbn("9780134685991");
+        existingRow.setTitle("Effective Java");
+        preview.getBooks().add(existingRow);
+
+        // Mô phỏng kết quả của BookImportValidator khi ISBN đã tồn tại trên hệ thống
+        existingRow.setExistingBook(true);
+        preview.getWarnings().add(new model.BookImportError("Books", 3, "isbn",
+                "ISBN đã tồn tại trên hệ thống."));
+
+        assertTrue("Cảnh báo không được làm tệp trở nên không hợp lệ", preview.isValid());
+        assertTrue(preview.hasWarnings());
+        assertEquals("Đúng một dòng bị bỏ qua", 1, preview.getSkippedBookRows());
+        assertEquals("Dòng bị bỏ qua không được tính vào số dòng sẽ lưu",
+                preview.getTotalRows() - 1, preview.getImportableRows());
+    }
+
+    @Test
+    public void testAllBookRowsExistingLeavesNothingToImport() {
+        BookImportPreviewDTO preview = createValidPreview();
+        preview.getBooks().get(0).setExistingBook(true);
+
+        assertEquals(1, preview.getSkippedBookRows());
+        assertEquals("Tệp chỉ chứa đầu sách đã tồn tại thì không còn dòng nào để lưu",
+                0, preview.getImportableRows());
+    }
 
     @Test
     public void testValidCategoryAndTagLengths() {

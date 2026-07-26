@@ -69,13 +69,17 @@ public class BookImportService {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
-                Map<String, Integer> bookIds = createBooks(conn, preview.getBooks(), actorId);
-                int copyCount = createCopies(conn, preview.getBookCopies(), bookIds, actorId);
-                BookImportBatch batch = batch(preview, actorId, preview.getTotalRows(), 0, "success");
+                BookCreationResult books = createBooks(conn, preview.getBooks(), actorId);
+                int copyCount = createCopies(conn, preview.getBookCopies(), books.idsByIsbn, actorId);
+                // successRows chỉ đếm số dòng thực sự được ghi vào CSDL: các dòng đầu sách có ISBN
+                // đã tồn tại bị bỏ qua nên không được tính là thành công.
+                int successRows = books.inserted + copyCount;
+                BookImportBatch batch = batch(preview, actorId, successRows, 0, "success");
                 int batchId = importDAO.insertBatch(conn, batch);
                 auditDAO.insert(conn, actorId, "IMPORT_BOOKS", "BookImportBatch", batchId, null,
                         "{\"fileName\":\"" + escape(preview.getFileName()) + "\",\"books\":"
-                        + preview.getBooks().size() + ",\"bookCopies\":" + copyCount + "}");
+                        + books.inserted + ",\"skippedBooks\":" + books.skipped
+                        + ",\"bookCopies\":" + copyCount + "}");
                 conn.commit();
                 return batchId;
             } catch (SQLException e) {
@@ -91,22 +95,34 @@ public class BookImportService {
         }
     }
 
-    private Map<String, Integer> createBooks(Connection conn, List<BookImportRowDTO> rows, int actorId)
+    /** Kết quả tạo đầu sách: ánh xạ ISBN → bookId, kèm số dòng đã tạo mới và số dòng bị bỏ qua. */
+    private static final class BookCreationResult {
+        private final Map<String, Integer> idsByIsbn = new LinkedHashMap<>();
+        private int inserted;
+        private int skipped;
+    }
+
+    private BookCreationResult createBooks(Connection conn, List<BookImportRowDTO> rows, int actorId)
             throws SQLException {
-        Map<String, Integer> ids = new LinkedHashMap<>();
+        BookCreationResult result = new BookCreationResult();
         for (BookImportRowDTO row : rows) {
             Book existing = bookDAO.findByIsbn(conn, row.getIsbn());
             if (existing != null) {
-                ids.put(row.getIsbn().toLowerCase(), existing.getBookId());
+                // Đầu sách đã tồn tại: chỉ dùng lại bookId, không ghi đè dữ liệu hiện có.
+                // BookImportValidator đã cảnh báo dòng này ở bước xem trước.
+                row.setExistingBook(true);
+                result.idsByIsbn.put(row.getIsbn().toLowerCase(), existing.getBookId());
+                result.skipped++;
                 continue;
             }
             Book book = toBook(row);
             int bookId = bookDAO.insert(conn, book);
             bookDAO.replaceCategories(conn, bookId, resolveCategories(conn, row.getCategories(), actorId));
             bookDAO.replaceTags(conn, bookId, resolveTags(conn, row.getTags(), actorId));
-            ids.put(row.getIsbn().toLowerCase(), bookId);
+            result.idsByIsbn.put(row.getIsbn().toLowerCase(), bookId);
+            result.inserted++;
         }
-        return ids;
+        return result;
     }
 
     private int createCopies(Connection conn, List<BookImportRowDTO> rows, Map<String, Integer> bookIds, int actorId)
@@ -116,6 +132,10 @@ public class BookImportService {
             Integer bookId = bookIds.get(row.getIsbn().toLowerCase());
             if (bookId == null) {
                 Book existing = bookDAO.findByIsbn(conn, row.getIsbn());
+                if (existing == null) {
+                    throw new SQLException("Không tìm thấy đầu sách cho ISBN " + row.getIsbn()
+                            + " ở dòng " + row.getRowNumber() + " của trang tính BookCopies.");
+                }
                 bookId = existing.getBookId();
                 bookIds.put(row.getIsbn().toLowerCase(), bookId);
             }
@@ -193,7 +213,7 @@ public class BookImportService {
         batch.setImportedBy(actorId);
         batch.setFileName(preview.getFileName());
         batch.setTotalRows(preview.getTotalRows());
-        batch.setSuccessRows(successRows);
+        batch.setSuccessRows(Math.min(successRows, preview.getTotalRows()));
         batch.setFailedRows(Math.min(failedRows, preview.getTotalRows()));
         batch.setStatus(status);
         return batch;
