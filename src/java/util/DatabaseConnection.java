@@ -72,13 +72,20 @@ public class DatabaseConnection {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
         }
 
-        // Thiết lập múi giờ Việt Nam (GMT+7) cho session làm việc của Connection
-        try (java.sql.Statement stmt = conn.createStatement()) {
-            stmt.execute("SET TIME ZONE 'Asia/Ho_Chi_Minh';");
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, "Khong the thiet lap SET TIME ZONE 'Asia/Ho_Chi_Minh': " + e.getMessage());
-        }
-
+        // Không chạy "SET TIME ZONE" ở đây. Múi giờ Asia/Ho_Chi_Minh đã được đặt sẵn ở cấp
+        // database/role trên Supabase, nên mọi session đều nhận đúng múi giờ ngay khi kết nối
+        // (đã kiểm chứng: mở connection thô, không chạy SET, "SHOW TIME ZONE" vẫn trả về
+        // Asia/Ho_Chi_Minh).
+        //
+        // Chạy SET mỗi lần lấy connection tốn thêm một vòng mạng tới Supabase (~39ms đo được
+        // trên môi trường chạy thật) mà không đem lại bảo đảm nào: ở chế độ transaction pooling
+        // của Supavisor, lệnh SET cấp session không chắc áp dụng cho backend mà transaction
+        // kế tiếp sử dụng.
+        //
+        // Lưu ý: tham số "options=-c timezone=..." trong JDBC URL bị Supavisor bỏ qua
+        // (đã kiểm chứng bằng cách ép options=UTC nhưng session vẫn là Asia/Ho_Chi_Minh),
+        // nên nguồn duy nhất quyết định múi giờ là cấu hình phía database.
+        // Xem ghi chú trong database/supabase/LMS_Schema_PostgreSQL.sql.
         return conn;
     }
 

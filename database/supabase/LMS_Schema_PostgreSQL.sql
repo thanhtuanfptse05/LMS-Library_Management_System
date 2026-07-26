@@ -3,6 +3,26 @@
 -- ============================================================
 
 -- ============================================================
+-- MÚI GIỜ — BẮT BUỘC CHẠY KHI DỰNG DATABASE MỚI
+-- ============================================================
+-- Các cột thời gian dùng kiểu TIMESTAMP (không kèm time zone) và được ghi bằng NOW().
+-- Giá trị lưu xuống phụ thuộc vào múi giờ của session, nên múi giờ PHẢI được đặt ở cấp
+-- database. Nếu bỏ qua bước này, toàn bộ mốc thời gian sẽ lệch 7 tiếng so với giờ Việt Nam.
+--
+-- Ứng dụng KHÔNG tự đặt múi giờ nữa vì hai cách phía client đều không dùng được:
+--   1. "SET TIME ZONE" mỗi lần lấy connection: tốn thêm một vòng mạng (~39ms) và không
+--      đáng tin ở chế độ transaction pooling của Supavisor (cổng 6543).
+--   2. Tham số "options=-c timezone=..." trong chuỗi kết nối: bị Supavisor bỏ qua
+--      (đã kiểm chứng — ép options=UTC nhưng session vẫn giữ Asia/Ho_Chi_Minh).
+--
+-- Chạy lệnh dưới đây một lần, bằng tài khoản sở hữu database, rồi mở lại kết nối:
+--
+--     ALTER DATABASE postgres SET timezone TO 'Asia/Ho_Chi_Minh';
+--
+-- Kiểm tra lại bằng: SHOW TIME ZONE;   -- kỳ vọng: Asia/Ho_Chi_Minh
+-- (Lệnh để ở dạng ghi chú vì tên database có thể khác và ALTER DATABASE đòi quyền sở hữu.)
+
+-- ============================================================
 -- XÓA BẢNG NẾU ĐÃ TỒN TẠI (Theo thứ tự ngược lại để không lỗi khóa ngoại)
 -- ============================================================
 DROP TABLE IF EXISTS SuggestionVote CASCADE;
