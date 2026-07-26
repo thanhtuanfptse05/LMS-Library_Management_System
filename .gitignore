@@ -4,3 +4,10 @@
 *.class
 *.log
 .codegraph/
+
+# Thư mục làm việc tạm: kết quả biên dịch của agent, node_modules, file trung gian.
+# Lưu ý: scratch/run_f8_tests.ps1 và scratch/update_runners.py đã được commit từ trước
+# nên vẫn tiếp tục được theo dõi. Muốn thêm file mới trong hai thư mục này vào git
+# thì phải dùng "git add -f".
+/scratch/
+/outputs/
