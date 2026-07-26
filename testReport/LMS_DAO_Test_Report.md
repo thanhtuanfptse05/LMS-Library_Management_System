@@ -1,41 +1,69 @@
-﻿# BÁO CÁO KẾT QUẢ KIỂM THỬ TẦNG TRUY XUẤT DỮ LIỆU (DAO LAYER)
+# B�O C�O K?T QU? KI?M TH? T?NG TRUY XU?T D? LI?U (DAO LAYER)
 
-- **Thời gian xuất báo cáo:** 24/07/2026 21:44:13
-- **Tổng số test cases:** 14 cases
-- **Số case thành công:** 14
-- **Số case thất bại:** 0
-- **Thời gian thực thi:** 20147 ms
-- **Trạng thái chung:** PASSED (100%)
+- **Th?i gian xu?t b�o c�o:** 24/07/2026 22:08:33
+- **T?ng s? test cases:** 39 cases
+- **S? case th�nh c�ng:** 39
+- **S? case th?t b?i:** 0
+- **Tr?ng th�i chung:** PASSED (100%)
 
-## 1. Tóm tắt theo Test Suite
+## 1. T�m t?t theo Test Suite
 
-| Tên Test Suite | Số Test Cases | Thành công | Thất bại | Trạng thái |
+| T�n Test Suite | S? Test Cases | Th�nh c�ng | Th?t b?i | Tr?ng th�i |
 | --- | --- | --- | --- | --- |
-| `dao.BookCopyIncidentDAOTest` | 1 | 1 | 0 | ✅ PASS |
-| `dao.BookDAOTest` | 2 | 2 | 0 | ✅ PASS |
-| `dao.BorrowRecordDAOTest` | 2 | 2 | 0 | ✅ PASS |
-| `dao.FineDAOTest` | 2 | 2 | 0 | ✅ PASS |
-| `dao.NotificationDAOTest` | 1 | 1 | 0 | ✅ PASS |
-| `dao.PaymentDAOTest` | 2 | 2 | 0 | ✅ PASS |
-| `dao.SystemConfigurationsDAOTest` | 2 | 2 | 0 | ✅ PASS |
-| `dao.UserDAOTest` | 2 | 2 | 0 | ✅ PASS |
+| `dao.BookCopyIncidentDAOTest` | 1 | 1 | 0 | ? PASS |
+| `dao.BookDAOTest` | 2 | 2 | 0 | ? PASS |
+| `dao.BorrowRecordDAOTest` | 2 | 2 | 0 | ? PASS |
+| `dao.FineDAOTest` | 2 | 2 | 0 | ? PASS |
+| `dao.NotificationDAOTest` | 1 | 1 | 0 | ? PASS |
+| `dao.PaymentDAOTest` | 2 | 2 | 0 | ? PASS |
+| `dao.SystemConfigurationsDAOTest` | 2 | 2 | 0 | ? PASS |
+| `dao.UserDAOTest` | 2 | 2 | 0 | ? PASS |
+| `dao.CategoryDAOTest` | 5 | 5 | 0 | ? PASS |
+| `dao.TagDAOTest` | 5 | 5 | 0 | ? PASS |
+| `dao.BookCopyDAOTest` | 5 | 5 | 0 | ? PASS |
+| `dao.ReservationDAOTest` | 5 | 5 | 0 | ? PASS |
+| `dao.InventoryDAOTest` | 5 | 5 | 0 | ? PASS |
 
-## 2. Nhật ký chi tiết từng Test Case
+## 2. Nh?t k? chi ti?t t?ng Test Case
 
-| STT | Test Suite | Tên Test Case | Thời gian | Trạng thái | Ghi chú / Lỗi |
+| STT | Test Suite | T�n Test Case | Th?i gian | Tr?ng th�i | Ghi ch� / L?i |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `BookCopyIncidentDAOTest` | `testInsertResolvedFromCheckInReturnsGeneratedId` | 43 ms | ✅ PASS | OK |
-| 2 | `BookDAOTest` | `testFindByIsbnWithMockConn` | 18 ms | ✅ PASS | OK |
-| 3 | `BookDAOTest` | `testInsertBookWithMockConn` | 0 ms | ✅ PASS | OK |
-| 4 | `BorrowRecordDAOTest` | `testUpdateStatusToReturnedWithMockConn` | 0 ms | ✅ PASS | OK |
-| 5 | `BorrowRecordDAOTest` | `testFindByIdWithMockConn` | 1 ms | ✅ PASS | OK |
-| 6 | `FineDAOTest` | `testUpdateStatusToPaidWithMockConn` | 0 ms | ✅ PASS | OK |
-| 7 | `FineDAOTest` | `testInsertCompensationFineWithMockConn` | 1 ms | ✅ PASS | OK |
-| 8 | `NotificationDAOTest` | `testNotificationDAOMockConn` | 0 ms | ✅ PASS | OK |
-| 9 | `PaymentDAOTest` | `testUpdateStatusToCompletedWithMockConn` | 1 ms | ✅ PASS | OK |
-| 10 | `PaymentDAOTest` | `testFindFineIdByPaymentIdWithMockConn` | 0 ms | ✅ PASS | OK |
-| 11 | `SystemConfigurationsDAOTest` | `testGetConfigValueWithMockConnection` | 0 ms | ✅ PASS | OK |
-| 12 | `SystemConfigurationsDAOTest` | `testGetLibraryConfigurationsWithMockConnection` | 0 ms | ✅ PASS | OK |
-| 13 | `UserDAOTest` | `testUpdatePasswordWithMockConn` | 1 ms | ✅ PASS | OK |
-| 14 | `UserDAOTest` | `testFindByEmailWithMockConn` | 0 ms | ✅ PASS | OK |
-
+| 1 | `BookCopyIncidentDAOTest` | `testInsertResolvedFromCheckInReturnsGeneratedId` | 2 ms | ? PASS | OK |
+| 2 | `BookDAOTest` | `testFindByIsbnWithMockConn` | 0 ms | ? PASS | OK |
+| 3 | `BookDAOTest` | `testInsertBookWithMockConn` | 1 ms | ? PASS | OK |
+| 4 | `BorrowRecordDAOTest` | `testUpdateStatusToReturnedWithMockConn` | 3 ms | ? PASS | OK |
+| 5 | `BorrowRecordDAOTest` | `testFindByIdWithMockConn` | 4 ms | ? PASS | OK |
+| 6 | `FineDAOTest` | `testInsertCompensationFineWithMockConn` | 1 ms | ? PASS | OK |
+| 7 | `FineDAOTest` | `testUpdateStatusToPaidWithMockConn` | 3 ms | ? PASS | OK |
+| 8 | `NotificationDAOTest` | `testNotificationDAOMockConn` | 0 ms | ? PASS | OK |
+| 9 | `PaymentDAOTest` | `testFindFineIdByPaymentIdWithMockConn` | 4 ms | ? PASS | OK |
+| 10 | `PaymentDAOTest` | `testUpdateStatusToCompletedWithMockConn` | 3 ms | ? PASS | OK |
+| 11 | `SystemConfigurationsDAOTest` | `testGetLibraryConfigurationsWithMockConnection` | 1 ms | ? PASS | OK |
+| 12 | `SystemConfigurationsDAOTest` | `testGetConfigValueWithMockConnection` | 0 ms | ? PASS | OK |
+| 13 | `UserDAOTest` | `testUpdatePasswordWithMockConn` | 4 ms | ? PASS | OK |
+| 14 | `UserDAOTest` | `testFindByEmailWithMockConn` | 3 ms | ? PASS | OK |
+| 15 | `CategoryDAOTest` | `testSearchCategoryWithMockConn` | 4 ms | ? PASS | OK |
+| 16 | `CategoryDAOTest` | `testCountCategoryWithMockConn` | 2 ms | ? PASS | OK |
+| 17 | `CategoryDAOTest` | `testNullSearchFilterHandling` | 2 ms | ? PASS | OK |
+| 18 | `CategoryDAOTest` | `testCategoryDAOInstantiation` | 4 ms | ? PASS | OK |
+| 19 | `CategoryDAOTest` | `testFindAllWithMockConn` | 2 ms | ? PASS | OK |
+| 20 | `TagDAOTest` | `testInsertTagWithMockConn` | 2 ms | ? PASS | OK |
+| 21 | `TagDAOTest` | `testTagDAOInstantiation` | 2 ms | ? PASS | OK |
+| 22 | `TagDAOTest` | `testUpdateTagStatusWithMockConn` | 0 ms | ? PASS | OK |
+| 23 | `TagDAOTest` | `testSearchTagEmptyKeyword` | 1 ms | ? PASS | OK |
+| 24 | `TagDAOTest` | `testFindAllWithMockConn` | 1 ms | ? PASS | OK |
+| 25 | `BookCopyDAOTest` | `testDeleteBookCopySoftWithMockConn` | 4 ms | ? PASS | OK |
+| 26 | `BookCopyDAOTest` | `testBookCopyDAOInstantiation` | 2 ms | ? PASS | OK |
+| 27 | `BookCopyDAOTest` | `testUpdateConditionWithMockConn` | 2 ms | ? PASS | OK |
+| 28 | `BookCopyDAOTest` | `testFindByBarcodeWithMockConn` | 2 ms | ? PASS | OK |
+| 29 | `BookCopyDAOTest` | `testInsertBookCopyWithMockConn` | 1 ms | ? PASS | OK |
+| 30 | `ReservationDAOTest` | `testFindActiveReservationWithMockConn` | 0 ms | ? PASS | OK |
+| 31 | `ReservationDAOTest` | `testUpdateQueuePositionWithMockConn` | 2 ms | ? PASS | OK |
+| 32 | `ReservationDAOTest` | `testReservationDAOInstantiation` | 0 ms | ? PASS | OK |
+| 33 | `ReservationDAOTest` | `testCancelReservationWithMockConn` | 2 ms | ? PASS | OK |
+| 34 | `ReservationDAOTest` | `testCreateReservationWithMockConn` | 0 ms | ? PASS | OK |
+| 35 | `InventoryDAOTest` | `testInsertInventoryItemWithMockConn` | 4 ms | ? PASS | OK |
+| 36 | `InventoryDAOTest` | `testInventoryDAOInstantiation` | 2 ms | ? PASS | OK |
+| 37 | `InventoryDAOTest` | `testResolveDiscrepancyWithMockConn` | 2 ms | ? PASS | OK |
+| 38 | `InventoryDAOTest` | `testCompleteSessionWithMockConn` | 0 ms | ? PASS | OK |
+| 39 | `InventoryDAOTest` | `testCreateSessionWithMockConn` | 0 ms | ? PASS | OK |
