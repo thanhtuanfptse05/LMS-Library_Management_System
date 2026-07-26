@@ -73,7 +73,11 @@ public class BookImportServlet extends HttpServlet {
                 BookImportPreviewDTO preview = workbookReader.read(file.getInputStream(), fileName);
                 importService.validate(preview, actorId);
                 session.setAttribute("bookImportPreview", preview);
-                if (preview.isValid()) {
+                if (preview.isValid() && preview.hasWarnings()) {
+                    session.setAttribute("successMessage",
+                            "Tệp hợp lệ nhưng có " + preview.getSkippedBookRows()
+                            + " đầu sách đã tồn tại sẽ được bỏ qua. Hãy xem phần cảnh báo trước khi xác nhận.");
+                } else if (preview.isValid()) {
                     session.setAttribute("successMessage",
                             "Tệp hợp lệ. Hãy kiểm tra phần xem trước và xác nhận import.");
                 } else {
@@ -85,9 +89,19 @@ public class BookImportServlet extends HttpServlet {
                 if (preview == null || !preview.isValid()) {
                     throw new ValidationException("Không có tệp hợp lệ đang chờ xác nhận.");
                 }
+                if (preview.getImportableRows() <= 0) {
+                    throw new ValidationException("Tệp không còn dòng nào để lưu vì toàn bộ đầu sách "
+                            + "đã tồn tại trên hệ thống.");
+                }
                 int batchId = importService.confirm(preview, actorId);
+                int skippedBooks = preview.getSkippedBookRows();
                 session.removeAttribute("bookImportPreview");
-                session.setAttribute("successMessage", "Import dữ liệu thành công. Mã phiên IMP-" + batchId + ".");
+                session.setAttribute("successMessage", "Import dữ liệu thành công. Đã lưu "
+                        + (preview.getTotalRows() - skippedBooks) + "/" + preview.getTotalRows() + " dòng"
+                        + (skippedBooks > 0
+                                ? ", bỏ qua " + skippedBooks + " đầu sách đã tồn tại trên hệ thống"
+                                : "")
+                        + ". Mã phiên IMP-" + batchId + ".");
                 response.sendRedirect(request.getContextPath() + "/librarian/book-management/import-history?batchId=" + batchId);
                 return;
             } else if ("clear".equals(action)) {

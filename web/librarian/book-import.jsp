@@ -68,14 +68,19 @@
                                                 <c:out value="${preview.fileName}" /> · ${preview.books.size()} đầu sách · ${preview.bookCopies.size()} bản sao
                                             </p>
                                         </div>
-                                        <c:choose>
-                                            <c:when test="${preview.valid}">
-                                                <span class="bm-badge bm-badge--success">Tệp hợp lệ</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="bm-badge bm-badge--danger">${preview.errors.size()} lỗi cần sửa</span>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <c:choose>
+                                                <c:when test="${preview.valid}">
+                                                    <span class="bm-badge bm-badge--success">Tệp hợp lệ</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="bm-badge bm-badge--danger">${preview.errors.size()} lỗi cần sửa</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <c:if test="${not empty preview.warnings}">
+                                                <span class="bm-badge bm-badge--warning">${preview.warnings.size()} cảnh báo</span>
+                                            </c:if>
+                                        </div>
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-lms">
@@ -111,6 +116,45 @@
                                         </table>
                                     </div>
                                 </section>
+
+                                <%-- 1b. Bảng cảnh báo: các dòng vẫn import được nhưng không tạo dữ liệu mới --%>
+                                <%-- Điển hình: ISBN đã tồn tại trên hệ thống nên dòng đầu sách đó bị bỏ qua --%>
+                                <c:if test="${not empty preview.warnings}">
+                                    <section class="bm-table-card bm-table-card--primary mb-3">
+                                        <div class="bm-table-card__header d-flex flex-wrap justify-content-between gap-2">
+                                            <div>
+                                                <h3 class="bm-section-title mb-1">Cảnh báo</h3>
+                                                <p class="bm-section-note mb-0">
+                                                    Những dòng này không chặn việc import, nhưng sẽ không tạo dữ liệu mới.
+                                                    Hệ thống sẽ lưu ${preview.importableRows}/${preview.totalRows} dòng.
+                                                </p>
+                                            </div>
+                                            <span class="bm-badge bm-badge--warning">${preview.skippedBookRows} đầu sách bị bỏ qua</span>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-lms">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Trang tính</th>
+                                                        <th>Dòng</th>
+                                                        <th>Cột</th>
+                                                        <th>Nội dung cảnh báo</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <c:forEach var="warning" items="${preview.warnings}">
+                                                        <tr>
+                                                            <td><strong><c:out value="${warning.sheetName}" /></strong></td>
+                                                            <td>${warning.rowNumber}</td>
+                                                            <td><c:out value="${empty warning.columnName ? 'Cấu trúc' : warning.columnName}" /></td>
+                                                            <td class="bm-text-warning"><c:out value="${warning.errorMessage}" /></td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+                                </c:if>
 
                                 <%-- 2. Bảng xem trước 10 dòng đầu tiên của sheet Bản sao để người dùng kiểm đối --%>
                                 <section class="bm-table-card bm-table-card--primary">
@@ -190,10 +234,21 @@
                             <c:if test="${not empty preview}">
                                 <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/import">
                                     <input type="hidden" name="action" value="confirm">
-                                    <button class="btn btn-primary-custom w-100 mb-2" type="submit" ${preview.valid ? '' : 'disabled'}>
-                                        Xác nhận nhập ${preview.totalRows} dòng
+                                    <%-- Khóa nút khi tệp còn lỗi, hoặc khi mọi dòng đều bị bỏ qua nên không có gì để lưu --%>
+                                    <button class="btn btn-primary-custom w-100 mb-2" type="submit"
+                                            ${preview.valid and preview.importableRows > 0 ? '' : 'disabled'}>
+                                        Xác nhận nhập ${preview.importableRows} dòng
                                     </button>
                                 </form>
+                                <c:if test="${preview.skippedBookRows > 0}">
+                                    <p class="bm-section-note bm-text-warning mb-2">
+                                        ${preview.skippedBookRows}/${preview.totalRows} dòng bị bỏ qua vì ISBN đã tồn tại.
+                                        Thông tin đầu sách hiện có sẽ không bị ghi đè.
+                                        <c:if test="${preview.importableRows == 0}">
+                                            Tệp không còn dòng nào để lưu.
+                                        </c:if>
+                                    </p>
+                                </c:if>
                                 <form method="post" action="${pageContext.request.contextPath}/librarian/book-management/import">
                                     <input type="hidden" name="action" value="clear">
                                     <button class="btn bm-btn-secondary w-100" type="submit">

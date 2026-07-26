@@ -18,6 +18,8 @@ public class BookImportRowDTO {
     private List<String> tags = new ArrayList<>();
     private String barcode;
     private String location;
+    /** Dòng sheet Books có ISBN đã tồn tại trong CSDL nên sẽ được bỏ qua khi import. */
+    private boolean existingBook;
 
     public String getSheetName() { return sheetName; }
     public void setSheetName(String sheetName) { this.sheetName = sheetName; }
@@ -43,4 +45,6 @@ public class BookImportRowDTO {
     public void setBarcode(String barcode) { this.barcode = barcode; }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+    public boolean isExistingBook() { return existingBook; }
+    public void setExistingBook(boolean existingBook) { this.existingBook = existingBook; }
 }

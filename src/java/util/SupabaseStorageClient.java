@@ -62,11 +62,71 @@ public class SupabaseStorageClient {
         return publicObjectUrl(fileName);
     }
 
+    /**
+     * Xóa một object khỏi bucket ảnh bìa.
+     *
+     * @param fileName tên tệp trong bucket (không kèm đường dẫn public)
+     * @return true nếu object đã được xóa hoặc vốn không tồn tại (404)
+     * @throws IOException nếu Supabase trả về mã lỗi khác
+     */
+    public boolean deleteObject(String fileName) throws IOException, InterruptedException {
+        if (!isConfigured()) {
+            throw new IllegalStateException("Supabase Storage chưa được cấu hình.");
+        }
+        if (fileName == null || fileName.isBlank()) {
+            return false;
+        }
+        String objectUrl = supabaseUrl + "/storage/v1/object/" + bucket + "/" + fileName;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(objectUrl))
+                .header("Authorization", "Bearer " + serviceRoleKey)
+                .header("apikey", serviceRoleKey)
+                .DELETE()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 404) {
+            return true;
+        }
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new IOException("Không thể xóa ảnh trên Supabase Storage. Mã lỗi "
+                    + response.statusCode() + ": " + response.body());
+        }
+        return true;
+    }
+
+    /**
+     * Tách tên tệp từ một URL public của chính bucket này.
+     *
+     * @return tên tệp, hoặc null nếu URL không thuộc bucket đang cấu hình
+     */
+    public String extractObjectName(String publicUrl) {
+        if (publicUrl == null || !isConfigured()) {
+            return null;
+        }
+        String prefix = publicObjectBaseUrl();
+        if (!publicUrl.startsWith(prefix)) {
+            return null;
+        }
+        String fileName = publicUrl.substring(prefix.length());
+        int queryIndex = fileName.indexOf('?');
+        if (queryIndex >= 0) {
+            fileName = fileName.substring(0, queryIndex);
+        }
+        return fileName.isBlank() ? null : fileName;
+    }
+
     public String publicObjectUrl(String fileName) {
         if (!isConfigured()) {
             throw new IllegalStateException("Supabase Storage chưa được cấu hình.");
         }
-        return supabaseUrl + "/storage/v1/object/public/" + bucket + "/" + fileName;
+        return publicObjectBaseUrl() + fileName;
+    }
+
+    public String publicObjectBaseUrl() {
+        if (!isConfigured()) {
+            throw new IllegalStateException("Supabase Storage chua duoc cau hinh.");
+        }
+        return supabaseUrl + "/storage/v1/object/public/" + bucket + "/";
     }
 
     private String normalizeBaseUrl(String value) {

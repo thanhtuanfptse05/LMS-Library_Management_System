@@ -436,7 +436,7 @@ public class BookCopyDAO {
 
     private void appendFilters(StringBuilder sql, List<Object> parameters, String keyword, String location, String status) {
         if (keyword != null) {
-            sql.append("AND (bc.barcode LIKE ? OR b.title LIKE ? OR b.isbn LIKE ?) ");
+            sql.append("AND (bc.barcode ILIKE ? OR b.title ILIKE ? OR b.isbn ILIKE ?) ");
             String value = "%" + keyword + "%";
             parameters.add(value);
             parameters.add(value);

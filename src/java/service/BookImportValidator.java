@@ -36,9 +36,10 @@ public class BookImportValidator {
 
     public void validate(BookImportPreviewDTO preview) throws DatabaseException {
         Set<String> availableIsbns = new HashSet<>();
+        preview.getWarnings().clear();
         try (Connection conn = DatabaseConnection.getConnection()) {
             for (BookImportRowDTO row : preview.getBooks()) {
-                validateBookRow(preview, row);
+                validateBookRow(conn, preview, row);
                 if (row.getIsbn() != null && !row.getIsbn().isBlank()) {
                     availableIsbns.add(row.getIsbn().toLowerCase());
                 }
@@ -51,7 +52,9 @@ public class BookImportValidator {
         }
     }
 
-    private void validateBookRow(BookImportPreviewDTO preview, BookImportRowDTO row) {
+    private void validateBookRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row)
+            throws SQLException {
+        row.setExistingBook(false);
         Book book = new Book();
         book.setIsbn(row.getIsbn());
         book.setTitle(row.getTitle());
@@ -65,6 +68,15 @@ public class BookImportValidator {
             row.setIsbn(book.getIsbn());
         } catch (ValidationException e) {
             preview.getErrors().add(new BookImportError("Books", row.getRowNumber(), null, e.getMessage()));
+        }
+        // Đầu sách đã có trên hệ thống sẽ không bị ghi đè: import chỉ dùng lại bookId sẵn có.
+        // Đây là cảnh báo (không chặn import) để thủ thư biết dòng này không tạo dữ liệu mới.
+        if (row.getIsbn() != null && !row.getIsbn().isBlank()
+                && bookDAO.findByIsbn(conn, row.getIsbn()) != null) {
+            row.setExistingBook(true);
+            preview.getWarnings().add(new BookImportError("Books", row.getRowNumber(), "isbn",
+                    "ISBN đã tồn tại trên hệ thống. Dòng này sẽ được bỏ qua, thông tin đầu sách hiện có "
+                    + "giữ nguyên và không bị cập nhật theo tệp."));
         }
         for (String category : row.getCategories()) {
             if (category.length() > 255) {
