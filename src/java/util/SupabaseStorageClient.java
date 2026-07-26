@@ -124,7 +124,7 @@ public class SupabaseStorageClient {
 
     public String publicObjectBaseUrl() {
         if (!isConfigured()) {
-            throw new IllegalStateException("Supabase Storage chua duoc cau hinh.");
+            throw new IllegalStateException("Supabase Storage chưa được cấu hình.");
         }
         return supabaseUrl + "/storage/v1/object/public/" + bucket + "/";
     }

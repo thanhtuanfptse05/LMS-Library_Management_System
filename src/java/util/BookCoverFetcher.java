@@ -1,5 +1,11 @@
 package util;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import config.AiConfig;
 import config.AppConfig;
 import java.io.IOException;
 import java.net.URI;
@@ -65,6 +71,10 @@ public class BookCoverFetcher {
     private static final int DELAY_BETWEEN_BOOKS_MS = 600;
     private static final int DELAY_BEFORE_FALLBACK_MS = 300;
     private static final int MAX_RETRIES = 2;
+    private static final int MAX_AI_QUERY_COUNT = 5;
+    private static final int MIN_SEARCH_MATCH_SCORE = 55;
+    private static final int MIN_AI_MATCH_SCORE = 65;
+    private static final int REMOTE_COVER_CHECK_LIMIT = 300;
     private static final int MIN_IMAGE_SIZE_BYTES = 1000;
     private static final Duration HTTP_TIMEOUT = Duration.ofSeconds(15);
 
@@ -75,9 +85,12 @@ public class BookCoverFetcher {
             Pattern.compile("\"totalItems\"\\s*:\\s*0");
     private static final Pattern COVER_ID_PATTERN =
             Pattern.compile("\"cover_i\"\\s*:\\s*(\\d+)|\"covers\"\\s*:\\s*\\[\\s*(\\d+)");
+    private static final Pattern GOOGLE_IMAGE_LINK_PATTERN =
+            Pattern.compile("\"(?:thumbnail|smallThumbnail)\"\\s*:\\s*\"([^\"]+)\"");
 
     private final HttpClient httpClient;
     private final SupabaseStorageClient storageClient;
+    private final boolean forceRefresh;
 
     // ── Thống kê kết quả ──
     private int totalBooks;
@@ -90,12 +103,17 @@ public class BookCoverFetcher {
     private final List<String> errorList = new ArrayList<>();
 
     public BookCoverFetcher() {
+        this(false);
+    }
+
+    public BookCoverFetcher(boolean forceRefresh) {
         this.httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(HTTP_TIMEOUT)
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
         this.storageClient = new SupabaseStorageClient();
+        this.forceRefresh = forceRefresh;
     }
 
     // ═════════════════════════════════════════════════════════════════
@@ -103,7 +121,19 @@ public class BookCoverFetcher {
     // ═════════════════════════════════════════════════════════════════
 
     public static void main(String[] args) {
-        new BookCoverFetcher().run();
+        new BookCoverFetcher(hasFlag(args, "--force")).run();
+    }
+
+    private static boolean hasFlag(String[] args, String flag) {
+        if (args == null) {
+            return false;
+        }
+        for (String arg : args) {
+            if (flag.equalsIgnoreCase(arg)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -116,7 +146,10 @@ public class BookCoverFetcher {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(true);
 
-            List<BookInfo> books = loadBooksWithoutCover(conn);
+            List<BookInfo> books = loadTargetBooks(conn);
+            if (!forceRefresh && !books.isEmpty()) {
+                books = filterBooksWithMissingRemoteCover(books);
+            }
             totalBooks = books.size();
 
             if (totalBooks == 0) {
@@ -208,13 +241,25 @@ public class BookCoverFetcher {
         }
 
         Thread.sleep(DELAY_BEFORE_FALLBACK_MS);
-        cover = fetchFromOpenLibrarySearch(book.title, book.author);
+        cover = fetchFromOpenLibrarySearch(book, isbnVariants);
         if (cover != null) {
             return cover;
         }
 
         Thread.sleep(DELAY_BEFORE_FALLBACK_MS);
-        return fetchFromGoogleBooksSearch(book.title, book.author);
+        cover = fetchFromGoogleBooksSearch(book, isbnVariants);
+        if (cover != null) {
+            return cover;
+        }
+
+        Thread.sleep(DELAY_BEFORE_FALLBACK_MS);
+        cover = fetchByGeneratedQueries(book);
+        if (cover != null) {
+            return cover;
+        }
+
+        Thread.sleep(DELAY_BEFORE_FALLBACK_MS);
+        return fetchByAiSuggestedQueries(book);
     }
 
     private CoverCandidate fetchGoogleByIsbnVariants(List<String> isbnVariants)
@@ -286,12 +331,12 @@ public class BookCoverFetcher {
         return downloadImageBytes(thumbnailUrl);
     }
 
-    private CoverCandidate fetchFromGoogleBooksSearch(String title, String author)
+    private CoverCandidate fetchFromGoogleBooksSearch(BookInfo book, List<String> isbnVariants)
             throws IOException, InterruptedException {
 
-        String query = "intitle:" + quoteQuery(title);
-        if (author != null && !author.isBlank()) {
-            query += " inauthor:" + quoteQuery(author);
+        String query = "intitle:" + quoteQuery(book.title);
+        if (book.author != null && !book.author.isBlank()) {
+            query += " inauthor:" + quoteQuery(book.author);
         }
         String url = GOOGLE_BOOKS_SEARCH_API + encodeQuery(query) + "&maxResults=5";
         HttpResponse<String> response = httpGet(url, HttpResponse.BodyHandlers.ofString());
@@ -307,12 +352,66 @@ public class BookCoverFetcher {
             return null;
         }
 
-        String thumbnailUrl = extractThumbnailUrl(response.body());
-        if (thumbnailUrl == null) {
+        return selectGoogleCover(response.body(), book, isbnVariants, "Google Books Search", MIN_SEARCH_MATCH_SCORE);
+    }
+
+    private CoverCandidate fetchByGeneratedQueries(BookInfo book)
+            throws IOException, InterruptedException {
+
+        for (String query : buildFallbackQueries(book)) {
+            CoverCandidate cover = fetchFromGoogleBooksQuery(query, book, "Google Books Query", MIN_SEARCH_MATCH_SCORE);
+            if (cover != null) {
+                return cover;
+            }
+
+            cover = fetchFromOpenLibraryKeywordSearch(query, book, "Open Library Query", MIN_SEARCH_MATCH_SCORE);
+            if (cover != null) {
+                return cover;
+            }
+        }
+        return null;
+    }
+
+    private CoverCandidate fetchByAiSuggestedQueries(BookInfo book)
+            throws IOException, InterruptedException {
+
+        List<String> aiQueries = suggestQueriesWithGemini(book);
+        if (aiQueries.isEmpty()) {
             return null;
         }
-        byte[] imageBytes = downloadImageBytes(improveThumbnailUrl(thumbnailUrl));
-        return imageBytes == null ? null : new CoverCandidate(imageBytes, "Google Books Search");
+
+        System.out.print("[AI query fallback] ");
+        for (String query : aiQueries) {
+            CoverCandidate cover = fetchFromGoogleBooksQuery(query, book, "Google Books AI Query", MIN_AI_MATCH_SCORE);
+            if (cover != null) {
+                return cover;
+            }
+
+            cover = fetchFromOpenLibraryKeywordSearch(query, book, "Open Library AI Query", MIN_AI_MATCH_SCORE);
+            if (cover != null) {
+                return cover;
+            }
+        }
+        return null;
+    }
+
+    private CoverCandidate fetchFromGoogleBooksQuery(String query, BookInfo book, String source, int minScore)
+            throws IOException, InterruptedException {
+
+        String url = GOOGLE_BOOKS_SEARCH_API + encodeQuery(query) + "&maxResults=10";
+        HttpResponse<String> response = httpGet(url, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            if (response.statusCode() == 429) {
+                System.out.print("[Google Query 429] ");
+            }
+            return null;
+        }
+
+        if (TOTAL_ITEMS_ZERO.matcher(response.body()).find()) {
+            return null;
+        }
+
+        return selectGoogleCover(response.body(), book, isbnVariants(book.isbn), source, minScore);
     }
 
     /**
@@ -349,23 +448,25 @@ public class BookCoverFetcher {
         return coverId == null ? null : fetchFromOpenLibraryCoverId(coverId);
     }
 
-    private CoverCandidate fetchFromOpenLibrarySearch(String title, String author)
+    private CoverCandidate fetchFromOpenLibrarySearch(BookInfo book, List<String> isbnVariants)
             throws IOException, InterruptedException {
 
         List<String> titleQueries = new ArrayList<>();
-        titleQueries.add(cleanTitle(title));
-        String shortTitle = titleBeforeSubtitle(title);
+        titleQueries.add(cleanTitle(book.title));
+        String shortTitle = titleBeforeSubtitle(book.title);
         if (!shortTitle.equalsIgnoreCase(titleQueries.get(0))) {
             titleQueries.add(shortTitle);
         }
 
         for (String titleQuery : titleQueries) {
-            CoverCandidate cover = fetchFromOpenLibrarySearch(titleQuery, author, true);
+            CoverCandidate cover = fetchFromOpenLibrarySearch(titleQuery, book.author, true,
+                    book, isbnVariants, MIN_SEARCH_MATCH_SCORE);
             if (cover != null) {
                 return cover;
             }
 
-            cover = fetchFromOpenLibrarySearch(titleQuery, null, false);
+            cover = fetchFromOpenLibrarySearch(titleQuery, null, false,
+                    book, isbnVariants, MIN_SEARCH_MATCH_SCORE);
             if (cover != null) {
                 return cover;
             }
@@ -373,7 +474,8 @@ public class BookCoverFetcher {
         return null;
     }
 
-    private CoverCandidate fetchFromOpenLibrarySearch(String title, String author, boolean includeAuthor)
+    private CoverCandidate fetchFromOpenLibrarySearch(String title, String author, boolean includeAuthor,
+            BookInfo book, List<String> isbnVariants, int minScore)
             throws IOException, InterruptedException {
 
         StringBuilder url = new StringBuilder(OPEN_LIBRARY_SEARCH_API)
@@ -389,12 +491,22 @@ public class BookCoverFetcher {
             return null;
         }
 
-        Long coverId = extractCoverId(response.body());
-        if (coverId == null) {
+        return selectOpenLibraryCover(response.body(), book, isbnVariants, "Open Library Search", minScore);
+    }
+
+    private CoverCandidate fetchFromOpenLibraryKeywordSearch(String query, BookInfo book, String source, int minScore)
+            throws IOException, InterruptedException {
+
+        String url = OPEN_LIBRARY_SEARCH_API
+                + "q=" + encodeQuery(query)
+                + "&fields=cover_i,title,author_name,isbn"
+                + "&limit=10";
+        HttpResponse<String> response = httpGet(url, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
             return null;
         }
-        byte[] imageBytes = fetchFromOpenLibraryCoverId(coverId);
-        return imageBytes == null ? null : new CoverCandidate(imageBytes, "Open Library Search");
+
+        return selectOpenLibraryCover(response.body(), book, isbnVariants(book.isbn), source, minScore);
     }
 
     private byte[] fetchFromOpenLibraryCoverId(long coverId)
@@ -408,6 +520,54 @@ public class BookCoverFetcher {
             }
         }
         return null;
+    }
+
+    private List<String> suggestQueriesWithGemini(BookInfo book)
+            throws IOException, InterruptedException {
+
+        String apiKey = AiConfig.resolveApiKey();
+        if (apiKey == null || apiKey.isBlank() || "MISSING_API_KEY".equals(apiKey)) {
+            return List.of();
+        }
+
+        JsonObject payload = new JsonObject();
+        JsonObject textPart = new JsonObject();
+        textPart.addProperty("text", buildAiQueryPrompt(book));
+
+        JsonArray parts = new JsonArray();
+        parts.add(textPart);
+        JsonObject content = new JsonObject();
+        content.add("parts", parts);
+        JsonArray contents = new JsonArray();
+        contents.add(content);
+        payload.add("contents", contents);
+
+        JsonObject generationConfig = new JsonObject();
+        generationConfig.addProperty("temperature", 0.2);
+        generationConfig.addProperty("maxOutputTokens", 160);
+        payload.add("generationConfig", generationConfig);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(AiConfig.GEMINI_API_URL + apiKey))
+                .timeout(HTTP_TIMEOUT)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(payload)))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            return List.of();
+        }
+        return parseAiQueries(response.body());
+    }
+
+    private String buildAiQueryPrompt(BookInfo book) {
+        return "Create up to " + MAX_AI_QUERY_COUNT + " concise search queries to find the real book cover. "
+                + "Use only the title, subtitle, author, edition, ISBN, and publisher clues if obvious. "
+                + "Do not invent a different book. Return raw JSON array of strings only.\n"
+                + "Title: " + nullToEmpty(book.title) + "\n"
+                + "Author: " + nullToEmpty(book.author) + "\n"
+                + "ISBN: " + nullToEmpty(book.isbn);
     }
 
     // ═════════════════════════════════════════════════════════════════
@@ -507,6 +667,265 @@ public class BookCoverFetcher {
         return matcher.find() ? matcher.group(1) : null;
     }
 
+    private String extractBestGoogleImageUrl(String json) {
+        Matcher matcher = GOOGLE_IMAGE_LINK_PATTERN.matcher(json);
+        String fallback = null;
+        while (matcher.find()) {
+            String candidate = matcher.group(1);
+            if (candidate == null || candidate.isBlank()) {
+                continue;
+            }
+            if (fallback == null) {
+                fallback = candidate;
+            }
+            if (candidate.contains("zoom=1") || candidate.contains("zoom=2")) {
+                return candidate;
+            }
+        }
+        return fallback;
+    }
+
+    private CoverCandidate selectGoogleCover(String json, BookInfo book, List<String> isbnVariants,
+            String source, int minScore) throws IOException, InterruptedException {
+
+        try {
+            JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+            JsonArray items = root.getAsJsonArray("items");
+            if (items == null || items.isEmpty()) {
+                return null;
+            }
+
+            int bestScore = -1;
+            String bestImageUrl = null;
+            for (JsonElement item : items) {
+                JsonObject volumeInfo = item.getAsJsonObject().getAsJsonObject("volumeInfo");
+                if (volumeInfo == null) {
+                    continue;
+                }
+
+                String imageUrl = googleImageUrl(volumeInfo);
+                if (imageUrl == null) {
+                    continue;
+                }
+
+                String title = googleTitle(volumeInfo);
+                String authors = joinJsonArray(volumeInfo.getAsJsonArray("authors"));
+                List<String> candidateIsbns = googleIsbns(volumeInfo);
+                int score = matchScore(book, isbnVariants, title, authors, candidateIsbns);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestImageUrl = imageUrl;
+                }
+            }
+
+            if (bestImageUrl == null || bestScore < minScore) {
+                return null;
+            }
+
+            byte[] imageBytes = downloadImageBytes(improveThumbnailUrl(bestImageUrl));
+            return imageBytes == null ? null : new CoverCandidate(imageBytes, source + " score=" + bestScore);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private CoverCandidate selectOpenLibraryCover(String json, BookInfo book, List<String> isbnVariants,
+            String source, int minScore) throws IOException, InterruptedException {
+
+        try {
+            JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+            JsonArray docs = root.getAsJsonArray("docs");
+            if (docs == null || docs.isEmpty()) {
+                return null;
+            }
+
+            int bestScore = -1;
+            Long bestCoverId = null;
+            for (JsonElement docElement : docs) {
+                JsonObject doc = docElement.getAsJsonObject();
+                if (!doc.has("cover_i")) {
+                    continue;
+                }
+
+                String title = getJsonString(doc, "title");
+                String authors = joinJsonArray(doc.getAsJsonArray("author_name"));
+                List<String> candidateIsbns = jsonArrayToStrings(doc.getAsJsonArray("isbn"));
+                int score = matchScore(book, isbnVariants, title, authors, candidateIsbns);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestCoverId = doc.get("cover_i").getAsLong();
+                }
+            }
+
+            if (bestCoverId == null || bestScore < minScore) {
+                return null;
+            }
+
+            byte[] imageBytes = fetchFromOpenLibraryCoverId(bestCoverId);
+            return imageBytes == null ? null : new CoverCandidate(imageBytes, source + " score=" + bestScore);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private int matchScore(BookInfo book, List<String> targetIsbns, String candidateTitle,
+            String candidateAuthors, List<String> candidateIsbns) {
+
+        int score = 0;
+        if (hasMatchingIsbn(targetIsbns, candidateIsbns)) {
+            score += 90;
+        }
+
+        score += titleMatchScore(book.title, candidateTitle);
+        score += authorMatchScore(book.author, candidateAuthors);
+        return score;
+    }
+
+    private boolean hasMatchingIsbn(List<String> targetIsbns, List<String> candidateIsbns) {
+        if (targetIsbns == null || candidateIsbns == null) {
+            return false;
+        }
+
+        Set<String> normalizedTargets = new LinkedHashSet<>();
+        for (String isbn : targetIsbns) {
+            addQuery(normalizedTargets, normalizeIsbn(isbn));
+        }
+
+        for (String isbn : candidateIsbns) {
+            if (normalizedTargets.contains(normalizeIsbn(isbn))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int titleMatchScore(String expectedTitle, String candidateTitle) {
+        String expected = normalizeText(cleanTitle(expectedTitle));
+        String expectedShort = normalizeText(titleBeforeSubtitle(expectedTitle));
+        String candidate = normalizeText(cleanTitle(candidateTitle));
+        if (expected.isBlank() || candidate.isBlank()) {
+            return 0;
+        }
+
+        int fullScore = textMatchScore(expected, candidate, 55, 45, 40);
+        int shortScore = expectedShort.equals(expected)
+                ? 0
+                : textMatchScore(expectedShort, candidate, 45, 35, 30);
+        return Math.max(fullScore, shortScore);
+    }
+
+    private int authorMatchScore(String expectedAuthor, String candidateAuthors) {
+        String expected = normalizeText(expectedAuthor);
+        String candidate = normalizeText(candidateAuthors);
+        if (expected.isBlank() || candidate.isBlank()) {
+            return 0;
+        }
+        return textMatchScore(expected, candidate, 25, 20, 18);
+    }
+
+    private int textMatchScore(String expected, String candidate, int exactScore, int containsScore, int overlapMax) {
+        if (expected.equals(candidate)) {
+            return exactScore;
+        }
+        if ((candidate.contains(expected) || expected.contains(candidate)) && Math.min(expected.length(), candidate.length()) >= 8) {
+            return containsScore;
+        }
+        double overlap = tokenOverlap(expected, candidate);
+        return overlap >= 0.5 ? (int) Math.round(overlap * overlapMax) : 0;
+    }
+
+    private double tokenOverlap(String expected, String candidate) {
+        Set<String> expectedTokens = meaningfulTokens(expected);
+        Set<String> candidateTokens = meaningfulTokens(candidate);
+        if (expectedTokens.isEmpty() || candidateTokens.isEmpty()) {
+            return 0;
+        }
+
+        int matched = 0;
+        for (String token : expectedTokens) {
+            if (candidateTokens.contains(token)) {
+                matched++;
+            }
+        }
+        return matched / (double) expectedTokens.size();
+    }
+
+    private Set<String> meaningfulTokens(String value) {
+        Set<String> tokens = new LinkedHashSet<>();
+        for (String token : normalizeText(value).split(" ")) {
+            if (token.length() >= 3 && !isWeakToken(token)) {
+                tokens.add(token);
+            }
+        }
+        return tokens;
+    }
+
+    private boolean isWeakToken(String token) {
+        return Set.of("the", "and", "for", "with", "book", "edition", "introduction").contains(token);
+    }
+
+    private String googleImageUrl(JsonObject volumeInfo) {
+        JsonObject imageLinks = volumeInfo.getAsJsonObject("imageLinks");
+        if (imageLinks == null) {
+            return null;
+        }
+        String thumbnail = getJsonString(imageLinks, "thumbnail");
+        if (thumbnail != null && !thumbnail.isBlank()) {
+            return thumbnail;
+        }
+        return getJsonString(imageLinks, "smallThumbnail");
+    }
+
+    private String googleTitle(JsonObject volumeInfo) {
+        String title = getJsonString(volumeInfo, "title");
+        String subtitle = getJsonString(volumeInfo, "subtitle");
+        if (subtitle == null || subtitle.isBlank()) {
+            return title;
+        }
+        return nullToEmpty(title) + ": " + subtitle;
+    }
+
+    private List<String> googleIsbns(JsonObject volumeInfo) {
+        List<String> values = new ArrayList<>();
+        JsonArray identifiers = volumeInfo.getAsJsonArray("industryIdentifiers");
+        if (identifiers == null) {
+            return values;
+        }
+
+        for (JsonElement element : identifiers) {
+            JsonObject identifier = element.getAsJsonObject();
+            String value = getJsonString(identifier, "identifier");
+            if (value != null) {
+                values.add(value);
+            }
+        }
+        return values;
+    }
+
+    private List<String> jsonArrayToStrings(JsonArray array) {
+        List<String> values = new ArrayList<>();
+        if (array == null) {
+            return values;
+        }
+        for (JsonElement element : array) {
+            if (!element.isJsonNull()) {
+                values.add(element.getAsString());
+            }
+        }
+        return values;
+    }
+
+    private String joinJsonArray(JsonArray array) {
+        return String.join(" ", jsonArrayToStrings(array));
+    }
+
+    private String getJsonString(JsonObject object, String key) {
+        if (object == null || !object.has(key) || object.get(key).isJsonNull()) {
+            return null;
+        }
+        return object.get(key).getAsString();
+    }
+
     private Long extractCoverId(String json) {
         Matcher matcher = COVER_ID_PATTERN.matcher(json);
         while (matcher.find()) {
@@ -550,6 +969,59 @@ public class BookCoverFetcher {
         return new ArrayList<>(variants);
     }
 
+    private List<String> buildFallbackQueries(BookInfo book) {
+        Set<String> queries = new LinkedHashSet<>();
+        String title = cleanTitle(book.title);
+        String shortTitle = titleBeforeSubtitle(book.title);
+        String author = normalizeAuthor(book.author);
+
+        addQuery(queries, quoteQuery(title) + " " + author);
+        addQuery(queries, quoteQuery(shortTitle) + " " + author);
+        addQuery(queries, title + " " + author);
+        addQuery(queries, shortTitle + " " + author);
+
+        return new ArrayList<>(queries);
+    }
+
+    private void addQuery(Set<String> queries, String query) {
+        String cleaned = query == null ? "" : query.replaceAll("\\s+", " ").trim();
+        if (!cleaned.isBlank()) {
+            queries.add(cleaned);
+        }
+    }
+
+    private List<String> parseAiQueries(String jsonResponse) {
+        try {
+            JsonObject root = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            JsonArray candidates = root.getAsJsonArray("candidates");
+            if (candidates == null || candidates.isEmpty()) {
+                return List.of();
+            }
+
+            JsonObject content = candidates.get(0).getAsJsonObject().getAsJsonObject("content");
+            JsonArray parts = content.getAsJsonArray("parts");
+            if (parts == null || parts.isEmpty()) {
+                return List.of();
+            }
+
+            String text = parts.get(0).getAsJsonObject().get("text").getAsString()
+                    .replace("```json", "")
+                    .replace("```", "")
+                    .trim();
+            JsonArray queryArray = JsonParser.parseString(text).getAsJsonArray();
+            Set<String> queries = new LinkedHashSet<>();
+            for (JsonElement element : queryArray) {
+                if (queries.size() >= MAX_AI_QUERY_COUNT) {
+                    break;
+                }
+                addQuery(queries, element.getAsString());
+            }
+            return new ArrayList<>(queries);
+        } catch (RuntimeException e) {
+            return List.of();
+        }
+    }
+
     private String toIsbn10(String isbn) {
         if (isbn == null || isbn.length() != 13 || !isbn.startsWith("978")) {
             return null;
@@ -591,6 +1063,31 @@ public class BookCoverFetcher {
         String cleaned = cleanTitle(title);
         int colonIndex = cleaned.indexOf(':');
         return colonIndex > 0 ? cleaned.substring(0, colonIndex).trim() : cleaned;
+    }
+
+    private String normalizeAuthor(String author) {
+        if (author == null) {
+            return "";
+        }
+        return author.replaceAll("\\s+", " ").trim();
+    }
+
+    private String normalizeText(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.toLowerCase()
+                .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]+", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
+    private String normalizeIsbn(String isbn) {
+        return isbn == null ? "" : isbn.replaceAll("[^0-9Xx]", "").toUpperCase();
+    }
+
+    private String nullToEmpty(String value) {
+        return value == null ? "" : value;
     }
 
     private String quoteQuery(String value) {
@@ -642,24 +1139,102 @@ public class BookCoverFetcher {
      * Lấy danh sách tất cả sách chưa có ảnh bìa (imagePath IS NULL hoặc rỗng).
      * Chỉ lấy sách có trạng thái 'available'.
      */
-    private List<BookInfo> loadBooksWithoutCover(Connection conn) throws SQLException {
-        String sql = "SELECT bookId, isbn, title, author FROM Book "
-                + "WHERE (imagePath IS NULL OR imagePath = '') "
-                + "AND status = 'available' "
-                + "ORDER BY bookId";
+    private List<BookInfo> loadTargetBooks(Connection conn) throws SQLException {
+        String sql = "SELECT bookId, isbn, title, author, imagePath FROM Book "
+                + "WHERE status = 'available' ";
+        if (!forceRefresh) {
+            sql += "AND (imagePath IS NULL OR TRIM(imagePath) = '' OR imagePath NOT LIKE ? OR imagePath LIKE ?) ";
+        }
+        sql += "ORDER BY bookId";
 
         List<BookInfo> books = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             ResultSet rs = executeTargetBookQuery(ps)) {
             while (rs.next()) {
                 books.add(new BookInfo(
                         rs.getInt("bookId"),
                         rs.getString("isbn"),
                         rs.getString("title"),
-                        rs.getString("author")));
+                        rs.getString("author"),
+                        rs.getString("imagePath")));
             }
         }
         return books;
+    }
+
+    private ResultSet executeTargetBookQuery(PreparedStatement ps) throws SQLException {
+        if (!forceRefresh) {
+            ps.setString(1, validSharedCoverPattern());
+            ps.setString(2, validSharedCoverPattern());
+        }
+        return ps.executeQuery();
+    }
+
+    private List<BookInfo> filterBooksWithMissingRemoteCover(List<BookInfo> books) {
+        List<BookInfo> targets = new ArrayList<>();
+        int checked = 0;
+        for (BookInfo book : books) {
+            if (!hasValidSharedCoverUrl(book.imagePath)) {
+                targets.add(book);
+                continue;
+            }
+
+            checked++;
+            if (checked > REMOTE_COVER_CHECK_LIMIT) {
+                continue;
+            }
+
+            if (!remoteCoverExists(book.imagePath)) {
+                targets.add(book);
+            }
+        }
+        return targets;
+    }
+
+    private boolean hasValidSharedCoverUrl(String imagePath) {
+        if (imagePath == null || imagePath.trim().isEmpty()) {
+            return false;
+        }
+        return imagePath.startsWith("https://") && imagePath.contains("/storage/v1/object/public/");
+    }
+
+    private boolean remoteCoverExists(String imagePath) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(imagePath))
+                    .timeout(HTTP_TIMEOUT)
+                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                    .build();
+            HttpResponse<Void> response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            if (response.statusCode() == 405) {
+                return remoteCoverExistsByRangeGet(imagePath);
+            }
+            return response.statusCode() >= 200 && response.statusCode() < 300;
+        } catch (IllegalArgumentException | IOException | InterruptedException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return false;
+        }
+    }
+
+    private boolean remoteCoverExistsByRangeGet(String imagePath)
+            throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(imagePath))
+                .timeout(HTTP_TIMEOUT)
+                .header("Range", "bytes=0-0")
+                .GET()
+                .build();
+        HttpResponse<Void> response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+        return response.statusCode() >= 200 && response.statusCode() < 300;
+    }
+
+    private String validSharedCoverPattern() {
+        if (storageClient.isConfigured()) {
+            return storageClient.publicObjectBaseUrl() + "%";
+        }
+        return "https://%/storage/v1/object/public/%";
     }
 
     // ═════════════════════════════════════════════════════════════════
@@ -755,12 +1330,14 @@ public class BookCoverFetcher {
         final String isbn;
         final String title;
         final String author;
+        final String imagePath;
 
-        BookInfo(int bookId, String isbn, String title, String author) {
+        BookInfo(int bookId, String isbn, String title, String author, String imagePath) {
             this.bookId = bookId;
             this.isbn = isbn;
             this.title = title;
             this.author = author;
+            this.imagePath = imagePath;
         }
     }
 
