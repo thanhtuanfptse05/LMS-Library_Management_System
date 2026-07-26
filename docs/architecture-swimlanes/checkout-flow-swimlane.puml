@@ -1,0 +1,131 @@
+@startuml
+!theme plain
+title Sơ đồ Phân làn (Activity Swimlane): Luồng Giao Sách tại Quầy (Desk Check-out Flow)
+
+|Thủ thư (Librarian)|
+start
+:Nhập Mã vạch (barcode) và Mã số độc giả (memberCode) tại màn hình Quầy;
+:Nhấn nút "Giao sách" (Submit Form POST /librarian/checkout);
+
+|Controller (CheckOutServlet)|
+:CheckOutServlet.doPost() nhận Request;
+if (Phiên làm việc hợp lệ & Role == 'LIBRARIAN'?) then (Không)
+  :Chuyển hướng (302) về /login;
+  stop
+else (Hợp lệ)
+  :Validate tham số barcode, memberCode;
+  if (barcode hoặc memberCode bị trống?) then (Trống)
+    :Gán session.errorMessage = "Vui lòng nhập đầy đủ...";
+    :Chuyển hướng (302) về /librarian/desk-dashboard;
+    stop
+  else (Đầy đủ)
+    |Business Service (DeskCirculationService)|
+    :Gọi DeskCirculationService.processCheckOut(librarianId, memberCode, barcode, targetBookId);
+    :Mở Connection & Bắt đầu Atomic DB Transaction (conn.setAutoCommit(false));
+    
+    :ReservationDAO.cancelExpiredReservations(conn);
+    |Cơ sở dữ liệu (PostgreSQL)|
+    :UPDATE Reservation SET status = 'cancelled' WHERE status = 'readypickup' AND endDate < NOW();
+    
+    |Business Service (DeskCirculationService)|
+    :UserLookupDAO.findUserIdByMemberCode(conn, memberCode);
+    |Cơ sở dữ liệu (PostgreSQL)|
+    :SELECT userId FROM Student/Lecturer/MemberProfile WHERE code = ?;
+    
+    |Business Service (DeskCirculationService)|
+    if (Độc giả tồn tại trong hệ thống?) then (Không)
+      :Rollback Transaction;
+      :Ném IllegalStateException("Mã độc giả không tồn tại");
+    else (Tồn tại userId)
+      :FineDAO.hasUnpaidFines(conn, userId) [Kểm tra BR-22];
+      |Cơ sở dữ liệu (PostgreSQL)|
+      :SELECT 1 FROM Fine WHERE userId = ? AND status = 'unpaid' LIMIT 1;
+      
+      |Business Service (DeskCirculationService)|
+      if (Độc giả đang có nợ phạt chưa trả (unpaid)?) then (Có nợ phạt)
+        :Rollback Transaction;
+        :Ném IllegalStateException("Tài khoản đang nợ phạt, không thể mượn sách...");
+      else (Không nợ phạt)
+        :BookCopyDAO.findByBarcode(conn, barcode);
+        |Cơ sở dữ liệu (PostgreSQL)|
+        :SELECT * FROM BookCopy WHERE barcode = ?;
+        
+        |Business Service (DeskCirculationService)|
+        if (Mã vạch hợp lệ & Bản sao khả dụng?) then (Không hợp lệ/ngưng lưu thông)
+          :Rollback Transaction;
+          :Ném IllegalStateException("Mã vạch không hợp lệ hoặc sách bị loại khỏi kho");
+        else (Bản sao hợp lệ)
+          :ReservationDAO.findReadyPickupByUserAndBook(conn, userId, bookId);
+          |Cơ sở dữ liệu (PostgreSQL)|
+          :SELECT * FROM Reservation WHERE userId = ? AND bookId = ? AND queuePosition = 0 AND status = 'readypickup';
+          
+          |Business Service (DeskCirculationService)|
+          if (Độc giả chưa có đơn đặt trước sẵn (Pre-reservation)?) then (Mượn trực tiếp - Walk-in)
+            :Kiểm tra hạn mức mượn tối đa (BR-21 quota check);
+            :BorrowRecordDAO.countActiveBorrowsByUserId(conn, userId);
+            |Cơ sở dữ liệu (PostgreSQL)|
+            :SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status = 'borrowed';
+            
+            |Business Service (DeskCirculationService)|
+            if (Đã đạt hạn mức tối đa - Student:3 / Lecturer:5?) then (Đạt hạn mức)
+              :Rollback Transaction;
+              :Ném IllegalStateException("Độc giả đã đạt hạn mức mượn sách tối đa...");
+            else (Còn hạn mức)
+              :Rollback Transaction;
+              :Ném IllegalStateException("Độc giả chưa có đơn đặt mượn sách khả dụng...");
+            endif
+          else (Đã có đơn đặt trước Ready Pickup)
+            |Business Service (DeskCirculationService)|
+            :Tính endDate = NOW() + borrowDays (từ SystemConfigurations);
+            
+            note right
+              Thực thi Atomic Transaction (3 bước ghi)
+              thứ tự: Insert BorrowRecord -> Update Reservation -> Update BookCopy
+            end note
+            
+            :BorrowRecordDAO.insert(conn, userId, bookCopyId, bookId, librarianId, endDate);
+            |Cơ sở dữ liệu (PostgreSQL)|
+            :INSERT INTO BorrowRecord (userId, bookCopyId, bookId, startDate, endDate, status, createdBy) VALUES (?, ?, ?, NOW(), ?, 'borrowed', ?);
+            
+            |Business Service (DeskCirculationService)|
+            :ReservationDAO.updateStatusToFulfilled(conn, reservationId, bookCopyId);
+            |Cơ sở dữ liệu (PostgreSQL)|
+            :UPDATE Reservation SET status = 'fulfilled', bookCopyId = ? WHERE reservationId = ?;
+            
+            |Business Service (DeskCirculationService)|
+            if (Đơn đặt trước có sẵn bản sao?) then (Pre-reserved)
+              :BookCopyDAO.updateStatusToBorrowedNoQtyChange(conn, bookCopyId);
+              |Cơ sở dữ liệu (PostgreSQL)|
+              :UPDATE BookCopy SET status = 'borrowed', updatedAt = NOW() WHERE bookCopyId = ?;
+            else (Walk-in / Online no copy)
+              :BookCopyDAO.updateStatusToBorrowedFromAvailable(conn, bookCopyId);
+              |Cơ sở dữ liệu (PostgreSQL)|
+              :UPDATE BookCopy SET status = 'borrowed' WHERE bookCopyId = ?;
+              :UPDATE Book SET availableQuantity = availableQuantity - 1 WHERE bookId = ?;
+            endif
+            
+            |Business Service (DeskCirculationService)|
+            :UserDAO.insertAuditLog(librarianId, "CHECK_OUT", "BorrowRecord", ...);
+            |Cơ sở dữ liệu (PostgreSQL)|
+            :INSERT INTO AuditLogs (userId, actionType, entityName, ...) VALUES (?, 'CHECK_OUT', ...);
+            
+            |Business Service (DeskCirculationService)|
+            :Commit DB Transaction (conn.commit());
+            :Kích hoạt Email thông báo mượn bất đồng bộ (Async Thread Outside Transaction);
+          endif
+        endif
+      endif
+    endif
+
+    |Controller (CheckOutServlet)|
+    if (Service thực thi thành công?) then (Thành công)
+      :Gán session.successMessage = "Giao sách thành công! Mã vạch: ...";
+    else (Ném lỗi IllegalStateException / SQLException)
+      :Bắt Exception & Gán session.errorMessage = e.getMessage();
+    endif
+    
+    :Chuyển hướng (302 PRG) về /librarian/desk-dashboard?memberCode=...;
+    stop
+  endif
+endif
+@enduml

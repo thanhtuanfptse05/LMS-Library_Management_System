@@ -1,5 +1,5 @@
-# Feature Specification: Tìm kiếm & Khám phá sách (Book Discovery & AI Recommendation)
-# Version: 1.2 | Chủ sở hữu: @bao | Ngày cập nhật: 2026-07-24 (Đồng bộ CodeGraph)
+﻿# Feature Specification: Tìm kiếm & Khám phá sách (Book Discovery & AI Recommendation)
+# Version: 1.3 | Chủ sở hữu: Bao | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
 Cung cấp giao diện tra cứu danh mục thư viện cho Sinh viên, Giảng viên và Khách vãng lai, cho phép tìm kiếm đa tiêu chí (tiêu đề, tác giả, ISBN, danh mục, thẻ tag, năm xuất bản), xem chi tiết sách kèm số lượng bản sao sẵn có tại các vị trí kệ, và nhận gợi ý sách thông minh hỗ trợ bởi AI dựa trên lịch sử mượn.
@@ -8,23 +8,23 @@ Cung cấp giao diện tra cứu danh mục thư viện cho Sinh viên, Giảng 
 * **Khách (Guest) & Người dùng (All Roles):** Tìm kiếm sách, lọc danh mục, xem chi tiết sách.
 * **Sinh viên (Student) & Giảng viên (Lecturer):** Xem danh sách gợi ý sách cá nhân hóa dựa trên AI.
 
-## 2.5 Use Cases (Danh sách Use Cases)
-* **UC-16 (Search Books):** Actor: Guest/User | Tìm kiếm sách theo từ khóa, lọc theo Danh mục, Tag, Trạng thái sẵn có và sắp xếp kết quả.
-* **UC-17 (View Book Detail):** Actor: Guest/User | Xem chi tiết thông tin sách, ảnh bìa, danh sách các bản sao và vị trí kệ tương ứng.
-* **UC-18 (AI Book Recommendation):** Actor: Student/Lecturer | Nhận danh sách gợi ý đọc sách cá nhân hóa do AI phân tích từ lịch sử mượn trả.
+## 2.5 Use Cases (Danh sách Use Cases đúng theo registry)
+* **UC-22 (Search & View Books):** Actor: User | (Tra cứu sách): Người dùng tìm kiếm đầu sách theo từ khóa, xem chi tiết tình trạng bản sao và gợi ý sách.
+* **UC-23 (Get AI Recommendation):** Actor: User | (Nhận gợi ý sách từ AI): Người dùng nhận danh sách các tựa sách được AI (Gemini) đề xuất.
 
-## 3. Business Rules (Quy tắc nghiệp vụ)
-* **BR-17 (Search Privacy):** Tìm kiếm công khai chỉ hiển thị các sách có `status='active'`. Sách ở trạng thái `inactive` bị ẩn khỏi kết quả tìm kiếm của độc giả.
-* **BR-18 (Real-time Availability):** Số lượng bản sao có sẵn (`availableQuantity`) và danh sách bản sao tại kệ phải phản ánh chính xác theo thời gian thực (Real-time).
-* **BR-19 (AI Service Fallback):** Khi dịch vụ AI (Gemini/OpenAI) gặp sự cố hoặc timeout, hệ thống SHALL tự động fallback về danh sách sách phổ biến nhất (Top Borrowed) mà không làm ngắt gián đoạn trải nghiệm người dùng.
+### Mapping Boundary
+* Canonical source: diagram/spec-UC-BR-FR.md cho F8 Book Discovery. Các UC ngoài danh sách trên thuộc feature khác và không được map vào feature này.
 
-## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
-* **FR-26 (Tìm kiếm đa tiêu chí & Sắp xếp):** WHEN độc giả thực hiện tìm kiếm tại `BookSearchServlet`, THE system SHALL truy vấn CSDL theo từ khóa (title, author, ISBN), hỗ trợ lọc gộp theo `categoryId`, `tagId`, `publicationYear`, và sắp xếp theo: Mới nhất, Tiêu đề A-Z, Phổ biến nhất. Có phân trang (12/24/48 sách/trang).
-  * *Mapping:* UC-16 / BR-17
-* **FR-27 (Xem chi tiết sách & Vị trí bản sao):** WHEN độc giả chọn một đầu sách tại `BookDetailServlet`, THE system SHALL hiển thị chi tiết thông tin sách, danh mục, tag, cùng danh sách các `BookCopy` có `status='available'` kèm mã vạch và vị trí kệ (`location`).
-  * *Mapping:* UC-17 / BR-18
-* **FR-28 (Gợi ý sách bằng AI):** WHEN người dùng xem mục Gợi ý sách tại `RecommendationServlet`, THE system SHALL gọi `AiRecommendationService` phân tích lịch sử mượn từ `BorrowRecordDAO`. WHERE dịch vụ AI phản hồi thành công, hiển thị danh sách sách gợi ý kèm lý do. WHERE AI lỗi, hệ thống hiển thị top 5 sách được mượn nhiều nhất.
-  * *Mapping:* UC-18 / BR-19
+
+## 3. Business Rules (Quy tắc nghiệp vụ đúng theo registry)
+* **BR-65 (Book Visibility):** The system SHALL only display books with status='active' in public search results.
+* **BR-66 (AI Fallback Policy):** The system SHALL fall back to trending books if the user lacks borrowing history or if the AI is unavailable.
+
+
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết đúng theo registry)
+* **FR-43 (Tra cứu & Gợi ý sách với AI Recommendation):** WHEN BookSearchServlet.doGet() hoặc BookDetailServlet.doGet() được gọi, THE system SHALL: (1) **Search Logic**: BookDAO.search(keyword, categoryId, tagIds[], filterStatus, page, pageSize=12) thực thi SQL với ILIKE '%keyword%' trên title, author, publisher, ISBN, pagination OFFSET (page-1)*12 LIMIT 12, (2) **User Context**: WHERE user đã login: BorrowRecordDAO.findBorrowedBookIdsByUser(userId) và ReservationDAO.findReservedBookIdsByUser(userId) để đánh dấu sách đang mượn/đặt trước trên giao diện, (3) **AI Recommendation** (chỉ BookDetailServlet): Gọi RecommendationServlet.doGet() (API endpoint) để lấy recommendations từ AiRecommendationService.getRecommendationsForUser(userId, currentBookId), Service gọi Gemini API với prompt chứa lịch sử mượn, category/tags của sách hiện tại, danh sách ISBN sách có sẵn, Gemini trả về JSON array chứa 5-10 ISBN gợi ý, Service parse JSON và truy vấn BookDAO.findByIsbnList(isbns) để lấy thông tin đầy đủ, Cache recommendations trong session với TTL 30 phút, (4) Forward sang JSP với {books[], categories[], tags[], borrowedBookIds[], reservedBookIds[], recommendations[]}.
+  * *Mapping:* UC-22, UC-23 / BR-65, BR-66
+
 
 ## 4.5 Non-functional Requirements (Yêu cầu phi chức năng)
 * **Hiệu năng:** Kết quả tìm kiếm phản hồi trong dưới 300ms. Dịch vụ AI có timeout 3.0 giây.

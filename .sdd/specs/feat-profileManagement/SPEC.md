@@ -1,5 +1,5 @@
-# Feature Specification: Quản lý hồ sơ cá nhân (Profile Management)
-# Version: 1.2 | Chủ sở hữu: @tuan | Ngày cập nhật: 2026-07-24 (Đồng bộ CodeGraph)
+﻿# Feature Specification: Quản lý hồ sơ cá nhân (Profile Management)
+# Version: 1.3 | Chủ sở hữu: Tuan | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
 Cung cấp giao diện cho phép tất cả các loại người dùng (Student, Lecturer, Librarian, Library Manager, Admin) tự xem và cập nhật thông tin cá nhân của mình (họ tên, số điện thoại, giới tính, ngày sinh) và thực hiện đổi mật khẩu cá nhân để bảo vệ tài khoản.
@@ -7,25 +7,31 @@ Cung cấp giao diện cho phép tất cả các loại người dùng (Student,
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Người dùng đã đăng nhập (User - All Roles):** Xem hồ sơ cá nhân, cập nhật thông tin liên hệ được phép, thay đổi mật khẩu.
 
-## 2.5 Use Cases (Danh sách Use Cases)
-* **UC-04 (View Profile):** Actor: User | Xem dữ liệu cá nhân, thông tin liên lạc và thông tin chuyên môn/chức vụ theo vai trò.
-* **UC-05 (Update Profile):** Actor: User | Cập nhật các thông tin cá nhân được phép (Họ tên, SĐT, Giới tính, Ngày sinh).
-* **UC-06 (Change Password):** Actor: User | Tự đổi mật khẩu sau khi xác nhận thành công mật khẩu hiện tại.
+## 2.5 Use Cases (Danh sách Use Cases đúng theo registry)
+* **UC-04 (View Profile):** Actor: User | (Xem hồ sơ cá nhân): Người dùng trích xuất và hiển thị dữ liệu định danh cùng thông tin liên lạc của bản thân.
+* **UC-05 (Update Profile):** Actor: User | (Cập nhật hồ sơ): Người dùng thay đổi các thông tin cá nhân được phép (SĐT, Ngày sinh...).
+* **UC-06 (Change Password):** Actor: User | (Thay đổi mật khẩu): Người dùng tự thiết lập mật khẩu mới sau khi xác thực mật khẩu hiện tại thành công.
 
-## 3. Business Rules (Quy tắc nghiệp vụ)
-* **BR-08 (Data Integrity):** Cập nhật hồ sơ cá nhân KHÔNG ĐƯỢC PHÉP thay đổi các trường định danh hệ thống (mã sinh viên/giảng viên, email, vai trò, trạng thái tài khoản).
-* **BR-09 (Password Policy):** Mật khẩu mới bắt buộc từ 8 ký tự trở lên, chứa cả chữ cái và chữ số.
-* **BR-15 (UPSERT Mechanism):** Tiến trình cập nhật thông tin profile BẮT BUỘC dùng cơ chế UPSERT (INSERT nếu chưa có bản ghi `MemberProfile`, UPDATE nếu đã tồn tại) để đảm bảo không đứt gãy dữ liệu đối với các tài khoản mới khởi tạo.
+### Mapping Boundary
+* Canonical source: diagram/spec-UC-BR-FR.md cho F2 Profile Management. Các UC ngoài danh sách trên thuộc feature khác và không được map vào feature này.
 
-## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
-* **FR-09 (Xem hồ sơ theo vai trò):** WHEN người dùng truy cập trang Profile tương ứng (`/student/profile`, `/lecturer/profile`, `/librarian/profile`, `/manager/profile`, `/admin/profile`), THE system SHALL truy vấn gộp (JOIN) dữ liệu từ `"User"`, `MemberProfile` và bảng vai trò chuyên biệt (`Student`, `Lecturer`, `Librarian`, `LibraryManager`, `Admin`) để hiển thị thông tin đầy đủ.
+
+## 3. Business Rules (Quy tắc nghiệp vụ đúng theo registry)
+* **BR-08 (Data Integrity):** Cập nhật hồ sơ cá nhân KHÔNG ĐƯỢC PHÉP thay đổi các trường định danh hệ thống (mã số, vai trò, trạng thái).
+* **BR-09 (Security):** Mật khẩu mới BẮT BUỘC đáp ứng tiêu chuẩn bảo mật.
+* **BR-15 (UPSERT Mechanism):** Tiến trình cập nhật hồ sơ cá nhân của người dùng BẮT BUỘC sử dụng cơ chế UPSERT (Cập nhật hoặc Chèn mới) để đảm bảo không đứt gãy dữ liệu đối với các tài khoản chưa có profile gốc.
+
+
+## 4. Functional Requirements (Yêu cầu chức năng chi tiết đúng theo registry)
+* **FR-09 (Hiển thị hồ sơ):** WHEN người dùng truy cập trang cá nhân, THE system SHALL thực hiện truy vấn gộp (Join) dữ liệu để hiển thị thông tin định danh và thông tin liên lạc tương ứng.
   * *Mapping:* UC-04
-* **FR-10 (Cơ chế UPSERT hồ sơ):** WHEN người dùng gửi yêu cầu cập nhật thông tin cá nhân, THE system SHALL kiểm tra sự tồn tại của `userId` trong `MemberProfile`. WHERE chưa có bản ghi, hệ thống thực thi `INSERT`. WHERE đã có bản ghi, hệ thống thực thi `UPDATE` các trường `fullName`, `phoneNumber`, `gender`, `dateOfBirth`.
+* **FR-10 (Cơ chế UPSERT hồ sơ):** WHEN người dùng lưu thay đổi hồ sơ, THE system SHALL kiểm tra; WHERE bản ghi MemberProfile chưa tồn tại, hệ thống SHALL thực thi lệnh INSERT thay vì UPDATE.
   * *Mapping:* UC-05 / BR-15
-* **FR-11 (Bảo mật sau Đổi mật khẩu):** WHEN người dùng thay đổi mật khẩu thành công, THE system SHALL: (1) Mã hóa BCrypt mật khẩu mới và lưu vào `"User"`, (2) Ghi nhật ký `AuditLogs` với action `CHANGE_PASSWORD`, (3) Hủy phiên làm việc `HttpSession.invalidate()` và buộc người dùng đăng nhập lại bằng mật khẩu mới.
+* **FR-11 (Bảo mật sau đổi pass):** WHEN thay đổi mật khẩu thành công, THE system SHALL ghi nhật ký Audit Log, đồng thời vô hiệu hóa session hiện tại và buộc người dùng đăng nhập lại.
   * *Mapping:* UC-06 / BR-09
-* **FR-16 (Xác thực mật khẩu cũ):** WHEN người dùng gửi yêu cầu đổi mật khẩu, THE system SHALL đối chiếu mật khẩu cũ với `passwordHash` trong DB. WHERE mật khẩu cũ không đúng HOẶC mật khẩu mới không đáp ứng policy, hệ thống từ chối cập nhật và trả về thông báo lỗi chi tiết.
+* **FR-16 (Xác thực đầu vào mật khẩu):** WHEN người dùng yêu cầu thay đổi mật khẩu, THE system SHALL mã hóa BCrypt mật khẩu hiện tại và đối chiếu với CSDL. WHERE mật khẩu không khớp HOẶC mật khẩu mới vi phạm chính sách bảo mật, hệ thống SHALL từ chối yêu cầu và hiển thị lỗi tương ứng.
   * *Mapping:* UC-06 / BR-09
+
 
 ## 4.5 Non-functional Requirements (Yêu cầu phi chức năng)
 * **Bảo mật:** Mật khẩu mới được hash BCrypt trước khi ghi đè vào DB. Thông tin nhạy cảm được validate ở cả Server-side và Client-side.

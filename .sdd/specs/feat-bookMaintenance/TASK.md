@@ -7,7 +7,7 @@
 | **T-F13-03** | Hoàn thiện IncidentDAO | `BookCopyIncidentDAO.java` | 3h | T-F13-02 | PreparedStatement, search/count/summary, row lock, pending/investigating transitions. Refs: FR-48, FR-49. |
 | **T-F13-04** | Hoàn thiện InventoryDAO | `InventoryDAO.java` | 4h | T-F13-02 | Snapshot, scan, mark missing, resolve item, count unresolved, transition session. Refs: FR-50. |
 | **T-F13-05** | Hoàn thiện IncidentService | `BookCopyIncidentService.java` | 5h | T-F13-03 | Report/investigate/resolve/reject/restore nguyên tử, số lượng và Audit đúng một lần. Refs: UC-28, BR-28, FR-48, FR-49. |
-| **T-F13-06** | Hoàn thiện InventoryService | `InventoryReconciliationService.java` | 6h | T-F13-03, T-F13-04 | 8 action đúng state machine; resolve missing tạo lost incident và đồng bộ tồn kho. Refs: UC-29, FR-50, FR-51. |
+| **T-F13-06** | Hoàn thiện InventoryService | `InventoryReconciliationService.java` | 6h | T-F13-03, T-F13-04 | 8 action đúng state machine; resolve missing tạo lost incident và đồng bộ tồn kho. Refs: UC-29, BR-44, FR-50; nhánh resolve-missing áp dụng BR-28. |
 | **T-F13-07** | Hoàn thiện controller sự cố | `BookCopyIncidentServlet.java` | 3h | T-F13-05 | Search/filter/page/detail và đủ action; lỗi/flash tiếng Việt. |
 | **T-F13-08** | Hoàn thiện controller kiểm kê | `InventoryReconciliationServlet.java` | 3h | T-F13-06 | List/detail và 8 action; giữ sessionId khi redirect. |
 | **T-F13-09** | Hoàn thiện JSP/fragments | `web/librarian/book-damaged-lost.jsp`, `book-inventory-reconciliation.jsp`, `fragments/_book-incident-*.jsp` | 5h | T-F13-07, T-F13-08 | 100% tiếng Việt, JSTL/EL, action chỉ hiện ở trạng thái phù hợp. |

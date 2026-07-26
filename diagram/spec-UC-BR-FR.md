@@ -1,0 +1,1555 @@
+# LMS UC-BR-FR Specification
+
+> **Version:** 4.1.0
+> **Date:** 2026-07-26
+> **Project:** Library Management System (LMS) - SWP391
+
+## HƯỚNG DẪN CHO AI AGENT KHI TẠO TÍNH NĂNG MỚI
+
+QUAN TRỌNG: Khi bạn là AI Agent được yêu cầu tạo tính năng mới, hãy tuân thủ:
+
+### 1. PHÂN TÍCH YÊU CẦU
+- Đọc kỹ user requirement
+- Xác định feature thuộc module nào (F1-F14) hoặc tạo F15+ mới
+- Kiểm tra xem có UC/BR liên quan đã tồn tại không
+
+### 2. QUY TẮC ĐẶT TÊN VÀ ĐÁNH SỐ
+UC (Use Case):
+- Format: UC-XX (Tên UC tiếng Việt)
+- Tìm UC-XX lớn nhất hiện có → increment +1
+- VÍ DỤ: UC hiện tại cao nhất là UC-39 → UC mới là UC-40
+- KHÔNG ĐƯỢC skip number hoặc tạo số trùng
+- UC phải trừu tượng, KHÔNG đề cập code/tech/bảng DB
+
+BR (Business Rule):
+- Format: BR-XX (Category)
+- Tìm BR-XX lớn nhất hiện có → increment +1
+- VÍ DỤ: BR hiện tại cao nhất là BR-31 → BR mới là BR-32
+- KHÔNG ĐƯỢC skip number hoặc tạo số trùng
+- BR phải độc lập với implementation, dùng SHALL/MUST NOT
+
+FR (Functional Requirement):
+- Format: FR-XX (Tên ngắn gọn)
+- Tìm FR-XX lớn nhất hiện có → increment +1
+- VÍ DỤ: FR hiện tại cao nhất là FR-54 → FR mới là FR-55
+- KHÔNG ĐƯỢC skip number hoặc tạo số trùng
+- FR phải dùng EARS pattern (WHEN/WHERE/WHILE/IF + THE system SHALL)
+- FR BẮT BUỘC có Mapping tới UC hoặc BR
+
+### 3. QUY TRÌNH TẠO SPEC MỚI
+Bước 1: Tạo UC (Use Case) - Mô tả người dùng làm gì
+Bước 2: Tạo BR (Business Rule) - Constraint/Policy hệ thống
+Bước 3: Tạo FR (Functional Requirement) - Chi tiết technical flow
+Bước 4: Cập nhật SECTION 1 (Feature Mapping Table)
+Bước 5: Thêm UC vào SECTION 2
+Bước 6: Thêm BR vào SECTION 3
+Bước 7: Thêm FR vào SECTION 4 (kèm Mapping)
+
+### 4. VÍ DỤ: TẠO FEATURE "ONLINE PAYMENT"
+
+UC-40 (Pay Fine Online)
+Actor: User (Student/Lecturer)
+Mô tả: (Thanh toán phạt trực tuyến): Người dùng quét mã QR để thanh toán
+tiền phạt qua cổng thanh toán SePay mà không cần đến quầy.
+
+BR-32 (Payment Verification)
+Mô tả: Hệ thống SHALL xác minh webhook từ SePay trước khi đánh dấu
+khoản phạt là đã thanh toán.
+
+FR-55 (Tạo QR thanh toán)
+Mô tả: WHEN người dùng chọn thanh toán online, THE system SHALL gọi
+SePay API để tạo mã QR chứa thông tin khoản phạt và userId.
+Mapping: UC-40 / BR-32
+
+FR-56 (Xử lý webhook)
+Mô tả: WHEN nhận webhook từ SePay, THE system SHALL xác minh chữ ký,
+WHERE hợp lệ, THE system SHALL UPDATE Fine.status='paid' và DELETE
+UserLockReason có reason='unpaid'.
+Mapping: UC-40 / BR-32, BR-25
+
+F9 (Fine & Payment Management)
+- Owner: Tuan
+- Spec Folder: feat-finePayment (tạo mới)
+- UC: UC-31, UC-38, UC-39, UC-40  ← THÊM UC-40
+- BR: BR-32                        ← THÊM BR-32
+- FR: FR-53, FR-54, FR-55, FR-56   ← THÊM FR-55, FR-56
+
+### 5. CHECKLIST TRƯỚC KHI COMMIT
+- [ ] UC có số thứ tự hợp lệ (không trùng, không skip)
+- [ ] BR có số thứ tự hợp lệ (không trùng, không skip)
+- [ ] FR có số thứ tự hợp lệ (không trùng, không skip)
+- [ ] FR có dùng EARS pattern (WHEN/WHERE/WHILE/IF)
+- [ ] FR có Mapping tới UC hoặc BR
+- [ ] Feature Mapping Table đã được cập nhật
+- [ ] UC/BR/FR mới đã được thêm vào đúng section
+
+### 6. LƯU Ý QUAN TRỌNG
+⚠️ KHÔNG ĐƯỢC xóa UC/BR/FR cũ (mark deprecated nếu cần)
+⚠️ KHÔNG ĐƯỢC thay đổi số của UC/BR/FR đã tồn tại
+⚠️ LUÔN tìm số lớn nhất hiện có và +1
+⚠️ UC phải abstract (không technical)
+⚠️ BR phải dùng SHALL/MUST NOT
+⚠️ FR phải có EARS pattern + Mapping
+
+
+## Section 1. Feature Mapping Table
+
+| Feature | Name | Owner | Spec Folder | UC | BR | FR |
+|---|---|---|---|---|---|---|
+| F1 | Authentication | Tuan | feat-authentication | UC-01, UC-02, UC-03, UC-21 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-09, BR-26, BR-39 | FR-01, FR-02, FR-03, FR-04, FR-05, FR-06, FR-07, FR-08, FR-42, FR-77 |
+| F2 | Profile Management | Tuan | feat-profileManagement | UC-04, UC-05, UC-06 | BR-08, BR-09, BR-15 | FR-09, FR-10, FR-11, FR-16 |
+| F3 | User Account Management | Quyet | feat-userAccountManagement | UC-07, UC-08, UC-09, UC-10, UC-11, UC-30 | BR-10, BR-11, BR-12, BR-13, BR-14, BR-54, BR-55, BR-71 | FR-12, FR-13, FR-14, FR-15, FR-17, FR-18, FR-19, FR-20, FR-21, FR-45 |
+| F4 | Book Management | Chuong | feat-bookManagement | UC-12, UC-13, UC-14, UC-15, UC-27, UC-52 | BR-16, BR-17, BR-18, BR-27 | FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47, FR-81, FR-133, FR-134 |
+| F5 | Online Reservation & Renewal | Bao | feat-Reservation&Renewal | UC-16, UC-17, UC-43, UC-49, UC-50 | BR-19, BR-20, BR-21, BR-36, BR-63, BR-64, BR-72, BR-78 | FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68, FR-78, FR-79 |
+| F6 | Desk Circulation Operations | Thai | feat-deskCirculationOperations | UC-18, UC-19, UC-20, UC-51 | BR-22, BR-23, BR-24, BR-25, BR-29, BR-41 | FR-34, FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41, FR-80 |
+| F7 | Notification Management | Tuan | feat-notification-management | UC-24, UC-25, UC-26 | BR-67, BR-68, BR-69 | FR-44, FR-52 |
+| F8 | Book Discovery | Bao | feat-bookDiscovery | UC-22, UC-23 | BR-65, BR-66 | FR-43 |
+| F9 | Fine & Payment Management | Tuan | feat-finePayment | UC-31, UC-38, UC-39, UC-42, UC-53 | BR-22, BR-25, BR-31, BR-35, BR-53, BR-75, BR-80 | FR-53, FR-54, FR-61, FR-62, FR-63, FR-64, FR-65, FR-66, FR-82 |
+| F10 | System Configuration | Quyet | feat-systemConfiguration | UC-32, UC-33 | BR-30, BR-31, BR-40 | FR-84, FR-85, FR-86, FR-87, FR-88, FR-89, FR-90, FR-91, FR-92, FR-93, FR-94, FR-95, FR-96, FR-97 |
+| F11 | System Reports | Quyet | feat-systemReport | UC-34, UC-35, UC-54 | BR-43, BR-44, BR-45, BR-52, BR-73, BR-81 | FR-98, FR-99, FR-100, FR-101, FR-102, FR-83 |
+| F12 | Audit Log | Quyet | feat-auditLog | UC-40, UC-41 | BR-32, BR-33, BR-34 | FR-55, FR-56, FR-57, FR-58, FR-59, FR-60 |
+| F13 | Book Maintenance | Chuong | feat-bookMaintenance | UC-28, UC-29 | BR-28, BR-44 | FR-48, FR-49, FR-50, FR-51 |
+| F14 | AI Chatbot | Thai | feat-ai-chatbot | UC-36, UC-37 | BR-37, BR-74 | FR-69, FR-70 |
+| F15 | Dashboard — Librarian | Thai | feat-dashboard-librarian | UC-44 | BR-38 | FR-71 |
+| F16 | Dashboard — Manager | Quyet | feat-systemReport | UC-45 | BR-38 | FR-72 |
+| F17 | Dashboard — Admin | Tuan | feat-auditLog | UC-46 | BR-38 | FR-73, FR-74 |
+| F18 | Public Pages | Tuan | feat-publicPages | UC-47, UC-48 | BR-76, BR-77 | FR-75, FR-76 |
+| F19 | Async Email Infrastructure | Bao | feat-asyncEmailSender | (none) | BR-42, BR-46, BR-47, BR-48, BR-49, BR-50, BR-51 | FR-103, FR-104, FR-105, FR-106, FR-107, FR-108, FR-109, FR-110, FR-111, FR-112, FR-113, FR-114, FR-115, FR-116, FR-117, FR-118 |
+| F20 | Book Suggestion | TBD | feat-bookSuggestion | UC-55, UC-56 | BR-56, BR-57, BR-58, BR-82 | FR-119, FR-120, FR-121, FR-122, FR-123, FR-124, FR-125, FR-126, FR-127, FR-128, FR-129, FR-130, FR-131, FR-132 |
+
+### Boundary Notes
+
+- `BR-31`, `BR-53`, `BR-80` liên quan cấu hình thanh toán: F10 quản lý cơ chế cấu hình chung, F9 sở hữu nghiệp vụ cấu hình SePay qua `UC-53`/`FR-82`.
+- `BR-38` là rule dashboard dùng chung cho F15/F16/F17; không thuộc riêng Audit Log hay System Report.
+- `BR-44` là rule dữ liệu kiểm kê dùng chung: F13 tạo/đối soát dữ liệu kiểm kê, F11 dùng dữ liệu đó để báo cáo.
+- `BR-52` và `FR-83` thuộc F11 System Reports, không thuộc F19 Email.
+- `BR-42`, `BR-46` đến `BR-51` thuộc F19 Async Email Infrastructure; không dùng `BR-41` vì `BR-41` thuộc đăng ký đặt trước tại quầy của F6.
+
+## Section 2. Use Case Specifications (UC)
+
+### UC-01 - Login
+
+- **Actor:** Guest, User
+- **Mô tả:** (Đăng nhập): Người dùng cung cấp Email và Mật khẩu để xác thực quyền truy cập hệ thống.
+
+### UC-02 - Logout
+
+- **Actor:** User
+- **Mô tả:** (Đăng xuất): Người dùng chủ động kết thúc phiên làm việc để bảo mật thông tin cá nhân.
+
+### UC-03 - Reset Password
+
+- **Actor:** Guest
+- **Mô tả:** (Quên mật khẩu): Người dùng yêu cầu hệ thống cấp mật khẩu tạm thời qua Email khi không thể truy cập.
+
+### UC-04 - View Profile
+
+- **Actor:** User
+- **Mô tả:** (Xem hồ sơ cá nhân): Người dùng trích xuất và hiển thị dữ liệu định danh cùng thông tin liên lạc của bản thân.
+
+### UC-05 - Update Profile
+
+- **Actor:** User
+- **Mô tả:** (Cập nhật hồ sơ): Người dùng thay đổi các thông tin cá nhân được phép (SĐT, Ngày sinh...).
+
+### UC-06 - Change Password
+
+- **Actor:** User
+- **Mô tả:** (Thay đổi mật khẩu): Người dùng tự thiết lập mật khẩu mới sau khi xác thực mật khẩu hiện tại thành công.
+
+### UC-07 - View User List
+
+- **Actor:** Admin
+- **Mô tả:** (Xem danh sách người dùng): Quản trị viên truy vấn và xem danh sách tổng hợp mọi tài khoản trong hệ thống.
+
+### UC-08 - View User Detail
+
+- **Actor:** Admin
+- **Mô tả:** (Xem chi tiết tài khoản): Quản trị viên trích xuất dữ liệu định danh chi tiết của một người dùng cụ thể.
+
+### UC-09 - Create Single Account
+
+- **Actor:** Admin
+- **Mô tả:** (Cấp tài khoản đơn lẻ): Quản trị viên khởi tạo thủ công một tài khoản mới qua biểu mẫu nhập liệu.
+
+### UC-10 - Import Bulk Accounts
+
+- **Actor:** Admin
+- **Mô tả:** (Nhập tài khoản hàng loạt): Quản trị viên tải tệp Excel để cấp phát tài khoản số lượng lớn.
+
+### UC-11 - Update User Account
+
+- **Actor:** Admin
+- **Mô tả:** (Quản trị tài khoản): Quản trị viên thực hiện chỉnh sửa thông tin định danh hoặc thay đổi trạng thái (Khóa/Mở khóa) tài khoản.
+
+### UC-12 - View Book Catalog & Inventory
+
+- **Actor:** Librarian
+- **Mô tả:** (Xem Danh mục & Kho): Truy xuất danh sách đầu sách, chi tiết các bản sao vật lý, kèm danh mục và thẻ.
+
+### UC-13 - Manage Book Catalog
+
+- **Actor:** Librarian
+- **Mô tả:** (Quản lý Đầu sách): Khởi tạo Đầu sách mới trực tuyến, hoặc cập nhật thông tin siêu dữ liệu (metadata) của Đầu sách hiện có.
+
+### UC-14 - Manage Physical Copies
+
+- **Actor:** Librarian
+- **Mô tả:** (Quản lý Bản sao vật lý): Khai báo bản sao bằng Barcode, cập nhật vị trí của bản sao đang khả dụng và xem thông tin/lịch sử liên quan tới bản sao. F4 không sửa condition trực tiếp; hỏng/mất chuyển sang F13 hoặc F6 tùy nghiệp vụ.
+
+### UC-15 - Manage Tags & Categories
+
+- **Actor:** Librarian
+- **Mô tả:** (Quản lý Danh mục & Thẻ): Thêm, sửa, hoặc thay đổi trạng thái của các Danh mục (Category) và Thẻ phân loại (Tag) áp dụng cho sách.
+
+### UC-16 - Reserve Book Online
+
+- **Actor:** User (Student/Lecturer)
+- **Mô tả:** (Đặt trước trực tuyến): Người dùng khởi tạo yêu cầu đặt sách. Nếu sách còn khả dụng, hệ thống cấp phát ngay (vào vị trí 0). Nếu sách hết, người dùng được xếp vào hàng đợi chờ (vị trí > 0).
+
+### UC-17 - Renew Book Online
+
+- **Actor:** User (Student/Lecturer)
+- **Mô tả:** (Gia hạn trực tuyến): Người dùng tự động kéo dài thời gian mượn của một cuốn sách đang giữ, với điều kiện không có ai khác đang xếp hàng chờ cuốn sách đó.
+
+### UC-18 - Desk Check-out
+
+- **Actor:** Librarian
+- **Mô tả:** (Giao sách tại quầy): Thủ thư quét mã vạch bản sao sách và mã độc giả để giao sách. Xử lý cả hai trường hợp: Độc giả đã đặt trước trực tuyến (có Reservation queuePosition = 0) hoặc Độc giả đến mượn trực tiếp tại chỗ.
+
+### UC-19 - Desk Check-in
+
+- **Actor:** Librarian
+- **Mô tả:** (Nhận sách tại quầy): Thủ thư nhận lại bản sao sách, đánh giá tình trạng vật lý (Condition). Tự động luân chuyển sách cho người chờ tiếp theo trong hàng đợi (nếu có) hoặc tính phạt và khóa tài khoản tức thời (nếu sách hỏng/mất).
+
+### UC-20 - Process Cash Payment
+
+- **Actor:** Librarian
+- **Mô tả:** (Duyệt thanh toán tiền mặt): Thủ thư xác nhận đã thu tiền phạt bằng tiền mặt từ độc giả, đóng khoản phạt, gỡ cờ nợ phạt và tự động mở khóa tài khoản nếu đủ điều kiện.
+
+### UC-21 - Login with Google
+
+- **Actor:** Guest
+- **Mô tả:** (Đăng nhập bằng Google): Người dùng sử dụng tài khoản Google SSO để xác thực. Hệ thống chỉ cho phép đăng nhập nếu email đã được cấp tài khoản.
+
+### UC-22 - Search & View Books
+
+- **Actor:** User
+- **Mô tả:** (Tra cứu sách): Người dùng tìm kiếm đầu sách theo từ khóa, xem chi tiết tình trạng bản sao và gợi ý sách.
+
+### UC-23 - Get AI Recommendation
+
+- **Actor:** User
+- **Mô tả:** (Nhận gợi ý sách từ AI): Người dùng nhận danh sách các tựa sách được AI (Gemini) đề xuất.
+
+### UC-24 - Manage Notifications
+
+- **Actor:** Manager
+- **Mô tả:** (Quản lý thông báo): Quản lý thư viện soạn thảo, ghim, phát hành hoặc xóa các thông báo hệ thống.
+
+### UC-25 - View Notifications
+
+- **Actor:** User
+- **Mô tả:** (Xem thông báo): Người dùng theo dõi thông báo qua biểu tượng chuông và đánh dấu trạng thái đã đọc.
+
+### UC-26 - Manage Document Templates
+
+- **Actor:** Manager
+- **Mô tả:** (Quản lý mẫu văn bản): Cấu hình các mẫu nội dung email tự động.
+
+### UC-27 - Import Bulk Books
+
+- **Actor:** Librarian
+- **Mô tả:** (Nhập sách hàng loạt): Thủ thư tải file .xlsx, xem preview và xác nhận import Book/BookCopy theo nguyên tắc all-or-nothing.
+
+### UC-28 - Report Book Incident
+
+- **Actor:** Librarian
+- **Mô tả:** (Báo cáo sự cố sách): Thủ thư tìm kiếm, báo hỏng/mất theo Barcode, chuyển xác minh, kết luận, bác bỏ, khôi phục bản sao hỏng sau sửa chữa hoặc loại khỏi tổng kho bằng soft flag.
+
+### UC-29 - Inventory Reconciliation
+
+- **Actor:** Librarian
+- **Mô tả:** (Kiểm kê kho): Thủ thư tạo phiên theo vị trí, quét Barcode, kết thúc kiểm đếm, xử lý sách sai vị trí/thiếu, hoàn tất hoặc hủy phiên.
+
+### UC-30 - Export User List
+
+- **Actor:** Admin
+- **Mô tả:** (Xuất danh sách người dùng): Quản trị viên trích xuất danh sách tài khoản hiện tại ra tệp Excel.
+
+### UC-31 - View My Borrowings & Reservations
+
+- **Actor:** User (Student/Lecturer)
+- **Mô tả:** (Xem Hàng mượn & Chờ sách): Độc giả xem danh sách các sách đang mượn, lịch sử mượn và các đơn đặt trước (đang chờ hoặc đã sẵn sàng nhận) tại trang "Hàng mượn & chờ sách".
+
+### UC-32 - View System Configuration
+
+- **Actor:** Library Manager, Admin
+- **Mô tả:** (Xem cấu hình hệ thống): Quản lý thư viện hoặc quản trị viên xem các thông số vận hành của hệ thống như chính sách mượn sách, tiền phạt, giới hạn.
+
+### UC-33 - Update System Configuration
+
+- **Actor:** Library Manager, Admin
+- **Mô tả:** (Cập nhật cấu hình hệ thống): Thay đổi các thông số vận hành thông qua giao diện quản trị mà không cần can thiệp mã nguồn.
+
+### UC-34 - View System Reports
+
+- **Actor:** Library Manager, Admin
+- **Mô tả:** (Xem báo cáo hệ thống): Quản lý thư viện xem các báo cáo thống kê về mượn/trả, tài chính, kho sách với biểu đồ xu hướng.
+
+### UC-35 - Export Reports
+
+- **Actor:** Library Manager, Admin
+- **Mô tả:** (Xuất báo cáo): Xuất dữ liệu thống kê ra file Excel để lưu trữ hoặc phân tích offline.
+
+### UC-36 - Ask Chatbot
+
+- **Actor:** Guest, User
+- **Mô tả:** (Hỏi chatbot): Người dùng gửi câu hỏi bằng ngôn ngữ tự nhiên về nội quy thư viện hoặc tìm kiếm sách thông qua giao diện chatbot.
+
+### UC-37 - View Chat History
+
+- **Actor:** User
+- **Mô tả:** (Xem lịch sử chat): Người dùng xem lại các câu hỏi và câu trả lời trong phiên làm việc hiện tại.
+
+### UC-38 - View Fine History
+
+- **Actor:** User
+- **Mô tả:** (Xem lịch sử phạt): Người dùng xem danh sách các khoản phạt đã thanh toán và chưa thanh toán.
+
+### UC-39 - Pay Fine Online
+
+- **Actor:** User
+- **Mô tả:** (Thanh toán phạt trực tuyến): Người dùng quét mã QR để thanh toán tiền phạt qua cổng thanh toán điện tử.
+
+### UC-40 - View Audit Log
+
+- **Actor:** SysAdmin
+- **Mô tả:** (Xem Nhật ký Kiểm toán): Quản trị viên truy cập trang Nhật ký Kiểm toán để xem danh sách toàn bộ hành động thay đổi dữ liệu của người dùng, lọc theo nhiều tiêu chí, và xem chi tiết so sánh giá trị cũ/mới.
+
+### UC-41 - Export Audit Log
+
+- **Actor:** SysAdmin
+- **Mô tả:** (Xuất Nhật ký Kiểm toán): Quản trị viên xuất dữ liệu Nhật ký Kiểm toán ra file Excel để phục vụ báo cáo và lưu trữ ngoài hệ thống.
+
+### UC-42 - Run Overdue Processor
+
+- **Actor:** System, SysAdmin
+- **Mô tả:** (Quét quá hạn tự động): Hệ thống tự động chạy định kỳ (hoặc SysAdmin kích hoạt thủ công) để quét các bản ghi mượn trễ hạn, tính tiền phạt, khóa tài khoản độc giả và gửi email thông báo.
+
+### UC-43 - Auto-cancel Expired Reservations
+
+- **Actor:** System, SysAdmin
+- **Mô tả:** (Hủy đặt trước quá hạn): Hệ thống chạy định kỳ (hoặc SysAdmin kích hoạt thủ công) để quét các đơn đặt trước sẵn sàng nhận quá hạn, hủy bỏ chúng, đôn hàng chờ cho người tiếp theo hoặc trả sách về kho.
+
+### UC-44 - View Librarian Dashboard
+
+- **Actor:** Librarian
+- **Mô tả:** (Xem bảng điều khiển thủ thư): Thủ thư xem tổng quan hoạt động thư viện bao gồm số lượng sách đang được mượn, số giao dịch hôm nay, sách quá hạn, và các thống kê nhanh về kho sách.
+
+### UC-45 - View Manager Dashboard
+
+- **Actor:** Library Manager
+- **Mô tả:** (Xem bảng điều khiển quản lý): Quản lý thư viện xem các chỉ số hiệu suất tổng hợp (KPI) bao gồm xu hướng mượn trả, thống kê tài chính, tình trạng kho sách, và các cảnh báo hệ thống.
+
+### UC-46 - View Admin Dashboard
+
+- **Actor:** Admin
+- **Mô tả:** (Xem bảng điều khiển quản trị): Quản trị viên hệ thống xem tổng quan toàn hệ thống bao gồm tổng số tài khoản, sách, tiền phạt chưa thu, giao dịch đang chờ, hoạt động gần đây và cấu hình hệ thống quan trọng.
+
+### UC-47 - View Public Homepage
+
+- **Actor:** Guest
+- **Mô tả:** (Xem trang chủ công khai): Khách truy cập xem trang chủ với thông tin giới thiệu thư viện, tin tức, thông báo quan trọng được ghim.
+
+### UC-48 - View Library Policies
+
+- **Actor:** Guest, User
+- **Mô tả:** (Xem nội quy thư viện): Người dùng và khách truy cập tra cứu các quy định, chính sách mượn trả, và hướng dẫn sử dụng dịch vụ thư viện.
+
+### UC-49 - View Full Borrow/Return History
+
+- **Actor:** Student, Lecturer
+- **Mô tả:** (Xem lịch sử mượn trả đầy đủ): Độc giả xem danh sách tất cả các bản ghi mượn sách trong lịch sử (đang mượn và đã trả) của bản thân.
+
+### UC-50 - Cancel Online Reservation
+
+- **Actor:** Student, Lecturer
+- **Mô tả:** (Hủy đặt trước trực tuyến): Độc giả chủ động hủy yêu cầu đặt trước sách khi đang trong hàng đợi hoặc trạng thái sẵn sàng nhận sách.
+
+### UC-51 - Register Desk Reservation
+
+- **Actor:** Librarian
+- **Mô tả:** (Đăng ký đặt trước tại quầy): Thủ thư thực hiện đăng ký đặt trước sách thay cho độc giả ngay tại quầy khi được yêu cầu trực tiếp.
+
+### UC-52 - View Book Import History
+
+- **Actor:** Librarian
+- **Mô tả:** (Xem lịch sử nhập sách hàng loạt): Thủ thư xem danh sách các đợt nhập sách số lượng lớn từ Excel, tìm kiếm và kiểm tra lỗi của từng dòng dữ liệu.
+
+### UC-53 - Configure Payment Gateway Integration
+
+- **Actor:** Library Manager
+- **Mô tả:** (Cấu hình cổng SePay QR): Quản lý thư viện cấu hình thông tin tích hợp SePay để sinh mã QR chuyển khoản thanh toán tiền phạt trực tuyến.
+
+### UC-54 - View Staff Performance Report
+
+- **Actor:** Library Manager
+- **Mô tả:** (Xem báo cáo hiệu suất nhân viên): Quản lý thư viện theo dõi số lượt giao sách, nhận sách và số tiền phạt thu được của từng thủ thư theo tháng/năm.
+
+### UC-55 - Submit & Vote Book Suggestion
+
+- **Actor:** Lecturer
+- **Mô tả:** (Đề xuất & Vote sách mới): Giảng viên gửi đề xuất sách mới cần bổ sung cho thư viện hoặc vote (+1) cho đề xuất có sẵn của giảng viên khác. Giảng viên cũng có thể hủy vote và sửa/xóa đề xuất của mình khi còn ở trạng thái pending.
+
+### UC-56 - Manage Book Suggestion Status
+
+- **Actor:** Librarian
+- **Mô tả:** (Quản lý trạng thái đề xuất sách): Thủ thư xem danh sách đề xuất sách từ giảng viên, xét duyệt và cập nhật trạng thái (pending / acknowledged / rejected) kèm ghi chú lý do. =============================================================================
+
+## Section 3. Business Rules (BR)
+
+### BR-01 - Authentication
+
+Hệ thống SHALL tạm đình chỉ quyền truy cập nếu người dùng cung cấp thông tin xác thực sai 5 lần liên tiếp.
+
+### BR-02 - Authentication
+
+Thời gian đình chỉ quyền truy cập mặc định cho các vi phạm bảo mật SHALL là 30 phút kể từ lần cuối.
+
+### BR-03 - Security
+
+Hệ thống SHALL cung cấp thông báo lỗi chung cho xác thực thất bại để ngăn chặn việc dò quét thông tin.
+
+### BR-04 - Security
+
+Đối với yêu cầu khôi phục mật khẩu, hệ thống SHALL trả về thông báo giả định chung bất kể định danh tồn tại hay không.
+
+### BR-05 - Authentication
+
+Việc tự động khôi phục quyền truy cập SHALL chỉ áp dụng cho tài khoản bị đình chỉ do sai sót thông tin xác thực.
+
+### BR-06 - Authentication
+
+Tài khoản bị đình chỉ do vi phạm hành chính hoặc nợ phạt SHALL KHÔNG được tự động khôi phục theo thời gian.
+
+### BR-07 - Security
+
+Thông tin xác thực tạm thời được cấp tự động (khi quên mật khẩu) SHALL bao gồm đúng 8 ký tự ngẫu nhiên.
+
+### BR-08 - Data Integrity
+
+Cập nhật hồ sơ cá nhân KHÔNG ĐƯỢC PHÉP thay đổi các trường định danh hệ thống (mã số, vai trò, trạng thái).
+
+### BR-09 - Security
+
+Mật khẩu mới BẮT BUỘC đáp ứng tiêu chuẩn bảo mật.
+
+### BR-10 - Data Validation
+
+Dữ liệu định danh gồm Email và Mã số (MSSV, MSGV...) BẮT BUỘC là duy nhất trên toàn hệ thống.
+
+### BR-11 - Transaction
+
+Quy trình nhập danh sách tài khoản khối lượng lớn BẮT BUỘC tuân thủ chiến lược "Thành công toàn bộ hoặc Hủy bỏ toàn bộ".
+
+### BR-12 - Provisioning
+
+Tài khoản khi khởi tạo BẮT BUỘC dùng Email làm mật khẩu mặc định.
+
+### BR-13 - Role Assignment
+
+File Excel dùng để Import khối lượng lớn KHÔNG ĐƯỢC chứa định nghĩa phân quyền. Quản trị viên BẮT BUỘC phải cấu hình Role chung từ giao diện trước khi thực thi tải tệp.
+
+### BR-14 - Mandatory Audit
+
+Mọi thao tác làm thay đổi dữ liệu tài khoản (Thêm, Sửa, Khóa, Mở khóa, Import) từ Quản trị viên BẮT BUỘC phải được lưu vết vào hệ thống Audit Log.
+
+### BR-15 - UPSERT Mechanism
+
+Tiến trình cập nhật hồ sơ cá nhân của người dùng BẮT BUỘC sử dụng cơ chế UPSERT (Cập nhật hoặc Chèn mới) để đảm bảo không đứt gãy dữ liệu đối với các tài khoản chưa có profile gốc.
+
+### BR-16 - Uniqueness of Identifiers
+
+Định danh sách gồm ISBN (Bảng Book) và Barcode (Bảng BookCopy) BẮT BUỘC phải là duy nhất trên toàn hệ thống.
+
+### BR-17 - Inventory Synchronization
+
+Số lượng totalQuantity và availableQuantity của bảng Book BẮT BUỘC đồng bộ với BookCopy. Tạo BookCopy good/available cộng 1 vào cả hai; các thay đổi khả dụng khác do F13/F6 xử lý trong transaction tương ứng.
+
+### BR-18 - Immutable Core Identifiers
+
+KHÔNG ĐƯỢC PHÉP thay đổi thông tin định danh hệ thống (ISBN, Barcode) sau khi bản ghi sách hoặc bản sao đã được lưu thành công.
+
+### BR-19 - Reservation Eligibility
+
+Độc giả BẮT BUỘC chỉ được phép thực hiện Đặt trước hoặc Gia hạn trực tuyến nếu tài khoản đang ở trạng thái hoạt động (status = 'active') VÀ không bị khóa vì bất kỳ lý do nợ phạt nào.
+
+### BR-20 - Queue Positioning Strategy
+
+Vị trí hàng đợi queuePosition = 0 DÀNH RIÊNG cho việc giữ sách đã sẵn sàng lấy (status = 'readypickup'). Mọi yêu cầu chờ sách (khi availableQuantity = 0) BẮT BUỘC phải có queuePosition > 0 và trạng thái 'pending'.
+
+### BR-21 - Renewal Constraints
+
+Giao dịch mượn (BorrowRecord) chỉ được phép gia hạn nếu thỏa mãn ĐỒNG THỜI 3 điều kiện: (1) Thời gian mượn đã qua % quy định, (2) extensionCount chưa vượt mức tối đa trong SystemConfigurations, (3) KHÔNG có bất kỳ Reservation nào có queuePosition > 0 đang chờ cho cùng tựa sách đó.
+
+### BR-22 - Strict Fine Enforcement
+
+Hệ thống BẮT BUỘC chặn giao dịch mượn sách nếu tồn tại bất kỳ bản ghi nào có reason = 'unpaid' trong bảng UserLockReason của người dùng. KHÔNG trực tiếp kiểm tra bảng Fine để quyết định chặn giao dịch nhằm giữ tính độc lập dữ liệu.
+
+### BR-23 - Direct Borrow Queue Policy
+
+Độc giả mượn sách trực tiếp tại quầy KHÔNG ĐƯỢC PHÉP mượn đầu sách đang có người xếp hàng chờ (tồn tại Reservation với status='pending' VÀ queuePosition > 0). Để chuẩn hóa dữ liệu, mọi giao dịch mượn trực tiếp đều BẮT BUỘC phải tự động sinh ra một Reservation ảo với queuePosition = 0 tại chỗ trước khi insert BorrowRecord.
+
+### BR-24 - Damaged/Lost Inventory Deduction
+
+Khi nhận sách trả với tình trạng 'damaged' hoặc 'lost', hệ thống BẮT BUỘC trừ 1 đơn vị vào Book.totalQuantity (vì sách không còn khả năng lưu thông). ĐỒNG THỜI, BẮT BUỘC phải insert tức thời bản ghi 'unpaid' vào UserLockReason và đổi status User thành 'locked' mà không chờ Background Job chạy ngầm, tránh lỗ hổng bảo mật.
+
+### BR-25 - Conditional Auto-Unlock
+
+Sau khi thanh toán tiền phạt (xóa reason 'unpaid'), hệ thống BẮT BUỘC đếm số lượng lý do khóa còn lại trong UserLockReason. CHỈ KHỞI ĐỘNG quy trình mở khóa (Update User.status = 'active') NẾU COUNT == 0. Tuyệt đối không mở khóa nếu tài khoản đang bị 'adminban' hoặc 'securitybreach'.
+
+### BR-26 - Google SSO Registration Policy
+
+Tính năng Google SSO KHÔNG ĐƯỢC PHÉP tự động tạo tài khoản mới. Hệ thống BẮT BUỘC trả về lỗi nếu email Google chưa được Admin cấp phát trước.
+
+### BR-27 - Book Import Transaction
+
+Tính năng Import khối lượng lớn Sách BẮT BUỘC tuân thủ chiến lược All-or-Nothing. Tệp dữ liệu chỉ được lưu vào DB khi toàn bộ thông tin Sách và Bản sao đều hợp lệ.
+
+### BR-28 - Incident Resolution Sync
+
+Khi báo sự cố hợp lệ trong F13, hệ thống BẮT BUỘC chuyển BookCopy sang status='unavailable' và giảm Book.availableQuantity đúng 1 trong cùng transaction. Khi bác bỏ báo cáo hoặc khôi phục bản sao hỏng sau sửa chữa, hệ thống BẮT BUỘC chuyển BookCopy về good/available và tăng availableQuantity đúng 1. Khi kết luận lost hoặc khi bản sao damaged/resolved không còn khả năng sửa, hệ thống BẮT BUỘC đánh dấu removedFromInventory=true và giảm Book.totalQuantity đúng 1 trong transaction; không được xóa record BookCopy.
+
+### BR-29 - Walk-in vs Pre-reservation Checkout Policy
+
+Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity (vì đã trừ khi đặt trước online).
+
+### BR-30 - System Config Immutability
+
+Cấm tuyệt đối việc xóa cấu hình (delete configKey) thông qua UI hoặc hệ thống dưới mọi hình thức. Hệ thống chỉ cho phép cập nhật (UPDATE) giá trị configValue của các key đã tồn tại, hoặc thêm mới (INSERT) đối với các key thuộc whitelist (KEY_TYPES) chưa tồn tại trong CSDL.
+
+### BR-31 - System Config Authorization
+
+Library Manager chỉ được phép xem và cập nhật các config thuộc nhóm 'library' hoặc cấu hình tích hợp SePay. Admin có toàn quyền với mọi nhóm config.
+
+### BR-32 - Audit Log Read-Only
+
+Tính năng Nhật ký Kiểm toán (F12) KHÔNG ĐƯỢC PHÉP Insert, Update hoặc Delete dữ liệu trong bất kỳ bảng nào. Chỉ được thực hiện SELECT.
+
+### BR-33 - Audit Log JSON Format
+
+Tất cả oldValues và newValues trong bảng AuditLogs BẮT BUỘC được ghi ở dạng JSON hợp lệ (hoặc NULL). KHÔNG sử dụng plain text để đảm bảo giao diện hiển thị nhất quán.
+
+### BR-34 - Audit Log Pagination
+
+Danh sách Nhật ký Kiểm toán BẮT BUỘC phải phân trang (20 bản ghi/trang) để bảo vệ hiệu năng hệ thống. KHÔNG ĐƯỢC PHÉP tải toàn bộ dữ liệu trong một request.
+
+### BR-35 - Overdue Policy
+
+Giao dịch mượn (BorrowRecord) ở trạng thái 'borrowed' có endDate nhỏ hơn thời điểm quét phải được coi là quá hạn. Hệ thống SHALL phạt 5,000 VND (hoặc theo cấu hình FINE_RATE_PER_DAY) cho mỗi ngày trễ hạn và khóa tài khoản độc giả cho tới khi thanh toán xong.
+
+### BR-36 - Reservation Pickup Limit
+
+Đơn đặt trước ở trạng thái 'readypickup' chỉ được giữ tại quầy trong một khoảng thời gian giới hạn được xác định bởi cấu hình RESERVATION_HOLD_DAYS trong bảng SystemConfigurations (mặc định là 3 ngày). Nếu quá thời hạn này (endDate < NOW()), đơn hàng sẽ tự động bị hủy và giải phóng bản sao sách.
+
+### BR-37 - AI Chatbot Access Control
+
+Tính năng AI Chatbot SHALL được public cho cả Guest và User đã đăng nhập. Chatbot SHALL chỉ trả lời các câu hỏi liên quan đến nội quy thư viện, chính sách mượn trả, và tra cứu thông tin sách. Chatbot MUST NOT trả lời các yêu cầu thực hiện giao dịch (mượn, trả, thanh toán) thay người dùng.
+
+### BR-38 - Dashboard Data Isolation
+
+Mỗi Dashboard (Admin/Manager/Librarian/Student/Lecturer) BẮT BUỘC chỉ hiển thị dữ liệu và chỉ số phù hợp với role của người dùng. Dashboard KHÔNG ĐƯỢC PHÉP truy xuất hoặc hiển thị dữ liệu ngoài phạm vi quyền hạn của role.
+
+### BR-39 - Session Management
+
+Hệ thống BẮT BUỘC kiểm tra trạng thái tài khoản từ database cho mỗi request (ngoại trừ static resources). Nếu tài khoản bị xóa hoặc status thay đổi thành 'locked', session BẮT BUỘC phải bị invalidate ngay lập tức và redirect về trang login.
+
+### BR-40 - SePay Whitelist Modification
+
+Cập nhật cấu hình hệ thống chỉ được áp dụng với các key cấu hình nằm trong whitelist (KEY_TYPES) định nghĩa sẵn trong mã nguồn. Mọi thao tác cập nhật phải được kiểm tra kiểu dữ liệu (số nguyên dương, số nguyên không âm, số thực không âm) trước khi lưu DB.
+
+### BR-41 - Desk Reservation Rules
+
+Khi Thủ thư đăng ký đặt trước tại quầy thay cho độc giả (UC-51), hệ thống BẮT BUỘC phải tuân thủ đầy đủ các giới hạn về chặn nợ phạt (BR-22) và hạn mức mượn sách (BR-19, BR-21).
+
+### BR-42 - Graceful Shutdown Email Queue
+
+Khi ứng dụng shutdown, hệ thống PHẢI dừng tiếp nhận email mới vào hàng đợi, chờ tối đa 5 giây để gửi nốt các email còn tồn đọng trong queue rồi mới ngắt luồng Consumer.
+
+### BR-43 - System Report Integrity
+
+Dữ liệu thống kê tài chính BẮT BUỘC hiển thị song song cả 2 chiều: tiền phạt đã thu (paid) và tiền phạt chưa thu (unpaid) để phục vụ đối chiếu minh bạch.
+
+### BR-44 - Inventory Reconciliation Data
+
+Dữ liệu kiểm kê gần nhất phải đủ để đối chiếu số lượng/vị trí bản sao trong báo cáo quản lý. Trong F13, quy tắc này được đáp ứng bằng InventorySession và InventoryItem; việc hiển thị báo cáo quản trị tổng hợp thuộc feature báo cáo nếu có.
+
+### BR-45 - System Report Granularity
+
+Hệ thống phải cung cấp dữ liệu báo cáo phân nhóm linh hoạt theo Ngày, Tháng, Năm để hỗ trợ phân tích chiều hướng phát triển (tăng/giảm) của thư viện.
+
+### BR-46 - Email SMTP Configurations
+
+Các tham số cấu hình SMTP (Host, Port, Username, Password) BẮT BUỘC phải được đọc trực tiếp từ bảng SystemConfigurations.
+
+### BR-47 - Email Template Protection
+
+Các mẫu email hệ thống (RESET_PASSWORD, RESERVATION_READY, RENEWAL_CONFIRMATION, OVERDUE_NOTICE, INCIDENT_FINE_NOTICE, PAYMENT_CONFIRMATION) cấm tuyệt đối xóa khỏi hệ thống.
+
+### BR-48 - Email Worker Error Recovery
+
+Lỗi kết nối SMTP không được phép làm crash thread Consumer; hệ thống phải tự động retry tối đa số lần cấu hình (EMAIL_MAX_RETRIES) trước khi bỏ qua job.
+
+### BR-49 - Email Job Queue Limits
+
+Hàng đợi email bất đồng bộ BẮT BUỘC giới hạn dung lượng tối đa (EMAIL_QUEUE_CAPACITY). Khi hàng đợi đầy, hệ thống SHALL ghi log cảnh báo và bỏ qua (drop) email mới nhất để bảo vệ tính ổn định hệ thống.
+
+### BR-50 - Email Temp Password Exclusion
+
+Tiến trình ngầm gửi mail TUYỆT ĐỐI KHÔNG ĐƯỢC log mật khẩu tạm thời (tempPassword) dưới dạng thô nhằm đảm bảo an toàn bảo mật.
+
+### BR-51 - Email Template Rendering
+
+Hệ thống hỗ trợ định dạng Markdown và render ra HTML trước khi gửi đi. Placeholders trong email template phải ở định dạng `{{key}}`.
+
+### BR-52 - Librarian Performance Isolation
+
+Báo cáo hiệu suất nhân viên chỉ thống kê các giao dịch được thực hiện bởi các tài khoản có vai trò là LIBRARIAN.
+
+### BR-53 - Payment Config Group Access
+
+Library Manager chỉ có quyền xem và sửa các cấu hình có prefix `SEPAY_`. Việc phân quyền sửa cấu hình SePay được kiểm soát nghiêm ngặt ở tầng Service.
+
+### BR-54 - User List Pagination
+
+Tính năng xem danh sách tài khoản BẮT BUỘC phải phân trang và hỗ trợ bộ lọc (Filter) theo Role/Status để chống tràn bộ nhớ.
+
+### BR-55 - Self-Lock Prevention
+
+Quản trị viên (Admin) KHÔNG ĐƯỢC PHÉP thực hiện thao tác Khóa (Lock), Xóa (Delete), hoặc thay đổi Role trên chính tài khoản mà họ đang đăng nhập để tránh tình trạng hệ thống bị vô chủ (orphaned system).
+
+### BR-56 - Book Suggestion Vote Uniqueness
+
+Mỗi Giảng viên SHALL chỉ được vote tối đa 1 lần cho mỗi đề xuất sách. Hệ thống BẮT BUỘC kiểm tra tính duy nhất trước khi ghi nhận vote.
+
+### BR-57 - Book Suggestion Vote Restriction
+
+Tính năng vote (+1) và hủy vote CHỈ ĐƯỢC PHÉP thực hiện khi đề xuất sách còn ở trạng thái 'pending'. Khi status = 'acknowledged' hoặc 'rejected', hệ thống MUST NOT cho phép vote mới hoặc hủy vote.
+
+### BR-58 - Book Suggestion Edit/Delete Restriction
+
+Giảng viên CHỈ ĐƯỢC PHÉP sửa hoặc xóa (soft-delete) đề xuất sách của chính mình KHI VÀ CHỈ KHI status = 'pending' VÀ voteCount = 1 (chỉ có vote của chính mình). Nếu có người khác đã vote hoặc trạng thái đã thay đổi, hệ thống MUST NOT cho phép sửa/xóa.
+
+### BR-59 - Book Taxonomy Override
+
+Khi cập nhật các danh mục (Category) và thẻ (Tag) của một tựa sách, hệ thống SHALL xóa toàn bộ liên kết cũ và chèn mới liên kết được cung cấp thay vì đồng bộ thủ công từng bản ghi.
+
+### BR-60 - Metadata Soft-Deletion Only
+
+Category và Tag KHÔNG ĐƯỢC PHÉP xóa cứng (HARD DELETE) khỏi cơ sở dữ liệu để bảo toàn lịch sử. Hệ thống BẮT BUỘC chỉ sử dụng cơ chế xóa mềm bằng cách đổi trạng thái thành 'hidden'.
+
+### BR-61 - Tag Consolidation
+
+Khi thực hiện gộp Tag (Merge), hệ thống BẮT BUỘC phải re-map tất cả các liên kết sách từ Tag nguồn sang Tag đích, sau đó tự động chuyển Tag nguồn sang trạng thái 'hidden' trong cùng một Database Transaction. Tag đích BẮT BUỘC phải đang ở trạng thái 'active'.
+
+### BR-62 - Metadata Name Uniqueness
+
+Tên của Category và Tag BẮT BUỘC phải là duy nhất trên toàn hệ thống. Hệ thống SHALL ngăn chặn việc tạo mới hoặc cập nhật nếu tên bị trùng lặp với một bản ghi đang tồn tại (kể cả bản ghi đang bị 'hidden').
+
+### BR-63 - Borrow and Reservation Quota
+
+The system SHALL enforce a maximum combined limit for active borrows and pending reservations per user.
+
+### BR-64 - Duplicate Title Prevention
+
+The system SHALL prevent a user from borrowing or reserving multiple copies of the exact same book title simultaneously.
+
+### BR-65 - Book Visibility
+
+The system SHALL only display books with status='active' in public search results.
+
+### BR-66 - AI Fallback Policy
+
+The system SHALL fall back to trending books if the user lacks borrowing history or if the AI is unavailable.
+
+### BR-67 - Notification Pinning Limit
+
+The system SHALL enforce a maximum limit on the number of concurrently pinned notifications.
+
+### BR-68 - Notification Visibility
+
+The system SHALL only show read notifications if specifically requested, prioritizing unread notifications.
+
+### BR-69 - Template Integrity
+
+The system SHALL prevent the removal of mandatory placeholders from system email templates.
+
+### BR-70 - Reconciliation Exclusivity
+
+The system SHALL ensure that only one active inventory session exists per location at any given time.
+
+### BR-71 - Data Export Authorization
+
+The system SHALL restrict full user list data exports to the Admin role only.
+
+### BR-72 - Borrowing History Privacy
+
+The system SHALL restrict users to viewing only their own personal borrowing and reservation records.
+
+### BR-73 - Report Export Consistency
+
+The system SHALL ensure exported reports exactly match the active filters in the UI.
+
+### BR-74 - Chat History Ephemerality
+
+The system SHALL NOT persist AI chat history beyond the active user session.
+
+### BR-75 - Fine Visibility
+
+The system SHALL display the complete history of both paid and unpaid fines to the user.
+
+### BR-76 - Homepage Content Priority
+
+The system SHALL prioritize pinned system announcements over general news on the public homepage.
+
+### BR-77 - Policy Accessibility
+
+The system SHALL make library policies publicly accessible without requiring authentication.
+
+### BR-78 - Historical Data Immutability
+
+The system SHALL NOT allow users to modify or delete their past borrow and return records.
+
+### BR-79 - Import Audit Trail
+
+The system SHALL permanently retain all book import batch records and their detailed error logs.
+
+### BR-80 - Payment Configuration Access
+
+The system SHALL strictly isolate payment gateway settings from general system configurations.
+
+### BR-81 - Performance Metric Scope
+
+The system SHALL calculate staff performance metrics based exclusively on transactions executed by Librarian roles.
+
+### BR-82 - Suggestion Status Finality
+
+The system SHALL freeze book suggestions from further updates once marked as rejected. =============================================================================
+
+## Section 4. Functional Requirements (FR)
+
+### FR-01 - Xác minh danh tính với chống Timing Attack
+
+WHEN người dùng gửi thông tin đăng nhập, THE system SHALL kiểm tra email trong DB. WHERE email tồn tại, THE system SHALL mã hóa plaintext password bằng BCrypt và đối chiếu với passwordHash đã lưu. WHERE email KHÔNG tồn tại, THE system SHALL gọi authService.runDummyVerify() để cân bằng thời gian phản hồi, ngăn chặn Timing Attack. THE system SHALL LUÔN trả về thông báo lỗi chung "Tài khoản hoặc mật khẩu không chính xác" để chống User Enumeration.
+
+**Mapping:** UC-01 / BR-03, BR-09
+
+### FR-02 - Kiểm soát trạng thái phân biệt lý do khóa
+
+AFTER xác thực thành công, THE system SHALL truy vấn bảng UserLockReason để kiểm tra lý do khóa. WHERE tồn tại reason='unpaid' VÀ KHÔNG có reason='securitybreach' hoặc 'adminban', THE system SHALL CHO PHÉP đăng nhập VÀ đặt flag unpaidWarning=true vào session để hiển thị cảnh báo. WHERE tồn tại reason='securitybreach' hoặc 'adminban', THE system SHALL CHẶN đăng nhập VÀ redirect về /login?error=locked.
+
+**Mapping:** UC-01 / BR-06
+
+### FR-03 - Tự động khôi phục khi hết thời gian khóa tạm
+
+WHERE User.status='locked' VÀ lockedUntil != NULL VÀ NOW() > lockedUntil, THE system SHALL tự động xóa reason='securitybreach' trong UserLockReason, UPDATE User.status='active', VÀ reset failedLoginAttempts=0. THEN CHO PHÉP đăng nhập tiếp. (Chỉ áp dụng cho khóa tạm do sai mật khẩu, KHÔNG áp dụng cho adminban hoặc lockedUntil=NULL).
+
+**Mapping:** UC-01 / BR-05
+
+### FR-04 - Ghi nhận đăng nhập sai và khóa tự động
+
+WHEN mật khẩu không khớp, THE system SHALL gọi authService.handleFailedLogin(user) để tăng User.failedLoginAttempts lên 1. WHERE failedLoginAttempts ≥ 5, THE system SHALL tự động gọi lockAccount(userId, 30 phút) để: (1) INSERT UserLockReason(userId, reason='securitybreach'), (2) UPDATE User.status='locked' VÀ User.lockedUntil = NOW() + 30 phút, (3) Trả về số lần đăng nhập sai = 5 để hiển thị thông báo.
+
+**Mapping:** UC-01 / BR-01, BR-02
+
+### FR-05 - Tạo session và redirect theo role
+
+WHEN đăng nhập thành công, THE system SHALL tạo HttpSession mới chứa: {userId, role, email, fullName, unpaidWarning (nếu có)}. THEN THE system SHALL gọi getRedirectByRole(role) để redirect về dashboard tương ứng: ADMIN→/admin/dashboard, LIBRARIAN→/librarian/dashboard, MANAGER→/manager/dashboard, STUDENT→/student/dashboard, LECTURER→/lecturer/dashboard. WHERE có query param redirect hợp lệ (qua isSafeInternalRedirect), ưu tiên redirect theo param.
+
+**Mapping:** UC-01 / BR-39
+
+### FR-06 - Hủy bỏ phiên làm việc
+
+WHEN có yêu cầu đăng xuất, THE system SHALL vô hiệu hóa hoàn toàn HttpSession hiện tại và điều hướng trình duyệt về màn hình đăng nhập.
+
+**Mapping:** UC-02 / BR-39
+
+### FR-07 - Trả kết quả giả định cho Forgot Password
+
+WHEN ForgotPasswordServlet.handleForgotPasswordRequest(email) được gọi, THE system SHALL tìm user theo email. WHERE email KHÔNG tồn tại, THE system SHALL KHÔNG gọi authService.resetPassword() NHƯNG VẪN trả về JSON {success:true, message:"Mật khẩu tạm thời đã được gửi đến email của bạn"} để chống User Enumeration. WHERE email tồn tại, gọi resetPassword() và enqueue email RESET_PASSWORD async.
+
+**Mapping:** UC-03 / BR-04
+
+### FR-08 - Cấp mật khẩu tạm và Reset mật khẩu
+
+WHEN authService.resetPassword(email) được gọi, THE system SHALL: (1) Gọi generateRandomPassword() để sinh 8 ký tự ngẫu nhiên từ [A-Za-z0-9], (2) Mã hóa BCrypt, (3) Gọi UserDAO.updatePasswordHash(), (4) Trả về plaintext password để ForgotPasswordServlet enqueue email. WHEN handleResetPassword(email, tempPassword, newPassword, confirmPassword), THE system SHALL validate: newPassword ≥ 8 ký tự VÀ chứa [a-zA-Z] VÀ [0-9], tempPassword khớp với DB, confirmPassword == newPassword. THEN mã hóa BCrypt newPassword, updatePasswordHash, INSERT AuditLog(CHANGE_PASSWORD).
+
+**Mapping:** UC-03 / BR-07, BR-09
+
+### FR-09 - Hiển thị hồ sơ
+
+WHEN người dùng truy cập trang cá nhân, THE system SHALL thực hiện truy vấn gộp (Join) dữ liệu để hiển thị thông tin định danh và thông tin liên lạc tương ứng.
+
+**Mapping:** UC-04
+
+### FR-10 - Cơ chế UPSERT hồ sơ
+
+WHEN người dùng lưu thay đổi hồ sơ, THE system SHALL kiểm tra; WHERE bản ghi MemberProfile chưa tồn tại, hệ thống SHALL thực thi lệnh INSERT thay vì UPDATE.
+
+**Mapping:** UC-05 / BR-15
+
+### FR-11 - Bảo mật sau đổi pass
+
+WHEN thay đổi mật khẩu thành công, THE system SHALL ghi nhật ký Audit Log, đồng thời vô hiệu hóa session hiện tại và buộc người dùng đăng nhập lại.
+
+**Mapping:** UC-06 / BR-09
+
+### FR-12 - Đối chiếu dữ liệu trùng
+
+WHEN Admin thực hiện tạo hoặc cập nhật tài khoản, THE system SHALL quét toàn bộ CSDL để đảm bảo Email và Mã định danh là duy nhất.
+
+**Mapping:** UC-09, UC-11 / BR-10
+
+### FR-13 - Rà soát danh sách Import với 2 Phase Validation
+
+WHEN ImportUserServlet.doPost(action=upload) nhận file Excel (.xlsx ≤10MB, tên ≤255 ký tự), THE system SHALL thực hiện Phase 1 (Pre-Validation) trên RAM: (1) Parse Excel bằng Apache POI, đọc từng sheet (Student/Lecturer/Admin), (2) Validate từng dòng: email unique (không trùng DB và không trùng trong file), memberCode unique, phoneNumber format, dateOfBirth hợp lệ, role-specific fields (major/enrollmentYear cho Student, department cho Lecturer), (3) WHERE phát hiện lỗi: thêm vào List<ImportError> với format "Sheet {sheetName} - Row {rowIndex}: {field} - {error detail}", (4) WHERE có lỗi: lưu errors vào session + redirect error page, (5) WHERE không lỗi: lưu List<UserImportDTO> vào session attribute "userImportPreview" + redirect confirmation page.
+
+**Mapping:** UC-10 / BR-10, BR-11
+
+### FR-14 - Báo cáo lỗi Import
+
+WHERE Phase 1 phát hiện bất kỳ dữ liệu không hợp lệ nào, THE system SHALL hủy bỏ toàn bộ tiến trình (All-or-Nothing) và xuất báo cáo JSON chi tiết vị trí lỗi.
+
+**Mapping:** UC-10 / BR-11
+
+### FR-15 - Lưu trữ hàng loạt với DB Transaction
+
+WHEN ImportUserServlet.doPost(action=import-{role}) được gọi sau khi user xác nhận preview, THE system SHALL thực hiện Phase 2 (DB Transaction): (1) Lấy userImportPreview từ session, lọc theo role, (2) Mở DB Transaction (conn.setAutoCommit(false)), (3) Với mỗi UserImportDTO: gọi UserService.createUser(dto, actorId) để BCrypt hash mật khẩu (= email), INSERT User, INSERT MemberProfile, INSERT role-specific table (Student/Lecturer/Admin), tạo thẻ thư viện mặc định 1 năm (libraryCardExpiry = NOW() + 31536000000ms), (4) INSERT AuditLog(BULK_USER_IMPORT, actorId, entityName='User', entityId=batchId), (5) conn.commit(), (6) WHERE SQLException: conn.rollback() + trả lỗi HTTP 500, (7) Clear session preview + redirect với flash success.
+
+**Mapping:** UC-10 / BR-11, BR-12
+
+### FR-16 - Xác thực đầu vào mật khẩu
+
+WHEN người dùng yêu cầu thay đổi mật khẩu, THE system SHALL mã hóa BCrypt mật khẩu hiện tại và đối chiếu với CSDL. WHERE mật khẩu không khớp HOẶC mật khẩu mới vi phạm chính sách bảo mật, hệ thống SHALL từ chối yêu cầu và hiển thị lỗi tương ứng.
+
+**Mapping:** UC-06 / BR-09
+
+### FR-17 - Ghi nhận Audit Log Quản trị
+
+WHEN Quản trị viên thực hiện tạo mới, cập nhật thông tin, thay đổi trạng thái (Khóa/Mở khóa), hoặc Import hàng loạt tài khoản thành công, THE system SHALL tự động ghi nhận bản ghi vào bảng AuditLogs chứa thông tin actor, actionType, và dữ liệu thay đổi.
+
+**Mapping:** UC-09, UC-10, UC-11 / BR-14
+
+### FR-18 - Truy xuất danh sách và chi tiết
+
+WHEN Quản trị viên yêu cầu xem danh sách hoặc chi tiết một tài khoản, THE system SHALL thực hiện truy vấn gộp (JOIN) dữ liệu từ bảng [User], MemberProfile và bảng phân quyền tương ứng (Student/Lecturer/Librarian) để hiển thị.
+
+**Mapping:** UC-07, UC-08 / BR-54
+
+### FR-19 - Khởi tạo tài khoản đơn lẻ
+
+WHEN Quản trị viên gửi biểu mẫu tạo tài khoản đơn lẻ hợp lệ, THE system SHALL thực thi lệnh INSERT tuần tự vào các bảng [User], MemberProfile, và bảng Role đã chọn, ĐỒNG THỜI cấp mật khẩu mặc định.
+
+**Mapping:** UC-09 / BR-12
+
+### FR-20 - Cập nhật và Trạng thái tài khoản
+
+WHEN Quản trị viên thao tác cập nhật tài khoản, THE system SHALL cho phép chỉnh sửa thông tin liên lạc tại MemberProfile, VÀ cho phép cập nhật status/lockReason tại bảng [User] để thực thi việc Khóa hoặc Mở khóa tài khoản.
+
+**Mapping:** UC-11 / BR-14, BR-55
+
+### FR-21 - Rollback ngoại lệ Phase 2
+
+WHERE xảy ra lỗi SQLException bất ngờ trong quá trình thực thi Batch Insert (Phase 2) của tiến trình Import, THE system SHALL Rollback toàn bộ Database Transaction VÀ trả về HTTP 500 kèm lỗi hệ thống chung (ẩn stack trace).
+
+**Mapping:** UC-10 / BR-11
+
+### FR-22 - Tạo đầu sách với validation ISBN
+
+WHEN BookServlet.doPost(action=create) nhận form, THE system SHALL chuẩn hóa và kiểm tra ISBN-10/ISBN-13 đúng checksum, kiểm tra ISBN chưa tồn tại, validate metadata/status theo schema, mở transaction, INSERT Book với totalQuantity=0 và availableQuantity=0, thay thế liên kết BookCategory/BookTag, ghi AuditLog(CREATE_BOOK), rồi commit; WHERE lỗi thì rollback và dọn ảnh bìa mới đã lưu.
+
+**Mapping:** UC-13 / BR-16, BR-17
+
+### FR-23 - Cập nhật đầu sách và chặn đổi ISBN
+
+WHEN cập nhật Book, THE system SHALL lấy Book hiện tại từ Database, giữ nguyên ISBN và số lượng, chỉ cập nhật metadata/trạng thái/ảnh/phân loại được phép, ghi AuditLog(UPDATE_BOOK) trong cùng transaction. WHERE Book không tồn tại hoặc dữ liệu không hợp lệ, THE system SHALL từ chối lưu và hiển thị lỗi tiếng Việt.
+
+**Mapping:** UC-13 / BR-18
+
+### FR-24 - Nhập kho bản sao với đồng bộ số lượng
+
+WHEN BookCopyServlet.doPost(action=create) nhận bookId, barcode và location, THE system SHALL kiểm tra Book tồn tại, barcode bắt buộc/đúng định dạng/không trùng, location hợp lệ, mở transaction, INSERT BookCopy với condition='good' và status='available', tăng Book.totalQuantity và Book.availableQuantity mỗi giá trị 1, ghi AuditLog(CREATE_BOOK_COPY), rồi commit; WHERE lỗi thì rollback.
+
+**Mapping:** UC-14 / BR-16, BR-17
+
+### FR-25 - Cập nhật vị trí bản sao
+
+WHEN BookCopyServlet.doPost(action=update) nhận bookCopyId và location, THE system SHALL chỉ cho cập nhật location nếu BookCopy hiện tại đang status='available' và condition='good'; Barcode, bookId, condition và status phải giữ theo Database. WHERE bản sao đang borrowed/reserved/unavailable/damaged/lost, THE system SHALL từ chối cập nhật và hướng người dùng sang quy trình phù hợp.
+
+**Mapping:** UC-14 / BR-18
+
+### FR-26 - Validation trùng lặp Barcode
+
+WHEN tạo BookCopy, THE system SHALL từ chối Barcode đã tồn tại và thông báo đầu sách sở hữu Barcode đó. WHERE unique constraint DB phát sinh do request đồng thời, THE system SHALL rollback và hiển thị lỗi tiếng Việt thân thiện thay vì lỗi hệ thống chung.
+
+**Mapping:** UC-14 / BR-16
+
+### FR-27 - Quản lý thể loại và tag
+
+WHEN CategoryServlet hoặc TagServlet nhận create/update, THE system SHALL validate tên bắt buộc, kiểm tra trùng tên theo DAO, chỉ dùng trạng thái active hoặc hidden cho UI F4, ghi Audit Log tương ứng và không hard-delete Category/Tag.
+
+**Mapping:** UC-15
+
+### FR-28 - Điều phối thay đổi condition sang F13/F6
+
+WHEN Thủ thư cần ghi nhận BookCopy hỏng/mất từ màn quản lý bản sao, F4 SHALL không cập nhật condition trực tiếp tại BookCopyServlet; hệ thống SHALL điều hướng sang F13 feat-bookMaintenance. WHERE hỏng/mất được phát hiện khi nhận trả sách tại quầy, F6 xử lý trong transaction check-in.
+
+**Mapping:** UC-14 / BR-17
+
+### FR-29 - Xác thực điều kiện Giao dịch Trực tuyến đầy đủ
+
+WHEN ReservationServlet hoặc RenewalServlet nhận request từ user, THE system SHALL kiểm tra điều kiện giao dịch: (1) Verify session userId hợp lệ, (2) UserDAO.findById(userId), kiểm tra User.status='active' (không locked), (3) UserLockReasonDAO.hasLockReason(userId, 'unpaid'), WHERE tồn tại: chặn với thông báo "Tài khoản có nợ phạt chưa thanh toán, không thể thực hiện giao dịch", (4) BorrowRecordDAO.countActiveBorrowsByUser(userId), so sánh với SystemConfig: STUDENT_MAX_BORROW_BOOKS hoặc LECTURER_MAX_BORROW_BOOKS theo role, WHERE vượt hạn mức: chặn với thông báo "Đã đạt giới hạn số sách mượn", (5) WHERE tất cả điều kiện OK: tiếp tục xử lý reserve/renew.
+
+**Mapping:** UC-16, UC-17 / BR-19
+
+### FR-30 - Đặt trước sách có sẵn với Transaction
+
+WHEN OnlineCirculationService.reserveBook(userId, bookId, role) được gọi VÀ Book.availableQuantity > 0, THE system SHALL mở DB Transaction (conn.setAutoCommit(false)): (1) **SELECT ... FOR UPDATE** Book WHERE bookId=? (lock row chống race condition), (2) Re-check availableQuantity > 0, (3) INSERT Reservation(userId, bookId, bookCopyId=NULL, queuePosition=0, status='readypickup', createdAt=NOW(), endDate=NOW()+RESERVATION_HOLD_DAYS từ SystemConfig), (4) UPDATE Book SET availableQuantity = availableQuantity - 1, (5) INSERT AuditLog(RESERVE_BOOK_ONLINE, userId), (6) conn.commit(), (7) EmailService.enqueue(RESERVATION_READY, userId) [async, ngoài transaction]. WHERE SQLException: rollback.
+
+**Mapping:** UC-16 / BR-20
+
+### FR-31 - Xếp hàng chờ sách hết bản sao với Race Condition Protection
+
+WHEN OnlineCirculationService.reserveBook(userId, bookId, role) được gọi VÀ Book.availableQuantity == 0, THE system SHALL mở DB Transaction: (1) **SELECT ... FOR UPDATE** Book WHERE bookId=? (lock row), (2) Re-check availableQuantity == 0, (3) ReservationDAO.getMaxQueuePosition(bookId) → maxQueue, (4) INSERT Reservation(userId, bookId, bookCopyId=NULL, queuePosition=maxQueue+1, status='pending', createdAt=NOW(), endDate=NULL), (5) INSERT AuditLog(RESERVE_BOOK_QUEUE, userId), (6) conn.commit(), (7) Trả về flash message "Đã xếp hàng chờ tại vị trí {maxQueue+1}". WHERE SQLException: rollback. (KHÔNG trừ availableQuantity vì sách đã hết).
+
+**Mapping:** UC-16 / BR-20
+
+### FR-32 - Kiểm tra điều kiện Gia hạn với 3 điều kiện bắt buộc
+
+WHEN OnlineCirculationService.renewBook(userId, borrowRecordId) được gọi, THE system SHALL kiểm tra 3 điều kiện theo BR-21: (1) **Điều kiện 1 - Thời gian tối thiểu**: Tính số ngày đã mượn = (NOW() - BorrowRecord.startDate), lấy RENEWAL_MIN_DAYS_BEFORE_DUE từ SystemConfig (default 0), WHERE số ngày < minDays: chặn với thông báo "Chưa đủ thời gian để gia hạn", (2) **Điều kiện 2 - Số lần tối đa**: Lấy MAX_EXTENSION_COUNT từ SystemConfig, WHERE BorrowRecord.extensionCount >= maxCount: chặn với thông báo "Đã hết lượt gia hạn", (3) **Điều kiện 3 - Không có người chờ**: ReservationDAO.hasPendingQueue(bookId) WHERE tồn tại Reservation có queuePosition > 0 AND status='pending': chặn với thông báo "Có người đang chờ sách này, không thể gia hạn". WHERE tất cả điều kiện OK: tiếp tục FR-33.
+
+**Mapping:** UC-17 / BR-21
+
+### FR-33 - Thực thi Gia hạn với cập nhật endDate
+
+WHERE yêu cầu gia hạn hợp lệ (qua FR-32), THE system SHALL mở DB Transaction: (1) Lấy STUDENT_MAX_BORROW_DAYS hoặc LECTURER_MAX_BORROW_DAYS từ SystemConfig theo role, (2) UPDATE BorrowRecord SET endDate = endDate + {loanDays} ngày, extensionCount = extensionCount + 1 WHERE borrowRecordId=?, (3) INSERT AuditLog(RENEW_BOOK_ONLINE, userId), (4) conn.commit(), (5) EmailService.enqueue(RENEWAL_CONFIRMATION, userId) [async], (6) Trả về flash "Gia hạn thành công, hạn mới: {newEndDate}".
+
+**Mapping:** UC-17 / BR-21
+
+### FR-34 - Kiểm tra điều kiện Giao sách đầy đủ
+
+WHEN CheckOutServlet.doPost(memberCode, barcode, targetBookId) được gọi, THE system SHALL: (1) Validate barcode và memberCode không rỗng, (2) UserLookupDAO.findUserIdByMemberCode() → userId, (3) Kiểm tra User tồn tại và không bị xóa, (4) Truy vấn UserLockReason: WHERE tồn tại reason='unpaid', CHẶN giao dịch với thông báo "Tài khoản có nợ phạt chưa thanh toán", (5) BookCopyDAO.findByBarcode(barcode), (6) Kiểm tra BookCopy.status: Walk-in yêu cầu 'available', Pre-reservation yêu cầu 'reserved', (7) Kiểm tra hạn mức: đếm số BorrowRecord active của user, so với STUDENT_MAX_BORROW_BOOKS hoặc LECTURER_MAX_BORROW_BOOKS từ SystemConfig.
+
+**Mapping:** UC-18 / BR-22, BR-29
+
+### FR-35 - Xử lý Mượn trực tiếp với Reservation ảo
+
+WHERE người dùng chưa có đơn đặt trước (Mượn trực tiếp Walk-in) VÀ không vi phạm nợ phạt, THE system SHALL kiểm tra hàng đợi: ReservationDAO.hasQueueForBook(bookId) WHERE tồn tại Reservation có queuePosition > 0 AND status='pending', THE system SHALL từ chối với thông báo "Sách đang có người chờ, không thể mượn trực tiếp". WHERE hàng đợi trống, THE system SHALL tự động CREATE Reservation tại chỗ với (userId, bookId, bookCopyId, queuePosition=0, status='readypickup', createdAt=NOW(), endDate=NOW()+LoanDays) theo BR-23 để chuẩn hóa dữ liệu trước khi insert BorrowRecord.
+
+**Mapping:** UC-18 / BR-23
+
+### FR-36 - Thực thi Giao sách với DB Transaction
+
+WHERE tất cả điều kiện FR-34, FR-35 thỏa mãn, THE system SHALL mở DB Transaction (conn.setAutoCommit(false)) và thực thi tuần tự: (1) INSERT BorrowRecord(userId, bookCopyId, status='borrowed', startDate=NOW(), endDate=NOW()+LoanDays theo role, extensionCount=0), (2) UPDATE Reservation SET status='fulfilled', borrowRecordId=? WHERE reservationId=?, (3) UPDATE BookCopy SET status='borrowed', (4) **PHÂN NHÁNH**: IF BookCopy trước đó status='available' (Walk-in): UPDATE Book.availableQuantity = availableQuantity - 1, ELSE IF BookCopy status='reserved' (Pre-reservation): SKIP (đã trừ khi đặt trước), (5) INSERT AuditLog(CHECKOUT, actorId=librarianId), (6) conn.commit(). WHERE SQLException: conn.rollback() + throw. (7) EmailService.enqueue(CHECKOUT_CONFIRMATION, userId) [async, ngoài transaction].
+
+**Mapping:** UC-18 / BR-29
+
+### FR-37 - Nhận sách Hỏng/Mất với khóa tức thì
+
+WHEN CheckInServlet.doPost(barcode, condition='damaged'|'lost', memberCode) được gọi, THE system SHALL mở DB Transaction: (1) BookCopyDAO.findByBarcode(), (2) BorrowRecordDAO.findActiveBorrowByBookCopyId(), (3) Tính số ngày trễ = (NOW() - BorrowRecord.endDate), WHERE > 0: amount = FINE_RATE_PER_DAY × số ngày, INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue'), (4) UPDATE BorrowRecord SET status='returned', returnedAt=NOW(), (5) UPDATE BookCopy SET status='unavailable', condition=condition, (6) UPDATE Book.totalQuantity = totalQuantity - 1 (vì sách hỏng/mất không còn lưu thông), (7) INSERT BookCopyIncident(bookCopyId, type=condition, description='Phát hiện khi trả sách', status='open'), (8) **KHÓA TỨC THÌ**: INSERT UserLockReason(userId, reason='unpaid') + UPDATE User.status='locked' (KHÔNG chờ background job), (9) INSERT AuditLog(CHECKIN), (10) conn.commit(). WHERE có người chờ: SKIP FR-39 (sách hỏng không luân chuyển).
+
+**Mapping:** UC-19 / BR-24
+
+### FR-38 - Nhận sách Nguyên vẹn với tính phạt trễ hạn
+
+WHEN CheckInServlet.doPost(barcode, condition='good', memberCode) được gọi, THE system SHALL mở DB Transaction: (1) BookCopyDAO.findByBarcode(), (2) BorrowRecordDAO.findActiveBorrowByBookCopyId(), (3) Tính số ngày trễ = (NOW() - BorrowRecord.endDate), WHERE số ngày > 0: amount = FINE_RATE_PER_DAY × số ngày trễ, INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue'), INSERT UserLockReason(userId, reason='unpaid'), UPDATE User.status='locked', (4) UPDATE BorrowRecord SET status='returned', returnedAt=NOW(), (5) UPDATE BookCopy SET condition='good', status='available' (tạm thời, sẽ đổi nếu có người chờ ở FR-39), (6) INSERT AuditLog(CHECKIN), (7) THEN gọi FR-39 để điều phối hàng chờ, (8) conn.commit(). (9) EmailService.enqueue(CHECKIN_CONFIRMATION) [async].
+
+**Mapping:** UC-19
+
+### FR-39 - Điều phối Hàng chờ Check-in với tính HOLD_DAYS
+
+WHILE hệ thống nhận trả sách condition='good' VÀ hoàn tất cập nhật BorrowRecord, THE system SHALL truy vấn ReservationDAO.findNextInQueue(bookId) WHERE queuePosition = 1 AND status='pending'. WHERE tồn tại người chờ tiếp theo: (1) UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=?, endDate=NOW()+RESERVATION_HOLD_DAYS (từ SystemConfig), (2) UPDATE BookCopy SET status='reserved', (3) EmailService.enqueue(RESERVATION_READY, userId) [async]. WHERE KHÔNG có người chờ: (1) UPDATE Book.availableQuantity = availableQuantity + 1, (2) UPDATE BookCopy.status='available'. (Tất cả trong cùng 1 transaction của FR-38).
+
+**Mapping:** UC-19
+
+### FR-40 - Xác nhận Thanh toán Tiền mặt với BR-25
+
+WHEN CashPaymentServlet.doPost(paymentId, memberCode) được gọi, THE system SHALL: (1) UserLookupDAO.findUserIdByMemberCode() → userId, (2) Mở DB Transaction: PaymentDAO.updatePaymentCompleted(paymentId, librarianId), FineDAO.updateStatusToPaid(fineId), UserLockReasonDAO.deleteLockReason(userId, 'unpaid'), (3) **Kiểm định mở khóa tự động theo BR-25**: COUNT(*) FROM UserLockReason WHERE userId=?, WHERE count = 0: UserDAO.updateStatusToActive(userId) [auto-unlock], WHERE count > 0: GIỮ NGUYÊN status='locked' (vì còn lý do khóa khác như 'adminban' hoặc 'securitybreach'), (4) INSERT AuditLog(CASH_PAYMENT), (5) conn.commit(), (6) EmailService.enqueue(PAYMENT_CONFIRMATION) [async].
+
+**Mapping:** UC-20 / BR-25
+
+### FR-41 - DEPRECATED - Merged into FR-40
+
+Logic kiểm định mở khóa tự động đã được tích hợp vào FR-40 theo BR-25. Không còn sử dụng FR riêng biệt.
+
+**Mapping:** (merged into FR-40)
+
+### FR-42 - Google SSO Verification
+
+WHEN GoogleLoginServlet.doGet() nhận code param từ Google OAuth callback, THE system SHALL: (1) Đổi code → accessToken qua GoogleSSOUtil.exchangeCodeForToken(code), (2) Lấy email từ Google Token bằng GoogleSSOUtil.getUserEmail(accessToken), (3) Tìm User bằng email trong DB: UserDAO.findByEmail(email). WHERE email KHÔNG tồn tại, THE system SHALL trả lỗi "Email chưa được cấp tài khoản trong hệ thống LMS". WHERE tồn tại, kiểm tra locked tương tự FR-02 (phân biệt unpaid vs securitybreach/adminban), FR-03 (auto-unlock nếu hết thời gian khóa tạm). THEN tạo HttpSession với {userId, role, email, fullName} và gọi getRedirectByRole(role) để redirect. **BUG HIỆN TẠI**: GoogleLoginServlet.getRedirectByRole() hiện luôn return "/" thay vì dashboard đúng theo role → CẦN SỬA để redirect logic giống LoginServlet (ADMIN→/admin/dashboard, LIBRARIAN→/librarian/dashboard, MANAGER→/manager/dashboard, STUDENT→/student/dashboard, LECTURER→/lecturer/dashboard). WHERE có query param redirect, áp dụng FR-77 (whitelist validation) trước khi redirect.
+
+**Mapping:** UC-21 / BR-26
+
+### FR-43 - Tra cứu & Gợi ý sách với AI Recommendation
+
+WHEN BookSearchServlet.doGet() hoặc BookDetailServlet.doGet() được gọi, THE system SHALL: (1) **Search Logic**: BookDAO.search(keyword, categoryId, tagIds[], filterStatus, page, pageSize=12) thực thi SQL với ILIKE '%keyword%' trên title, author, publisher, ISBN, pagination OFFSET (page-1)*12 LIMIT 12, (2) **User Context**: WHERE user đã login: BorrowRecordDAO.findBorrowedBookIdsByUser(userId) và ReservationDAO.findReservedBookIdsByUser(userId) để đánh dấu sách đang mượn/đặt trước trên giao diện, (3) **AI Recommendation** (chỉ BookDetailServlet): Gọi RecommendationServlet.doGet() (API endpoint) để lấy recommendations từ AiRecommendationService.getRecommendationsForUser(userId, currentBookId), Service gọi Gemini API với prompt chứa lịch sử mượn, category/tags của sách hiện tại, danh sách ISBN sách có sẵn, Gemini trả về JSON array chứa 5-10 ISBN gợi ý, Service parse JSON và truy vấn BookDAO.findByIsbnList(isbns) để lấy thông tin đầy đủ, Cache recommendations trong session với TTL 30 phút, (4) Forward sang JSP với {books[], categories[], tags[], borrowedBookIds[], reservedBookIds[], recommendations[]}.
+
+**Mapping:** UC-22, UC-23 / BR-65, BR-66
+
+### FR-44 - Quản lý & Phát hành Thông báo hàng loạt
+
+WHEN NotificationManagerServlet.doPost(action=create) hoặc action=update được gọi, THE system SHALL: (1) **Validate input**: title không rỗng và ≤ 255 ký tự, content ≤ 10.000 ký tự, type IN ['news', 'announcement', 'maintenance'] (Tin tức và sự kiện đã gộp chung thành 'news'), isPinned = true/false, (2) **Create/Update Notification**: Mở DB Transaction, INSERT hoặc UPDATE Notification(notificationId, title, content, type, thumbnailUrl, isPinned, status='published', createdBy=managerId, createdAt=NOW() hoặc updatedAt=NOW()), INSERT AuditLog(CREATE_NOTIFICATION hoặc UPDATE_NOTIFICATION, managerId), conn.commit(), (3) **Gửi Email hàng loạt** (chỉ khi action=create VÀ user chọn "Gửi email thông báo"): WHERE templateId được cung cấp, DocumentTempDAO.findById(templateId) để load email template, EmailService.sendBulkNotificationEmails(notificationId, templateId) [async, ngoài transaction]: Query UserDAO.findAllActiveUsersWithRole(['STUDENT', 'LECTURER']), Với mỗi user: render template với variables {userName, notificationTitle, notificationContent, notificationUrl}, enqueue email vào background ExecutorService, ghi log số lượng email queued, (4) **Widget Update**: NotificationWidgetServlet sẽ hiển thị badge số lượng thông báo chưa đọc dựa trên UserNotificationStatus.
+
+**Mapping:** UC-24, UC-25 / BR-67, BR-68
+
+### FR-45 - Bulk Excel Export với 10 cột
+
+WHEN ExportUserServlet.doGet(search, role, status) được gọi, THE system SHALL: (1) Gọi UserService.getUsersForExport(search, role, status) để lấy toàn bộ danh sách user KHÔNG phân trang, (2) Build file Excel (.xlsx) bằng Apache POI với 10 cột: [Email, Họ tên, SĐT, Giới tính, Ngày sinh, Vai trò, Mã số (MSSV/MSGV/Staff), Chuyên ngành/Khoa, Năm nhập học/Năm vào, Trạng thái], (3) Set header Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, (4) Set header Content-Disposition: attachment; filename="danh_sach_nguoi_dung_{ROLE}_{YYYYMMDD}.xlsx", (5) Write workbook to response OutputStream, (6) Ghi AuditLog(EXPORT_USER_LIST, actorId).
+
+**Mapping:** UC-30 / BR-71
+
+### FR-46 - Kiểm định file Excel sách với 2 phase
+
+WHEN BookImportServlet.doPost(action=upload) nhận file, THE system SHALL chỉ nhận .xlsx tối đa 10 MB, yêu cầu sheet Books và BookCopies đúng header, bỏ dòng trống, giới hạn 5.000 BookCopy, kiểm tra trường bắt buộc, kiểu dữ liệu, ISBN, tham chiếu ISBN, độ dài, Barcode cùng rule validate với nhập tay, duplicate nội bộ và duplicate Barcode trong DB; WHERE có lỗi thì lưu BookImportBatch(status='failed') và BookImportError theo sheet/dòng/cột, không tạo dữ liệu sách.
+
+**Mapping:** UC-27 / BR-16, BR-27
+
+### FR-47 - Lưu hàng loạt sách với đồng bộ số lượng
+
+WHEN BookImportServlet.doPost(action=confirm) nhận preview hợp lệ, THE system SHALL validate lại preview, mở một transaction, dùng Book hiện hữu theo ISBN hoặc tạo Book mới mà không ghi đè metadata hiện hữu, tự tạo Category/Tag chưa tồn tại và liên kết với Book mới, INSERT mọi BookCopy với Barcode bắt buộc từ file, condition='good', status='available', tăng số lượng Book theo số BookCopy được tạo, INSERT batch success và Audit Log tổng hợp, rồi commit; WHERE bất kỳ bước nào lỗi thì rollback toàn bộ dữ liệu nghiệp vụ và lưu batch failed bằng transaction riêng.
+
+**Mapping:** UC-27 / BR-16, BR-17, BR-27
+
+### FR-48 - Ghi nhận sự cố bản sao với vô hiệu hóa tức thì
+
+WHEN BookCopyIncidentServlet.doPost(action=report) nhận barcode, incidentType và description, THE system SHALL chỉ chấp nhận type damaged/lost, mô tả không rỗng và tối đa 1000 ký tự, khóa và tìm BookCopy theo Barcode, chỉ chấp nhận BookCopy condition='good', status='available', chưa có incident pending/investigating, mở transaction, INSERT BookCopyIncident(status='pending'), UPDATE BookCopy status='unavailable' nhưng chưa đổi condition, giảm Book.availableQuantity đúng 1, ghi Audit Log cho incident và BookCopy, rồi commit; WHERE lỗi thì rollback.
+
+**Mapping:** UC-28 / BR-28
+
+### FR-49 - Xử lý vòng đời sự cố và phục hồi số lượng
+
+WHEN xử lý incident được báo trực tiếp trong F13, THE system SHALL tuân theo state machine: investigate chỉ pending -> investigating; resolve từ pending/investigating -> resolved, cập nhật BookCopy.condition thành damaged hoặc lost, giữ status='unavailable', nếu lost thì set removedFromInventory=true và giảm totalQuantity 1; reject từ pending/investigating -> rejected, đưa BookCopy về available và tăng availableQuantity 1; restore chỉ incident resolved loại damaged có BookCopy damaged/unavailable và chưa removedFromInventory, đưa BookCopy về good/available, tăng availableQuantity 1; removeFromInventory chỉ incident resolved loại damaged chưa removedFromInventory, set removedFromInventory=true và giảm totalQuantity 1. Incident resolved tạo bởi F6 không được resolve/reject lại. Mọi nhánh phải khóa bản ghi, ghi Audit Log và commit/rollback nguyên tử.
+
+**Mapping:** UC-28 / BR-28
+
+### FR-50 - Tạo và xử lý phiên kiểm kê kho với 8 action
+
+WHEN InventoryReconciliationServlet nhận action, THE system SHALL hỗ trợ create, start, scan, finish-counting, resolve-misplaced, resolve-missing, complete và cancel theo state machine F13. Resolve-missing chỉ áp dụng BookCopy good/available, tạo incident lost/pending, chuyển copy unavailable, giảm availableQuantity và đánh dấu item đã xử lý. Complete chỉ cho phép reviewing -> completed khi không còn missing/misplaced chưa xử lý. Mỗi action thay đổi dữ liệu phải dùng transaction và Audit Log.
+
+**Mapping:** UC-29 / BR-44, BR-28 cho nhánh resolve-missing
+
+### FR-51 - DEPRECATED - Logic merged into FR-50
+
+Logic kết luận kiểm kê đã được tích hợp vào FR-50 với action=complete. Không còn sử dụng FR riêng biệt.
+
+**Mapping:** (merged into FR-50)
+
+### FR-52 - Quản lý Mẫu Email
+
+WHEN DocumentTempManagerServlet.doPost(action=update) cập nhật email template, THE system SHALL: (1) Validate input: tempId tồn tại, subject không rỗng và ≤ 255 ký tự, bodyContent ≤ 50.000 ký tự (hỗ trợ HTML + placeholders), (2) Kiểm tra các placeholders bắt buộc theo loại template: RESET_PASSWORD template MUST chứa {{tempPassword}}, {{userName}}, {{resetLink}}, OVERDUE_NOTICE template MUST chứa {{bookTitle}}, {{dueDate}}, {{daysLate}}, {{fineAmount}}, RESERVATION_READY template MUST chứa {{bookTitle}}, {{pickupDeadline}}, {{libraryLocation}}, WHERE thiếu placeholder bắt buộc: trả lỗi validation "Template thiếu biến bắt buộc: {missingPlaceholders}", (3) Mở DB Transaction: UPDATE DocumentTemp SET subject=?, bodyContent=?, updatedBy=managerId, updatedAt=NOW() WHERE tempId=?, INSERT AuditLog(UPDATE_EMAIL_TEMPLATE, managerId, entityName='DocumentTemp', entityId=tempId, oldValues=JSON.stringify({oldSubject, oldBodyContent}), newValues=JSON.stringify({subject, bodyContent})), conn.commit(), (4) **Clear template cache**: DocumentTemplateCache.invalidate(tempId) để buộc reload template mới khi gửi email tiếp theo, (5) Redirect với flash success "Đã cập nhật mẫu email: {tempName}". **Rendering**: EmailService.sendEmail() sẽ dùng định dạng HTML/Text thông thường, thay thế placeholders bằng SimpleTemplateEngine hoặc String.replace().
+
+**Mapping:** UC-26 / BR-69
+
+### FR-53 - Hiển thị Hàng mượn & chờ sách với trạng thái
+
+WHEN MyBorrowingsServlet.doGet() được gọi, THE system SHALL: (1) BorrowRecordDAO.findActiveBorrowsByUser(userId) → JOIN Book, BookCopy để lấy {borrowRecordId, bookTitle, barcode, startDate, endDate, extensionCount, daysUntilDue, isOverdue}, (2) ReservationDAO.findActiveReservationsByUser(userId) → JOIN Book, BookCopy (nếu có) để lấy {reservationId, bookTitle, queuePosition, status, createdAt, endDate (nếu readypickup), barcode (nếu có)}, (3) Tính toán các flag: isOverdue = (endDate < NOW()), canRenew = (extensionCount < MAX_EXTENSION_COUNT AND không có người chờ), canCancel = (status='pending' OR status='readypickup'), (4) Forward sang JSP với {activeBorrows, activeReservations} để hiển thị.
+
+**Mapping:** UC-31
+
+### FR-54 - Liên kết chuyển hướng Dashboard với stats cards
+
+WHEN StudentDashboardServlet hoặc LecturerDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu: (1) activeLoansCount = BorrowRecordDAO.countActiveBorrowsByUser(userId), (2) dueSoonCount = BorrowRecordDAO.countDueSoonByUser(userId, 3) — số sách hạn trả trong 3 ngày, (3) reservedCount = ReservationDAO.countActiveReservationsByUser(userId), (4) totalFines = FineDAO.getTotalUnpaidFinesByUser(userId), (5) activeLoans = BorrowRecordDAO.findActiveBorrowsByUser(userId) JOIN Book (top 5), (6) recentLoans = BorrowRecordDAO.findRecentByUser(userId, limit=5), (7) recommendations = AiRecommendationService.getRecommendationsForUser(userId) [cache trong session]. THEN forward sang dashboard.jsp với các stats cards có link: "Sách đang mượn" → /{role}/my-borrowings, "Sách quá hạn" → /{role}/my-borrowings?filter=overdue, "Tiền phạt" → /{role}/fines.
+
+**Mapping:** UC-31
+
+### FR-55 - Truy vấn Danh sách Nhật ký Kiểm toán với phân trang
+
+WHEN AuditLogServlet.doGet(action=list) được gọi, THE system SHALL: (1) Parse filter params: actionType, entityName, email (search user), fromDate, toDate, keyword (search in oldValues/newValues JSON), page (default 1), pageSize (fixed 20), (2) AuditLogDAO.findWithFilters(filters, page, pageSize) thực thi SQL: SELECT a.*, u.email AS actorEmail FROM AuditLogs a LEFT JOIN "User" u ON a.userId = u.userId WHERE (filters) ORDER BY timestamp DESC LIMIT 20 OFFSET (page-1)*20, (3) WHERE userId IS NULL: hiển thị "Hệ thống" thay vì email, (4) Tính totalCount để phân trang, totalPages = CEIL(totalCount / 20), (5) Forward sang audit-log-list.jsp với {logs[], currentPage, totalPages, filters (giữ nguyên để preserve state)}.
+
+**Mapping:** UC-40 / BR-32, BR-34
+
+### FR-56 - Lọc Nhật ký Kiểm toán với 7 filter params
+
+WHEN AuditLogServlet nhận filter params, THE system SHALL build SQL WHERE clause động: (1) actionType filter: WHERE actionType = ? (dropdown: CREATE, UPDATE, DELETE, LOGIN, LOGOUT, CHECKOUT, CHECKIN, ...), (2) entityName filter: WHERE entityName = ? (dropdown: User, Book, BorrowRecord, Payment, ...), (3) email filter: WHERE u.email ILIKE '%?%' (case-insensitive search), (4) fromDate filter: WHERE timestamp >= ? (parse yyyy-MM-dd), (5) toDate filter: WHERE timestamp <= ? + 1 day, (6) keyword filter: WHERE (oldValues::text ILIKE '%?%' OR newValues::text ILIKE '%?%') — search trong JSON string, (7) WHILE chuyển trang (page param thay đổi): giữ nguyên toàn bộ filter params trong query string để preserve filter state.
+
+**Mapping:** UC-40 / BR-34
+
+### FR-57 - Chi tiết Nhật ký dạng Card so sánh 1-1
+
+WHEN SysAdmin click "Xem chi tiết" trên một AuditLog row, THE system SHALL mở modal popup hiển thị: (1) Parse oldValues và newValues từ JSON string → Map<String, Object>, (2) Lấy tất cả keys từ cả 2 maps, (3) Với mỗi key: tạo 1 comparison card pair với 2 cột: LEFT (Giá trị Cũ - nền hồng nhạt), RIGHT (Giá trị Mới - nền xanh nhạt), (4) Format: Key name (bold) ở header, old value ở card trái, new value ở card phải, xếp theo chiều dọc, (5) WHERE value là nested object/array: pretty-print JSON với indent, (6) Hiển thị metadata: {actionType, entityName, entityId, actorEmail, timestamp} ở modal header.
+
+**Mapping:** UC-40 / BR-33
+
+### FR-58 - Xử lý hiển thị đặc biệt Modal theo actionType
+
+WHEN render modal chi tiết AuditLog, THE system SHALL xử lý các trường hợp đặc biệt: (1) **actionType = CREATE**: oldValues = NULL → hiển thị "—" hoặc badge "Không có" ở cột trái, chỉ hiển thị newValues ở cột phải, (2) **actionType = DELETE**: newValues = NULL → hiển thị "—" ở cột phải, chỉ hiển thị oldValues ở cột trái, (3) **actionType = CHANGE_PASSWORD**: oldValues và newValues đều NULL hoặc rỗng (vì bảo mật) → hiển thị text "Mật khẩu đã thay đổi (bảo mật)" thay vì cards rỗng, (4) **WHERE JSON invalid**: không parse được oldValues/newValues → hiển thị raw text trong 1 card đơn với border đỏ + icon warning, (5) **WHERE field name dài**: truncate với tooltip hover để xem full text.
+
+**Mapping:** UC-40 / BR-33
+
+### FR-59 - Xuất Excel Nhật ký Kiểm toán
+
+WHEN AuditLogServlet.doGet(action=export) được gọi, THE system SHALL: (1) Lấy cùng filter params từ list view (actionType, entityName, email, fromDate, toDate, keyword), (2) AuditLogDAO.findWithFilters(filters, page=1, pageSize=10000) — giới hạn tối đa 10.000 bản ghi để bảo vệ hiệu năng, (3) Build Excel file (.xlsx) bằng Apache POI: tạo header row = ["Thời gian", "Hành động", "Đối tượng", "ID", "Người thực hiện", "Giá trị cũ", "Giá trị mới"], data rows với oldValues/newValues được flatten thành string (bỏ qua nested structure), (4) Set response headers: Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, Content-Disposition: attachment; filename="audit_log_{yyyyMMdd_HHmmss}.xlsx", (5) Write workbook to response OutputStream, (6) INSERT AuditLog(EXPORT_AUDIT_LOG, actorId).
+
+**Mapping:** UC-41 / BR-32
+
+### FR-60 - Badge màu hành động theo nhóm
+
+WHEN hiển thị danh sách Nhật ký Kiểm toán trong audit-log-list.jsp, THE system SHALL render badge màu cho cột actionType theo nhóm: (1) **Nhóm Tạo mới** (màu xanh lá - green): CREATE, CREATE_USER, CREATE_BOOK, BULK_USER_IMPORT, BOOK_IMPORT, (2) **Nhóm Cập nhật** (màu vàng - yellow/warning): UPDATE, UPDATE_USER, UPDATE_BOOK, UPDATE_BOOK_COPY, (3) **Nhóm Xóa/Hủy** (màu đỏ - red): DELETE, DELETE_USER, CANCEL_RESERVATION, CANCEL_EXPIRED_RESERVATION, (4) **Nhóm Giao dịch** (màu xanh dương - blue): CHECKOUT, CHECKIN, RESERVE_BOOK_ONLINE, RENEW_BOOK_ONLINE, (5) **Nhóm Bảo mật** (màu tím - purple): LOGIN, LOGOUT, CHANGE_PASSWORD, LOCK_ACCOUNT, UNLOCK_ACCOUNT, (6) **Nhóm Thanh toán** (màu cam - orange): CASH_PAYMENT, SEPAY_WEBHOOK_PAYMENT, CREATE_FINE_OVERDUE, (7) **Mặc định** (màu xám - gray): các action khác.
+
+**Mapping:** UC-40
+
+### FR-61 - Quét quá hạn tự động với cron job
+
+WHEN OverdueProcessor chạy định kỳ (scheduled 00:00 AM hằng đêm) hoặc TriggerOverdueServlet được admin kích hoạt thủ công, THE system SHALL: (1) Truy vấn BorrowRecordDAO.findOverdueBorrows(NOW()) để lấy tất cả BorrowRecord WHERE status='borrowed' AND endDate < NOW(), (2) Ghi log số lượng overdue tìm được, (3) Với mỗi overdue BorrowRecord: gọi FR-62 để xử lý phạt + khóa tài khoản, (4) Đếm số lượng: processedRecords, lockedUsers, emailsSent, (5) INSERT AuditLog(RUN_OVERDUE_PROCESSOR, actorId=NULL, details={processedRecords, lockedUsers}), (6) Trả về JSON {success:true, processedRecords, lockedUsers, emailsSent} cho admin monitor.
+
+**Mapping:** UC-42 / BR-35
+
+### FR-62 - Xử lý phạt quá hạn và khóa tài khoản tức thì
+
+For each overdue BorrowRecord found trong FR-61, THE system SHALL mở DB Transaction: (1) Tính số ngày trễ = DATEDIFF(NOW(), BorrowRecord.endDate), (2) Lấy FINE_RATE_PER_DAY từ SystemConfig (default 5000 VNĐ), tính amount = daysLate × FINE_RATE_PER_DAY, (3) INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue', createdAt=NOW()), (4) UPDATE BorrowRecord SET status='overdue' WHERE borrowRecordId=?, (5) **Khóa tài khoản tức thì theo BR-22**: INSERT UserLockReason(userId, reason='unpaid', createdAt=NOW()), UPDATE User SET status='locked' WHERE userId=?, (6) INSERT AuditLog(CREATE_FINE_OVERDUE, actorId=NULL), (7) conn.commit(), (8) EmailService.enqueue(OVERDUE_NOTICE, userId, templateData={bookTitle, daysLate, fineAmount}) [async, ngoài transaction].
+
+**Mapping:** UC-42 / BR-22, BR-35
+
+### FR-63 - Gửi email thông báo trễ hạn async
+
+WHEN FR-62 hoàn tất thành công xử lý DB cho một overdue BorrowRecord, THE system SHALL gọi EmailService.sendOverdueNotificationEmail(userId, fineId) [async]. EmailService sẽ: (1) Lấy DocumentTemp WHERE tempName='OVERDUE_NOTICE', (2) Render template với biến {userName, bookTitle, dueDate, daysLate, fineAmount, libraryContactInfo}, (3) Enqueue email vào background worker (ExecutorService) với subject="Thông báo sách quá hạn - {bookTitle}", (4) Background worker gửi email qua SMTP/SendGrid, (5) Ghi log email sent. WHERE email fail: retry 3 lần, sau đó ghi error log.
+
+**Mapping:** UC-42
+
+### FR-64 - Hiển thị Lịch sử Phạt của Độc giả với Payment status
+
+WHEN MemberFinesServlet.doGet() được gọi (đã xử lý ở FR-65 - tự động tạo Payment), THE system SHALL: (1) FineDAO.findByUserId(userId) ORDER BY createdAt DESC → lấy tất cả Fine, (2) Với mỗi Fine: LEFT JOIN Payment để lấy {paymentId, paymentStatus, paidAt, method, transactionReference}, (3) Tính toán flags: isPaid = (Fine.status='paid'), hasPendingPayment = (paymentStatus='pending'), (4) Tính totalUnpaid = SUM(amount WHERE status='unpaid'), unpaidCount = COUNT(*), (5) Forward sang fines.jsp với {fines[], totalUnpaid, unpaidCount, sePayConfig}. JSP hiển thị: Fine unpaid → button "Thanh toán Online" (nếu có paymentId) hoặc "Thanh toán tại quầy", Fine paid → badge "Đã thanh toán" + paidAt + method.
+
+**Mapping:** UC-38 / BR-75
+
+### FR-65 - Tạo mã QR thanh toán SePay tự động
+
+WHEN MemberFinesServlet.doGet() được gọi, THE system SHALL: (1) Lấy danh sách Fine của userId từ FineDAO, (2) Với mỗi Fine có status='unpaid' VÀ paymentId=NULL, TỰ ĐỘNG INSERT Payment(fineId, userId, amount=Fine.amount, method='BankTransfer', status='pending', createdAt=NOW()), (3) Tính totalUnpaid = SUM(Fine.amount WHERE status='unpaid'), (4) Lấy cấu hình SePay từ SystemConfigDAO: SEPAY_ACCOUNT_NUMBER, SEPAY_BANK_CODE, SEPAY_ACCOUNT_NAME, (5) Forward sang JSP với dữ liệu {fines, totalUnpaid, unpaidCount, SePay config}. JSP sẽ sinh mã VietQR cho từng khoản phạt với nội dung="LMSPF{paymentId}".
+
+**Mapping:** UC-39 / BR-80
+
+### FR-66 - Xử lý Webhook thanh toán SePay với Parse JSON thủ công
+
+WHEN SePayWebhookServlet.doPost() nhận webhook, THE system SHALL: (1) **Xác thực tùy chọn**: IF SystemConfig có SEPAY_API_KEY, đọc header Authorization, WHERE không khớp: trả 401 Unauthorized, (2) **Parse JSON thủ công** (không dùng thư viện): Đọc request body, dùng regex tìm "content":"([^"]*)", "code":"([^"]*)", "transferAmount":([0-9.]+), "referenceCode":"([^"]*)", (3) Dùng regex LMSPF(\\d+) tìm paymentId trong content+code, WHERE không tìm thấy: trả JSON {success:false, message:"Không tìm thấy mã thanh toán"}, (4) **Mở DB Transaction** (conn.setAutoCommit(false)): PaymentDAO.updatePaymentOnlineSuccess(paymentId, transactionReference, transferAmount), FineDAO.updateStatusToPaid(fineId), SELECT userId FROM Fine WHERE fineId=?, UserLockReasonDAO.deleteLockReason(userId, 'unpaid'), countLockReasonsByUserId(userId) → IF = 0: UserDAO.updateStatusToActive(userId), AuditLogDAO.insert(SEPAY_WEBHOOK_PAYMENT, userId=NULL, entityName='Payment', entityId=paymentId), conn.commit(), (5) **Gửi email xác nhận** (ngoài transaction): EmailService.sendPaymentConfirmationEmail(paymentId, userId, "BankTransfer") [async], (6) Trả JSON {success:true, message:"Thanh toán thành công"}.
+
+**Mapping:** UC-39 / BR-25, BR-80
+
+### FR-67 - Quét đơn đặt trước sẵn sàng quá hạn theo BR-36
+
+WHEN ReservationExpirationProcessor chạy định kỳ (mỗi 1 giờ) hoặc TriggerReservationExpirationServlet được admin kích hoạt thủ công, THE system SHALL: (1) Lấy RESERVATION_HOLD_DAYS từ SystemConfig (default 3 ngày), (2) Truy vấn ReservationDAO.findExpiredReadyPickup(NOW()) để lấy tất cả Reservation WHERE status='readypickup' AND endDate < NOW(), (3) Ghi log số lượng đơn hết hạn tìm được, (4) Với mỗi expired reservation: gọi FR-68 để xử lý cancel + đôn hàng chờ, (5) Trả về JSON {processedCount, cancelledCount, reassignedCount, emailsSent}.
+
+**Mapping:** UC-43 / BR-36
+
+### FR-68 - Hủy đặt trước và đôn hàng chờ tự động
+
+For each expired Reservation found trong FR-67, THE system SHALL mở DB Transaction: (1) UPDATE Reservation SET status='cancelled', cancelledAt=NOW(), cancelReason='Expired - không nhận sách trong thời hạn' WHERE reservationId=?, (2) **Kiểm tra hàng chờ**: ReservationDAO.findNextInQueue(bookId) WHERE queuePosition=1 AND status='pending', (3) **PHÂN NHÁNH A - Có người chờ tiếp theo**: UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=expired.bookCopyId (kế thừa bản sao), endDate=NOW()+RESERVATION_HOLD_DAYS, UPDATE BookCopy SET status='reserved' (giữ nguyên), EmailService.enqueue(RESERVATION_READY, nextUserId) [async], **PHÂN NHÁNH B - Không có người chờ**: UPDATE BookCopy SET status='available', UPDATE Book SET availableQuantity = availableQuantity + 1, (4) INSERT AuditLog(CANCEL_EXPIRED_RESERVATION), (5) conn.commit(), (6) EmailService.enqueue(RESERVATION_EXPIRED_NOTICE, originalUserId) [async].
+
+**Mapping:** UC-43 / BR-36
+
+### FR-69 - Gửi câu hỏi Chatbot với RAG
+
+WHEN AiChatbotServlet.doPost() nhận JSON {message:"..."}, THE system SHALL: (1) Validate message không rỗng và ≤ 500 ký tự, (2) Lấy chatHistory từ HttpSession (nếu chưa có: khởi tạo empty list), (3) Gọi AiChatbotService.processMessage(message, chatHistory): Service thực hiện RAG (Retrieval-Augmented Generation): (a) Query relevant context từ DB: NotificationDAO.findPinned() (nội quy), SystemConfigDAO.getAllPublic() (chính sách mượn/phạt), BookDAO.findPopular() (sách hot), (b) Build prompt với context + chatHistory (latest 5 messages) + new message, (c) Gọi Gemini API với prompt, (d) Parse response từ Gemini, (4) Append {role:"user", content:message} và {role:"assistant", content:reply} vào chatHistory, (5) Lưu chatHistory vào session, (6) Trả JSON {status:"success", reply, history}.
+
+**Mapping:** UC-36 / BR-37
+
+### FR-70 - Lấy lịch sử Chat từ session
+
+WHEN AiChatbotServlet.doGet() được gọi, THE system SHALL: (1) Lấy chatHistory từ HttpSession (attribute name: "chatHistory"), (2) WHERE session không tồn tại hoặc chatHistory = NULL: trả JSON {status:"success", history:[]}, (3) WHERE chatHistory tồn tại: trả JSON {status:"success", history:[{role, content, timestamp}...]} với tối đa 50 messages gần nhất, (4) Không ghi AuditLog (read-only operation).
+
+**Mapping:** UC-37 / BR-74
+
+### FR-71 - Hiển thị Dashboard Thủ thư với stats hoạt động
+
+WHEN LibrarianDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu: (1) activeBorrowsCount = BorrowRecordDAO.countAllActiveBorrows(), (2) todayCheckoutsCount = BorrowRecordDAO.countTodayCheckouts(), (3) todayCheckinsCount = BorrowRecordDAO.countTodayCheckins(), (4) overdueCount = BorrowRecordDAO.countAllOverdue(), (5) recentCheckouts = BorrowRecordDAO.findRecentCheckouts(limit=10) JOIN User, Book, (6) recentCheckins = BorrowRecordDAO.findRecentCheckins(limit=10), (7) inventoryStats = {totalBooks: BookCopyDAO.countAll(), available: COUNT(status='available'), borrowed: COUNT(status='borrowed'), unavailable: COUNT(status='unavailable'), byCondition: {good, damaged, lost}}, (8) Forward sang librarian/dashboard.jsp với tất cả stats + charts (hoạt động theo giờ trong ngày).
+
+**Mapping:** UC-44 / BR-38
+
+### FR-72 - Hiển thị Dashboard Quản lý với KPI
+
+WHEN ManagerDashboardServlet.doGet() được gọi với filters {startDate, endDate, groupBy}, THE system SHALL: (1) **borrowTrends** = ReportDAO.getBorrowTrendsByPeriod(startDate, endDate, groupBy='day'|'week'|'month') → {date, checkoutCount, checkinCount, activeCount}, (2) **financialTrends** = ReportDAO.getFinancialTrendsByPeriod() → {date, finesCollected, finesPending, cashPayments, onlinePayments}, (3) **inventoryStats** = InventoryReportDAO.getCurrentInventoryStats() → {totalBooks, availableBooks, borrowedBooks, damagedBooks, lostBooks, topBorrowedBooks[], lowStockBooks[]}, (4) **alerts** = {overdueCount, expiredReservationsCount, unpaidFinesCount, incidentsOpenCount}, (5) Forward sang manager/dashboard.jsp với charts library (Chart.js) render trend graphs.
+
+**Mapping:** UC-45 / BR-38
+
+### FR-73 - Hiển thị Dashboard Admin với tổng quan hệ thống
+
+WHEN AdminDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu toàn hệ thống: (1) **totalBooks** = BookCopyDAO.count(null, null, null) — tổng số bản sao vật lý, (2) **totalMembers** = UserDAO.countAllUsers("", "ALL", "ALL") — tổng số tài khoản, (3) **unpaidFines** = FineDAO.getTotalUnpaidFines() — tổng tiền phạt chưa thu (VNĐ), (4) **pendingPayments** = PaymentDAO.countPendingPayments() — số giao dịch đang chờ, (5) **recentUsers** = UserService.getUserList("", "ALL", "ALL", page=1, pageSize=5) — 5 user mới nhất, (6) **recentAuditLogs** = AuditLogDAO.findWithFilters(null, page=1, pageSize=5) — 5 log gần nhất, (7) Forward sang admin/dashboard.jsp. Dashboard có quick links: "Quản lý người dùng", "Xem Audit Log", "Cấu hình hệ thống".
+
+**Mapping:** UC-46 / BR-38
+
+### FR-74 - Hiển thị Cấu hình Quan trọng trên Admin Dashboard
+
+WHEN AdminDashboardServlet.doGet() render dashboard, THE system SHALL đọc SystemConfigCache để lấy các cấu hình quan trọng: (1) STUDENT_MAX_BORROW_DAYS (số ngày mượn SV), (2) LECTURER_MAX_BORROW_DAYS (số ngày mượn GV), (3) FINE_RATE_PER_DAY (tiền phạt/ngày VNĐ), (4) RESERVATION_HOLD_DAYS (số ngày giữ sách đặt trước), (5) MAX_EXTENSION_COUNT (số lần gia hạn tối đa), (6) STUDENT_MAX_BORROW_BOOKS (hạn mức sách SV), (7) LECTURER_MAX_BORROW_BOOKS (hạn mức sách GV). Hiển thị trong panel "Cấu hình Hệ thống Quan trọng" với button "Chỉnh sửa" → redirect sang /admin/system-config. WHERE cache miss: load từ DB và populate cache.
+
+**Mapping:** UC-46 / BR-38
+
+### FR-75 - Hiển thị Trang Chủ Công Khai với thông báo ghim
+
+WHEN NewsServlet.doGet() hoặc user truy cập index.jsp, THE system SHALL: (1) NotificationDAO.findPinnedNotifications() WHERE isPinned=true AND status='published' ORDER BY createdAt DESC LIMIT 5 → lấy thông báo quan trọng được ghim, (2) NotificationDAO.findRecentNews(limit=10) WHERE type='news' AND status='published' ORDER BY createdAt DESC → tin tức mới nhất, (3) BookDAO.findFeaturedBooks(limit=6) WHERE bookStatus='available' ORDER BY viewCount DESC → sách nổi bật, (4) Render index.jsp với sections: Hero banner (giới thiệu thư viện), Pinned notifications carousel, Recent news cards, Featured books grid, Quick links (Tra cứu sách, Đăng nhập, Xem nội quy).
+
+**Mapping:** UC-47 / BR-76
+
+### FR-76 - Hiển thị Nội Quy Thư Viện chi tiết
+
+WHEN user hoặc guest truy cập trang policies.jsp hoặc services.jsp, THE system SHALL hiển thị nội dung đầy đủ: (1) **Chính sách mượn trả**: Số ngày mượn theo role (STUDENT_MAX_BORROW_DAYS, LECTURER_MAX_BORROW_DAYS từ SystemConfig), Hạn mức sách (STUDENT_MAX_BORROW_BOOKS, LECTURER_MAX_BORROW_BOOKS), Quy định gia hạn (MAX_EXTENSION_COUNT, RENEWAL_MIN_DAYS_BEFORE_DUE), Quy định đặt trước (RESERVATION_HOLD_DAYS), (2) **Chính sách tiền phạt**: Phạt trễ hạn (FINE_RATE_PER_DAY VNĐ/ngày), Phạt sách hư hỏng/mất (theo giá sách), Hình thức thanh toán (tiền mặt tại quầy, online qua VietQR), (3) **Quyền lợi và nghĩa vụ**: Quyền của độc giả, Nghĩa vụ bảo quản sách, Xử lý vi phạm, (4) **Hướng dẫn sử dụng**: Cách tra cứu sách online, Cách đặt trước và gia hạn, Liên hệ thư viện. Content MUST được format rõ ràng với headings, lists, tables, và được viết hoàn toàn bằng **tiếng Việt**.
+
+**Mapping:** UC-48 / BR-77
+
+### FR-77 - Whitelist validation cho Safe Redirect
+
+WHEN LoginServlet hoặc GoogleLoginServlet nhận query param redirect, THE system SHALL gọi isSafeInternalRedirect(redirect) để kiểm tra: redirect KHÔNG chứa ["://", "..", "\\", "\r", "\n"]. WHERE hợp lệ, redirect theo param. WHERE không hợp lệ, bỏ qua param và redirect theo role mặc định từ getRedirectByRole(role). Whitelist validation ngăn chặn Open Redirect Attack bằng cách chặn: (1) Absolute URLs với protocol ("://"), (2) Path traversal (".."), (3) Windows path separator ("\\"), (4) CRLF injection ("\r", "\n").
+
+**Mapping:** UC-01, UC-21
+
+### FR-78 - Hủy đặt trước trực tuyến
+
+WHEN CancelReservationServlet.doPost() nhận request hủy đặt trước từ Student hoặc Lecturer, THE system SHALL: (1) Lấy reservationId từ param, (2) Gọi OnlineCirculationService.cancelReservation(userId, reservationId) để mở DB Transaction: (a) Đổi status Reservation thành 'cancelled', (b) UPDATE queuePosition của các đơn hàng chờ phía sau trong hàng đợi cho đầu sách đó (trừ đi 1), (c) Ghi log AuditLog(CANCEL_RESERVATION), (3) Redirect về trang my-borrowings kèm success flash message.
+
+**Mapping:** UC-50 / BR-19
+
+### FR-79 - Xem lịch sử mượn trả đầy đủ
+
+WHEN BorrowHistoryServlet.doGet() được gọi, THE system SHALL: (1) Lấy userId từ session, (2) Gọi BorrowRecordDAO.findAllBorrowRecordsByUserId() để JOIN Book và BookCopy lấy toàn bộ lịch sử mượn trả (bao gồm các bản ghi đã trả 'returned', quá hạn 'overdue', đang mượn 'borrowed'), (3) Set attribute và forward sang borrow-history.jsp tương ứng với role.
+
+**Mapping:** UC-49
+
+### FR-80 - Đăng ký đặt trước tại quầy
+
+WHEN DeskReservationServlet.doPost() nhận mã độc giả (memberCode) và mã sách/ISBN (bookIdOrIsbn), THE system SHALL: (1) Ánh xạ memberCode sang userId, (2) Xác định bookId từ ISBN/barcode/bookId, (3) Gọi OnlineCirculationService.reserveBook(userId, bookId, role) trong DB Transaction: thực hiện validate các quy tắc chặn nợ phạt (BR-22), giới hạn số lượng sách (BR-19), sau đó tạo bản ghi Reservation với queuePosition thích hợp, (4) Redirect về desk-dashboard kèm thông báo thành công.
+
+**Mapping:** UC-51 / BR-41
+
+### FR-81 - Xem lịch sử nhập sách hàng loạt
+
+WHEN BookImportHistoryServlet.doGet() được gọi, THE system SHALL tìm theo từ khóa, lọc success/failed, phân trang 20 bản ghi; WHERE có batchId, hệ thống SHALL hiển thị lỗi chi tiết từ BookImportError và forward tới book-import-history.jsp.
+
+**Mapping:** UC-52 / BR-27
+
+### FR-82 - Cấu hình cổng SePay QR
+
+WHEN ManagerPaymentConfigServlet.doGet() được gọi, THE system SHALL truy vấn từ SystemConfigDAO tất cả các cấu hình có prefix `SEPAY_` để hiển thị lên giao diện quản lý. WHEN doPost() nhận key và value mới, hệ thống SHALL gọi SystemConfigService.update() để cập nhật giá trị vào DB, ghi Audit Log và reload cache config.
+
+**Mapping:** UC-53 / BR-31, BR-53, BR-80
+
+### FR-83 - Xem báo cáo hiệu suất nhân viên
+
+WHEN StaffPerformanceServlet.doGet() được gọi với month và year chọn lựa (mặc định tháng/năm hiện tại), THE system SHALL: (1) Gọi StaffPerformanceDAO.getStaffPerformance() để tính toán số lần Checkout, Checkin, và tổng tiền phạt đã thu của từng tài khoản LIBRARIAN trong khoảng thời gian đó, (2) Gọi getMonthTotals() lấy tổng toàn hệ thống, (3) Forward sang staff-performance.jsp để hiển thị bảng dữ liệu.
+
+**Mapping:** UC-54 / BR-52
+
+### FR-84 - Xem cấu hình nhóm library của Manager
+
+WHEN SystemConfigServlet.doGet() được gọi bởi MANAGER, THE system SHALL truy vấn SystemConfigDAO.findByGroup(conn, "library") để lấy danh sách các cấu hình chính sách mượn/trả và đặt trước, sau đó forward sang manager/system-config-list.jsp.
+
+**Mapping:** UC-32 / BR-31, BR-40
+
+### FR-85 - Xem toàn bộ cấu hình của Admin
+
+WHEN AdminSystemConfigServlet.doGet() được gọi bởi ADMIN, THE system SHALL lấy toàn bộ cấu hình hệ thống từ DB, hỗ trợ lọc theo nhóm thông qua query parameter 'group', sau đó forward sang admin/system-config-list.jsp.
+
+**Mapping:** UC-32 / BR-31, BR-40
+
+### FR-86 - Cập nhật cấu hình hệ thống
+
+WHEN SystemConfigServlet hoặc AdminSystemConfigServlet nhận POST cập nhật, THE system SHALL gọi SystemConfigService.update(key, value, actorId, role) để: (1) Kiểm tra key có trong whitelist (KEY_TYPES), (2) Xác thực giá trị hợp lệ theo kiểu dữ liệu quy định, (3) Chặn Manager nếu cố ý sửa các key nhóm khác (ngoại trừ sepay), (4) Thực thi UPDATE câu lệnh SQL, ghi Audit Log và reload cache config.
+
+**Mapping:** UC-33 / BR-30, BR-31, BR-40
+
+### FR-87 - Thêm mới cấu hình whitelist
+
+WHEN Servlet nhận POST thêm mới (action=create), THE system SHALL gọi SystemConfigService.create() để kiểm tra key có trong whitelist và chưa tồn tại trong CSDL. THEN thực hiện INSERT vào bảng SystemConfigurations, ghi Audit Log, và reload cache.
+
+**Mapping:** UC-33 / BR-30, BR-40
+
+### FR-88 - Bảo mật chặn xóa cấu hình
+
+WHEN SystemConfigServlet nhận POST xóa cấu hình (action=delete), THE system SHALL ném ra lỗi ValidationException "Cấm tuyệt đối việc xóa cấu hình khỏi hệ thống" và chặn đứng mọi hoạt động xóa dữ liệu.
+
+**Mapping:** UC-33 / BR-30
+
+### FR-89 - Hiển thị màu badge nhóm cấu hình
+
+WHEN kết xuất danh sách cấu hình trên JSP, THE system SHALL render class CSS tương ứng để tạo badge màu: library=green, fine=yellow, notification=blue, system=gray.
+
+**Mapping:** UC-32 / BR-31
+
+### FR-90 - Phân quyền AuthFilter cấu hình Manager
+
+WHERE người dùng không có vai trò MANAGER cố tình truy cập `/manager/system-config`, THE system SHALL chặn lại tại AuthFilter và trả về lỗi SC_FORBIDDEN (403).
+
+**Mapping:** UC-32 / BR-31
+
+### FR-91 - Phân quyền AuthFilter cấu hình Admin
+
+WHERE người dùng không có vai trò ADMIN cố tình truy cập `/admin/system-config`, THE system SHALL chặn lại tại AuthFilter và trả về lỗi SC_FORBIDDEN (403).
+
+**Mapping:** UC-32 / BR-31
+
+### FR-92 - Chặn sửa đổi chéo nhóm config
+
+WHERE Manager cố ý chỉnh sửa key cấu hình thuộc nhóm system/fine/notification thông qua giả lập request, THE system SHALL phát hiện tại Service layer và trả về lỗi "Bạn không có quyền chỉnh sửa nhóm cấu hình này."
+
+**Mapping:** UC-33 / BR-31
+
+### FR-93 - Khởi động nạp Cache cấu hình
+
+WHEN ứng dụng khởi động (AppContextListener.contextInitialized), THE system SHALL gọi SystemConfigCache.reload() để nạp toàn bộ cặp key-value từ bảng SystemConfigurations vào bộ nhớ ServletContext.
+
+**Mapping:** UC-32 / BR-40
+
+### FR-94 - Đồng bộ cache tức thời khi update
+
+WHEN cập nhật hoặc thêm mới cấu hình thành công, THE system SHALL gọi ngay SystemConfigCache.reload(ctx) để làm mới giá trị lưu trữ trong bộ nhớ RAM, phục vụ các nghiệp vụ mượn trả tức thì.
+
+**Mapping:** UC-33 / BR-30
+
+### FR-95 - Validation kiểu dữ liệu số nguyên dương
+
+WHERE configKey yêu cầu kiểu POSITIVE_INT, THE system SHALL validate value phải parse được thành số nguyên lớn hơn 0; ngược lại ném lỗi ValidationException.
+
+**Mapping:** UC-33 / BR-40
+
+### FR-96 - Validation kiểu dữ liệu số nguyên không âm
+
+WHERE configKey yêu cầu kiểu NON_NEGATIVE_INT, THE system SHALL validate value phải parse được thành số nguyên lớn hơn hoặc bằng 0; ngược lại ném lỗi.
+
+**Mapping:** UC-33 / BR-40
+
+### FR-97 - Validation kiểu dữ liệu số thực không âm
+
+WHERE configKey yêu cầu kiểu NON_NEGATIVE_DECIMAL, THE system SHALL validate value phải parse được thành số thực lớn hơn hoặc bằng 0; ngược lại ném lỗi.
+
+**Mapping:** UC-33 / BR-40
+
+### FR-98 - Hiển thị biểu đồ xu hướng mượn trả
+
+WHEN SystemReportServlet nhận tham số biểu đồ mượn trả, THE system SHALL truy vấn số lượng mượn/trả qua ReportDAO.getBorrowTrendsByPeriod(), phân nhóm theo Ngày/Tháng/Năm, và render dữ liệu dưới dạng JSON để Chart.js hiển thị biểu đồ đường (Line Chart).
+
+**Mapping:** UC-34 / BR-45
+
+### FR-99 - Hiển thị biểu đồ đối chiếu tài chính
+
+WHEN hiển thị báo cáo tài chính, THE system SHALL gọi ReportDAO.getFinancialTrendsByPeriod() để lấy dữ liệu đối chiếu số tiền phạt đã thu và chưa thu, vẽ biểu đồ Pie/Bar Chart.
+
+**Mapping:** UC-34 / BR-43
+
+### FR-100 - Truy xuất báo cáo kho sách và kiểm kê
+
+WHEN hiển thị báo cáo kho sách, THE system SHALL truy vấn kết quả đợt kiểm kê gần nhất từ bảng InventorySession và InventoryItem để tính toán số sách khớp, mất, sai vị trí, đưa ra tỷ lệ thất thoát.
+
+**Mapping:** UC-34 / BR-44
+
+### FR-101 - Tính toán tỷ lệ tăng trưởng
+
+THE system SHALL tự động so sánh số liệu của chu kỳ hiện tại (ngày/tháng/năm) với chu kỳ trước đó để tính tỷ lệ % tăng/giảm và hiển thị nhận xét xu hướng trên giao diện.
+
+**Mapping:** UC-34
+
+### FR-102 - Xuất báo cáo hệ thống ra Excel
+
+WHEN ExportReportServlet.doGet() được gọi, THE system SHALL tập hợp dữ liệu thống kê từ ReportService, ghi vào tệp Excel (.xlsx) thông qua Apache POI và ghi nhận AuditLog(EXPORT_REPORT).
+
+**Mapping:** UC-35
+
+### FR-103 - Giao diện public cho enqueue EmailJob
+
+WHEN bất kỳ dịch vụ nào gọi EmailService.enqueue(job), THE system SHALL đẩy job vào LinkedBlockingQueue và trả về kết quả thành công ngay lập tức để tránh block luồng xử lý chính.
+
+**Mapping:** BR-49
+
+### FR-104 - Khởi chạy Daemon Thread Worker
+
+WHEN ứng dụng bắt đầu khởi động, AppContextListener SHALL khởi tạo một instance duy nhất của EmailWorker, đăng ký là Daemon Thread và kích hoạt luồng xử lý chạy nền.
+
+**Mapping:** BR-48, BR-49
+
+### FR-105 - Consumer lấy Job từ hàng đợi
+
+WHILE EmailWorker hoạt động, Consumer SHALL liên tục lấy job ra bằng phương thức queue.take() (sử dụng cơ chế block để không tiêu hao tài nguyên CPU khi hàng đợi rỗng).
+
+**Mapping:** BR-49
+
+### FR-106 - Tra cứu template động từ DB
+
+WHEN xử lý gửi email, THE system SHALL gọi DocumentTempDAO.findByTempName() để lấy nội dung template mới nhất do Manager chỉnh sửa từ CSDL.
+
+**Mapping:** BR-47, BR-51
+
+### FR-107 - Inject dữ liệu vào Template placeholders
+
+THE system SHALL quét và thay thế tất cả các placeholder có định dạng `{{key}}` trong nội dung mẫu email bằng giá trị tương ứng truyền vào từ EmailJob.placeholders.
+
+**Mapping:** BR-51
+
+### FR-108 - Gửi email qua SMTP JavaMail
+
+THE system SHALL sử dụng thư viện JavaMail để kết nối SMTP Server dựa trên các tham số cấu hình (SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD) lấy từ cache hệ thống.
+
+**Mapping:** BR-46
+
+### FR-109 - Cơ chế tự động Retry gửi lỗi
+
+WHERE xảy ra lỗi kết nối SMTP trong quá trình gửi, Consumer SHALL tự động thử lại sau mỗi EMAIL_RETRY_DELAY_SECONDS giây, tối đa EMAIL_MAX_RETRIES lần.
+
+**Mapping:** BR-48
+
+### FR-110 - Ghi log lỗi khi vượt quá lượt retry
+
+WHERE vượt quá giới hạn retry cho phép mà email vẫn lỗi, Consumer SHALL ghi nhận log lỗi mức SEVERE và tiếp tục xử lý các email khác trong hàng đợi.
+
+**Mapping:** BR-48
+
+### FR-111 - Chặn xóa mẫu email hệ thống
+
+WHEN Manager yêu cầu xóa mẫu email, THE system SHALL kiểm tra danh sách PROTECTED_TEMPLATES. WHERE mẫu email nằm trong danh sách được bảo vệ, hệ thống SHALL ngăn chặn hành động và trả về thông báo lỗi bằng tiếng Việt.
+
+**Mapping:** BR-47
+
+### FR-112 - Bảo mật không ghi log mật khẩu thô
+
+THE system SHALL loại bỏ giá trị của placeholder {{tempPassword}} trước khi ghi log hoặc Audit Log để tránh lộ thông tin nhạy cảm.
+
+**Mapping:** BR-50
+
+### FR-113 - Graceful Shutdown hàng đợi
+
+WHEN ứng dụng Tomcat tắt (contextDestroyed), THE system SHALL set cờ running=false, đợi tối đa 5 giây cho luồng Consumer xử lý hết các email còn lại trong queue trước khi dừng hẳn thread.
+
+**Mapping:** BR-42
+
+### FR-114 - Tích hợp Email Reset Mật Khẩu
+
+WHEN người dùng yêu cầu đặt lại mật khẩu thành công, THE system SHALL đẩy một job gửi email với template 'RESET_PASSWORD' và placeholders chứa userName, tempPassword, resetLink vào hàng đợi.
+
+**Mapping:** BR-49, BR-50, BR-51
+**External Trigger:** UC-03
+
+### FR-115 - Tích hợp Email Sách Sẵn Sàng Nhận
+
+WHEN một bản sao sách được giải phóng hoặc sẵn sàng cho người tiếp theo trong hàng đợi, THE system SHALL đẩy một job gửi email với template 'RESERVATION_READY' và deadline nhận sách vào hàng đợi.
+
+**Mapping:** BR-49, BR-51
+**External Trigger:** UC-16, UC-43
+
+### FR-116 - Tích hợp Email Báo Phạt Quá Hạn
+
+WHEN OverdueProcessor chạy định kỳ phát hiện sách quá hạn, THE system SHALL đẩy job gửi email với template 'OVERDUE_NOTICE' chứa số ngày trễ và tiền phạt ước tính vào hàng đợi.
+
+**Mapping:** BR-49, BR-51
+**External Trigger:** UC-42
+
+### FR-117 - Tích hợp Email Báo Sự Cố Sách
+
+WHEN thủ thư nhận trả sách và phát hiện hỏng/mất sách dẫn đến phạt tiền, THE system SHALL đẩy job gửi email với template 'INCIDENT_FINE_NOTICE' báo chi tiết sự cố và mức phạt vào hàng đợi.
+
+**Mapping:** BR-49, BR-51
+**External Trigger:** UC-19, UC-28
+
+### FR-118 - Tích hợp Email Xác Nhận Thanh Toán
+
+WHEN độc giả thanh toán thành công tiền phạt (qua tiền mặt tại quầy hoặc SePay online), THE system SHALL đẩy job gửi email với template 'PAYMENT_CONFIRMATION' xác nhận hoàn thành nghĩa vụ đóng phạt vào hàng đợi.
+
+**Mapping:** BR-49, BR-51
+**External Trigger:** UC-20, UC-39
+
+### FR-119 - Gửi đề xuất sách mới
+
+WHEN BookSuggestionServlet.doPost(action=create) nhận form đề xuất từ Giảng viên, THE system SHALL: (1) Validate các trường bắt buộc (title, author, reason), (2) Kiểm tra tiêu đề tương tự đã tồn tại (LIKE query), WHERE trùng THE system SHALL hiển thị cảnh báo, (3) INSERT vào bảng BookSuggestion với status='pending', voteCount=1, (4) INSERT bản ghi SuggestionVote tương ứng, (5) INSERT AuditLog(CREATE_SUGGESTION), (6) Redirect kèm thông báo thành công.
+
+**Mapping:** UC-55 / BR-56
+
+### FR-120 - Vote đề xuất sách
+
+WHEN BookSuggestionServlet.doPost(action=vote) nhận request vote từ Giảng viên, THE system SHALL mở DB Transaction: (1) Kiểm tra đề xuất tồn tại và status='pending', (2) Kiểm tra user chưa vote cho đề xuất này (BR-56), WHERE đã vote THE system SHALL trả lỗi "Bạn đã vote cho đề xuất này", (3) INSERT SuggestionVote(suggestionId, userId), (4) UPDATE BookSuggestion SET voteCount = voteCount + 1, (5) conn.commit(), (6) Redirect kèm thông báo.
+
+**Mapping:** UC-55 / BR-56, BR-57
+
+### FR-121 - Hủy vote đề xuất sách
+
+WHEN BookSuggestionServlet.doPost(action=unvote) nhận request hủy vote từ Giảng viên, THE system SHALL mở DB Transaction: (1) Kiểm tra đề xuất tồn tại và status='pending' (BR-57), WHERE status ≠ 'pending' THE system SHALL từ chối, (2) Kiểm tra user đã vote, (3) DELETE bản ghi SuggestionVote, (4) UPDATE BookSuggestion SET voteCount = voteCount - 1, (5) conn.commit().
+
+**Mapping:** UC-55 / BR-57
+
+### FR-122 - Sửa đề xuất sách
+
+WHEN BookSuggestionServlet.doPost(action=edit) nhận request sửa đề xuất, THE system SHALL: (1) Kiểm tra đề xuất thuộc về user hiện tại, (2) Kiểm tra status='pending' VÀ voteCount=1 (BR-58), WHERE không thỏa THE system SHALL từ chối, (3) UPDATE các trường được phép (title, author, publisher, isbn, reason), (4) INSERT AuditLog(UPDATE_SUGGESTION).
+
+**Mapping:** UC-55 / BR-58
+
+### FR-123 - Xóa mềm đề xuất sách
+
+WHEN BookSuggestionServlet.doPost(action=delete) nhận request xóa đề xuất, THE system SHALL: (1) Kiểm tra đề xuất thuộc về user, (2) Kiểm tra status='pending' VÀ voteCount=1 (BR-58), (3) UPDATE BookSuggestion SET status='deleted', (4) DELETE bản ghi SuggestionVote liên quan, (5) INSERT AuditLog(DELETE_SUGGESTION). Soft-delete tuân thủ DATA-01.
+
+**Mapping:** UC-55 / BR-58
+
+### FR-124 - Xem danh sách đề xuất sách - Giảng viên
+
+WHEN BookSuggestionServlet.doGet() được gọi bởi Lecturer, THE system SHALL: (1) Đọc params tìm kiếm (keyword), lọc (status), phân trang (page, pageSize=10), (2) Truy vấn BookSuggestionDAO với JOIN User để lấy tên người đề xuất, (3) Sắp xếp mặc định theo voteCount DESC, (4) Kiểm tra user hiện tại đã vote cho từng đề xuất chưa, (5) Forward sang lecturer/book-suggestions.jsp với danh sách và trạng thái vote.
+
+**Mapping:** UC-55
+
+### FR-125 - Xem danh sách đề xuất sách - Thủ thư
+
+WHEN BookSuggestionServlet.doGet() được gọi bởi Librarian, THE system SHALL: (1) Đọc params tìm kiếm và lọc tương tự FR-124, (2) Truy vấn danh sách đề xuất với JOIN User, (3) Sắp xếp mặc định theo voteCount DESC, (4) Forward sang librarian/book-suggestions.jsp với giao diện quản lý trạng thái.
+
+**Mapping:** UC-56
+
+### FR-126 - Cập nhật trạng thái đề xuất sách
+
+WHEN BookSuggestionServlet.doPost(action=updateStatus) nhận request từ Thủ thư, THE system SHALL: (1) Validate status mới phải thuộc {'pending', 'acknowledged', 'rejected'}, (2) UPDATE BookSuggestion SET status=newStatus, librarianNote=note, reviewedBy=librarianUserId, updatedAt=NOW(), (3) INSERT AuditLog(UPDATE_SUGGESTION_STATUS) ghi oldStatus → newStatus, (4) Redirect kèm thông báo thành công.
+
+**Mapping:** UC-56
+
+### FR-127 - Phân quyền truy cập đề xuất sách
+
+WHERE người dùng không có vai trò LECTURER hoặc LIBRARIAN cố truy cập URL /lecturer/book-suggestions hoặc /librarian/book-suggestions, THE system SHALL chặn tại AuthFilter và trả về lỗi SC_FORBIDDEN (403).
+
+**Mapping:** UC-55, UC-56
+
+### FR-128 - Cảnh báo đề xuất trùng lặp
+
+WHEN Giảng viên nhập tiêu đề sách để đề xuất, THE system SHALL truy vấn BookSuggestionDAO.findByTitleLike(title) để kiểm tra đề xuất tương tự đã tồn tại. WHERE tìm thấy, THE system SHALL hiển thị danh sách đề xuất tương tự kèm gợi ý "Đề xuất tương tự đã tồn tại, bạn có muốn vote thay vì tạo mới?". Giảng viên vẫn được phép tạo nếu xác nhận.
+
+**Mapping:** UC-55
+
+### FR-129 - Transaction an toàn cho Vote
+
+THE system SHALL thực hiện mọi thao tác vote/unvote trong một DB Transaction duy nhất: INSERT/DELETE SuggestionVote VÀ UPDATE voteCount trong BookSuggestion. WHERE xảy ra lỗi giữa chừng, THE system SHALL rollback toàn bộ transaction.
+
+**Mapping:** UC-55 / BR-56, BR-57
+
+### FR-130 - Ẩn nút tương tác theo trạng thái
+
+WHEN hiển thị đề xuất sách trên JSP, THE system SHALL ẩn/hiện các nút tương tác dựa trên trạng thái: (1) Nút "Tôi cũng cần (+1)" chỉ hiện khi status='pending' VÀ user chưa vote, (2) Nút "Hủy vote" chỉ hiện khi status='pending' VÀ user đã vote, (3) Nút "Sửa"/"Xóa" chỉ hiện khi user là người tạo VÀ status='pending' VÀ voteCount=1.
+
+**Mapping:** UC-55 / BR-57, BR-58
+
+### FR-131 - Ghi Audit Log đề xuất sách
+
+THE system SHALL ghi nhận vào bảng AuditLogs cho mọi thao tác CUD trên đề xuất sách: CREATE_SUGGESTION, UPDATE_SUGGESTION, DELETE_SUGGESTION, UPDATE_SUGGESTION_STATUS với đầy đủ oldValues/newValues.
+
+**Mapping:** UC-55, UC-56
+
+### FR-132 - Bảo vệ voteCount không âm
+
+WHERE thao tác hủy vote khiến voteCount giảm dưới 0, THE system SHALL đặt voteCount = 0 (tối thiểu là 0). Đề xuất với voteCount = 0 vẫn tồn tại trong hệ thống để Thủ thư xem xét.
+
+**Mapping:** UC-55 / BR-57
+
+### FR-133 - Xem lịch sử lưu thông bản sao
+
+WHEN BookCirculationHistoryServlet.doGet(bookCopyId) được gọi, THE system SHALL validate bookCopyId, kiểm tra BookCopy tồn tại, truy vấn lịch sử BorrowRecord liên quan theo thứ tự mới nhất, phân trang 15 bản ghi và hiển thị read-only thông tin người mượn, ngày mượn/trả và trạng thái lưu thông; WHERE bookCopyId sai hoặc không tồn tại, THE system SHALL redirect về danh sách bản sao với lỗi tiếng Việt.
+
+**Mapping:** UC-14 / BR-18
+
+### FR-134 - Xuất CSV danh sách đầu sách/bản sao
+
+WHEN BookExportServlet hoặc BookCopyExportServlet được gọi, THE system SHALL xuất tối đa 10.000 dòng theo bộ lọc hiện tại, dùng UTF-8 BOM, escape đúng CSV và trung hòa CSV formula injection cho giá trị bắt đầu bằng =, +, -, @, tab hoặc xuống dòng; WHERE lỗi DB, THE system SHALL log server và hiển thị lỗi thân thiện.
+
+**Mapping:** UC-12, UC-14 / BR-16
+
+---
+
+**Summary:** Total UC: 56 | Total BR: 82 | Total FR: 134
+
+**Version:** 4.1.0 | **Date:** 2026-07-26 | **Project:** Library Management System (LMS) - SWP391

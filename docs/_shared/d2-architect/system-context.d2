@@ -1,0 +1,54 @@
+direction: right
+
+# User Actors
+SinhVien: Sinh viên { shape: person; style.fill: "#E8F0FE" }
+GiangVien: Giảng viên { shape: person; style.fill: "#E8F0FE" }
+ThuThu: Thủ thư { shape: person; style.fill: "#E8F0FE" }
+QuanLy: Quản lý thư viện { shape: person; style.fill: "#E8F0FE" }
+SysAdmin: Quản trị viên { shape: person; style.fill: "#E8F0FE" }
+
+# System Center (LMS)
+LMS: Library Management System {
+  style.fill: "#FFF4E5"
+  style.stroke-width: 2
+  
+  UI: Giao diện Web (JSP/HTML/CSS/JS)
+  Filter: WebFilter (Bảo mật & Phân quyền)
+  Controller: Java Servlet Controllers
+  Service: Business Logic Services
+  DAO: Data Access Objects (JDBC)
+  
+  UI -> Filter: HTTP Requests
+  Filter -> Controller: Đã xác thực
+  Controller -> Service: Xử lý nghiệp vụ
+  Service -> DAO: Thao tác dữ liệu
+}
+
+# External Systems (3rd Party)
+External: Dịch vụ ngoài {
+  style.stroke-dash: 3
+  
+  DB: PostgreSQL (Supabase/Supavisor) { shape: cylinder; style.fill: "#E6F4EA" }
+  Storage: Supabase Storage { shape: cylinder; style.fill: "#E6F4EA" }
+  GoogleOAuth: Google SSO (OAuth2)
+  Email: SendGrid / Gmail (SMTP)
+  Payment: VNPAY / SePay API
+  AI: OpenAI / Gemini API
+  BookAPI: Google Books / Open Library API
+}
+
+# Actor Interactions
+SinhVien -> LMS.UI: "Tra cứu, Mượn trả, Thanh toán, AI Chat"
+GiangVien -> LMS.UI: "Tra cứu, Mượn trả, Thanh toán"
+ThuThu -> LMS.UI: "Quét barcode, Nhập sách, Phạt"
+QuanLy -> LMS.UI: "Cấu hình chính sách, Báo cáo"
+SysAdmin -> LMS.UI: "Quản trị tài khoản, Audit Log"
+
+# System to External Interactions
+LMS.DAO -> External.DB: "Truy vấn JDBC (Port 6543)"
+LMS.Service -> External.Storage: "Upload/Download (REST API)"
+LMS.Service -> External.GoogleOAuth: "Xác thực đăng nhập (OAuth2)"
+LMS.Service -> External.Email: "Gửi OTP, Thông báo (SMTP Port 587)"
+LMS.Service -> External.Payment: "Tạo link & Xác thực thanh toán (REST API)"
+LMS.Service -> External.AI: "Gợi ý sách & Chatbot (REST API)"
+LMS.Service -> External.BookAPI: "Lấy ảnh bìa & Metadata sách (REST API)"
