@@ -43,7 +43,7 @@
                     </section>
 
                     <div class="row g-3">
-                        <%-- Cột bên trái: Drag-and-drop upload file và Bảng xem trước dữ liệu/lỗi --%>
+                        <%-- Cột bên trái: Drag-and-drop upload file và bảng kết quả kiểm tra --%>
                         <section class="col-xl-8">
                             <%-- Biểu mẫu gửi file Excel lên Server để thực hiện bước Validation --%>
                             <div class="bm-side-card mb-3">
@@ -57,7 +57,7 @@
                                 </form>
                             </div>
 
-                            <%-- Khối xem trước kết quả sau khi upload file thành công --%>
+                            <%-- Khối kết quả kiểm tra, hiện sau khi upload tệp thành công --%>
                             <c:if test="${not empty preview}">
                                 <%-- 1. Bảng liệt kê chi tiết các lỗi dữ liệu (nếu có) trên từng dòng/cột của các sheet --%>
                                 <section class="bm-table-card bm-table-card--primary mb-3">
@@ -83,37 +83,21 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive">
-                                        <table class="table table-lms">
-                                            <thead>
-                                                <tr>
-                                                    <th>Trang tính</th>
-                                                    <th>Dòng</th>
-                                                    <th>Cột</th>
-                                                    <th>Kết quả kiểm tra</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <c:forEach var="error" items="${preview.errors}">
-                                                    <tr>
-                                                        <td><strong><c:out value="${error.sheetName}" /></strong></td>
-                                                        <td>${error.rowNumber}</td>
-                                                        <td><c:out value="${empty error.columnName ? 'Cấu trúc' : error.columnName}" /></td>
-                                                        <td class="bm-text-danger"><c:out value="${error.errorMessage}" /></td>
-                                                    </tr>
-                                                </c:forEach>
-                                                <c:if test="${preview.valid}">
-                                                    <tr>
-                                                        <td colspan="4">
-                                                            <div class="bm-empty-state">
-                                                                <span class="material-symbols-outlined">verified</span>
-                                                                <strong>Không phát hiện lỗi</strong>
-                                                                <span>Dữ liệu sẵn sàng để nhập theo nguyên tắc toàn bộ hoặc không.</span>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </c:if>
-                                            </tbody>
-                                        </table>
+                                        <c:choose>
+                                            <c:when test="${preview.valid}">
+                                                <div class="bm-empty-state">
+                                                    <span class="material-symbols-outlined">verified</span>
+                                                    <strong>Không phát hiện lỗi</strong>
+                                                    <span>Dữ liệu sẵn sàng để nhập theo nguyên tắc toàn bộ hoặc không.</span>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:set var="issueRows" value="${preview.errors}" scope="request" />
+                                                <c:set var="issueTone" value="danger" scope="request" />
+                                                <c:set var="issueHeading" value="Cần sửa" scope="request" />
+                                                <jsp:include page="fragments/_book-import-issues.jsp" />
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                 </section>
 
@@ -132,63 +116,14 @@
                                             <span class="bm-badge bm-badge--warning">${preview.skippedBookRows} đầu sách bị bỏ qua</span>
                                         </div>
                                         <div class="table-responsive">
-                                            <table class="table table-lms">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Trang tính</th>
-                                                        <th>Dòng</th>
-                                                        <th>Cột</th>
-                                                        <th>Nội dung cảnh báo</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <c:forEach var="warning" items="${preview.warnings}">
-                                                        <tr>
-                                                            <td><strong><c:out value="${warning.sheetName}" /></strong></td>
-                                                            <td>${warning.rowNumber}</td>
-                                                            <td><c:out value="${empty warning.columnName ? 'Cấu trúc' : warning.columnName}" /></td>
-                                                            <td class="bm-text-warning"><c:out value="${warning.errorMessage}" /></td>
-                                                        </tr>
-                                                    </c:forEach>
-                                                </tbody>
-                                            </table>
+                                            <c:set var="issueRows" value="${preview.warnings}" scope="request" />
+                                            <c:set var="issueTone" value="warning" scope="request" />
+                                            <c:set var="issueHeading" value="Điều gì xảy ra" scope="request" />
+                                            <jsp:include page="fragments/_book-import-issues.jsp" />
                                         </div>
                                     </section>
                                 </c:if>
 
-                                <%-- 2. Bảng xem trước 10 dòng đầu tiên của sheet Bản sao để người dùng kiểm đối --%>
-                                <section class="bm-table-card bm-table-card--primary">
-                                    <div class="bm-table-card__header">
-                                        <h3 class="bm-section-title mb-1">Xem trước bản sao</h3>
-                                        <p class="bm-section-note mb-0">Hiển thị tối đa 10 dòng đầu tiên trong trang tính Bản sao sách.</p>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-lms">
-                                            <thead>
-                                                <tr>
-                                                    <th>Dòng</th>
-                                                    <th>ISBN</th>
-                                                    <th>Mã vạch</th>
-                                                    <th>Vị trí</th>
-                                                    <th>Khởi tạo</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <c:forEach var="row" items="${preview.bookCopies}" varStatus="loop">
-                                                    <c:if test="${loop.index < 10}">
-                                                        <tr>
-                                                            <td>${row.rowNumber}</td>
-                                                            <td><c:out value="${row.isbn}" /></td>
-                                                            <td><strong><c:out value="${row.barcode}" /></strong></td>
-                                                            <td><c:out value="${row.location}" /></td>
-                                                            <td><span class="bm-badge bm-badge--success">Tốt · Sẵn sàng</span></td>
-                                                        </tr>
-                                                    </c:if>
-                                                </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </section>
                             </c:if>
                         </section>
 
