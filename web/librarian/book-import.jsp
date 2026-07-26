@@ -83,37 +83,21 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive">
-                                        <table class="table table-lms">
-                                            <thead>
-                                                <tr>
-                                                    <th>Trang tính</th>
-                                                    <th>Dòng</th>
-                                                    <th>Cột</th>
-                                                    <th>Kết quả kiểm tra</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <c:forEach var="error" items="${preview.errors}">
-                                                    <tr>
-                                                        <td><strong><c:out value="${error.sheetName}" /></strong></td>
-                                                        <td>${error.rowNumber}</td>
-                                                        <td><c:out value="${empty error.columnName ? 'Cấu trúc' : error.columnName}" /></td>
-                                                        <td class="bm-text-danger"><c:out value="${error.errorMessage}" /></td>
-                                                    </tr>
-                                                </c:forEach>
-                                                <c:if test="${preview.valid}">
-                                                    <tr>
-                                                        <td colspan="4">
-                                                            <div class="bm-empty-state">
-                                                                <span class="material-symbols-outlined">verified</span>
-                                                                <strong>Không phát hiện lỗi</strong>
-                                                                <span>Dữ liệu sẵn sàng để nhập theo nguyên tắc toàn bộ hoặc không.</span>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </c:if>
-                                            </tbody>
-                                        </table>
+                                        <c:choose>
+                                            <c:when test="${preview.valid}">
+                                                <div class="bm-empty-state">
+                                                    <span class="material-symbols-outlined">verified</span>
+                                                    <strong>Không phát hiện lỗi</strong>
+                                                    <span>Dữ liệu sẵn sàng để nhập theo nguyên tắc toàn bộ hoặc không.</span>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:set var="issueRows" value="${preview.errors}" scope="request" />
+                                                <c:set var="issueTone" value="danger" scope="request" />
+                                                <c:set var="issueHeading" value="Cần sửa" scope="request" />
+                                                <jsp:include page="fragments/_book-import-issues.jsp" />
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                 </section>
 
@@ -132,26 +116,10 @@
                                             <span class="bm-badge bm-badge--warning">${preview.skippedBookRows} đầu sách bị bỏ qua</span>
                                         </div>
                                         <div class="table-responsive">
-                                            <table class="table table-lms">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Trang tính</th>
-                                                        <th>Dòng</th>
-                                                        <th>Cột</th>
-                                                        <th>Nội dung cảnh báo</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <c:forEach var="warning" items="${preview.warnings}">
-                                                        <tr>
-                                                            <td><strong><c:out value="${warning.sheetName}" /></strong></td>
-                                                            <td>${warning.rowNumber}</td>
-                                                            <td><c:out value="${empty warning.columnName ? 'Cấu trúc' : warning.columnName}" /></td>
-                                                            <td class="bm-text-warning"><c:out value="${warning.errorMessage}" /></td>
-                                                        </tr>
-                                                    </c:forEach>
-                                                </tbody>
-                                            </table>
+                                            <c:set var="issueRows" value="${preview.warnings}" scope="request" />
+                                            <c:set var="issueTone" value="warning" scope="request" />
+                                            <c:set var="issueHeading" value="Điều gì xảy ra" scope="request" />
+                                            <jsp:include page="fragments/_book-import-issues.jsp" />
                                         </div>
                                     </section>
                                 </c:if>
