@@ -43,7 +43,7 @@
                     </section>
 
                     <div class="row g-3">
-                        <%-- Cột bên trái: Drag-and-drop upload file và Bảng xem trước dữ liệu/lỗi --%>
+                        <%-- Cột bên trái: Drag-and-drop upload file và bảng kết quả kiểm tra --%>
                         <section class="col-xl-8">
                             <%-- Biểu mẫu gửi file Excel lên Server để thực hiện bước Validation --%>
                             <div class="bm-side-card mb-3">
@@ -57,7 +57,7 @@
                                 </form>
                             </div>
 
-                            <%-- Khối xem trước kết quả sau khi upload file thành công --%>
+                            <%-- Khối kết quả kiểm tra, hiện sau khi upload tệp thành công --%>
                             <c:if test="${not empty preview}">
                                 <%-- 1. Bảng liệt kê chi tiết các lỗi dữ liệu (nếu có) trên từng dòng/cột của các sheet --%>
                                 <section class="bm-table-card bm-table-card--primary mb-3">
@@ -124,39 +124,6 @@
                                     </section>
                                 </c:if>
 
-                                <%-- 2. Bảng xem trước 10 dòng đầu tiên của sheet Bản sao để người dùng kiểm đối --%>
-                                <section class="bm-table-card bm-table-card--primary">
-                                    <div class="bm-table-card__header">
-                                        <h3 class="bm-section-title mb-1">Xem trước bản sao</h3>
-                                        <p class="bm-section-note mb-0">Hiển thị tối đa 10 dòng đầu tiên trong trang tính Bản sao sách.</p>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-lms">
-                                            <thead>
-                                                <tr>
-                                                    <th>Dòng</th>
-                                                    <th>ISBN</th>
-                                                    <th>Mã vạch</th>
-                                                    <th>Vị trí</th>
-                                                    <th>Khởi tạo</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <c:forEach var="row" items="${preview.bookCopies}" varStatus="loop">
-                                                    <c:if test="${loop.index < 10}">
-                                                        <tr>
-                                                            <td>${row.rowNumber}</td>
-                                                            <td><c:out value="${row.isbn}" /></td>
-                                                            <td><strong><c:out value="${row.barcode}" /></strong></td>
-                                                            <td><c:out value="${row.location}" /></td>
-                                                            <td><span class="bm-badge bm-badge--success">Tốt · Sẵn sàng</span></td>
-                                                        </tr>
-                                                    </c:if>
-                                                </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </section>
                             </c:if>
                         </section>
 

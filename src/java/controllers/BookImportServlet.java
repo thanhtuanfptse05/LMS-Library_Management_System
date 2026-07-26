@@ -79,7 +79,7 @@ public class BookImportServlet extends HttpServlet {
                             + " đầu sách đã tồn tại sẽ được bỏ qua. Hãy xem phần cảnh báo trước khi xác nhận.");
                 } else if (preview.isValid()) {
                     session.setAttribute("successMessage",
-                            "Tệp hợp lệ. Hãy kiểm tra phần xem trước và xác nhận import.");
+                            "Tệp hợp lệ, không phát hiện lỗi nào. Hãy xác nhận để nhập dữ liệu.");
                 } else {
                     session.setAttribute("errorMessage",
                             "Tệp có " + preview.getErrors().size() + " lỗi. Không có dữ liệu sách nào được lưu.");
