@@ -146,12 +146,15 @@ public class BookImportServlet extends HttpServlet {
             Sheet books = workbook.createSheet("Books");
             writeHeader(books, BookImportWorkbookReader.BOOK_HEADERS);
             Row book = books.createRow(1);
-            String[] bookExample = {"9786040000001", "Lập trình Java", "Nguyễn Văn A", "NXB Giáo dục",
+            // ISBN mẫu phải qua được IsbnValidator, nếu không thủ thư tải tệp mẫu về rồi
+            // tải lên ngay sẽ nhận lỗi "ISBN không hợp lệ" dù chưa sửa gì.
+            // 978-604 là dải ISBN của Việt Nam; chữ số cuối là số kiểm tra.
+            String[] bookExample = {"9786040000002", "Lập trình Java", "Nguyễn Văn A", "NXB Giáo dục",
                 "2026", "120000", "Công nghệ thông tin;Giáo trình", "Java;Lập trình"};
             writeValues(book, bookExample);
             Sheet copies = workbook.createSheet("BookCopies");
             writeHeader(copies, BookImportWorkbookReader.COPY_HEADERS);
-            writeValues(copies.createRow(1), new String[]{"9786040000001", "BC-000001", "Kho A · Kệ A01"});
+            writeValues(copies.createRow(1), new String[]{"9786040000002", "BC-000001", "Kho A · Kệ A01"});
             workbook.write(output);
         }
     }
