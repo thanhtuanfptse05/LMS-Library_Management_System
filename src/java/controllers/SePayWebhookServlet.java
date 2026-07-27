@@ -56,28 +56,7 @@ public class SePayWebhookServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        // Debug endpoint: GET /api/sepay-webhook?test=LMSPF19
-        // Kiểm tra nhanh payment code parsing không cần SePay gửi webhook thật.
-        String testCode = request.getParameter("test");
-        response.setContentType("application/json;charset=UTF-8");
-
-        if (testCode != null && !testCode.isEmpty()) {
-            Matcher m = PAYMENT_CODE_PATTERN.matcher(testCode);
-            if (m.find()) {
-                int pid = Integer.parseInt(m.group(1));
-                out(response, "{\"matched\":true,\"paymentId\":" + pid
-                        + ",\"input\":\"" + testCode + "\"}");
-            } else {
-                out(response, "{\"matched\":false,\"input\":\"" + testCode
-                        + "\",\"pattern\":\"LMSPF(\\\\d+) case-insensitive\"}");
-            }
-            return;
-        }
-
-        // Hướng dẫn sử dụng debug
-        out(response, "{\"info\":\"SePay Webhook endpoint\","
-                + "\"debug\":\"GET ?test=LMSPF19 to test regex\","
-                + "\"post\":\"POST JSON body to process payment\"}");
+       
     }
 
     private void out(HttpServletResponse response, String json) throws IOException {
