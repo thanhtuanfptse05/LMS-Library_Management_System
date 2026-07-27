@@ -1,5 +1,13 @@
 # CHANGELOG.md — Quản lý Luân chuyển tại quầy
 
+## [1.3.0] - 2026-07-27
+### Changed
+- **Chuẩn hóa luồng Check-out yêu cầu BẮT BUỘC Reservation trước (BR-23 / FR-35):** Cập nhật toàn bộ spec khớp 100% với mã nguồn `DeskCirculationService.java` hiện tại. Loại bỏ hoàn toàn logic tự động tạo Reservation ảo ngầm trong Check-out. Nếu độc giả chưa có đơn đặt trước, hệ thống chặn giao dịch và báo lỗi yêu cầu Thủ thư dùng chức năng Đặt trước sách tại quầy (`DeskReservationServlet` / UC-51) trước khi tiến hành giao sách.
+- **Cập nhật SPEC.md:** Điều chỉnh BR-23, FR-34, FR-35, FR-36, Error Handling và Acceptance Criteria.
+- **Cập nhật CONTEXT.md:** Điều chỉnh phần Domain Knowledge về kịch bản Giao sách (Check-out).
+- **Cập nhật PLAN.md:** Bổ sung `DeskReservationServlet.java` vào bảng Components và cập nhật Data Flow Check-out.
+- **Cập nhật TASK.md:** Điều chỉnh Task T-F6-02 và bổ sung Task T-F6-08 cho UC-51.
+
 ## [1.2.0] - 2026-07-22
 ### Added
 - **Tự động tạo BookCopyIncident đã kết luận khi check-in hỏng/mất (FR-37 bước 6):** Khi Thủ thư trả sách với condition='damaged' hoặc 'lost', hệ thống tự động INSERT bản ghi `BookCopyIncident` (incidentType=condition, status='resolved', reportedBy/resolvedBy=librarianId, description chứa mã mượn, resolution ghi rõ kết luận tại quầy) trong cùng DB Transaction. Bản ghi sẽ xuất hiện ngay trên trang "Hỏng và mất" để tra cứu và khôi phục hoặc loại khỏi kho nếu là `damaged`.

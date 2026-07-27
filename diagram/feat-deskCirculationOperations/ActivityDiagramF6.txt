@@ -9,7 +9,7 @@ Nối tới: Mũi tên đi tới [Manual Action 2.2].
 Actor: Librarian
 Loại: Manual Action
 Tên Action: Select Desk Operation
-Nội dung Action: Thủ thư lựa chọn nghiệp vụ: Giao sách, Nhận sách, hoặc Thanh toán tiền phạt.
+Nội dung Action: Thủ thư lựa chọn nghiệp vụ: Giao sách, Nhận sách, Đặt trước sách tại quầy, hoặc Thanh toán tiền phạt.
 Nối tới: Mũi tên đi tới [Decision Node 3.3].
 
 [Decision Node 3.3]
@@ -21,8 +21,9 @@ Nối tới:
 Nhánh [Check-out Book]: rẽ tới [Manual Action 4.4].
 Nhánh [Check-in Book]: rẽ tới [Manual Action 4.15].
 Nhánh [Process Cash Payment]: rẽ tới [Manual Action 4.25].
+Nhánh [Register Desk Reservation]: rẽ tới [Manual Action 4.35].
 
-NHÁNH A: GIAO SÁCH (CHECK-OUT & MƯỢN TRỰC TIẾP)
+NHÁNH A: GIAO SÁCH (CHECK-OUT)
 
 [Manual Action 4.4]
 Actor: Librarian
@@ -35,7 +36,7 @@ Nối tới: Mũi tên đi tới [System Action Box 5.5].
 Actor: LMS System
 Loại: System Action Box
 Tên Action: Query User Status And Reservation
-Nội dung Action: Truy vấn bảng [User] để lấy status. Truy vấn bảng UserLockReason tìm các lý do khóa của user này. Truy xuất bảng Reservation tìm yêu cầu đặt trước hợp lệ cho bookId hiện tại.
+Nội dung Action: Truy vấn bảng [User] để lấy status. Truy vấn bảng UserLockReason/Fine tìm nợ phạt. Truy xuất bảng Reservation tìm đơn đặt trước ở trạng thái readypickup cho bookId hiện tại.
 Nối tới: Mũi tên đi tới [Decision Node 6.6].
 
 [Decision Node 6.6]
@@ -44,8 +45,8 @@ Loại: Decision Node
 Tên Action: Validate User Account Status
 Nội dung Action: Kiểm tra người dùng có đang nợ phạt hay không.
 Nối tới:
-Nhánh [Tồn tại reason == 'unpaid' trong UserLockReason]: rẽ tới [System Action Box 7.7].
-Nhánh [status == 'active' AND KHÔNG CÓ reason 'unpaid']: rẽ tới [Decision Node 7.8].
+Nhánh [Tồn tại nợ phạt / reason == 'unpaid']: rẽ tới [System Action Box 7.7].
+Nhánh [status == 'active' AND KHÔNG CÓ nợ phạt]: rẽ tới [Decision Node 7.8].
 
 [System Action Box 7.7]
 Actor: LMS System
@@ -58,46 +59,23 @@ Nối tới: Mũi tên đi tới [Final Node 13.30].
 Actor: LMS System
 Loại: Decision Node
 Tên Action: Evaluate User Reservation
-Nội dung Action: Kiểm tra người dùng có đơn đặt trước với queuePosition = 0 và status = 'readypickup' hay không.
+Nội dung Action: Kiểm tra người dùng có đơn đặt trước với status = 'readypickup' hay không.
 Nối tới:
-Nhánh [No Reservation (Direct Borrow)]: rẽ tới [System Action Box 8.9].
-Nhánh [Has Reservation (queuePosition = 0)]: rẽ tới [System Action Box 11.13].
+Nhánh [No Reservation (Chưa đặt trước)]: rẽ tới [System Action Box 8.9].
+Nhánh [Has Reservation (status = 'readypickup')]: rẽ tới [System Action Box 11.13].
 
 [System Action Box 8.9]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Check Existing Queue
-Nội dung Action: Truy vấn bảng Reservation để xem có user khác đang xếp hàng (status = 'pending' VÀ queuePosition > 0) cho tựa sách này hay không.
-Nối tới: Mũi tên đi tới [Decision Node 9.10].
-
-[Decision Node 9.10]
-Actor: LMS System
-Loại: Decision Node
-Tên Action: Validate Direct Borrow Queue
-Nội dung Action: Phân nhánh quyết định mượn trực tiếp dựa trên dữ liệu hàng chờ.
-Nối tới:
-Nhánh [queuePosition > 0 (Has pending)]: rẽ tới [System Action Box 10.11].
-Nhánh [Queue is Empty]: rẽ tới [System Action Box 10.12].
-
-[System Action Box 10.11]
-Actor: LMS System
-Loại: System Action Box
-Tên Action: Return Queue Exist Error
-Nội dung Action: Hệ thống từ chối và hiển thị lỗi: "Sách đã được người khác đặt trước trong hàng đợi".
+Tên Action: Return Missing Reservation Error
+Nội dung Action: Chặn giao dịch, trả về thông báo lỗi: "Độc giả chưa có đơn đặt mượn sách (Reservation) khả dụng cho đầu sách này. Bắt buộc độc giả hoặc thủ thư phải đăng ký Đặt trước sách trước khi thực hiện giao sách."
 Nối tới: Mũi tên đi tới [Final Node 13.30].
-
-[System Action Box 10.12]
-Actor: LMS System
-Loại: System Action Box
-Tên Action: Create On-site Reservation
-Nội dung Action: Tự động khởi tạo Reservation tại chỗ (queuePosition = 0, status = 'readypickup') để chuẩn hóa luồng cấp phát.
-Nối tới: Mũi tên đi tới [System Action Box 11.13].
 
 [System Action Box 11.13]
 Actor: LMS System
 Loại: System Action Box
 Tên Action: Execute Check-out Transaction
-Nội dung Action: Mở DB Transaction. Insert BorrowRecord (status = 'borrowed', extensionCount = 0). UPDATE Reservation (status = 'fulfilled'). UPDATE BookCopy (status = 'borrowed').
+Nội dung Action: Mở DB Transaction. Insert BorrowRecord (status = 'borrowed', extensionCount = 0). UPDATE Reservation (status = 'fulfilled'). UPDATE BookCopy (status = 'borrowed'). Ghi AuditLog.
 Nối tới: Mũi tên đi tới [System Action Box 12.14].
 
 [System Action Box 12.14]
@@ -213,6 +191,22 @@ Actor: LMS System
 Loại: System Action Box
 Tên Action: Commit And Notify Payment Success
 Nội dung Action: Commit Transaction. Hiển thị thông báo "Duyệt thanh toán thành công". Kèm cảnh báo trạng thái khóa nếu tài khoản vẫn bị khóa bởi lý do khác (adminban/securitybreach).
+Nối tới: Mũi tên đi tới [Final Node 13.30].
+
+NHÁNH D: ĐĂNG KÝ ĐẶT TRƯỚC TẠI QUẦY (DESK RESERVATION - UC-51)
+
+[Manual Action 4.35]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Submit Desk Reservation Request
+Nội dung Action: Thủ thư nhập mã số độc giả (MemberCode) và nhập mã sách/ISBN/barcode chọn Đặt trước thay cho độc giả.
+Nối tới: Mũi tên đi tới [System Action Box 5.36].
+
+[System Action Box 5.36]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Desk Reservation Processing
+Nội dung Action: Mở DB Transaction. Validate nợ phạt (BR-22) và hạn mức mượn/đặt (BR-21). Tạo bản ghi Reservation ở trạng thái readypickup/pending với vị trí hàng chờ phù hợp. Commit Transaction. Hiển thị thông báo đặt trước thành công.
 Nối tới: Mũi tên đi tới [Final Node 13.30].
 
 [Final Node 13.30]
