@@ -1,0 +1,170 @@
+ACTIVITY DIAGRAM — UC-18: DESK CHECK-OUT (GIAO SÁCH TẠI QUẦY)
+Feature: F6 — Desk Circulation Operations
+Version: 1.0 | Ngày tạo: 2026-07-28
+Mô tả: Luồng hoạt động chi tiết cho nghiệp vụ Giao sách tại quầy (Check-out).
+Actors: Librarian, LMS System, Email System
+Business Rules áp dụng: BR-22, BR-23, BR-29
+
+========================================================================
+
+[Initial Node 1.1]
+Actor: Librarian
+Loại: Initial Node
+Tên Action: Start Check-Out Flow
+Nội dung Action: Điểm bắt đầu luồng Giao sách tại quầy. Thủ thư truy cập trang Desk Dashboard và chọn chức năng "Giao sách (Check-out)".
+Nối tới: Mũi tên đi tới [Manual Action 2.1].
+
+[Manual Action 2.1]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Input Member Code And Scan Barcode
+Nội dung Action: Thủ thư nhập mã định danh người mượn (memberCode — studentCode/lecturerCode) và quét barcode của bản sao sách (BookCopy) cần giao. Thủ thư cũng nhập hoặc chọn mã đầu sách (bookId/ISBN) nếu cần.
+Nối tới: Mũi tên đi tới [System Action Box 3.1].
+
+[System Action Box 3.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Validate Input Parameters
+Nội dung Action: Kiểm tra memberCode và barcode không rỗng, không null. Nếu rỗng, trả về thông báo lỗi "Vui lòng nhập đầy đủ mã độc giả và mã vạch sách".
+Nối tới: Mũi tên đi tới [Decision Node 4.1].
+
+[Decision Node 4.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Input Validity
+Nội dung Action: Phân nhánh theo kết quả validate đầu vào.
+Nối tới:
+Nhánh [Input không hợp lệ (rỗng/null)]: rẽ tới [System Action Box 4.2].
+Nhánh [Input hợp lệ]: rẽ tới [System Action Box 5.1].
+
+[System Action Box 4.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Validation Error
+Nội dung Action: Trả về thông báo lỗi: "Vui lòng nhập đầy đủ mã độc giả và mã vạch sách". Hiển thị lại form Check-out.
+Nối tới: Mũi tên đi tới [Final Node 15.1].
+
+[System Action Box 5.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Lookup User By Member Code
+Nội dung Action: Gọi UserLookupDAO.findUserIdByMemberCode(memberCode) để ánh xạ memberCode sang userId. Truy vấn bảng Student (studentCode), Lecturer (lecturerCode) để tìm userId tương ứng.
+Nối tới: Mũi tên đi tới [Decision Node 6.1].
+
+[Decision Node 6.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check User Existence
+Nội dung Action: Kiểm tra kết quả tra cứu userId.
+Nối tới:
+Nhánh [userId == null (Không tìm thấy độc giả)]: rẽ tới [System Action Box 6.2].
+Nhánh [userId != null (Tìm thấy độc giả)]: rẽ tới [System Action Box 7.1].
+
+[System Action Box 6.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return User Not Found Error
+Nội dung Action: Trả về thông báo lỗi: "Không tìm thấy độc giả với mã định danh đã nhập". Hiển thị lại form Check-out.
+Nối tới: Mũi tên đi tới [Final Node 15.1].
+
+[System Action Box 7.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query User Account And Fine Status
+Nội dung Action: Truy vấn bảng "User" để lấy status. Truy vấn bảng Fine tìm các khoản phạt chưa thanh toán (status = 'unpaid'). Truy vấn bảng UserLockReason tìm lý do khóa 'unpaid'.
+Nối tới: Mũi tên đi tới [Decision Node 8.1].
+
+[Decision Node 8.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Validate User Account — Check Unpaid Fines (BR-22)
+Nội dung Action: Kiểm tra người dùng có đang nợ phạt (hasUnpaidFines) hoặc có lý do khóa 'unpaid' trong UserLockReason hay không.
+Nối tới:
+Nhánh [Tồn tại nợ phạt / reason == 'unpaid']: rẽ tới [System Action Box 8.2].
+Nhánh [KHÔNG CÓ nợ phạt]: rẽ tới [System Action Box 9.1].
+
+[System Action Box 8.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Unpaid Fine Lock Error
+Nội dung Action: Chặn giao dịch, trả về thông báo lỗi: "Tài khoản đang nợ phạt, không thể mượn sách cho đến khi thanh toán xong". Hiển thị lại form Check-out.
+Nối tới: Mũi tên đi tới [Final Node 15.1].
+
+[System Action Box 9.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Lookup Book Copy By Barcode
+Nội dung Action: Gọi BookCopyDAO.findByBarcode(barcode) để tra cứu bản sao sách. Lấy thông tin bookCopyId, bookId, status, condition của bản sao.
+Nối tới: Mũi tên đi tới [Decision Node 10.1].
+
+[Decision Node 10.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Check Book Copy Status
+Nội dung Action: Kiểm tra trạng thái bản sao sách có hợp lệ để giao không.
+Nối tới:
+Nhánh [BookCopy == null HOẶC status NOT IN ('available', 'reserved')]: rẽ tới [System Action Box 10.2].
+Nhánh [BookCopy.status IN ('available', 'reserved')]: rẽ tới [System Action Box 11.1].
+
+[System Action Box 10.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Invalid Book Copy Error
+Nội dung Action: Trả về thông báo lỗi: "Bản sao sách không tồn tại hoặc không ở trạng thái có thể giao". Hiển thị lại form Check-out.
+Nối tới: Mũi tên đi tới [Final Node 15.1].
+
+[System Action Box 11.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query Reservation Status (BR-23)
+Nội dung Action: Gọi ReservationDAO.findReadyPickupByUserAndBook(conn, userId, bookId) để kiểm tra đơn đặt trước ở trạng thái 'readypickup' cho đầu sách hiện tại và user hiện tại.
+Nối tới: Mũi tên đi tới [Decision Node 12.1].
+
+[Decision Node 12.1]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Evaluate Reservation Existence (BR-23)
+Nội dung Action: Kiểm tra người dùng có đơn đặt trước với status = 'readypickup' cho đầu sách này hay không.
+Nối tới:
+Nhánh [reservation == null (Chưa có đơn đặt trước)]: rẽ tới [System Action Box 12.2].
+Nhánh [reservation != null (Có đơn đặt trước hợp lệ)]: rẽ tới [System Action Box 13.1].
+
+[System Action Box 12.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Return Missing Reservation Error
+Nội dung Action: Chặn giao dịch, trả về thông báo lỗi: "Độc giả chưa có đơn đặt mượn sách (Reservation) khả dụng cho đầu sách này. Bắt buộc độc giả hoặc thủ thư phải đăng ký Đặt trước sách trước khi thực hiện giao sách."
+Nối tới: Mũi tên đi tới [Final Node 15.1].
+
+[System Action Box 13.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Execute Check-Out Transaction (BR-29)
+Nội dung Action: Mở DB Transaction (conn.setAutoCommit(false)). Thực thi tuần tự:
+  (1) INSERT BorrowRecord (userId, bookCopyId, bookId, status = 'borrowed', startDate = NOW(), endDate = NOW() + LoanDays theo role, extensionCount = 0, createdBy = librarianId).
+  (2) UPDATE Reservation SET status = 'fulfilled', borrowRecordId = borrowRecordId mới WHERE reservationId = reservationId.
+  (3) Nếu Reservation đã gán bookCopyId (bookCopyId != null): UPDATE BookCopy SET status = 'borrowed' (KHÔNG trừ availableQuantity vì đã trừ khi chuyển readypickup). Nếu Reservation chưa gán bookCopyId: gán bookCopyId hiện tại, UPDATE BookCopy SET status = 'borrowed'.
+  (4) INSERT AuditLog (actionType = 'CHECKOUT', entityName = 'BorrowRecord', entityId = borrowRecordId, userId = librarianId).
+  (5) conn.commit().
+Nối tới: Mũi tên đi tới [System Action Box 14.1].
+
+[System Action Box 14.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Send Check-Out Confirmation (Async)
+Nội dung Action: Gửi email thông báo mượn sách thành công kèm thông tin endDate (ngày hẹn trả) cho độc giả. Thực hiện bất đồng bộ qua EmailService.enqueue(CHECKOUT_CONFIRMATION, userId) — chạy ngoài Transaction.
+Nối tới: Mũi tên đi tới [Manual Action 14.2].
+
+[Manual Action 14.2]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Hand Over Book To Reader
+Nội dung Action: Hệ thống hiển thị thông báo "Giao sách thành công" kèm thông tin phiếu mượn (mã phiếu, tên sách, ngày hẹn trả). Thủ thư in biên nhận mượn sách (nếu cần) và giao sách cho độc giả.
+Nối tới: Mũi tên đi tới [Final Node 15.1].
+
+[Final Node 15.1]
+Actor: LMS System
+Loại: Final Node
+Tên Action: End Check-Out Flow
+Nội dung Action: Kết thúc luồng Giao sách tại quầy (UC-18). Quay về trang Desk Dashboard.
+Nối tới: Không có.
