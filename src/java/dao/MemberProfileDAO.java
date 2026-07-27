@@ -48,58 +48,32 @@ public class MemberProfileDAO {
     }
 
     /**
-     * Thực hiện cập nhật hoặc thêm mới hồ sơ thành viên (Upsert).
+     * Cập nhật thông tin hồ sơ cá nhân của thành viên.
      * 
-     * @param profile Đối tượng MemberProfile cần lưu
-     * @return true nếu lưu thành công, ngược lại trả về false
+     * @param profile Đối tượng MemberProfile chứa thông tin cập nhật
+     * @return true nếu cập nhật thành công, ngược lại trả về false
      */
-    public boolean upsertProfile(MemberProfile profile) {
-        boolean exists = false;
-        String checkSql = "SELECT COUNT(*) FROM MemberProfile WHERE userId = ?";
+    public boolean updateProfile(MemberProfile profile) {
+        String updateSql = "UPDATE MemberProfile SET fullName = ?, phoneNumber = ?, gender = ?, dateOfBirth = ? WHERE userId = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(checkSql)) {
-            ps.setInt(1, profile.getUserId());
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next() && rs.getInt(1) > 0) {
-                    exists = true;
-                }
-            }
+             PreparedStatement ps = conn.prepareStatement(updateSql)) {
+            ps.setString(1, profile.getFullName());
+            ps.setString(2, profile.getPhoneNumber());
+            ps.setString(3, profile.getGender());
+            ps.setDate(4, profile.getDateOfBirth());
+            ps.setInt(5, profile.getUserId());
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi kiểm tra sự tồn tại của hồ sơ thành viên theo userId=" + profile.getUserId(), e);
+            LOGGER.log(Level.SEVERE, "Lỗi cập nhật hồ sơ thành viên theo userId=" + profile.getUserId(), e);
             return false;
         }
+    }
 
-        if (exists) {
-            String updateSql = "UPDATE MemberProfile SET fullName = ?, phoneNumber = ?, gender = ?, dateOfBirth = ? WHERE userId = ?";
-            try (Connection conn = DatabaseConnection.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(updateSql)) {
-                ps.setString(1, profile.getFullName());
-                ps.setString(2, profile.getPhoneNumber());
-                ps.setString(3, profile.getGender());
-                ps.setDate(4, profile.getDateOfBirth());
-                ps.setInt(5, profile.getUserId());
-                return ps.executeUpdate() > 0;
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Lỗi cập nhật hồ sơ thành viên theo userId=" + profile.getUserId(), e);
-            }
-        } else {
-            String insertSql = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            try (Connection conn = DatabaseConnection.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(insertSql)) {
-                ps.setInt(1, profile.getUserId());
-                ps.setString(2, profile.getFullName());
-                ps.setString(3, profile.getPhoneNumber());
-                ps.setString(4, profile.getGender());
-                ps.setDate(5, profile.getDateOfBirth());
-                // Ngày bắt đầu mặc định là hôm nay, ngày kết thúc là 1 năm sau nếu không được đặt
-                ps.setDate(6, profile.getStartDate() != null ? profile.getStartDate() : new java.sql.Date(System.currentTimeMillis()));
-                ps.setDate(7, profile.getEndDate() != null ? profile.getEndDate() : new java.sql.Date(System.currentTimeMillis() + 31536000000L)); // 1 năm
-                return ps.executeUpdate() > 0;
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Lỗi chèn mới hồ sơ thành viên theo userId=" + profile.getUserId(), e);
-            }
-        }
-        return false;
+    /**
+     * Alias giữ tương thích cho upsertProfile.
+     */
+    public boolean upsertProfile(MemberProfile profile) {
+        return updateProfile(profile);
     }
 
     /**
