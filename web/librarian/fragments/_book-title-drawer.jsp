@@ -6,11 +6,9 @@
     <c:forEach var="book" items="${books}">
         <c:set var="drawerCopies" value="${copiesByBookId[book.bookId]}" />
         <c:set var="borrowedCount" value="0" />
-        <c:set var="reservedCount" value="0" />
         <c:set var="incidentCount" value="0" />
         <c:forEach var="copy" items="${drawerCopies}">
             <c:if test="${copy.status == 'borrowed'}"><c:set var="borrowedCount" value="${borrowedCount + 1}" /></c:if>
-            <c:if test="${copy.status == 'reserved'}"><c:set var="reservedCount" value="${reservedCount + 1}" /></c:if>
             <c:if test="${copy.condition == 'damaged' or copy.condition == 'lost'}"><c:set var="incidentCount" value="${incidentCount + 1}" /></c:if>
         </c:forEach>
         <template id="bookDrawerTemplate-${book.bookId}">
@@ -58,7 +56,7 @@
                 <span>Tổng bản sao <strong><fmt:formatNumber value="${book.totalQuantity}" /></strong></span>
                 <span>Sẵn sàng <strong><fmt:formatNumber value="${book.availableQuantity}" /></strong></span>
                 <span>Đang mượn <strong><fmt:formatNumber value="${borrowedCount}" /></strong></span>
-                <span>Đặt trước <strong><fmt:formatNumber value="${reservedCount}" /></strong></span>
+                <span>Đặt trước <strong><fmt:formatNumber value="${book.activeReservationCount}" /></strong></span>
                 <span>Hỏng/mất <strong><fmt:formatNumber value="${incidentCount}" /></strong></span>
             </div>
 
@@ -97,7 +95,7 @@
                                     <c:when test="${copy.removedFromInventory}"><span class="bm-badge bm-badge--neutral">Đã loại khỏi kho</span></c:when>
                                     <c:when test="${copy.status == 'available'}"><span class="bm-badge bm-badge--success">Sẵn sàng</span></c:when>
                                     <c:when test="${copy.status == 'borrowed'}"><span class="bm-badge bm-badge--info">Đang mượn</span></c:when>
-                                    <c:when test="${copy.status == 'reserved'}"><span class="bm-badge bm-badge--warning">Đặt trước</span></c:when>
+                                    <c:when test="${copy.status == 'reserved'}"><span class="bm-badge bm-badge--warning">Giữ riêng</span></c:when>
                                     <c:otherwise><span class="bm-badge bm-badge--neutral">Ngừng lưu thông</span></c:otherwise>
                                 </c:choose>
                             </div>

@@ -101,7 +101,6 @@ public class BookCopyDAO {
         String sql = "SELECT COUNT(*) totalCopies, "
                 + "SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) availableCopies, "
                 + "SUM(CASE WHEN status = 'borrowed' THEN 1 ELSE 0 END) borrowedCopies, "
-                + "SUM(CASE WHEN status = 'reserved' THEN 1 ELSE 0 END) reservedCopies, "
                 + "SUM(CASE WHEN condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) incidentCopies FROM BookCopy";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -111,7 +110,6 @@ public class BookCopyDAO {
                 summary.setTotalCopies(rs.getInt("totalCopies"));
                 summary.setAvailableCopies(rs.getInt("availableCopies"));
                 summary.setBorrowedCopies(rs.getInt("borrowedCopies"));
-                summary.setReservedCopies(rs.getInt("reservedCopies"));
                 summary.setIncidentCopies(rs.getInt("incidentCopies"));
             }
             return summary;

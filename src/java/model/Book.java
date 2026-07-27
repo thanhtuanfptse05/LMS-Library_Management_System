@@ -17,6 +17,7 @@ public class Book {
     private String imagePath;
     private int totalQuantity;
     private int availableQuantity;
+    private int activeReservationCount;
     private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -54,6 +55,8 @@ public class Book {
     public void setTotalQuantity(int totalQuantity) { this.totalQuantity = totalQuantity; }
     public int getAvailableQuantity() { return availableQuantity; }
     public void setAvailableQuantity(int availableQuantity) { this.availableQuantity = availableQuantity; }
+    public int getActiveReservationCount() { return activeReservationCount; }
+    public void setActiveReservationCount(int activeReservationCount) { this.activeReservationCount = activeReservationCount; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public Timestamp getCreatedAt() { return createdAt; }

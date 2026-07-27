@@ -544,6 +544,7 @@ public class BookDAO {
     private void loadRelations(Connection conn, Book book) throws SQLException {
         book.setCategories(loadCategories(conn, book.getBookId()));
         book.setTags(loadTags(conn, book.getBookId()));
+        book.setActiveReservationCount(countActiveReservations(conn, book.getBookId()));
     }
 
     private void loadRelations(Connection conn, List<Book> books) throws SQLException {
@@ -581,6 +582,37 @@ public class BookDAO {
                     tag.setName(rs.getString("name"));
                     tag.setStatus(rs.getString("status"));
                     booksById.get(rs.getInt("bookId")).getTags().add(tag);
+                }
+            }
+        }
+        loadActiveReservationCounts(conn, books, placeholders);
+    }
+
+    private int countActiveReservations(Connection conn, int bookId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Reservation WHERE bookId = ? AND status IN ('pending', 'readypickup')";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
+    }
+
+    private void loadActiveReservationCounts(Connection conn, List<Book> books, String placeholders) throws SQLException {
+        Map<Integer, Book> booksById = new HashMap<>();
+        for (Book book : books) {
+            booksById.put(book.getBookId(), book);
+        }
+        String sql = "SELECT bookId, COUNT(*) AS activeReservationCount FROM Reservation "
+                + "WHERE status IN ('pending', 'readypickup') AND bookId IN (" + placeholders + ") GROUP BY bookId";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            bindBookIds(ps, books);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Book book = booksById.get(rs.getInt("bookId"));
+                    if (book != null) {
+                        book.setActiveReservationCount(rs.getInt("activeReservationCount"));
+                    }
                 }
             }
         }

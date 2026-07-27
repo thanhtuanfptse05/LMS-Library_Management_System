@@ -5,11 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const editModal = document.querySelector('#editBookModal[data-auto-open="true"]');
-    if (editModal && window.bootstrap) {
-        window.bootstrap.Modal.getOrCreateInstance(editModal).show();
-    }
-
     document.querySelectorAll('[data-cover-input]').forEach(function (input) {
         input.addEventListener('change', function () {
             const file = input.files && input.files[0];

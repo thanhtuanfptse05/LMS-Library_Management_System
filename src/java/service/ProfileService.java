@@ -60,7 +60,7 @@ public class ProfileService {
         profile.setGender(gender != null ? gender.trim() : null);
         profile.setDateOfBirth(dateOfBirth);
 
-        boolean success = memberProfileDAO.upsertProfile(profile);
+        boolean success = memberProfileDAO.updateProfile(profile);
         if (!success) {
             throw new Exception("Lỗi hệ thống khi cập nhật thông tin cá nhân.");
         }
