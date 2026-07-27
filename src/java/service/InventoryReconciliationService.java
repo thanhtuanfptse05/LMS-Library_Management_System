@@ -75,6 +75,10 @@ public class InventoryReconciliationService {
                 InventorySession session = requireSession(conn, id, "counting");
                 BookCopy copy = copyDAO.findByBarcodeForUpdate(conn, barcode.trim());
                 if (copy == null) throw new ValidationException("Mã vạch không tồn tại trên hệ thống.");
+                if (!"available".equals(copy.getStatus()) || !"good".equals(copy.getCondition())
+                        || copy.isRemovedFromInventory()) {
+                    throw new ValidationException("Bản sao này không thuộc phạm vi kiểm kê vì không đang sẵn sàng trong kho.");
+                }
                 String result = session.getLocation().equals(copy.getLocation()) ? "matched" : "misplaced";
                 inventoryDAO.recordScan(conn, id, copy.getBookCopyId(), session.getLocation(), result,
                         actorId, copy.getLocation());

@@ -123,7 +123,8 @@ public class InventoryDAO {
     public int createExpectedItems(Connection conn, int sessionId, String location) throws SQLException {
         String sql = "INSERT INTO InventoryItem (inventorySessionId, bookCopyId, expectedLocation, result) "
                 + "SELECT ?, bookCopyId, location, 'pending' FROM BookCopy "
-                + "WHERE location = ? AND condition = 'good'";
+                + "WHERE location = ? AND condition = 'good' "
+                + "AND status = 'available' AND removedFromInventory = FALSE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sessionId);
             ps.setString(2, location);
