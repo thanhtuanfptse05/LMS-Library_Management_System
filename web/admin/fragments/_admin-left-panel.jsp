@@ -97,10 +97,6 @@
                                                     </button>
                                                 </c:otherwise>
                                             </c:choose>
-                                            <button class="btn-icon" title="Đặt lại Mật khẩu"
-                                                    onclick="location.href='${pageContext.request.contextPath}/admin/user?search=${u.email}'">
-                                                <span class="material-symbols-outlined">key</span>
-                                            </button>
                                             <button class="btn-icon" title="Sửa"
                                                     onclick="location.href='${pageContext.request.contextPath}/admin/user?search=${u.email}'">
                                                 <span class="material-symbols-outlined">edit</span>
