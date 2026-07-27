@@ -1,0 +1,36 @@
+@startuml BookRenewalFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Book Renewal Flow
+
+|Member|
+start
+:Request loan extension for borrowed book;
+
+|System|
+:Verify account standing & renewal rules\n(Overdue status, extension limit, active reservations);
+
+if (Loan renewal permitted?) then (No)
+  :Display renewal rejection reason;
+  |Member|
+  :View error message;
+  |System|
+else (Yes)
+  |System|
+  :Extend loan due date;
+  |Member|
+  :View updated return due date;
+  |System|
+endif
+
+|System|
+stop
+@enduml

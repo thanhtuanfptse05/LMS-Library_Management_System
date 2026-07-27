@@ -1,0 +1,38 @@
+@startuml OverdueProcessorFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Overdue Processor Flow
+
+|Scheduler|
+start
+:Trigger daily loan overdue audit;
+
+|System|
+:Identify active loans past due date;
+
+if (Overdue loans detected?) then (No)
+  :Log overdue audit completion;
+else (Yes)
+  repeat
+    :Calculate fine, mark loan overdue & restrict account;
+    fork
+      :Continue batch loan audit;
+    fork again
+      |Email System|
+      :Send overdue fine notification email;
+    end fork
+    |System|
+  repeat while (More overdue loans?) is (Yes) not (No)
+endif
+
+|System|
+stop
+@enduml

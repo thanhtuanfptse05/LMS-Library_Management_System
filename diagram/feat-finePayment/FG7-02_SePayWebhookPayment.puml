@@ -1,0 +1,42 @@
+@startuml SePayWebhookPaymentFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title SePay Webhook Payment Flow
+
+|SePay Gateway|
+start
+:Send bank transfer payment webhook notification;
+
+|System|
+:Authenticate webhook & match payment reference;
+
+if (Payment reference valid & pending?) then (No)
+  :Return webhook acknowledgment notice;
+  |SePay Gateway|
+  :Receive acknowledgment response;
+  |System|
+else (Yes)
+  |System|
+  :Mark fine paid & restore account active status;
+  fork
+    :Return payment success acknowledgment;
+    |SePay Gateway|
+    :Receive success response;
+  fork again
+    |Email System|
+    :Send payment confirmation email;
+  end fork
+  |System|
+endif
+
+|System|
+stop
+@enduml

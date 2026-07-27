@@ -1,0 +1,50 @@
+@startuml DeskCheckInFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Desk Check-In Flow
+
+|Librarian|
+start
+:Scan returned book copy barcode & assess condition;
+
+|System|
+:Process book return & update loan record status;
+
+if (Book returned late or damaged/lost?) then (Yes)
+  :Assess fine & restrict reader account;
+  fork
+    :Continue return processing;
+  fork again
+    |Email System|
+    :Send fine notification email;
+  end fork
+  |System|
+else (No)
+endif
+
+if (Book in good condition & has waiting reservations?) then (Yes)
+  :Assign book copy to next waiting member;
+  fork
+    :Complete return session;
+  fork again
+    |Email System|
+    :Notify next member book is ready for pickup;
+  end fork
+  |System|
+else (No)
+  :Return book copy to available shelf inventory;
+endif
+
+|Librarian|
+:View check-in result & fine summary;
+|System|
+stop
+@enduml

@@ -1,0 +1,50 @@
+@startuml OnlineBookReservationFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Online Book Reservation Flow
+
+|Member|
+start
+:Request online book reservation;
+
+|System|
+:Verify member eligibility & borrow limit;
+
+if (Member eligible to reserve?) then (No)
+  :Display reservation rejection error;
+  |Member|
+  :View error message;
+  |System|
+else (Yes)
+  |System|
+  if (Book currently available on shelf?) then (Yes)
+    :Hold book copy & set ready for pickup;
+    fork
+      :Confirm reservation to member;
+      |Member|
+      :View ready-for-pickup notice;
+      |System|
+    fork again
+      |Email System|
+      :Send ready-for-pickup email notification;
+      |System|
+    end fork
+  else (No)
+    :Place member in reservation waiting queue;
+    |Member|
+    :View queue position confirmation;
+    |System|
+  endif
+endif
+
+|System|
+stop
+@enduml

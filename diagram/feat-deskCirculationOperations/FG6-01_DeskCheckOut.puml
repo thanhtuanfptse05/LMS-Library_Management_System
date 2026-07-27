@@ -1,0 +1,41 @@
+@startuml DeskCheckOutFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Desk Check-Out Flow
+
+|Reader|
+start
+:Present library card & selected book at circulation desk;
+
+|Librarian|
+:Scan reader barcode & book copy barcode;
+
+|System|
+:Verify reader account standing & book copy circulation status;
+
+if (Check-out transaction permitted?) then (No)
+  :Display check-out rejection reason;
+  |Librarian|
+  :Inform reader of rejection;
+  |System|
+else (Yes)
+  |System|
+  :Fulfill reservation (if any) & issue loan record;
+  |Librarian|
+  :Print loan receipt & hand over book;
+  |Reader|
+  :Receive book with return due date;
+  |System|
+endif
+
+|System|
+stop
+@enduml

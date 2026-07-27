@@ -1,0 +1,54 @@
+@startuml InventoryReconciliationFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Inventory Reconciliation Flow
+
+|Librarian|
+start
+:Initiate shelf inventory session for location;
+
+|System|
+:Create inventory session & load expected shelf list;
+
+|Librarian|
+repeat
+  :Scan book copy barcode;
+  |System|
+  :Record copy location match or mismatch;
+  |Librarian|
+repeat while (More shelf copies to scan?) is (Yes) not (No)
+
+:Finalize scanning phase;
+
+|System|
+:Identify missing un-scanned copies & generate audit summary;
+
+|Librarian|
+:Review discrepancy list;
+
+if (Discrepancies require resolution?) then (No)
+  :Complete inventory audit;
+  |System|
+else (Yes)
+  repeat
+    :Resolve mismatch location or report missing copy;
+    |System|
+    :Update inventory record resolution;
+    |Librarian|
+  repeat while (More discrepancies?) is (Yes) not (No)
+
+  :View finalized inventory audit report;
+  |System|
+endif
+
+|System|
+stop
+@enduml

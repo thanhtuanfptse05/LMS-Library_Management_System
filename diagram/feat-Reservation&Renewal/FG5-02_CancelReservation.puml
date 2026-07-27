@@ -1,0 +1,46 @@
+@startuml CancelReservationFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Cancel Reservation Flow
+
+|Actor|
+start
+:Cancel active book reservation;
+
+|System|
+:Validate cancellation authority & reservation status;
+
+if (Reservation eligible for cancellation?) then (No)
+  :Display cancellation error;
+  |Actor|
+  :View error message;
+  |System|
+else (Yes)
+  |System|
+  :Cancel reservation record;
+
+  if (Cancelled reservation was ready for pickup & has next queue member?) then (Yes)
+    :Reassign held book copy to next waiting member;
+    |Email System|
+    :Notify next member book is ready for pickup;
+    |System|
+  else (No)
+    :Release held copy or adjust queue positions;
+  endif
+
+  |Actor|
+  :View cancellation confirmation;
+  |System|
+endif
+
+|System|
+stop
+@enduml

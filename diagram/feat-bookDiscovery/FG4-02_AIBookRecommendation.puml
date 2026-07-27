@@ -1,0 +1,47 @@
+@startuml AIBookRecommendationFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title AI Book Recommendation Flow
+
+|Member|
+start
+:Access AI recommendations page;
+
+|System|
+:Analyze reading history & prepare candidate book pool;
+
+if (Eligible book candidates available?) then (No)
+  :Display default popular books;
+  |Member|
+  :View default recommendations;
+  |System|
+else (Yes)
+  |System|
+  :Request personalized recommendations from AI engine;
+
+  |Gemini API|
+  :Generate book recommendations with explanations;
+
+  |System|
+  if (AI engine response valid?) then (No)
+    :Display fallback popular books;
+  else (Yes)
+    :Compile personalized recommended catalog;
+  endif
+
+  |Member|
+  :View AI-recommended books with explanations;
+  |System|
+endif
+
+|System|
+stop
+@enduml

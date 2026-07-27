@@ -1,0 +1,48 @@
+@startuml BookCopyIncidentLifecycleFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Book Copy Incident Lifecycle Flow
+
+|Librarian|
+start
+:Report damaged or lost book copy;
+
+|System|
+:Validate copy availability & register incident;
+
+if (Book copy eligible for incident report?) then (No)
+  :Display incident registration error;
+  |Librarian|
+  :View error message;
+  |System|
+else (Yes)
+  |Librarian|
+  :Investigate incident & choose resolution;
+
+  if (Resolution decision?) then (Reject Incident)
+    |System|
+    :Reject incident & return copy to circulation;
+  elseif (Resolution decision?) then (Resolve & Restore)
+    |System|
+    :Mark resolved & restore repaired copy to circulation;
+  else (Resolve & Remove)
+    |System|
+    :Mark resolved & remove copy from library inventory;
+  endif
+
+  |Librarian|
+  :View updated incident & copy status;
+  |System|
+endif
+
+|System|
+stop
+@enduml

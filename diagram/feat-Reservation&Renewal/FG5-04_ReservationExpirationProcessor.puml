@@ -1,0 +1,52 @@
+@startuml ReservationExpirationProcessorFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Reservation Expiration Processor Flow
+
+|Scheduler|
+start
+:Trigger periodic reservation expiration audit;
+
+|System|
+:Query pickup reservations exceeding hold deadline;
+
+if (Expired pickup reservations found?) then (No)
+  :Log expiration audit completion;
+else (Yes)
+  repeat
+    :Mark reservation as expired;
+
+    if (Has next waiting member in queue?) then (Yes)
+      :Reassign book copy & set ready for next member;
+      fork
+        :Process next queue item;
+      fork again
+        |Email System|
+        :Notify next member book is ready for pickup;
+      end fork
+      |System|
+    else (No)
+      :Return held copy to available shelf inventory;
+    endif
+
+    fork
+      :Continue batch expiration processing;
+    fork again
+      |Email System|
+      :Send expiration notification to expired member;
+    end fork
+    |System|
+  repeat while (More expired reservations?) is (Yes) not (No)
+endif
+
+|System|
+stop
+@enduml

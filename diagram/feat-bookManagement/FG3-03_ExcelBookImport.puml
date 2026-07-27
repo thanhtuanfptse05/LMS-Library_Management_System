@@ -1,0 +1,37 @@
+@startuml ExcelBookImportFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Excel Batch Book Import Flow
+
+|Librarian|
+start
+:Upload Excel file for catalog import;
+
+|System|
+:Validate catalog data & generate import preview;
+
+|Librarian|
+:Review import preview list;
+
+if (Confirm import execution?) then (No)
+  :Cancel import session;
+  |System|
+else (Yes)
+  |System|
+  :Batch insert books & generate inventory copies;
+  |Librarian|
+  :View import completion summary;
+  |System|
+endif
+
+|System|
+stop
+@enduml

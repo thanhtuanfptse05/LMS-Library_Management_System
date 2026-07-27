@@ -32,9 +32,27 @@ Vẽ 1 quy trình nghiệp vụ đa vai trò thành activity diagram có **swiml
 - **TỰ XEM LẠI ẢNH sau render** (bước bắt buộc — xem Approach 7) — render `.png` rồi Read ảnh, tự soi mũi tên/lane/dead-end **trước** khi báo user. Đây là cách bắt lỗi "mũi tên hiển thị không đúng" mà compile-check bỏ sót.
 - **L1 approval** trước Write — prose BA-friendly (xem `ba-conventions.md` Mục 5), từ nghiệp vụ (các bước / nhánh / vai trò), KHÔNG dump source PlantUML.
 - **KHÔNG L3 iterate** — PlantUML không render trong chat; user review từ `.svg`. (Skill TỰ review qua ảnh PNG ở bước 7 thay cho user.)
-- **Vietnamese-first** trong label (PlantUML hỗ trợ Unicode); keyword cú pháp English.
+- **Vietnamese-first hoặc English** trong label (PlantUML hỗ trợ Unicode); keyword cú pháp English.
 - **`--feature` optional** — auto-detect từ ngữ cảnh; mơ hồ mới hỏi. **Feature chưa có + arg là mô tả quy trình → tự derive slug + tạo feature** (điểm-vào, `feature-bootstrap.md` nhóm A).
 - **Idempotent** — slug đã tồn tại → tự vào update mode (L2 diff cho .puml + section flows.md), re-render.
+
+## 1. Quy tắc trừu tượng hoá luồng Nghiệp vụ (áp dụng trước khi vẽ)
+
+1. **Gộp theo câu hỏi nghiệp vụ, không theo điều kiện code**:
+   Nếu 2+ điều kiện code (`if`) đều dẫn tới cùng 1 hành động kế tiếp (VD: đều → "báo lỗi, dừng") → gộp thành 1 quyết định duy nhất (`Hợp lệ mượn?`). Chỉ tách riêng khi mỗi điều kiện dẫn tới hành động khác nhau.
+2. **Tên node = hành động nghiệp vụ, không phải tên hàm/class**:
+   Sai: `Call UserLookupDAO.findById()` → Đúng: `Look up reader account` (hoặc `Tra cứu tài khoản độc giả`).
+3. **Mỗi swimlane = 1 actor chịu trách nhiệm, không phải 1 layer kỹ thuật**:
+   Controller / Filter / Service / DAO → gộp chung 1 làn `System`. Chỉ tách làn riêng cho actor thực khác (người khác, hệ thống bên thứ 3 như Email Service) — vì có SLA/fail độc lập.
+4. **Ẩn hoàn toàn lỗi kỹ thuật tự động** (rollback, transaction, exception) — không ai ra quyết định ở đó nên không hiện trên diagram.
+5. **Test nhanh cho từng bước**: *"Nếu xoá bước này, người đọc còn hiểu đúng luồng nghiệp vụ không?"* — còn hiểu thì bỏ.
+
+## 2. Quy tắc trình bày kỹ thuật PlantUML
+
+- **Màu sắc**: Nền sạch, viền rõ ràng (`!theme plain` hoặc set `skinparam` về White/Black cho Activity & Diamond, `ArrowColor Black`).
+- **Quyết định (decision)** luôn dùng `if (...) then (...) else (...) endif` → PlantUML tự render hình thoi, không dùng note hay activity giả làm quyết định.
+- **Start/Stop Node**: Mọi nhánh rẽ cuối cùng phải hội tụ về nút `stop` hoặc `end` tự nhiên.
+- **Loop-back**: Dùng `repeat / repeat while` hoặc `backward:` (xem ví dụ).
 
 ## Công thức chuẩn (yêu cầu bắt buộc mọi diagram — đúc từ prompt IT-BA chuẩn)
 
@@ -47,9 +65,9 @@ Mọi swimlane diagram skill sinh ra PHẢI thoả:
 5. **Tương tác giữa lane** thể hiện qua việc node chuyển lane (`|Lane khác|` trước activity).
 6. **Flow logic + đầy đủ, no loose ends** — mọi node có đường ra tới 1 end.
 7. **Note cho step phức tạp** (`note right: ...`) khi cần làm rõ.
-8. **Default colors** — KHÔNG tô màu tùy biến (dùng `!theme plain` cho nền sạch).
-9. **TRÁNH dấu ngoặc kép `"..."`** trong syntax — PlantUML activity không cần quote label; quote gây lỗi parse. Label tiếng Việt/space/dấu để trần.
-10. **Layout sạch, không rối** — node đặt logic, hạn chế mũi tên cắt chéo (xem Gotchas mũi tên).
+8. **Default colors / White-Black** — KHÔNG tô màu tùy biến lòe loẹt.
+9. **TRÁNH dấu ngoặc kép `"..."`** trong syntax — PlantUML activity không cần quote label; quote gây lỗi parse. Label/space/dấu để trần.
+10. **Layout sạch, không rối** — node đặt logic, hạn chế mũi tên cắt chéo.
 
 ## Inputs
 
