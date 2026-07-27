@@ -68,6 +68,7 @@
                         <c:param name="status" value="${selectedStatus}" />
                         <c:param name="page" value="${currentPage}" />
                     </c:url>
+                    <c:url var="postCopyUrl" value="/librarian/book-management/copies" />
 
                     <form class="bm-filter-card bm-list-filter mb-3" method="get" action="${pageContext.request.contextPath}/librarian/book-management/copies">
                         <div class="row g-2">
@@ -298,8 +299,12 @@
             <div class="modal fade bm-modal" id="createCopyModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form method="post" action="${listUrl}">
+                        <form method="post" action="${postCopyUrl}">
                             <input type="hidden" name="action" value="create">
+                            <input type="hidden" name="q" value="<c:out value="${q}" />">
+                            <input type="hidden" name="filterLocation" value="<c:out value="${selectedLocation}" />">
+                            <input type="hidden" name="status" value="<c:out value="${selectedStatus}" />">
+                            <input type="hidden" name="page" value="${currentPage}">
                             <div class="modal-header">
                                 <div>
                                     <h5 class="modal-title">Thêm bản sao vật lý</h5>
@@ -328,7 +333,7 @@
                                 <%-- Vị trí lưu trữ trong kho (kệ, tầng, hàng) --%>
                                 <div>
                                     <label class="form-label">Vị trí <span class="bm-required">*</span></label>
-                                    <input class="form-control" name="location" required maxlength="255" list="locationOptions" placeholder="Ví dụ: Kho A · Kệ A12">
+                                    <input class="form-control" name="copyLocation" required maxlength="255" list="locationOptions" placeholder="Ví dụ: Kho A · Kệ A12">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -353,8 +358,12 @@
             <div class="modal fade bm-modal" id="editCopyModal" tabindex="-1" aria-hidden="true" data-auto-open="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form method="post" action="${listUrl}">
+                        <form method="post" action="${postCopyUrl}">
                             <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="q" value="<c:out value="${q}" />">
+                            <input type="hidden" name="filterLocation" value="<c:out value="${selectedLocation}" />">
+                            <input type="hidden" name="status" value="<c:out value="${selectedStatus}" />">
+                            <input type="hidden" name="page" value="${currentPage}">
                             <input type="hidden" name="bookCopyId" value="${editCopy.bookCopyId}">
                             <div class="modal-header">
                                 <div>
@@ -366,7 +375,7 @@
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="form-label">Vị trí</label>
-                                    <input class="form-control" name="location" required maxlength="255" list="locationOptions" value="<c:out value="${editCopy.location}" />">
+                                    <input class="form-control" name="copyLocation" required maxlength="255" list="locationOptions" value="<c:out value="${editCopy.location}" />">
                                 </div>
                                 <p class="bm-section-note mt-2 mb-0">Tình trạng Hỏng/Mất phải được ghi nhận và xác minh tại màn Hỏng &amp; mất.</p>
                             </div>

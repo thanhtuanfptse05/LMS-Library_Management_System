@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             optionLimit: 80
         });
     });
-    document.querySelectorAll('#createCopyModal input[name="location"], #editCopyModal input[name="location"]')
+    document.querySelectorAll('#createCopyModal input[name="copyLocation"], #editCopyModal input[name="copyLocation"]')
         .forEach(enhanceLocationInput);
     initBookManagementPagination();
 });

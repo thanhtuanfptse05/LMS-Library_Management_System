@@ -128,7 +128,9 @@ public class BookCopyServlet extends HttpServlet {
             if (!keepPage && "page".equals(name)) {
                 continue;
             }
-            String value = trimToNull(request.getParameter(name));
+            String value = trimToNull("location".equals(name)
+                    ? request.getParameter("filterLocation")
+                    : request.getParameter(name));
             if (value == null) {
                 continue;
             }
@@ -144,15 +146,20 @@ public class BookCopyServlet extends HttpServlet {
         BookCopy copy = new BookCopy();
         copy.setBookId(Integer.parseInt(request.getParameter("bookId")));
         copy.setBarcode(trimToNull(request.getParameter("barcode")));
-        copy.setLocation(trimToNull(request.getParameter("location")));
+        copy.setLocation(readCopyLocation(request));
         return copy;
     }
 
     private BookCopy readUpdateCopy(HttpServletRequest request) {
         BookCopy copy = new BookCopy();
         copy.setBookCopyId(Integer.parseInt(request.getParameter("bookCopyId")));
-        copy.setLocation(trimToNull(request.getParameter("location")));
+        copy.setLocation(readCopyLocation(request));
         return copy;
+    }
+
+    private String readCopyLocation(HttpServletRequest request) {
+        String location = trimToNull(request.getParameter("copyLocation"));
+        return location == null ? trimToNull(request.getParameter("location")) : location;
     }
 
     private boolean isEditor(String role) {
