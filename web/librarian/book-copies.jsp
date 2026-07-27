@@ -133,7 +133,7 @@
                         </div>
                     </c:if>
 
-                    <div class="bm-rule-note bm-rule-note--compact mb-3"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đang giữ riêng hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
+                    <div class="bm-rule-note bm-rule-note--compact mb-3"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
 
                     <%-- Thống kê tổng quan về các bản sao (Tổng, Sẵn sàng, Đang mượn, Hỏng/Mất) --%>
                     <div class="bm-list-stats bm-list-stats--four mb-3">
@@ -206,7 +206,7 @@
                                                 </c:choose>
                                             </td>
                                             <td>
-                                                <%-- Trạng thái lưu thông/giao dịch (Sẵn sàng, Đang mượn, Giữ riêng, Ngừng lưu thông) --%>
+                                                <%-- Trạng thái lưu thông/giao dịch (Sẵn sàng, Đang mượn, Ngừng lưu thông) --%>
                                                 <c:choose>
                                                     <c:when test="${copy.removedFromInventory}">
                                                         <span class="bm-badge bm-badge--neutral">Đã loại khỏi kho</span>
@@ -216,9 +216,6 @@
                                                     </c:when>
                                                     <c:when test="${copy.status == 'borrowed'}">
                                                         <span class="bm-badge bm-badge--info">Đang mượn</span>
-                                                    </c:when>
-                                                    <c:when test="${copy.status == 'reserved'}">
-                                                        <span class="bm-badge bm-badge--warning">Giữ riêng</span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span class="bm-badge bm-badge--neutral">Ngừng lưu thông</span>

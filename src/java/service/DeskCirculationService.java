@@ -290,7 +290,7 @@ public class DeskCirculationService {
                     }
                     if (reservation.getBookCopyId() != bookCopyId) {
                         throw new IllegalStateException(
-                                "Bản sao này không khớp với bản sao được giữ riêng cho độc giả này.");
+                                "Bản sao này không khớp với bản sao được gán cho độc giả này.");
                     }
                 } else {
                     // Đơn đặt trước online chưa gán bản sao (bookCopyId == null)

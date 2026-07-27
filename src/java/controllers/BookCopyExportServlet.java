@@ -78,16 +78,16 @@ public class BookCopyExportServlet extends HttpServlet {
     }
 
     private String formatCopyStatus(String status) {
+        if ("available".equals(status)) {
+            return "Sẵn sàng";
+        }
         if ("borrowed".equals(status)) {
             return "Đang mượn";
-        }
-        if ("reserved".equals(status)) {
-            return "Giữ riêng";
         }
         if ("unavailable".equals(status)) {
             return "Ngừng lưu thông";
         }
-        return "Sẵn sàng";
+        return "Ngừng lưu thông";
     }
 
     private String normalizeStatus(String status) {

@@ -61,7 +61,6 @@
                                     <c:choose>
                                         <c:when test="${copy.status == 'available'}">Sẵn sàng</c:when>
                                         <c:when test="${copy.status == 'borrowed'}">Đang mượn</c:when>
-                                        <c:when test="${copy.status == 'reserved'}">Đặt trước</c:when>
                                         <c:otherwise>Ngừng lưu thông</c:otherwise>
                                     </c:choose>
                                 </p>

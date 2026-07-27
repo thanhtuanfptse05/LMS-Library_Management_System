@@ -95,7 +95,6 @@
                                     <c:when test="${copy.removedFromInventory}"><span class="bm-badge bm-badge--neutral">Đã loại khỏi kho</span></c:when>
                                     <c:when test="${copy.status == 'available'}"><span class="bm-badge bm-badge--success">Sẵn sàng</span></c:when>
                                     <c:when test="${copy.status == 'borrowed'}"><span class="bm-badge bm-badge--info">Đang mượn</span></c:when>
-                                    <c:when test="${copy.status == 'reserved'}"><span class="bm-badge bm-badge--warning">Giữ riêng</span></c:when>
                                     <c:otherwise><span class="bm-badge bm-badge--neutral">Ngừng lưu thông</span></c:otherwise>
                                 </c:choose>
                             </div>
