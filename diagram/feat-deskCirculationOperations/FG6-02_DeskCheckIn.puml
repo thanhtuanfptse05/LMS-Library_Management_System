@@ -9,42 +9,130 @@ skinparam ArrowColor Black
 skinparam titleBorderThickness 1
 skinparam titleBorderColor Black
 skinparam titleBackgroundColor White
-title Desk Check-In Flow
+title Activity Diagram - Desk Check-In Flow \n UC-19 | F6 - Desk Circulation Operations
 
 |Librarian|
 start
-:Scan returned book copy barcode & assess condition;
+:Scan returned book copy\nbarcode;
+
+:Inspect physical condition\nand select condition:\n- 'good'\n- 'damaged'\n- 'lost';
 
 |System|
-:Process book return & update loan record status;
+:Look up book copy\n(BookCopyDAO.findByBarcode)\nand active borrow record\n(BorrowRecordDAO.\nfindActiveBorrowByBookCopyId);
 
-if (Book returned late or damaged/lost?) then (Yes)
-  :Assess fine & restrict reader account;
-  fork
-    :Continue return processing;
-  fork again
-    |Email System|
-    :Send fine notification email;
-  end fork
+if (Active borrow record\nfound?) then (Not found)
+  :Display error:\n"No active borrow record\nfound for this book copy";
+  |Librarian|
+  :Inform reader\nof error;
   |System|
-else (No)
+  stop
 endif
 
-if (Book in good condition & has waiting reservations?) then (Yes)
-  :Assign book copy to next waiting member;
+:Calculate overdue days:\noverdueDays = NOW() - endDate;
+
+if (Book condition?) then (damaged / lost)
+
+  #LightGreen:=== Open DB Transaction ===\n(conn.setAutoCommit(false))\n**[FR-37]**;
+
+  if (overdueDays > 0?) then (Overdue)
+    :Calculate overdue fine:\namount = FINE_RATE_PER_DAY x days.\nINSERT Fine\n(borrowRecordId, userId, amount,\nstatus = 'unpaid',\nreason = 'overdue');
+  else (On time)
+  endif
+
+  :UPDATE BorrowRecord\nSET status = 'returned',\nreturnedAt = NOW();
+
+  :UPDATE BookCopy\nSET status = 'unavailable',\ncondition = condition;
+
+  if (condition = 'lost'?) then (lost)
+    :UPDATE Book\nSET totalQuantity = totalQuantity - 1\n**[BR-24]**;
+  else (damaged)
+    :Keep totalQuantity unchanged.\n(Forward to F13 for handling)\n**[BR-24]**;
+  endif
+
+  :INSERT BookCopyIncident\n(bookCopyId, type = condition,\ndescription = 'Detected at return',\nstatus = 'resolved');
+
+  #Pink:=== IMMEDIATE LOCK ===\nINSERT UserLockReason\n(userId, reason = 'unpaid').\nUPDATE User\nSET status = 'locked'\n**[BR-24]**;
+
+  :INSERT AuditLog\n(actionType = 'CHECKIN',\nentityName = 'BorrowRecord',\nuserId = librarianId);
+
+  :conn.commit();
+
   fork
-    :Complete return session;
+    :Display message:\n"Check-in successful.\nBook damaged/lost.\nReader account locked.";
   fork again
-    |Email System|
-    :Notify next member book is ready for pickup;
+    |Email|
+    :Send fine notification email\n(EmailService.enqueue)\n[Async];
   end fork
+
   |System|
-else (No)
-  :Return book copy to available shelf inventory;
+  stop
+
+else (good)
+
+  #LightGreen:=== Open DB Transaction ===\n(conn.setAutoCommit(false))\n**[FR-38]**;
+
+  if (overdueDays > 0?) then (Overdue)
+    :Calculate overdue fine:\namount = FINE_RATE_PER_DAY x days.\nINSERT Fine\n(borrowRecordId, userId, amount,\nstatus = 'unpaid',\nreason = 'overdue');
+
+    #Pink:LOCK ACCOUNT:\nINSERT UserLockReason\n(userId, reason = 'unpaid').\nUPDATE User\nSET status = 'locked';
+  else (On time)
+  endif
+
+  :UPDATE BorrowRecord\nSET status = 'returned',\nreturnedAt = NOW();
+
+  :UPDATE BookCopy\nSET condition = 'good';
+
+  note right
+    **[FR-39] Queue Dispatch**
+    Check if any reader is
+    waiting in the reservation
+    queue for this book.
+  end note
+
+  :Query ReservationDAO.\nfindNextInQueue(bookId)\nWHERE queuePosition = 1\nAND status = 'pending'\n**[FR-39]**;
+
+  if (Next reader waiting\nin queue?) then (Yes)
+
+    :UPDATE Reservation\nSET queuePosition = 0,\nstatus = 'readypickup',\nbookCopyId = bookCopyId,\nendDate = NOW() + HOLD_DAYS;
+
+    :UPDATE BookCopy\nSET status = 'reserved';
+
+    :INSERT AuditLog\n(actionType = 'CHECKIN',\nentityName = 'BorrowRecord',\nuserId = librarianId);
+
+    :conn.commit();
+
+    fork
+      :Display message:\n"Check-in successful.\nCopy dispatched to next\nreservation in queue.";
+    fork again
+      |Email|
+      :Send reservation ready\nnotification email\n(RESERVATION_READY)\n[Async];
+    end fork
+
+  else (No)
+
+    :UPDATE Book\nSET availableQuantity =\navailableQuantity + 1;
+
+    :UPDATE BookCopy\nSET status = 'available';
+
+    :INSERT AuditLog\n(actionType = 'CHECKIN',\nentityName = 'BorrowRecord',\nuserId = librarianId);
+
+    :conn.commit();
+
+    fork
+      :Display message:\n"Check-in successful.\nCopy returned to\navailable inventory.";
+    fork again
+      |Email|
+      :Send check-in confirmation\nemail (CHECKIN_CONFIRMATION)\n[Async];
+    end fork
+
+  endif
+
 endif
 
 |Librarian|
-:View check-in result & fine summary;
+:View check-in result\nand fine summary (if any);
+
 |System|
 stop
+
 @enduml

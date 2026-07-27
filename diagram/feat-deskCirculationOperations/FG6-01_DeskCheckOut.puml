@@ -9,33 +9,89 @@ skinparam ArrowColor Black
 skinparam titleBorderThickness 1
 skinparam titleBorderColor Black
 skinparam titleBackgroundColor White
-title Desk Check-Out Flow
+title Activity Diagram - Desk Check-Out Flow \n UC-18 | F6 - Desk Circulation Operations
 
 |Reader|
 start
-:Present library card & selected book at circulation desk;
+:Present library card and\nselected book at circulation desk;
 
 |Librarian|
-:Scan reader barcode & book copy barcode;
+:Scan reader barcode\n(memberCode) and book copy\nbarcode;
 
 |System|
-:Verify reader account standing & book copy circulation status;
+:Look up reader info\n(UserLookupDAO.findUserIdByMemberCode)\nand book copy\n(BookCopyDAO.findByBarcode);
 
-if (Check-out transaction permitted?) then (No)
-  :Display check-out rejection reason;
+if (Reader and book copy\nvalid?) then (Invalid)
+  :Display error:\n"Invalid reader code\nor book barcode";
   |Librarian|
-  :Inform reader of rejection;
+  :Inform reader\nof input error;
   |System|
-else (Yes)
-  |System|
-  :Fulfill reservation (if any) & issue loan record;
-  |Librarian|
-  :Print loan receipt & hand over book;
-  |Reader|
-  :Receive book with return due date;
-  |System|
+  stop
 endif
+
+:Check unpaid fines\n(FineDAO: unpaid fines\n+ UserLockReason: reason='unpaid')\n**[BR-22]**;
+
+if (Has unpaid fines?) then (Yes)
+  :Block transaction.\nDisplay error:\n"Account has unpaid fines.\nCannot borrow until\nall fines are paid.";
+  |Librarian|
+  :Inform reader\nof outstanding fines;
+  |System|
+  stop
+endif
+
+:Check maximum borrow limit\nby role (Student/Lecturer)\n**[BR-21]**;
+
+if (Maximum borrow\nlimit reached?) then (Yes)
+  :Block transaction.\nDisplay error:\n"Reader has reached\nmaximum borrow limit";
+  |Librarian|
+  :Inform reader\nof borrow limit;
+  |System|
+  stop
+endif
+
+:Query reservation\n(ReservationDAO.\nfindReadyPickupByUserAndBook)\nstatus = 'readypickup'\n**[BR-23 / FR-35]**;
+
+if (Has reservation with\nstatus = 'readypickup'?) then (No)
+  :Block transaction.\nDisplay error:\n"Reader has no available\nReservation for this book.\nMust register a Reservation\nbefore check-out.";
+  |Librarian|
+  :Guide reader to register\nDesk Reservation\n(UC-51 / DeskReservationServlet);
+  |System|
+  stop
+else (Yes)
+endif
+
+:Check if Reservation\nhas assigned bookCopyId\n**[BR-29]**;
+
+if (bookCopyId != null\nin Reservation?) then (Already assigned)
+  :UPDATE BookCopy\nSET status = 'borrowed'\n(Do not deduct availableQuantity\nsince already deducted\nwhen moved to ready);
+else (Not assigned)
+  :Assign current bookCopyId\nto Reservation.\nUPDATE BookCopy\nSET status = 'borrowed'.\nUPDATE Book\nSET availableQuantity - 1;
+endif
+
+#LightGreen:=== Open DB Transaction ===\n(conn.setAutoCommit(false))\n**[FR-36]**;
+
+:INSERT BorrowRecord\n(userId, bookCopyId, bookId,\nstatus = 'borrowed',\nstartDate = NOW(),\nendDate = NOW() + LoanDays by role,\nextensionCount = 0,\ncreatedBy = librarianId);
+
+:UPDATE Reservation\nSET status = 'fulfilled',\nbookCopyId = bookCopyId;
+
+:INSERT AuditLog\n(actionType = 'CHECKOUT',\nentityName = 'BorrowRecord',\nuserId = librarianId);
+
+:conn.commit();
+
+fork
+  :Display success message\nwith return due date (endDate);
+fork again
+  |Email|
+  :Send checkout confirmation email\n(EmailService.enqueue)\n[Async - outside transaction];
+end fork
+
+|Librarian|
+:Print loan receipt\nand hand over book;
+
+|Reader|
+:Receive book with\nreturn due date;
 
 |System|
 stop
+
 @enduml
