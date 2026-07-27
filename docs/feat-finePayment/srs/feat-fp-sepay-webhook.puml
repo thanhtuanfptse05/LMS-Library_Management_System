@@ -1,0 +1,69 @@
+@startuml Flow_6_2_WebhookSePayXuLyThanhToan
+autoactivate on
+
+participant "SePayGateway" as SePay
+participant "AuthFilter" as Filter
+participant "SePayWebhookServlet" as Servlet
+participant "PaymentDAO" as PayDAO
+participant "FineDAO" as FineDAO
+participant "UserDAO" as UDAO
+participant "UserLockReasonDAO" as LockDAO
+participant "AuditLogDAO" as AuditDAO
+participant "EmailService" as Email
+
+SePay -> Filter : 1 : POST /api/sepay-webhook\n(JSON: content, code, transferAmount, referenceCode)
+note right : AuthFilter bypass route /api/sepay-webhook\nTự xác thực bằng API Key riêng
+return
+Filter -> Servlet : 2 : doPost(request, response)
+return
+Servlet -> Servlet : 3 : kiểm tra header Authorization\nvs SystemConfigDAO.getValue("SEPAY_API_KEY")
+return
+
+alt 3a [API key không khớp]
+    Servlet --> SePay : HTTP 401 Unauthorized
+
+else 3b [API key hợp lệ]
+    Servlet -> Servlet : 4 : parse JSON → regex\ntìm "LMSPF(\d+)" trong content/code
+    return
+
+    alt 4a [không tìm thấy paymentId - không có pattern LMSPF]
+        Servlet --> SePay : HTTP 200\n{success: false,\nmessage: "Không tìm thấy mã thanh toán"}
+
+    else 4b [tìm thấy paymentId]
+        Servlet -> PayDAO : 5 : findByPaymentId(paymentId)
+        return
+
+        alt 5a [Payment đã completed - webhook trùng - idempotent]
+            PayDAO --> Servlet : return Payment (status=completed)
+            Servlet --> SePay : HTTP 200\n{success: true,\nmessage: "Đã xử lý trước đó"}
+
+        else 5b [Payment còn pending]
+            note over Servlet : BEGIN Transaction
+            Servlet -> PayDAO : 6 : updatePaymentOnlineSuccess\n(conn, paymentId, transactionRef, amount)
+            note right : UPDATE Payment\nSET status='completed'\ntransactionReference=ref, paidAt=NOW()
+            return
+            Servlet -> FineDAO : 6.1 : updateStatusToPaid(conn, fineId)
+            return
+            Servlet -> UDAO : 6.2 : findUserIdByFineId(conn, fineId)
+            return
+            Servlet -> LockDAO : 6.3 : deleteLockReason(conn, userId, "unpaid")
+            return
+            Servlet -> LockDAO : 6.4 : countLockReasons(conn, userId)
+            return
+
+            opt 6.4a [count == 0 - auto-unlock BR-25]
+                Servlet -> UDAO : 6.5 : unlockAccount(userId)
+                return
+            end
+
+            Servlet -> AuditDAO : 6.6 : insertAuditLog(null,\n"SEPAY_WEBHOOK_PAYMENT",\n"Payment", paymentId, ...)
+            return
+            note over Servlet : COMMIT Transaction
+            Servlet -> Email : 7 : enqueue(PAYMENT_CONFIRMATION, userId)
+            note right : Bất đồng bộ
+            return
+            Servlet --> SePay : 8 : HTTP 200\n{success: true,\nmessage: "Thanh toán thành công"}
+        end
+    end
+end
+@enduml

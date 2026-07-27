@@ -1,0 +1,49 @@
+@startuml Flow_3_1_TaoDauSachMoi
+autoactivate on
+
+actor Librarian
+participant "book-form.jsp" as JSP
+participant "AuthFilter" as Filter
+participant "BookServlet" as Servlet
+participant "BookService" as Service
+participant "BookDAO" as DAO
+participant "AuditLogDAO" as AuditDAO
+
+Librarian -> JSP : 1 : điền form (ISBN, title, author,\ncategories[], tags[], ảnh bìa) và submit
+return
+JSP -> Filter : 2 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 3 : doPost(request, response) [action=create]
+return
+Servlet -> Service : 4 : createBook(bookDTO, librarianId, imageFile)
+Service -> Service : 4.1 : validateIsbn(isbn)
+note right : Kiểm tra 13 chữ số + checksum mod10
+return
+
+alt 4.1a [ISBN sai format hoặc checksum không hợp lệ]
+    Service --> Servlet : throw ValidationException("ISBN không hợp lệ")
+    Servlet --> JSP : set errorMessage, forward
+
+else 4.1b [ISBN hợp lệ]
+    Service -> DAO : 4.2 : findByIsbn(isbn)
+
+    alt 4.2a [ISBN đã tồn tại]
+        DAO --> Service : return Book
+        Service --> Servlet : throw ValidationException\n("ISBN đã tồn tại: {existingTitle}")
+        Servlet --> JSP : set errorMessage, forward
+
+    else 4.2b [ISBN mới]
+        DAO --> Service : return null
+        Service -> DAO : 4.3 : createBook(book, categoryIds[], tagIds[])
+        note right : BEGIN Transaction\nINSERT Book → INSERT BookCategory (batch)\n→ INSERT BookTag (batch) → COMMIT
+        return
+        Service -> Service : 4.4 : BookImageStorage.saveImage\n(imageFile, newBookId)
+        return
+        Service -> AuditDAO : 4.5 : insertAuditLog(librarianId,\n"CREATE_BOOK", "Book",\nnewBookId, null, bookJson)
+        return
+        Service --> Servlet : return newBookId
+        Servlet -> Librarian : 5 : sendRedirect\n("/librarian/book-management/books/{id}?success=created")
+    end
+    deactivate Service
+end
+@enduml

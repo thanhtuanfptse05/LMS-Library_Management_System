@@ -1,0 +1,48 @@
+@startuml Flow_6_3_QuetPhatQuaHanTuDong
+autoactivate on
+
+actor System
+participant "OverdueProcessor" as Processor
+participant "SystemConfigDAO" as ConfigDAO
+participant "BorrowRecordDAO" as BRDAO
+participant "FineDAO" as FineDAO
+participant "UserDAO" as UDAO
+participant "UserLockReasonDAO" as LockDAO
+participant "AuditLogDAO" as AuditDAO
+participant "EmailService" as Email
+
+System -> Processor : 1 : run()\n(AppContextListener schedule 00:00 AM\nhoặc TriggerOverdueServlet.doPost)
+return
+Processor -> ConfigDAO : 2 : getValue("FINE_RATE_PER_DAY")
+note right : Mặc định 5.000 VNĐ/ngày
+return
+Processor -> BRDAO : 3 : findOverdueBorrows(NOW())
+note right : SELECT BorrowRecord\nWHERE status='borrowed'\nAND endDate < NOW()
+return
+
+alt 3a [không có bản ghi quá hạn]
+    Processor --> System : return {processedRecords: 0}
+
+else 3b [có bản ghi quá hạn]
+    loop Mỗi overdue BorrowRecord
+        note over Processor : BEGIN Transaction riêng
+        Processor -> Processor : 4 : tính daysLate = DATEDIFF(NOW(), endDate)\nfineAmount = daysLate × fineRatePerDay
+        return
+        Processor -> FineDAO : 4.1 : insertOverdueFine\n(borrowRecordId, userId,\nfineAmount, reason='overdue')
+        return
+        Processor -> BRDAO : 4.2 : updateStatus(borrowRecordId, 'overdue')
+        return
+        Processor -> LockDAO : 4.3 : insertLockReason(userId, "unpaid")
+        return
+        Processor -> UDAO : 4.4 : updateStatus(userId, 'locked')
+        return
+        Processor -> AuditDAO : 4.5 : insertAuditLog(null,\n"CREATE_FINE_OVERDUE",\n"Fine", fineId, ...)
+        return
+        note over Processor : COMMIT Transaction
+        Processor -> Email : 4.6 : enqueue(OVERDUE_NOTICE,\nuserId, {bookTitle, daysLate, fineAmount})
+        note right : Bất đồng bộ\nEmailWorker retry tối đa 3 lần nếu SMTP lỗi
+        return
+    end
+    Processor --> System : 5 : return {processedRecords,\nlockedUsers, emailsSent}
+end
+@enduml

@@ -137,4 +137,63 @@ public class BorrowRecord {
     public void setMemberCode(String memberCode) { this.memberCode = memberCode; }
     public String getBookTitle() { return bookTitle; }
     public void setBookTitle(String bookTitle) { this.bookTitle = bookTitle; }
+
+    /**
+     * Tính phần trăm thời gian mượn sách đã trôi qua (0% - 100%).
+     * Phục vụ hiển thị thanh tiến độ mượn sách chính xác trên giao diện JSP.
+     */
+    public double getPercentPassed() {
+        if (startDate == null || endDate == null) {
+            return 0.0;
+        }
+        long start = startDate.getTime();
+        long end = endDate.getTime();
+        long total = end - start;
+        if (total <= 0) {
+            return 100.0;
+        }
+        if ("overdue".equalsIgnoreCase(status)) {
+            return 100.0;
+        }
+        long now = System.currentTimeMillis();
+        if (now <= start) {
+            return 0.0;
+        }
+        if (now >= end) {
+            return 100.0;
+        }
+        double percent = ((double) (now - start) / total) * 100.0;
+        return Math.min(100.0, Math.max(0.0, percent));
+    }
+
+    /**
+     * Lấy phần trăm làm tròn số nguyên cho aria-valuenow và style width của progress-bar.
+     */
+    public int getPercentPassedInt() {
+        return (int) Math.round(getPercentPassed());
+    }
+
+    /**
+     * Lấy class màu CSS tương ứng cho thanh tiến độ dựa trên thời hạn mượn.
+     */
+    public String getBarColorClass() {
+        if ("overdue".equalsIgnoreCase(status) || getPercentPassed() >= 100.0) {
+            return "bg-danger";
+        }
+        if (getPercentPassed() >= 80.0) {
+            return "bg-warning";
+        }
+        return "bg-primary-custom";
+    }
+
+    /**
+     * Tính số ngày còn lại đến hạn trả sách.
+     */
+    public long getDaysRemaining() {
+        if (endDate == null) return 0;
+        long now = System.currentTimeMillis();
+        long diff = endDate.getTime() - now;
+        if (diff <= 0) return 0;
+        return (diff + 86399999L) / 86400000L;
+    }
 }

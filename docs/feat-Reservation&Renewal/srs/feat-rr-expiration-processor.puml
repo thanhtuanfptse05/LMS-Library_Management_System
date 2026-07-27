@@ -1,0 +1,53 @@
+@startuml Flow_5_4_TuDongHuyDatTruocQuaHan
+autoactivate on
+
+actor System
+participant "ReservationExpirationProcessor" as Processor
+participant "SystemConfigDAO" as ConfigDAO
+participant "ReservationDAO" as ResvDAO
+participant "BookCopyDAO" as BCDAO
+participant "BookDAO" as BDAO
+participant "AuditLogDAO" as AuditDAO
+participant "EmailService" as Email
+
+System -> Processor : 1 : run()\n(AppContextListener schedule\nhoặc TriggerReservationExpirationServlet)
+return
+Processor -> ConfigDAO : 2 : getValue("RESERVATION_HOLD_DAYS")
+return
+Processor -> ResvDAO : 3 : findExpiredReadyPickup(NOW())
+note right : SELECT Reservation\nWHERE status='readypickup'\nAND endDate < NOW()
+return
+
+loop Mỗi expired Reservation
+    note over Processor : BEGIN Transaction riêng
+    Processor -> ResvDAO : 4 : cancelReservation\n(conn, reservationId,\nreason='Hết hạn nhận sách')
+    return
+    Processor -> ResvDAO : 5 : findNextInQueue(conn, bookId)
+
+    alt 5a [có người tiếp theo trong hàng chờ]
+        ResvDAO --> Processor : return nextReservation
+        Processor -> ResvDAO : 5.1 : promoteToReadyPickup\n(nextId, expiredBookCopyId,\nendDate=NOW()+holdDays)
+        return
+        Processor -> BCDAO : 5.2 : updateStatus(bookCopyId, 'reserved')
+        return
+        Processor -> Email : 5.3 : enqueue(RESERVATION_READY, nextUserId)
+        note right : Bất đồng bộ
+        return
+
+    else 5b [không có người chờ]
+        Processor -> BCDAO : 5.1 : updateStatus(bookCopyId, 'available')
+        return
+        Processor -> BDAO : 5.2 : incrementAvailableQuantity(bookId)
+        return
+    end
+
+    Processor -> AuditDAO : 6 : insertAuditLog(null,\n"CANCEL_EXPIRED_RESERVATION",\n"Reservation", reservationId, ...)
+    return
+    note over Processor : COMMIT Transaction
+    Processor -> Email : 7 : enqueue(RESERVATION_EXPIRED_NOTICE,\noriginalUserId)
+    note right : Bất đồng bộ
+    return
+end
+
+Processor --> System : 8 : return {processedCount,\ncancelledCount, reassignedCount}
+@enduml

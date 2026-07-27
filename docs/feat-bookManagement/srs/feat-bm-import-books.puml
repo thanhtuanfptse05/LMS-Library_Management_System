@@ -1,0 +1,87 @@
+@startuml Flow_3_3_ImportSachHangLoat
+autoactivate on
+
+actor Librarian
+participant "book-import.jsp" as JSP
+participant "book-import-preview.jsp" as Preview
+participant "AuthFilter" as Filter
+participant "BookImportServlet" as Servlet
+participant "BookImportService" as Service
+participant "BookImportValidator" as Validator
+participant "BookDAO" as BDAO
+participant "BookCopyDAO" as BCDAO
+participant "BookImportDAO" as ImportDAO
+participant "AuditLogDAO" as AuditDAO
+
+note over Librarian, AuditDAO : PHASE 1 — Validation & Preview
+
+Librarian -> JSP : 1 : upload file .xlsx (action=upload)
+return
+JSP -> Filter : 2 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 3 : doPost(request, response) [action=upload]
+return
+Servlet -> Service : 4 : validateAndPreview(xlsxFile, librarianId)
+Service -> Service : 4.1 : BookImportWorkbookReader.readRows(file)
+return
+
+alt 4.1a [file sai format / quá 10MB]
+    Service --> Servlet : throw Exception(...)
+    Servlet --> JSP : set errorMessage, forward
+
+else 4.1b [phát hiện lỗi validation]
+    Service -> Validator : 4.2 : validate(rowDTO) cho từng row
+    Validator -> BDAO : findByIsbn(isbn)
+    return
+    Validator --> Service : return List<BookImportError>
+    Service --> Servlet : return errors
+    Servlet --> JSP : hiển thị "Row N: {field} — {lỗi}"
+
+else 4.1c [tất cả row hợp lệ]
+    Service -> Validator : 4.2 : validate(rowDTO) cho từng row
+    return
+    Service --> Servlet : return List<BookImportPreviewDTO>
+    Servlet -> Servlet : 5 : session.setAttribute\n("bookImportPreview", previewList)
+    return
+    Servlet --> Preview : forward book-import-preview.jsp
+    Preview --> Librarian : hiển thị preview để xác nhận
+end
+
+note over Librarian, AuditDAO : PHASE 2 — Commit
+
+Librarian -> Preview : 6 : click "Xác nhận" (action=confirm)
+return
+Preview -> Filter : 7 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 8 : doPost(request, response) [action=confirm]
+return
+Servlet -> Servlet : 9 : session.getAttribute("bookImportPreview")
+return
+Servlet -> Service : 10 : commitImport(previewList, librarianId)
+Service -> ImportDAO : 10.1 : insertBatch\n(status='processing', importedBy=librarianId)
+return
+
+loop Mỗi BookImportPreviewDTO
+    Service -> BDAO : 10.2 : createBook(book, categoryIds[], tagIds[])
+    return
+    Service -> BCDAO : 10.3 : insertBookCopy × quantity\n(auto-gen barcode "LMS{bookId}{seq}")
+    return
+end
+
+note right of Service : All-or-Nothing Transaction (BR-27)
+
+alt 10a [SQLException - ROLLBACK]
+    Service -> ImportDAO : updateBatch(status='failed')
+    return
+    Service --> Servlet : throw DatabaseException(...)
+    Servlet --> JSP : set errorMessage = "Lỗi hệ thống, đã rollback"
+
+else 10b [COMMIT thành công]
+    Service -> ImportDAO : 10.4 : updateBatch\n(status='completed', successRows, failedRows)
+    return
+    Service -> AuditDAO : 10.5 : insertAuditLog(librarianId,\n"BOOK_IMPORT", "BookImportBatch",\nbatchId, null, stats)
+    return
+    Service --> Servlet : return {successRows, totalRows}
+    Servlet -> Librarian : 11 : sendRedirect("?success=imported&count=N")
+end
+@enduml

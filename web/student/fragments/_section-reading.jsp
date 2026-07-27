@@ -62,22 +62,22 @@
                                         </c:choose>
                                     </div>
 
-                                    <!-- Progress Bar (placeholder — no actual reading tracker in DB) -->
+                                    <!-- Progress Bar (Thời hạn mượn thực tế) -->
                                     <div class="mt-4">
                                         <div class="d-flex justify-content-between small mb-1">
                                             <span class="text-on-surface-variant">Trạng thái mượn</span>
-                                            <span class="text-primary-custom fw-bold">
+                                            <span class="fw-bold <c:choose><c:when test="${loan.status eq 'overdue' or loan.percentPassed >= 100}">text-danger</c:when><c:when test="${loan.percentPassed >= 80}">text-warning</c:when><c:otherwise>text-primary-custom</c:otherwise></c:choose>">
                                                 <c:choose>
                                                     <c:when test="${loan.status eq 'overdue'}">Quá hạn</c:when>
-                                                    <c:otherwise>Đang mượn</c:otherwise>
+                                                    <c:otherwise>Đang mượn (${loan.percentPassedInt}%)</c:otherwise>
                                                 </c:choose>
                                             </span>
                                         </div>
-                                        <div class="progress" style="height: 6px;">
-                                            <div class="progress-bar bg-primary-custom"
+                                        <div class="progress" style="height: 6px; background-color: var(--surface-container-high, #e2e8f0);">
+                                            <div class="progress-bar ${loan.barColorClass}"
                                                  role="progressbar"
-                                                 style="width: ${loan.status eq 'overdue' ? '100' : '60'}%;"
-                                                 aria-valuenow="${loan.status eq 'overdue' ? '100' : '60'}"
+                                                 style="width: ${loan.percentPassedInt}%;"
+                                                 aria-valuenow="${loan.percentPassedInt}"
                                                  aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
                                     </div>

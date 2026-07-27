@@ -103,21 +103,6 @@
                                             </thead>
                                             <tbody>
                                                 <c:forEach var="br" items="${borrows}">
-                                                    <!-- Tính phần trăm thời gian đã qua theo ngày nguyên -->
-                                                    <c:set var="startDay" value="${br.startDate.time / 86400000}"/>
-                                                    <c:set var="endDay" value="${br.endDate.time / 86400000}"/>
-                                                    <c:set var="nowDay" value="<%= System.currentTimeMillis() / 86400000.0 %>"/>
-                                                    <c:set var="totalDays" value="${endDay - startDay}"/>
-                                                    <c:set var="elapsedDays" value="${nowDay - startDay}"/>
-                                                    <c:set var="percentPassed" value="${totalDays > 0 ? (elapsedDays * 100.0 / totalDays) : 0}"/>
-                                                    <c:if test="${percentPassed > 100}"><c:set var="percentPassed" value="100"/></c:if>
-                                                    <c:if test="${percentPassed < 0}"><c:set var="percentPassed" value="0"/></c:if>
-                                                    
-                                                    <!-- Chọn màu progress bar -->
-                                                    <c:set var="barColor" value="bg-primary"/>
-                                                    <c:if test="${percentPassed >= 80}"><c:set var="barColor" value="bg-warning"/></c:if>
-                                                    <c:if test="${nowDay > endDay}"><c:set var="barColor" value="bg-danger"/></c:if>
-
                                                     <tr>
                                                         <td class="py-3 px-4">
                                                             <div class="d-flex align-items-center">
@@ -148,19 +133,19 @@
                                                             <fmt:formatDate value="${br.startDate}" pattern="dd/MM/yyyy HH:mm"/>
                                                         </td>
                                                         <td class="py-3">
-                                                            <span class="${nowDay > endDay ? 'text-danger fw-bold' : ''}">
+                                                            <span class="${br.status eq 'overdue' or br.percentPassed >= 100 ? 'text-danger fw-bold' : ''}">
                                                                 <fmt:formatDate value="${br.endDate}" pattern="dd/MM/yyyy HH:mm"/>
                                                             </span>
-                                                            <c:if test="${nowDay > endDay}">
+                                                            <c:if test="${br.status eq 'overdue' or br.percentPassed >= 100}">
                                                                 <span class="badge bg-danger ms-1" style="font-size: 10px;">Quá hạn</span>
                                                             </c:if>
                                                         </td>
                                                         <td class="py-3">
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <div class="progress flex-grow-1" style="height: 6px; border-radius: 3px; background-color: var(--surface-container-high);">
-                                                                    <div class="progress-bar ${barColor}" role="progressbar" style="width: ${percentPassed}%" aria-valuenow="${percentPassed}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                <div class="progress flex-grow-1" style="height: 6px; border-radius: 3px; background-color: var(--surface-container-high, #e2e8f0);">
+                                                                    <div class="progress-bar ${br.barColorClass}" role="progressbar" style="width: ${br.percentPassedInt}%" aria-valuenow="${br.percentPassedInt}" aria-valuemin="0" aria-valuemax="100"></div>
                                                                 </div>
-                                                                <span class="text-muted" style="font-size: 12px;"><fmt:formatNumber value="${percentPassed}" maxFractionDigits="0"/>%</span>
+                                                                <span class="text-muted" style="font-size: 12px;">${br.percentPassedInt}%</span>
                                                             </div>
                                                         </td>
                                                         <td class="py-3 text-center">

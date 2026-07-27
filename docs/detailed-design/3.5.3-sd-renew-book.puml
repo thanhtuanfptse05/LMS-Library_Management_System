@@ -1,0 +1,62 @@
+@startuml Flow_3_5_3_RenewBook
+autoactivate on
+
+actor User
+participant "my-borrowings.jsp" as JSP
+participant "AuthFilter" as Filter
+participant "RenewalServlet" as Servlet
+participant "OnlineCirculationService" as Service
+participant "BorrowRecordDAO" as BRDAO
+participant "ReservationDAO" as ResvDAO
+participant "SystemConfigDAO" as ConfigDAO
+participant "AuditLogDAO" as AuditDAO
+participant "EmailService" as Email
+
+User -> JSP : 1 : click "Renew" on borrowing record
+return
+JSP -> Filter : 2 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 3 : doPost(request, response)
+return
+Servlet -> Service : 4 : renewBook(userId, borrowRecordId, role)
+Service -> BRDAO : 4.1 : findById(conn, borrowRecordId)
+return
+Service -> ConfigDAO : 4.2 : getValue("RENEWAL_MIN_DAYS_BEFORE_DUE")
+return
+Service -> ConfigDAO : 4.3 : getValue("MAX_EXTENSION_COUNT")
+return
+Service -> ConfigDAO : 4.4 : getValue("STUDENT_MAX_BORROW_DAYS")
+return
+
+alt 4a [Condition 1 invalid - not within minimum window - BR-21]
+    Service --> Servlet : throw ValidationException\n("Not eligible for renewal yet")
+    Servlet --> JSP : set errorMessage, forward
+
+else 4b [Condition 2 invalid - extensionCount >= MAX_EXTENSION_COUNT]
+    Service --> Servlet : throw ValidationException\n("Maximum renewals reached ({MAX} times)")
+    Servlet --> JSP : set errorMessage, forward
+
+else 4c [Condition 3 check - is there a waiting queue?]
+    Service -> ResvDAO : 4.5 : hasActivePendingQueue(conn, bookId)
+
+    alt 4c.1 [queue exists - BR-21]
+        ResvDAO --> Service : return true
+        Service --> Servlet : throw ValidationException\n("Book has waiting reservations")
+        Servlet --> JSP : forward
+
+    else 4c.2 [all conditions valid]
+        note over Service : BEGIN Transaction
+        Service -> BRDAO : 5 : extendBorrowRecord\n(conn, borrowRecordId,\nnewEndDate, extensionCount+1)
+        note right : UPDATE BorrowRecord\nSET endDate=endDate+LoanDays\nextensionCount=extensionCount+1
+        return
+        Service -> AuditDAO : 5.1 : insertAuditLog(userId,\n"RENEW_BOOK_ONLINE",\n"BorrowRecord", borrowRecordId, ...)
+        return
+        note over Service : COMMIT Transaction
+        Service -> Email : 5.2 : enqueue(RENEWAL_CONFIRMATION,\nuserId, {newEndDate})
+        note right : Asynchronous
+        return
+        Service --> Servlet : return newEndDate
+        Servlet -> User : 6 : flash "Renewed successfully!\nNew due date: {newEndDate}"
+    end
+end
+@enduml

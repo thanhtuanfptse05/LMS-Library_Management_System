@@ -1,0 +1,87 @@
+@startuml Flow_5_1_DatTruocSachTrucTuyen
+autoactivate on
+
+actor User
+participant "book-detail.jsp" as JSP
+participant "AuthFilter" as Filter
+participant "ReservationServlet" as Servlet
+participant "OnlineCirculationService" as Service
+participant "UserDAO" as UDAO
+participant "FineDAO" as FineDAO
+participant "BorrowRecordDAO" as BRDAO
+participant "ReservationDAO" as ResvDAO
+participant "BookDAO" as BDAO
+participant "AuditLogDAO" as AuditDAO
+participant "EmailService" as Email
+
+User -> JSP : 1 : click "Đặt trước"
+return
+JSP -> Filter : 2 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 3 : doPost(request, response)
+return
+Servlet -> Service : 4 : reserveBook(userId, bookId, role)
+note over Service : BEGIN Transaction\nconn.setAutoCommit(false)
+Service -> UDAO : 4.1 : findByUserId(userId)
+return
+
+alt 4.1a [status != 'active' - tài khoản bị khóa]
+    UDAO --> Service : return User (status=locked)
+    Service --> Servlet : throw ValidationException\n("Tài khoản bị khóa")
+    Servlet --> JSP : set errorMessage, forward
+
+else 4.1b [tài khoản hợp lệ]
+    Service -> FineDAO : 4.2 : hasUnpaidFines(conn, userId)
+
+    alt 4.2a [có nợ phạt - BR-19]
+        FineDAO --> Service : return true
+        Service --> Servlet : throw ValidationException\n("Tài khoản đang nợ phạt")
+        Servlet --> JSP : forward
+
+    else 4.2b [không có nợ phạt]
+        Service -> BRDAO : 4.3 : hasActiveBorrowRecord(conn, userId, bookId)
+        return
+        Service -> ResvDAO : 4.4 : hasActiveReservation(conn, userId, bookId)
+        return
+        Service -> BRDAO : 4.5 : countActiveBorrowsByUser(conn, userId)
+        return
+        note right : So với SystemConfig quota\n+ pending reservations (BR-63)
+
+        alt 4.5a [đang mượn, đã đặt, hoặc vượt quota]
+            Service --> Servlet : throw ValidationException\n("Không đủ điều kiện đặt trước")
+            Servlet --> JSP : forward
+
+        else 4.5b [đủ điều kiện]
+            Service -> BDAO : 4.6 : findByIdForUpdate(conn, bookId)
+            note right : SELECT ... FOR UPDATE\nChống race condition
+            return
+
+            alt 4.6a [availableQuantity > 0 - Sách có sẵn - cấp ngay]
+                Service -> ResvDAO : 5 : insertReservation\n(userId, bookId, queuePosition=0,\nstatus='readypickup',\nendDate=NOW()+HOLD_DAYS)
+                return
+                Service -> BDAO : 5.1 : decrementAvailableQuantity(conn, bookId)
+                return
+                Service -> AuditDAO : 5.2 : insertAuditLog(userId,\n"RESERVE_BOOK_ONLINE",\n"Reservation", reservationId, ...)
+                return
+                note over Service : COMMIT Transaction
+                Service -> Email : 5.3 : enqueue(RESERVATION_READY, userId)
+                note right : Bất đồng bộ — ngoài transaction
+                return
+                Service --> Servlet : return queuePosition=0
+                Servlet -> User : 6 : flash "Đặt trước thành công!\nĐến nhận sách trước {endDate}"
+
+            else 4.6b [availableQuantity = 0 - Hết sách - xếp hàng chờ]
+                Service -> ResvDAO : 5 : getMaxQueuePosition(conn, bookId)
+                return
+                Service -> ResvDAO : 5.1 : insertReservation\n(userId, bookId,\nqueuePosition=maxQueue+1,\nstatus='pending', endDate=NULL)
+                return
+                Service -> AuditDAO : 5.2 : insertAuditLog(userId,\n"RESERVE_BOOK_QUEUE",\n"Reservation", reservationId, ...)
+                return
+                note over Service : COMMIT Transaction
+                Service --> Servlet : return queuePosition=maxQueue+1
+                Servlet -> User : 6 : flash "Đã xếp hàng chờ\ntại vị trí {pos}"
+            end
+        end
+    end
+end
+@enduml

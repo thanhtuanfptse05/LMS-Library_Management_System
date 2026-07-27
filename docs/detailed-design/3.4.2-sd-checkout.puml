@@ -1,0 +1,102 @@
+@startuml Flow_3_4_2_CheckOut
+autoactivate on
+
+actor Librarian
+participant "desk-dashboard.jsp" as JSP
+participant "AuthFilter" as Filter
+participant "CheckOutServlet" as Servlet
+participant "DeskCirculationService" as Service
+participant "UserLookupDAO" as LookupDAO
+participant "UserLockReasonDAO" as LockDAO
+participant "BookCopyDAO" as BCDAO
+participant "BorrowRecordDAO" as BRDAO
+participant "ReservationDAO" as ResvDAO
+participant "BookDAO" as BDAO
+participant "AuditLogDAO" as AuditDAO
+
+Librarian -> JSP : 1 : enter memberCode & barcode, submit
+return
+JSP -> Filter : 2 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 3 : doPost(request, response)
+return
+Servlet -> Service : 4 : processCheckOut(librarianId, memberCode, barcode)
+Service -> LookupDAO : 4.1 : findUserIdByCode(memberCode)
+
+alt 4.1a [memberCode does not exist]
+    LookupDAO --> Service : return null
+    Service --> Servlet : throw IllegalStateException\n("Patron not found")
+    Servlet --> JSP : set errorMessage, forward
+
+else 4.1b [memberCode valid]
+    LookupDAO --> Service : return userId
+    Service -> LockDAO : 4.2 : hasReason(userId, "unpaid")
+
+    alt 4.2a [account has unpaid fines - BR-22]
+        LockDAO --> Service : return true
+        Service --> Servlet : throw IllegalStateException\n("Account has unpaid fines")
+        Servlet --> JSP : set errorMessage, forward
+
+    else 4.2b [no unpaid fines]
+        LockDAO --> Service : return false
+        Service -> BCDAO : 4.3 : findByBarcode(conn, barcode)
+
+        alt 4.3a [barcode does not exist]
+            BCDAO --> Service : return null
+            Service --> Servlet : throw IllegalStateException\n("Barcode does not exist")
+            Servlet --> JSP : forward
+
+        else 4.3b [barcode valid]
+            BCDAO --> Service : return BookCopy
+            Service -> BRDAO : 4.4 : countActiveBorrowsByUser(conn, userId)
+            return
+            note right : Compare against SystemConfig\nSTUDENT/LECTURER_MAX_BORROW_BOOKS
+
+            alt 4.4a [exceeded borrow limit]
+                Service --> Servlet : throw IllegalStateException\n("Borrowing limit reached")
+                Servlet --> JSP : forward
+
+            else 4.4b [quota available]
+                note over Service : BEGIN Transaction\nconn.setAutoCommit(false)
+
+                alt 4.4b.1 [BookCopy.status = 'available' - Walk-in]
+                    Service -> ResvDAO : 5 : hasQueueForBook(conn, bookId)
+
+                    opt 5a [waiting queue exists - BR-23]
+                        ResvDAO --> Service : return true
+                        Service --> Servlet : throw IllegalStateException\n("Book has waiting reservations, walk-in disallowed")
+                        Servlet --> JSP : forward
+                    end
+
+                    Service -> ResvDAO : 5.1 : insertReservation\n(userId, bookId, queuePosition=0,\nstatus='readypickup')
+                    note right : Virtual Reservation queuePosition=0 (BR-23)
+                    return
+                    Service -> BRDAO : 5.2 : insertBorrowRecord\n(userId, bookCopyId, bookId,\nendDate=NOW()+BORROW_DAYS)
+                    return
+                    Service -> BCDAO : 5.3 : updateStatus(bookCopyId, 'borrowed')
+                    return
+                    Service -> BDAO : 5.4 : decrementAvailableQuantity(bookId)
+                    return
+
+                else 4.4b.2 [BookCopy.status = 'reserved' - Pre-reservation]
+                    Service -> ResvDAO : 5 : findMatchingReservation\n(userId, bookCopyId, 'readypickup')
+                    return
+                    Service -> BRDAO : 5.1 : insertBorrowRecord\n(userId, bookCopyId, bookId,\nendDate=NOW()+BORROW_DAYS)
+                    return
+                    Service -> ResvDAO : 5.2 : updateReservationStatus\n(reservationId, 'fulfilled', borrowRecordId)
+                    return
+                    Service -> BCDAO : 5.3 : updateStatus(bookCopyId, 'borrowed')
+                    return
+                    note right : DO NOT decrementAvailableQuantity\n— already decremented when reserved online (BR-29)
+                end
+
+                Service -> AuditDAO : 6 : insertAuditLog(librarianId,\n"CHECKOUT", "BorrowRecord", newId, null, details)
+                return
+                note over Service : COMMIT Transaction
+                Service --> Servlet : return void
+                Servlet -> Librarian : 7 : set successMessage "Check-out successful"
+            end
+        end
+    end
+end
+@enduml

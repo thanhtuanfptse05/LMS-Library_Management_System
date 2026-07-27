@@ -1,0 +1,60 @@
+@startuml Flow_3_2_2_SingleUserCreation
+autoactivate on
+
+actor Admin
+participant "create-user.jsp" as JSP
+participant "AuthFilter" as Filter
+participant "CreateUserServlet" as Servlet
+participant "UserService" as Service
+participant "UserDAO" as DAO
+participant "AuditLogDAO" as AuditDAO
+
+Admin -> JSP : 1 : fill form (email, role, code,\nfullName,...) and submit
+return
+JSP -> Filter : 2 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 3 : doPost(request, response)
+return
+Servlet -> Servlet : 4 : construct UserDTO from request params
+return
+Servlet -> Service : 5 : createUser(userDTO, creatorId)
+Service -> Service : 5.1 : validateUserDTO(dto, isNew=true)
+return
+
+alt 5.1a [validateUserDTO failed - missing field, invalid email format]
+    Service --> Servlet : throw Exception(...)
+    Servlet -> Servlet : set errorMessage
+    return
+    Servlet --> JSP : forward create-user.jsp
+
+else 5.1b [valid data]
+    Service -> Service : 5.2 : BCrypt.hashpw(email, gensalt(10))
+    note right : Default password = email (BR-12)
+    return
+    Service -> DAO : 5.3 : createUserWithProfile(user, profile,\ncode, major, enrollmentYear, department)
+    note right : BEGIN Transaction\nINSERT "User" → INSERT MemberProfile\n→ INSERT Student/Lecturer/Librarian/...\nCOMMIT
+
+    alt 5.3a [duplicate email or code - UNIQUE constraint]
+        DAO --> Service : return false
+        Service --> Servlet : throw Exception("Account already exists")
+        Servlet --> JSP : display error
+
+    else 5.3b [SQLException in transaction]
+        DAO -> DAO : ROLLBACK
+        return
+        DAO --> Service : throw SQLException
+        Service --> Servlet : propagate exception
+        Servlet -> Servlet : set errorMessage = "System error"
+        return
+        Servlet --> JSP : forward
+
+    else 5.3c [creation successful]
+        DAO --> Service : return newUserId
+        Service -> AuditDAO : 5.4 : insertAuditLog(creatorId,\n"CREATE_USER", "User", newUserId,\nnull, newValues)
+        return
+        Service --> Servlet : success
+        Servlet -> Admin : 6 : sendRedirect("/admin/users?success=created")
+    end
+    deactivate Service
+end
+@enduml

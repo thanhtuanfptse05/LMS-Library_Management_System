@@ -1,0 +1,36 @@
+@startuml Flow_3_2_NhapKhoBanSaoSach
+autoactivate on
+
+actor Librarian
+participant "book-copy-form.jsp" as JSP
+participant "AuthFilter" as Filter
+participant "BookCopyServlet" as Servlet
+participant "BookCopyService" as Service
+participant "BookCopyDAO" as BCDAO
+participant "AuditLogDAO" as AuditDAO
+
+Librarian -> JSP : 1 : nhập barcode + location, submit
+return
+JSP -> Filter : 2 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 3 : doPost(request, response) [action=create]
+return
+Servlet -> Service : 4 : createBookCopy(bookCopyDTO, librarianId)
+Service -> BCDAO : 4.1 : findByBarcode(barcode)
+
+alt 4.1a [barcode đã tồn tại - UNIQUE constraint]
+    BCDAO --> Service : return BookCopy
+    Service --> Servlet : throw ValidationException\n("Mã vạch đã tồn tại: {bookTitle}")
+    Servlet --> JSP : set errorMessage, forward
+
+else 4.1b [barcode mới, hợp lệ]
+    BCDAO --> Service : return null
+    Service -> BCDAO : 4.2 : insertBookCopy(bookId, barcode,\nlocation, condition='good', status='available')
+    note right : BEGIN Transaction\nINSERT BookCopy\nUPDATE Book SET totalQuantity+1, availableQuantity+1\nCOMMIT (BR-17)
+    return
+    Service -> AuditDAO : 4.3 : insertAuditLog(librarianId,\n"CREATE_BOOK_COPY", "BookCopy",\nnewId, null, copyJson)
+    return
+    Service --> Servlet : return newBookCopyId
+    Servlet -> Librarian : 5 : sendRedirect("?success=created")
+end
+@enduml

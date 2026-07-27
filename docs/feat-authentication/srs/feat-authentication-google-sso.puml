@@ -1,0 +1,53 @@
+@startuml Flow_1_3_DangNhapGoogleSSO
+autoactivate on
+
+actor User
+participant "AuthFilter" as Filter
+participant "GoogleLoginServlet" as Servlet
+participant "GoogleOAuth\n(GoogleSSOUtil)" as Google
+participant "UserDAO" as DAO
+participant "AuthService" as Service
+participant "MemberProfileDAO" as ProfDAO
+
+User -> Filter : 1 : GET /auth/google (click nút Google)
+return
+Filter -> Servlet : 2 : doGet(request, response)
+return
+Servlet -> User : 3 : sendRedirect(GoogleSSOUtil.getAuthorizationUrl())
+User -> Google : 4 : đăng nhập & đồng ý cấp quyền
+return
+Google -> Servlet : 5 : GET /auth/google/callback?code=...
+return
+Servlet -> Google : 6 : GoogleSSOUtil.getEmailFromCode(code)
+return
+Servlet -> DAO : 7 : findByEmail(email)
+
+alt 7a [email KHÔNG tồn tại trong LMS - BR-26]
+    DAO --> Servlet : return null
+    Servlet --> User : sendRedirect("/login?error=notregistered")
+
+else 7b [email tồn tại]
+    DAO --> Servlet : return User
+    Servlet -> Service : 8 : isLockedOnlyForUnpaid(userId)
+    return
+
+    alt 8a [tài khoản bị khóa - adminban/securitybreach]
+        opt 8a.1 [lockedUntil <= NOW()]
+            Servlet -> DAO : unlockAccount(userId)
+            return
+        end
+        Servlet --> User : sendRedirect("/login?error=locked")
+
+    else 8b [tài khoản active hoặc chỉ khóa do unpaid]
+        Servlet -> ProfDAO : 9 : findByUserId(userId)
+        return
+        Servlet -> Servlet : 10 : session.setAttribute\n(userId, role, email, fullName)
+        return
+        opt 10a [isLockedOnlyForUnpaid = true]
+            Servlet -> Servlet : session.setAttribute("unpaidWarning", true)
+            return
+        end
+        Servlet -> User : 11 : sendRedirect(getRedirectByRole(role))
+    end
+end
+@enduml

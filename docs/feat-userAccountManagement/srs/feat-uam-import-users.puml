@@ -1,0 +1,76 @@
+@startuml Flow_2_2_ImportTaiKhoanHangLoat
+autoactivate on
+
+actor Admin
+participant "import-user.jsp" as JSP
+participant "preview-import.jsp" as Preview
+participant "AuthFilter" as Filter
+participant "ImportUserServlet" as Servlet
+participant "UserService" as Service
+participant "UserDAO" as DAO
+participant "AuditLogDAO" as AuditDAO
+
+note over Admin, AuditDAO : PHASE 1 — Validation & Preview
+
+Admin -> JSP : 1 : upload file .xlsx (action=upload)
+return
+JSP -> Filter : 2 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 3 : doPost(request, response) [action=upload]
+return
+Servlet -> Service : 4 : đọc file Apache POI,\nparse từng row → List<UserDTO>
+return
+
+alt 4a [file sai định dạng / quá 10MB]
+    Service --> Servlet : throw Exception(...)
+    Servlet -> Servlet : set errorMessage = "File không hợp lệ"
+    return
+    Servlet --> JSP : forward
+
+else 4b [phát hiện row lỗi - email trùng, thiếu field]
+    Service -> DAO : 4.1 : checkEmailExists(email) cho từng row
+    return
+    DAO --> Service : found duplicate
+    Service --> Servlet : return List<ImportError>\n{rowNumber, columnName, errorMessage}
+    Servlet -> Servlet : set errors = errorList
+    return
+    Servlet --> JSP : hiển thị "Row N: field — mô tả lỗi"
+
+else 4c [tất cả row hợp lệ]
+    Service -> DAO : 4.1 : checkEmailExists(email) cho từng row
+    return
+    Service --> Servlet : return List<UserDTO>
+    Servlet -> Servlet : 5 : session.setAttribute\n("importPreview", userDTOList)
+    return
+    Servlet --> Preview : forward preview-import.jsp
+    Preview --> Admin : hiển thị preview để xác nhận
+end
+
+note over Admin, AuditDAO : PHASE 2 — Commit
+
+Admin -> Preview : 6 : click "Xác nhận nhập" (action=confirm)
+return
+Preview -> Filter : 7 : doFilter(request, response, chain)
+return
+Filter -> Servlet : 8 : doPost(request, response) [action=confirm]
+return
+Servlet -> Servlet : 9 : session.getAttribute("importPreview")
+return
+Servlet -> DAO : 10 : Batch createUserWithProfile()\ncho từng UserDTO
+note right : BEGIN Transaction\nBatch INSERT "User" + MemberProfile + bảng role\nCOMMIT — All-or-Nothing (BR-11)
+
+alt 10a [SQLException trong Batch Insert]
+    DAO -> DAO : ROLLBACK
+    return
+    DAO --> Servlet : throw SQLException
+    Servlet -> Servlet : set errorMessage = "Lỗi hệ thống, đã rollback"
+    return
+    Servlet --> JSP : forward
+
+else 10b [commit thành công]
+    DAO --> Servlet : return count
+    Servlet -> AuditDAO : 11 : insertAuditLog(adminId,\n"BULK_USER_IMPORT", "User",\nnull, null, "{N} users")
+    return
+    Servlet -> Admin : 12 : sendRedirect\n("/admin/users?success=imported&count=N")
+end
+@enduml
