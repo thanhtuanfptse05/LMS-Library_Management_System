@@ -90,7 +90,6 @@
                                     <option value="">Mọi trạng thái</option>
                                     <option value="available" ${selectedStatus == 'available' ? 'selected' : ''}>Sẵn sàng</option>
                                     <option value="borrowed" ${selectedStatus == 'borrowed' ? 'selected' : ''}>Đang mượn</option>
-                                    <option value="reserved" ${selectedStatus == 'reserved' ? 'selected' : ''}>Đặt trước</option>
                                     <option value="incident" ${selectedStatus == 'incident' ? 'selected' : ''}>Hỏng hoặc mất</option>
                                     <option value="unavailable" ${selectedStatus == 'unavailable' ? 'selected' : ''}>Ngừng lưu thông</option>
                                 </select>
@@ -115,7 +114,6 @@
                     <c:choose>
                         <c:when test="${selectedStatus == 'available'}"><c:set var="selectedStatusLabel" value="Sẵn sàng" /></c:when>
                         <c:when test="${selectedStatus == 'borrowed'}"><c:set var="selectedStatusLabel" value="Đang mượn" /></c:when>
-                        <c:when test="${selectedStatus == 'reserved'}"><c:set var="selectedStatusLabel" value="Đặt trước" /></c:when>
                         <c:when test="${selectedStatus == 'incident'}"><c:set var="selectedStatusLabel" value="Hỏng hoặc mất" /></c:when>
                         <c:when test="${selectedStatus == 'unavailable'}"><c:set var="selectedStatusLabel" value="Ngừng lưu thông" /></c:when>
                     </c:choose>
@@ -135,10 +133,10 @@
                         </div>
                     </c:if>
 
-                    <div class="bm-rule-note bm-rule-note--compact mb-3"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đã đặt trước hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
+                    <div class="bm-rule-note bm-rule-note--compact mb-3"><strong>Quy tắc:</strong> Không thể sửa bản sao đang được mượn, đang giữ riêng hoặc đang chờ xử lý sự cố. Mã vạch không thể thay đổi sau khi tạo.</div>
 
                     <%-- Thống kê tổng quan về các bản sao (Tổng, Sẵn sàng, Đang mượn, Hỏng/Mất) --%>
-                    <div class="bm-list-stats bm-list-stats--five mb-3">
+                    <div class="bm-list-stats bm-list-stats--four mb-3">
                         <article class="bm-list-stat">
                             <span class="material-symbols-outlined">inventory_2</span>
                             <div>
@@ -158,13 +156,6 @@
                             <div>
                                 <p class="bm-stat-card__label mb-1">Đang mượn</p>
                                 <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.borrowedCopies}" /></p>
-                            </div>
-                        </article>
-                        <article class="bm-list-stat bm-list-stat--warning">
-                            <span class="material-symbols-outlined">event_available</span>
-                            <div>
-                                <p class="bm-stat-card__label mb-1">Đặt trước</p>
-                                <p class="bm-stat-card__value mb-0"><fmt:formatNumber value="${summary.reservedCopies}" /></p>
                             </div>
                         </article>
                         <article class="bm-list-stat bm-list-stat--danger">
@@ -215,7 +206,7 @@
                                                 </c:choose>
                                             </td>
                                             <td>
-                                                <%-- Trạng thái lưu thông/giao dịch (Sẵn sàng, Đang mượn, Đặt trước, Ngừng lưu thông) --%>
+                                                <%-- Trạng thái lưu thông/giao dịch (Sẵn sàng, Đang mượn, Giữ riêng, Ngừng lưu thông) --%>
                                                 <c:choose>
                                                     <c:when test="${copy.removedFromInventory}">
                                                         <span class="bm-badge bm-badge--neutral">Đã loại khỏi kho</span>
@@ -227,7 +218,7 @@
                                                         <span class="bm-badge bm-badge--info">Đang mượn</span>
                                                     </c:when>
                                                     <c:when test="${copy.status == 'reserved'}">
-                                                        <span class="bm-badge bm-badge--warning">Đặt trước</span>
+                                                        <span class="bm-badge bm-badge--warning">Giữ riêng</span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span class="bm-badge bm-badge--neutral">Ngừng lưu thông</span>

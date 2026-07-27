@@ -160,7 +160,7 @@ public class BookCopyServlet extends HttpServlet {
     }
 
     private String normalizeStatus(String status) {
-        return "available".equals(status) || "borrowed".equals(status) || "reserved".equals(status)
+        return "available".equals(status) || "borrowed".equals(status)
                 || "unavailable".equals(status) || "incident".equals(status) ? status : null;
     }
 

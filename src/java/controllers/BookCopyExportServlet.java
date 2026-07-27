@@ -82,7 +82,7 @@ public class BookCopyExportServlet extends HttpServlet {
             return "Đang mượn";
         }
         if ("reserved".equals(status)) {
-            return "Đặt trước";
+            return "Giữ riêng";
         }
         if ("unavailable".equals(status)) {
             return "Ngừng lưu thông";
@@ -91,7 +91,7 @@ public class BookCopyExportServlet extends HttpServlet {
     }
 
     private String normalizeStatus(String status) {
-        return "available".equals(status) || "borrowed".equals(status) || "reserved".equals(status)
+        return "available".equals(status) || "borrowed".equals(status)
                 || "unavailable".equals(status) || "incident".equals(status) ? status : null;
     }
 
