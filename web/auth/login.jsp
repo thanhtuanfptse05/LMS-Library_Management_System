@@ -464,15 +464,7 @@
                     }, 800);
                 });
 
-                // Parallax effect on hero image
-                document.addEventListener('mousemove', (e) => {
-                    const hero = document.querySelector('.hero-bg-img');
-                    if (hero) {
-                        const moveX = (e.clientX - window.innerWidth / 2) * 0.005;
-                        const moveY = (e.clientY - window.innerHeight / 2) * 0.005;
-                        hero.style.transform = `scale(1.05) translate(${moveX}px, ${moveY}px)`;
-                    }
-                });
+           
             </script>
 
         </body>
