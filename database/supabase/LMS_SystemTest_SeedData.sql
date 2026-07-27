@@ -171,10 +171,10 @@ VALUES (9902, 'SE_TEST_FINE', 'Information Assurance', 2023);
 -- Book 994: Dùng cho TS6 TCRenewBookOnline (lecturer1 đang mượn, tách riêng khỏi TS4)
 INSERT INTO Book (bookId, isbn, title, author, publisher, publicationYear, price, totalQuantity, availableQuantity, status, createdAt, updatedAt)
 VALUES 
-(991, '978-0134685991', 'Giáo Trình Kiểm Thử LMS 2026',       'Joshua Bloch', 'NXB Đại Học FPT', 2024, 185000, 10, 1, 'available', NOW(), NOW()),
-(992, '978-0134685992', 'Lập Trình Java Servlet Monolith',       'FPT Author',   'NXB Giáo Dục',    2024, 150000,  5, 4, 'available', NOW(), NOW()),
-(993, '978-0134685993', 'Thiết Kế Kiến Trúc Hệ Thống LMS',      'FPT Software', 'NXB Đại Học FPT', 2024, 200000,  5, 5, 'available', NOW(), NOW()),
-(994, '978-0134685994', 'Kiến Trúc Phần Mềm Hướng Dịch Vụ',     'FPT Software', 'NXB Đại Học FPT', 2024, 175000,  3, 2, 'available', NOW(), NOW());
+(991, '978-0134685991', 'Giáo Trình Kiểm Thử LMS 2026',       'Joshua Bloch', 'NXB Đại Học FPT', 2024, 125000, 10, 1, 'available', NOW(), NOW()),
+(992, '978-0134685992', 'Lập Trình Java Servlet Monolith',       'FPT Author',   'NXB Giáo Dục',    2024, 110000,  5, 4, 'available', NOW(), NOW()),
+(993, '978-0134685993', 'Thiết Kế Kiến Trúc Hệ Thống LMS',      'FPT Software', 'NXB Đại Học FPT', 2024, 135000,  5, 5, 'available', NOW(), NOW()),
+(994, '978-0134685994', 'Kiến Trúc Phần Mềm Hướng Dịch Vụ',     'FPT Software', 'NXB Đại Học FPT', 2024, 120000,  3, 2, 'available', NOW(), NOW());
 
 -- 3b. Tạo Ánh xạ Category & Tag mồi cho TS5 (Discovery)
 INSERT INTO BookCategory (bookId, categoryId)

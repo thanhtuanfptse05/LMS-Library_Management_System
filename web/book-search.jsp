@@ -212,9 +212,8 @@
                                                 </span>
                                                 <input type="text" name="keyword"
                                                     class="form-control border-start-0 ps-0"
-                                                    placeholder="Tên sách, tác giả..." value="<c:out value="
-                                                    ${param.keyword}" />"
-                                                style="border-color: var(--outline-variant); box-shadow: none;">
+                                                    placeholder="Tên sách, tác giả..." value="<c:out value="${keyword}" />"
+                                                    style="border-color: var(--outline-variant); box-shadow: none;">
                                             </div>
                                         </div>
 
@@ -223,14 +222,13 @@
                                             <label class="form-label filter-section-title">Thể loại</label>
                                             <div class="d-flex flex-wrap gap-2">
                                                 <input type="radio" class="btn-check" name="categoryId" id="cat_0"
-                                                    value="0" ${empty param.categoryId or param.categoryId=='0'
-                                                    ? 'checked' : '' }>
+                                                    value="0" ${empty categoryId or categoryId == 0 ? 'checked' : ''}>
                                                 <label class="btn btn-outline-category btn-sm" for="cat_0">Tất
                                                     cả</label>
                                                 <c:forEach var="cat" items="${categories}">
                                                     <input type="radio" class="btn-check" name="categoryId"
                                                         id="cat_${cat.categoryId}" value="${cat.categoryId}"
-                                                        ${param.categoryId==cat.categoryId ? 'checked' : '' }>
+                                                        ${categoryId == cat.categoryId ? 'checked' : ''}>
                                                     <label class="btn btn-outline-category btn-sm"
                                                         for="cat_${cat.categoryId}">
                                                         <c:out value="${cat.name}" />
@@ -369,15 +367,11 @@
                                                                     <c:choose>
                                                                         <c:when
                                                                             test="${fn:startsWith(book.imagePath, 'http://') or fn:startsWith(book.imagePath, 'https://')}">
-                                                                            <img src="<c:out value="
-                                                                                ${book.imagePath}" />" alt="Bìa sách
-                                                                            <c:out value="${book.title}" />"
+                                                                            <img src="<c:out value="${book.imagePath}" />" alt="Bìa sách <c:out value="${book.title}" />"
                                                                             onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
                                                                         </c:when>
                                                                         <c:otherwise>
-                                                                            <img src="${pageContext.request.contextPath}/book-images/<c:out value="
-                                                                                ${book.imagePath}" />" alt="Bìa sách
-                                                                            <c:out value="${book.title}" />"
+                                                                            <img src="${pageContext.request.contextPath}/book-images/<c:out value="${book.imagePath}" />" alt="Bìa sách <c:out value="${book.title}" />"
                                                                             onerror="this.src='${pageContext.request.contextPath}/assets/images/book-placeholder.jpg'">
                                                                         </c:otherwise>
                                                                     </c:choose>
@@ -473,41 +467,54 @@
                                             </c:forEach>
                                         </div>
 
-                                        <!-- Prepare multi tag params for pagination -->
-                                        <c:set var="tagParams" value="" />
-                                        <c:if test="${not empty tagIds}">
-                                            <c:forEach var="tId" items="${tagIds}">
-                                                <c:set var="tagParams" value="${tagParams}&tagId=${tId}" />
-                                            </c:forEach>
-                                        </c:if>
-
                                         <!-- Phân trang Bootstrap -->
                                         <c:if test="${totalPages > 1}">
                                             <nav aria-label="Phân trang tìm kiếm" class="mt-4">
                                                 <ul class="pagination justify-content-center">
                                                     <!-- Nút Previous -->
                                                     <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                                        <a class="page-link"
-                                                            href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}${tagParams}&availableOnly=${param.availableOnly}&page=${currentPage - 1}"
-                                                            aria-label="Trang trước">
+                                                        <c:url var="prevPageUrl" value="book-search">
+                                                            <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}" /></c:if>
+                                                            <c:if test="${categoryId > 0}"><c:param name="categoryId" value="${categoryId}" /></c:if>
+                                                            <c:if test="${not empty filterStatus}"><c:param name="filterStatus" value="${filterStatus}" /></c:if>
+                                                            <c:forEach var="tId" items="${selectedTags}">
+                                                                <c:param name="tagId" value="${tId}" />
+                                                            </c:forEach>
+                                                            <c:param name="page" value="${currentPage - 1}" />
+                                                        </c:url>
+                                                        <a class="page-link" href="${prevPageUrl}" aria-label="Trang trước">
                                                             <span aria-hidden="true">&laquo;</span>
                                                         </a>
                                                     </li>
 
                                                     <!-- Số trang -->
                                                     <c:forEach begin="1" end="${totalPages}" var="i">
+                                                        <c:url var="pageItemUrl" value="book-search">
+                                                            <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}" /></c:if>
+                                                            <c:if test="${categoryId > 0}"><c:param name="categoryId" value="${categoryId}" /></c:if>
+                                                            <c:if test="${not empty filterStatus}"><c:param name="filterStatus" value="${filterStatus}" /></c:if>
+                                                            <c:forEach var="tId" items="${selectedTags}">
+                                                                <c:param name="tagId" value="${tId}" />
+                                                            </c:forEach>
+                                                            <c:param name="page" value="${i}" />
+                                                        </c:url>
                                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                            <a class="page-link"
-                                                                href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}${tagParams}&availableOnly=${param.availableOnly}&page=${i}">${i}</a>
+                                                            <a class="page-link" href="${pageItemUrl}">${i}</a>
                                                         </li>
                                                     </c:forEach>
 
                                                     <!-- Nút Next -->
-                                                    <li
-                                                        class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                                        <a class="page-link"
-                                                            href="book-search?keyword=${param.keyword}&categoryId=${param.categoryId}${tagParams}&availableOnly=${param.availableOnly}&page=${currentPage + 1}"
-                                                            aria-label="Trang tiếp theo">
+                                                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                                        <c:url var="nextPageUrl" value="book-search">
+                                                            <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}" /></c:if>
+                                                            <c:if test="${categoryId > 0}"><c:param name="categoryId" value="${categoryId}" /></c:if>
+                                                            <c:if test="${not empty filterStatus}"><c:param name="filterStatus" value="${filterStatus}" /></c:if>
+                                                            <c:forEach var="tId" items="${selectedTags}">
+                                                                <c:param name="tagId" value="${tId}" />
+                                                            </c:forEach>
+                                                            <c:param name="page" value="${currentPage + 1}" />
+                                                        </c:url>
+                                                        <a class="page-link" href="${nextPageUrl}" aria-label="Trang tiếp theo">
                                                             <span aria-hidden="true">&raquo;</span>
                                                         </a>
                                                     </li>

@@ -174,16 +174,21 @@ public class BookSearchServlet extends HttpServlet {
                 }
             }
             totalBooks = books.size();
+            totalPages = (int) Math.ceil((double) totalBooks / PAGE_SIZE);
+            if (totalPages < 1) {
+                totalPages = 1;
+            }
+            if (page > totalPages) {
+                page = totalPages;
+            }
+            int fromIndex = (page - 1) * PAGE_SIZE;
+            int toIndex = Math.min(fromIndex + PAGE_SIZE, totalBooks);
+            if (fromIndex >= 0 && fromIndex < totalBooks) {
+                books = books.subList(fromIndex, toIndex);
+            } else if (totalBooks == 0) {
+                books = new java.util.ArrayList<>();
+            }
         }
-        
-        request.setAttribute("books", books);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("filterStatus", filterStatus);
-        
-        request.setAttribute("borrowedBookIds", borrowedBookIds);
-        request.setAttribute("pendingBookIds", pendingBookIds);
-        request.setAttribute("pickupBookIds", pickupBookIds);
         
         request.setAttribute("books", books);
         request.setAttribute("categories", categories);
@@ -193,8 +198,13 @@ public class BookSearchServlet extends HttpServlet {
         request.setAttribute("tagIds", tagIdParams); // Gửi mảng string cho URL
         request.setAttribute("selectedTags", selectedTags); // Gửi List Integer để dùng trong c:if
         request.setAttribute("availableOnly", availableOnly);
+        request.setAttribute("filterStatus", filterStatus);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
+        
+        request.setAttribute("borrowedBookIds", borrowedBookIds);
+        request.setAttribute("pendingBookIds", pendingBookIds);
+        request.setAttribute("pickupBookIds", pickupBookIds);
         
         request.getRequestDispatcher("/book-search.jsp").forward(request, response);
     }

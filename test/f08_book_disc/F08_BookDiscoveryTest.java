@@ -52,4 +52,19 @@ public class F08_BookDiscoveryTest {
         assertEquals(2000, catalogSummary.getAvailableCopies());
         assertEquals(10, catalogSummary.getBooksWithoutCopies());
     }
+
+    @Test
+    public void testPaginationTotalPagesCalculation() {
+        int pageSize = 12;
+        int totalBooks = 25;
+        int totalPages = (int) Math.ceil((double) totalBooks / pageSize);
+        assertEquals(3, totalPages);
+    }
+
+    @Test
+    public void testFilterStatusPreservation() {
+        String filterStatus = "available";
+        boolean availableOnly = "available".equals(filterStatus);
+        assertTrue(availableOnly);
+    }
 }

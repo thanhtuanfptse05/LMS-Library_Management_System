@@ -16,7 +16,7 @@ books_data = [
         "author": "Joshua Bloch",
         "publisher": "Addison-Wesley",
         "publicationYear": 2018,
-        "price": 850000.0,
+        "price": 125000.0,
         "categories": "Computer Science",
         "tags": "Textbook;Coding;Reference"
     },
@@ -26,7 +26,7 @@ books_data = [
         "author": "Robert C. Martin",
         "publisher": "Prentice Hall",
         "publicationYear": 2008,
-        "price": 650000.0,
+        "price": 110000.0,
         "categories": "Computer Science",
         "tags": "Textbook;Coding"
     },
@@ -36,17 +36,17 @@ books_data = [
         "author": "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
         "publisher": "Addison-Wesley",
         "publicationYear": 1994,
-        "price": 950000.0,
+        "price": 135000.0,
         "categories": "Computer Science",
         "tags": "Reference;Theoretical"
     },
     {
-        "isbn": "9781119560822",
+        "isbn": "9781119560821",
         "title": "Corporate Finance (12th Edition)",
         "author": "Stephen Ross, Randolph Westerfield, Jeffrey Jaffe",
         "publisher": "Wiley",
         "publicationYear": 2019,
-        "price": 1200000.0,
+        "price": 140000.0,
         "categories": "Economics & Finance",
         "tags": "Textbook;CaseStudy"
     },
@@ -56,7 +56,7 @@ books_data = [
         "author": "Robert Sedgewick, Kevin Wayne",
         "publisher": "Addison-Wesley",
         "publicationYear": 2011,
-        "price": 900000.0,
+        "price": 130000.0,
         "categories": "Computer Science",
         "tags": "Textbook;Coding;Theoretical"
     },
@@ -66,7 +66,7 @@ books_data = [
         "author": "N. Gregory Mankiw",
         "publisher": "Worth Publishers",
         "publicationYear": 2015,
-        "price": 800000.0,
+        "price": 115000.0,
         "categories": "Economics & Finance",
         "tags": "Textbook;Theoretical"
     },
@@ -76,7 +76,7 @@ books_data = [
         "author": "Robert Garner, Peter Ferdinand, Stephanie Lawson",
         "publisher": "Oxford University Press",
         "publicationYear": 2016,
-        "price": 550000.0,
+        "price": 85000.0,
         "categories": "Politics & International Relations",
         "tags": "Introduction;Textbook"
     },
@@ -86,7 +86,7 @@ books_data = [
         "author": "Martin Kleppmann",
         "publisher": "O'Reilly Media",
         "publicationYear": 2017,
-        "price": 1100000.0,
+        "price": 145000.0,
         "categories": "Computer Science",
         "tags": "Reference;Advanced"
     },
@@ -96,7 +96,7 @@ books_data = [
         "author": "Stuart Russell, Peter Norvig",
         "publisher": "Pearson",
         "publicationYear": 2010,
-        "price": 1500000.0,
+        "price": 150000.0,
         "categories": "Computer Science",
         "tags": "Textbook;AI_Driven;Advanced"
     },
@@ -106,7 +106,7 @@ books_data = [
         "author": "David J. Griffiths",
         "publisher": "Pearson",
         "publicationYear": 2012,
-        "price": 750000.0,
+        "price": 105000.0,
         "categories": "Physics",
         "tags": "Textbook;Theoretical"
     },
@@ -116,7 +116,7 @@ books_data = [
         "author": "Lisa A. Urry, Michael L. Cain",
         "publisher": "Pearson",
         "publicationYear": 2016,
-        "price": 1600000.0,
+        "price": 148000.0,
         "categories": "Biology & Ecology",
         "tags": "Textbook;Reference"
     },
@@ -126,7 +126,7 @@ books_data = [
         "author": "John D. Cutnell, Kenneth W. Johnson",
         "publisher": "Wiley",
         "publicationYear": 2012,
-        "price": 700000.0,
+        "price": 95000.0,
         "categories": "Physics",
         "tags": "Introduction;Textbook"
     },
@@ -136,7 +136,7 @@ books_data = [
         "author": "Francis Carey, Robert Giuliano",
         "publisher": "McGraw-Hill Education",
         "publicationYear": 2013,
-        "price": 1300000.0,
+        "price": 138000.0,
         "categories": "Chemistry",
         "tags": "Textbook;Experimental"
     },
@@ -146,7 +146,7 @@ books_data = [
         "author": "Gerard J. Tortora, Berdell R. Funke",
         "publisher": "Pearson",
         "publicationYear": 2009,
-        "price": 1420000.0,
+        "price": 142000.0,
         "categories": "Biology & Ecology;Medicine & Health Sciences",
         "tags": "Textbook;LabManual"
     },
@@ -156,7 +156,7 @@ books_data = [
         "author": "Gerard J. Tortora, Bryan H. Derrickson",
         "publisher": "Wiley",
         "publicationYear": 2011,
-        "price": 1800000.0,
+        "price": 150000.0,
         "categories": "Medicine & Health Sciences",
         "tags": "Textbook;Reference"
     },
@@ -166,7 +166,7 @@ books_data = [
         "author": "Jeff Madura",
         "publisher": "Cengage Learning",
         "publicationYear": 2013,
-        "price": 600000.0,
+        "price": 75000.0,
         "categories": "Business Administration",
         "tags": "Introduction;Textbook"
     },
@@ -176,7 +176,7 @@ books_data = [
         "author": "Philip Kotler, Kevin Lane Keller",
         "publisher": "Pearson",
         "publicationYear": 2015,
-        "price": 1150000.0,
+        "price": 120000.0,
         "categories": "Business Administration",
         "tags": "Textbook;CaseStudy;Strategic"
     },
@@ -186,7 +186,7 @@ books_data = [
         "author": "H. Stephen Stoker",
         "publisher": "Cengage Learning",
         "publicationYear": 2015,
-        "price": 980000.0,
+        "price": 118000.0,
         "categories": "Chemistry;Pharmacy & Biochemistry",
         "tags": "Textbook;LabManual"
     },
@@ -196,7 +196,7 @@ books_data = [
         "author": "Jaap Hage, Bram Akkermans",
         "publisher": "Springer",
         "publicationYear": 2014,
-        "price": 670000.0,
+        "price": 88000.0,
         "categories": "Law & Legal Studies",
         "tags": "Introduction;Textbook"
     },
@@ -206,7 +206,7 @@ books_data = [
         "author": "S. Marc Breedlove",
         "publisher": "Oxford University Press",
         "publicationYear": 2015,
-        "price": 850000.0,
+        "price": 98000.0,
         "categories": "Psychology",
         "tags": "Textbook;Behavioral"
     },
@@ -216,7 +216,7 @@ books_data = [
         "author": "Ben Shneiderman, Catherine Plaisant",
         "publisher": "Pearson",
         "publicationYear": 2016,
-        "price": 930000.0,
+        "price": 128000.0,
         "categories": "Computer Science;Arts & Design",
         "tags": "Reference;Visual_Design"
     },
@@ -226,7 +226,7 @@ books_data = [
         "author": "Ian Sommerville",
         "publisher": "Pearson",
         "publicationYear": 2015,
-        "price": 950000.0,
+        "price": 132000.0,
         "categories": "Computer Science",
         "tags": "Textbook;Management"
     },
@@ -236,7 +236,7 @@ books_data = [
         "author": "Neha Narkhede, Gwen Shapira, Todd Palino",
         "publisher": "O'Reilly Media",
         "publicationYear": 2017,
-        "price": 650000.0,
+        "price": 92000.0,
         "categories": "Computer Science",
         "tags": "Reference;Advanced"
     },
@@ -246,7 +246,7 @@ books_data = [
         "author": "John Sonmez",
         "publisher": "Manning Publications",
         "publicationYear": 2014,
-        "price": 450000.0,
+        "price": 65000.0,
         "categories": "Soft Skills",
         "tags": "Reference;Management"
     },
@@ -256,7 +256,7 @@ books_data = [
         "author": "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
         "publisher": "MIT Press",
         "publicationYear": 2009,
-        "price": 1400000.0,
+        "price": 145000.0,
         "categories": "Computer Science",
         "tags": "Textbook;Theoretical;Advanced"
     }
