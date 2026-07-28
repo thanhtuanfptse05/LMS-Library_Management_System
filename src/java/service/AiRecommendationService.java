@@ -64,21 +64,30 @@ public class AiRecommendationService {
             return null;
         }
 
-        LOGGER.log(Level.INFO, "API Key (masked): {0}", new Object[]{
-                        AiConfig.getGeminiApiKey().length() > 8
-                                ? AiConfig.getGeminiApiKey().substring(0, 8) + "..."
-                                : AiConfig.getGeminiApiKey() });
+        // Kiểm tra API Key — nếu vẫn là MISSING thì dừng sớm, không cần gọi mạng
+        String apiKey = AiConfig.getGeminiApiKey();
+        if ("MISSING_API_KEY".equals(apiKey)) {
+            LOGGER.log(Level.SEVERE, "[AI-SVC] MISSING API KEY — Chưa cấu hình GEMINI_RECOMMEN_API_KEY trong DB hoặc biến môi trường. Gợi ý AI bị tắt.");
+            return null;
+        }
+        LOGGER.log(Level.INFO, "[AI-SVC] Using API Key (masked): {0}",
+                apiKey.length() > 8 ? apiKey.substring(0, 8) + "..." : apiKey);
+        LOGGER.log(Level.INFO, "[AI-SVC] Target URL: {0}",
+                AiConfig.GEMINI_API_URL + apiKey.substring(0, Math.min(8, apiKey.length())) + "...");
+        LOGGER.log(Level.INFO, "[AI-SVC] CandidatePool size={0}, RecentHistory size={1}",
+                new Object[]{candidatePool.size(), recentHistory != null ? recentHistory.size() : 0});
 
         String prompt = buildPromptWithReasons(frequencyProfile, recentHistory, candidatePool);
         String jsonPayload = buildJsonPayload(prompt);
 
         try {
             String jsonResponse = sendPostRequest(jsonPayload);
-            LOGGER.log(Level.FINE, "[AI-SVC] Gemini API returned successfully ({0} characters).", jsonResponse.length());
+            LOGGER.log(Level.INFO, "[AI-SVC] Gemini API returned successfully ({0} characters).", jsonResponse.length());
             java.util.Map<Integer, String> aiRecommended = parseResponseWithReasons(jsonResponse);
+            LOGGER.log(Level.INFO, "[AI-SVC] Parsed {0} recommendations from AI.", aiRecommended.size());
             return filterHallucinationWithReasons(aiRecommended, candidatePool);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "[AI-SVC] AI error occurred (network/timeout/invalid JSON), triggering fallback: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "[AI-SVC] AI call FAILED — triggering fallback. Chi tiết lỗi: " + e.getMessage(), e);
             return null;
         }
     }
@@ -166,14 +175,7 @@ public class AiRecommendationService {
         JsonObject root = new JsonObject();
         root.add("contents", contents);
 
-        // Tắt tính năng Thinking của Gemini 3.5 để giảm thời gian phản hồi từ ~20s xuống ~1-2s
-        JsonObject thinkingConfig = new JsonObject();
-        thinkingConfig.addProperty("thinkingBudget", 0);
-
-        JsonObject generationConfig = new JsonObject();
-        generationConfig.add("thinkingConfig", thinkingConfig);
-
-        root.add("generationConfig", generationConfig);
+        // Không thêm thinkingConfig — gemini-flash-latest không cần, tránh lỗi 400 INVALID_ARGUMENT
 
         return new Gson().toJson(root);
     }

@@ -63,9 +63,10 @@ public class AiConfig {
     }
 
     /**
-     * Endpoint URL của mô hình Gemini 2.5 Flash (Tránh lỗi 503 của Gemini 3.5 Flash).
+     * Endpoint URL dùng alias "gemini-flash-latest" — luôn trỏ tới phiên bản Flash mới nhất.
+     * Hiện tại: Gemini 3 Flash (tính đến 2026-07).
      */
-    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
+    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=";
 
     /**
      * Giải quyết API Key từ nhiều nguồn cấu hình theo thứ tự ưu tiên.
