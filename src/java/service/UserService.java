@@ -123,12 +123,10 @@ public class UserService {
 
         User user = new User();
         user.setUserId(dto.getUserId());
-        user.setEmail(dto.getEmail()); // Vẫn giữ email cũ/mới nhưng không được thay đổi email gốc nếu spec cấm, ở đây check trùng đã được làm ở validate
+        user.setEmail(dto.getEmail());
         user.setStatus(dto.getStatus() != null ? dto.getStatus() : "active");
-        user.setRole(oldDto.getRole()); // Không cho phép đổi vai trò hệ thống từ form chỉnh sửa cơ bản
+        user.setRole(oldDto.getRole());
         
-        // Lock reason is handled separately if needed
-
         MemberProfile profile = new MemberProfile();
         profile.setFullName(dto.getFullName().trim());
         profile.setPhoneNumber(dto.getPhoneNumber() != null ? dto.getPhoneNumber().trim() : "");
@@ -173,7 +171,7 @@ public class UserService {
         if ("active".equals(status)) {
             lockReason = null;
         } else if (lockReason == null || lockReason.trim().isEmpty()) {
-            lockReason = "adminban"; // Lý do mặc định nếu Admin khóa
+            lockReason = "adminban";
         }
 
         boolean success = userDAO.updateUserStatus(userId, status, lockReason);
@@ -188,32 +186,42 @@ public class UserService {
         userDAO.insertAuditLog(actorId, actionType, "User", userId, oldValues, newValues);
     }
 
+    // =========================================================================
+    // IMPORT USERS — PHASE 1 (VALIDATE) + PHASE 2 (DB TRANSACTION)
+    // =========================================================================
+
     /**
-     * Tiến trình Import người dùng hàng loạt (All-or-Nothing).
+     * Phase 1 — Validate dữ liệu import trên RAM trước khi cho phép xác nhận.
+     *
+     * <p>Kiểm tra:</p>
+     * <ul>
+     *   <li>Email: Không trống, đúng định dạng, không trùng trong file, không trùng trong DB</li>
+     *   <li>Họ tên: Không trống</li>
+     *   <li>Mã số: Không trống, không trùng trong file, không trùng trong DB</li>
+     *   <li>Ngày sinh: Không trống</li>
+     *   <li>Giới tính: Nếu có, phải là Nam/Nữ/Khác</li>
+     *   <li>Số điện thoại: Nếu có, phải đúng 10 chữ số</li>
+     * </ul>
+     *
+     * @param users Danh sách UserDTO đã được parse từ Excel
+     * @param role  Vai trò chung áp dụng cho đợt import
+     * @return Danh sách lỗi (rỗng = tất cả hợp lệ)
      */
-    public void importUsers(List<UserDTO> users, String role, int actorId) throws Exception {
-        if (users == null || users.isEmpty()) {
-            throw new Exception("Danh sách import rỗng hoặc không hợp lệ.");
-        }
-
-        role = role.trim().toUpperCase();
-
-        // ════════════════ PHASE 1: PRE-VALIDATION (ON RAM) ════════════════
+    public List<String> validateImportData(List<UserDTO> users, String role) {
         List<String> errors = new ArrayList<>();
         Set<String> emailsInFile = new HashSet<>();
         Set<String> codesInFile = new HashSet<>();
-
         String emailPattern = "^[A-Za-z0-9+_.-]+@(.+)$";
 
         for (int i = 0; i < users.size(); i++) {
             UserDTO u = users.get(i);
-            int rowNum = i + 2; // CSV header là dòng 1, data bắt đầu từ dòng 2
+            int rowNum = i + 2; // Header là dòng 1, data bắt đầu từ dòng 2
 
             // 1. Validate Email
-            if (u.getEmail() == null || u.getEmail().isEmpty()) {
+            if (u.getEmail() == null || u.getEmail().trim().isEmpty()) {
                 errors.add("Dòng " + rowNum + ": Email không được để trống.");
             } else {
-                String email = u.getEmail().toLowerCase();
+                String email = u.getEmail().trim().toLowerCase();
                 if (!email.matches(emailPattern)) {
                     errors.add("Dòng " + rowNum + ": Email '" + u.getEmail() + "' sai định dạng.");
                 } else if (emailsInFile.contains(email)) {
@@ -227,15 +235,15 @@ public class UserService {
             }
 
             // 2. Validate Họ và tên
-            if (u.getFullName() == null || u.getFullName().isEmpty()) {
+            if (u.getFullName() == null || u.getFullName().trim().isEmpty()) {
                 errors.add("Dòng " + rowNum + ": Họ và tên không được để trống.");
             }
 
             // 3. Validate Mã số định danh
-            if (u.getCode() == null || u.getCode().isEmpty()) {
+            if (u.getCode() == null || u.getCode().trim().isEmpty()) {
                 errors.add("Dòng " + rowNum + ": Mã số định danh không được để trống.");
             } else {
-                String code = u.getCode().toUpperCase();
+                String code = u.getCode().trim().toUpperCase();
                 if (codesInFile.contains(code)) {
                     errors.add("Dòng " + rowNum + ": Mã số '" + u.getCode() + "' bị trùng lặp trong file tải lên.");
                 } else {
@@ -252,45 +260,70 @@ public class UserService {
             }
 
             // 5. Validate Giới tính
-            if (u.getGender() != null && !u.getGender().isEmpty()) {
+            if (u.getGender() != null && !u.getGender().trim().isEmpty()) {
                 String g = u.getGender().trim();
                 if (!"Nam".equalsIgnoreCase(g) && !"Nữ".equalsIgnoreCase(g) && !"Khác".equalsIgnoreCase(g)) {
                     errors.add("Dòng " + rowNum + ": Giới tính '" + u.getGender() + "' không hợp lệ (chỉ chấp nhận: Nam, Nữ, Khác).");
                 }
             }
-        }
 
-        // Nếu có lỗi ở Phase 1, ném Custom Exception (hủy toàn bộ tiến trình)
-        if (!errors.isEmpty()) {
-            StringBuilder sb = new StringBuilder("Phát hiện lỗi dữ liệu ở Phase 1:\n");
-            for (String err : errors) {
-                sb.append(err).append("\n");
+            // 6. Validate Số điện thoại (nhất quán với validateUserDTO cho Create/Update)
+            if (u.getPhoneNumber() != null && !u.getPhoneNumber().trim().isEmpty()) {
+                String phone = u.getPhoneNumber().trim();
+                if (!phone.matches("^[0-9]{10}$")) {
+                    errors.add("Dòng " + rowNum + ": Số điện thoại '" + phone + "' không hợp lệ (yêu cầu đúng 10 chữ số).");
+                }
             }
-            throw new Exception(sb.toString().trim());
         }
 
-        // ════════════════ PHASE 2: DATABASE TRANSACTION ════════════════
-        // Gán mật khẩu mặc định (Email) và băm BCrypt
+        return errors;
+    }
+
+    /**
+     * Phase 2 — Thực thi import hàng loạt vào CSDL trong một Transaction duy nhất (All-or-Nothing).
+     *
+     * <p>Method này CHỈ xử lý:</p>
+     * <ul>
+     *   <li>Hash BCrypt mật khẩu mặc định (= email) cho mỗi user</li>
+     *   <li>Gọi DAO batch insert trong 1 DB Transaction (bao gồm cả AuditLog)</li>
+     * </ul>
+     *
+     * <p>Validate phải được gọi trước qua {@link #validateImportData(List, String)}
+     * và đảm bảo errors rỗng trước khi gọi method này.</p>
+     *
+     * @param users   Danh sách UserDTO đã validate thành công ở Phase 1
+     * @param role    Vai trò chung
+     * @param actorId ID Admin thực hiện import
+     * @throws Exception Khi xảy ra lỗi hệ thống (ẩn stack trace theo FR-21)
+     */
+    public void importUsers(List<UserDTO> users, String role, int actorId) throws Exception {
+        if (users == null || users.isEmpty()) {
+            throw new Exception("Danh sách import rỗng hoặc không hợp lệ.");
+        }
+
+        role = role.trim().toUpperCase();
+
+        // Hash BCrypt mật khẩu mặc định (= email) cho mỗi user
         for (UserDTO u : users) {
             String rawPw = u.getEmail().trim();
             u.setPasswordHash(BCrypt.hashpw(rawPw, BCrypt.gensalt(10)));
         }
 
+        // Gọi DAO batch insert — AuditLog nằm BÊN TRONG cùng Transaction
         try {
-            boolean success = userDAO.importUsersBatch(users, role);
+            boolean success = userDAO.importUsersBatch(users, role, actorId);
             if (!success) {
                 throw new Exception("Lỗi hệ thống trong quá trình thực thi ghi CSDL.");
             }
         } catch (SQLException e) {
-            // Ném lỗi SQLException chung không để lộ chi tiết stack trace (FR-21)
+            // Ném lỗi chung không để lộ chi tiết stack trace (FR-21)
             throw new Exception("Lỗi hệ thống: Không thể hoàn tất lưu trữ hàng loạt vào Cơ sở dữ liệu.");
         }
-
-        // Ghi Audit Log (BR-14)
-        String logDetails = String.format("{\"role\":\"%s\",\"totalImported\":%d}", role, users.size());
-        userDAO.insertAuditLog(actorId, "IMPORT_USERS", "User", null, null, logDetails);
     }
 
+    /**
+     * Validate dữ liệu UserDTO cho thao tác Tạo mới hoặc Cập nhật đơn lẻ.
+     */
     private void validateUserDTO(UserDTO dto, boolean isCreate) throws Exception {
         // 1. Kiểm tra Email
         if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {

@@ -816,11 +816,19 @@ public class UserDAO {
 
     /**
      * Nhập danh sách tài khoản hàng loạt trong 1 Database Transaction duy nhất (All-or-Nothing).
+     * AuditLog được ghi BÊN TRONG cùng Transaction để đảm bảo tính toàn vẹn (BR-14).
+     *
+     * @param users   Danh sách UserDTO đã validate và đã hash BCrypt password
+     * @param role    Vai trò chung cho đợt import
+     * @param actorId ID Admin thực hiện import (dùng ghi AuditLog)
+     * @return true nếu import thành công
+     * @throws SQLException Khi xảy ra lỗi SQL (sẽ tự động rollback)
      */
-    public boolean importUsersBatch(List<UserDTO> users, String role) throws SQLException {
+    public boolean importUsersBatch(List<UserDTO> users, String role, int actorId) throws SQLException {
         Connection conn = null;
         String sqlUser = "INSERT INTO \"User\" (email, passwordHash, status, role, failedLoginAttempts) VALUES (?, ?, 'active', ?, 0)";
         String sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sqlAuditLog = "INSERT INTO AuditLogs (userId, actionType, entityName, entityId, oldValues, newValues, timestamp) VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
         try {
             conn = DatabaseConnection.getConnection();
@@ -903,6 +911,18 @@ public class UserDAO {
                 }
             }
 
+            // Ghi AuditLog BÊN TRONG Transaction — nếu rollback thì AuditLog cũng bị rollback (BR-14)
+            try (PreparedStatement psAudit = conn.prepareStatement(sqlAuditLog)) {
+                psAudit.setInt(1, actorId);
+                psAudit.setString(2, "IMPORT_USERS");
+                psAudit.setString(3, "User");
+                psAudit.setNull(4, java.sql.Types.INTEGER);
+                psAudit.setNull(5, java.sql.Types.VARCHAR);
+                String logDetails = String.format("{\"role\":\"%s\",\"totalImported\":%d}", role, users.size());
+                psAudit.setString(6, logDetails);
+                psAudit.executeUpdate();
+            }
+
             conn.commit();
             return true;
         } catch (SQLException e) {
@@ -925,6 +945,7 @@ public class UserDAO {
             }
         }
     }
+
 
     // =========================================================================
     // F6 DESK CIRCULATION METHODS (từ nhánh Thai)
