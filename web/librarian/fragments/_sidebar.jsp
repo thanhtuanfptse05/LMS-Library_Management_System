@@ -29,6 +29,10 @@
             <span class="material-symbols-outlined">room_service</span>
             <span>Bảng điều khiển quầy</span>
         </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/borrowings">
+            <span class="material-symbols-outlined">book_online</span>
+            <span>Quản lý đang mượn</span>
+        </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/my-circulations">
             <span class="material-symbols-outlined">history_edu</span>
             <span>Sách tôi đã xử lý</span>
@@ -141,6 +145,10 @@
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-dashboard">
                 <span class="material-symbols-outlined">room_service</span>
                 <span>Bảng điều khiển quầy</span>
+            </a>
+            <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/borrowings">
+                <span class="material-symbols-outlined">book_online</span>
+                <span>Quản lý đang mượn</span>
             </a>
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/my-circulations">
                 <span class="material-symbols-outlined">history_edu</span>

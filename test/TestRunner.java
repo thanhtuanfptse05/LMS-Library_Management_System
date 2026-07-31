@@ -24,6 +24,7 @@ public class TestRunner {
             f04_book_mgmt.F04_BookManagementTest.class,
             f05_reservation.F05_OnlineReservationRenewalTest.class,
             f06_desk_circ.F06_DeskCirculationOperationsTest.class,
+            f06_desk_circ.LibrarianBorrowingsManagementTest.class,
             f07_notif.F07_NotificationManagementTest.class,
             f08_book_disc.F08_BookDiscoveryTest.class,
             f09_fine_payment.F09_FinePaymentManagementTest.class,

@@ -331,6 +331,13 @@ public class BorrowRecordDAO {
     }
 
     /**
+     * Tìm BorrowRecord bằng ID (alias cho findBorrowRecordById).
+     */
+    public BorrowRecord findById(Connection conn, int borrowRecordId) throws SQLException {
+        return findBorrowRecordById(conn, borrowRecordId);
+    }
+
+    /**
      * Tìm BorrowRecord bằng ID.
      */
     public BorrowRecord findBorrowRecordById(Connection conn, int borrowRecordId) throws SQLException {
@@ -857,6 +864,178 @@ public class BorrowRecordDAO {
             throw e;
         }
         return list;
+    }
+
+    // =========================================================================
+    // LIBRARIAN BORROWINGS MANAGEMENT — SEARCH & PAGINATION (feat-borrowingsManagement)
+    // =========================================================================
+
+    /**
+     * Tìm kiếm và phân trang danh sách lượt mượn sách cho màn hình Quản lý Đang mượn (Thủ thư).
+     *
+     * @param conn           Connection CSDL
+     * @param userKeyword    Từ khóa tên hoặc mã độc giả (SV/GV)
+     * @param barcodeKeyword Từ khóa mã vạch bản sao
+     * @param status         Trạng thái mượn ('borrowed', 'overdue', 'returned', 'recalled' hoặc 'all')
+     * @param fromDate       Từ ngày mượn (Timestamp hoặc null)
+     * @param toDate         Đến ngày mượn (Timestamp hoặc null)
+     * @param offset         Vị trí bắt đầu
+     * @param limit          Số bản ghi tối đa / trang
+     * @return Danh sách DTO BorrowingManagementDTO
+     * @throws SQLException nếu có lỗi SQL
+     */
+    public List<dto.BorrowingManagementDTO> searchBorrowingsPaginated(
+            Connection conn, String userKeyword, String barcodeKeyword,
+            String status, Timestamp fromDate, Timestamp toDate,
+            int offset, int limit) throws SQLException {
+
+        List<dto.BorrowingManagementDTO> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT br.borrowRecordId, br.userId, mp.fullName AS userFullName, ")
+           .append("       COALESCE(st.studentCode, lec.lecturerCode, u.email) AS userCode, ")
+           .append("       u.email AS userEmail, u.role AS userRole, ")
+           .append("       b.bookId, b.title AS bookTitle, b.isbn, ")
+           .append("       bc.bookCopyId, bc.barcode, ")
+           .append("       br.startDate, br.endDate, br.returnedAt, br.status ")
+           .append("FROM BorrowRecord br ")
+           .append("JOIN \"User\" u ON br.userId = u.userId ")
+           .append("JOIN MemberProfile mp ON u.userId = mp.userId ")
+           .append("JOIN Book b ON br.bookId = b.bookId ")
+           .append("JOIN BookCopy bc ON br.bookCopyId = bc.bookCopyId ")
+           .append("LEFT JOIN Student st ON u.userId = st.userId ")
+           .append("LEFT JOIN Lecturer lec ON u.userId = lec.userId ")
+           .append("WHERE 1=1 ");
+
+        List<Object> params = new ArrayList<>();
+
+        if (userKeyword != null && !userKeyword.trim().isEmpty()) {
+            sql.append("AND (mp.fullName ILIKE ? OR st.studentCode ILIKE ? OR lec.lecturerCode ILIKE ? OR u.email ILIKE ?) ");
+            String kw = "%" + userKeyword.trim() + "%";
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+        }
+
+        if (barcodeKeyword != null && !barcodeKeyword.trim().isEmpty()) {
+            sql.append("AND bc.barcode ILIKE ? ");
+            params.add("%" + barcodeKeyword.trim() + "%");
+        }
+
+        if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status.trim())) {
+            sql.append("AND br.status = ? ");
+            params.add(status.trim().toLowerCase());
+        }
+
+        if (fromDate != null) {
+            sql.append("AND br.startDate >= ? ");
+            params.add(fromDate);
+        }
+
+        if (toDate != null) {
+            sql.append("AND br.startDate <= ? ");
+            params.add(toDate);
+        }
+
+        sql.append("ORDER BY br.startDate DESC LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    dto.BorrowingManagementDTO dto = new dto.BorrowingManagementDTO();
+                    dto.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    dto.setUserId(rs.getInt("userId"));
+                    dto.setUserFullName(rs.getString("userFullName"));
+                    dto.setUserCode(rs.getString("userCode"));
+                    dto.setUserEmail(rs.getString("userEmail"));
+                    dto.setUserRole(rs.getString("userRole"));
+                    dto.setBookId(rs.getInt("bookId"));
+                    dto.setBookTitle(rs.getString("bookTitle"));
+                    dto.setIsbn(rs.getString("isbn"));
+                    dto.setBookCopyId(rs.getInt("bookCopyId"));
+                    dto.setBarcode(rs.getString("barcode"));
+                    dto.setStartDate(rs.getTimestamp("startDate"));
+                    dto.setEndDate(rs.getTimestamp("endDate"));
+                    dto.setReturnedAt(rs.getTimestamp("returnedAt"));
+                    dto.setStatus(rs.getString("status"));
+                    list.add(dto);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tìm kiếm phân trang mượn sách cho thủ thư", e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
+     * Đếm tổng số bản ghi mượn sách khớp với điều kiện tìm kiếm.
+     */
+    public int countSearchBorrowings(
+            Connection conn, String userKeyword, String barcodeKeyword,
+            String status, Timestamp fromDate, Timestamp toDate) throws SQLException {
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(*) ")
+           .append("FROM BorrowRecord br ")
+           .append("JOIN \"User\" u ON br.userId = u.userId ")
+           .append("JOIN MemberProfile mp ON u.userId = mp.userId ")
+           .append("JOIN Book b ON br.bookId = b.bookId ")
+           .append("JOIN BookCopy bc ON br.bookCopyId = bc.bookCopyId ")
+           .append("LEFT JOIN Student st ON u.userId = st.userId ")
+           .append("LEFT JOIN Lecturer lec ON u.userId = lec.userId ")
+           .append("WHERE 1=1 ");
+
+        List<Object> params = new ArrayList<>();
+
+        if (userKeyword != null && !userKeyword.trim().isEmpty()) {
+            sql.append("AND (mp.fullName ILIKE ? OR st.studentCode ILIKE ? OR lec.lecturerCode ILIKE ? OR u.email ILIKE ?) ");
+            String kw = "%" + userKeyword.trim() + "%";
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+        }
+
+        if (barcodeKeyword != null && !barcodeKeyword.trim().isEmpty()) {
+            sql.append("AND bc.barcode ILIKE ? ");
+            params.add("%" + barcodeKeyword.trim() + "%");
+        }
+
+        if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status.trim())) {
+            sql.append("AND br.status = ? ");
+            params.add(status.trim().toLowerCase());
+        }
+
+        if (fromDate != null) {
+            sql.append("AND br.startDate >= ? ");
+            params.add(fromDate);
+        }
+
+        if (toDate != null) {
+            sql.append("AND br.startDate <= ? ");
+            params.add(toDate);
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm tổng số mượn sách cho thủ thư", e);
+            throw e;
+        }
+        return 0;
     }
 }
 

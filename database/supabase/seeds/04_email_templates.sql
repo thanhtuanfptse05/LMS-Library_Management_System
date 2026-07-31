@@ -202,6 +202,35 @@ VALUES
   <hr style="border:none;border-top:1px solid #eee;margin:24px 0;"/>
   <p style="font-size:12px;color:#888;">Thư viện Đại học LMS — Phục vụ tri thức, kiến tạo tương lai.</p>
 </div></body></html>'
+),
+
+-- ============================================================
+-- [8] Yêu cầu thu hồi sách mượn
+-- Trigger: DeskBorrowingManagerServlet -> Sau khi Thủ thư gửi Gmail Thu hồi
+-- Placeholders: {{userName}}, {{bookTitle}}, {{barcode}}, {{recallReason}}
+-- ============================================================
+(
+    'RECALL_NOTICE',
+    'Thông báo yêu cầu độc giả mang sách tới quầy thư viện trả theo yêu cầu thu hồi của Thủ thư.',
+    'Thông báo: Yêu cầu thu hồi sách mượn — Thư viện LMS',
+    '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;">
+<div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;padding:36px;box-shadow:0 2px 16px rgba(0,0,0,0.08);">
+  <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+    <h2 style="color:#c2410c;margin:0;">📢 Yêu cầu thu hồi sách mượn</h2>
+  </div>
+  <p>Xin chào <strong>{{userName}}</strong>,</p>
+  <p>Thư viện xin thông báo yêu cầu <strong>thu hồi lại cuốn sách</strong> bạn đang mượn với lý do cụ thể sau:</p>
+  <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px 20px;margin:16px 0;">
+    <p style="margin:0;font-size:14px;color:#dc2626;font-weight:bold;">💬 Lý do thu hồi: {{recallReason}}</p>
+  </div>
+  <div style="background:#f0f4ff;border:1px solid #c7d6f7;border-radius:8px;padding:16px 20px;margin:16px 0;">
+    <p style="margin:0 0 6px;font-size:16px;font-weight:bold;color:#1a4fa3;">📖 Tên sách: {{bookTitle}}</p>
+    <p style="margin:0;font-size:13px;color:#475569;">🏷️ Mã vạch bản sao: <strong>{{barcode}}</strong></p>
+  </div>
+  <p>Vui lòng mang cuốn sách này đến <strong>Quầy Lưu thông Thư viện</strong> để hoàn tất thủ tục trả sách trong thời gian sớm nhất.</p>
+  <hr style="border:none;border-top:1px solid #eee;margin:24px 0;"/>
+  <p style="font-size:12px;color:#888;">Thư viện Đại học LMS — Phục vụ tri thức, kiến tạo tương lai.</p>
+</div></body></html>'
 )
 
 ON CONFLICT (tempName) DO NOTHING;

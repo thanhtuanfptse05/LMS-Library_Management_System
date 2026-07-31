@@ -194,7 +194,10 @@
                                                             <button type="button"
                                                                     class="btn btn-sm fw-bold px-3 text-decoration-none rounded-2"
                                                                     style="font-size: 11px; color: var(--error); background-color: var(--error-container); border: none;"
-                                                                    onclick="openCancelModal('${res.reservationId}', '<c:out value="${fn:replace(res.bookTitle, \"'\", \"\\\\'\")}" />', '<c:out value="${fn:replace(res.memberName, \"'\", \"\\\\'\")}" />')">
+                                                                    data-id="${res.reservationId}"
+                                                                    data-title="${fn:escapeXml(res.bookTitle)}"
+                                                                    data-name="${fn:escapeXml(res.memberName)}"
+                                                                    onclick="openCancelModal(this.getAttribute('data-id'), this.getAttribute('data-title'), this.getAttribute('data-name'))">
                                                                 <span class="material-symbols-outlined align-middle me-1" style="font-size: 14px;">cancel</span>
                                                                 Hủy lượt
                                                             </button>
