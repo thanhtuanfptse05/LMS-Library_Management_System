@@ -2,7 +2,7 @@
 Phiên bản: 1.0.0 | Ngày: 2026-06-10
 
 ## 1.1 Problem Statement
-Quản lý thư viện hiện thiếu công cụ để truyền thông các chính sách mới (lịch nghỉ, quy định mượn trả) tới toàn bộ người dùng và không thể chủ động điều chỉnh nội dung các email tự động dẫn đến việc thông tin bị cứng nhắc, khó thay đổi theo từng thời điểm [UC19, FR24].
+Quản trị viên hiện thiếu công cụ để truyền thông các chính sách mới (lịch nghỉ, quy định mượn trả) tới toàn bộ người dùng và không thể chủ động điều chỉnh nội dung các email tự động dẫn đến việc thông tin bị cứng nhắc, khó thay đổi theo từng thời điểm [UC19, FR24].
 
 ## 1.2 Domain Knowledge
 * **Internal Broadcast:** Thông báo hiển thị trực tiếp trên Dashboard của mọi người dùng thông qua bảng Notification.

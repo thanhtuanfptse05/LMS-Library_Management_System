@@ -2,12 +2,12 @@
 # Version: 1.3 | Chủ sở hữu: Thai | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
-Cung cấp màn hình Bảng điều khiển (Dashboard) tổng quan được tùy biến theo từng vai trò người dùng (Admin, Librarian, Manager, Student, Lecturer), hiển thị các chỉ số đo lường nhanh (KPI metrics), lối tắt thao tác nhanh (Quick Actions), danh sách cảnh báo (Quá hạn, Chờ duyệt, Nợ phạt) và thông báo mới nhất.
+Cung cấp màn hình Bảng điều khiển (Dashboard) tổng quan được tùy biến theo từng vai trò người dùng (Admin, Librarian, Admin, Student, Lecturer), hiển thị các chỉ số đo lường nhanh (KPI metrics), lối tắt thao tác nhanh (Quick Actions), danh sách cảnh báo (Quá hạn, Chờ duyệt, Nợ phạt) và thông báo mới nhất.
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Quản trị viên (SysAdmin):** Xem Dashboard tổng quan hệ thống, chỉ số người dùng, trạng thái dịch vụ và Audit Logs mới nhất.
 * **Thủ thư (Librarian):** Xem Dashboard quầy lưu thông (lượt mượn/trả trong ngày, sách chờ trả, đơn đặt trước chờ nhận).
-* **Quản lý Thư viện (Library Manager):** Xem Dashboard quản lý (thống kê tổng quan sách, danh mục, đề xuất mua sách chờ duyệt).
+* **Quản trị viên (Admin):** Xem Dashboard quản lý (thống kê tổng quan sách, danh mục, đề xuất mua sách chờ duyệt).
 * **Sinh viên & Giảng viên:** Xem Dashboard cá nhân (sách đang mượn, ngày đến hạn trả, lịch sử mượn, thông báo nợ phạt).
 
 ## 2.5 Use Cases (Danh sách Use Cases đúng theo registry)
@@ -18,7 +18,7 @@ Cung cấp màn hình Bảng điều khiển (Dashboard) tổng quan được t�
 
 
 ## 3. Business Rules (Quy tắc nghiệp vụ đúng theo registry)
-* **BR-38 (Dashboard Data Isolation):** Mỗi Dashboard (Admin/Manager/Librarian/Student/Lecturer) BẮT BUỘC chỉ hiển thị dữ liệu và chỉ số phù hợp với role của người dùng. Dashboard KHÔNG ĐƯỢC PHÉP truy xuất hoặc hiển thị dữ liệu ngoài phạm vi quyền hạn của role.
+* **BR-38 (Dashboard Data Isolation):** Mỗi Dashboard (Admin/Librarian/Student/Lecturer) BẮT BUỘC chỉ hiển thị dữ liệu và chỉ số phù hợp với role của người dùng. Dashboard KHÔNG ĐƯỢC PHÉP truy xuất hoặc hiển thị dữ liệu ngoài phạm vi quyền hạn của role.
 
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết đúng theo registry)

@@ -1,7 +1,7 @@
 # Context: Audit Log (Nhật ký hoạt động và Dashboard Admin)
 
 ## Problem Statement (Mô tả vấn đề)
-Hệ thống thư viện LMS có nhiều vai trò người dùng (Admin, Librarian, Manager, Student, Lecturer) cùng tương tác và thực hiện các thao tác thay đổi dữ liệu cốt lõi trên CSDL. Khi xảy ra sự cố, phá hoại dữ liệu, sai sót hoặc tranh chấp nghiệp vụ, Quản trị viên (`SysAdmin`) cần một công cụ giám sát tập trung để truy vết ai đã làm gì, tác động lên đối tượng nào, vào thời điểm nào và giá trị thay đổi cụ thể ra sao. Hiện tại, dữ liệu nhật ký kiểm toán đã được ghi lại tự động từ các dịch vụ nghiệp vụ nền, nhưng cần một giao diện quản trị an toàn để truy vấn, phân tích, và kết xuất.
+Hệ thống thư viện LMS có nhiều vai trò người dùng (Admin, Librarian, Admin, Student, Lecturer) cùng tương tác và thực hiện các thao tác thay đổi dữ liệu cốt lõi trên CSDL. Khi xảy ra sự cố, phá hoại dữ liệu, sai sót hoặc tranh chấp nghiệp vụ, Quản trị viên (`SysAdmin`) cần một công cụ giám sát tập trung để truy vết ai đã làm gì, tác động lên đối tượng nào, vào thời điểm nào và giá trị thay đổi cụ thể ra sao. Hiện tại, dữ liệu nhật ký kiểm toán đã được ghi lại tự động từ các dịch vụ nghiệp vụ nền, nhưng cần một giao diện quản trị an toàn để truy vấn, phân tích, và kết xuất.
 
 ## Business Drivers (Động lực kinh doanh)
 * **Truy vết sự cố & Minh bạch:** Hỗ trợ SysAdmin truy vết nguyên nhân gây lỗi hoặc thay đổi bất thường đối với các thực thể cốt lõi (như thông tin tài khoản, cấu hình hệ thống, sách và giao dịch mượn trả).

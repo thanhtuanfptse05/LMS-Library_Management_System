@@ -2,7 +2,7 @@
 # Version: 1.3 | Chủ sở hữu: Tuan | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
-Tính năng này cung cấp cơ chế xác thực bảo mật cho toàn bộ người dùng trong hệ thống Quản lý Thư viện (LMS), bao gồm các chức năng Đăng nhập, Đăng xuất, Quên/Khôi phục mật khẩu và Đăng nhập SSO bằng tài khoản Google, kết hợp với cơ chế phân quyền dựa trên vai trò (RBAC) để bảo vệ tài nguyên hệ thống.
+Tính năng này cung cấp cơ chế xác thực bảo mật cho toàn bộ người dùng trong hệ thống Quản trị viên (LMS), bao gồm các chức năng Đăng nhập, Đăng xuất, Quên/Khôi phục mật khẩu và Đăng nhập SSO bằng tài khoản Google, kết hợp với cơ chế phân quyền dựa trên vai trò (RBAC) để bảo vệ tài nguyên hệ thống.
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Khách (Guest):** Truy cập trang đăng nhập, thực hiện đăng nhập bằng Email/Password hoặc Google SSO, yêu cầu phục hồi mật khẩu qua email.
@@ -40,7 +40,7 @@ Tính năng này cung cấp cơ chế xác thực bảo mật cho toàn bộ ng�
   * *Mapping:* UC-01 / BR-05
 * **FR-04 (Ghi nhận đăng nhập sai và khóa tự động):** WHEN mật khẩu không khớp, THE system SHALL gọi authService.handleFailedLogin(user) để tăng User.failedLoginAttempts lên 1. WHERE failedLoginAttempts ≥ 5, THE system SHALL tự động gọi lockAccount(userId, 30 phút) để: (1) INSERT UserLockReason(userId, reason='securitybreach'), (2) UPDATE User.status='locked' VÀ User.lockedUntil = NOW() + 30 phút, (3) Trả về số lần đăng nhập sai = 5 để hiển thị thông báo.
   * *Mapping:* UC-01 / BR-01, BR-02
-* **FR-05 (Tạo session và redirect theo role):** WHEN đăng nhập thành công, THE system SHALL tạo HttpSession mới chứa: {userId, role, email, fullName, unpaidWarning (nếu có)}. THEN THE system SHALL gọi getRedirectByRole(role) để redirect về dashboard tương ứng: ADMIN→/admin/dashboard, LIBRARIAN→/librarian/dashboard, MANAGER→/manager/dashboard, STUDENT→/student/dashboard, LECTURER→/lecturer/dashboard. WHERE có query param redirect hợp lệ (qua isSafeInternalRedirect), ưu tiên redirect theo param.
+* **FR-05 (Tạo session và redirect theo role):** WHEN đăng nhập thành công, THE system SHALL tạo HttpSession mới chứa: {userId, role, email, fullName, unpaidWarning (nếu có)}. THEN THE system SHALL gọi getRedirectByRole(role) để redirect về dashboard tương ứng: ADMIN→/admin/dashboard, LIBRARIAN→/librarian/dashboard, ADMIN→/admin/dashboard, STUDENT→/student/dashboard, LECTURER→/lecturer/dashboard. WHERE có query param redirect hợp lệ (qua isSafeInternalRedirect), ưu tiên redirect theo param.
   * *Mapping:* UC-01 / BR-39
 * **FR-06 (Hủy bỏ phiên làm việc):** WHEN có yêu cầu đăng xuất, THE system SHALL vô hiệu hóa hoàn toàn HttpSession hiện tại và điều hướng trình duyệt về màn hình đăng nhập.
   * *Mapping:* UC-02 / BR-39
@@ -48,7 +48,7 @@ Tính năng này cung cấp cơ chế xác thực bảo mật cho toàn bộ ng�
   * *Mapping:* UC-03 / BR-04
 * **FR-08 (Cấp mật khẩu tạm và Reset mật khẩu):** WHEN authService.resetPassword(email) được gọi, THE system SHALL: (1) Gọi generateRandomPassword() để sinh 8 ký tự ngẫu nhiên từ [A-Za-z0-9], (2) Mã hóa BCrypt, (3) Gọi UserDAO.updatePasswordHash(), (4) Trả về plaintext password để ForgotPasswordServlet enqueue email. WHEN handleResetPassword(email, tempPassword, newPassword, confirmPassword), THE system SHALL validate: newPassword ≥ 8 ký tự VÀ chứa [a-zA-Z] VÀ [0-9], tempPassword khớp với DB, confirmPassword == newPassword. THEN mã hóa BCrypt newPassword, updatePasswordHash, INSERT AuditLog(CHANGE_PASSWORD).
   * *Mapping:* UC-03 / BR-07, BR-09
-* **FR-42 (Google SSO Verification):** WHEN GoogleLoginServlet.doGet() nhận code param từ Google OAuth callback, THE system SHALL: (1) Đổi code → accessToken qua GoogleSSOUtil.exchangeCodeForToken(code), (2) Lấy email từ Google Token bằng GoogleSSOUtil.getUserEmail(accessToken), (3) Tìm User bằng email trong DB: UserDAO.findByEmail(email). WHERE email KHÔNG tồn tại, THE system SHALL trả lỗi "Email chưa được cấp tài khoản trong hệ thống LMS". WHERE tồn tại, kiểm tra locked tương tự FR-02 (phân biệt unpaid vs securitybreach/adminban), FR-03 (auto-unlock nếu hết thời gian khóa tạm). THEN tạo HttpSession với {userId, role, email, fullName} và gọi getRedirectByRole(role) để redirect. **BUG HIỆN TẠI**: GoogleLoginServlet.getRedirectByRole() hiện luôn return "/" thay vì dashboard đúng theo role → CẦN SỬA để redirect logic giống LoginServlet (ADMIN→/admin/dashboard, LIBRARIAN→/librarian/dashboard, MANAGER→/manager/dashboard, STUDENT→/student/dashboard, LECTURER→/lecturer/dashboard). WHERE có query param redirect, áp dụng FR-77 (whitelist validation) trước khi redirect.
+* **FR-42 (Google SSO Verification):** WHEN GoogleLoginServlet.doGet() nhận code param từ Google OAuth callback, THE system SHALL: (1) Đổi code → accessToken qua GoogleSSOUtil.exchangeCodeForToken(code), (2) Lấy email từ Google Token bằng GoogleSSOUtil.getUserEmail(accessToken), (3) Tìm User bằng email trong DB: UserDAO.findByEmail(email). WHERE email KHÔNG tồn tại, THE system SHALL trả lỗi "Email chưa được cấp tài khoản trong hệ thống LMS". WHERE tồn tại, kiểm tra locked tương tự FR-02 (phân biệt unpaid vs securitybreach/adminban), FR-03 (auto-unlock nếu hết thời gian khóa tạm). THEN tạo HttpSession với {userId, role, email, fullName} và gọi getRedirectByRole(role) để redirect. **BUG HIỆN TẠI**: GoogleLoginServlet.getRedirectByRole() hiện luôn return "/" thay vì dashboard đúng theo role → CẦN SỬA để redirect logic giống LoginServlet (ADMIN→/admin/dashboard, LIBRARIAN→/librarian/dashboard, ADMIN→/admin/dashboard, STUDENT→/student/dashboard, LECTURER→/lecturer/dashboard). WHERE có query param redirect, áp dụng FR-77 (whitelist validation) trước khi redirect.
   * *Mapping:* UC-21 / BR-26
 * **FR-77 (Whitelist validation cho Safe Redirect):** WHEN LoginServlet hoặc GoogleLoginServlet nhận query param redirect, THE system SHALL gọi isSafeInternalRedirect(redirect) để kiểm tra: redirect KHÔNG chứa ["://", "..", "\\", "\r", "\n"]. WHERE hợp lệ, redirect theo param. WHERE không hợp lệ, bỏ qua param và redirect theo role mặc định từ getRedirectByRole(role). Whitelist validation ngăn chặn Open Redirect Attack bằng cách chặn: (1) Absolute URLs với protocol ("://"), (2) Path traversal (".."), (3) Windows path separator ("\\"), (4) CRLF injection ("\r", "\n").
   * *Mapping:* UC-01, UC-21
@@ -65,7 +65,7 @@ Tính năng này cung cấp cơ chế xác thực bảo mật cho toàn bộ ng�
 * `email` (VARCHAR(255), UNIQUE, NOT NULL)
 * `passwordHash` (VARCHAR(255), NOT NULL)
 * `status` (VARCHAR(20), NOT NULL) — active / locked / inactive
-* `role` (VARCHAR(50), NOT NULL) — ADMIN / LIBRARIAN / MANAGER / STUDENT / LECTURER
+* `role` (VARCHAR(50), NOT NULL) — ADMIN / LIBRARIAN / ADMIN / STUDENT / LECTURER
 * `failedLoginAttempts` (INT, DEFAULT 0)
 * `lockedUntil` (TIMESTAMP, NULL)
 

@@ -6,7 +6,7 @@ Cung cấp dịch vụ gửi Email thông báo tự động (Mật khẩu tạm 
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Hệ thống (System Engine):** Tự động đẩy công việc gửi email vào hàng chờ (Queue) khi phát sinh sự kiện.
-* **Quản lý Thư viện (Library Manager):** Khai báo và quản lý mẫu nội dung email (`DocumentTemp`).
+* **Quản trị viên (Admin):** Khai báo và quản lý mẫu nội dung email (`DocumentTemp`).
 
 ## 2.5 Use Cases (Danh sách Use Cases đúng theo registry)
 
@@ -31,7 +31,7 @@ Cung cấp dịch vụ gửi Email thông báo tự động (Mật khẩu tạm 
   * *Mapping:* BR-48, BR-49
 * **FR-105 (Consumer lấy Job từ hàng đợi):** WHILE EmailWorker hoạt động, Consumer SHALL liên tục lấy job ra bằng phương thức queue.take() (sử dụng cơ chế block để không tiêu hao tài nguyên CPU khi hàng đợi rỗng).
   * *Mapping:* BR-49
-* **FR-106 (Tra cứu template động từ DB):** WHEN xử lý gửi email, THE system SHALL gọi DocumentTempDAO.findByTempName() để lấy nội dung template mới nhất do Manager chỉnh sửa từ CSDL.
+* **FR-106 (Tra cứu template động từ DB):** WHEN xử lý gửi email, THE system SHALL gọi DocumentTempDAO.findByTempName() để lấy nội dung template mới nhất do Admin chỉnh sửa từ CSDL.
   * *Mapping:* BR-47, BR-51
 * **FR-107 (Inject dữ liệu vào Template placeholders):** THE system SHALL quét và thay thế tất cả các placeholder có định dạng `{{key}}` trong nội dung mẫu email bằng giá trị tương ứng truyền vào từ EmailJob.placeholders.
   * *Mapping:* BR-51
@@ -41,7 +41,7 @@ Cung cấp dịch vụ gửi Email thông báo tự động (Mật khẩu tạm 
   * *Mapping:* BR-48
 * **FR-110 (Ghi log lỗi khi vượt quá lượt retry):** WHERE vượt quá giới hạn retry cho phép mà email vẫn lỗi, Consumer SHALL ghi nhận log lỗi mức SEVERE và tiếp tục xử lý các email khác trong hàng đợi.
   * *Mapping:* BR-48
-* **FR-111 (Chặn xóa mẫu email hệ thống):** WHEN Manager yêu cầu xóa mẫu email, THE system SHALL kiểm tra danh sách PROTECTED_TEMPLATES. WHERE mẫu email nằm trong danh sách được bảo vệ, hệ thống SHALL ngăn chặn hành động và trả về thông báo lỗi bằng tiếng Việt.
+* **FR-111 (Chặn xóa mẫu email hệ thống):** WHEN Admin yêu cầu xóa mẫu email, THE system SHALL kiểm tra danh sách PROTECTED_TEMPLATES. WHERE mẫu email nằm trong danh sách được bảo vệ, hệ thống SHALL ngăn chặn hành động và trả về thông báo lỗi bằng tiếng Việt.
   * *Mapping:* BR-47
 * **FR-112 (Bảo mật không ghi log mật khẩu thô):** THE system SHALL loại bỏ giá trị của placeholder {{tempPassword}} trước khi ghi log hoặc Audit Log để tránh lộ thông tin nhạy cảm.
   * *Mapping:* BR-50
@@ -71,7 +71,7 @@ Cung cấp dịch vụ gửi Email thông báo tự động (Mật khẩu tạm 
 
 ## 5. Database Schema & Data Models (Lược đồ dữ liệu)
 ### Bảng `DocumentTemp`
-* `tempId` (INT, PK), `tempName` (VARCHAR, UNIQUE), `subject`, `bodyContent` (TEXT), `managerId` (FK), `updatedAt`
+* `tempId` (INT, PK), `tempName` (VARCHAR, UNIQUE), `subject`, `bodyContent` (TEXT), `adminId` (FK), `updatedAt`
 
 ## 6. Error Handling (Xử lý lỗi ngoại lệ)
 * **WHERE** gửi email qua SMTP/SendGrid bị lỗi mạng, **THE system SHALL** catch ngoại lệ trong luồng async, ghi log lỗi chi tiết và thử lại tối đa 3 lần trước khi đánh dấu thất bại.

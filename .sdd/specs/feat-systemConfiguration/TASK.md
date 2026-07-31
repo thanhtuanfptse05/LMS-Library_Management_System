@@ -9,7 +9,7 @@
 ## PHASE 0 — Khởi động & Kiểm tra thiết lập
 - [x] **TASK-SC-00:** Đọc mã nguồn và thiết lập cache cấu hình, kiểm tra lớp `SystemConfigCache` để xác định các phương thức lấy giá trị.
 - [x] **TASK-SC-01:** Kiểm tra `AppContextListener.java` để nạp cache khi ứng dụng khởi động.
-- [x] **TASK-SC-02:** Kiểm tra và cấu hình `AuthFilter.java` bảo vệ các URL `/manager/*` và `/admin/*`.
+- [x] **TASK-SC-02:** Kiểm tra và cấu hình `AuthFilter.java` bảo vệ các URL `/admin/*` và `/admin/*`.
 
 ---
 
@@ -27,23 +27,23 @@
 
 ## PHASE 2 — Phát triển Lớp Nghiệp vụ (Service Layer)
 - [x] **TASK-SC-20:** Tạo lớp `src/java/service/SystemConfigService.java` xử lý logic:
-  * Kiểm tra whitelist và phân quyền RBAC (chặn Manager sửa nhóm system/fine).
+  * Kiểm tra whitelist và phân quyền RBAC (chặn Admin sửa nhóm system/fine).
   * Gọi `validateValue()` để kiểm tra định dạng dữ liệu (số nguyên dương, số nguyên không âm, số thực không âm).
   * Thực thi DB Transaction: gọi DAO cập nhật, gọi `auditLogDAO` ghi log, và reload cache RAM thông qua `SystemConfigCache.reload()`.
 
 ---
 
 ## PHASE 3 — Lớp Điều khiển (Controller Layer)
-- [x] **TASK-SC-30:** Tạo Servlet điều khiển cho Manager: `src/java/controllers/SystemConfigServlet.java` (@WebServlet("/manager/system-config")).
+- [x] **TASK-SC-30:** Tạo Servlet điều khiển cho Admin: `src/java/controllers/AdminSystemConfigServlet.java` (@WebServlet("/admin/system-config")).
 - [x] **TASK-SC-31:** Tạo Servlet điều khiển cho Admin: `src/java/controllers/AdminSystemConfigServlet.java` (@WebServlet("/admin/system-config")).
-- [x] **TASK-SC-32:** Tạo Servlet cấu hình SePay: `src/java/controllers/ManagerPaymentConfigServlet.java` (@WebServlet("/manager/payment-config")).
+- [x] **TASK-SC-32:** Tạo Servlet cấu hình SePay: `src/java/controllers/PaymentConfigServlet.java` (@WebServlet("/admin/payment-config")).
 
 ---
 
 ## PHASE 4 — Xây dựng Giao diện (View Layer - JSP)
-- [x] **TASK-SC-40:** Xây dựng trang `web/manager/system-config-list.jsp` hiển thị danh sách cấu hình, lọc theo nhóm, phân loại badge màu sắc.
+- [x] **TASK-SC-40:** Xây dựng trang `web/admin/system-config-list.jsp` hiển thị danh sách cấu hình, lọc theo nhóm, phân loại badge màu sắc.
 - [x] **TASK-SC-41:** Thiết kế modal sửa giá trị cấu hình inline tích hợp thông báo validate lỗi trực quan bằng tiếng Việt.
-- [x] **TASK-SC-42:** Xây dựng trang `web/manager/payment-config.jsp` phục vụ cấu hình tham số SePay QR.
+- [x] **TASK-SC-42:** Xây dựng trang `web/admin/payment-config.jsp` phục vụ cấu hình tham số SePay QR.
 
 ---
 

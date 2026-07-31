@@ -3,22 +3,22 @@
 **Branch**: `main` | **Date**: 2026-07-21 | **Spec**: [SPEC.md](file:///d:/LMS-Library_Management_System/.sdd/specs/feat-systemConfiguration/SPEC.md)
 
 ## Summary (Tóm tắt)
-Triển khai hệ thống Quản lý Cấu hình hệ thống động (System Configuration), cho phép Quản lý Thư viện (Library Manager) và Admin xem, cập nhật các thông số nghiệp vụ (phí phạt, thời gian mượn, hạn mức gia hạn, thông tin cổng SePay, API key AI) trực tiếp qua UI mà không cần sửa code. Hệ thống sử dụng một lớp Cache RAM (`SystemConfigCache`) lưu trữ thông số trong ServletContext để tối ưu hóa hiệu năng đọc của các nghiệp vụ khác, và tự động đồng bộ cache tức thời sau mỗi thay đổi.
+Triển khai hệ thống Quản lý Cấu hình hệ thống động (System Configuration), cho phép Quản trị viên (Admin) và Admin xem, cập nhật các thông số nghiệp vụ (phí phạt, thời gian mượn, hạn mức gia hạn, thông tin cổng SePay, API key AI) trực tiếp qua UI mà không cần sửa code. Hệ thống sử dụng một lớp Cache RAM (`SystemConfigCache`) lưu trữ thông số trong ServletContext để tối ưu hóa hiệu năng đọc của các nghiệp vụ khác, và tự động đồng bộ cache tức thời sau mỗi thay đổi.
 
 ## Technical Context (Bối cảnh kỹ thuật)
 * **Backend:** Java 17, Java Servlet (Servlet 4.0/5.0)
 * **Database:** PostgreSQL (JDBC + DAO Pattern)
 * **Caching:** ServletContext Cache (`SystemConfigCache`)
-* **Security & Auth:** Session-based Authentication + Java Filter (`AuthFilter`) bảo vệ `/manager/*` và `/admin/*`
+* **Security & Auth:** Session-based Authentication + Java Filter (`AuthFilter`) bảo vệ `/admin/*` và `/admin/*`
 
 ## Project Structure (Cấu trúc dự án thực tế)
 ### Source Code
 ```text
 src/java/
 ├── controllers/
-│   ├── SystemConfigServlet.java        # Controller dành cho Manager sửa cấu hình nghiệp vụ (UC-33)
+│   ├── AdminSystemConfigServlet.java        # Controller dành cho Admin sửa cấu hình nghiệp vụ (UC-33)
 │   ├── AdminSystemConfigServlet.java   # Controller dành cho Admin quản lý toàn bộ cấu hình (UC-32, UC-33)
-│   └── ManagerPaymentConfigServlet.java # Controller dành cho cấu hình cổng thanh toán SePay (UC-53)
+│   └── PaymentConfigServlet.java # Controller dành cho cấu hình cổng thanh toán SePay (UC-53)
 ├── dao/
 │   ├── SystemConfigDAO.java            # Thực thi SELECT, INSERT, UPDATE trên bảng SystemConfigurations
 │   └── AuditLogDAO.java                # Ghi nhật ký thay đổi cấu hình vào CSDL (BR-14)
@@ -44,9 +44,9 @@ src/java/
   * `STRING` (Dạng chuỗi): `SEPAY_API_KEY`, `SEPAY_ACCOUNT_NUMBER`, `SEPAY_BANK_CODE`, `SEPAY_ACCOUNT_NAME`, `SEPAY_QR_URL`, `GEMINI_API_KEY`, v.v.
 
 ### 3. Phân quyền và Cô lập nghiệp vụ (BR-31, BR-53)
-* Manager chỉ có quyền xem và sửa các cấu hình thuộc nhóm `library` hoặc có tiền tố `SEPAY_`. Việc phân quyền được kiểm tra nghiêm ngặt tại Service Layer:
+* Admin chỉ có quyền xem và sửa các cấu hình thuộc nhóm `library` hoặc có tiền tố `SEPAY_`. Việc phân quyền được kiểm tra nghiêm ngặt tại Service Layer:
   ```java
-  if ("MANAGER".equals(actorRole) && !"library".equals(current.getConfigGroup()) && !key.startsWith("SEPAY_")) {
+  if ("ADMIN".equals(actorRole) && !"library".equals(current.getConfigGroup()) && !key.startsWith("SEPAY_")) {
       throw new ValidationException("Bạn không có quyền chỉnh sửa nhóm cấu hình này.");
   }
   ```

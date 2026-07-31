@@ -11,7 +11,7 @@ Tất cả các thay đổi đáng chú ý của tính năng này sẽ được 
   - Làm rõ lược đồ bảng `SystemConfigurations`, cơ chế validate định dạng lỗi và kịch bản nghiệm thu.
 - Cập nhật `PLAN.md`:
   - Thay đổi thông tin cache sang `SystemConfigCache` khớp với code Java thực tế.
-  - Cập nhật danh sách key whitelist thực tế và các Servlets tương ứng (`SystemConfigServlet`, `AdminSystemConfigServlet`, `ManagerPaymentConfigServlet`).
+  - Cập nhật danh sách key whitelist thực tế và các Servlets tương ứng (`AdminSystemConfigServlet`, `AdminSystemConfigServlet`, `PaymentConfigServlet`).
   - Làm chi tiết luồng xử lý phân quyền và validate tại Service Layer.
 - Cập nhật `TASK.md`:
   - Đánh dấu hoàn thành (`[x]`) cho tất cả các tác vụ đã triển khai thành công trên codebase.

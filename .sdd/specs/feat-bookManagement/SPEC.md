@@ -8,7 +8,7 @@ Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Thủ thư (Librarian):** Tác nhân duy nhất được truy cập và thay đổi dữ liệu trong F4.
-* **Vai trò khác:** `ADMIN`, `MANAGER`, `STUDENT`, `LECTURER` và vai trò khác nhận HTTP 403 khi truy cập `/librarian/book-management/*` hoặc legacy `/book-management/*`.
+* **Vai trò khác:** `ADMIN`, `ADMIN`, `STUDENT`, `LECTURER` và vai trò khác nhận HTTP 403 khi truy cập `/librarian/book-management/*` hoặc legacy `/book-management/*`.
 * **Người chưa đăng nhập:** Được chuyển tới trang đăng nhập.
 
 ## 2.5 Use Cases (Danh sách Use Cases đúng theo registry)

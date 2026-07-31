@@ -2,11 +2,11 @@
 # Version: 1.3 | Chủ sở hữu: TBD | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
-Cho phép độc giả (Sinh viên, Giảng viên) gửi đề xuất cho Thư viện bổ sung các đầu sách mới chưa có trong kho. Quản lý Thư viện có thể duyệt, từ chối hoặc đánh dấu đã nhập sách, giúp thư viện xây dựng nguồn tài liệu bám sát nhu cầu học tập và nghiên cứu.
+Cho phép độc giả (Sinh viên, Giảng viên) gửi đề xuất cho Thư viện bổ sung các đầu sách mới chưa có trong kho. Quản trị viên có thể duyệt, từ chối hoặc đánh dấu đã nhập sách, giúp thư viện xây dựng nguồn tài liệu bám sát nhu cầu học tập và nghiên cứu.
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Sinh viên (Student) & Giảng viên (Lecturer):** Gửi đề xuất mua sách mới, xem trạng thái các yêu cầu đề xuất của bản thân.
-* **Quản lý Thư viện (Library Manager):** Xem danh sách đề xuất từ độc giả, phê duyệt (Approve), từ chối (Reject) kèm lý do, hoặc chuyển trạng thái đã mua (Acquired).
+* **Quản trị viên (Admin):** Xem danh sách đề xuất từ độc giả, phê duyệt (Approve), từ chối (Reject) kèm lý do, hoặc chuyển trạng thái đã mua (Acquired).
 
 ## 2.5 Use Cases (Danh sách Use Cases đúng theo registry)
 * **UC-55 (Submit & Vote Book Suggestion):** Actor: Lecturer | (Đề xuất & Vote sách mới): Giảng viên gửi đề xuất sách mới cần bổ sung cho thư viện hoặc vote (+1) cho đề xuất có sẵn của giảng viên khác. Giảng viên cũng có thể hủy vote và sửa/xóa đề xuất của mình khi còn ở trạng thái pending.
@@ -55,7 +55,7 @@ Cho phép độc giả (Sinh viên, Giảng viên) gửi đề xuất cho Thư v
 
 
 ## 4.5 Non-functional Requirements (Yêu cầu phi chức năng)
-* **Bảo mật:** Phân quyền bắt buộc đối với Manager cho các thao tác phê duyệt. Đảm bảo dữ liệu người đề xuất được bảo mật.
+* **Bảo mật:** Phân quyền bắt buộc đối với Admin cho các thao tác phê duyệt. Đảm bảo dữ liệu người đề xuất được bảo mật.
 * **Giao diện:** Đồ họa thân thiện 100% tiếng Việt, hiển thị rõ ràng tiến trình xử lý đề xuất.
 
 ## 5. Database Schema & Data Models (Lược đồ dữ liệu)

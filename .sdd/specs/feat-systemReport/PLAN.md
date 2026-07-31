@@ -1,22 +1,22 @@
-# Implementation Plan: System Report (Báo cáo hệ thống và Dashboard Manager)
+# Implementation Plan: System Report (Báo cáo hệ thống và Dashboard Admin)
 
 **Branch**: `main` | **Date**: 2026-07-21 | **Spec**: [SPEC.md](file:///d:/LMS-Library_Management_System/.sdd/specs/feat-systemReport/SPEC.md)
 
 ## Summary (Tóm tắt)
-Triển khai hệ thống Báo cáo thống kê trực quan và Bảng điều khiển dành cho Quản lý Thư viện (Manager Dashboard). Hệ thống hỗ trợ phân tích xu hướng mượn trả theo Ngày/Tháng/Năm, đối chiếu doanh thu tài chính (phạt đã thu vs phạt chưa thu), thống kê kho sách và rủi ro thất thoát dựa vào kết quả kiểm kê gần nhất, và báo cáo hiệu suất hoạt động của từng thủ thư. Chức năng kết xuất Excel được xây dựng bằng Apache POI, và biểu đồ trực quan phía client sử dụng thư viện Chart.js.
+Triển khai hệ thống Báo cáo thống kê trực quan và Bảng điều khiển dành cho Quản trị viên (Admin Dashboard). Hệ thống hỗ trợ phân tích xu hướng mượn trả theo Ngày/Tháng/Năm, đối chiếu doanh thu tài chính (phạt đã thu vs phạt chưa thu), thống kê kho sách và rủi ro thất thoát dựa vào kết quả kiểm kê gần nhất, và báo cáo hiệu suất hoạt động của từng thủ thư. Chức năng kết xuất Excel được xây dựng bằng Apache POI, và biểu đồ trực quan phía client sử dụng thư viện Chart.js.
 
 ## Technical Context (Bối cảnh kỹ thuật)
 * **Backend:** Java 17, Java Servlet (Servlet 4.0/5.0)
 * **Database:** PostgreSQL (JDBC + DAO Pattern)
 * **Libraries:** Apache POI 5.2.5 (Excel Export), Chart.js (Frontend charts rendering)
-* **Auth & Authorization:** Session-based authorization và `@WebFilter` (chặn bảo vệ `/manager/*`)
+* **Auth & Authorization:** Session-based authorization và `@WebFilter` (chặn bảo vệ `/admin/*`)
 
 ## Project Structure (Cấu trúc dự án thực tế)
 ### Source Code
 ```text
 src/java/
 ├── controllers/
-│   ├── ManagerDashboardServlet.java   # Controller cho Dashboard của Manager (UC-45, FR-72)
+│   ├── AdminDashboardServlet.java   # Controller cho Dashboard của Admin (UC-45, FR-72)
 │   ├── SystemReportServlet.java       # Controller cho báo cáo xu hướng, tài chính (UC-34, FR-98, FR-99, FR-100, FR-101)
 │   ├── StaffPerformanceServlet.java   # Controller cho báo cáo hiệu suất thủ thư (UC-54, FR-83)
 │   └── ExportReportServlet.java       # Controller cho kết xuất báo cáo Excel (UC-35, FR-102)
@@ -33,8 +33,8 @@ src/java/
 └── service/
     └── ReportService.java             # Xử lý business logic tính toán báo cáo và xuất Excel
 
-web/manager/                           # Giao diện dành cho Manager
-├── dashboard.jsp                      # Trang Dashboard Manager (biểu đồ KPI và cảnh báo nhanh)
+web/admin/                           # Giao diện dành cho Admin
+├── dashboard.jsp                      # Trang Dashboard Admin (biểu đồ KPI và cảnh báo nhanh)
 ├── system-report.jsp                  # Trang xem báo cáo xu hướng mượn trả, tài chính, kiểm kê
 ├── staff-performance.jsp              # Trang xem báo cáo hiệu suất hoạt động thủ thư
 └── fragments/                         # Các fragment JSP dùng chung (header, sidebar, footer)

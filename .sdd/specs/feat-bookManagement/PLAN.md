@@ -52,7 +52,7 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 - `AuthFilter` bảo vệ `/librarian/book-management` và `/librarian/book-management/*`.
 - Chưa đăng nhập: redirect `/login`.
 - `LIBRARIAN`: được xem và thực hiện toàn bộ thao tác F4.
-- `ADMIN`, `MANAGER`, `STUDENT`, `LECTURER` và vai trò khác: HTTP 403 trước khi vào servlet/JSP.
+- `ADMIN`, `ADMIN`, `STUDENT`, `LECTURER` và vai trò khác: HTTP 403 trước khi vào servlet/JSP.
 - Controller vẫn kiểm tra session/role cho thao tác POST như lớp phòng vệ bổ sung.
 
 ## 6. DATABASE CHANGES

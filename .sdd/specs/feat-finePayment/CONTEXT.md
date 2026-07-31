@@ -18,7 +18,7 @@
 ## 3. STAKEHOLDERS (Các bên liên quan)
 - **Độc giả (Student/Lecturer):** Đối tượng nộp phạt, tự tra cứu và thanh toán online.
 - **Thủ thư (Librarian):** Tra cứu nợ phạt và xác nhận thanh toán bằng tiền mặt tại quầy.
-- **SysAdmin & Library Manager:** Quản trị cấu hình mức phạt (`FINE_RATE_PER_DAY`) và giám sát audit trail.
+- **SysAdmin & Admin:** Quản trị cấu hình mức phạt (`FINE_RATE_PER_DAY`) và giám sát audit trail.
 
 ## 4. CONSTRAINTS (Ràng buộc kỹ thuật)
 - **Tech Stack:** Java Servlet, JDBC, JSP. Không dùng ORM hay Spring Framework.

@@ -39,7 +39,7 @@
 - **Protected routes** (yêu cầu session hợp lệ):
   - `/admin/*` → Chỉ role `ADMIN`
   - `/librarian/*` → Chỉ role `LIBRARIAN`
-  - `/manager/*` → Chỉ role `MANAGER`
+  - `/admin/*` → Chỉ role `ADMIN`
   - `/student/*` → Chỉ role `STUDENT`
   → Nếu không có session → `response.sendRedirect("/login")`; sai role → `response.sendError(403)`.
 - **Session check logic**: Đọc `HttpSession` attribute `userId` và `role`. Nếu null → coi là chưa đăng nhập.
@@ -97,7 +97,7 @@
 Sau đăng nhập thành công, `HttpSession` lưu tối thiểu:
 ```
 session.setAttribute("userId",   user.getUserId());   // int
-session.setAttribute("role",     user.getRole());     // String: ADMIN/LIBRARIAN/MANAGER/STUDENT
+session.setAttribute("role",     user.getRole());     // String: ADMIN/LIBRARIAN/ADMIN/STUDENT
 session.setAttribute("email",    user.getEmail());    // String
 ```
 Session timeout mặc định: **30 phút** (cấu hình trong `web.xml`).

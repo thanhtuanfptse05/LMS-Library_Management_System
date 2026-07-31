@@ -32,7 +32,7 @@
 ## 4. DEPENDENCIES
 - Cần có `EmailService` để trigger bất đồng bộ thông báo cho người dùng tiếp theo trong hàng đợi khi sách có sẵn.
 - DeskCirculationService sử dụng BookCopyIncidentDAO.insertResolvedFromCheckIn(...) để ghi nhận incident đã kết luận khi check-in hỏng/mất tại quầy.
-- AuthFilter cấu hình chỉ cấp quyền truy cập route `/librarian/*` cho role `LIBRARIAN` và `MANAGER`.
+- AuthFilter cấu hình chỉ cấp quyền truy cập route `/librarian/*` cho role `LIBRARIAN` và `ADMIN`.
 
 ## 5. RISKS & MITIGATIONS
 - **Risk:** Gỡ khóa nhầm tài khoản đang bị vi phạm kỷ luật hoặc bảo mật khi đóng tiền phạt.

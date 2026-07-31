@@ -2,7 +2,7 @@
 # Version: 1.3 | Chủ sở hữu: Tuan | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
-Cung cấp giao diện cho phép tất cả các loại người dùng (Student, Lecturer, Librarian, Library Manager, Admin) tự xem và cập nhật thông tin cá nhân của mình (họ tên, số điện thoại, giới tính, ngày sinh) và thực hiện đổi mật khẩu cá nhân để bảo vệ tài khoản.
+Cung cấp giao diện cho phép tất cả các loại người dùng (Student, Lecturer, Librarian, Admin) tự xem và cập nhật thông tin cá nhân của mình (họ tên, số điện thoại, giới tính, ngày sinh) và thực hiện đổi mật khẩu cá nhân để bảo vệ tài khoản.
 
 ## 2. Actors & Roles (Tác nhân & Quyền hạn)
 * **Người dùng đã đăng nhập (User - All Roles):** Xem hồ sơ cá nhân, cập nhật thông tin liên hệ được phép, thay đổi mật khẩu.
@@ -46,7 +46,7 @@ Cung cấp giao diện cho phép tất cả các loại người dùng (Student,
 * `gender` (VARCHAR(10), NOT NULL)
 * `dateOfBirth` (DATE, NOT NULL)
 
-### Bảng Role Specs (`Student`, `Lecturer`, `Librarian`, `LibraryManager`, `Admin`)
+### Bảng Role Specs (`Student`, `Lecturer`, `Librarian`, `Admin`)
 * `userId` (INT, PK, FK REFERENCES `"User"`)
 * `studentCode` / `lecturerCode` / `staffCode` (VARCHAR(50), UNIQUE)
 * `major` / `department` (VARCHAR(100))

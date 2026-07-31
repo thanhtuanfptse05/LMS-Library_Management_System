@@ -43,11 +43,11 @@ Phù hợp với kiến trúc Monolith Java Servlet của dự án:
 |---|---|---|
 | D1 | Dùng `LinkedBlockingQueue` thay vì synchronized list | Thread-safe built-in, không cần lock thủ công |
 | D2 | Daemon Thread duy nhất (không pool) | Đủ throughput, đơn giản, không race condition |
-| D3 | Template lấy từ DB mỗi lần gửi (có thể cache) | Manager cần chỉnh sửa template và thấy hiệu lực ngay |
+| D3 | Template lấy từ DB mỗi lần gửi (có thể cache) | Admin cần chỉnh sửa template và thấy hiệu lực ngay |
 | D4 | Placeholder dạng `{{key}}` thay vào bằng `String.replace()` | Không cần template engine phức tạp |
 | D5 | Retry với `Thread.sleep()` trong Worker | Đơn giản, phù hợp Monolith — không cần ScheduledExecutorService phức tạp |
 | D6 | Graceful shutdown drain queue 5 giây | Tránh mất email trong queue khi restart server |
-| D7 | `DocumentTemp` là System Config table | Manager chỉnh sửa nội dung, không được xóa 6 mẫu hệ thống |
+| D7 | `DocumentTemp` là System Config table | Admin chỉnh sửa nội dung, không được xóa 6 mẫu hệ thống |
 | D8 | SMTP credentials lấy từ AppConfig (env/fallback) | Bảo mật thông tin nhạy cảm, dễ dàng cấu hình qua biến môi trường hoặc fallback cứng |
 
 ---
@@ -76,7 +76,7 @@ Phù hợp với kiến trúc Monolith Java Servlet của dự án:
 ## 4. GIẢ ĐỊNH & RÀNG BUỘC
 
 - **GA-01:** SMTP credentials (host, port, user, password) đã được cấu hình trong `AppConfig` (qua biến môi trường hoặc fallback cứng) trước khi deploy.
-- **GA-02:** Manager mặc định (managerId = ID của MANAGER đầu tiên trong DB) đã tồn tại trong bảng `LibraryManager` từ seed data.
+- **GA-02:** Admin mặc định (adminId = ID của ADMIN đầu tiên trong DB) đã tồn tại trong bảng `LibraryManager` từ seed data.
 - **GA-03:** Template HTML trong `bodyContent` đã được kiểm tra render đúng trên Gmail, Outlook.
 - **CB-01:** Daemon Thread sẽ bị kill ngay khi JVM tắt hoàn toàn — đây là hành vi bình thường của Daemon Thread.
 - **CB-02:** Không hỗ trợ attachment file trong phiên bản này.

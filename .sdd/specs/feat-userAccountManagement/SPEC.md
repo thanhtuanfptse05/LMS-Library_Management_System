@@ -1,4 +1,4 @@
-﻿# Feature Specification: Quản lý tài khoản người dùng (User Account Management)
+# Feature Specification: Quản lý tài khoản người dùng (User Account Management)
 # Version: 1.3 | Chủ sở hữu: Quyet | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
@@ -45,7 +45,7 @@ Tính năng cho phép Quản trị viên (SysAdmin) quản lý toàn bộ vòng 
   * *Mapping:* UC-07, UC-08 / BR-54
 * **FR-19 (Khởi tạo tài khoản đơn lẻ):** WHEN Quản trị viên gửi biểu mẫu tạo tài khoản đơn lẻ hợp lệ, THE system SHALL thực thi lệnh INSERT tuần tự vào các bảng [User], MemberProfile, và bảng Role đã chọn, ĐỒNG THỜI cấp mật khẩu mặc định.
   * *Mapping:* UC-09 / BR-12
-* **FR-20 (Cập nhật và Trạng thái tài khoản):** WHEN Quản trị viên thao tác cập nhật tài khoản, THE system SHALL cho phép chỉnh sửa thông tin liên lạc tại MemberProfile, VÀ cho phép cập nhật status/lockReason tại bảng [User] để thực thi việc Khóa hoặc Mở khóa tài khoản.
+* **FR-20 (Cập nhật và Trạng thái tài khoản):** WHEN Quản trị viên thao tác cập nhật tài khoản, THE system SHALL cho phép chỉnh sửa thông tin liên lạc tại MemberProfile, VÀ cho phép cập nhật status tại bảng [User] cùng việc nhập lý do khóa thủ công (textarea) để lưu vào bảng UserLockReason khi thực thi việc Khóa tài khoản.
   * *Mapping:* UC-11 / BR-14, BR-55
 * **FR-21 (Rollback ngoại lệ Phase 2):** WHERE xảy ra lỗi SQLException bất ngờ trong quá trình thực thi Batch Insert (Phase 2) của tiến trình Import, THE system SHALL Rollback toàn bộ Database Transaction VÀ trả về HTTP 500 kèm lỗi hệ thống chung (ẩn stack trace).
   * *Mapping:* UC-10 / BR-11
@@ -62,7 +62,7 @@ Tính năng cho phép Quản trị viên (SysAdmin) quản lý toàn bộ vòng 
 ### Bảng `"User"`, `MemberProfile`, `UserLockReason`
 * Chuẩn PascalCase cho tên bảng, camelCase cho cột. `User` bắt buộc bọc nháy kép trong SQL.
 
-### Bảng Vai Trò (`Student`, `Lecturer`, `Librarian`, `LibraryManager`, `Admin`)
+### Bảng Vai Trò (`Student`, `Lecturer`, `Librarian`, `Admin`)
 * `userId` (INT, PK/FK), `studentCode`/`lecturerCode`/`staffCode` (VARCHAR, UNIQUE).
 
 ## 6. Error Handling (Xử lý lỗi ngoại lệ)

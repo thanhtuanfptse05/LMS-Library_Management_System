@@ -2,7 +2,7 @@
 Kiến trúc: Servlet MVC Pattern
 
 ## 1. Architectural Approach
-Sử dụng NotificationService để điều phối logic giữa hai bảng dữ liệu. Áp dụng AuthFilter để chặn truy cập trái phép từ các role không phải Manager.
+Sử dụng NotificationService để điều phối logic giữa hai bảng dữ liệu. Áp dụng AuthFilter để chặn truy cập trái phép từ các role không phải Admin.
 
 ## 2. Components
 * **NotificationServlet:** Xử lý Request CRUD cho thông báo và templates.
