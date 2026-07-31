@@ -31,7 +31,7 @@ TRUNCATE TABLE
     AuditLogs,
     SystemConfigurations,
     Admin,
-    LibraryManager,
+
     Librarian,
     Lecturer,
     Student,

@@ -53,7 +53,7 @@ BEGIN
             INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate)
             VALUES (v_uid, 'Cao Tuấn', '0123456789', 'Nam', '2005-12-01', NULL, NULL);
 
-            INSERT INTO LibraryManager (userId, staffCode) VALUES (v_uid, 'ALL2');
+
         END IF;
     END IF;
 
@@ -121,7 +121,7 @@ BEGIN
             RETURNING userId INTO v_uid;
             INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth)
             VALUES (v_uid, 'Do Viet Giang', '0945593975', 'Nam', '1984-08-24');
-            INSERT INTO LibraryManager (userId, staffCode) VALUES (v_uid, 'MN001');
+
         END IF;
 
         IF NOT EXISTS (SELECT 1 FROM "User" WHERE email = 'manager2@lms.com') THEN
@@ -130,7 +130,7 @@ BEGIN
             RETURNING userId INTO v_uid;
             INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth)
             VALUES (v_uid, 'Duong Phuong Nga', '0956205558', 'Nữ', '1971-09-15');
-            INSERT INTO LibraryManager (userId, staffCode) VALUES (v_uid, 'MN002');
+
         END IF;
 
         IF NOT EXISTS (SELECT 1 FROM "User" WHERE email = 'manager3@lms.com') THEN
@@ -139,7 +139,7 @@ BEGIN
             RETURNING userId INTO v_uid;
             INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth)
             VALUES (v_uid, 'Hoang Xuan Long', '0932025897', 'Nam', '1989-09-10');
-            INSERT INTO LibraryManager (userId, staffCode) VALUES (v_uid, 'MN003');
+
         END IF;
 
         IF NOT EXISTS (SELECT 1 FROM "User" WHERE email = 'manager4@lms.com') THEN
@@ -148,7 +148,7 @@ BEGIN
             RETURNING userId INTO v_uid;
             INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth)
             VALUES (v_uid, 'Ly Quoc Hai', '0967183775', 'Nam', '1989-11-02');
-            INSERT INTO LibraryManager (userId, staffCode) VALUES (v_uid, 'MN004');
+
         END IF;
 
         IF NOT EXISTS (SELECT 1 FROM "User" WHERE email = 'manager5@lms.com') THEN
@@ -157,7 +157,7 @@ BEGIN
             RETURNING userId INTO v_uid;
             INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth)
             VALUES (v_uid, 'Hoang Phuong Trinh', '0982080986', 'Nữ', '1970-06-22');
-            INSERT INTO LibraryManager (userId, staffCode) VALUES (v_uid, 'MN005');
+
         END IF;
 
 
