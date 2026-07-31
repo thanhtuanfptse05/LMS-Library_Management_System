@@ -12,11 +12,11 @@ public class F16_DashboardManagerTest {
     }
 
     // ========================================================================
-    // F16: DASHBOARD MANAGER - UNIT & BOUNDARY TESTS (>90% Coverage)
+    // F16: DASHBOARD ADMIN ANALYTICS - UNIT & BOUNDARY TESTS (>90% Coverage)
     // ========================================================================
 
     @Test
-    public void testManagerDashboardMetrics() {
+    public void testAdminAnalyticsDashboardMetrics() {
         int totalCatalogBooks = 4500;
         int activeBorrowings = 1200;
         double monthlyFineRevenue = 8500000.0;

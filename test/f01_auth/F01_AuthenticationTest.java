@@ -59,7 +59,7 @@ public class F01_AuthenticationTest {
 
     @Test
     public void testUserRolesBoundary() {
-        String[] validRoles = {"ADMIN", "LIBRARIAN", "LIBRARY_MANAGER", "STUDENT", "LECTURER"};
+        String[] validRoles = {"ADMIN", "LIBRARIAN", "STUDENT", "LECTURER"};
         for (String role : validRoles) {
             user.setRole(role);
             assertEquals(role, user.getRole());

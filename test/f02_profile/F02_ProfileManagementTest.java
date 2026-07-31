@@ -4,7 +4,6 @@ import model.MemberProfile;
 import model.Student;
 import model.Lecturer;
 import model.Librarian;
-import model.LibraryManager;
 import model.Admin;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,11 +79,11 @@ public class F02_ProfileManagementTest {
         assertEquals(301, lib.getUserId());
         assertEquals("LIB001", lib.getStaffCode());
 
-        LibraryManager mgr = new LibraryManager();
-        mgr.setUserId(302);
-        mgr.setStaffCode("MGR001");
-        assertEquals(302, mgr.getUserId());
-        assertEquals("MGR001", mgr.getStaffCode());
+        Admin adm2 = new Admin();
+        adm2.setUserId(302);
+        adm2.setStaffCode("ADM002");
+        assertEquals(302, adm2.getUserId());
+        assertEquals("ADM002", adm2.getStaffCode());
 
         Admin adm = new Admin();
         adm.setUserId(303);
