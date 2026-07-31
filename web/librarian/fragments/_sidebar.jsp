@@ -37,6 +37,10 @@
             <span class="material-symbols-outlined">gavel</span>
             <span>Danh sách vi phạm</span>
         </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/reservation-queue">
+            <span class="material-symbols-outlined">queue</span>
+            <span>Hàng chờ đặt trước</span>
+        </a>
 
         <!-- Quản lý sách -->
         <p class="sidebar-section-label">Quản lý sách</p>
@@ -145,6 +149,10 @@
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fines">
                 <span class="material-symbols-outlined">gavel</span>
                 <span>Danh sách vi phạm</span>
+            </a>
+            <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/reservation-queue">
+                <span class="material-symbols-outlined">queue</span>
+                <span>Hàng chờ đặt trước</span>
             </a>
 
             <p class="sidebar-section-label">Quản lý sách</p>

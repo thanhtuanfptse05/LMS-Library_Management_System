@@ -1016,4 +1016,128 @@ public class ReservationDAO {
         }
         return list;
     }
+
+    /**
+     * Tra cứu danh sách hàng chờ đặt trước cho Thủ thư với bộ lọc từ khóa, trạng thái và phân trang.
+     *
+     * @param conn    Kết nối CSDL
+     * @param keyword Từ khóa tìm kiếm (tên độc giả, mã độc giả, tên sách, ISBN)
+     * @param status  Trạng thái ('all', 'pending', 'readypickup', 'fulfilled', 'cancelled')
+     * @param offset  Vị trí bắt đầu bản ghi
+     * @param limit   Số bản ghi trên 1 trang
+     * @return Danh sách các đơn Reservation thỏa mãn điều kiện
+     * @throws SQLException nếu có lỗi truy vấn SQL
+     */
+    public List<Reservation> findReservationQueueForLibrarian(Connection conn, String keyword, String status, int offset, int limit) throws SQLException {
+        List<Reservation> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT r.reservationId, r.userId, r.bookId, r.bookCopyId, r.status, r.queuePosition, r.startDate, r.endDate, "
+          + "       mp.fullName AS memberName, "
+          + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode, "
+          + "       b.title AS bookTitle "
+          + "FROM Reservation r "
+          + "JOIN MemberProfile mp ON r.userId = mp.userId "
+          + "JOIN Book b ON r.bookId = b.bookId "
+          + "LEFT JOIN Student s ON r.userId = s.userId "
+          + "LEFT JOIN Lecturer l ON r.userId = l.userId "
+          + "WHERE 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (status != null && !status.isBlank() && !"all".equalsIgnoreCase(status)) {
+            sql.append(" AND r.status = ? ");
+            params.add(status.trim());
+        }
+
+        if (keyword != null && !keyword.isBlank()) {
+            sql.append(" AND (mp.fullName ILIKE ? OR s.studentCode ILIKE ? OR l.lecturerCode ILIKE ? OR b.title ILIKE ? OR b.isbn ILIKE ?) ");
+            String pattern = "%" + keyword.trim() + "%";
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+        }
+
+        sql.append(" ORDER BY r.bookId ASC, CASE WHEN r.queuePosition IS NULL THEN 99999 ELSE r.queuePosition END ASC, r.startDate DESC LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Reservation r = new Reservation();
+                    r.setReservationId(rs.getInt("reservationId"));
+                    r.setUserId(rs.getInt("userId"));
+                    r.setBookId(rs.getInt("bookId"));
+                    int rawBookCopyId = rs.getInt("bookCopyId");
+                    r.setBookCopyId(rs.wasNull() ? null : rawBookCopyId);
+                    r.setStatus(rs.getString("status"));
+                    int rawQueuePos = rs.getInt("queuePosition");
+                    r.setQueuePosition(rs.wasNull() ? null : rawQueuePos);
+                    r.setStartDate(rs.getTimestamp("startDate"));
+                    r.setEndDate(rs.getTimestamp("endDate"));
+                    r.setMemberName(rs.getString("memberName"));
+                    r.setMemberCode(rs.getString("memberCode"));
+                    r.setBookTitle(rs.getString("bookTitle"));
+                    list.add(r);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi truy vấn danh sách hàng chờ đặt trước cho Thủ thư", e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
+     * Đếm tổng số bản ghi hàng chờ đặt trước thỏa mãn bộ lọc cho Thủ thư (dùng cho phân trang).
+     */
+    public int countReservationQueueForLibrarian(Connection conn, String keyword, String status) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+            "SELECT COUNT(*) "
+          + "FROM Reservation r "
+          + "JOIN MemberProfile mp ON r.userId = mp.userId "
+          + "JOIN Book b ON r.bookId = b.bookId "
+          + "LEFT JOIN Student s ON r.userId = s.userId "
+          + "LEFT JOIN Lecturer l ON r.userId = l.userId "
+          + "WHERE 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (status != null && !status.isBlank() && !"all".equalsIgnoreCase(status)) {
+            sql.append(" AND r.status = ? ");
+            params.add(status.trim());
+        }
+
+        if (keyword != null && !keyword.isBlank()) {
+            sql.append(" AND (mp.fullName ILIKE ? OR s.studentCode ILIKE ? OR l.lecturerCode ILIKE ? OR b.title ILIKE ? OR b.isbn ILIKE ?) ");
+            String pattern = "%" + keyword.trim() + "%";
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi đếm tổng số bản ghi hàng chờ đặt trước cho Thủ thư", e);
+            throw e;
+        }
+        return 0;
+    }
 }
