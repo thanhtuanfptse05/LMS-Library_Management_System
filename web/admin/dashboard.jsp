@@ -89,6 +89,8 @@
         <input type="hidden" name="lockReason" id="quickLockReason">
     </form>
 
+    <jsp:include page="fragments/_user_lock_modal.jsp" />
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Hover effect on card header buttons
@@ -175,13 +177,15 @@
         }
 
         // Xử lý Khóa/Mở khóa tài khoản nhanh từ Dashboard
-        function quickLock(userId) {
-            if (confirm('Bạn có chắc chắn muốn khóa tài khoản này?')) {
-                document.getElementById('quickUserId').value = userId;
-                document.getElementById('quickStatus').value = 'locked';
-                document.getElementById('quickLockReason').value = 'adminban';
-                document.getElementById('quickToggleForm').submit();
-            }
+        function quickLock(userId, fullName, email) {
+            document.getElementById('lockModalUserId').value = userId;
+            var userText = fullName ? fullName + ' (' + email + ')' : (email || 'ID: ' + userId);
+            document.getElementById('lockModalUserText').textContent = userText;
+            document.getElementById('lockModalReason').value = '';
+            var charCount = document.getElementById('lockReasonCharCount');
+            if (charCount) charCount.textContent = '0/50';
+            var lockModal = new bootstrap.Modal(document.getElementById('lockUserModal'));
+            lockModal.show();
         }
 
         function quickUnlock(userId) {

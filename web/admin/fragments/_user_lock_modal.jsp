@@ -29,11 +29,14 @@
                     
                     <div>
                         <label for="lockModalReason" class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Lý do khóa tài khoản <span class="text-danger">*</span></label>
-                        <select class="form-select config-input w-100" id="lockModalReason" name="lockReason" required>
-                            <option value="adminban" selected>Bị cấm bởi Admin (adminban)</option>
-                            <option value="unpaid">Nợ tiền phạt thư viện (unpaid)</option>
-                            <option value="securitybreach">Vi phạm bảo mật / Đăng nhập sai nhiều lần (securitybreach)</option>
-                        </select>
+                        <textarea class="form-control config-input w-100" id="lockModalReason" name="lockReason"
+                                  required maxlength="50" rows="3"
+                                  placeholder="Nhập lý do khóa tài khoản (tối đa 50 ký tự)..."
+                                  style="resize: vertical;"></textarea>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted" style="font-size: 11px;">Bắt buộc nhập lý do</small>
+                            <small class="text-muted" id="lockReasonCharCount" style="font-size: 11px;">0/50</small>
+                        </div>
                     </div>
                 </div>
                 
@@ -48,3 +51,27 @@
         </div>
     </div>
 </div>
+
+<script>
+(function() {
+    var lockReasonInput = document.getElementById('lockModalReason');
+    var charCountEl = document.getElementById('lockReasonCharCount');
+
+    if (lockReasonInput && charCountEl) {
+        lockReasonInput.addEventListener('input', function() {
+            charCountEl.textContent = this.value.length + '/50';
+        });
+    }
+
+    var lockForm = document.getElementById('lockUserForm');
+    if (lockForm) {
+        lockForm.addEventListener('submit', function(e) {
+            var reason = document.getElementById('lockModalReason').value.trim();
+            if (!reason) {
+                e.preventDefault();
+                alert('Vui lòng nhập lý do khóa tài khoản.');
+            }
+        });
+    }
+})();
+</script>

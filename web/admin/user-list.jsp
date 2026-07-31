@@ -315,7 +315,9 @@
             document.getElementById('lockModalUserId').value = userId;
             const userText = fullName ? fullName + ' (' + email + ')' : email;
             document.getElementById('lockModalUserText').textContent = userText;
-            document.getElementById('lockModalReason').value = 'adminban';
+            document.getElementById('lockModalReason').value = '';
+            var charCount = document.getElementById('lockReasonCharCount');
+            if (charCount) charCount.textContent = '0/50';
             
             const lockModal = new bootstrap.Modal(document.getElementById('lockUserModal'));
             lockModal.show();

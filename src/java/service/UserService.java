@@ -170,8 +170,14 @@ public class UserService {
 
         if ("active".equals(status)) {
             lockReason = null;
-        } else if (lockReason == null || lockReason.trim().isEmpty()) {
-            lockReason = "adminban";
+        } else {
+            if (lockReason == null || lockReason.trim().isEmpty()) {
+                throw new Exception("Vui lòng nhập lý do khóa tài khoản.");
+            }
+            lockReason = lockReason.trim();
+            if (lockReason.length() > 50) {
+                lockReason = lockReason.substring(0, 50);
+            }
         }
 
         boolean success = userDAO.updateUserStatus(userId, status, lockReason);

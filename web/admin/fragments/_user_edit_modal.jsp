@@ -68,11 +68,10 @@
 
                         <div class="col-12 col-md-6 d-none" id="lockReasonContainer">
                             <label for="editLockReason" class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px;">Lý do khóa tài khoản</label>
-                            <select class="form-select config-input w-100" id="editLockReason" name="lockReason">
-                                <option value="adminban">Bị cấm bởi Admin (adminban)</option>
-                                <option value="unpaid">Nợ tiền phạt thư viện (unpaid)</option>
-                                <option value="securitybreach">Vi phạm bảo mật / Đăng nhập sai nhiều lần (securitybreach)</option>
-                            </select>
+                            <textarea class="form-control config-input w-100" id="editLockReason" name="lockReason"
+                                      maxlength="50" rows="2"
+                                      placeholder="Nhập lý do khóa tài khoản..."
+                                      style="resize: vertical;"></textarea>
                         </div>
 
                         <!-- Cột 2: Thông tin mở rộng động theo vai trò -->
@@ -157,9 +156,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (status === "locked") {
             lockReasonContainer.classList.remove("d-none");
-            document.getElementById("editLockReason").value = "adminban";
+            document.getElementById("editLockReason").value = "";
         } else {
             lockReasonContainer.classList.add("d-none");
+            document.getElementById("editLockReason").value = "";
         }
 
         // Ẩn hiện các trường mở rộng

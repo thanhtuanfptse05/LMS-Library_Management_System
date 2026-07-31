@@ -84,7 +84,7 @@
                                             <c:choose>
                                                 <c:when test="${u.status == 'active'}">
                                                     <button class="btn-icon" title="Khóa"
-                                                            onclick="quickLock('${u.userId}')">
+                                                            onclick="quickLock('${u.userId}', '<c:out value="${u.fullName}" />', '<c:out value="${u.email}" />')">
                                                         <span class="material-symbols-outlined">lock</span>
                                                     </button>
                                                 </c:when>
