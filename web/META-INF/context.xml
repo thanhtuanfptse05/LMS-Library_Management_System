@@ -10,6 +10,8 @@
               maxTotal="20"
               maxIdle="10"
               maxWaitMillis="10000"
-              testOnBorrow="true"
+              testOnBorrow="false"
+              testWhileIdle="true"
+              timeBetweenEvictionRunsMillis="30000"
               validationQuery="SELECT 1"/>
 </Context>
