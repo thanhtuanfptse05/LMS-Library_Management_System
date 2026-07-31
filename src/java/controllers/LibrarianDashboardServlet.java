@@ -56,11 +56,11 @@ public class LibrarianDashboardServlet extends HttpServlet {
             request.setAttribute("now", new java.util.Date());
 
             // 2. Giao dịch do thủ thư này xử lý (borrowed + returned gần đây, createdBy = librarianId)
-            List<BorrowRecord> myLoans = borrowRecordDAO.findLoansByLibrarian(conn, librarianId, 15);
+            List<BorrowRecord> myLoans = borrowRecordDAO.findLoansByLibrarian(conn, librarianId, 20);
             request.setAttribute("myLoans", myLoans);
 
-            // 3. Unpaid Fines (Top 10)
-            List<Fine> unpaidFinesList = fineDAO.findUnpaidFines(conn, 10);
+            // 3. Unpaid Fines (Fetch limit 20 to check for "Xem tất cả")
+            List<Fine> unpaidFinesList = fineDAO.findUnpaidFines(conn, 20);
             request.setAttribute("unpaidFinesList", unpaidFinesList);
 
             // 4. Overdue Loans detail list (Top 8 — quá hạn lâu nhất ưu tiên trước)

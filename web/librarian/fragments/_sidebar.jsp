@@ -29,6 +29,14 @@
             <span class="material-symbols-outlined">room_service</span>
             <span>Bảng điều khiển quầy</span>
         </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/my-circulations">
+            <span class="material-symbols-outlined">history_edu</span>
+            <span>Sách tôi đã xử lý</span>
+        </a>
+        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fines">
+            <span class="material-symbols-outlined">gavel</span>
+            <span>Danh sách vi phạm</span>
+        </a>
 
         <!-- Quản lý sách -->
         <p class="sidebar-section-label">Quản lý sách</p>
@@ -129,6 +137,14 @@
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/desk-dashboard">
                 <span class="material-symbols-outlined">room_service</span>
                 <span>Bảng điều khiển quầy</span>
+            </a>
+            <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/my-circulations">
+                <span class="material-symbols-outlined">history_edu</span>
+                <span>Sách tôi đã xử lý</span>
+            </a>
+            <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fines">
+                <span class="material-symbols-outlined">gavel</span>
+                <span>Danh sách vi phạm</span>
             </a>
 
             <p class="sidebar-section-label">Quản lý sách</p>
