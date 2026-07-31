@@ -22,6 +22,10 @@
             <span class="material-symbols-outlined">dashboard</span>
             <span>Bảng điều khiển</span>
         </a>
+        <a class="sidebar-link nav-analytics-link" id="nav-analytics" href="${pageContext.request.contextPath}/admin/analytics">
+            <span class="material-symbols-outlined">analytics</span>
+            <span>Phân tích &amp; Thống kê</span>
+        </a>
 
         <!-- Người dùng -->
         <p class="sidebar-section-label">Người dùng</p>
@@ -30,15 +34,35 @@
             <span>Quản lý Người dùng</span>
         </a>
 
-        <!-- Cấu hình Hệ thống -->
-        <p class="sidebar-section-label">Cấu hình Hệ thống</p>
+        <!-- Quản lý Thư viện -->
+        <p class="sidebar-section-label">Quản lý Thư viện</p>
         <a class="sidebar-link nav-config-link" id="nav-config-list" href="${pageContext.request.contextPath}/admin/system-config">
             <span class="material-symbols-outlined">settings</span>
-            <span>Cấu hình</span>
+            <span>Cấu hình Hệ thống</span>
+        </a>
+        <a class="sidebar-link nav-payment-link" id="nav-payment-config" href="${pageContext.request.contextPath}/admin/payment-config">
+            <span class="material-symbols-outlined">payments</span>
+            <span>Cấu hình Thanh toán</span>
+        </a>
+        <a class="sidebar-link nav-notif-link" id="nav-notifications" href="${pageContext.request.contextPath}/admin/notifications">
+            <span class="material-symbols-outlined">campaign</span>
+            <span>Quản lý Thông báo</span>
+        </a>
+        <a class="sidebar-link nav-email-link" id="nav-email-templates" href="${pageContext.request.contextPath}/admin/email-templates">
+            <span class="material-symbols-outlined">mail</span>
+            <span>Quản lý Mẫu Email</span>
         </a>
 
-        <!-- Kiểm toán & Giám sát -->
-        <p class="sidebar-section-label">Kiểm toán &amp; Giám sát</p>
+        <!-- Báo cáo & Giám sát -->
+        <p class="sidebar-section-label">Báo cáo &amp; Giám sát</p>
+        <a class="sidebar-link nav-report-link" id="nav-reports" href="${pageContext.request.contextPath}/admin/reports/dashboard">
+            <span class="material-symbols-outlined">summarize</span>
+            <span>Báo cáo Hệ thống</span>
+        </a>
+        <a class="sidebar-link nav-staff-link" id="nav-staff-performance" href="${pageContext.request.contextPath}/admin/staff-performance">
+            <span class="material-symbols-outlined">trending_up</span>
+            <span>Hiệu suất Nhân viên</span>
+        </a>
         <a class="sidebar-link nav-audit-link" id="nav-audit-logs" href="${pageContext.request.contextPath}/admin/audit-log">
             <span class="material-symbols-outlined">receipt_long</span>
             <span>Nhật ký Kiểm toán</span>
@@ -96,6 +120,10 @@
                 <span class="material-symbols-outlined">dashboard</span>
                 <span>Bảng điều khiển</span>
             </a>
+            <a class="sidebar-link nav-analytics-link" href="${pageContext.request.contextPath}/admin/analytics">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Phân tích &amp; Thống kê</span>
+            </a>
 
             <p class="sidebar-section-label">Người dùng</p>
             <a class="sidebar-link nav-user-link" href="${pageContext.request.contextPath}/admin/user">
@@ -103,13 +131,33 @@
                 <span>Quản lý Người dùng</span>
             </a>
 
-            <p class="sidebar-section-label">Cấu hình Hệ thống</p>
+            <p class="sidebar-section-label">Quản lý Thư viện</p>
             <a class="sidebar-link nav-config-link" href="${pageContext.request.contextPath}/admin/system-config">
                 <span class="material-symbols-outlined">settings</span>
-                <span>Cấu hình</span>
+                <span>Cấu hình Hệ thống</span>
+            </a>
+            <a class="sidebar-link nav-payment-link" href="${pageContext.request.contextPath}/admin/payment-config">
+                <span class="material-symbols-outlined">payments</span>
+                <span>Cấu hình Thanh toán</span>
+            </a>
+            <a class="sidebar-link nav-notif-link" href="${pageContext.request.contextPath}/admin/notifications">
+                <span class="material-symbols-outlined">campaign</span>
+                <span>Quản lý Thông báo</span>
+            </a>
+            <a class="sidebar-link nav-email-link" href="${pageContext.request.contextPath}/admin/email-templates">
+                <span class="material-symbols-outlined">mail</span>
+                <span>Quản lý Mẫu Email</span>
             </a>
 
-            <p class="sidebar-section-label">Kiểm toán &amp; Giám sát</p>
+            <p class="sidebar-section-label">Báo cáo &amp; Giám sát</p>
+            <a class="sidebar-link nav-report-link" href="${pageContext.request.contextPath}/admin/reports/dashboard">
+                <span class="material-symbols-outlined">summarize</span>
+                <span>Báo cáo Hệ thống</span>
+            </a>
+            <a class="sidebar-link nav-staff-link" href="${pageContext.request.contextPath}/admin/staff-performance">
+                <span class="material-symbols-outlined">trending_up</span>
+                <span>Hiệu suất Nhân viên</span>
+            </a>
             <a class="sidebar-link nav-audit-link" href="${pageContext.request.contextPath}/admin/audit-log">
                 <span class="material-symbols-outlined">receipt_long</span>
                 <span>Nhật ký Kiểm toán</span>
@@ -157,10 +205,22 @@
         setActive('.nav-user-link');
     } else if (path.indexOf('/admin/system-config') !== -1) {
         setActive('.nav-config-link');
+    } else if (path.indexOf('/admin/payment-config') !== -1) {
+        setActive('.nav-payment-link');
+    } else if (path.indexOf('/admin/notifications') !== -1) {
+        setActive('.nav-notif-link');
+    } else if (path.indexOf('/admin/email-templates') !== -1) {
+        setActive('.nav-email-link');
+    } else if (path.indexOf('/admin/reports') !== -1) {
+        setActive('.nav-report-link');
+    } else if (path.indexOf('/admin/staff-performance') !== -1) {
+        setActive('.nav-staff-link');
     } else if (path.indexOf('/admin/audit-log') !== -1) {
         setActive('.nav-audit-link');
     } else if (path.indexOf('/admin/profile') !== -1) {
         setActive('.nav-profile-link');
+    } else if (path.indexOf('/admin/analytics') !== -1) {
+        setActive('.nav-analytics-link');
     } else {
         setActive('.nav-dash-link');
     }

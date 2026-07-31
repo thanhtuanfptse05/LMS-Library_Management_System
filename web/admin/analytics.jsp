@@ -47,7 +47,7 @@
                                 <span id="current-month" class="fw-semibold"></span>
                             </p>
                         </div>
-                        <a href="${pageContext.request.contextPath}/manager/reports/dashboard" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
+                        <a href="${pageContext.request.contextPath}/admin/reports/dashboard" class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
                             <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Xuất báo cáo
                         </a>
                     </div>
@@ -189,7 +189,7 @@
                                     <h3 class="card-title">Hiệu suất Nhân viên</h3>
                                     <p class="card-subtitle">Hoạt động hàng tháng theo thủ thư</p>
                                 </div>
-                                <a href="${pageContext.request.contextPath}/manager/staff-performance"
+                                <a href="${pageContext.request.contextPath}/admin/staff-performance"
                                    class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 text-decoration-none">
                                     Báo cáo Chi tiết
                                 </a>
@@ -228,7 +228,7 @@
                                                     <td colspan="4" class="text-center py-4">
                                                         <span class="material-symbols-outlined d-block mb-2" style="font-size: 36px; color: var(--outline-variant);">groups</span>
                                                         <p class="mb-0 fw-semibold" style="font-size: 13px; color: var(--on-surface-variant);">Chưa có dữ liệu hoạt động tháng này</p>
-                                                        <a href="${pageContext.request.contextPath}/manager/staff-performance" class="text-primary-custom fw-semibold text-decoration-none" style="font-size: 12px;">Xem toàn bộ →</a>
+                                                        <a href="${pageContext.request.contextPath}/admin/staff-performance" class="text-primary-custom fw-semibold text-decoration-none" style="font-size: 12px;">Xem toàn bộ →</a>
                                                     </td>
                                                 </tr>
                                             </c:otherwise>
@@ -247,7 +247,7 @@
                         <div class="raised-card overflow-hidden">
                             <div class="card-header-row">
                                 <h3 class="card-title mb-0">Thông báo hệ thống</h3>
-                                <a href="${pageContext.request.contextPath}/manager/notifications" class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1 text-decoration-none" style="font-size: 12px;">
+                                <a href="${pageContext.request.contextPath}/admin/notifications" class="btn btn-sm btn-primary-custom rounded-2 fw-bold px-2 d-flex align-items-center gap-1 text-decoration-none" style="font-size: 12px;">
                                     <span class="material-symbols-outlined" style="font-size: 15px;">campaign</span> Đăng
                                 </a>
                             </div>

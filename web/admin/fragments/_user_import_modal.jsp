@@ -38,7 +38,6 @@
                                         <option value="STUDENT" selected>Độc giả Sinh viên (STUDENT)</option>
                                         <option value="LECTURER">Độc giả Giảng viên (LECTURER)</option>
                                         <option value="LIBRARIAN">Thủ thư (LIBRARIAN)</option>
-                                        <option value="MANAGER">Quản lý Thư viện (MANAGER)</option>
                                         <option value="ADMIN">Quản trị viên (ADMIN)</option>
                                     </select>
                                     <div class="form-text" style="font-size: 11px;">Tệp Excel không được định nghĩa vai trò; Admin bắt buộc chọn vai trò chung tại đây (BR-13).</div>

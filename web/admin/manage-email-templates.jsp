@@ -22,7 +22,7 @@
                 <!-- ─── Breadcrumb ─── -->
                 <nav class="mb-2 d-flex align-items-center gap-1 text-muted small fw-semibold text-uppercase"
                      aria-label="breadcrumb" style="font-size: 12px; letter-spacing: 0.05em;">
-                    <a class="text-decoration-none text-muted" href="${pageContext.request.contextPath}/manager/dashboard">Bảng điều khiển</a>
+                    <a class="text-decoration-none text-muted" href="${pageContext.request.contextPath}/admin/dashboard">Bảng điều khiển</a>
                     <span class="material-symbols-outlined fs-6">chevron_right</span>
                     <span style="color: var(--on-surface);">Mẫu Email</span>
                 </nav>
@@ -93,7 +93,7 @@
 
                             <div class="d-flex flex-column">
                                 <c:forEach var="tmpl" items="${templates}">
-                                    <a href="${pageContext.request.contextPath}/manager/email-templates?action=edit&tempId=${tmpl.tempId}"
+                                    <a href="${pageContext.request.contextPath}/admin/email-templates?action=edit&tempId=${tmpl.tempId}"
                                        class="email-tmpl-item px-3 py-3 text-decoration-none d-flex align-items-start gap-3
                                               ${editTemplate != null and editTemplate.tempId == tmpl.tempId ? 'active-template' : ''}"
                                        style="border-bottom: 1px solid var(--outline-variant);">
@@ -168,7 +168,7 @@
                                 <h6 class="fw-bold mb-0" style="color: var(--on-surface);">Tạo mẫu Email mới</h6>
                             </div>
 
-                            <form method="post" action="${pageContext.request.contextPath}/manager/email-templates">
+                            <form method="post" action="${pageContext.request.contextPath}/admin/email-templates">
                                 <input type="hidden" name="action" value="create">
 
                                 <div class="mb-3">
@@ -293,7 +293,7 @@
 
                                     <!-- Editor content -->
                                     <div class="p-4">
-                                        <form method="post" action="${pageContext.request.contextPath}/manager/email-templates"
+                                        <form method="post" action="${pageContext.request.contextPath}/admin/email-templates"
                                               id="editTemplateForm">
                                             <input type="hidden" name="action" value="update">
                                             <input type="hidden" name="tempId" value="${editTemplate.tempId}">
@@ -379,7 +379,7 @@
                                                         onclick="confirmDeleteTemplate('${editTemplate.tempId}', '${editTemplate.tempName}')">
                                                     <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>Xóa
                                                 </button>
-                                                <a href="${pageContext.request.contextPath}/manager/email-templates"
+                                                <a href="${pageContext.request.contextPath}/admin/email-templates"
                                                    class="btn rounded-3 py-2 px-4"
                                                    style="background-color: var(--surface-container-high); color: var(--on-surface-variant);">Hủy</a>
                                             </div>
@@ -448,7 +448,7 @@
                 </div>
                 <h5 class="fw-bold mb-2">Xác nhận xóa mẫu email</h5>
                 <p class="text-secondary small mb-4">Bạn có chắc chắn muốn xóa mẫu <code id="deleteTargetName"></code> không? Hành động này không thể hoàn tác.</p>
-                <form method="post" action="${pageContext.request.contextPath}/manager/email-templates" class="d-flex gap-2 w-100">
+                <form method="post" action="${pageContext.request.contextPath}/admin/email-templates" class="d-flex gap-2 w-100">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="tempId" id="deleteTargetId">
                     <button type="button" class="btn btn-light flex-grow-1 rounded-3 fw-semibold" data-bs-dismiss="modal">Hủy</button>

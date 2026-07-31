@@ -527,7 +527,6 @@
             if (val === "STUDENT") return "Sinh viên";
             if (val === "LECTURER") return "Giảng viên";
             if (val === "LIBRARIAN") return "Thủ thư";
-            if (val === "MANAGER") return "Quản lý";
             return val;
         }
 

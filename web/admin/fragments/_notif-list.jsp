@@ -8,7 +8,7 @@
         <%-- Toolbar: tìm kiếm & lọc --%>
         <div class="p-3 d-flex flex-wrap gap-2 align-items-center justify-content-between"
              style="border-bottom: 1px solid var(--outline-variant); background-color: var(--surface-container-low);">
-            <form method="get" action="${pageContext.request.contextPath}/manager/notifications"
+            <form method="get" action="${pageContext.request.contextPath}/admin/notifications"
                   class="d-flex flex-wrap gap-2 flex-grow-1">
                 <div class="input-group" style="width: 260px; flex-shrink: 0;">
                     <span class="input-group-text bg-white border-end-0 rounded-start-3"
@@ -30,7 +30,7 @@
                     <span class="material-symbols-outlined" style="font-size: 18px;">filter_list</span>
                 </button>
                 <c:if test="${not empty keyword or not empty typeFilter}">
-                    <a href="${pageContext.request.contextPath}/manager/notifications"
+                    <a href="${pageContext.request.contextPath}/admin/notifications"
                        class="btn rounded-3 px-3" style="background: var(--surface-container-high); color: var(--on-surface-variant);">
                         <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
                     </a>
@@ -82,7 +82,7 @@
                                 </div>
                                 <p class="mb-1 text-truncate notif-content-text"
                                    style="font-size: 13px; color: var(--on-surface-variant); max-width: 380px; cursor: pointer;"
-                                   onclick="openManagerDetail(this)" title="Nhấn để xem chi tiết">
+                                   onclick="openNotifDetail(this)" title="Nhấn để xem chi tiết">
                                     <c:out value="${notif.content}" />
                                 </p>
                                 <%-- Hidden full content for modal --%>
@@ -127,11 +127,11 @@
 
                             <%-- Actions --%>
                             <div class="d-flex align-items-center gap-1 flex-shrink-0">
-                                <a href="${pageContext.request.contextPath}/manager/notifications?action=edit&notificationId=${notif.notificationId}"
+                                <a href="${pageContext.request.contextPath}/admin/notifications?action=edit&notificationId=${notif.notificationId}"
                                    class="btn-icon rounded-2" title="Chỉnh sửa thông báo">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                 </a>
-                                <form method="post" action="${pageContext.request.contextPath}/manager/notifications"
+                                <form method="post" action="${pageContext.request.contextPath}/admin/notifications"
                                       onsubmit="return confirmDelete(event, '${notif.title}')">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="notificationId" value="${notif.notificationId}">
@@ -158,7 +158,7 @@
                                 <c:if test="${currentPage > 1}">
                                     <li class="page-item">
                                         <a class="page-link rounded-2"
-                                           href="${pageContext.request.contextPath}/manager/notifications?page=${currentPage-1}&keyword=${keyword}&typeFilter=${typeFilter}">
+                                           href="${pageContext.request.contextPath}/admin/notifications?page=${currentPage-1}&keyword=${keyword}&typeFilter=${typeFilter}">
                                             <span class="material-symbols-outlined" style="font-size: 16px;">chevron_left</span>
                                         </a>
                                     </li>
@@ -166,7 +166,7 @@
                                 <c:forEach begin="1" end="${totalPages}" var="p">
                                     <li class="page-item ${p == currentPage ? 'active' : ''}">
                                         <a class="page-link rounded-2"
-                                           href="${pageContext.request.contextPath}/manager/notifications?page=${p}&keyword=${keyword}&typeFilter=${typeFilter}">
+                                           href="${pageContext.request.contextPath}/admin/notifications?page=${p}&keyword=${keyword}&typeFilter=${typeFilter}">
                                             ${p}
                                         </a>
                                     </li>
@@ -174,7 +174,7 @@
                                 <c:if test="${currentPage < totalPages}">
                                     <li class="page-item">
                                         <a class="page-link rounded-2"
-                                           href="${pageContext.request.contextPath}/manager/notifications?page=${currentPage+1}&keyword=${keyword}&typeFilter=${typeFilter}">
+                                           href="${pageContext.request.contextPath}/admin/notifications?page=${currentPage+1}&keyword=${keyword}&typeFilter=${typeFilter}">
                                             <span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
                                         </a>
                                     </li>

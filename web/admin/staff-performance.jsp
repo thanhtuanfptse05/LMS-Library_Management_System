@@ -23,7 +23,7 @@
                     </h1>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                    <a href="${pageContext.request.contextPath}/manager/profile"
+                    <a href="${pageContext.request.contextPath}/admin/profile"
                        class="d-flex align-items-center gap-2 text-decoration-none" title="Xem Hồ sơ">
                         <div class="header-avatar" title="${not empty sessionScope.fullName ? sessionScope.fullName : sessionScope.email}">
                             <c:choose>
@@ -41,7 +41,7 @@
                                 <c:out value="${not empty sessionScope.fullName ? sessionScope.fullName : sessionScope.email}" default="Quản lý"/>
                             </p>
                             <p class="mb-0 text-uppercase text-on-surface-variant text-truncate" style="font-size: 10px; letter-spacing: 0.1em;">
-                                <c:out value="${sessionScope.role}" default="MANAGER"/>
+                                <c:out value="${sessionScope.role}" default="ADMIN"/>
                             </p>
                         </div>
                     </a>
@@ -62,7 +62,7 @@
                             <strong><c:out value="${selectedMonth}"/>/<c:out value="${selectedYear}"/></strong>
                         </p>
                     </div>
-                    <a href="${pageContext.request.contextPath}/manager/dashboard"
+                    <a href="${pageContext.request.contextPath}/admin/dashboard"
                        class="btn btn-sm btn-secondary-custom rounded-3 fw-bold px-3 d-flex align-items-center gap-1 text-decoration-none">
                         <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
                         Quay lại Dashboard
@@ -71,7 +71,7 @@
 
                 <%-- ─── Bộ lọc Tháng / Năm ─── --%>
                 <div class="raised-card p-3 mb-4">
-                    <form method="get" action="${pageContext.request.contextPath}/manager/staff-performance"
+                    <form method="get" action="${pageContext.request.contextPath}/admin/staff-performance"
                           class="d-flex flex-wrap align-items-center gap-3">
                         <label class="fw-semibold mb-0" style="font-size: 13px; color: var(--on-surface);">Lọc theo:</label>
 

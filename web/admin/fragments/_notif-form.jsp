@@ -20,7 +20,7 @@
                         <p class="mb-0" style="font-size: 11px; color: var(--on-surface-variant);">ID #${editNotification.notificationId}</p>
                     </div>
                 </div>
-                <form method="post" action="${pageContext.request.contextPath}/manager/notifications" id="notifForm">
+                <form method="post" action="${pageContext.request.contextPath}/admin/notifications" id="notifForm">
                     <input type="hidden" name="action" value="update">
                     <input type="hidden" name="notificationId" value="${editNotification.notificationId}">
 
@@ -117,7 +117,7 @@
                             </select>
                             <small class="text-muted" style="font-size:11px;">
                                 <span class="material-symbols-outlined" style="font-size:11px; vertical-align:middle;">info</span>
-                                Mẫu email sẽ được dùng để gửi tới người dùng. Quản lý mẫu tại <a href="${pageContext.request.contextPath}/manager/email-templates" target="_blank">Quản lý Mẫu Email</a>.
+                                Mẫu email sẽ được dùng để gửi tới người dùng. Quản lý mẫu tại <a href="${pageContext.request.contextPath}/admin/email-templates" target="_blank">Quản lý Mẫu Email</a>.
                             </small>
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                         <button type="submit" class="btn btn-primary-custom flex-grow-1 rounded-3 fw-bold py-2">
                             <span class="material-symbols-outlined me-1 align-middle">save</span>Lưu thay đổi
                         </button>
-                        <a href="${pageContext.request.contextPath}/manager/notifications"
+                        <a href="${pageContext.request.contextPath}/admin/notifications"
                            class="btn rounded-3 py-2"
                            style="background-color: var(--surface-container-high); color: var(--on-surface-variant);">
                             Hủy
@@ -149,7 +149,7 @@
                         <p class="mb-0" style="font-size: 11px; color: var(--on-surface-variant);">Gửi đến toàn bộ thành viên</p>
                     </div>
                 </div>
-                <form method="post" action="${pageContext.request.contextPath}/manager/notifications" id="notifForm">
+                <form method="post" action="${pageContext.request.contextPath}/admin/notifications" id="notifForm">
                     <input type="hidden" name="action" value="create">
 
                     <div class="mb-3">
@@ -240,7 +240,7 @@
                             </select>
                             <small class="text-muted" style="font-size:11px;">
                                 <span class="material-symbols-outlined" style="font-size:11px; vertical-align:middle;">info</span>
-                                Mẫu email sẽ được dùng để gửi tới người dùng. Quản lý mẫu tại <a href="${pageContext.request.contextPath}/manager/email-templates" target="_blank">Quản lý Mẫu Email</a>.
+                                Mẫu email sẽ được dùng để gửi tới người dùng. Quản lý mẫu tại <a href="${pageContext.request.contextPath}/admin/email-templates" target="_blank">Quản lý Mẫu Email</a>.
                             </small>
                         </div>
                     </div>

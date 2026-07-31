@@ -153,7 +153,7 @@
     <!-- Modal Cập Nhật Cấu Hình -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <form action="${pageContext.request.contextPath}/manager/payment-config" method="POST" class="modal-content" style="border-radius: var(--radius-lg);">
+            <form action="${pageContext.request.contextPath}/admin/payment-config" method="POST" class="modal-content" style="border-radius: var(--radius-lg);">
                 <div class="modal-header" style="border-bottom: 1px solid var(--outline-variant);">
                     <h5 class="modal-title fw-bold" id="editModalLabel">
                         <span class="material-symbols-outlined align-middle me-2" style="color: var(--primary); font-size: 20px;">edit_document</span>

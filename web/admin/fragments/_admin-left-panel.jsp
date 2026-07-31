@@ -53,7 +53,6 @@
                                             <c:choose>
                                                 <c:when test="${u.role == 'ADMIN'}">SysAdmin</c:when>
                                                 <c:when test="${u.role == 'LIBRARIAN'}">Thủ thư</c:when>
-                                                <c:when test="${u.role == 'MANAGER'}">Quản lý</c:when>
                                                 <c:when test="${u.role == 'STUDENT'}">Sinh viên</c:when>
                                                 <c:when test="${u.role == 'LECTURER'}">Giảng viên</c:when>
                                                 <c:otherwise><c:out value="${u.role}" /></c:otherwise>

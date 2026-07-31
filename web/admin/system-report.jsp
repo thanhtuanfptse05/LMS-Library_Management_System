@@ -41,7 +41,7 @@
                     
                     <!-- Filters -->
                     <div class="raised-card p-3 mb-4">
-                        <form action="${pageContext.request.contextPath}/manager/reports/dashboard" method="GET" class="row g-3 align-items-end">
+                        <form action="${pageContext.request.contextPath}/admin/reports/dashboard" method="GET" class="row g-3 align-items-end">
                             <div class="col-md-3">
                                 <label class="form-label" style="font-size: 13px; font-weight: 600;">Từ ngày</label>
                                 <input type="date" class="form-control form-control-sm" name="startDate" value="${startDate}">
@@ -65,14 +65,14 @@
                                         <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Xuất Excel
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="exportDropdown" style="font-size: 14px;">
-                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/manager/reports/export?exportType=summary&startDate=${startDate}&endDate=${endDate}&groupBy=${groupBy}">
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/admin/reports/export?exportType=summary&startDate=${startDate}&endDate=${endDate}&groupBy=${groupBy}">
                                             <span class="material-symbols-outlined text-primary" style="font-size: 18px;">analytics</span> Báo cáo Tổng hợp
                                         </a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/manager/reports/export?exportType=borrow_detail&startDate=${startDate}&endDate=${endDate}">
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/admin/reports/export?exportType=borrow_detail&startDate=${startDate}&endDate=${endDate}">
                                             <span class="material-symbols-outlined text-success" style="font-size: 18px;">menu_book</span> Chi tiết Mượn/Trả sách
                                         </a></li>
-                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/manager/reports/export?exportType=finance_detail&startDate=${startDate}&endDate=${endDate}">
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/admin/reports/export?exportType=finance_detail&startDate=${startDate}&endDate=${endDate}">
                                             <span class="material-symbols-outlined text-danger" style="font-size: 18px;">payments</span> Chi tiết Tài chính
                                         </a></li>
                                     </ul>

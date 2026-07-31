@@ -84,7 +84,6 @@
                                 <option value="STUDENT" ${role eq 'STUDENT' ? 'selected' : ''}>Độc giả Sinh viên</option>
                                 <option value="LECTURER" ${role eq 'LECTURER' ? 'selected' : ''}>Độc giả Giảng viên</option>
                                 <option value="LIBRARIAN" ${role eq 'LIBRARIAN' ? 'selected' : ''}>Thủ thư</option>
-                                <option value="MANAGER" ${role eq 'MANAGER' ? 'selected' : ''}>Quản lý Thư viện</option>
                                 <option value="ADMIN" ${role eq 'ADMIN' ? 'selected' : ''}>Quản trị viên</option>
                             </select>
                         </div>
@@ -147,9 +146,6 @@
                                                         </c:when>
                                                         <c:when test="${fn:toUpperCase(u.role) eq 'LIBRARIAN'}">
                                                             <span class="badge-pill" style="background-color: #d1fae5; color: #065f46;">LIBRARIAN</span>
-                                                        </c:when>
-                                                        <c:when test="${fn:toUpperCase(u.role) eq 'MANAGER'}">
-                                                            <span class="badge-pill" style="background-color: #e0f2fe; color: #0369a1;">MANAGER</span>
                                                         </c:when>
                                                         <c:when test="${fn:toUpperCase(u.role) eq 'ADMIN'}">
                                                             <span class="badge-pill" style="background-color: var(--primary-fixed); color: var(--on-primary-container);">ADMIN</span>

@@ -85,7 +85,7 @@
                 <nav class="mb-2 d-flex align-items-center gap-1 text-muted small fw-semibold text-uppercase"
                      aria-label="breadcrumb" style="font-size: 12px; letter-spacing: 0.05em;">
                     <a class="text-decoration-none text-muted"
-                       href="${pageContext.request.contextPath}/manager/dashboard">Bảng điều khiển</a>
+                       href="${pageContext.request.contextPath}/admin/dashboard">Bảng điều khiển</a>
                     <span class="material-symbols-outlined fs-6">chevron_right</span>
                     <span style="color: var(--on-surface);">Quản lý Bảng tin</span>
                 </nav>
@@ -214,7 +214,7 @@
             general: { symbol: 'campaign',    cls: 'icon-general', badgeCls: 'type-general', label: 'Thông tin' }
         };
 
-        function openManagerDetail(btn) {
+        function openNotifDetail(btn) {
             const row = btn.closest('.notif-row');
             if (!row) return;
 

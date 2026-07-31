@@ -50,7 +50,6 @@
                                 <option value="STUDENT" selected>Độc giả Sinh viên (STUDENT)</option>
                                 <option value="LECTURER">Độc giả Giảng viên (LECTURER)</option>
                                 <option value="LIBRARIAN">Thủ thư (LIBRARIAN)</option>
-                                <option value="MANAGER">Quản lý Thư viện (MANAGER)</option>
                                 <option value="ADMIN">Quản trị viên (ADMIN)</option>
                             </select>
                         </div>
