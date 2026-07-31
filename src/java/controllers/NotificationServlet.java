@@ -20,10 +20,10 @@ import dto.UserContactDTO;
 import service.EmailService;
 
 /**
- * NotificationManagerServlet — Servlet quản lý Bảng tin hệ thống cho Manager.
+ * NotificationServlet — Servlet quản lý Bảng tin hệ thống.
  *
- * <p>URL Pattern: /manager/notifications</p>
- * <p>Quyền truy cập: MANAGER (kiểm tra qua {@link filter.AuthFilter}).</p>
+ * <p>URL Pattern: /admin/notifications</p>
+ * <p>Quyền truy cập: ADMIN (kiểm tra qua {@link filter.AuthFilter}).</p>
  *
  * <p>Hỗ trợ các thao tác:</p>
  * <ul>
@@ -36,10 +36,10 @@ import service.EmailService;
  *
  * <p>Ghi AuditLog: Mọi thao tác CREATE/UPDATE/DELETE đều được ghi vào AuditLogs (ARCH-02).</p>
  */
-@WebServlet(name = "NotificationManagerServlet", urlPatterns = {"/manager/notifications"})
-public class NotificationManagerServlet extends HttpServlet {
+@WebServlet(name = "NotificationServlet", urlPatterns = {"/admin/notifications"})
+public class NotificationServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(NotificationManagerServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(NotificationServlet.class.getName());
 
     private static final int PAGE_SIZE = 8;
     private final NotificationDAO notificationDAO = new NotificationDAO();
@@ -53,7 +53,7 @@ public class NotificationManagerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        if (!isAuthorizedManager(request, response)) return;
+        if (!isAuthorized(request, response)) return;
 
         String action = request.getParameter("action");
 
@@ -84,7 +84,7 @@ public class NotificationManagerServlet extends HttpServlet {
         // Load danh sách mẫu email để JSP render dropdown chọn mẫu
         request.setAttribute("emailTemplates", documentTempDAO.getAll());
 
-        request.getRequestDispatcher("/manager/manage-notifications.jsp").forward(request, response);
+        request.getRequestDispatcher("/admin/manage-notifications.jsp").forward(request, response);
     }
 
     /**
@@ -94,18 +94,18 @@ public class NotificationManagerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        if (!isAuthorizedManager(request, response)) return;
+        if (!isAuthorized(request, response)) return;
 
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         HttpSession session = request.getSession(false);
-        int managerId = (int) session.getAttribute("userId");
+        int adminId = (int) session.getAttribute("userId");
 
         switch (action != null ? action : "") {
-            case "create" -> handleCreate(request, response, managerId);
-            case "update" -> handleUpdate(request, response, managerId);
-            case "delete" -> handleDelete(request, response, managerId);
-            default       -> response.sendRedirect(request.getContextPath() + "/manager/notifications");
+            case "create" -> handleCreate(request, response, adminId);
+            case "update" -> handleUpdate(request, response, adminId);
+            case "delete" -> handleDelete(request, response, adminId);
+            default       -> response.sendRedirect(request.getContextPath() + "/admin/notifications");
         }
     }
 
@@ -139,7 +139,7 @@ public class NotificationManagerServlet extends HttpServlet {
             request.setAttribute("totalPages",    1);
             // Load danh sách mẫu email để JSP render dropdown chọn mẫu
             request.setAttribute("emailTemplates", documentTempDAO.getAll());
-            request.getRequestDispatcher("/manager/manage-notifications.jsp").forward(request, response);
+            request.getRequestDispatcher("/admin/manage-notifications.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             redirectWithError(request, response, "ID không hợp lệ");
         }
@@ -148,7 +148,7 @@ public class NotificationManagerServlet extends HttpServlet {
     /**
      * Xử lý tạo thông báo mới (POST action=create). Ghi AuditLog sau INSERT.
      */
-    private void handleCreate(HttpServletRequest request, HttpServletResponse response, int managerId)
+    private void handleCreate(HttpServletRequest request, HttpServletResponse response, int adminId)
             throws IOException {
 
         String title    = request.getParameter("title");
@@ -182,14 +182,14 @@ public class NotificationManagerServlet extends HttpServlet {
         notification.setType(isValidType(type) ? type : "general");
         notification.setTargetRole(targetRole);
         notification.setPinned(isPinned);
-        notification.setCreatedBy(managerId);
+        notification.setCreatedBy(adminId);
         // URL ảnh minh họa (chỉ có ý nghĩa với type general/event trên trang công khai)
         String thumbnailUrl = request.getParameter("thumbnailUrl");
         notification.setThumbnailUrl(thumbnailUrl);
 
         int newId = notificationDAO.insert(notification);
         if (newId > 0) {
-            notificationDAO.insertAuditLog(managerId, "CREATE_NOTIFICATION", "Notification", newId,
+            notificationDAO.insertAuditLog(adminId, "CREATE_NOTIFICATION", "Notification", newId,
                     null, "title=" + title + "; type=" + type);
 
             // ── Gửi Email Thông Báo (Async) ──
@@ -206,7 +206,7 @@ public class NotificationManagerServlet extends HttpServlet {
     /**
      * Xử lý cập nhật thông báo đã có (POST action=update). Ghi AuditLog sau UPDATE.
      */
-    private void handleUpdate(HttpServletRequest request, HttpServletResponse response, int managerId)
+    private void handleUpdate(HttpServletRequest request, HttpServletResponse response, int adminId)
             throws IOException {
 
         String idParam  = request.getParameter("notificationId");
@@ -255,7 +255,7 @@ public class NotificationManagerServlet extends HttpServlet {
             if (success) {
                 String oldVal = old != null ? "title=" + old.getTitle() + "; type=" + old.getType() : null;
                 String newVal = "title=" + title + "; type=" + type + "; isPinned=" + isPinned;
-                notificationDAO.insertAuditLog(managerId, "UPDATE_NOTIFICATION", "Notification", notificationId, oldVal, newVal);
+                notificationDAO.insertAuditLog(adminId, "UPDATE_NOTIFICATION", "Notification", notificationId, oldVal, newVal);
 
                 // ── Gửi Email Thông Báo (Async) ──
                 if (isSendEmail && selectedTemplateName != null && !selectedTemplateName.trim().isEmpty()) {
@@ -274,7 +274,7 @@ public class NotificationManagerServlet extends HttpServlet {
     /**
      * Xử lý xóa thông báo (POST action=delete). Ghi AuditLog sau DELETE.
      */
-    private void handleDelete(HttpServletRequest request, HttpServletResponse response, int managerId)
+    private void handleDelete(HttpServletRequest request, HttpServletResponse response, int adminId)
             throws IOException {
 
         String idParam = request.getParameter("notificationId");
@@ -287,7 +287,7 @@ public class NotificationManagerServlet extends HttpServlet {
             int notificationId = Integer.parseInt(idParam.trim());
             boolean deleted = notificationDAO.delete(notificationId);
             if (deleted) {
-                notificationDAO.insertAuditLog(managerId, "DELETE_NOTIFICATION", "Notification", notificationId,
+                notificationDAO.insertAuditLog(adminId, "DELETE_NOTIFICATION", "Notification", notificationId,
                         "id=" + notificationId, null);
                 redirectWithSuccess(request, response, "Đã xóa thông báo thành công");
             } else {
@@ -363,11 +363,11 @@ public class NotificationManagerServlet extends HttpServlet {
     // HELPERS
 
     private void redirectWithError(HttpServletRequest request, HttpServletResponse response, String msg) throws IOException {
-        response.sendRedirect(request.getContextPath() + "/manager/notifications?error=" + java.net.URLEncoder.encode(msg, "UTF-8"));
+        response.sendRedirect(request.getContextPath() + "/admin/notifications?error=" + java.net.URLEncoder.encode(msg, "UTF-8"));
     }
 
     private void redirectWithSuccess(HttpServletRequest request, HttpServletResponse response, String msg) throws IOException {
-        response.sendRedirect(request.getContextPath() + "/manager/notifications?success=" + java.net.URLEncoder.encode(msg, "UTF-8"));
+        response.sendRedirect(request.getContextPath() + "/admin/notifications?success=" + java.net.URLEncoder.encode(msg, "UTF-8"));
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -378,8 +378,8 @@ public class NotificationManagerServlet extends HttpServlet {
                 || type.equals("event"));
     }
 
-    /** Kiểm tra xác thực và phân quyền Manager. */
-    private boolean isAuthorizedManager(HttpServletRequest request, HttpServletResponse response)
+    /** Kiểm tra xác thực và phân quyền Admin. */
+    private boolean isAuthorized(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
@@ -387,7 +387,7 @@ public class NotificationManagerServlet extends HttpServlet {
             return false;
         }
         String role = (String) session.getAttribute("role");
-        if (!"MANAGER".equalsIgnoreCase(role)) {
+        if (!"ADMIN".equalsIgnoreCase(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập.");
             return false;
         }

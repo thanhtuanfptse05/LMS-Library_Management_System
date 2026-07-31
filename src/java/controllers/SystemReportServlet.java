@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import service.ReportService;
 
-@WebServlet(name = "SystemReportServlet", urlPatterns = {"/manager/reports/dashboard"})
+@WebServlet(name = "SystemReportServlet", urlPatterns = {"/admin/reports/dashboard"})
 public class SystemReportServlet extends HttpServlet {
 
     private ReportService reportService;
@@ -37,7 +37,7 @@ public class SystemReportServlet extends HttpServlet {
             request.setAttribute("financialTrends", data.get("financialTrends"));
             request.setAttribute("inventoryStats", data.get("inventoryStats"));
             
-            request.getRequestDispatcher("/manager/system-report.jsp").forward(request, response);
+            request.getRequestDispatcher("/admin/system-report.jsp").forward(request, response);
             
         } catch (Exception ex) {
             ex.printStackTrace();

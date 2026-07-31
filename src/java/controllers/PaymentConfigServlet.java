@@ -20,21 +20,20 @@ import service.SystemConfigService;
 import util.DatabaseConnection;
 
 /**
- * ManagerPaymentConfigServlet — Quản lý cấu hình tích hợp thanh toán SePay QR.
+ * PaymentConfigServlet — Quản lý cấu hình tích hợp thanh toán SePay QR.
  *
- * <p>Route: {@code /manager/payment-config} (GET + POST)</p>
+ * <p>Route: {@code /admin/payment-config} (GET + POST)</p>
  *
- * <p>Cho phép Library Manager xem và cập nhật các thông tin tích hợp SePay:
+ * <p>Cho phép Admin xem và cập nhật các thông tin tích hợp SePay:
  * số tài khoản ngân hàng, mã ngân hàng, tên chủ tài khoản, API Key và URL QR
  * dùng để sinh mã QR chuyển khoản cho độc giả thanh toán tiền phạt trực tuyến.</p>
  *
- * <p>Phân quyền: Chỉ MANAGER mới được phép truy cập. Admin dùng trang riêng
- * ({@code /admin/system-config}) với bộ lọc nhóm 'sepay'.</p>
+ * <p>Kiểm tra phân quyền qua {@link filter.AuthFilter}: chỉ ADMIN được truy cập.</p>
  */
-@WebServlet(name = "ManagerPaymentConfigServlet", urlPatterns = {"/manager/payment-config"})
-public class ManagerPaymentConfigServlet extends HttpServlet {
+@WebServlet(name = "PaymentConfigServlet", urlPatterns = {"/admin/payment-config"})
+public class PaymentConfigServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(ManagerPaymentConfigServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PaymentConfigServlet.class.getName());
 
     private SystemConfigService configService;
     private final SystemConfigDAO configDAO = new SystemConfigDAO();
@@ -45,7 +44,7 @@ public class ManagerPaymentConfigServlet extends HttpServlet {
     }
 
     /**
-     * GET /manager/payment-config — Hiển thị trang cấu hình SePay.
+     * GET /admin/payment-config — Hiển thị trang cấu hình SePay.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -80,11 +79,11 @@ public class ManagerPaymentConfigServlet extends HttpServlet {
             session.setAttribute("errorMessage", "Lỗi hệ thống khi tải cấu hình thanh toán.");
         }
 
-        request.getRequestDispatcher("/manager/payment-config.jsp").forward(request, response);
+        request.getRequestDispatcher("/admin/payment-config.jsp").forward(request, response);
     }
 
     /**
-     * POST /manager/payment-config — Cập nhật một key cấu hình SePay.
+     * POST /admin/payment-config — Cập nhật một key cấu hình SePay.
      *
      * <p>Nhận {@code configKey} và {@code configValue} từ form, validate và lưu vào DB.
      * Tuân thủ PRG pattern: redirect sau khi POST để tránh duplicate submission.</p>
@@ -101,14 +100,14 @@ public class ManagerPaymentConfigServlet extends HttpServlet {
             return;
         }
 
-        int managerId = (int) session.getAttribute("userId");
+        int adminId = (int) session.getAttribute("userId");
         String key = request.getParameter("configKey");
         String value = request.getParameter("configValue");
 
         try {
             // SystemConfigService.update() sẽ kiểm tra key có trong KEY_TYPES không
             // và từ chối nếu nhóm không phải 'library' hoặc 'sepay'
-            configService.update(key, value, managerId, "MANAGER", getServletContext());
+            configService.update(key, value, adminId, "ADMIN", getServletContext());
             session.setAttribute("successMessage",
                     "Cập nhật cấu hình \"" + key + "\" thành công!");
 
@@ -120,7 +119,7 @@ public class ManagerPaymentConfigServlet extends HttpServlet {
                     "Lỗi hệ thống khi lưu cấu hình. Vui lòng thử lại.");
         }
 
-        response.sendRedirect(request.getContextPath() + "/manager/payment-config");
+        response.sendRedirect(request.getContextPath() + "/admin/payment-config");
     }
 
     private boolean isAuthorized(HttpSession session) {
@@ -128,6 +127,6 @@ public class ManagerPaymentConfigServlet extends HttpServlet {
             return false;
         }
         String role = (String) session.getAttribute("role");
-        return "MANAGER".equalsIgnoreCase(role);
+        return "ADMIN".equalsIgnoreCase(role);
     }
 }

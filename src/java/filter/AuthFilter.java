@@ -121,7 +121,6 @@ public class AuthFilter implements Filter {
         // 3. Phân quyền truy cập các route bảo vệ
         boolean isAdminRoute = path.startsWith("/admin/") || path.equals("/admin");
         boolean isLibrarianRoute = path.startsWith("/librarian/") || path.equals("/librarian");
-        boolean isManagerRoute = path.startsWith("/manager/") || path.equals("/manager");
         boolean isStudentRoute = path.startsWith("/student/") || path.equals("/student");
         boolean isLecturerRoute = path.startsWith("/lecturer/") || path.equals("/lecturer");
         boolean isLegacyBookManagementRoute = path.startsWith("/book-management/")
@@ -165,16 +164,6 @@ public class AuthFilter implements Filter {
                 return;
             }
             if (!"LIBRARIAN".equalsIgnoreCase(role)) {
-                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
-                        "Bạn không có quyền truy cập vào chức năng này.");
-                return;
-            }
-        } else if (isManagerRoute) {
-            if (!isLoggedIn) {
-                httpResponse.sendRedirect(contextPath + "/login");
-                return;
-            }
-            if (!"MANAGER".equalsIgnoreCase(role)) {
                 httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
                         "Bạn không có quyền truy cập vào chức năng này.");
                 return;

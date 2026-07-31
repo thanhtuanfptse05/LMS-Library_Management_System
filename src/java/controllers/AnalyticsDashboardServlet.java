@@ -23,10 +23,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import util.DatabaseConnection;
 
-@WebServlet(name = "ManagerDashboardServlet", urlPatterns = {"/manager/dashboard"})
-public class ManagerDashboardServlet extends HttpServlet {
+@WebServlet(name = "AnalyticsDashboardServlet", urlPatterns = {"/admin/analytics"})
+public class AnalyticsDashboardServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(ManagerDashboardServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AnalyticsDashboardServlet.class.getName());
 
     private final BorrowRecordDAO borrowDAO    = new BorrowRecordDAO();
     private final FineDAO         fineDAO      = new FineDAO();
@@ -42,7 +42,7 @@ public class ManagerDashboardServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null
                 || session.getAttribute("userId") == null
-                || !"MANAGER".equalsIgnoreCase((String) session.getAttribute("role"))) {
+                || !"ADMIN".equalsIgnoreCase((String) session.getAttribute("role"))) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
@@ -90,11 +90,11 @@ public class ManagerDashboardServlet extends HttpServlet {
             request.setAttribute("announcements", announcements.subList(0, announcementLimit));
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi load Manager Dashboard", e);
+            LOGGER.log(Level.SEVERE, "Lỗi khi load Analytics Dashboard", e);
             // Graceful degradation: forward JSP với null attributes → JSP dùng fallback
         }
 
-        request.getRequestDispatcher("/manager/dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("/admin/analytics.jsp").forward(request, response);
     }
 
     /** Định dạng số nguyên có dấu phẩy phân cách hàng nghìn (VD: 1,254). */

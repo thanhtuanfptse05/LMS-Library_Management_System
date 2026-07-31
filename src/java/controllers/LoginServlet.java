@@ -178,8 +178,6 @@ public class LoginServlet extends HttpServlet {
                 return contextPath + "/admin/dashboard";
             case "LIBRARIAN":
                 return contextPath + "/librarian/dashboard";
-            case "MANAGER":
-                return contextPath + "/manager/dashboard";
             case "STUDENT":
                 return contextPath + "/student/dashboard";
             case "LECTURER":

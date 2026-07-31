@@ -15,10 +15,10 @@ import java.util.List;
 import model.DocumentTemp;
 
 /**
- * DocumentTempManagerServlet — Servlet quản lý Mẫu Email cho Manager.
+ * EmailTemplateServlet — Servlet quản lý Mẫu Email.
  *
- * <p>URL Pattern: /manager/email-templates</p>
- * <p>Quyền truy cập: MANAGER (kiểm tra qua {@link filter.AuthFilter}).</p>
+ * <p>URL Pattern: /admin/email-templates</p>
+ * <p>Quyền truy cập: ADMIN (kiểm tra qua {@link filter.AuthFilter}).</p>
  *
  * <p>Hỗ trợ các thao tác:</p>
  * <ul>
@@ -29,8 +29,8 @@ import model.DocumentTemp;
  *
  * <p>Ghi AuditLog: Thao tác UPDATE ghi vào bảng AuditLogs (ARCH-02).</p>
  */
-@WebServlet(name = "DocumentTempManagerServlet", urlPatterns = {"/manager/email-templates"})
-public class DocumentTempManagerServlet extends HttpServlet {
+@WebServlet(name = "EmailTemplateServlet", urlPatterns = {"/admin/email-templates"})
+public class EmailTemplateServlet extends HttpServlet {
 
     private final DocumentTempDAO documentTempDAO = new DocumentTempDAO();
     private final NotificationDAO notificationDAO = new NotificationDAO(); // Dùng để ghi AuditLog
@@ -42,7 +42,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        if (!isAuthorizedManager(request, response)) return;
+        if (!isAuthorized(request, response)) return;
 
         String action = request.getParameter("action");
 
@@ -50,19 +50,19 @@ public class DocumentTempManagerServlet extends HttpServlet {
             // Hiển thị form chỉnh sửa một mẫu cụ thể
             String idParam = request.getParameter("tempId");
             if (idParam == null || idParam.trim().isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/manager/email-templates?error=ID+không+hợp+lệ");
+                response.sendRedirect(request.getContextPath() + "/admin/email-templates?error=ID+không+hợp+lệ");
                 return;
             }
             try {
                 int tempId = Integer.parseInt(idParam.trim());
                 DocumentTemp dt = documentTempDAO.findById(tempId);
                 if (dt == null) {
-                    response.sendRedirect(request.getContextPath() + "/manager/email-templates?error=Không+tìm+thấy+mẫu+email");
+                    response.sendRedirect(request.getContextPath() + "/admin/email-templates?error=Không+tìm+thấy+mẫu+email");
                     return;
                 }
                 request.setAttribute("editTemplate", dt);
             } catch (NumberFormatException e) {
-                response.sendRedirect(request.getContextPath() + "/manager/email-templates?error=ID+không+hợp+lệ");
+                response.sendRedirect(request.getContextPath() + "/admin/email-templates?error=ID+không+hợp+lệ");
                 return;
             }
         }
@@ -70,7 +70,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
         // Luôn load danh sách để hiển thị sidebar/table
         List<DocumentTemp> templates = documentTempDAO.getAll();
         request.setAttribute("templates", templates);
-        request.getRequestDispatcher("/manager/manage-email-templates.jsp").forward(request, response);
+        request.getRequestDispatcher("/admin/manage-email-templates.jsp").forward(request, response);
     }
 
     /**
@@ -80,28 +80,28 @@ public class DocumentTempManagerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        if (!isAuthorizedManager(request, response)) return;
+        if (!isAuthorized(request, response)) return;
 
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         HttpSession session = request.getSession(false);
-        int managerId = (int) session.getAttribute("userId");
+        int adminId = (int) session.getAttribute("userId");
 
         if ("update".equals(action)) {
-            handleUpdate(request, response, managerId);
+            handleUpdate(request, response, adminId);
         } else if ("create".equals(action)) {
-            handleCreate(request, response, managerId);
+            handleCreate(request, response, adminId);
         } else if ("delete".equals(action)) {
-            handleDelete(request, response, managerId);
+            handleDelete(request, response, adminId);
         } else {
-            response.sendRedirect(request.getContextPath() + "/manager/email-templates");
+            response.sendRedirect(request.getContextPath() + "/admin/email-templates");
         }
     }
 
     /**
      * Xử lý tạo mới mẫu Email (POST action=create). Ghi AuditLog sau INSERT.
      */
-    private void handleCreate(HttpServletRequest request, HttpServletResponse response, int managerId)
+    private void handleCreate(HttpServletRequest request, HttpServletResponse response, int adminId)
             throws IOException {
 
         String tempName   = request.getParameter("tempName");
@@ -118,11 +118,11 @@ public class DocumentTempManagerServlet extends HttpServlet {
         dt.setTempName(tempName.trim().toUpperCase().replace(" ", "_"));
         dt.setSubject(subject.trim());
         dt.setBodyContent(bodyContent != null ? bodyContent.trim() : "");
-        dt.setManagerId(managerId);
+        dt.setManagerId(adminId);
 
         int newId = documentTempDAO.insert(dt);
         if (newId > 0) {
-            notificationDAO.insertAuditLog(managerId, "CREATE_EMAIL_TEMPLATE", "DocumentTemp", newId,
+            notificationDAO.insertAuditLog(adminId, "CREATE_EMAIL_TEMPLATE", "DocumentTemp", newId,
                     null, "tempName=" + dt.getTempName() + "; subject=" + subject);
             redirectTo(response, request, "success", "Đã tạo mẫu email thành công");
         } else {
@@ -134,7 +134,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
      * Xử lý cập nhật nội dung mẫu Email.
      * Ghi AuditLog sau khi UPDATE thành công (ARCH-02).
      */
-    private void handleUpdate(HttpServletRequest request, HttpServletResponse response, int managerId)
+    private void handleUpdate(HttpServletRequest request, HttpServletResponse response, int adminId)
             throws IOException {
 
         String idParam = request.getParameter("tempId");
@@ -162,7 +162,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
             if (updated) {
                 String oldVal = old != null ? "subject=" + old.getSubject() : null;
                 String newVal = "subject=" + subject;
-                notificationDAO.insertAuditLog(managerId, "UPDATE_EMAIL_TEMPLATE", "DocumentTemp", tempId, oldVal, newVal);
+                notificationDAO.insertAuditLog(adminId, "UPDATE_EMAIL_TEMPLATE", "DocumentTemp", tempId, oldVal, newVal);
                 redirectTo(response, request, "success", "Đã cập nhật mẫu email thành công");
             } else {
                 redirectTo(response, request, "error", "Cập nhật thất bại");
@@ -177,7 +177,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
      * Mẫu hệ thống ({@link dao.DocumentTempDAO#PROTECTED_TEMPLATES}) KHÔNG ĐƯỢC PHÉP xóa.
      * Ghi AuditLog sau khi DELETE thành công (ARCH-02).
      */
-    private void handleDelete(HttpServletRequest request, HttpServletResponse response, int managerId)
+    private void handleDelete(HttpServletRequest request, HttpServletResponse response, int adminId)
             throws IOException {
         String idParam = request.getParameter("tempId");
         if (idParam == null || idParam.trim().isEmpty()) {
@@ -204,7 +204,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
             boolean deleted = documentTempDAO.delete(tempId);
             if (deleted) {
                 String oldVal = "tempName=" + old.getTempName() + "; subject=" + old.getSubject();
-                notificationDAO.insertAuditLog(managerId, "DELETE_EMAIL_TEMPLATE", "DocumentTemp", tempId, oldVal, null);
+                notificationDAO.insertAuditLog(adminId, "DELETE_EMAIL_TEMPLATE", "DocumentTemp", tempId, oldVal, null);
                 redirectTo(response, request, "success", "Đã xóa mẫu email thành công");
             } else {
                 redirectTo(response, request, "error", "Xóa thất bại");
@@ -219,15 +219,15 @@ public class DocumentTempManagerServlet extends HttpServlet {
     private void redirectTo(HttpServletResponse response, HttpServletRequest request,
                             String paramName, String message) throws IOException {
         String encoded = URLEncoder.encode(message, StandardCharsets.UTF_8);
-        response.sendRedirect(request.getContextPath() + "/manager/email-templates?" + paramName + "=" + encoded);
+        response.sendRedirect(request.getContextPath() + "/admin/email-templates?" + paramName + "=" + encoded);
     }
 
     /**
-     * Kiểm tra xác thực và phân quyền Manager.
+     * Kiểm tra xác thực và phân quyền Admin.
      *
      * @return true nếu hợp lệ, false nếu đã redirect/error
      */
-    private boolean isAuthorizedManager(HttpServletRequest request, HttpServletResponse response)
+    private boolean isAuthorized(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
         HttpSession session = request.getSession(false);
@@ -237,7 +237,7 @@ public class DocumentTempManagerServlet extends HttpServlet {
         }
 
         String role = (String) session.getAttribute("role");
-        if (!"MANAGER".equalsIgnoreCase(role)) {
+        if (!"ADMIN".equalsIgnoreCase(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập.");
             return false;
         }

@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-@WebServlet(name = "ExportReportServlet", urlPatterns = {"/manager/reports/export"})
+@WebServlet(name = "ExportReportServlet", urlPatterns = {"/admin/reports/export"})
 public class ExportReportServlet extends HttpServlet {
 
     private ReportService reportService;

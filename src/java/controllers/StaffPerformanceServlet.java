@@ -15,10 +15,10 @@ import java.util.List;
 /**
  * StaffPerformanceServlet — Hiển thị trang Hiệu suất Nhân viên cho Manager.
  *
- * <p>URL: /manager/staff-performance</p>
+ * <p>URL: /admin/staff-performance</p>
  * <p>Hỗ trợ lọc theo tháng/năm qua query param: ?month=6&year=2026</p>
  */
-@WebServlet(name = "StaffPerformanceServlet", urlPatterns = {"/manager/staff-performance"})
+@WebServlet(name = "StaffPerformanceServlet", urlPatterns = {"/admin/staff-performance"})
 public class StaffPerformanceServlet extends HttpServlet {
 
     private final StaffPerformanceDAO staffDAO = new StaffPerformanceDAO();
@@ -31,7 +31,7 @@ public class StaffPerformanceServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null
                 || session.getAttribute("userId") == null
-                || !"MANAGER".equalsIgnoreCase((String) session.getAttribute("role"))) {
+                || !"ADMIN".equalsIgnoreCase((String) session.getAttribute("role"))) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
@@ -70,7 +70,7 @@ public class StaffPerformanceServlet extends HttpServlet {
         request.setAttribute("totalFine",     totals[2]);
         request.setAttribute("currentYear",   now.getYear());
 
-        request.getRequestDispatcher("/manager/staff-performance.jsp")
+        request.getRequestDispatcher("/admin/staff-performance.jsp")
                .forward(request, response);
     }
 }
