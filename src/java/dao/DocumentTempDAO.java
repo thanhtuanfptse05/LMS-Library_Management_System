@@ -21,8 +21,8 @@ import util.DatabaseConnection;
  *
  * <p>Quy tắc vận hành:</p>
  * <ul>
- *   <li>Manager được phép UPDATE subject và bodyContent.</li>
- *   <li>Manager KHÔNG ĐƯỢC PHÉP xóa các mẫu trong {@link #PROTECTED_TEMPLATES}.</li>
+ *   <li>Admin được phép UPDATE subject và bodyContent.</li>
+ *   <li>Admin KHÔNG ĐƯỢC PHÉP xóa các mẫu trong {@link #PROTECTED_TEMPLATES}.</li>
  *   <li>Phương thức {@link #delete(int)} sẽ trả về {@code false} ngay lập tức
  *       nếu tempName thuộc danh sách bảo vệ.</li>
  * </ul>
@@ -56,7 +56,7 @@ public class DocumentTempDAO {
     // =========================================================================
 
     /**
-     * Lấy toàn bộ danh sách mẫu Email. Dùng cho trang quản lý của Manager.
+     * Lấy toàn bộ danh sách mẫu Email. Dùng cho trang quản lý của Admin.
      *
      * @return Danh sách DocumentTemp, danh sách rỗng nếu không có dữ liệu
      */
@@ -174,7 +174,7 @@ public class DocumentTempDAO {
     // =========================================================================
 
     /**
-     * Cập nhật nội dung mẫu Email. Chỉ Manager mới được thực hiện.
+     * Cập nhật nội dung mẫu Email. Chỉ Admin mới được thực hiện.
      * Cập nhật được phép: subject, bodyContent, updatedAt.
      * Không được phép thay đổi: tempName, description (do đây là metadata hệ thống).
      *
@@ -204,7 +204,7 @@ public class DocumentTempDAO {
     // =========================================================================
 
     /**
-     * Xóa mẫu Email. Chỉ Manager mới được thực hiện.
+     * Xóa mẫu Email. Chỉ Admin mới được thực hiện.
      *
      * <p><strong>Bảo vệ hệ thống:</strong> Phương thức này sẽ TỪ CHỐI (trả về false)
      * nếu mẫu có tempName thuộc {@link #PROTECTED_TEMPLATES}.

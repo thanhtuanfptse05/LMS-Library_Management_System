@@ -12,8 +12,8 @@ import java.sql.Timestamp;
  *
  * <p>Quy tắc vận hành:</p>
  * <ul>
- *   <li>Manager được phép chỉnh sửa {@code subject} và {@code bodyContent}.</li>
- *   <li>Manager KHÔNG ĐƯỢC PHÉP xóa các mẫu có tempName là hệ thống.</li>
+ *   <li>Admin được phép chỉnh sửa {@code subject} và {@code bodyContent}.</li>
+ *   <li>Admin KHÔNG ĐƯỢC PHÉP xóa các mẫu có tempName là hệ thống.</li>
  *   <li>Nội dung hỗ trợ placeholder dạng {{key}} để inject dữ liệu động.</li>
  * </ul>
  *
@@ -21,10 +21,10 @@ import java.sql.Timestamp;
  * <ul>
  *   <li>{@code tempId}      — INT IDENTITY PRIMARY KEY</li>
  *   <li>{@code tempName}    — VARCHAR(100) NOT NULL UNIQUE (VD: 'OVERDUE_NOTICE')</li>
- *   <li>{@code description} — VARCHAR(500) NULL (Mô tả mục đích mẫu cho Manager)</li>
+ *   <li>{@code description} — VARCHAR(500) NULL (Mô tả mục đích mẫu)</li>
  *   <li>{@code subject}     — VARCHAR(255) NOT NULL (Tiêu đề email)</li>
  *   <li>{@code bodyContent} — TEXT NOT NULL (Nội dung HTML có placeholder {{...}})</li>
- *   <li>{@code managerId}   — INT NOT NULL (FK -> LibraryManager.userId)</li>
+ *   <li>{@code managerId}   — INT NOT NULL (FK -> "User".userId)</li>
  *   <li>{@code createdAt}   — TIMESTAMP NOT NULL DEFAULT NOW()</li>
  *   <li>{@code updatedAt}   — TIMESTAMP NULL</li>
  * </ul>

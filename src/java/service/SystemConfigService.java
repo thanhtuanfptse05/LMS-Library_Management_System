@@ -24,6 +24,7 @@ public class SystemConfigService {
     }
 
     private static final Map<String, String> KEY_TYPES = Map.ofEntries(
+            // ── Cấu hình mượn sách (library) ──
             Map.entry("STUDENT_MAX_BORROW_DAYS", "POSITIVE_INT"),
             Map.entry("LECTURER_MAX_BORROW_DAYS", "POSITIVE_INT"),
             Map.entry("STUDENT_MAX_BORROW_LIMIT", "POSITIVE_INT"),
@@ -36,15 +37,23 @@ public class SystemConfigService {
             Map.entry("LOST_FINE_MULTIPLIER", "NON_NEGATIVE_DECIMAL"),
             Map.entry("DAMAGED_FINE_MULTIPLIER", "NON_NEGATIVE_DECIMAL"),
             Map.entry("DEFAULT_BOOK_PRICE", "NON_NEGATIVE_DECIMAL"),
+            Map.entry("MAX_SUGGESTION_PER_LECTURER", "POSITIVE_INT"),
+            // ── Cấu hình hệ thống (system) ──
             Map.entry("EMAIL_OTP_EXPIRE_MINUTES", "POSITIVE_INT"),
             Map.entry("EMAIL_OVERDUE_NOTICE_DAYS", "POSITIVE_INT"),
+            Map.entry("EMAIL_QUEUE_CAPACITY", "POSITIVE_INT"),
+            Map.entry("EMAIL_MAX_RETRIES", "NON_NEGATIVE_INT"),
+            Map.entry("EMAIL_RETRY_DELAY_SECONDS", "POSITIVE_INT"),
+            Map.entry("EMAIL_FROM_NAME", "STRING"),
             Map.entry("MAX_IMPORT_ROWS", "POSITIVE_INT"),
             Map.entry("IMPORT_EXPIRE_DAYS", "POSITIVE_INT"),
+            // ── Cấu hình SePay (system) ──
             Map.entry("SEPAY_API_KEY", "STRING"),
             Map.entry("SEPAY_ACCOUNT_NUMBER", "STRING"),
             Map.entry("SEPAY_BANK_CODE", "STRING"),
             Map.entry("SEPAY_ACCOUNT_NAME", "STRING"),
             Map.entry("SEPAY_QR_URL", "STRING"),
+            // ── Cấu hình Gemini API (API) ──
             Map.entry("GEMINI_API_KEY", "STRING"),
             Map.entry("GEMINI_RECOMMEN_API_KEY", "STRING"),
             Map.entry("GEMINI_CHATBOT_API_KEY", "STRING")
@@ -52,14 +61,10 @@ public class SystemConfigService {
 
     public List<SystemConfiguration> getAll(String groupFilter, String actorRole) throws DatabaseException {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            if ("MANAGER".equals(actorRole)) {
-                return dao.findByGroup(conn, "library");
-            } else { // ADMIN
-                if (groupFilter != null && !groupFilter.trim().isEmpty() && !"all".equals(groupFilter)) {
-                    return dao.findByGroup(conn, groupFilter);
-                } else {
-                    return dao.findAll(conn);
-                }
+            if (groupFilter != null && !groupFilter.trim().isEmpty() && !"all".equals(groupFilter)) {
+                return dao.findByGroup(conn, groupFilter);
+            } else {
+                return dao.findAll(conn);
             }
         } catch (SQLException e) {
             throw new DatabaseException("Lỗi khi lấy danh sách cấu hình", e);
@@ -73,9 +78,6 @@ public class SystemConfigService {
 
         validateValue(config.getConfigKey(), config.getConfigValue());
 
-        if ("MANAGER".equals(actorRole) && !"library".equals(config.getConfigGroup())) {
-            throw new ValidationException("Bạn chỉ có quyền thêm cấu hình nhóm library.");
-        }
 
         Connection conn = null;
         try {
@@ -125,9 +127,6 @@ public class SystemConfigService {
                 throw new ValidationException("Khóa cấu hình không tồn tại trong CSDL.");
             }
 
-            if ("MANAGER".equals(actorRole) && !"library".equals(current.getConfigGroup()) && !key.startsWith("SEPAY_")) {
-                throw new ValidationException("Bạn không có quyền chỉnh sửa nhóm cấu hình này.");
-            }
 
             String oldJson = buildJson(key, current.getConfigValue());
             String newJson = buildJson(key, newValue);

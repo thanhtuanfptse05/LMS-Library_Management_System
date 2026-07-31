@@ -20,8 +20,8 @@ import util.DatabaseConnection;
  * <p>Quy tắc vận hành:</p>
  * <ul>
  *   <li>Mẫu chỉ được tạo bởi seed SQL khi deploy — DAO KHÔNG có insert().</li>
- *   <li>Manager được phép UPDATE subject và bodyContent.</li>
- *   <li>Manager KHÔNG ĐƯỢC PHÉP xóa mẫu — DAO KHÔNG có delete().</li>
+ *   <li>Admin được phép UPDATE subject và bodyContent.</li>
+ *   <li>Admin KHÔNG ĐƯỢC PHÉP xóa mẫu — DAO KHÔNG có delete().</li>
  * </ul>
  *
  * <p>Tuân thủ nghiêm ngặt:</p>
@@ -41,7 +41,7 @@ public class EmailTemplateDAO {
 
     /**
      * Lấy toàn bộ danh sách mẫu Email hệ thống.
-     * Dùng cho trang quản lý Passive templates của Manager.
+     * Dùng cho trang quản lý Passive templates của Admin.
      *
      * @return Danh sách EmailTemplate, danh sách rỗng nếu không có dữ liệu
      */

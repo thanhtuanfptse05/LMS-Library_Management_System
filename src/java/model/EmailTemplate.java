@@ -13,8 +13,8 @@ import java.sql.Timestamp;
  * <p>Quy tắc vận hành:</p>
  * <ul>
  *   <li>Mẫu được tạo bởi seed SQL khi deploy — không có createdAt.</li>
- *   <li>Manager được phép chỉnh sửa {@code subject} và {@code bodyContent}.</li>
- *   <li>Manager KHÔNG ĐƯỢC PHÉP tạo hoặc xóa mẫu (DAO không có insert/delete).</li>
+ *   <li>Admin được phép chỉnh sửa {@code subject} và {@code bodyContent}.</li>
+ *   <li>Admin KHÔNG ĐƯỢC PHÉP tạo hoặc xóa mẫu (DAO không có insert/delete).</li>
  *   <li>Nội dung hỗ trợ placeholder dạng {{key}} để inject dữ liệu động.</li>
  * </ul>
  *
@@ -22,7 +22,7 @@ import java.sql.Timestamp;
  * <ul>
  *   <li>{@code templateId} — INT IDENTITY PRIMARY KEY</li>
  *   <li>{@code tempName}   — VARCHAR(100) NOT NULL UNIQUE (VD: 'OVERDUE_NOTICE')</li>
- *   <li>{@code description}— VARCHAR(500) NULL (Mô tả mục đích mẫu cho Manager)</li>
+ *   <li>{@code description}— VARCHAR(500) NULL (Mô tả mục đích mẫu)</li>
  *   <li>{@code subject}    — VARCHAR(255) NOT NULL (Tiêu đề email)</li>
  *   <li>{@code bodyContent}— TEXT NOT NULL (Nội dung HTML có placeholder {{...}})</li>
  *   <li>{@code updatedBy}  — INT NULL (FK → "User".userId — ai cập nhật gần nhất)</li>
