@@ -145,13 +145,13 @@
                                                     </td>
                                                     <td class="text-center">
                                                         <c:choose>
-                                                            <c:when test="${res.queuePosition == 0}">
+                                                            <c:when test="${res.status == 'readypickup' and res.queuePosition == 0}">
                                                                 <span class="badge-pill badge-success">
                                                                     <span class="material-symbols-outlined align-middle me-1" style="font-size: 14px;">verified</span>
                                                                     Đến lượt nhận
                                                                 </span>
                                                             </c:when>
-                                                            <c:when test="${not empty res.queuePosition and res.queuePosition > 0}">
+                                                            <c:when test="${res.status == 'pending' and not empty res.queuePosition and res.queuePosition > 0}">
                                                                 <span class="badge-pill badge-warning">Vị trí #<c:out value="${res.queuePosition}" /></span>
                                                             </c:when>
                                                             <c:otherwise>
@@ -190,18 +190,33 @@
                                                         </c:choose>
                                                     </td>
                                                     <td class="text-end">
-                                                        <c:if test="${res.status == 'pending' or res.status == 'readypickup'}">
-                                                            <button type="button"
-                                                                    class="btn btn-sm fw-bold px-3 text-decoration-none rounded-2"
-                                                                    style="font-size: 11px; color: var(--error); background-color: var(--error-container); border: none;"
-                                                                    data-id="${res.reservationId}"
-                                                                    data-title="${fn:escapeXml(res.bookTitle)}"
-                                                                    data-name="${fn:escapeXml(res.memberName)}"
-                                                                    onclick="openCancelModal(this.getAttribute('data-id'), this.getAttribute('data-title'), this.getAttribute('data-name'))">
-                                                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 14px;">cancel</span>
-                                                                Hủy lượt
-                                                            </button>
-                                                        </c:if>
+                                                        <div class="d-flex justify-content-end gap-1">
+                                                            <c:if test="${res.status == 'pending' and not empty res.queuePosition and res.queuePosition >= 1}">
+                                                                <button type="button"
+                                                                        class="btn btn-sm fw-bold px-2 text-decoration-none rounded-2"
+                                                                        style="font-size: 11px; color: var(--on-secondary-container); background-color: var(--secondary-container); border: none;"
+                                                                        data-id="${res.reservationId}"
+                                                                        data-title="${fn:escapeXml(res.bookTitle)}"
+                                                                        data-name="${fn:escapeXml(res.memberName)}"
+                                                                        data-pos="${res.queuePosition}"
+                                                                        onclick="openReorderModal(this.getAttribute('data-id'), this.getAttribute('data-title'), this.getAttribute('data-name'), this.getAttribute('data-pos'))">
+                                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 14px;">reorder</span>
+                                                                    Đổi vị trí
+                                                                </button>
+                                                            </c:if>
+                                                            <c:if test="${res.status == 'pending' or res.status == 'readypickup'}">
+                                                                <button type="button"
+                                                                        class="btn btn-sm fw-bold px-2 text-decoration-none rounded-2"
+                                                                        style="font-size: 11px; color: var(--error); background-color: var(--error-container); border: none;"
+                                                                        data-id="${res.reservationId}"
+                                                                        data-title="${fn:escapeXml(res.bookTitle)}"
+                                                                        data-name="${fn:escapeXml(res.memberName)}"
+                                                                        onclick="openCancelModal(this.getAttribute('data-id'), this.getAttribute('data-title'), this.getAttribute('data-name'))">
+                                                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 14px;">cancel</span>
+                                                                    Hủy lượt
+                                                                </button>
+                                                            </c:if>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </c:forEach>
@@ -279,6 +294,41 @@
             </div>
         </div>
 
+        <%-- Modal Thay đổi Vị trí Hàng chờ --%>
+        <div class="modal fade" id="reorderModal" tabindex="-1" aria-labelledby="reorderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="${pageContext.request.contextPath}/librarian/reservation-queue">
+                        <input type="hidden" name="action" value="reorder">
+                        <input type="hidden" name="reservationId" id="reorderReservationId">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="reorderModalLabel">Thay đổi Vị trí Hàng chờ</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-2">
+                                Bạn đang thay đổi vị trí hàng chờ cho lượt đặt trước sách <strong id="reorderBookTitle"></strong>
+                                của độc giả <strong id="reorderMemberName"></strong>.
+                            </p>
+                            <p style="font-size: 13px; color: var(--on-surface-variant);" class="mb-3">
+                                Vị trí hiện tại trong hàng chờ: <span class="badge-pill badge-warning" id="reorderCurrentPos"></span>
+                            </p>
+                            <div class="mb-3">
+                                <label for="reorderNewPosition" class="form-label fw-semibold">Vị trí mới trong hàng chờ <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="newPosition" id="reorderNewPosition" min="1" required
+                                       placeholder="Nhập số vị trí mới (ví dụ: 1, 2, 3...)">
+                                <div class="form-text" style="font-size: 12px;">Các đơn vị trí khác cùng sách sẽ tự động được điều chỉnh (dịch chuyển) tương ứng.</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
             function openCancelModal(resId, bookTitle, memberName) {
@@ -287,6 +337,16 @@
                 document.getElementById('cancelMemberName').innerText = memberName;
                 document.getElementById('cancelReason').value = '';
                 var modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+                modal.show();
+            }
+
+            function openReorderModal(resId, bookTitle, memberName, currentPos) {
+                document.getElementById('reorderReservationId').value = resId;
+                document.getElementById('reorderBookTitle').innerText = bookTitle;
+                document.getElementById('reorderMemberName').innerText = memberName;
+                document.getElementById('reorderCurrentPos').innerText = '#' + currentPos;
+                document.getElementById('reorderNewPosition').value = currentPos;
+                var modal = new bootstrap.Modal(document.getElementById('reorderModal'));
                 modal.show();
             }
         </script>

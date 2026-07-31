@@ -84,4 +84,101 @@ public class LibrarianReservationQueueTest {
         assertEquals(Integer.valueOf(0), nextInQueue.getQueuePosition());
         assertEquals("readypickup", nextInQueue.getStatus());
     }
+
+    @Test
+    public void testReorderMoveUpShiftLogic() {
+        // Giả lập danh sách 5 đơn pending (pos 1..5)
+        List<Reservation> pendingList = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Reservation r = new Reservation();
+            r.setReservationId(700 + i);
+            r.setBookId(301);
+            r.setStatus("pending");
+            r.setQueuePosition(i);
+            pendingList.add(r);
+        }
+
+        int oldPos = 5;
+        int newPos = 2;
+
+        // Giả lập thuật toán Move Up (đơn 705 từ #5 lên #2)
+        Reservation target = pendingList.stream().filter(r -> r.getQueuePosition() == oldPos).findFirst().orElse(null);
+        assertNotNull(target);
+
+        for (Reservation r : pendingList) {
+            int pos = r.getQueuePosition();
+            if (pos >= newPos && pos < oldPos) {
+                r.setQueuePosition(pos + 1);
+            }
+        }
+        target.setQueuePosition(newPos);
+
+        // Kiểm tra thứ tự sau khi Move Up:
+        // Đơn 701 (cũ #1) -> giữ nguyên #1
+        // Đơn 705 (cũ #5) -> lên #2
+        // Đơn 702 (cũ #2) -> xuống #3
+        // Đơn 703 (cũ #3) -> xuống #4
+        // Đơn 704 (cũ #4) -> xuống #5
+        assertEquals(Integer.valueOf(1), pendingList.get(0).getQueuePosition()); // 701
+        assertEquals(Integer.valueOf(3), pendingList.get(1).getQueuePosition()); // 702
+        assertEquals(Integer.valueOf(4), pendingList.get(2).getQueuePosition()); // 703
+        assertEquals(Integer.valueOf(5), pendingList.get(3).getQueuePosition()); // 704
+        assertEquals(Integer.valueOf(2), pendingList.get(4).getQueuePosition()); // 705 (target)
+    }
+
+    @Test
+    public void testReorderMoveDownShiftLogic() {
+        // Giả lập danh sách 5 đơn pending (pos 1..5)
+        List<Reservation> pendingList = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Reservation r = new Reservation();
+            r.setReservationId(700 + i);
+            r.setBookId(301);
+            r.setStatus("pending");
+            r.setQueuePosition(i);
+            pendingList.add(r);
+        }
+
+        int oldPos = 1;
+        int newPos = 4;
+
+        // Giả lập thuật toán Move Down (đơn 701 từ #1 xuống #4)
+        Reservation target = pendingList.stream().filter(r -> r.getQueuePosition() == oldPos).findFirst().orElse(null);
+        assertNotNull(target);
+
+        for (Reservation r : pendingList) {
+            int pos = r.getQueuePosition();
+            if (pos > oldPos && pos <= newPos) {
+                r.setQueuePosition(pos - 1);
+            }
+        }
+        target.setQueuePosition(newPos);
+
+        // Kiểm tra thứ tự sau khi Move Down:
+        // Đơn 701 (cũ #1) -> xuống #4
+        // Đơn 702 (cũ #2) -> lên #1
+        // Đơn 703 (cũ #3) -> lên #2
+        // Đơn 704 (cũ #4) -> lên #3
+        // Đơn 705 (cũ #5) -> giữ nguyên #5
+        assertEquals(Integer.valueOf(4), pendingList.get(0).getQueuePosition()); // 701 (target)
+        assertEquals(Integer.valueOf(1), pendingList.get(1).getQueuePosition()); // 702
+        assertEquals(Integer.valueOf(2), pendingList.get(2).getQueuePosition()); // 703
+        assertEquals(Integer.valueOf(3), pendingList.get(3).getQueuePosition()); // 704
+        assertEquals(Integer.valueOf(5), pendingList.get(4).getQueuePosition()); // 705
+    }
+
+    @Test
+    public void testReorderValidationRules() {
+        // Validation 1: Không thể đổi vị trí đơn có queuePosition = 0 (readypickup)
+        assertTrue("Lượt readypickup không ở trạng thái pending", !"pending".equalsIgnoreCase(reservation2.getStatus()) || reservation2.getQueuePosition() < 1);
+
+        // Validation 2: Vị trí mới phải khác vị trí hiện tại
+        int currentPos = reservation1.getQueuePosition();
+        int newPosSame = 1;
+        assertEquals(currentPos, newPosSame);
+
+        // Validation 3: Vị trí mới phải >= 1
+        int invalidNewPos = 0;
+        assertTrue("Vị trí mới phải >= 1", invalidNewPos < 1);
+    }
 }

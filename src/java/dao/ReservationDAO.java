@@ -1140,4 +1140,86 @@ public class ReservationDAO {
         }
         return 0;
     }
+
+    /**
+     * Lấy vị trí hàng chờ pending cao nhất hiện tại của một cuốn sách (dùng cho validation reorder).
+     */
+    public int getMaxPendingQueuePositionForBook(Connection conn, int bookId) throws SQLException {
+        String sql = "SELECT COALESCE(MAX(queuePosition), 0) FROM Reservation WHERE bookId = ? AND status = 'pending'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy MAX queuePosition (pending) cho bookId=" + bookId, e);
+            throw e;
+        }
+        return 0;
+    }
+
+    /**
+     * Thay đổi vị trí hàng chờ (reorder queue position) của một đơn đặt trước đang ở trạng thái 'pending'.
+     *
+     * @param conn          Kết nối CSDL trong cùng Transaction
+     * @param bookId        ID cuốn sách
+     * @param reservationId ID đơn đặt trước cần đổi vị trí
+     * @param oldPos        Vị trí hàng chờ cũ
+     * @param newPos        Vị trí hàng chờ mới
+     * @throws SQLException nếu có lỗi SQL
+     */
+    public void reorderQueuePosition(Connection conn, int bookId, int reservationId, int oldPos, int newPos) throws SQLException {
+        if (oldPos == newPos) {
+            return;
+        }
+
+        if (newPos < oldPos) {
+            // Case 1: Đôn lên (Move Up) — các đơn từ newPos đến (oldPos - 1) sẽ +1 vị trí
+            String shiftSql = "UPDATE Reservation "
+                            + "SET    queuePosition = queuePosition + 1 "
+                            + "WHERE  bookId        = ? "
+                            + "  AND  queuePosition >= ? "
+                            + "  AND  queuePosition < ? "
+                            + "  AND  status        = 'pending'";
+            try (PreparedStatement psShift = conn.prepareStatement(shiftSql)) {
+                psShift.setInt(1, bookId);
+                psShift.setInt(2, newPos);
+                psShift.setInt(3, oldPos);
+                psShift.executeUpdate();
+            }
+        } else {
+            // Case 2: Đẩy xuống (Move Down) — các đơn từ (oldPos + 1) đến newPos sẽ -1 vị trí
+            String shiftSql = "UPDATE Reservation "
+                            + "SET    queuePosition = queuePosition - 1 "
+                            + "WHERE  bookId        = ? "
+                            + "  AND  queuePosition > ? "
+                            + "  AND  queuePosition <= ? "
+                            + "  AND  status        = 'pending'";
+            try (PreparedStatement psShift = conn.prepareStatement(shiftSql)) {
+                psShift.setInt(1, bookId);
+                psShift.setInt(2, oldPos);
+                psShift.setInt(3, newPos);
+                psShift.executeUpdate();
+            }
+        }
+
+        // Cập nhật vị trí mới cho đơn đặt trước mục tiêu
+        String updateTargetSql = "UPDATE Reservation "
+                               + "SET    queuePosition = ? "
+                               + "WHERE  reservationId = ? "
+                               + "  AND  status        = 'pending'";
+        try (PreparedStatement psTarget = conn.prepareStatement(updateTargetSql)) {
+            psTarget.setInt(1, newPos);
+            psTarget.setInt(2, reservationId);
+            int rows = psTarget.executeUpdate();
+            if (rows == 0) {
+                throw new SQLException("Cập nhật vị trí mới cho đơn đặt trước #" + reservationId + " thất bại (đơn không ở trạng thái pending).");
+            }
+        }
+
+        LOGGER.log(Level.INFO, "Đã thay đổi vị trí hàng chờ cho Reservation #{0} từ {1} sang {2} (bookId={3})",
+                new Object[]{reservationId, oldPos, newPos, bookId});
+    }
 }

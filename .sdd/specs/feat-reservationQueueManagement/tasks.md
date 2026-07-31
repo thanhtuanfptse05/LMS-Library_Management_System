@@ -23,7 +23,7 @@
   - Target: `src/java/dao/ReservationDAO.java`
   - Đã bổ sung `findReservationQueueForLibrarian` và `countReservationQueueForLibrarian`.
 
-- [ ] **Task 10: Bổ sung phương thức `reorderQueuePosition` vào `ReservationDAO.java`**
+- [x] **Task 10: Bổ sung phương thức `reorderQueuePosition` vào `ReservationDAO.java`**
   - Target: `src/java/dao/ReservationDAO.java`
   - Tạo hàm `reorderQueuePosition(Connection conn, int bookId, int reservationId, int oldPos, int newPos)`:
     - **Move Up** (`newPos < oldPos`): `UPDATE SET queuePosition = queuePosition + 1 WHERE bookId = ? AND queuePosition >= newPos AND queuePosition < oldPos AND status = 'pending'`, sau đó `UPDATE SET queuePosition = newPos WHERE reservationId = ?`.
@@ -40,7 +40,7 @@
 - [x] **Task 5: Xử lý Hủy lượt đặt trước trong `LibrarianReservationQueueServlet.java` (POST Request)**
   - Target: `src/java/controllers/LibrarianReservationQueueServlet.java`
 
-- [ ] **Task 11: Xử lý Thay đổi vị trí hàng chờ trong `LibrarianReservationQueueServlet.java` (POST action=reorder)**
+- [x] **Task 11: Xử lý Thay đổi vị trí hàng chờ trong `LibrarianReservationQueueServlet.java` (POST action=reorder)**
   - Target: `src/java/controllers/LibrarianReservationQueueServlet.java`
   - Tiếp nhận `action = "reorder"`, `reservationId`, `newPosition`.
   - Validation:
@@ -60,7 +60,7 @@
 - [x] **Task 7: Gắn Menu điều hướng vào Sidebar Thủ thư**
   - Target: `web/librarian/fragments/_sidebar.jsp`
 
-- [ ] **Task 12: Bổ sung nút "Đổi vị trí" và modal nhập vị trí mới vào `reservation-queue.jsp`**
+- [x] **Task 12: Bổ sung nút "Đổi vị trí" và modal nhập vị trí mới vào `reservation-queue.jsp`**
   - Target: `web/librarian/reservation-queue.jsp`
   - Thêm nút **"Đổi vị trí"** ở cột Thao tác cho các đơn có `status = 'pending'` và `queuePosition >= 1`.
   - Modal nhập vị trí mới: input số nguyên dương, label hiển thị vị trí hiện tại, nút "Xác nhận đổi vị trí".
@@ -76,7 +76,7 @@
 - [x] **Task 9: Kiểm thử Phân quyền RBAC (`AuthFilter`)**
   - Target: `src/java/filter/AuthFilter.java`
 
-- [ ] **Task 13: Bổ sung Unit Test cho tính năng Reorder**
+- [x] **Task 13: Bổ sung Unit Test cho tính năng Reorder**
   - Target: `test/f05_reservation/LibrarianReservationQueueTest.java`
   - Test case:
     - Đổi vị trí #5 → #2 (Move Up): kiểm tra dịch chuyển đúng.

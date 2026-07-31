@@ -118,6 +118,62 @@ public class LibrarianReservationQueueServlet extends HttpServlet {
                 LOGGER.log(Level.SEVERE, "Lỗi hệ thống khi Thủ thư hủy lượt đặt trước", e);
                 session.setAttribute("errorMessage", "Đã xảy ra lỗi hệ thống khi hủy lượt đặt trước.");
             }
+        } else if ("reorder".equalsIgnoreCase(action)) {
+            String resIdRaw = request.getParameter("reservationId");
+            String newPosRaw = request.getParameter("newPosition");
+
+            if (resIdRaw == null || resIdRaw.isBlank() || newPosRaw == null || newPosRaw.isBlank()) {
+                session.setAttribute("errorMessage", "Thông tin đổi vị trí hàng chờ không hợp lệ.");
+                response.sendRedirect(request.getContextPath() + "/librarian/reservation-queue");
+                return;
+            }
+
+            try (Connection conn = DatabaseConnection.getConnection()) {
+                conn.setAutoCommit(false);
+                try {
+                    int reservationId = Integer.parseInt(resIdRaw);
+                    int newPosition = Integer.parseInt(newPosRaw);
+
+                    Reservation r = reservationDAO.findReservationByIdForUpdate(conn, reservationId);
+                    if (r == null) {
+                        throw new ValidationException("Không tìm thấy đơn đặt trước #" + reservationId);
+                    }
+                    if (!"pending".equalsIgnoreCase(r.getStatus()) || r.getQueuePosition() == null || r.getQueuePosition() < 1) {
+                        throw new ValidationException("Chỉ có thể thay đổi vị trí cho các đơn đặt trước đang chờ (pending).");
+                    }
+
+                    int oldPosition = r.getQueuePosition();
+                    int maxPendingPos = reservationDAO.getMaxPendingQueuePositionForBook(conn, r.getBookId());
+
+                    if (newPosition < 1 || newPosition > maxPendingPos) {
+                        throw new ValidationException("Vị trí mới phải từ 1 đến " + maxPendingPos + ".");
+                    }
+                    if (newPosition == oldPosition) {
+                        throw new ValidationException("Vị trí mới trùng với vị trí hiện tại (#" + oldPosition + ").");
+                    }
+
+                    reservationDAO.reorderQueuePosition(conn, r.getBookId(), reservationId, oldPosition, newPosition);
+
+                    dao.AuditLogDAO auditLogDAO = new dao.AuditLogDAO();
+                    auditLogDAO.insert(conn, librarianId, "REORDER_RESERVATION_BY_LIBRARIAN", "Reservation", reservationId,
+                            "{\"queuePosition\":" + oldPosition + "}", "{\"queuePosition\":" + newPosition + "}");
+
+                    conn.commit();
+                    session.setAttribute("successMessage", "Đã đổi vị trí hàng chờ đơn #" + reservationId + " từ #" + oldPosition + " sang #" + newPosition + " thành công.");
+                } catch (Exception e) {
+                    conn.rollback();
+                    throw e;
+                } finally {
+                    conn.setAutoCommit(true);
+                }
+            } catch (NumberFormatException e) {
+                session.setAttribute("errorMessage", "Mã đơn đặt trước và vị trí mới phải là các số nguyên hợp lệ.");
+            } catch (ValidationException e) {
+                session.setAttribute("errorMessage", e.getMessage());
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Lỗi CSDL khi thay đổi vị trí hàng chờ đặt trước", e);
+                session.setAttribute("errorMessage", "Không thể thay đổi vị trí hàng chờ do lỗi CSDL. Vui lòng thử lại sau.");
+            }
         }
 
         response.sendRedirect(request.getContextPath() + "/librarian/reservation-queue");
