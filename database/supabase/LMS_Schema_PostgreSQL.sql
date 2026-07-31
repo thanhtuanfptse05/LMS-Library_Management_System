@@ -49,7 +49,6 @@ DROP TABLE IF EXISTS Category CASCADE;
 DROP TABLE IF EXISTS AuditLogs CASCADE;
 DROP TABLE IF EXISTS SystemConfigurations CASCADE;
 DROP TABLE IF EXISTS Admin CASCADE;
-DROP TABLE IF EXISTS LibraryManager CASCADE;
 DROP TABLE IF EXISTS Librarian CASCADE;
 DROP TABLE IF EXISTS Lecturer CASCADE;
 DROP TABLE IF EXISTS Student CASCADE;
@@ -115,12 +114,6 @@ CREATE TABLE Librarian (
     CONSTRAINT FK_Librarian_User FOREIGN KEY (userId) REFERENCES "User"(userId) ON DELETE CASCADE
 );
 
--- 7. Bảng LibraryManager
-CREATE TABLE LibraryManager (
-    userId INT PRIMARY KEY,
-    staffCode VARCHAR(50) NOT NULL UNIQUE,
-    CONSTRAINT FK_LibraryManager_User FOREIGN KEY (userId) REFERENCES "User"(userId) ON DELETE CASCADE
-);
 
 -- 8. Bảng Admin
 CREATE TABLE Admin (
@@ -332,7 +325,7 @@ CREATE TABLE DocumentTemp (
     managerId INT NOT NULL,
     createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
     updatedAt TIMESTAMP NULL,
-    CONSTRAINT FK_DocumentTemp_Manager FOREIGN KEY (managerId) REFERENCES LibraryManager(userId)
+    CONSTRAINT FK_DocumentTemp_User FOREIGN KEY (managerId) REFERENCES "User"(userId)
 );
 
 -- 23b. Bảng EmailTemplate (Mẫu Email Hệ Thống cho tiến trình ngầm Async Email Sender)
