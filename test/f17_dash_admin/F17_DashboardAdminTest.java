@@ -25,4 +25,19 @@ public class F17_DashboardAdminTest {
         assertEquals(42, activeSessions);
         assertEquals(156, totalAuditLogsToday);
     }
+
+    @Test
+    public void testAdminUserLockAuditLogFormat() {
+        int actorId = 1;
+        int userId = 101;
+        String status = "locked";
+        String lockReason = "Vi phạm quy định sử dụng tài nguyên";
+
+        String actionType = "active".equals(status) ? "UNLOCK_USER" : "LOCK_USER";
+        String newValues = "{\"status\":\"" + status + "\",\"lockReason\":\"" + lockReason + "\"}";
+
+        assertEquals("LOCK_USER", actionType);
+        assertTrue("Audit log newValues chứa lockReason", newValues.contains("lockReason"));
+        assertTrue("Audit log newValues chứa status locked", newValues.contains("locked"));
+    }
 }

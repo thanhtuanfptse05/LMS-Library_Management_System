@@ -90,8 +90,7 @@ public class AuthService {
      * @return {@code true} nếu tồn tại ít nhất một lý do khóa khác 'unpaid'
      */
     public boolean hasNonUnpaidLockReason(int userId) {
-        return userLockReasonDAO.hasReason(userId, "securitybreach")
-                || userLockReasonDAO.hasReason(userId, "adminban");
+        return userLockReasonDAO.hasNonUnpaidReason(userId);
     }
 
     /**

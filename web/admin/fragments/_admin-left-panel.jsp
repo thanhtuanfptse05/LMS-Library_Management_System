@@ -71,7 +71,8 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="d-flex align-items-center gap-1"
-                                                      style="color: var(--error); font-size: 13px;">
+                                                      style="color: var(--error); font-size: 13px;"
+                                                      title="Lý do khóa: <c:out value='${not empty u.lockReason ? u.lockReason : "Bởi quản trị viên"}' />">
                                                     <span class="rounded-circle d-inline-block"
                                                           style="width: 7px; height: 7px; background: var(--error);"></span>
                                                     Đã khóa

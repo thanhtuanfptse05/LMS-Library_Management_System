@@ -54,22 +54,26 @@ public class GoogleLoginServlet extends HttpServlet {
                 Timestamp lockedUntil = user.getLockedUntil();
                 Timestamp now = new Timestamp(System.currentTimeMillis());
 
-                if (lockedUntil != null) {
-                    if (lockedUntil.after(now)) {
+                if (lockedUntil != null && !lockedUntil.after(now)) {
+                    userDAO.unlockAccount(user.getUserId());
+                    user.setStatus("active");
+                    user.setFailedLoginAttempts(0);
+                    LOGGER.log(Level.INFO, "Auto-unlocked account for user email via Google SSO: {0}", email);
+                } else {
+                    service.AuthService authService = new service.AuthService();
+                    if (authService.isLockedOnlyForUnpaid(user.getUserId())) {
+                        request.setAttribute("unpaidWarning", true);
+                        LOGGER.log(Level.INFO, "User {0} logged in via Google SSO has status=locked but only reason=unpaid — allowing login with warning.", email);
+                    } else if (lockedUntil != null && lockedUntil.after(now)) {
                         request.setAttribute("errorMessage", "Tài khoản bị khóa do đăng nhập sai nhiều lần. Tự động mở khóa lúc: " + lockedUntil);
                         request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
                         return;
                     } else {
-                        userDAO.unlockAccount(user.getUserId());
-                        user.setStatus("active");
-                        user.setFailedLoginAttempts(0);
-                        LOGGER.log(Level.INFO, "Auto-unlocked account for user email via Google SSO: {0}", email);
+                        String errorMsg = "Tài khoản của bạn đã bị khóa bởi quản trị viên. Vui lòng liên hệ thư viện để được hỗ trợ.";
+                        request.setAttribute("errorMessage", errorMsg);
+                        request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+                        return;
                     }
-                } else {
-                    String errorMsg = "Tài khoản của bạn đã bị khóa bởi quản trị viên.";
-                    request.setAttribute("errorMessage", errorMsg);
-                    request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
-                    return;
                 }
             }
 

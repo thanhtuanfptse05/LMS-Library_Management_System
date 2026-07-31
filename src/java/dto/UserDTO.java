@@ -17,6 +17,7 @@ public class UserDTO {
     private String role;
     private int failedLoginAttempts;
     private Timestamp lockedUntil;
+    private String lockReason;
     
     // MemberProfile fields
     private String fullName;
@@ -93,6 +94,14 @@ public class UserDTO {
 
     public void setLockedUntil(Timestamp lockedUntil) {
         this.lockedUntil = lockedUntil;
+    }
+
+    public String getLockReason() {
+        return lockReason;
+    }
+
+    public void setLockReason(String lockReason) {
+        this.lockReason = lockReason;
     }
 
     public String getFullName() {

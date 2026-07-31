@@ -49,6 +49,33 @@ public class UserLockReasonDAO {
     }
 
     /**
+     * Kiểm tra xem người dùng có bất kỳ lý do khóa nào KHÁC 'unpaid' không (ví dụ: admin khóa tay, securitybreach).
+     */
+    public boolean hasNonUnpaidReason(int userId) {
+        String sql = "SELECT 1 FROM UserLockReason WHERE userId = ? AND reason != 'unpaid' LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra lý do khóa khác unpaid cho userId=" + userId, e);
+            return false;
+        }
+    }
+
+    public boolean hasNonUnpaidReason(Connection conn, int userId) throws SQLException {
+        String sql = "SELECT 1 FROM UserLockReason WHERE userId = ? AND reason != 'unpaid' LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    /**
      * Đếm tổng số lý do khóa hiện tại của một tài khoản người dùng.
      *
      * <p>Được gọi sau khi xóa lý do 'unpaid' (Node 6.27) để quyết định có

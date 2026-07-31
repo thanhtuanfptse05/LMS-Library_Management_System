@@ -170,7 +170,20 @@
                                                                     Đã khóa
                                                                 </span>
                                                                 <span class="text-danger mt-1 fw-medium" style="font-size: 11px; padding-left: 12px;">
-                                                                    Lý do: Bởi quản trị viên
+                                                                    <c:choose>
+                                                                        <c:when test="${u.lockReason eq 'unpaid'}">
+                                                                            Lý do: Nợ phạt quá hạn
+                                                                        </c:when>
+                                                                        <c:when test="${u.lockReason eq 'securitybreach' or (not empty u.lockedUntil)}">
+                                                                            Lý do: Nhập sai MK quá 5 lần
+                                                                        </c:when>
+                                                                        <c:when test="${not empty u.lockReason}">
+                                                                            Lý do: <c:out value="${u.lockReason}" />
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            Lý do: Bởi quản trị viên
+                                                                        </c:otherwise>
+                                                                    </c:choose>
                                                                 </span>
                                                             </div>
                                                         </c:otherwise>

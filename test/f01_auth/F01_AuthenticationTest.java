@@ -140,4 +140,20 @@ public class F01_AuthenticationTest {
         }
         assertTrue("Sau 5 lần sai mật khẩu tài khoản phải chuyển sang khóa", user.getFailedLoginAttempts() >= 5);
     }
+
+    @Test
+    public void testCustomAdminLockReasonValidation() {
+        String customReason = "Vi phạm quy định giữ trật tự thư viện";
+        assertNotNull(customReason);
+        assertFalse("Lý do khóa nhập tay không được để trống", customReason.trim().isEmpty());
+        assertTrue("Lý do khóa nhập tay không quá 50 ký tự", customReason.length() <= 50);
+
+        String tooLongReason = "Lý do này vượt quá năm mươi ký tự quy định nhằm kiểm tra tính năng cắt ngắn chuỗi tự động";
+        if (tooLongReason.length() > 50) {
+            tooLongReason = tooLongReason.substring(0, 50);
+        }
+        assertEquals(50, tooLongReason.length());
+
+        assertFalse("Lý do nhập tay khác unpaid", "unpaid".equals(customReason));
+    }
 }

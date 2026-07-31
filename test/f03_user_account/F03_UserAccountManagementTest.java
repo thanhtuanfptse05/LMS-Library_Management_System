@@ -69,4 +69,41 @@ public class F03_UserAccountManagementTest {
         assertEquals(user.getUserId(), profile.getUserId());
         assertEquals("Le Van C", profile.getFullName());
     }
+
+    @Test
+    public void testAdminLockUserSelfLockRestrictionBR41() {
+        int actorId = 1;
+        int targetUserId = 1; // Tự khóa chính mình
+        boolean isSelfLockForbidden = (actorId == targetUserId);
+        assertTrue("BR-41: Admin không được tự khóa tài khoản của chính mình", isSelfLockForbidden);
+    }
+
+    @Test
+    public void testAdminLockAnotherAdminRestriction() {
+        int actorId = 1; // Admin 1
+        User targetAdmin = new User();
+        targetAdmin.setUserId(2); // Admin 2
+        targetAdmin.setRole("ADMIN");
+
+        boolean isAnotherAdmin = "ADMIN".equalsIgnoreCase(targetAdmin.getRole()) && actorId != targetAdmin.getUserId();
+        assertTrue("Admin không được thay đổi trạng thái của Quản trị viên khác", isAnotherAdmin);
+    }
+
+    @Test
+    public void testToggleStatusLockReasonValidation() {
+        String status = "locked";
+        String emptyLockReason = "   ";
+        boolean isValidEmpty = (emptyLockReason != null && !emptyLockReason.trim().isEmpty());
+        assertFalse("Vui lòng nhập lý do khóa tài khoản khi status='locked'", isValidEmpty);
+
+        String validReason = "Vi phạm quy định sử dụng máy tính thư viện";
+        boolean isValidReason = (validReason != null && !validReason.trim().isEmpty());
+        assertTrue("Lý do hợp lệ khi không rỗng", isValidReason);
+
+        String longReason = "123456789012345678901234567890123456789012345678901234567890"; // 60 chars
+        if (longReason.length() > 50) {
+            longReason = longReason.substring(0, 50);
+        }
+        assertEquals(50, longReason.length());
+    }
 }

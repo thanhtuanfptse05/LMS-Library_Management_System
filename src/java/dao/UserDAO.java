@@ -314,6 +314,7 @@ public class UserDAO {
         List<UserDTO> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT u.userId, u.email, u.status, u.role, u.failedLoginAttempts, u.lockedUntil, "
+              + "(SELECT reason FROM UserLockReason WHERE userId = u.userId ORDER BY createdAt DESC LIMIT 1) as lockReason, "
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
               + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
@@ -753,6 +754,7 @@ public class UserDAO {
      */
     public UserDTO findUserDTOById(int userId) {
         String sql = "SELECT u.userId, u.email, u.status, u.role, u.failedLoginAttempts, u.lockedUntil, "
+              + "(SELECT reason FROM UserLockReason WHERE userId = u.userId ORDER BY createdAt DESC LIMIT 1) as lockReason, "
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
               + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
@@ -789,6 +791,7 @@ public class UserDAO {
         dto.setRole(rs.getString("role"));
         dto.setFailedLoginAttempts(rs.getInt("failedLoginAttempts"));
         dto.setLockedUntil(rs.getTimestamp("lockedUntil"));
+        dto.setLockReason(rs.getString("lockReason"));
 
         dto.setFullName(rs.getString("fullName"));
         dto.setPhoneNumber(rs.getString("phoneNumber"));
