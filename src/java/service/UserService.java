@@ -372,7 +372,7 @@ public class UserService {
                 throw new Exception("Vui lòng lựa chọn vai trò cho tài khoản.");
             }
             String r = dto.getRole().toUpperCase();
-            if (!"ADMIN".equals(r) && !"LIBRARIAN".equals(r) && !"MANAGER".equals(r) && !"STUDENT".equals(r) && !"LECTURER".equals(r)) {
+            if (!"ADMIN".equals(r) && !"LIBRARIAN".equals(r) && !"STUDENT".equals(r) && !"LECTURER".equals(r)) {
                 throw new Exception("Vai trò người dùng không hợp lệ.");
             }
         }

@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  *   <li>{@code email}              — NVARCHAR(255) NOT NULL UNIQUE</li>
  *   <li>{@code passwordHash}       — NVARCHAR(255) NOT NULL (BCrypt hash)</li>
  *   <li>{@code status}             — NVARCHAR(50) DEFAULT 'active' ('active' | 'locked')</li>
- *   <li>{@code role}               — NVARCHAR(50) NOT NULL ('ADMIN' | 'LIBRARIAN' | 'MANAGER' | 'STUDENT')</li>
+ *   <li>{@code role}               — NVARCHAR(50) NOT NULL ('ADMIN' | 'LIBRARIAN' | 'STUDENT' | 'LECTURER')</li>
  *   <li>{@code lockReason}         — NVARCHAR(50) NULL ('unpaid' | 'adminban' | 'securitybreach')</li>
  *   <li>{@code failedLoginAttempts} — INT DEFAULT 0</li>
  *   <li>{@code lockedUntil}        — DATETIME NULL</li>

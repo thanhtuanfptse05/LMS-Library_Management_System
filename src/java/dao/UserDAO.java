@@ -315,14 +315,13 @@ public class UserDAO {
         StringBuilder sql = new StringBuilder(
                 "SELECT u.userId, u.email, u.status, u.role, u.failedLoginAttempts, u.lockedUntil, "
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
-              + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
+              + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
               + "FROM \"User\" u "
               + "LEFT JOIN MemberProfile p ON u.userId = p.userId "
               + "LEFT JOIN Student s ON u.userId = s.userId "
               + "LEFT JOIN Lecturer l ON u.userId = l.userId "
               + "LEFT JOIN Librarian lib ON u.userId = lib.userId "
-              + "LEFT JOIN LibraryManager mgr ON u.userId = mgr.userId "
               + "LEFT JOIN Admin adm ON u.userId = adm.userId "
               + "WHERE 1=1 "
         );
@@ -330,8 +329,8 @@ public class UserDAO {
         List<Object> params = new ArrayList<>();
         if (search != null && !search.trim().isEmpty()) {
             String likeSearch = "%" + search.trim() + "%";
-            sql.append("AND (u.email LIKE ? OR p.fullName LIKE ? OR s.studentCode LIKE ? OR l.lecturerCode LIKE ? OR lib.staffCode LIKE ? OR mgr.staffCode LIKE ? OR adm.staffCode LIKE ?) ");
-            for (int i = 0; i < 7; i++) {
+            sql.append("AND (u.email LIKE ? OR p.fullName LIKE ? OR s.studentCode LIKE ? OR l.lecturerCode LIKE ? OR lib.staffCode LIKE ? OR adm.staffCode LIKE ?) ");
+            for (int i = 0; i < 6; i++) {
                 params.add(likeSearch);
             }
         }
@@ -382,7 +381,6 @@ public class UserDAO {
               + "LEFT JOIN Student s ON u.userId = s.userId "
               + "LEFT JOIN Lecturer l ON u.userId = l.userId "
               + "LEFT JOIN Librarian lib ON u.userId = lib.userId "
-              + "LEFT JOIN LibraryManager mgr ON u.userId = mgr.userId "
               + "LEFT JOIN Admin adm ON u.userId = adm.userId "
               + "WHERE 1=1 "
         );
@@ -390,8 +388,8 @@ public class UserDAO {
         List<Object> params = new ArrayList<>();
         if (search != null && !search.trim().isEmpty()) {
             String likeSearch = "%" + search.trim() + "%";
-            sql.append("AND (u.email LIKE ? OR p.fullName LIKE ? OR s.studentCode LIKE ? OR l.lecturerCode LIKE ? OR lib.staffCode LIKE ? OR mgr.staffCode LIKE ? OR adm.staffCode LIKE ?) ");
-            for (int i = 0; i < 7; i++) {
+            sql.append("AND (u.email LIKE ? OR p.fullName LIKE ? OR s.studentCode LIKE ? OR l.lecturerCode LIKE ? OR lib.staffCode LIKE ? OR adm.staffCode LIKE ?) ");
+            for (int i = 0; i < 6; i++) {
                 params.add(likeSearch);
             }
         }
@@ -461,8 +459,6 @@ public class UserDAO {
             sql = "SELECT COUNT(*) FROM Lecturer WHERE lecturerCode = ?";
         } else if ("LIBRARIAN".equalsIgnoreCase(role)) {
             sql = "SELECT COUNT(*) FROM Librarian WHERE staffCode = ?";
-        } else if ("MANAGER".equalsIgnoreCase(role)) {
-            sql = "SELECT COUNT(*) FROM LibraryManager WHERE staffCode = ?";
         } else if ("ADMIN".equalsIgnoreCase(role)) {
             sql = "SELECT COUNT(*) FROM Admin WHERE staffCode = ?";
         } else {
@@ -542,8 +538,7 @@ public class UserDAO {
                 sqlRole = "INSERT INTO Lecturer (userId, lecturerCode, department) VALUES (?, ?, ?)";
             } else if ("LIBRARIAN".equalsIgnoreCase(user.getRole())) {
                 sqlRole = "INSERT INTO Librarian (userId, staffCode) VALUES (?, ?)";
-            } else if ("MANAGER".equalsIgnoreCase(user.getRole())) {
-                sqlRole = "INSERT INTO LibraryManager (userId, staffCode) VALUES (?, ?)";
+
             } else if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                 sqlRole = "INSERT INTO Admin (userId, staffCode) VALUES (?, ?)";
             }
@@ -659,8 +654,7 @@ public class UserDAO {
                 sqlRole = "UPDATE Lecturer SET lecturerCode = ?, department = ? WHERE userId = ?";
             } else if ("LIBRARIAN".equalsIgnoreCase(user.getRole())) {
                 sqlRole = "UPDATE Librarian SET staffCode = ? WHERE userId = ?";
-            } else if ("MANAGER".equalsIgnoreCase(user.getRole())) {
-                sqlRole = "UPDATE LibraryManager SET staffCode = ? WHERE userId = ?";
+
             } else if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                 sqlRole = "UPDATE Admin SET staffCode = ? WHERE userId = ?";
             }
@@ -760,14 +754,13 @@ public class UserDAO {
     public UserDTO findUserDTOById(int userId) {
         String sql = "SELECT u.userId, u.email, u.status, u.role, u.failedLoginAttempts, u.lockedUntil, "
               + "p.fullName, p.phoneNumber, p.gender, p.dateOfBirth, p.startDate, p.endDate, "
-              + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, mgr.staffCode, adm.staffCode) as code, "
+              + "COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, adm.staffCode) as code, "
               + "s.major, s.enrollmentYear, l.department "
               + "FROM \"User\" u "
               + "LEFT JOIN MemberProfile p ON u.userId = p.userId "
               + "LEFT JOIN Student s ON u.userId = s.userId "
               + "LEFT JOIN Lecturer l ON u.userId = l.userId "
               + "LEFT JOIN Librarian lib ON u.userId = lib.userId "
-              + "LEFT JOIN LibraryManager mgr ON u.userId = mgr.userId "
               + "LEFT JOIN Admin adm ON u.userId = adm.userId "
               + "WHERE u.userId = ?";
 
@@ -844,8 +837,7 @@ public class UserDAO {
                     sqlRole = "INSERT INTO Lecturer (userId, lecturerCode, department) VALUES (?, ?, ?)";
                 } else if ("LIBRARIAN".equalsIgnoreCase(role)) {
                     sqlRole = "INSERT INTO Librarian (userId, staffCode) VALUES (?, ?)";
-                } else if ("MANAGER".equalsIgnoreCase(role)) {
-                    sqlRole = "INSERT INTO LibraryManager (userId, staffCode) VALUES (?, ?)";
+
                 } else if ("ADMIN".equalsIgnoreCase(role)) {
                     sqlRole = "INSERT INTO Admin (userId, staffCode) VALUES (?, ?)";
                 }
@@ -998,7 +990,7 @@ public class UserDAO {
     }
 
     // =========================================================================
-    // MANAGER DASHBOARD KPI METHOD
+    // ADMIN DASHBOARD KPI METHOD
     // =========================================================================
 
     /**

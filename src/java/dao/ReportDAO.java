@@ -103,7 +103,7 @@ public class ReportDAO {
     public List<BorrowDetailDTO> getDetailedBorrowRecords(String startDateStr, String endDateStr) throws Exception {
         List<BorrowDetailDTO> list = new ArrayList<>();
         
-        String sql = "SELECT COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, m.staffCode, a.staffCode) AS memberCode, " +
+        String sql = "SELECT COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, a.staffCode) AS memberCode, " +
                      "p.fullName, b.title, bc.barcode, " +
                      "br.startDate, br.endDate, br.returnedAt, br.status " +
                      "FROM BorrowRecord br " +
@@ -112,7 +112,6 @@ public class ReportDAO {
                      "LEFT JOIN Student s ON u.userId = s.userId " +
                      "LEFT JOIN Lecturer l ON u.userId = l.userId " +
                      "LEFT JOIN Librarian lib ON u.userId = lib.userId " +
-                     "LEFT JOIN LibraryManager m ON u.userId = m.userId " +
                      "LEFT JOIN Admin a ON u.userId = a.userId " +
                      "JOIN BookCopy bc ON br.bookCopyId = bc.bookCopyId " +
                      "JOIN Book b ON br.bookId = b.bookId " +
@@ -149,7 +148,7 @@ public class ReportDAO {
     public List<FinancialDetailDTO> getDetailedFinancialRecords(String startDateStr, String endDateStr) throws Exception {
         List<FinancialDetailDTO> list = new ArrayList<>();
         
-        String sql = "SELECT COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, m.staffCode, a.staffCode) AS memberCode, " +
+        String sql = "SELECT COALESCE(s.studentCode, l.lecturerCode, lib.staffCode, a.staffCode) AS memberCode, " +
                      "p.fullName, f.reason, f.amount, f.status AS fineStatus, " +
                      "pay.paidAmount, pay.paymentMethod, pay.paidAt " +
                      "FROM Fine f " +
@@ -158,7 +157,6 @@ public class ReportDAO {
                      "LEFT JOIN Student s ON u.userId = s.userId " +
                      "LEFT JOIN Lecturer l ON u.userId = l.userId " +
                      "LEFT JOIN Librarian lib ON u.userId = lib.userId " +
-                     "LEFT JOIN LibraryManager m ON u.userId = m.userId " +
                      "LEFT JOIN Admin a ON u.userId = a.userId " +
                      "LEFT JOIN Payment pay ON f.fineId = pay.fineId " +
                      "WHERE f.createdAt >= CAST(? AS TIMESTAMP) AND f.createdAt <= CAST(? AS TIMESTAMP) " +

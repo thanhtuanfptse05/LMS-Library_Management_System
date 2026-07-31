@@ -186,7 +186,6 @@ public class AuditLogDTO {
             case "STUDENT": return "Sinh viên";
             case "LECTURER": return "Giảng viên";
             case "LIBRARIAN": return "Thủ thư";
-            case "MANAGER": return "Quản lý";
             case "male": case "Nam": return "Nam";
             case "female": case "Nữ": return "Nữ";
             default: return val;

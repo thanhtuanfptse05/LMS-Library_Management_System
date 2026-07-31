@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 
 /**
  * UserDTO — Data Transfer Object chứa thông tin gộp từ các bảng
- * [User], MemberProfile, Student, Lecturer, Librarian, LibraryManager, Admin.
+ * [User], MemberProfile, Student, Lecturer, Librarian, Admin.
  */
 public class UserDTO {
     
