@@ -1242,4 +1242,65 @@ public class ReservationDAO {
         LOGGER.log(Level.INFO, "Đã thay đổi vị trí hàng chờ cho Reservation #{0} từ {1} sang {2} (bookId={3})",
                 new Object[]{reservationId, oldPos, newPos, bookId});
     }
+
+    /**
+     * Lấy tất cả các đơn Reservation đang ở trạng thái active ('pending' hoặc 'readypickup') của người dùng,
+     * ngoại trừ một đơn đặt trước cụ thể.
+     *
+     * @param conn                 {@code Connection} tương tác DB trong Transaction
+     * @param userId               ID độc giả
+     * @param excludeReservationId ID đơn đặt trước cần loại trừ
+     * @return Danh sách các Reservation active còn lại của người dùng
+     * @throws SQLException nếu có lỗi SQL
+     */
+    public List<Reservation> findAllActiveByUserId(Connection conn, int userId, int excludeReservationId) throws SQLException {
+        List<Reservation> list = new ArrayList<>();
+        String sql = "SELECT reservationId, userId, bookId, bookCopyId, status, queuePosition, startDate, endDate "
+                   + "FROM Reservation "
+                   + "WHERE userId = ? "
+                   + "  AND status IN ('pending', 'readypickup') "
+                   + "  AND reservationId != ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, excludeReservationId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToReservation(rs));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách Reservation active của userId=" + userId, e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
+     * Hủy toàn bộ các đơn Reservation active ('pending' hoặc 'readypickup') của người dùng (ngoại trừ đơn chỉ định).
+     *
+     * @param conn                 {@code Connection} tương tác DB trong Transaction
+     * @param userId               ID độc giả
+     * @param excludeReservationId ID đơn đặt trước cần loại trừ
+     * @return Số lượng đơn hàng bị hủy
+     * @throws SQLException nếu có lỗi SQL
+     */
+    public int cancelAllActiveByUserId(Connection conn, int userId, int excludeReservationId) throws SQLException {
+        String sql = "UPDATE Reservation "
+                   + "SET status = 'cancelled' "
+                   + "WHERE userId = ? "
+                   + "  AND status IN ('pending', 'readypickup') "
+                   + "  AND reservationId != ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, excludeReservationId);
+            int updatedRows = ps.executeUpdate();
+            LOGGER.log(Level.INFO, "Đã hủy toàn bộ {0} đơn Reservation active của userId={1}", new Object[]{updatedRows, userId});
+            return updatedRows;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi bulk cancel Reservation cho userId=" + userId, e);
+            throw e;
+        }
+    }
 }

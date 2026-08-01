@@ -90,6 +90,12 @@ public class OnlineCirculationService {
                     throw new ValidationException("Tài khoản người dùng không tồn tại.");
                 }
                 if (!"active".equals(user.getStatus())) {
+                    Timestamp lockedUntil = user.getLockedUntil();
+                    Timestamp now = new Timestamp(System.currentTimeMillis());
+                    if (lockedUntil != null && lockedUntil.after(now)) {
+                        String formattedTime = new java.text.SimpleDateFormat("HH:mm dd/MM/yyyy").format(lockedUntil);
+                        throw new ValidationException("Tài khoản đang bị khóa giao dịch 7 ngày do quá hạn nhận sách đặt trước. Tự động mở khóa giao dịch lúc: " + formattedTime);
+                    }
                     throw new ValidationException("Tài khoản của bạn hiện đang bị khóa hoặc ngưng hoạt động.");
                 }
 
@@ -473,6 +479,12 @@ public class OnlineCirculationService {
                     throw new ValidationException("Tài khoản người dùng không tồn tại.");
                 }
                 if (!"active".equals(user.getStatus())) {
+                    Timestamp lockedUntil = user.getLockedUntil();
+                    Timestamp now = new Timestamp(System.currentTimeMillis());
+                    if (lockedUntil != null && lockedUntil.after(now)) {
+                        String formattedTime = new java.text.SimpleDateFormat("HH:mm dd/MM/yyyy").format(lockedUntil);
+                        throw new ValidationException("Tài khoản đang bị khóa giao dịch 7 ngày do quá hạn nhận sách đặt trước. Tự động mở khóa giao dịch lúc: " + formattedTime);
+                    }
                     throw new ValidationException("Tài khoản của bạn hiện đang bị khóa hoặc ngưng hoạt động.");
                 }
 

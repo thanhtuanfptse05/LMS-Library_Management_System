@@ -76,6 +76,44 @@ public class UserLockReasonDAO {
     }
 
     /**
+     * Kiểm tra xem người dùng có lý do khóa do phạt quá hạn nhận sách đặt trước không.
+     */
+    public boolean hasReservationPenaltyReason(int userId) {
+        String sql = "SELECT 1 FROM UserLockReason WHERE userId = ? AND (reason LIKE '%quá hạn nhận sách đặt trước%' OR reason LIKE '%ReservationID%') LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra lý do khóa reservation penalty cho userId=" + userId, e);
+            return false;
+        }
+    }
+
+    /**
+     * Kiểm tra xem người dùng có lý do khóa BẢO MẬT hoặc ADMIN (chặn login hoàn toàn) không.
+     * Lý do được phép login (có warning): 'unpaid' và 'Tự động khóa 7 ngày do quá hạn nhận sách đặt trước...'
+     */
+    public boolean hasBlockingSecurityOrAdminReason(int userId) {
+        String sql = "SELECT 1 FROM UserLockReason WHERE userId = ? "
+                   + "AND reason != 'unpaid' "
+                   + "AND reason NOT LIKE '%quá hạn nhận sách đặt trước%' "
+                   + "AND reason NOT LIKE '%ReservationID%' LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra lý do khóa blocking cho userId=" + userId, e);
+            return true;
+        }
+    }
+
+    /**
      * Đếm tổng số lý do khóa hiện tại của một tài khoản người dùng.
      *
      * <p>Được gọi sau khi xóa lý do 'unpaid' (Node 6.27) để quyết định có

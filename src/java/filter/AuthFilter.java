@@ -100,11 +100,11 @@ public class AuthFilter implements Filter {
                 }
 
                 if ("locked".equals(user.getStatus())) {
-                    // Kiểm tra lý do khóa: nếu chỉ bị khóa do 'unpaid' thì cho qua
+                    // Kiểm tra lý do khóa: nếu chỉ bị khóa do 'unpaid' hoặc 'reservation_penalty' thì cho qua
                     AuthService authService = new AuthService();
-                    boolean onlyUnpaid = authService.isLockedOnlyForUnpaid(userId);
+                    boolean isAllowedPenaltyLock = authService.isLockedForPenaltyAllowedLogin(userId);
 
-                    if (!onlyUnpaid) {
+                    if (!isAllowedPenaltyLock) {
                         // Bị khóa vì lý do bảo mật hoặc admin thì đá session ra
                         session.invalidate();
                         isLoggedIn = false;
@@ -112,8 +112,7 @@ public class AuthFilter implements Filter {
                         httpResponse.sendRedirect(contextPath + "/login?error=locked");
                         return;
                     }
-                    // Nếu chỉ bị khóa vì 'unpaid' thì không đá session, cho tiếp tục
-                    // (session attribute 'unpaidWarning' đã được gán lúc login)
+                    // Nếu chỉ bị khóa vì phạt nợ/quá hạn đặt trước thì không đá session, cho tiếp tục vào xem trang cá nhân/thanh toán
                 }
             }
         }

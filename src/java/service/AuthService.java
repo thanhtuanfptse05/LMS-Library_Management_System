@@ -83,6 +83,29 @@ public class AuthService {
     }
 
     /**
+     * Kiểm tra xem tài khoản bị khóa có thuộc danh sách ĐƯỢC PHÉP ĐĂNG NHẬP không
+     * (bao gồm nợ phạt 'unpaid' và chế tài 'quá hạn nhận sách đặt trước').
+     *
+     * @param userId ID của người dùng cần kiểm tra
+     * @return {@code true} nếu tài khoản chỉ có các lý do phạt được phép login
+     */
+    public boolean isLockedForPenaltyAllowedLogin(int userId) {
+        boolean hasAllowedReason = userLockReasonDAO.hasReason(userId, "unpaid") 
+                || userLockReasonDAO.hasReservationPenaltyReason(userId);
+        if (!hasAllowedReason) {
+            return false;
+        }
+        return !userLockReasonDAO.hasBlockingSecurityOrAdminReason(userId);
+    }
+
+    /**
+     * Kiểm tra xem tài khoản có lý do khóa phạt quá hạn đặt trước không.
+     */
+    public boolean hasReservationPenaltyLock(int userId) {
+        return userLockReasonDAO.hasReservationPenaltyReason(userId);
+    }
+
+    /**
      * Kiểm tra xem tài khoản có bất kỳ lý do khóa nào KHÁC 'unpaid' không.
      * (ví dụ: 'securitybreach', 'adminban')
      *

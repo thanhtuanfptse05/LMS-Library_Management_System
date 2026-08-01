@@ -222,6 +222,16 @@ public class DeskCirculationService {
                         "Tài khoản đang nợ phạt, không thể mượn sách cho đến khi thanh toán xong.");
             }
 
+            User borrowingUser = userDAO.findByUserId(userId);
+            if (borrowingUser != null && "locked".equals(borrowingUser.getStatus())) {
+                Timestamp lockedUntil = borrowingUser.getLockedUntil();
+                Timestamp now = new Timestamp(System.currentTimeMillis());
+                if (lockedUntil != null && lockedUntil.after(now)) {
+                    String formattedTime = new java.text.SimpleDateFormat("HH:mm dd/MM/yyyy").format(lockedUntil);
+                    throw new IllegalStateException("Độc giả đang bị khóa giao dịch 7 ngày do quá hạn nhận sách đặt trước (tự động mở khóa lúc " + formattedTime + "). Không thể làm thủ tục mượn sách.");
+                }
+            }
+
             // ----------------------------------------------------------------
             // [Node 5.5 / SPEC §6] BƯỚC 2: Xác thực barcode — lấy BookCopy
             // ----------------------------------------------------------------

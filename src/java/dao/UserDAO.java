@@ -156,6 +156,31 @@ public class UserDAO {
     }
 
     /**
+     * Khóa tài khoản trong N ngày (hoặc nới rộng mốc lockedUntil nếu mốc mới xa hơn).
+     * Dùng Connection truyền vào trong cùng DB Transaction.
+     *
+     * @param conn   {@code Connection} trong Transaction
+     * @param userId ID người dùng cần khóa
+     * @param days   Số ngày khóa (ví dụ: 7 ngày)
+     * @throws SQLException nếu có lỗi SQL
+     */
+    public void lockUserForDuration(Connection conn, int userId, int days) throws SQLException {
+        java.sql.Timestamp targetLockedUntil = new java.sql.Timestamp(System.currentTimeMillis() + (long) days * 24L * 60 * 60 * 1000);
+        String sql = "UPDATE \"User\" SET status = 'locked', "
+                + "lockedUntil = GREATEST(COALESCE(lockedUntil, NOW()), ?) "
+                + "WHERE userId = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setTimestamp(1, targetLockedUntil);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi khóa tài khoản cho userId=" + userId + " trong " + days + " ngày", e);
+            throw e;
+        }
+    }
+
+    /**
      * Mở khóa tài khoản — reset về trạng thái hoạt động bình thường.
      * KHÔNG xóa bản ghi trong UserLockReason để giữ audit history.
      */

@@ -87,13 +87,17 @@ public class LoginServlet extends HttpServlet {
                 LOGGER.log(Level.INFO, "Auto-unlocked account for user email: {0}", email);
             } else {
                 // Tài khoản vẫn đang bị khóa → kiểm tra lý do
-                // Nếu chỉ bị khóa do 'unpaid' → CHO PHÉP đăng nhập, đặt cờ cảnh báo
-                if (authService.isLockedOnlyForUnpaid(user.getUserId())) {
-                    // Cho qua — đặt flag để JSP hiển thị cảnh báo nợ phạt sau khi login
-                    // Lưu flag vào request để bước tạo session phía dưới có thể đọc
-                    request.setAttribute("unpaidWarning", true);
+                // Nếu bị khóa do 'unpaid' hoặc 'reservation_penalty' → CHO PHÉP đăng nhập, đặt cờ cảnh báo
+                if (authService.isLockedForPenaltyAllowedLogin(user.getUserId())) {
+                    dao.UserLockReasonDAO userLockReasonDAO = new dao.UserLockReasonDAO();
+                    if (userLockReasonDAO.hasReason(user.getUserId(), "unpaid")) {
+                        request.setAttribute("unpaidWarning", true);
+                    }
+                    if (authService.hasReservationPenaltyLock(user.getUserId())) {
+                        request.setAttribute("reservationPenaltyWarning", true);
+                    }
                     LOGGER.log(Level.INFO,
-                            "User {0} has status=locked but only reason=unpaid — allowing login with warning.",
+                            "User {0} has status=locked for penalty (unpaid/reservation) — allowing login with warning.",
                             email);
                 } else if (lockedUntil != null && lockedUntil.after(now)) {
                     // Bị khóa tạm do nhập sai mật khẩu (securitybreach), chưa hết hạn [Node 10.16]
