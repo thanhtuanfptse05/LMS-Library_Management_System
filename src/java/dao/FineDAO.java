@@ -410,6 +410,76 @@ public class FineDAO {
     }
 
     /**
+     * Tìm kiếm và lọc danh sách khoản phạt/vi phạm theo từ khóa và trạng thái (unpaid, paid, all).
+     *
+     * @param conn         Kết nối DB
+     * @param keyword      Từ khóa tìm kiếm (Tên thành viên, mã số, tên sách, lý do)
+     * @param statusFilter Lọc theo trạng thái ('unpaid', 'paid', 'all')
+     * @return Danh sách Fine phù hợp
+     * @throws SQLException nếu có lỗi DB
+     */
+    public List<Fine> searchAndFilterFines(Connection conn, String keyword, String statusFilter) throws SQLException {
+        List<Fine> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT f.fineId, f.borrowRecordId, f.userId, f.amount, f.reason, f.status, f.createdAt, "
+          + "       mp.fullName AS memberName, "
+          + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode, "
+          + "       b.title AS bookTitle "
+          + "FROM Fine f "
+          + "JOIN MemberProfile mp ON f.userId = mp.userId "
+          + "LEFT JOIN Student s ON f.userId = s.userId "
+          + "LEFT JOIN Lecturer l ON f.userId = l.userId "
+          + "LEFT JOIN BorrowRecord br ON f.borrowRecordId = br.borrowRecordId "
+          + "LEFT JOIN Book b ON br.bookId = b.bookId "
+          + "WHERE 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+        if (statusFilter != null && !statusFilter.trim().isEmpty() && !"all".equalsIgnoreCase(statusFilter.trim())) {
+            sql.append(" AND f.status = ? ");
+            params.add(statusFilter.trim());
+        }
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (LOWER(mp.fullName) LIKE ? OR LOWER(s.studentCode) LIKE ? OR LOWER(l.lecturerCode) LIKE ? OR LOWER(b.title) LIKE ? OR LOWER(f.reason) LIKE ?) ");
+            String kw = "%" + keyword.trim().toLowerCase() + "%";
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+            params.add(kw);
+        }
+
+        sql.append(" ORDER BY f.createdAt DESC");
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Fine fine = new Fine();
+                    fine.setFineId(rs.getInt("fineId"));
+                    fine.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    fine.setUserId(rs.getInt("userId"));
+                    fine.setAmount(rs.getBigDecimal("amount"));
+                    fine.setReason(rs.getString("reason"));
+                    fine.setStatus(rs.getString("status"));
+                    fine.setCreatedAt(rs.getTimestamp("createdAt"));
+                    fine.setMemberName(rs.getString("memberName"));
+                    fine.setMemberCode(rs.getString("memberCode"));
+                    fine.setBookTitle(rs.getString("bookTitle"));
+                    list.add(fine);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tìm kiếm & lọc danh sách Fine", e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
      * Tính tổng số tiền phạt chưa thanh toán (unpaid) trên toàn hệ thống.
      *
      * @param conn Connection từ servlet

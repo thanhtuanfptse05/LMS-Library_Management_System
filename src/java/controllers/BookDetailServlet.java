@@ -34,6 +34,15 @@ public class BookDetailServlet extends HttpServlet {
 
         try {
             int bookId = Integer.parseInt(idParam);
+
+            // [LAZY LOAD] Dọn dẹp đơn quá hạn nhận sách trước khi lấy dữ liệu chi tiết sách & số lượng sẵn có
+            try {
+                new service.ReservationExpirationProcessor().processExpiration();
+            } catch (Exception e) {
+                java.util.logging.Logger.getLogger(BookDetailServlet.class.getName())
+                    .log(java.util.logging.Level.WARNING, "[LAZY LOAD] Lỗi khi dọn đơn quá hạn trên BookDetailServlet", e);
+            }
+
             Book book = bookDAO.getBookById(bookId);
 
             if (book == null) {

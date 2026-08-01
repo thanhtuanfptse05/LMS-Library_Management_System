@@ -18,16 +18,6 @@ public class AppContextListener implements ServletContextListener {
     
     private static final Logger LOGGER = Logger.getLogger(AppContextListener.class.getName());
 
-    // Tiết trình ngầm Hủy đặt trước quá hạn (F5)
-    private ScheduledExecutorService reservationExpirationScheduler;
-
-    // Tiết trình ngầm Quét quá hạn tự động (F9)
-    private ScheduledExecutorService overdueScheduler;
-
-    // Tiến trình ngầm gửi email ngầm (F-AsyncEmail)
-    private service.EmailWorker emailWorker;
-    private Thread emailThread;
-
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
@@ -39,102 +29,12 @@ public class AppContextListener implements ServletContextListener {
             LOGGER.log(Level.SEVERE, "[AppListener] Failed to load SystemConfigCache. Business defaults will be used.", e);
         }
 
-        // Khởi động Async Email Worker Daemon Thread trước tiên
-        try {
-            emailWorker = new service.EmailWorker(sce.getServletContext());
-            emailThread = new Thread(emailWorker, "EmailWorker-Thread");
-            emailThread.setDaemon(true); // Daemon thread: tự tắt khi JVM dừng
-            emailThread.start();
-            LOGGER.log(Level.INFO, "[AppListener] Đã khởi động tiến trình ngầm EmailWorker Daemon Thread thành công.");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "[AppListener] Lỗi khi khởi động EmailWorker Daemon Thread", e);
-        }
-
-        // Đăng ký Tiến trình Hủy đặt trước quá hạn lặp lại tự động sau mỗi 1 giờ (initialDelay=0, period=1, TimeUnit.HOURS)
-        reservationExpirationScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
-            Thread thread = new Thread(runnable, "ReservationExpiration-Thread");
-            thread.setDaemon(true); // daemon thread: tự tắt khi JVM dừng
-            return thread;
-        });
-        reservationExpirationScheduler.scheduleAtFixedRate(
-            new service.ReservationExpirationProcessor(),
-            0,
-            1,
-            TimeUnit.HOURS
-        );
-        LOGGER.log(Level.INFO, "[AppListener] Đã đăng ký tiến trình ngầm ReservationExpirationProcessor tự động chạy mỗi 1 giờ.");
-
-        // Đăng ký Tiến trình Quét quá hạn trả sách tự động lúc 00:00 AM hằng ngày
-        overdueScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
-            Thread thread = new Thread(runnable, "OverdueProcessor-Thread");
-            thread.setDaemon(true);
-            return thread;
-        });
-
-        java.util.Calendar tomorrow = java.util.Calendar.getInstance();
-        tomorrow.add(java.util.Calendar.DAY_OF_MONTH, 1);
-        tomorrow.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        tomorrow.set(java.util.Calendar.MINUTE, 0);
-        tomorrow.set(java.util.Calendar.SECOND, 0);
-        tomorrow.set(java.util.Calendar.MILLISECOND, 0);
-
-        long initialDelay = tomorrow.getTimeInMillis() - System.currentTimeMillis();
-        long period = TimeUnit.DAYS.toMillis(1);
-
-        overdueScheduler.scheduleAtFixedRate(
-            new service.OverdueProcessor(),
-            initialDelay,
-            period,
-            TimeUnit.MILLISECONDS
-        );
-        LOGGER.log(Level.INFO, "[AppListener] Đã đăng ký tiến trình ngầm OverdueProcessor tự động quét hằng đêm lúc 00:00 AM.");
+        LOGGER.log(Level.INFO, "[AppListener] Hệ thống chuyển sang cơ chế Lazy Load & CompletableFuture cho tác vụ gửi mail và xử lý quá hạn.");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         LOGGER.log(Level.INFO, "[AppListener] Application LMS Stopping. Cleaning up resources...");
-
-        // Dừng các scheduler trước
-        if (reservationExpirationScheduler != null && !reservationExpirationScheduler.isShutdown()) {
-            LOGGER.log(Level.INFO, "[AppListener] Đang dừng tiến trình ngầm ReservationExpirationProcessor...");
-            reservationExpirationScheduler.shutdownNow();
-            try {
-                if (!reservationExpirationScheduler.awaitTermination(5, TimeUnit.SECONDS)) {
-                    LOGGER.log(Level.WARNING, "[AppListener] Tiến trình ngầm không dừng trong thời gian quy định.");
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        // Dừng overdue scheduler
-        if (overdueScheduler != null && !overdueScheduler.isShutdown()) {
-            LOGGER.log(Level.INFO, "[AppListener] Đang dừng tiến trình ngầm OverdueProcessor...");
-            overdueScheduler.shutdownNow();
-            try {
-                if (!overdueScheduler.awaitTermination(5, TimeUnit.SECONDS)) {
-                    LOGGER.log(Level.WARNING, "[AppListener] Tiến trình ngầm OverdueProcessor không dừng trong thời gian quy định.");
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        // Dừng và Drain Email Queue
-        if (emailWorker != null) {
-            LOGGER.log(Level.INFO, "[AppListener] Đang dừng tiến trình ngầm EmailWorker...");
-            emailWorker.shutdown();
-        }
-        if (emailThread != null) {
-            emailThread.interrupt(); // Đánh thức khỏi queue.take()
-            try {
-                emailThread.join(5000); // Đợi tối đa 5 giây drain queue
-                LOGGER.log(Level.INFO, "[AppListener] Đã dừng hoàn toàn tiến trình ngầm EmailWorker.");
-            } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING, "[AppListener] Đang chờ dừng EmailWorker thì bị ngắt quãng.");
-                Thread.currentThread().interrupt();
-            }
-        }
 
         // Giải phóng JDBC drivers
         Enumeration<Driver> drivers = DriverManager.getDrivers();

@@ -73,6 +73,14 @@ public class OnlineCirculationService {
      * Đặt trước sách trực tuyến (UC09)
      */
     public int reserveBook(int userId, int bookId, String role) throws ValidationException, DatabaseException {
+        // [LAZY LOAD] Dọn dẹp đơn quá hạn nhận và quét quá hạn nợ phạt trước khi thực hiện đặt trước sách
+        try {
+            new service.ReservationExpirationProcessor().processExpiration();
+            new service.OverdueProcessor().processOverdue();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi quét tự động trong OnlineCirculationService.reserveBook", e);
+        }
+
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
@@ -315,6 +323,10 @@ public class OnlineCirculationService {
      * Hủy đơn đặt trước bởi Thủ thư
      */
     public void cancelReservationByLibrarian(int librarianId, int reservationId) throws ValidationException, DatabaseException {
+        cancelReservationByLibrarian(librarianId, reservationId, "Thủ thư hủy lượt đặt trước theo quy định.");
+    }
+
+    public void cancelReservationByLibrarian(int librarianId, int reservationId, String cancelReason) throws ValidationException, DatabaseException {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
@@ -327,10 +339,24 @@ public class OnlineCirculationService {
                     throw new ValidationException("Đơn đặt trước không còn ở trạng thái hoạt động để hủy.");
                 }
 
+                // Lấy thông tin độc giả bị hủy để gửi email
+                String cancelledUserEmail = null;
+                String cancelledUserName = null;
+                String cancelledBookTitle = null;
+                User cancelledUser = userDAO.findByUserId(res.getUserId());
+                if (cancelledUser != null) {
+                    cancelledUserEmail = cancelledUser.getEmail();
+                    MemberProfile profile = memberProfileDAO.findByUserId(res.getUserId());
+                    cancelledUserName = (profile != null) ? profile.getFullName() : cancelledUser.getEmail();
+                    Book b = bookDAO.findById(conn, res.getBookId());
+                    cancelledBookTitle = (b != null) ? b.getTitle() : "Sách đã đặt";
+                }
+
                 // 2. Thực hiện hủy
                 reservationDAO.cancelReservation(conn, reservationId, res.getUserId());
                 auditLogDAO.insert(conn, librarianId, "CANCEL_RESERVATION_BY_LIBRARIAN", "Reservation", reservationId,
-                        "{\"status\":\"" + res.getStatus() + "\",\"userId\":" + res.getUserId() + "}", "{\"status\":\"cancelled\"}");
+                        "{\"status\":\"" + res.getStatus() + "\",\"userId\":" + res.getUserId() + "}",
+                        "{\"status\":\"cancelled\",\"reason\":\"" + (cancelReason != null ? cancelReason.replace("\"", "\\\"") : "") + "\"}");
 
                 String nextUserEmail = null;
                 String nextUserFullName = null;
@@ -402,7 +428,12 @@ public class OnlineCirculationService {
 
                 conn.commit();
 
-                // Gửi email thông báo cho người kế tiếp ngoài transaction
+                // 4. Gửi email cho độc giả bị hủy đơn
+                if (cancelledUserEmail != null && cancelledBookTitle != null) {
+                    EmailService.sendReservationCancelledEmail(cancelledUserEmail, cancelledUserName, cancelledBookTitle, cancelReason);
+                }
+
+                // 5. Gửi email thông báo cho người kế tiếp ngoài transaction
                 if (nextUserEmail != null && bookTitle != null) {
                     sendReadyPickupEmail(nextUserEmail, nextUserFullName, bookTitle, deadlineStr);
                 }

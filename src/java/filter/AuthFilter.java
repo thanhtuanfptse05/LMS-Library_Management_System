@@ -57,6 +57,15 @@ public class AuthFilter implements Filter {
             httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             httpResponse.setHeader("Pragma", "no-cache");
             httpResponse.setDateHeader("Expires", 0);
+
+            // [LAZY LOAD GLOBAL] Tự động quét dọn đơn đặt trước quá hạn và phạt mượn sách quá hạn cho mọi request động
+            try {
+                new service.ReservationExpirationProcessor().processExpiration();
+                new service.OverdueProcessor().processOverdue();
+            } catch (Exception e) {
+                java.util.logging.Logger.getLogger(AuthFilter.class.getName())
+                    .log(java.util.logging.Level.WARNING, "[LAZY LOAD GLOBAL] Lỗi khi quét tự động trong AuthFilter", e);
+            }
         }
 
         // 0. Cho phép SePay Webhook route bypass AuthFilter (tự xác thực bằng API Key riêng)

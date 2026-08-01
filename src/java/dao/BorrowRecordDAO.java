@@ -557,7 +557,10 @@ public class BorrowRecordDAO {
      * Đếm số khoản mượn quá hạn trong toàn hệ thống.
      */
     public int countOverdueAll(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE status = 'borrowed' AND endDate < now()";
+        String sql = "SELECT COUNT(*) FROM BorrowRecord br "
+                   + "WHERE (br.status = 'overdue' OR (br.status = 'borrowed' AND br.endDate < NOW())) "
+                   + "  AND br.returnedAt IS NULL "
+                   + "  AND NOT EXISTS (SELECT 1 FROM Fine f WHERE f.borrowRecordId = br.borrowRecordId AND f.status = 'paid')";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
@@ -669,6 +672,64 @@ public class BorrowRecordDAO {
     }
 
     /**
+     * Lấy danh sách giao dịch mượn/trả sách gần đây trên TOÀN HỆ THỐNG kèm thông tin Thủ thư xử lý.
+     * Dùng cho Librarian Dashboard tổng quan.
+     *
+     * @param conn  Kết nối DB
+     * @param limit Giới hạn số bản ghi
+     * @return Danh sách BorrowRecord kèm memberName, memberCode, bookTitle, staffName, staffCode
+     * @throws SQLException nếu có lỗi DB
+     */
+    public List<BorrowRecord> findAllRecentLoans(Connection conn, int limit) throws SQLException {
+        List<BorrowRecord> list = new ArrayList<>();
+        String sql = "SELECT br.borrowRecordId, br.userId, br.bookCopyId, br.bookId, br.startDate, br.endDate, br.returnedAt, br.status, br.extensionCount, br.createdBy, "
+                   + "       mp.fullName AS memberName, "
+                   + "       COALESCE(s.studentCode, l.lecturerCode) AS memberCode, "
+                   + "       b.title AS bookTitle, "
+                   + "       staff_mp.fullName AS staffName, "
+                   + "       lib.staffCode AS staffCode "
+                   + "FROM BorrowRecord br "
+                   + "JOIN MemberProfile mp ON br.userId = mp.userId "
+                   + "JOIN Book b ON br.bookId = b.bookId "
+                   + "LEFT JOIN Student s ON br.userId = s.userId "
+                   + "LEFT JOIN Lecturer l ON br.userId = l.userId "
+                   + "LEFT JOIN MemberProfile staff_mp ON br.createdBy = staff_mp.userId "
+                   + "LEFT JOIN Librarian lib ON br.createdBy = lib.userId "
+                   + "WHERE br.status IN ('borrowed', 'returned', 'overdue') "
+                   + "ORDER BY br.startDate DESC "
+                   + "LIMIT ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    BorrowRecord record = new BorrowRecord();
+                    record.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    record.setUserId(rs.getInt("userId"));
+                    record.setBookCopyId(rs.getInt("bookCopyId"));
+                    record.setBookId(rs.getInt("bookId"));
+                    record.setStartDate(rs.getTimestamp("startDate"));
+                    record.setEndDate(rs.getTimestamp("endDate"));
+                    record.setReturnedAt(rs.getTimestamp("returnedAt"));
+                    record.setStatus(rs.getString("status"));
+                    record.setExtensionCount(rs.getInt("extensionCount"));
+                    int rawCreatedBy = rs.getInt("createdBy");
+                    record.setCreatedBy(rs.wasNull() ? null : rawCreatedBy);
+                    record.setMemberName(rs.getString("memberName"));
+                    record.setMemberCode(rs.getString("memberCode"));
+                    record.setBookTitle(rs.getString("bookTitle"));
+                    record.setStaffName(rs.getString("staffName"));
+                    record.setStaffCode(rs.getString("staffCode"));
+                    list.add(record);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách giao dịch mượn/trả toàn hệ thống", e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
      * Tìm kiếm các bản ghi mượn quá hạn (trạng thái 'borrowed' và endDate < NOW()).
      * Dùng cho tiến trình quét quá hạn tự động.
      *
@@ -681,7 +742,7 @@ public class BorrowRecordDAO {
         String sql = "SELECT borrowRecordId, userId, bookCopyId, bookId, startDate, endDate, "
                    + "       returnedAt, status, extensionCount, createdBy, createdAt "
                    + "FROM   BorrowRecord "
-                   + "WHERE  status = 'borrowed' AND endDate < NOW()";
+                   + "WHERE  status = 'borrowed' AND endDate < NOW() AND returnedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -836,7 +897,9 @@ public class BorrowRecordDAO {
                    + "JOIN Book b ON br.bookId = b.bookId "
                    + "LEFT JOIN Student s ON br.userId = s.userId "
                    + "LEFT JOIN Lecturer l ON br.userId = l.userId "
-                   + "WHERE br.status = 'borrowed' AND br.endDate < NOW() "
+                   + "WHERE (br.status = 'overdue' OR (br.status = 'borrowed' AND br.endDate < NOW())) "
+                   + "  AND br.returnedAt IS NULL "
+                   + "  AND NOT EXISTS (SELECT 1 FROM Fine f WHERE f.borrowRecordId = br.borrowRecordId AND f.status = 'paid') "
                    + "ORDER BY br.endDate ASC "
                    + "LIMIT ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -888,6 +951,14 @@ public class BorrowRecordDAO {
             Connection conn, String userKeyword, String barcodeKeyword,
             String status, Timestamp fromDate, Timestamp toDate,
             int offset, int limit) throws SQLException {
+        return searchBorrowingsPaginated(conn, userKeyword, barcodeKeyword, status, fromDate, toDate, "startDate", "DESC", offset, limit);
+    }
+
+    public List<dto.BorrowingManagementDTO> searchBorrowingsPaginated(
+            Connection conn, String userKeyword, String barcodeKeyword,
+            String status, Timestamp fromDate, Timestamp toDate,
+            String sortBy, String sortOrder,
+            int offset, int limit) throws SQLException {
 
         List<dto.BorrowingManagementDTO> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
@@ -937,7 +1008,23 @@ public class BorrowRecordDAO {
             params.add(toDate);
         }
 
-        sql.append("ORDER BY br.startDate DESC LIMIT ? OFFSET ?");
+        String orderCol;
+        if ("endDate".equalsIgnoreCase(sortBy) || "duedate".equalsIgnoreCase(sortBy)) {
+            orderCol = "br.endDate";
+        } else if ("bookTitle".equalsIgnoreCase(sortBy) || "title".equalsIgnoreCase(sortBy)) {
+            orderCol = "b.title";
+        } else if ("userFullName".equalsIgnoreCase(sortBy) || "name".equalsIgnoreCase(sortBy)) {
+            orderCol = "mp.fullName";
+        } else if ("barcode".equalsIgnoreCase(sortBy)) {
+            orderCol = "bc.barcode";
+        } else if ("borrowRecordId".equalsIgnoreCase(sortBy) || "id".equalsIgnoreCase(sortBy)) {
+            orderCol = "br.borrowRecordId";
+        } else {
+            orderCol = "br.startDate";
+        }
+
+        String orderDir = "ASC".equalsIgnoreCase(sortOrder) ? "ASC" : "DESC";
+        sql.append("ORDER BY ").append(orderCol).append(" ").append(orderDir).append(", br.borrowRecordId DESC LIMIT ? OFFSET ?");
         params.add(limit);
         params.add(offset);
 

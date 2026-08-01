@@ -231,6 +231,31 @@ VALUES
   <hr style="border:none;border-top:1px solid #eee;margin:24px 0;"/>
   <p style="font-size:12px;color:#888;">Thư viện Đại học LMS — Phục vụ tri thức, kiến tạo tương lai.</p>
 </div></body></html>'
+),
+
+-- ============================================================
+-- [9] Hủy đơn đặt trước bởi Thủ thư
+-- Trigger: OnlineCirculationService -> Sau khi Thủ thư hủy đơn đặt trước
+-- Placeholders: {{userName}}, {{bookTitle}}, {{cancelReason}}
+-- ============================================================
+(
+    'RESERVATION_CANCELLED',
+    'Thông báo gửi độc giả khi lượt đặt trước sách của họ bị hủy bởi Thủ thư.',
+    'Thông báo: Hủy lượt đặt trước sách — Thư viện LMS',
+    '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;">
+<div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;padding:36px;box-shadow:0 2px 16px rgba(0,0,0,0.08);">
+  <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+    <h2 style="color:#dc2626;margin:0;">🚫 Thông báo hủy lượt đặt trước sách</h2>
+  </div>
+  <p>Xin chào <strong>{{userName}}</strong>,</p>
+  <p>Thư viện xin thông báo lượt đặt trước cuốn sách <strong>{{bookTitle}}</strong> của bạn đã bị hủy bởi Thủ thư.</p>
+  <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:16px 20px;margin:16px 0;">
+    <p style="margin:0;font-size:14px;color:#c2410c;font-weight:bold;">💬 Lý do hủy: {{cancelReason}}</p>
+  </div>
+  <p>Nếu có thắc mắc, vui lòng liên hệ với quầy thủ thư để được trợ giúp.</p>
+  <hr style="border:none;border-top:1px solid #eee;margin:24px 0;"/>
+  <p style="font-size:12px;color:#888;">Thư viện Đại học LMS — Phục vụ tri thức, kiến tạo tương lai.</p>
+</div></body></html>'
 )
 
 ON CONFLICT (tempName) DO NOTHING;

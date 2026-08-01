@@ -69,6 +69,14 @@ public class CheckInServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         int librarianId = (int) session.getAttribute("userId");
 
+        // [LAZY LOAD] Dọn dẹp đơn quá hạn nhận và quét tính phạt quá hạn trước khi xử lý Check-in
+        try {
+            new service.ReservationExpirationProcessor().processExpiration();
+            new service.OverdueProcessor().processOverdue();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi quét tự động trên CheckInServlet", e);
+        }
+
         String memberCodeParam = request.getParameter("memberCode");
         String memberCode = (memberCodeParam != null) ? memberCodeParam.trim() : "";
 

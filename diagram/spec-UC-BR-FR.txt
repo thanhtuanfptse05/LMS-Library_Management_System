@@ -46,56 +46,6 @@
 //    Bước 6: Thêm BR vào SECTION 3
 //    Bước 7: Thêm FR vào SECTION 4 (kèm Mapping)
 //
-// 4. VÍ DỤ: TẠO FEATURE "ONLINE PAYMENT"
-//
-//    // Bước 1: Tạo UC-40
-//    UC-40 (Pay Fine Online)
-//    Actor: User (Student/Lecturer)
-//    Mô tả: (Thanh toán phạt trực tuyến): Người dùng quét mã QR để thanh toán 
-//    tiền phạt qua cổng thanh toán SePay mà không cần đến quầy.
-//
-//    // Bước 2: Tạo BR-32
-//    BR-32 (Payment Verification)
-//    Mô tả: Hệ thống SHALL xác minh webhook từ SePay trước khi đánh dấu 
-//    khoản phạt là đã thanh toán.
-//
-//    // Bước 3: Tạo FR-55, FR-56
-//    FR-55 (Tạo QR thanh toán)
-//    Mô tả: WHEN người dùng chọn thanh toán online, THE system SHALL gọi 
-//    SePay API để tạo mã QR chứa thông tin khoản phạt và userId.
-//    Mapping: UC-40 / BR-32
-//
-//    FR-56 (Xử lý webhook)
-//    Mô tả: WHEN nhận webhook từ SePay, THE system SHALL xác minh chữ ký, 
-//    WHERE hợp lệ, THE system SHALL UPDATE Fine.status='paid' và DELETE 
-//    UserLockReason có reason='unpaid'.
-//    Mapping: UC-40 / BR-32, BR-25
-//
-//    // Bước 4: Cập nhật Feature Mapping Table
-//    F9 (Fine & Payment Management)
-//    - Owner: Tuan
-//    - Spec Folder: feat-finePayment (tạo mới)
-//    - UC: UC-31, UC-38, UC-39, UC-40  ← THÊM UC-40
-//    - BR: BR-32                        ← THÊM BR-32, BR-75, BR-80
-//    - FR: FR-53, FR-54, FR-55, FR-56   ← THÊM FR-55, FR-56
-//
-// 5. CHECKLIST TRƯỚC KHI COMMIT
-//    [ ] UC có số thứ tự hợp lệ (không trùng, không skip)
-//    [ ] BR có số thứ tự hợp lệ (không trùng, không skip)
-//    [ ] FR có số thứ tự hợp lệ (không trùng, không skip)
-//    [ ] FR có dùng EARS pattern (WHEN/WHERE/WHILE/IF)
-//    [ ] FR có Mapping tới UC hoặc BR
-//    [ ] Feature Mapping Table đã được cập nhật
-//    [ ] UC/BR/FR mới đã được thêm vào đúng section
-//
-// 6. LƯU Ý QUAN TRỌNG
-//    ⚠️ KHÔNG ĐƯỢC xóa UC/BR/FR cũ (mark deprecated nếu cần)
-//    ⚠️ KHÔNG ĐƯỢC thay đổi số của UC/BR/FR đã tồn tại
-//    ⚠️ LUÔN tìm số lớn nhất hiện có và +1
-//    ⚠️ UC phải abstract (không technical)
-//    ⚠️ BR phải dùng SHALL/MUST NOT
-//    ⚠️ FR phải có EARS pattern + Mapping
-//
 // =============================================================================
 
 // =============================================================================
@@ -121,29 +71,29 @@ F3 (User Account Management)
 - Owner: Quyet
 - Spec Folder: feat-userAccountManagement
 - UC: UC-07, UC-08, UC-09, UC-10, UC-11, UC-30
-- BR: BR-10, BR-11, BR-12, BR-13, BR-14, BR-54, BR-55, BR-71
+- BR: BR-10, BR-11, BR-12, BR-13, BR-14, BR-54, BR-55, BR-71
 - FR: FR-12, FR-13, FR-14, FR-15, FR-17, FR-18, FR-19, FR-20, FR-21, FR-45
 
 F4 (Book Management)
 - Owner: Chuong
 - Spec Folder: feat-bookManagement
 - UC: UC-12, UC-13, UC-14, UC-15, UC-27, UC-52
-- BR: BR-16, BR-17, BR-18, BR-27, BR-59, BR-60, BR-61, BR-62, BR-79
+- BR: BR-16, BR-17, BR-18, BR-27, BR-59, BR-60, BR-61, BR-62, BR-79
 - FR: FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47, FR-81
 
 F5 (Online Reservation & Renewal)
 - Owner: Bao
 - Spec Folder: feat-Reservation&Renewal
-- UC: UC-16, UC-17, UC-43, UC-49, UC-50
-- BR: BR-19, BR-20, BR-21, BR-36, BR-63, BR-64, BR-72, BR-78
-- FR: FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68, FR-78, FR-79
+- UC: UC-16, UC-17, UC-43, UC-49, UC-50, UC-59
+- BR: BR-19, BR-20, BR-21, BR-36, BR-63, BR-64, BR-72, BR-78, BR-83, BR-84
+- FR: FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68, FR-78, FR-79, FR-133, FR-134, FR-136, FR-137
 
 F6 (Desk Circulation Operations)
 - Owner: Thai
 - Spec Folder: feat-deskCirculationOperations
-- UC: UC-18, UC-19, UC-20, UC-51
-- BR: BR-22, BR-23, BR-24, BR-25, BR-29, BR-41
-- FR: FR-34, FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41, FR-80
+- UC: UC-18, UC-19, UC-20, UC-51, UC-57, UC-58
+- BR: BR-22, BR-23, BR-24, BR-25, BR-29, BR-41, BR-84
+- FR: FR-34, FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41, FR-80, FR-135, FR-137, FR-138
 
 F7 (Notification Management)
 - Owner: Tuan
@@ -177,7 +127,8 @@ F11 (System Reports)
 - Owner: Quyet
 - Spec Folder: feat-systemReport
 - UC: UC-34, UC-35, UC-54
-- BR: BR-43, BR-44, BR-45, BR-73, BR-81
+- BR: BR-43, BR-44, BR-45
+, BR-73, BR-81
 - FR: FR-98, FR-99, FR-100, FR-101, FR-102, FR-83
 
 F12 (Audit Log)
@@ -191,14 +142,16 @@ F13 (Book Maintenance)
 - Owner: Chuong
 - Spec Folder: (to be created)
 - UC: UC-28, UC-29
-- BR: BR-28, BR-70
+- BR: BR-28
+, BR-70
 - FR: FR-48, FR-49, FR-50, FR-51
 
 F14 (AI Chatbot)
 - Owner: Thai
 - Spec Folder: feat-ai-chatbot
 - UC: UC-36, UC-37
-- BR: BR-37, BR-74
+- BR: BR-37
+, BR-74
 - FR: FR-69, FR-70
 
 F15 (Dashboard — Librarian)
@@ -240,7 +193,8 @@ F20 (Book Suggestion)
 - Owner: 
 - Spec Folder: feat-bookSuggestion
 - UC: UC-55, UC-56
-- BR: BR-56, BR-57, BR-58, BR-82
+- BR: BR-56, BR-57, BR-58
+, BR-82
 - FR: FR-119, FR-120, FR-121, FR-122, FR-123, FR-124, FR-125, FR-126, FR-127, FR-128, FR-129, FR-130, FR-131, FR-132
 
 
@@ -424,9 +378,9 @@ UC-44 (View Librarian Dashboard)
 Actor: Librarian
 Mô tả: (Xem bảng điều khiển thủ thư): Thủ thư xem tổng quan hoạt động thư viện bao gồm số lượng sách đang được mượn, số giao dịch hôm nay, sách quá hạn, và các thống kê nhanh về kho sách.
 
-UC-45 (View Manager Dashboard)
+UC-45 (View Manager Dashboard & Circulation Overview)
 Actor: Library Manager
-Mô tả: (Xem bảng điều khiển quản lý): Quản lý thư viện xem các chỉ số hiệu suất tổng hợp (KPI) bao gồm xu hướng mượn trả, thống kê tài chính, tình trạng kho sách, và các cảnh báo hệ thống.
+Mô tả: (Xem bảng điều khiển quản lý): Quản lý thư viện xem các chỉ số hiệu suất tổng hợp (KPI) bao gồm xu hướng mượn trả, thống kê tài chính, tình trạng kho sách, cảnh báo sách quá hạn, tổng số lượt đang mượn/đang đặt trước/hàng chờ toàn hệ thống, và các chỉ số đặt trước theo trạng thái (pending/readypickup/fulfilled/cancelled).
 
 UC-46 (View Admin Dashboard)
 Actor: Admin
@@ -450,7 +404,7 @@ Mô tả: (Hủy đặt trước trực tuyến): Độc giả chủ động h�
 
 UC-51 (Register Desk Reservation)
 Actor: Librarian
-Mô tả: (Đăng ký đặt trước tại quầy): Thủ thư thực hiện đăng ký đặt trước sách thay cho độc giả ngay tại quầy khi được yêu cầu trực tiếp.
+Mô tả: (Đăng ký đặt trước tại quầy): Thủ thư thực hiện đăng ký đặt trước sách thay cho độc giả ngay tại quầy khi được yêu cầu trực tiếp. Thủ thư nhập mã độc giả và ISBN/Barcode sách, hệ thống tự động xác định vị trí hàng chờ và trạng thái phù hợp.
 
 UC-52 (View Book Import History)
 Actor: Librarian
@@ -471,6 +425,18 @@ Mô tả: (Đề xuất & Vote sách mới): Giảng viên gửi đề xuất s�
 UC-56 (Manage Book Suggestion Status)
 Actor: Librarian
 Mô tả: (Quản lý trạng thái đề xuất sách): Thủ thư xem danh sách đề xuất sách từ giảng viên, xét duyệt và cập nhật trạng thái (pending / acknowledged / rejected) kèm ghi chú lý do.
+
+UC-57 (Manage Active Borrowings & Multi-Criteria Sorting)
+Actor: Librarian
+Mô tả: (Quản lý & sắp xếp sách đang mượn): Thủ thư tra cứu danh sách các lượt mượn sách đang diễn ra trên hệ thống, lọc theo từ khóa/trạng thái/thời gian, chọn tiêu chí và chiều sắp xếp linh hoạt (Tăng/Giảm), và gửi email yêu cầu thu hồi sách theo mẫu RECALL_NOTICE.
+
+UC-58 (Manage Librarian Reservation Queue & Position Reordering)
+Actor: Librarian
+Mô tả: (Quản lý hàng chờ & đổi vị trí đặt trước): Thủ thư theo dõi toàn bộ danh sách đặt trước tại quầy, sắp xếp hai chiều đa tiêu chí, đôn vị trí hàng chờ khi có nhu cầu ưu tiên, hoặc hủy đơn đặt trước kèm lý do và tự động gửi email thông báo cho độc giả.
+
+UC-59 (Personal Loan & Reservation Queue View with Countdown Timer)
+Actor: Student / Lecturer
+Mô tả: (Xem & sắp xếp cá nhân mượn/đặt sách kèm bộ đếm ngược): Sinh viên và Giảng viên xem danh sách mượn và đặt trước cá nhân, chủ động chọn tiêu chí sắp xếp, đồng thời theo dõi bộ đếm ngược thời gian thực (Countdown Timer) cho các đơn đặt trước sẵn sàng nhận tại quầy.
 
 
 // =============================================================================
@@ -616,7 +582,7 @@ BR-46 (Email SMTP Configurations)
 Mô tả: Các tham số cấu hình SMTP (Host, Port, Username, Password) BẮT BUỘC phải được đọc trực tiếp từ bảng SystemConfigurations.
 
 BR-47 (Email Template Protection)
-Mô tả: Các mẫu email hệ thống (RESET_PASSWORD, RESERVATION_READY, RENEWAL_CONFIRMATION, OVERDUE_NOTICE, INCIDENT_FINE_NOTICE, PAYMENT_CONFIRMATION) cấm tuyệt đối xóa khỏi hệ thống.
+Mô tả: Các mẫu email hệ thống (RESET_PASSWORD, RESERVATION_READY, RENEWAL_CONFIRMATION, OVERDUE_NOTICE, INCIDENT_FINE_NOTICE, PAYMENT_CONFIRMATION, CHECKOUT_CONFIRMATION, RECALL_NOTICE, RESERVATION_CANCELLED, RESERVATION_EXPIRED) cấm tuyệt đối xóa khỏi hệ thống.
 
 BR-48 (Email Worker Error Recovery)
 Mô tả: Lỗi kết nối SMTP không được phép làm crash thread Consumer; hệ thống phải tự động retry tối đa số lần cấu hình (EMAIL_MAX_RETRIES) trước khi bỏ qua job.
@@ -724,6 +690,12 @@ Mô tả: The system SHALL calculate staff performance metrics based exclusively
 
 BR-82 (Suggestion Status Finality)
 Mô tả: The system SHALL freeze book suggestions from further updates once marked as rejected.
+
+BR-83 (Reservation Cancellation Notification & Reason Enforcement)
+Mô tả: Khi Thủ thư hủy lượt đặt trước sách tại quầy, hệ thống BẮT BUỘC tiếp nhận lý do hủy (`reason`), ghi AuditLog, đôn vị trí hàng chờ người tiếp theo (nếu có), đồng thời kích hoạt gửi email thông báo mẫu `RESERVATION_CANCELLED` chứa `{{userName}}`, `{{bookTitle}}`, `{{cancelReason}}` cho độc giả bị hủy đơn.
+
+BR-84 (Multi-criteria Two-way Sorting & Real-time Countdown)
+Mô tả: Mọi màn hình quản lý danh sách mượn sách và hàng chờ đặt trước (phía Thủ thư và Độc giả) BẮT BUỘC hỗ trợ lọc sắp xếp đa tiêu chí và chiều sắp xếp linh hoạt (Tăng dần / Giảm dần), đồng thời tự động đếm ngược thời gian giữ sách và tự động reload làm mới trạng thái phía độc giả khi hết hạn.
 
 // =============================================================================
 // SECTION 4: FUNCTIONAL REQUIREMENTS (FR)
@@ -934,7 +906,7 @@ Mô tả: Logic kết luận kiểm kê đã được tích hợp vào FR-50 v�
 Mapping: (merged into FR-50)
 
 FR-52 (Quản lý Mẫu Email)
-Mô tả: WHEN DocumentTempManagerServlet.doPost(action=update) cập nhật email template, THE system SHALL: (1) Validate input: tempId tồn tại, subject không rỗng và ≤ 255 ký tự, bodyContent ≤ 50.000 ký tự (hỗ trợ HTML + placeholders), (2) Kiểm tra các placeholders bắt buộc theo loại template: RESET_PASSWORD template MUST chứa {{tempPassword}}, {{userName}}, {{resetLink}}, OVERDUE_NOTICE template MUST chứa {{bookTitle}}, {{dueDate}}, {{daysLate}}, {{fineAmount}}, RESERVATION_READY template MUST chứa {{bookTitle}}, {{pickupDeadline}}, {{libraryLocation}}, WHERE thiếu placeholder bắt buộc: trả lỗi validation "Template thiếu biến bắt buộc: {missingPlaceholders}", (3) Mở DB Transaction: UPDATE DocumentTemp SET subject=?, bodyContent=?, updatedBy=managerId, updatedAt=NOW() WHERE tempId=?, INSERT AuditLog(UPDATE_EMAIL_TEMPLATE, managerId, entityName='DocumentTemp', entityId=tempId, oldValues=JSON.stringify({oldSubject, oldBodyContent}), newValues=JSON.stringify({subject, bodyContent})), conn.commit(), (4) **Clear template cache**: DocumentTemplateCache.invalidate(tempId) để buộc reload template mới khi gửi email tiếp theo, (5) Redirect với flash success "Đã cập nhật mẫu email: {tempName}". **Rendering**: EmailService.sendEmail() sẽ dùng định dạng HTML/Text thông thường, thay thế placeholders bằng SimpleTemplateEngine hoặc String.replace().
+Mô tả: WHEN DocumentTempManagerServlet.doPost(action=update) cập nhật email template, THE system SHALL: (1) Validate input: tempId tồn tại, subject không rỗng và ≤ 255 ký tự, bodyContent ≤ 50.000 ký tự (hỗ trợ HTML + placeholders), (2) Kiểm tra các placeholders bắt buộc theo loại template: RESET_PASSWORD template MUST chứa {{tempPassword}}, {{userName}}, {{resetLink}}, OVERDUE_NOTICE template MUST chứa {{bookTitle}}, {{dueDate}}, {{daysLate}}, {{fineAmount}}, RESERVATION_READY template MUST chứa {{bookTitle}}, {{pickupDeadline}}, {{libraryLocation}}, RECALL_NOTICE template MUST chứa {{bookTitle}}, {{userName}}, {{recallReason}}, RESERVATION_CANCELLED template MUST chứa {{userName}}, {{bookTitle}}, {{cancelReason}}, WHERE thiếu placeholder bắt buộc: trả lỗi validation "Template thiếu biến bắt buộc: {missingPlaceholders}", (3) Mở DB Transaction: UPDATE DocumentTemp SET subject=?, bodyContent=?, updatedBy=managerId, updatedAt=NOW() WHERE tempId=?, INSERT AuditLog(UPDATE_EMAIL_TEMPLATE, managerId, entityName='DocumentTemp', entityId=tempId, oldValues=JSON.stringify({oldSubject, oldBodyContent}), newValues=JSON.stringify({subject, bodyContent})), conn.commit(), (4) **Clear template cache**: DocumentTemplateCache.invalidate(tempId) để buộc reload template mới khi gửi email tiếp theo, (5) Redirect với flash success "Đã cập nhật mẫu email: {tempName}". **Rendering**: EmailService.sendEmail() sẽ dùng định dạng HTML/Text thông thường, thay thế placeholders bằng SimpleTemplateEngine hoặc String.replace().
 Mapping: UC-26
 
 FR-53 (Hiển thị Hàng mượn & chờ sách với trạng thái)
@@ -1010,7 +982,7 @@ Mô tả: WHEN AiChatbotServlet.doGet() được gọi, THE system SHALL: (1) L�
 Mapping: UC-37
 
 FR-71 (Hiển thị Dashboard Thủ thư với stats hoạt động)
-Mô tả: WHEN LibrarianDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu: (1) activeBorrowsCount = BorrowRecordDAO.countAllActiveBorrows(), (2) todayCheckoutsCount = BorrowRecordDAO.countTodayCheckouts(), (3) todayCheckinsCount = BorrowRecordDAO.countTodayCheckins(), (4) overdueCount = BorrowRecordDAO.countAllOverdue(), (5) recentCheckouts = BorrowRecordDAO.findRecentCheckouts(limit=10) JOIN User, Book, (6) recentCheckins = BorrowRecordDAO.findRecentCheckins(limit=10), (7) inventoryStats = {totalBooks: BookCopyDAO.countAll(), available: COUNT(status='available'), borrowed: COUNT(status='borrowed'), unavailable: COUNT(status='unavailable'), byCondition: {good, damaged, lost}}, (8) Forward sang librarian/dashboard.jsp với tất cả stats + charts (hoạt động theo giờ trong ngày).
+Mô tả: WHEN LibrarianDashboardServlet.doGet() được gọi, THE system SHALL tổng hợp dữ liệu: (1) activeBorrowsCount = BorrowRecordDAO.countAllActiveBorrows(), (2) todayCheckoutsCount = BorrowRecordDAO.countTodayCheckouts(), (3) todayCheckinsCount = BorrowRecordDAO.countTodayCheckins(), (4) overdueCount = BorrowRecordDAO.countAllOverdue(), (5) recentCheckouts = BorrowRecordDAO.findRecentCheckouts(limit=10) JOIN User, Book, (6) recentCheckins = BorrowRecordDAO.findRecentCheckins(limit=10), (7) inventoryStats = {totalBooks: BookCopyDAO.countAll(), available: COUNT(status='available'), borrowed: COUNT(status='borrowed'), unavailable: COUNT(status='unavailable'), byCondition: {good, damaged, lost}}, (8) **Dashboard Layout**: Hiển thị panel "Sẵn sàng nhận sách" (readypickup với Countdown Timer) ở TRÊN và panel "Danh sách Đơn Phạt" (fine collection) ở DƯỚI; hai panel ngang nhau (col-6 mỗi bên). Danh sách khoản mượn quá hạn trong panel phạt CHỈ hiển thị các bản ghi có khoản phạt chưa thanh toán (Fine.status != 'paid' HOẶC chưa có Fine cho bản ghi đó) để tránh trùng lặp với các khoản đã xử lý xong. (9) Forward sang librarian/dashboard.jsp với tất cả stats + charts (hoạt động theo giờ trong ngày).
 Mapping: UC-44 / BR-38
 
 FR-72 (Hiển thị Dashboard Quản lý với KPI)
@@ -1170,7 +1142,7 @@ Mô tả: WHERE vượt quá giới hạn retry cho phép mà email vẫn lỗi,
 Mapping: BR-48
 
 FR-111 (Chặn xóa mẫu email hệ thống)
-Mô tả: WHEN Manager yêu cầu xóa mẫu email, THE system SHALL kiểm tra danh sách PROTECTED_TEMPLATES. WHERE mẫu email nằm trong danh sách được bảo vệ, hệ thống SHALL ngăn chặn hành động và trả về thông báo lỗi bằng tiếng Việt.
+Mô tả: WHEN Manager yêu cầu xóa mẫu email, THE system SHALL kiểm tra danh sách PROTECTED_TEMPLATES = [RESET_PASSWORD, RESERVATION_READY, RENEWAL_CONFIRMATION, OVERDUE_NOTICE, INCIDENT_FINE_NOTICE, PAYMENT_CONFIRMATION, CHECKOUT_CONFIRMATION, RECALL_NOTICE, RESERVATION_CANCELLED, RESERVATION_EXPIRED]. WHERE mẫu email nằm trong danh sách được bảo vệ, hệ thống SHALL ngăn chặn hành động và trả về thông báo lỗi bằng tiếng Việt.
 Mapping: BR-47
 
 FR-112 (Bảo mật không ghi log mật khẩu thô)
@@ -1257,11 +1229,35 @@ FR-132 (Bảo vệ voteCount không âm)
 Mô tả: WHERE thao tác hủy vote khiến voteCount giảm dưới 0, THE system SHALL đặt voteCount = 0 (tối thiểu là 0). Đề xuất với voteCount = 0 vẫn tồn tại trong hệ thống để Thủ thư xem xét.
 Mapping: UC-55 / BR-57
 
+FR-133 (Sắp xếp Hàng chờ Đặt trước - Thủ thư)
+Mô tả: WHEN Thủ thư truy cập `/librarian/reservation-queue` và chọn các thuộc tính sắp xếp `sortBy` (`queuePosition`, `startDate`, `endDate`, `bookTitle`, `memberName`, `reservationId`) và chiều `sortOrder` (`ASC`, `DESC`), THE system SHALL thực hiện câu lệnh SQL truy vấn phân trang sắp xếp tương ứng và trả về kết quả cho giao diện.
+Mapping: UC-43, UC-50, UC-58 / BR-84
+
+FR-134 (Sắp xếp Cá nhân & Đếm ngược phía Độc giả)
+Mô tả: WHEN Độc giả (Student/Lecturer) truy cập trang sách đang mượn & đặt trước (`/student/my-borrowings`, `/lecturer/my-borrowings`), THE system SHALL hỗ trợ sắp xếp hai danh sách theo `borrowSortBy`, `borrowSortOrder`, `resSortBy`, `resSortOrder`, và hiển thị bộ đếm ngược thời gian thực (Countdown Timer) cho các đơn đặt trước sẵn sàng nhận (`queuePosition == 0`), tự động reload trang sau 1.5s khi hết hạn để kích hoạt Lazy Sweep.
+Mapping: UC-16, UC-50, UC-59 / BR-20, BR-36, BR-84
+
+FR-135 (Sắp xếp Danh sách Sách đang mượn - Thủ thư)
+Mô tả: WHEN Thủ thư truy cập `/librarian/borrowings` và chọn các thuộc tính sắp xếp `sortBy` (`startDate`, `endDate`, `bookTitle`, `userFullName`, `barcode`, `borrowRecordId`) và chiều `sortOrder` (`DESC`, `ASC`), THE system SHALL gọi `BorrowRecordDAO.searchBorrowingsPaginated` để thực hiện truy vấn CSDL phân trang và trả về kết quả cho giao diện.
+Mapping: UC-18, UC-19, UC-57 / BR-84
+
+FR-136 (Thủ thư Hủy lượt đặt trước kèm Lý do & Gửi Mail Thông báo)
+Mô tả: WHEN Thủ thư gửi POST request tới `/librarian/reservation-queue` với `action=cancel` kèm `reservationId` và `reason`, THE system SHALL gọi `OnlineCirculationService.cancelReservationByLibrarian(librarianId, reservationId, reason)`, chuyển `status = 'cancelled'`, lưu `AuditLogs`, tự động đôn người ở vị trí `queuePosition = 1` lên `queuePosition = 0` (`readypickup`), và enqueue gửi mail thông báo `RESERVATION_CANCELLED` tới độc giả.
+Mapping: UC-50, UC-58 / BR-83
+
+FR-137 (Đồng bộ Giao diện Scholastic & Sidebar Navigation)
+Mô tả: THE system SHALL đồng bộ thiết kế giao diện cho các màn hình mượn/trả/hàng chờ theo chuẩn `raised-card`, `table-lms`, `badge-pill`, nút bấm Terracotta Orange (#d97706) quy định tại `DESIGN.md`, đồng thời đồng bộ nhất quán tiêu đề menu sidebar trên các vai trò: "Quản lý sách đang mượn" (Librarian) và "Quản lý sách đang mượn & đặt trước" (Student/Lecturer).
+Mapping: UC-18, UC-43, UC-50, UC-57, UC-58, UC-59 / BR-38
+
+FR-138 (Tích hợp Email Thu Hồi Sách - RECALL_NOTICE)
+Mô tả: WHEN Thủ thư click nút "Gửi email thu hồi" trên màn hình Quản lý sách đang mượn (`/librarian/borrowings`), THE system SHALL gọi `EmailService.sendRecallNoticeEmail(borrowRecord, librarianId, recallReason)` để enqueue một EmailJob với template `RECALL_NOTICE`. Template được render với các placeholder: `{{userName}}` (họ tên độc giả), `{{bookTitle}}` (tên sách), `{{recallReason}}` (lý do thu hồi do Thủ thư nhập), `{{dueDate}}` (hạn trả ban đầu). Hệ thống SHALL ghi nhận hành động thu hồi vào AuditLog(RECALL_NOTICE, librarianId). Email được gửi bất đồng bộ qua background worker, KHÔNG block HTTP request của Thủ thư.
+Mapping: UC-57 / BR-47
+
 // =============================================================================
 // END OF SPECIFICATION
 // =============================================================================
-// Total UC: 56 | Total BR: 58 | Total FR: 132
-// Version: 4.0.0 | Date: 2026-07-05
+// Total UC: 59 | Total BR: 84 | Total FR: 138
+// Version: 4.2.0 | Date: 2026-08-01
 // Project: Library Management System (LMS) - SWP391
 // =============================================================================
 

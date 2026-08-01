@@ -29,7 +29,7 @@
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/student/my-borrowings">
             <span class="material-symbols-outlined">library_books</span>
-            <span>Hàng mượn & chờ sách</span>
+            <span>Quản lý sách đang mượn & đặt trước</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/student/borrow-history">
             <span class="material-symbols-outlined">history</span>
@@ -109,7 +109,7 @@
             </a>
             <a class="sidebar-link" href="${pageContext.request.contextPath}/student/my-borrowings">
                 <span class="material-symbols-outlined">library_books</span>
-                <span>Hàng mượn & chờ sách</span>
+                <span>Quản lý sách đang mượn & đặt trước</span>
             </a>
             <a class="sidebar-link" href="${pageContext.request.contextPath}/student/borrow-history">
                 <span class="material-symbols-outlined">history</span>

@@ -189,31 +189,4 @@
         </div>
     </div>
 
-    <%-- Maintenance Operations --%>
-    <div class="raised-card overflow-hidden">
-        <div class="card-header-row">
-            <div>
-                <h3 class="card-title">Bảo trì &amp; Vận hành Hệ thống</h3>
-                <p class="card-subtitle">Kích hoạt nhanh quy trình xử lý tác vụ định kỳ bằng tay</p>
-            </div>
-        </div>
-        <div class="p-4">
-            <div class="d-flex flex-wrap gap-3">
-                <button id="btn-trigger-expiration"
-                        class="btn rounded-3 fw-semibold d-flex align-items-center gap-2"
-                        style="border: 1.5px solid var(--outline-variant); font-size: 13.5px; padding: 10px 16px; color: var(--on-surface-variant); background: var(--surface-container-low); transition: all 0.2s ease;">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">cleaning_services</span>
-                    Dọn dẹp Đặt trước Quá hạn (F5)
-                </button>
-                <button id="btn-trigger-overdue"
-                        class="btn rounded-3 fw-semibold d-flex align-items-center gap-2"
-                        style="border: 1.5px solid var(--outline-variant); font-size: 13.5px; padding: 10px 16px; color: var(--on-surface-variant); background: var(--surface-container-low); transition: all 0.2s ease;">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">alarm_on</span>
-                    Quét Phạt &amp; Khóa Quá Hạn (F9)
-                </button>
-            </div>
-            <div id="maintenance-msg" class="mt-3 d-none p-3 rounded-2" style="font-size: 13.5px;"></div>
-        </div>
-    </div>
-
 </div>

@@ -1,5 +1,24 @@
 # CHANGELOG.md — Quản lý Luân chuyển tại quầy
 
+## [1.5.0] - 2026-08-01
+### Added
+- **FR-138 (Gửi email thu hồi sách - RECALL_NOTICE):** Thêm phương thức `EmailService.sendRecallNoticeEmail(borrowRecord, librarianId, recallReason)`. Khi Thủ thư click "Gửi email thu hồi" trên màn hình `/librarian/borrowings`, hệ thống enqueue EmailJob với template `RECALL_NOTICE` (placeholders: `{{userName}}`, `{{bookTitle}}`, `{{recallReason}}`, `{{dueDate}}`) và ghi AuditLog(RECALL_NOTICE, librarianId).
+- **Template RECALL_NOTICE:** Bổ sung vào `EmailService.java` fallback template và `04_email_templates.sql` seed data.
+- **Template RESERVATION_CANCELLED:** Bổ sung vào `EmailService.java` fallback và `04_email_templates.sql` (được trigger khi Thủ thư hủy lượt đặt trước kèm lý do).
+- **Template RESERVATION_EXPIRED:** Bổ sung vào `EmailService.java` fallback (được trigger bởi FR-68 khi đơn hết hạn).
+
+### Changed
+- **FR-71 (Dashboard Thủ thư):** Danh sách sách quá hạn trong panel "Danh sách Đơn Phạt" chỉ hiển thị các bản ghi có khoản phạt CHƯA thanh toán (`Fine.status != 'paid'` hoặc chưa có Fine), loại bỏ các khoản đã xử lý xong.
+- **Dashboard Layout:** Panel "Sẵn sàng nhận sách" (readypickup + Countdown Timer) được đặt TRÊN panel "Danh sách Đơn Phạt" (thu tiền); cả hai ngang nhau (col-6). Tên view đổi thành "Danh sách Đơn Phạt" (thay cho "Danh sách vi phạm"). Bổ sung chức năng search và filter theo tên, mã sinh viên, khoảng ngày.
+- **UC-57 & UC-58** chính thức đưa vào phạm vi F6 (Desk Circulation Operations).
+- Cập nhật SPEC.md: Bổ sung FR-138, làm rõ UC-57, UC-58 và layout dashboard.
+
+## [1.4.0] - 2026-08-01
+### Added
+- Bổ sung hàm `BorrowRecordDAO.findAllRecentLoans` hỗ trợ hiển thị danh sách mượn trả mới nhất toàn hệ thống cho Librarian Dashboard.
+- Mở rộng bộ lọc sắp xếp đa tiêu chí linh hoạt (sortBy, sortOrder) trong `BorrowRecordDAO.searchBorrowingsPaginated` và `DeskBorrowingManagerServlet`.
+- Đồng bộ chuẩn thiết kế giao diện theo `DESIGN.md` và `ui_rule.md` cho các view luân chuyển tại quầy.
+
 ## [1.3.0] - 2026-07-27
 ### Changed
 - **Chuẩn hóa luồng Check-out yêu cầu BẮT BUỘC Reservation trước (BR-23 / FR-35):** Cập nhật toàn bộ spec khớp 100% với mã nguồn `DeskCirculationService.java` hiện tại. Loại bỏ hoàn toàn logic tự động tạo Reservation ảo ngầm trong Check-out. Nếu độc giả chưa có đơn đặt trước, hệ thống chặn giao dịch và báo lỗi yêu cầu Thủ thư dùng chức năng Đặt trước sách tại quầy (`DeskReservationServlet` / UC-51) trước khi tiến hành giao sách.

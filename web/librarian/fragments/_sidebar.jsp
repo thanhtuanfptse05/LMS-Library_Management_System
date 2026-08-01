@@ -31,19 +31,19 @@
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/borrowings">
             <span class="material-symbols-outlined">book_online</span>
-            <span>Quản lý đang mượn</span>
+            <span>Quản lý sách đang mượn</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/my-circulations">
             <span class="material-symbols-outlined">history_edu</span>
             <span>Sách tôi đã xử lý</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fines">
-            <span class="material-symbols-outlined">gavel</span>
-            <span>Danh sách vi phạm</span>
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Danh sách Đơn Phạt</span>
         </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/reservation-queue">
             <span class="material-symbols-outlined">queue</span>
-            <span>Hàng chờ đặt trước</span>
+            <span>Quản lý hàng chờ đặt trước</span>
         </a>
 
         <!-- Quản lý sách -->
@@ -148,19 +148,19 @@
             </a>
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/borrowings">
                 <span class="material-symbols-outlined">book_online</span>
-                <span>Quản lý đang mượn</span>
+                <span>Quản lý sách đang mượn</span>
             </a>
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/my-circulations">
                 <span class="material-symbols-outlined">history_edu</span>
                 <span>Sách tôi đã xử lý</span>
             </a>
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fines">
-                <span class="material-symbols-outlined">gavel</span>
-                <span>Danh sách vi phạm</span>
+                <span class="material-symbols-outlined">receipt_long</span>
+                <span>Danh sách Đơn Phạt</span>
             </a>
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/reservation-queue">
                 <span class="material-symbols-outlined">queue</span>
-                <span>Hàng chờ đặt trước</span>
+                <span>Quản lý hàng chờ đặt trước</span>
             </a>
 
             <p class="sidebar-section-label">Quản lý sách</p>

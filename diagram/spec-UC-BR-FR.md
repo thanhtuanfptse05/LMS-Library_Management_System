@@ -100,8 +100,8 @@ F9 (Fine & Payment Management)
 | F2 | Profile Management | Tuan | feat-profileManagement | UC-04, UC-05, UC-06 | BR-08, BR-09, BR-15 | FR-09, FR-10, FR-11, FR-16 |
 | F3 | User Account Management | Quyet | feat-userAccountManagement | UC-07, UC-08, UC-09, UC-10, UC-11, UC-30 | BR-10, BR-11, BR-12, BR-13, BR-14, BR-54, BR-55, BR-71 | FR-12, FR-13, FR-14, FR-15, FR-17, FR-18, FR-19, FR-20, FR-21, FR-45 |
 | F4 | Book Management | Chuong | feat-bookManagement | UC-12, UC-13, UC-14, UC-15, UC-27, UC-52 | BR-16, BR-17, BR-18, BR-27 | FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-46, FR-47, FR-81, FR-133, FR-134 |
-| F5 | Online Reservation & Renewal | Bao | feat-Reservation&Renewal | UC-16, UC-17, UC-43, UC-49, UC-50 | BR-19, BR-20, BR-21, BR-36, BR-63, BR-64, BR-72, BR-78 | FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68, FR-78, FR-79 |
-| F6 | Desk Circulation Operations | Thai | feat-deskCirculationOperations | UC-18, UC-19, UC-20, UC-51 | BR-22, BR-23, BR-24, BR-25, BR-29, BR-41 | FR-34, FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41, FR-80 |
+| F5 | Online Reservation & Renewal | Bao | feat-Reservation&Renewal | UC-16, UC-17, UC-43, UC-49, UC-50, UC-59 | BR-19, BR-20, BR-21, BR-36, BR-63, BR-64, BR-72, BR-78, BR-83, BR-84 | FR-29, FR-30, FR-31, FR-32, FR-33, FR-67, FR-68, FR-78, FR-79, FR-133\*, FR-134\*, FR-136, FR-137 |
+| F6 | Desk Circulation Operations | Thai | feat-deskCirculationOperations | UC-18, UC-19, UC-20, UC-51, UC-57, UC-58 | BR-22, BR-23, BR-24, BR-25, BR-29, BR-41, BR-84 | FR-34, FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41, FR-80, FR-135, FR-137, FR-138 |
 | F7 | Notification Management | Tuan | feat-notification-management | UC-24, UC-25, UC-26 | BR-67, BR-68, BR-69 | FR-44, FR-52 |
 | F8 | Book Discovery | Bao | feat-bookDiscovery | UC-22, UC-23 | BR-65, BR-66 | FR-43 |
 | F9 | Fine & Payment Management | Tuan | feat-finePayment | UC-31, UC-38, UC-39, UC-42, UC-53 | BR-22, BR-25, BR-31, BR-35, BR-53, BR-75, BR-80 | FR-53, FR-54, FR-61, FR-62, FR-63, FR-64, FR-65, FR-66, FR-82 |
@@ -1548,8 +1548,34 @@ WHEN BookExportServlet hoặc BookCopyExportServlet được gọi, THE system S
 
 **Mapping:** UC-12, UC-14 / BR-16
 
+### FR-135 - Sắp xếp Danh sách Sách đang mượn - Thủ thư
+
+WHEN Thủ thư truy cập `/librarian/borrowings` và chọn các thuộc tính sắp xếp `sortBy` (`startDate`, `endDate`, `bookTitle`, `userFullName`, `barcode`, `borrowRecordId`) và chiều `sortOrder` (`DESC`, `ASC`), THE system SHALL gọi `BorrowRecordDAO.searchBorrowingsPaginated` để thực hiện trậy vấn CSDL phân trang và trả về kết quả cho giao diện.
+
+**Mapping:** UC-18, UC-19, UC-57 / BR-84
+
+### FR-136 - Thủ thư Hủy lượt đặt trước kèm Lý do & Gửi Mail Thông báo
+
+WHEN Thủ thư gửi POST request tới `/librarian/reservation-queue` với `action=cancel` kèm `reservationId` và `reason`, THE system SHALL gọi `OnlineCirculationService.cancelReservationByLibrarian(librarianId, reservationId, reason)`, chuyển `status = 'cancelled'`, lưu `AuditLogs`, tự động đôn người ở vị trí `queuePosition = 1` lên `queuePosition = 0` (`readypickup`), và enqueue gửi mail thông báo `RESERVATION_CANCELLED` tới độc giả.
+
+**Mapping:** UC-50, UC-58 / BR-83
+
+### FR-137 - Đồng bộ Giao diện Scholastic & Sidebar Navigation
+
+THE system SHALL đồng bộ thiết kế giao diện cho các màn hình mượn/trả/hàng chờ theo chuẩn `raised-card`, `table-lms`, `badge-pill`, nút bấm Terracotta Orange (#d97706) quy định tại `DESIGN.md`, đồng thời đồng bộ nhất quán tiêu đề menu sidebar trên các vai trò: "Quản lý sách đang mượn" (Librarian) và "Quản lý sách đang mượn & đặt trước" (Student/Lecturer).
+
+**Mapping:** UC-18, UC-43, UC-50, UC-57, UC-58, UC-59 / BR-38
+
+### FR-138 - Tích hợp Email Thu Hồi Sách - RECALL_NOTICE
+
+WHEN Thủ thư click nút "Gửi email thu hồi" trên màn hình Quản lý sách đang mượn (`/librarian/borrowings`), THE system SHALL gọi `EmailService.sendRecallNoticeEmail(borrowRecord, librarianId, recallReason)` để enqueue một EmailJob với template `RECALL_NOTICE`. Template được render với các placeholder: `{{userName}}` (họ tên độc giả), `{{bookTitle}}` (tên sách), `{{recallReason}}` (lý do thu hồi), `{{dueDate}}` (hạn trả ban đầu). Email được gửi bất đồng bộ qua background worker, không block HTTP request của Thủ thư.
+
+**Mapping:** UC-57 / BR-47
+
 ---
 
-**Summary:** Total UC: 56 | Total BR: 82 | Total FR: 134
+> \* **Lưu ý:** FR-133 và FR-134 trong file `.txt` canonical khác nội dung với FR-133/FR-134 trong file `.md` này do hai file đã được duy trì độc lập. Tham chiếu chính xác theo `spec-UC-BR-FR.txt` (canonical source với version 4.2.0).
 
-**Version:** 4.1.0 | **Date:** 2026-07-26 | **Project:** Library Management System (LMS) - SWP391
+**Summary:** Total UC: 59 | Total BR: 84 | Total FR: 138
+
+**Version:** 4.2.0 | **Date:** 2026-08-01 | **Project:** Library Management System (LMS) - SWP391

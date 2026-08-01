@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import service.OnlineCirculationService;
 
 /**
@@ -17,6 +19,7 @@ import service.OnlineCirculationService;
 @WebServlet(name = "RenewalServlet", urlPatterns = {"/student/renew", "/lecturer/renew"})
 public class RenewalServlet extends HttpServlet {
 
+    private static final Logger LOGGER = Logger.getLogger(RenewalServlet.class.getName());
     private final OnlineCirculationService circulationService = new OnlineCirculationService();
 
     @Override
@@ -44,6 +47,14 @@ public class RenewalServlet extends HttpServlet {
             session.setAttribute("errorMessage", "Mã lượt mượn sách không hợp lệ.");
             response.sendRedirect(request.getContextPath() + "/" + role.toLowerCase() + "/my-borrowings");
             return;
+        }
+
+        // [LAZY LOAD] Quét quá hạn nhận sách và nợ phạt trước khi gia hạn
+        try {
+            new service.ReservationExpirationProcessor().processExpiration();
+            new service.OverdueProcessor().processOverdue();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi quét tự động trên RenewalServlet", e);
         }
 
         try {

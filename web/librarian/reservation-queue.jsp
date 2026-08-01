@@ -53,10 +53,10 @@
                         </div>
                     </div>
 
-                    <%-- Search & Filter --%>
+                    <%-- Search & Filter Card --%>
                     <div class="raised-card mb-4 p-3">
-                        <form method="GET" action="${pageContext.request.contextPath}/librarian/reservation-queue" class="row g-3 align-items-center">
-                            <div class="col-md-5">
+                        <form method="GET" action="${pageContext.request.contextPath}/librarian/reservation-queue" class="row g-3">
+                            <div class="col-12 col-md-7">
                                 <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Tìm kiếm từ khóa</label>
                                 <div class="input-group">
                                     <span class="input-group-text" style="background: var(--surface-container-lowest); border-color: var(--outline-variant);">
@@ -68,7 +68,8 @@
                                            style="border-color: var(--outline-variant);">
                                 </div>
                             </div>
-                            <div class="col-md-4">
+
+                            <div class="col-12 col-md-5">
                                 <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Trạng thái đặt trước</label>
                                 <select name="status" class="form-select" style="border-color: var(--outline-variant);">
                                     <option value="all" ${status == 'all' ? 'selected' : ''}>-- Tất cả trạng thái --</option>
@@ -78,11 +79,39 @@
                                     <option value="cancelled" ${status == 'cancelled' ? 'selected' : ''}>Đã hủy (cancelled)</option>
                                 </select>
                             </div>
-                            <div class="col-md-3 d-flex align-items-end gap-2">
-                                <button type="submit" class="btn btn-primary flex-grow-1">
-                                    <span class="material-symbols-outlined align-middle me-1" style="font-size: 18px;">filter_alt</span> Lọc
+
+                            <div class="col-12 col-md-8">
+                                <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Sắp xếp dữ liệu</label>
+                                <div class="row g-2">
+                                    <div class="col-6 col-md-7">
+                                        <select name="sortBy" class="form-select" style="border-color: var(--outline-variant);">
+                                            <option value="queuePosition" ${sortBy == 'queuePosition' ? 'selected' : ''}>Vị trí hàng chờ</option>
+                                            <option value="startDate" ${sortBy == 'startDate' ? 'selected' : ''}>Thời gian / Ngày đặt</option>
+                                            <option value="endDate" ${sortBy == 'endDate' ? 'selected' : ''}>Hạn nhận / Hạn giữ sách</option>
+                                            <option value="bookTitle" ${sortBy == 'bookTitle' ? 'selected' : ''}>Tên sách</option>
+                                            <option value="memberName" ${sortBy == 'memberName' ? 'selected' : ''}>Tên độc giả</option>
+                                            <option value="reservationId" ${sortBy == 'reservationId' ? 'selected' : ''}>Mã đơn đặt trước</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-5">
+                                        <select name="sortOrder" class="form-select" style="border-color: var(--outline-variant);">
+                                            <option value="ASC" ${sortOrder == 'ASC' ? 'selected' : ''}>Tăng dần (Từ dưới lên ↑)</option>
+                                            <option value="DESC" ${sortOrder == 'DESC' ? 'selected' : ''}>Giảm dần (Từ trên xuống ↓)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4 d-flex align-items-end justify-content-end gap-2">
+                                <a href="${pageContext.request.contextPath}/librarian/reservation-queue"
+                                   class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center"
+                                   style="height: 38px; border-radius: 8px;">
+                                    <span class="material-symbols-outlined me-1" style="font-size: 18px;">restart_alt</span> Đặt lại
+                                </a>
+                                <button type="submit" class="btn text-white fw-semibold d-inline-flex align-items-center justify-content-center"
+                                        style="background-color: #d97706; border-color: #d97706; height: 38px; border-radius: 8px;">
+                                    <span class="material-symbols-outlined me-1" style="font-size: 18px;">search</span> Tìm kiếm &amp; Lọc
                                 </button>
-                                <a href="${pageContext.request.contextPath}/librarian/reservation-queue" class="btn btn-outline-secondary">Đặt lại</a>
                             </div>
                         </form>
                     </div>
@@ -130,7 +159,7 @@
                                                     </td>
                                                     <td>
                                                         <div style="font-size: 13px; font-weight: 600;"><c:out value="${res.bookTitle}" /></div>
-                                                        <div class="text-muted" style="font-size: 11px;">ID: <c:out value="${res.bookId}" /></div>
+                                                        <div class="text-muted" style="font-size: 11px;">ID Sách: <c:out value="${res.bookId}" /></div>
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center gap-2">
@@ -236,17 +265,17 @@
                                     <ul class="pagination pagination-sm mb-0">
                                         <c:if test="${currentPage > 1}">
                                             <li class="page-item">
-                                                <a class="page-link" href="${pageContext.request.contextPath}/librarian/reservation-queue?keyword=${keyword}&amp;status=${status}&amp;page=${currentPage - 1}">Trước</a>
+                                                <a class="page-link" href="${pageContext.request.contextPath}/librarian/reservation-queue?keyword=${keyword}&amp;status=${status}&amp;sortBy=${sortBy}&amp;sortOrder=${sortOrder}&amp;page=${currentPage - 1}">Trước</a>
                                             </li>
                                         </c:if>
                                         <c:forEach var="i" begin="1" end="${totalPages}">
                                             <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                <a class="page-link" href="${pageContext.request.contextPath}/librarian/reservation-queue?keyword=${keyword}&amp;status=${status}&amp;page=${i}">${i}</a>
+                                                <a class="page-link" href="${pageContext.request.contextPath}/librarian/reservation-queue?keyword=${keyword}&amp;status=${status}&amp;sortBy=${sortBy}&amp;sortOrder=${sortOrder}&amp;page=${i}">${i}</a>
                                             </li>
                                         </c:forEach>
                                         <c:if test="${currentPage < totalPages}">
                                             <li class="page-item">
-                                                <a class="page-link" href="${pageContext.request.contextPath}/librarian/reservation-queue?keyword=${keyword}&amp;status=${status}&amp;page=${currentPage + 1}">Sau</a>
+                                                <a class="page-link" href="${pageContext.request.contextPath}/librarian/reservation-queue?keyword=${keyword}&amp;status=${status}&amp;sortBy=${sortBy}&amp;sortOrder=${sortOrder}&amp;page=${currentPage + 1}">Sau</a>
                                             </li>
                                         </c:if>
                                     </ul>

@@ -69,6 +69,14 @@ public class DeskDashboardServlet extends HttpServlet {
             String memberCode = memberCodeRaw.trim();
             request.setAttribute("memberCode", memberCode);
 
+            // [LAZY LOAD] Quét quá hạn đặt trước và quá hạn mượn trước khi hiển thị chi tiết thẻ độc giả
+            try {
+                new service.ReservationExpirationProcessor().processExpiration();
+                new service.OverdueProcessor().processOverdue();
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi quét tự động trên Desk Dashboard", e);
+            }
+
             try (Connection conn = DatabaseConnection.getConnection()) {
                 // Bước 1: Ánh xạ memberCode sang userId
                 Integer userId = userLookupDAO.findUserIdByMemberCode(conn, memberCode);

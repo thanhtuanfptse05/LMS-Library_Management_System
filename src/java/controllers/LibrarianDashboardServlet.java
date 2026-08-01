@@ -42,6 +42,14 @@ public class LibrarianDashboardServlet extends HttpServlet {
 
         int librarianId = (int) session.getAttribute("userId");
 
+        // [LAZY LOAD] Tự động dọn dẹp đơn quá hạn nhận và quét quá hạn trả trước khi tải thông tin Dashboard
+        try {
+            new service.ReservationExpirationProcessor().processExpiration();
+            new service.OverdueProcessor().processOverdue();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi quét tự động trên Librarian Dashboard", e);
+        }
+
         try (Connection conn = DatabaseConnection.getConnection()) {
             // 1. KPI Counts
             int issuedToday = borrowRecordDAO.countIssuedToday(conn);
@@ -55,8 +63,8 @@ public class LibrarianDashboardServlet extends HttpServlet {
             request.setAttribute("pendingReservations", pendingReservations);
             request.setAttribute("now", new java.util.Date());
 
-            // 2. Giao dịch do thủ thư này xử lý (borrowed + returned gần đây, createdBy = librarianId)
-            List<BorrowRecord> myLoans = borrowRecordDAO.findLoansByLibrarian(conn, librarianId, 20);
+            // 2. Giao dịch mượn/trả gần đây trên TOÀN HỆ THỐNG kèm thông tin Thủ thư xử lý
+            List<BorrowRecord> myLoans = borrowRecordDAO.findAllRecentLoans(conn, 20);
             request.setAttribute("myLoans", myLoans);
 
             // 3. Unpaid Fines (Fetch limit 20 to check for "Xem tất cả")

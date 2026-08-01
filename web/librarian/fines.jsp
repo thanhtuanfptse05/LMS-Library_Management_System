@@ -36,20 +36,53 @@
                                 <a href="${pageContext.request.contextPath}/librarian/dashboard" class="btn btn-sm btn-icon text-muted" title="Trở lại">
                                     <span class="material-symbols-outlined">arrow_back</span>
                                 </a>
-                                <h2 class="mb-0" style="font-size: 22px; font-weight: 700; color: var(--on-surface);">Danh sách vi phạm (Phạt)</h2>
+                                <h2 class="mb-0" style="font-size: 22px; font-weight: 700; color: var(--on-surface);">Danh sách Đơn Phạt</h2>
                             </div>
                             <p class="text-on-surface-variant mb-0 ms-5" style="font-size: 13px;">
-                                Danh sách đầy đủ các khoản phạt trên hệ thống
+                                Tra cứu, lọc trạng thái và thu tiền phạt trực tiếp từ các thành viên thư viện
                             </p>
                         </div>
+                    </div>
+
+                    <!-- Thanh Tìm Kiếm & Bộ Lọc Trạng Thái -->
+                    <div class="card border-0 shadow-sm p-3 mb-4 rounded-3" style="background: var(--surface-container-lowest);">
+                        <form method="GET" action="${pageContext.request.contextPath}/librarian/fines" id="fineFilterForm" class="row g-3 align-items-center">
+                            <div class="col-12 col-md-6 col-lg-7">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0 text-muted">
+                                        <span class="material-symbols-outlined" style="font-size: 20px;">search</span>
+                                    </span>
+                                    <input type="text" id="fineSearchInput" name="search" class="form-control border-start-0 ps-0" 
+                                           placeholder="Tìm theo tên thành viên, mã số SV/GV, tên sách, lý do..." 
+                                           value="<c:out value='${searchKeyword}'/>" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4 col-lg-3">
+                                <select name="status" id="fineStatusSelect" class="form-select" onchange="this.form.submit()">
+                                    <option value="all" ${selectedStatus eq 'all' ? 'selected' : ''}>Tất cả trạng thái</option>
+                                    <option value="unpaid" ${selectedStatus eq 'unpaid' ? 'selected' : ''}>Chưa thanh toán (Chờ thu)</option>
+                                    <option value="paid" ${selectedStatus eq 'paid' ? 'selected' : ''}>Đã thanh toán</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-2 col-lg-2 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary-custom w-100 rounded-3 font-weight-bold">
+                                    Tìm kiếm
+                                </button>
+                                <c:if test="${not empty searchKeyword or selectedStatus ne 'all'}">
+                                    <a href="${pageContext.request.contextPath}/librarian/fines" class="btn btn-outline-secondary rounded-3" title="Xóa bộ lọc">
+                                        <span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">restart_alt</span>
+                                    </a>
+                                </c:if>
+                            </div>
+                        </form>
                     </div>
 
                     <div class="raised-card overflow-hidden">
                         <div class="card-header-row">
                             <div>
-                                <h3 class="card-title">Tất cả vi phạm</h3>
+                                <h3 class="card-title">Danh sách đơn phạt</h3>
                                 <p class="card-subtitle">
-                                    <span class="badge-pill badge-info"><c:out value="${fn:length(allFines)}" /> Khoản</span>
+                                    <span class="badge-pill badge-info"><c:out value="${fn:length(allFines)}" /> Đơn phạt phù hợp</span>
                                 </p>
                             </div>
                         </div>
@@ -58,7 +91,7 @@
                                 <thead>
                                     <tr>
                                         <th>Thành viên</th>
-                                        <th>Lý do vi phạm</th>
+                                        <th>Lý do phạt</th>
                                         <th>Sách (nếu có)</th>
                                         <th>Thời gian</th>
                                         <th class="text-end">Số tiền</th>
@@ -72,7 +105,7 @@
                                             <tr>
                                                 <td colspan="7" class="text-center py-5">
                                                     <span class="material-symbols-outlined text-muted" style="font-size: 48px;">inbox</span>
-                                                    <p class="text-muted mt-2 mb-0" style="font-size: 14px;">Chưa có dữ liệu vi phạm</p>
+                                                    <p class="text-muted mt-2 mb-0" style="font-size: 14px;">Chưa có dữ liệu đơn phạt</p>
                                                 </td>
                                             </tr>
                                         </c:when>

@@ -32,11 +32,16 @@ public class LibrarianFinesServlet extends HttpServlet {
             return;
         }
 
+        String search = request.getParameter("search");
+        String status = request.getParameter("status");
+
         try (Connection conn = DatabaseConnection.getConnection()) {
-            List<Fine> allFines = fineDAO.findAllFinesWithMemberInfo(conn);
+            List<Fine> allFines = fineDAO.searchAndFilterFines(conn, search, status);
             request.setAttribute("allFines", allFines);
+            request.setAttribute("searchKeyword", search != null ? search.trim() : "");
+            request.setAttribute("selectedStatus", status != null ? status.trim() : "all");
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi lấy toàn bộ danh sách vi phạm/phạt", e);
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách vi phạm/phạt", e);
             request.setAttribute("errorMessage", "Không thể nạp danh sách vi phạm.");
         }
 

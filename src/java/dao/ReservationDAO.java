@@ -1029,6 +1029,10 @@ public class ReservationDAO {
      * @throws SQLException nếu có lỗi truy vấn SQL
      */
     public List<Reservation> findReservationQueueForLibrarian(Connection conn, String keyword, String status, int offset, int limit) throws SQLException {
+        return findReservationQueueForLibrarian(conn, keyword, status, "queuePosition", "ASC", offset, limit);
+    }
+
+    public List<Reservation> findReservationQueueForLibrarian(Connection conn, String keyword, String status, String sortBy, String sortOrder, int offset, int limit) throws SQLException {
         List<Reservation> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
             "SELECT r.reservationId, r.userId, r.bookId, r.bookCopyId, r.status, r.queuePosition, r.startDate, r.endDate, "
@@ -1060,7 +1064,23 @@ public class ReservationDAO {
             params.add(pattern);
         }
 
-        sql.append(" ORDER BY r.bookId ASC, CASE WHEN r.queuePosition IS NULL THEN 99999 ELSE r.queuePosition END ASC, r.startDate DESC LIMIT ? OFFSET ?");
+        String orderCol;
+        if ("startDate".equalsIgnoreCase(sortBy) || "date".equalsIgnoreCase(sortBy)) {
+            orderCol = "r.startDate";
+        } else if ("endDate".equalsIgnoreCase(sortBy) || "expire".equalsIgnoreCase(sortBy)) {
+            orderCol = "r.endDate";
+        } else if ("bookTitle".equalsIgnoreCase(sortBy) || "title".equalsIgnoreCase(sortBy)) {
+            orderCol = "b.title";
+        } else if ("memberName".equalsIgnoreCase(sortBy) || "name".equalsIgnoreCase(sortBy)) {
+            orderCol = "mp.fullName";
+        } else if ("reservationId".equalsIgnoreCase(sortBy) || "id".equalsIgnoreCase(sortBy)) {
+            orderCol = "r.reservationId";
+        } else {
+            orderCol = "CASE WHEN r.queuePosition IS NULL THEN 99999 ELSE r.queuePosition END";
+        }
+
+        String orderDir = "DESC".equalsIgnoreCase(sortOrder) ? "DESC" : "ASC";
+        sql.append(" ORDER BY ").append(orderCol).append(" ").append(orderDir).append(", r.reservationId DESC LIMIT ? OFFSET ?");
         params.add(limit);
         params.add(offset);
 

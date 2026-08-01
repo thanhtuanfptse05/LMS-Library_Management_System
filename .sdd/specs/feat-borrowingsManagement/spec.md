@@ -54,9 +54,11 @@ Là một Thủ thư, tôi muốn gửi Gmail yêu cầu thu hồi sách cho đ�
 
 ## 4. Functional Requirements (Yêu cầu chức năng)
 
-### Tra cứu & Phân trang
+### Tra cứu, Sắp xếp & Phân trang
 
-* **FR-103 (Truy vấn danh sách lượt mượn phân trang):** WHEN `DeskBorrowingManagerServlet.doGet()` được gọi với các tham số `userKeyword`, `barcodeKeyword`, `status`, `fromDate`, `toDate`, `page`, THE system SHALL: (1) Truy vấn JOIN dữ liệu giữa `BorrowRecord`, `MemberProfile`, `"User"`, `Book`, `BookCopy`, `Student`, `Lecturer`, (2) Lọc dữ liệu theo các tiêu chí từ khóa, trạng thái và ngày mượn, (3) Phân trang với `PAGE_SIZE = 10`, (4) Forward danh sách `BorrowingManagementDTO` cho `borrowings-management.jsp` hiển thị.
+* **FR-103 (Truy vấn danh sách lượt mượn phân trang & Sắp xếp linh hoạt) (FR-135, BR-84):** WHEN `DeskBorrowingManagerServlet.doGet()` được gọi với các tham số `userKeyword`, `barcodeKeyword`, `status`, `fromDate`, `toDate`, `sortBy`, `sortOrder`, `page`, THE system SHALL: (1) Truy vấn JOIN dữ liệu giữa `BorrowRecord`, `MemberProfile`, `"User"`, `Book`, `BookCopy`, `Student`, `Lecturer`, (2) Lọc dữ liệu theo các tiêu chí từ khóa, trạng thái và ngày mượn, (3) Sắp xếp dữ liệu theo `sortBy` (`startDate`, `endDate`, `bookTitle`, `userFullName`, `barcode`, `borrowRecordId`) và chiều `sortOrder` (`DESC`, `ASC`), (4) Phân trang với `PAGE_SIZE = 10`, (5) Forward danh sách `BorrowingManagementDTO` cho `borrowings-management.jsp` hiển thị.
+
+* **FR-105 (Đồng bộ Giao diện & Navigation Sidebar) (FR-137):** Giao diện `borrowings-management.jsp` sử dụng cấu trúc `raised-card`, bảng `table-lms`, nhãn `badge-pill` và nút bấm Terracotta Orange (#d97706) đồng bộ 100% với hệ thống design system (`DESIGN.md`). Tên menu sidebar tại các vai trò được đồng bộ thành "Quản lý sách đang mượn" (Librarian) và "Quản lý sách đang mượn & đặt trước" (Student/Lecturer).
 
 ### Gửi Yêu cầu Thu hồi Sách qua Email Template RECALL_NOTICE
 

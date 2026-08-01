@@ -52,6 +52,13 @@ public class LecturerDashboardServlet extends HttpServlet {
 
         int userId = (int) session.getAttribute("userId");
 
+        // [LAZY LOAD] Cập nhật tình trạng mượn quá hạn và tiền phạt trước khi tính toán các KPI cho giảng viên
+        try {
+            new service.OverdueProcessor().processOverdue();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi quét quá hạn trên Lecturer Dashboard", e);
+        }
+
         // Truy vấn các thông tin thống kê và dữ liệu giao dịch từ CSDL
         try (Connection conn = DatabaseConnection.getConnection()) {
             // Stats

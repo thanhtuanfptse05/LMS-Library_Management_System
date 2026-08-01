@@ -31,21 +31,22 @@ Tính năng này **HOÀN TOÀN KHÔNG XỬ LÝ BẤT KỲ THÔNG TIN HAY THAO T�
   * Khi Thủ thư hủy lượt đặt trước ở suất `queuePosition = 0`, hệ thống tự động tìm người kế tiếp (`queuePosition = 1`), đôn lên `queuePosition = 0`, chuyển `status = 'readypickup'`, đặt hạn `endDate = NOW() + RESERVATION_HOLD_DAYS` và dịch chuyển hàng đợi phía sau (`decrementQueuePositions`).
   * Khi Thủ thư hủy lượt đặt trước ở vị trí `queuePosition > 0`, hệ thống thực hiện dịch hàng đợi phía sau (`shiftQueuePositions`).
 * **[BR-LIB-RES-04] Thời hạn giữ sách theo Cấu hình:** Thời gian giữ sách `endDate` luôn lấy động từ `SystemConfigurations` (khóa `RESERVATION_HOLD_DAYS`), không fix cứng.
-* **[BR-LIB-RES-05] Nhật ký Audit Log:** Mọi thao tác Hủy (`CANCEL_RESERVATION_BY_LIBRARIAN`) và Thay đổi vị trí (`REORDER_RESERVATION_BY_LIBRARIAN`) của Thủ thư phải lưu rõ `userId` người thực hiện, `reservationId`, vị trí cũ, vị trí mới và lý do xử lý thủ công.
+* **[BR-LIB-RES-05] Nhật ký Audit Log & Thông báo Hủy (BR-83):** Mọi thao tác Hủy (`CANCEL_RESERVATION_BY_LIBRARIAN`) của Thủ thư phải truyền lý do hủy (`reason`), lưu rõ `userId` người thực hiện trong `AuditLogs`, đồng thời kích hoạt `EmailService` gửi email thông báo mẫu `RESERVATION_CANCELLED` tới độc giả với các tham số `{{userName}}`, `{{bookTitle}}`, `{{cancelReason}}`.
 * **[BR-LIB-RES-06] Quy tắc Thay đổi Vị trí Hàng chờ (Reorder Queue Position):**
   * Chỉ áp dụng cho các lượt đặt trước có `status = 'pending'` (tức `queuePosition >= 1`). Không thể dời trực tiếp lên `queuePosition = 0` (suất `readypickup` chỉ được cấp tự động khi hủy/hoàn thành lượt phía trước).
   * **Đôn lên (Move Up):** Khi Thủ thư đổi vị trí từ `oldPos` lên `newPos` (với `newPos < oldPos`), tất cả các lượt có `queuePosition >= newPos AND queuePosition < oldPos` (cùng `bookId`) sẽ được **tăng 1** (dịch xuống).
   * **Đẩy xuống (Move Down):** Khi Thủ thư đổi vị trí từ `oldPos` xuống `newPos` (với `newPos > oldPos`), tất cả các lượt có `queuePosition > oldPos AND queuePosition <= newPos` (cùng `bookId`) sẽ được **giảm 1** (dịch lên).
   * Sau khi dịch chuyển, lượt đặt trước mục tiêu được gán `queuePosition = newPos`.
   * Toàn bộ thao tác phải chạy trong **1 Database Transaction nguyên tử** (dịch chuyển hàng loạt + gán vị trí mới + ghi AuditLog) để tránh dữ liệu bất nhất.
+* **[BR-LIB-RES-07] Sắp xếp & Đếm ngược Hàng chờ (BR-84):** Hỗ trợ sắp xếp dữ liệu linh hoạt đa tiêu chí và đếm ngược thời gian giữ sách ở phía Độc giả để tự động reload kích hoạt Lazy Sweep khi hết hạn.
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết)
-* **[FR-LIB-RES-01] Màn hình Danh sách Hàng chờ Đặt trước:**
+* **[FR-LIB-RES-01] Màn hình Danh sách Hàng chờ Đặt trước (FR-133):**
   * WHEN Thủ thư truy cập `/librarian/reservation-queue`, THE system SHALL hiển thị bảng danh sách tất cả các lượt đặt trước phân trang, bao gồm: Mã đặt trước, Tên tựa sách, Mã độc giả, Họ tên, Thứ tự hàng chờ (`queuePosition`), Trạng thái (`status`), Ngày đặt (`startDate`), Hạn nhận sách (`endDate`).
-* **[FR-LIB-RES-02] Bộ lọc & Tra cứu linh hoạt:**
-  * WHEN Thủ thư tìm kiếm theo từ khóa (tên sách, ISBN, mã sinh viên, tên độc giả) hoặc lọc theo trạng thái (`pending`, `readypickup`), THE system SHALL trả về kết quả truy vấn tương ứng tức thì.
-* **[FR-LIB-RES-03] Thủ thư Hủy lượt đặt trước tại quầy:**
-  * WHEN Thủ thư chọn "Hủy lượt đặt trước" và nhập lý do hủy, THE system SHALL gọi `OnlineCirculationService.cancelReservationByLibrarian`, cập nhật `status = 'cancelled'`, thực hiện đôn hàng chờ và gửi email cho người tiếp theo (nếu có).
+* **[FR-LIB-RES-02] Bộ lọc, Tra cứu & Sắp xếp linh hoạt (FR-133):**
+  * WHEN Thủ thư tìm kiếm theo từ khóa (tên sách, ISBN, mã sinh viên, tên độc giả), lọc theo trạng thái (`pending`, `readypickup`, `fulfilled`, `cancelled`), hoặc thay đổi tiêu chí sắp xếp (`sortBy`: `queuePosition`, `startDate`, `endDate`, `bookTitle`, `memberName`, `reservationId`) và chiều sắp xếp (`sortOrder`: `ASC`, `DESC`), THE system SHALL thực hiện SQL query sắp xếp tương ứng và trả về kết quả truy vấn phân trang tức thì.
+* **[FR-LIB-RES-03] Thủ thư Hủy lượt đặt trước tại quầy kèm Lý do & Gửi Mail (FR-136):**
+  * WHEN Thủ thư chọn "Hủy lượt đặt trước" và nhập lý do hủy, THE system SHALL gọi `OnlineCirculationService.cancelReservationByLibrarian(librarianId, reservationId, reason)`, cập nhật `status = 'cancelled'`, lưu `AuditLogs`, thực hiện đôn hàng chờ và tự động gửi email thông báo mẫu `RESERVATION_CANCELLED` tới độc giả.
 * **[FR-LIB-RES-04] Thủ thư Thay đổi Vị trí Hàng chờ (Reorder Queue Position):**
   * WHEN Thủ thư chọn "Đổi vị trí" cho một lượt đặt trước đang ở trạng thái `pending`, nhập vị trí mới mong muốn (số nguyên dương từ `1` đến `maxPosition`), THE system SHALL:
     1. Kiểm tra đơn đặt trước phải ở trạng thái `pending` và vị trí mới nằm trong phạm vi hợp lệ (`1 ≤ newPos ≤ maxPendingPosition`).
@@ -53,6 +54,8 @@ Tính năng này **HOÀN TOÀN KHÔNG XỬ LÝ BẤT KỲ THÔNG TIN HAY THAO T�
     3. Gán `queuePosition = newPos` cho lượt đặt trước mục tiêu.
     4. Ghi `AuditLogs` với `actionType = 'REORDER_RESERVATION_BY_LIBRARIAN'`, bao gồm `reservationId`, `oldPosition`, `newPosition`.
     5. Hiển thị thông báo thành công và làm mới danh sách hàng chờ.
+* **[FR-LIB-RES-05] Đồng bộ Giao diện & Đếm ngược phía Độc giả (FR-134, FR-137):**
+  * Giao diện `reservation-queue.jsp` sử dụng khung `raised-card`, bảng `table-lms`, badge `badge-pill` và nút bấm Terracotta Orange (#d97706) đồng bộ 100% với hệ thống design system (`DESIGN.md`). Phía độc giả (`my-borrowings.jsp`) tích hợp bộ đếm ngược thời gian thực (Countdown Timer) cho suất `queuePosition = 0` và tự động reload sau 1.5s khi hết hạn.
 
 ## 5. Non-functional Requirements (Yêu cầu phi chức năng)
 * **Bảo mật:** Phân quyền qua `@WebFilter` chặn người dùng vai role `Student`/`Lecturer` truy cập `/librarian/reservation-queue`.

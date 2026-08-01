@@ -77,6 +77,25 @@
 
                 <!-- 1. Tab Sách đang mượn -->
                 <div class="tab-pane fade show active" id="borrowed" role="tabpanel" aria-labelledby="borrowed-tab">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-3 p-3 bg-white rounded-3 shadow-sm border">
+                        <div class="fw-semibold text-secondary" style="font-size: 14px;">
+                            <i class="bi bi-funnel me-1"></i> Sắp xếp danh sách mượn
+                        </div>
+                        <form method="GET" action="${pageContext.request.contextPath}/student/my-borrowings" class="d-flex gap-2 align-items-center flex-wrap">
+                            <input type="hidden" name="resSortBy" value="${resSortBy}">
+                            <input type="hidden" name="resSortOrder" value="${resSortOrder}">
+                            <select name="borrowSortBy" class="form-select form-select-sm" style="width: 180px;" onchange="this.form.submit()">
+                                <option value="startDate" ${borrowSortBy == 'startDate' ? 'selected' : ''}>Ngày mượn sách</option>
+                                <option value="endDate" ${borrowSortBy == 'endDate' ? 'selected' : ''}>Hạn trả sách</option>
+                                <option value="title" ${borrowSortBy == 'title' ? 'selected' : ''}>Tên sách</option>
+                                <option value="id" ${borrowSortBy == 'id' ? 'selected' : ''}>Mã phiếu mượn</option>
+                            </select>
+                            <select name="borrowSortOrder" class="form-select form-select-sm" style="width: 130px;" onchange="this.form.submit()">
+                                <option value="DESC" ${borrowSortOrder == 'DESC' ? 'selected' : ''}>Giảm dần (↓)</option>
+                                <option value="ASC" ${borrowSortOrder == 'ASC' ? 'selected' : ''}>Tăng dần (↑)</option>
+                            </select>
+                        </form>
+                    </div>
                     <div class="card border-0 rounded-3 shadow-sm overflow-hidden" style="background-color: var(--surface-lowest); border: 1px solid var(--outline-variant) !important;">
                         <div class="card-body p-0">
                             <c:choose>
@@ -172,6 +191,25 @@
 
                 <!-- 2. Tab Sách đang đặt trước -->
                 <div class="tab-pane fade" id="reserved" role="tabpanel" aria-labelledby="reserved-tab">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-3 p-3 bg-white rounded-3 shadow-sm border">
+                        <div class="fw-semibold text-secondary" style="font-size: 14px;">
+                            <i class="bi bi-funnel me-1"></i> Sắp xếp hàng chờ đặt trước
+                        </div>
+                        <form method="GET" action="${pageContext.request.contextPath}/student/my-borrowings" class="d-flex gap-2 align-items-center flex-wrap">
+                            <input type="hidden" name="borrowSortBy" value="${borrowSortBy}">
+                            <input type="hidden" name="borrowSortOrder" value="${borrowSortOrder}">
+                            <select name="resSortBy" class="form-select form-select-sm" style="width: 180px;" onchange="this.form.submit()">
+                                <option value="queuePosition" ${resSortBy == 'queuePosition' ? 'selected' : ''}>Vị trí hàng chờ</option>
+                                <option value="startDate" ${resSortBy == 'startDate' ? 'selected' : ''}>Ngày đặt sách</option>
+                                <option value="endDate" ${resSortBy == 'endDate' ? 'selected' : ''}>Hạn giữ sách</option>
+                                <option value="title" ${resSortBy == 'title' ? 'selected' : ''}>Tên sách</option>
+                            </select>
+                            <select name="resSortOrder" class="form-select form-select-sm" style="width: 130px;" onchange="this.form.submit()">
+                                <option value="ASC" ${resSortOrder == 'ASC' ? 'selected' : ''}>Tăng dần (↑)</option>
+                                <option value="DESC" ${resSortOrder == 'DESC' ? 'selected' : ''}>Giảm dần (↓)</option>
+                            </select>
+                        </form>
+                    </div>
                     <div class="card border-0 rounded-3 shadow-sm overflow-hidden" style="background-color: var(--surface-lowest); border: 1px solid var(--outline-variant) !important;">
                         <div class="card-body p-0">
                             <c:choose>
@@ -244,11 +282,16 @@
                                                         </td>
                                                         <td class="py-3">
                                                             <c:choose>
-                                                                <c:when test="${res.queuePosition == 0 && not empty res.endDate}">
-                                                                    <span class="text-danger fw-bold">
-                                                                        <fmt:formatDate value="${res.endDate}" pattern="dd/MM/yyyy HH:mm"/>
-                                                                    </span>
-                                                                </c:when>
+                                                                 <c:when test="${res.queuePosition == 0 && not empty res.endDate}">
+                                                                     <div class="d-flex flex-column">
+                                                                         <span class="text-danger fw-bold">
+                                                                             <fmt:formatDate value="${res.endDate}" pattern="dd/MM/yyyy HH:mm"/>
+                                                                         </span>
+                                                                         <small class="text-danger-custom fw-semibold countdown-timer" data-endtime="${res.endDate.time}" style="font-size: 11px;">
+                                                                             Đang tính thời gian...
+                                                                         </small>
+                                                                     </div>
+                                                                 </c:when>
                                                                 <c:otherwise>
                                                                     <span class="text-muted">—</span>
                                                                 </c:otherwise>
@@ -290,6 +333,31 @@
                 var tab = new bootstrap.Tab(triggerEl);
                 tab.show();
             }
+        }
+
+        // Script tự động đếm ngược và tự động Reload trang khi hết hạn giữ sách
+        var timers = document.querySelectorAll('.countdown-timer');
+        if (timers.length > 0) {
+            setInterval(function() {
+                var now = new Date().getTime();
+                timers.forEach(function(el) {
+                    var endTime = parseInt(el.getAttribute('data-endtime'));
+                    var distance = endTime - now;
+
+                    if (distance <= 0) {
+                        el.innerHTML = '<span class="badge bg-danger">Hết hạn - Đang cập nhật...</span>';
+                        // Tự động reload trang sau 1.5 giây để kích hoạt Lazy Sweep và cập nhật lại giao diện
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        el.innerText = 'Còn lại: ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+                    }
+                });
+            }, 1000);
         }
     });
 </script>

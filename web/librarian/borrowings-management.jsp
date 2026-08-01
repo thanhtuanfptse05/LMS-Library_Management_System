@@ -42,155 +42,190 @@
                         <c:remove var="errorMessage" scope="session" />
                     </c:if>
 
-                    <!-- Filter Card -->
-                    <div class="card border-0 shadow-sm rounded-3 mb-4">
-                        <div class="card-body p-4">
-                            <form action="${pageContext.request.contextPath}/librarian/borrowings" method="get" class="row g-3">
-                                <div class="col-12 col-md-3">
-                                    <label for="userKeyword" class="form-label small fw-semibold text-secondary">Độc giả (Tên / Mã SV-GV / Email)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-end-0"><span class="material-symbols-outlined text-muted">person_search</span></span>
-                                        <input type="text" class="form-control border-start-0 bg-light" id="userKeyword" name="userKeyword" value="<c:out value='${userKeyword}' />" placeholder="Nhập tên, mã SV/GV...">
+                    <%-- Filter Card --%>
+                    <div class="raised-card mb-4 p-3">
+                        <form action="${pageContext.request.contextPath}/librarian/borrowings" method="get" class="row g-3">
+                            <div class="col-12 col-md-3">
+                                <label for="userKeyword" class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Độc giả (Tên / Mã SV-GV / Email)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--surface-container-lowest); border-color: var(--outline-variant);">
+                                        <span class="material-symbols-outlined text-muted" style="font-size: 18px;">person_search</span>
+                                    </span>
+                                    <input type="text" class="form-control" id="userKeyword" name="userKeyword" value="<c:out value='${userKeyword}' />" placeholder="Nhập tên, mã SV/GV..." style="border-color: var(--outline-variant);">
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label for="barcodeKeyword" class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Mã vạch bản sao sách</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background: var(--surface-container-lowest); border-color: var(--outline-variant);">
+                                        <span class="material-symbols-outlined text-muted" style="font-size: 18px;">qr_code_scanner</span>
+                                    </span>
+                                    <input type="text" class="form-control" id="barcodeKeyword" name="barcodeKeyword" value="<c:out value='${barcodeKeyword}' />" placeholder="Nhập mã vạch..." style="border-color: var(--outline-variant);">
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <label for="status" class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Trạng thái mượn</label>
+                                <select class="form-select" id="status" name="status" style="border-color: var(--outline-variant);">
+                                    <option value="all" ${status == 'all' ? 'selected' : ''}>-- Tất cả trạng thái --</option>
+                                    <option value="borrowed" ${status == 'borrowed' ? 'selected' : ''}>Đang mượn</option>
+                                    <option value="overdue" ${status == 'overdue' ? 'selected' : ''}>Quá hạn</option>
+                                    <option value="recalled" ${status == 'recalled' ? 'selected' : ''}>Đã thu hồi</option>
+                                    <option value="returned" ${status == 'returned' ? 'selected' : ''}>Đã trả</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <label for="fromDate" class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Từ ngày mượn</label>
+                                <input type="date" class="form-control" id="fromDate" name="fromDate" value="<c:out value='${fromDate}' />" style="border-color: var(--outline-variant);">
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <label for="toDate" class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Đến ngày mượn</label>
+                                <input type="date" class="form-control" id="toDate" name="toDate" value="<c:out value='${toDate}' />" style="border-color: var(--outline-variant);">
+                            </div>
+
+                            <div class="col-12 col-md-8">
+                                <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Sắp xếp dữ liệu</label>
+                                <div class="row g-2">
+                                    <div class="col-6 col-md-7">
+                                        <select name="sortBy" class="form-select" style="border-color: var(--outline-variant);">
+                                            <option value="startDate" ${sortBy == 'startDate' ? 'selected' : ''}>Thời gian / Ngày mượn sách</option>
+                                            <option value="endDate" ${sortBy == 'endDate' ? 'selected' : ''}>Hạn trả sách</option>
+                                            <option value="bookTitle" ${sortBy == 'bookTitle' ? 'selected' : ''}>Tên sách</option>
+                                            <option value="userFullName" ${sortBy == 'userFullName' ? 'selected' : ''}>Tên độc giả</option>
+                                            <option value="barcode" ${sortBy == 'barcode' ? 'selected' : ''}>Mã vạch bản sao</option>
+                                            <option value="borrowRecordId" ${sortBy == 'borrowRecordId' ? 'selected' : ''}>Mã phiếu mượn (ID)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-5">
+                                        <select name="sortOrder" class="form-select" style="border-color: var(--outline-variant);">
+                                            <option value="DESC" ${sortOrder == 'DESC' ? 'selected' : ''}>Giảm dần (Từ trên xuống ↓)</option>
+                                            <option value="ASC" ${sortOrder == 'ASC' ? 'selected' : ''}>Tăng dần (Từ dưới lên ↑)</option>
+                                        </select>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="col-12 col-md-3">
-                                    <label for="barcodeKeyword" class="form-label small fw-semibold text-secondary">Mã vạch bản sao sách</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-end-0"><span class="material-symbols-outlined text-muted">qr_code_scanner</span></span>
-                                        <input type="text" class="form-control border-start-0 bg-light" id="barcodeKeyword" name="barcodeKeyword" value="<c:out value='${barcodeKeyword}' />" placeholder="Nhập mã vạch...">
-                                    </div>
-                                </div>
-
-                                <div class="col-12 col-md-2">
-                                    <label for="status" class="form-label small fw-semibold text-secondary">Trạng thái mượn</label>
-                                    <select class="form-select bg-light" id="status" name="status">
-                                        <option value="all" ${status == 'all' ? 'selected' : ''}>Tất cả trạng thái</option>
-                                        <option value="borrowed" ${status == 'borrowed' ? 'selected' : ''}>Đang mượn</option>
-                                        <option value="overdue" ${status == 'overdue' ? 'selected' : ''}>Quá hạn</option>
-                                        <option value="recalled" ${status == 'recalled' ? 'selected' : ''}>Đã thu hồi</option>
-                                        <option value="returned" ${status == 'returned' ? 'selected' : ''}>Đã trả</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-12 col-md-2">
-                                    <label for="fromDate" class="form-label small fw-semibold text-secondary">Từ ngày mượn</label>
-                                    <input type="date" class="form-control bg-light" id="fromDate" name="fromDate" value="<c:out value='${fromDate}' />">
-                                </div>
-
-                                <div class="col-12 col-md-2">
-                                    <label for="toDate" class="form-label small fw-semibold text-secondary">Đến ngày mượn</label>
-                                    <input type="date" class="form-control bg-light" id="toDate" name="toDate" value="<c:out value='${toDate}' />">
-                                </div>
-
-                                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                                    <a href="${pageContext.request.contextPath}/librarian/borrowings" class="btn btn-outline-secondary d-inline-flex align-items-center">
-                                        <span class="material-symbols-outlined me-1">restart_alt</span> Đặt lại
+                            <div class="col-12 col-md-4 d-flex flex-column justify-content-end">
+                                <label class="form-label d-none d-md-block" style="font-size: 12px; margin-bottom: 8px; visibility: hidden;">&nbsp;</label>
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="${pageContext.request.contextPath}/librarian/borrowings"
+                                       class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center"
+                                       style="height: 38px; border-radius: 8px;">
+                                        <span class="material-symbols-outlined me-1" style="font-size: 18px;">restart_alt</span> Đặt lại
                                     </a>
-                                    <button type="submit" class="btn btn-primary d-inline-flex align-items-center">
-                                        <span class="material-symbols-outlined me-1">search</span> Tìm kiếm
+                                    <button type="submit" class="btn text-white fw-semibold d-inline-flex align-items-center justify-content-center"
+                                            style="background-color: #d97706; border-color: #d97706; height: 38px; border-radius: 8px;">
+                                        <span class="material-symbols-outlined me-1" style="font-size: 18px;">search</span> Tìm kiếm &amp; Lọc
                                     </button>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
 
-                    <!-- Data Table Card -->
-                    <div class="card border-0 shadow-sm rounded-3">
-                        <div class="card-header bg-transparent border-0 px-4 py-3 d-flex justify-content-between align-items-center">
-                            <h5 class="card-title fw-bold mb-0 text-secondary">
-                                Danh sách lượt mượn (<c:out value="${totalRecords}" /> lượt mượn)
-                            </h5>
+                    <%-- Data Table Card --%>
+                    <div class="raised-card overflow-hidden">
+                        <div class="card-header-row">
+                            <div>
+                                <h3 class="card-title">Quản lý sách đang mượn</h3>
+                                <p class="card-subtitle">
+                                    <span class="badge-pill badge-info"><c:out value="${totalRecords}" /> lượt mượn</span>
+                                </p>
+                            </div>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="px-4 py-3 text-secondary" style="width: 70px;">ID</th>
-                                            <th class="py-3 text-secondary">Thông tin Độc giả</th>
-                                            <th class="py-3 text-secondary">Thông tin Sách mượn</th>
-                                            <th class="py-3 text-secondary">Ngày mượn</th>
-                                            <th class="py-3 text-secondary">Hạn trả sách</th>
-                                            <th class="py-3 text-secondary text-center">Trạng thái</th>
-                                            <th class="px-4 py-3 text-secondary text-end" style="width: 180px;">Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:choose>
-                                            <c:when test="${not empty borrowings}">
-                                                <c:forEach var="item" items="${borrowings}">
-                                                    <tr>
-                                                        <td class="px-4 py-3 fw-bold text-muted">#<c:out value="${item.borrowRecordId}" /></td>
-                                                        <td>
-                                                            <div class="fw-semibold text-dark"><c:out value="${item.userFullName}" /></div>
-                                                            <div class="small text-muted">
-                                                                Mã: <span class="badge bg-light text-dark border"><c:out value="${item.userCode}" /></span>
-                                                                | Email: <c:out value="${item.userEmail}" />
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="fw-semibold text-dark"><c:out value="${item.bookTitle}" /></div>
-                                                            <div class="small text-muted">
-                                                                Mã vạch: <span class="badge bg-light text-primary border"><c:out value="${item.barcode}" /></span>
-                                                                <c:if test="${not empty item.isbn}">
-                                                                    | ISBN: <c:out value="${item.isbn}" />
-                                                                </c:if>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <fmt:formatDate value="${item.startDate}" pattern="dd/MM/yyyy HH:mm" />
-                                                        </td>
-                                                        <td>
-                                                            <fmt:formatDate value="${item.endDate}" pattern="dd/MM/yyyy HH:mm" />
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <c:choose>
-                                                                <c:when test="${item.status == 'borrowed'}">
-                                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded-pill">Đang mượn</span>
-                                                                </c:when>
-                                                                <c:when test="${item.status == 'overdue'}">
-                                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill">Quá hạn</span>
-                                                                </c:when>
-                                                                <c:when test="${item.status == 'recalled'}">
-                                                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill">Đã thu hồi</span>
-                                                                </c:when>
-                                                                <c:when test="${item.status == 'returned'}">
-                                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">Đã trả</span>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill"><c:out value="${item.status}" /></span>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </td>
-                                                        <td class="px-4 py-3 text-end">
-                                                            <c:if test="${item.status == 'borrowed' or item.status == 'overdue'}">
-                                                                <button type="button" class="btn btn-sm btn-outline-warning text-dark d-inline-flex align-items-center"
-                                                                        data-bs-toggle="modal" data-bs-target="#sendRecallModal"
-                                                                        data-id="${item.borrowRecordId}"
-                                                                        data-user="${fn:escapeXml(item.userFullName)}"
-                                                                        data-book="${fn:escapeXml(item.bookTitle)}"
-                                                                        data-barcode="${fn:escapeXml(item.barcode)}">
-                                                                    <span class="material-symbols-outlined me-1" style="font-size: 1.1rem;">mail</span>
-                                                                    Gửi Gmail Thu hồi
-                                                                </button>
-                                                            </c:if>
-                                                        </td>
-                                                    </tr>
-                                                </c:forEach>
-                                            </c:when>
-                                            <c:otherwise>
+                        <div class="table-responsive">
+                            <table class="table table-lms mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 70px;">Mã phiếu</th>
+                                        <th>Tựa sách &amp; Mã vạch</th>
+                                        <th>Độc giả</th>
+                                        <th>Mã độc giả</th>
+                                        <th>Ngày mượn</th>
+                                        <th>Hạn trả sách</th>
+                                        <th class="text-center">Trạng thái</th>
+                                        <th class="text-end" style="width: 140px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:choose>
+                                        <c:when test="${not empty borrowings}">
+                                            <c:forEach var="item" items="${borrowings}">
                                                 <tr>
-                                                    <td colspan="7" class="text-center py-5 text-muted">
-                                                        <span class="material-symbols-outlined fs-1 text-secondary d-block mb-2">inbox</span>
-                                                        Không tìm thấy lượt mượn sách nào phù hợp với bộ lọc.
+                                                    <td>
+                                                        <span style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant);">#<c:out value="${item.borrowRecordId}" /></span>
+                                                    </td>
+                                                    <td>
+                                                        <div style="font-size: 13px; font-weight: 600;"><c:out value="${item.bookTitle}" /></div>
+                                                        <div class="text-muted" style="font-size: 11px;">
+                                                            Mã vạch: <span class="badge-pill badge-info"><c:out value="${item.barcode}" /></span>
+                                                            <c:if test="${not empty item.isbn}">
+                                                                | ISBN: <c:out value="${item.isbn}" />
+                                                            </c:if>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="avatar avatar-sm" style="background-color: var(--secondary-container); color: var(--on-secondary-container);">
+                                                                <c:out value="${fn:toUpperCase(fn:substring(item.userFullName, 0, 2))}" />
+                                                            </div>
+                                                            <span style="font-size: 13px; font-weight: 600;"><c:out value="${item.userFullName}" /></span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge-pill badge-info"><c:out value="${item.userCode}" /></span>
+                                                    </td>
+                                                    <td class="text-on-surface-variant" style="font-size: 13px;">
+                                                        <fmt:formatDate value="${item.startDate}" pattern="dd/MM/yyyy HH:mm" />
+                                                    </td>
+                                                    <td style="font-size: 13px;">
+                                                        <fmt:formatDate value="${item.endDate}" pattern="dd/MM/yyyy HH:mm" />
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <c:choose>
+                                                            <c:when test="${item.status == 'borrowed'}">
+                                                                <span class="badge-pill badge-warning">Đang mượn</span>
+                                                            </c:when>
+                                                            <c:when test="${item.status == 'overdue'}">
+                                                                <span class="badge-pill badge-error">Quá hạn</span>
+                                                            </c:when>
+                                                            <c:when test="${item.status == 'recalled'}">
+                                                                <span class="badge-pill badge-warning">Đã thu hồi</span>
+                                                            </c:when>
+                                                            <c:when test="${item.status == 'returned'}">
+                                                                <span class="badge-pill badge-success">Đã trả</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="badge-pill badge-info"><c:out value="${item.status}" /></span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <c:if test="${item.status == 'borrowed' || item.status == 'overdue'}">
+                                                            <button type="button"
+                                                                    class="btn btn-sm fw-bold px-2 text-decoration-none rounded-2"
+                                                                    style="font-size: 11px; color: var(--on-secondary-container); background-color: var(--secondary-container); border: none;"
+                                                                    onclick="openRecallModal('${item.borrowRecordId}', '${fn:escapeXml(item.userFullName)}', '${fn:escapeXml(item.bookTitle)}', '${item.barcode}')">
+                                                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 14px;">mail</span> Thu hồi
+                                                            </button>
+                                                        </c:if>
                                                     </td>
                                                 </tr>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </tbody>
-                                </table>
-                            </div>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <tr>
+                                                <td colspan="8" class="text-center py-5">
+                                                    <span class="material-symbols-outlined text-muted" style="font-size: 48px;">inbox</span>
+                                                    <p class="text-muted mt-2 mb-0" style="font-size: 14px;">Không tìm thấy bản ghi mượn sách nào phù hợp.</p>
+                                                </td>
+                                            </tr>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </tbody>
+                            </table>
                         </div>
 
                         <!-- Pagination Footer -->
@@ -200,15 +235,15 @@
                                 <nav aria-label="Pagination">
                                     <ul class="pagination pagination-sm mb-0">
                                         <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
-                                            <a class="page-link" href="${pageContext.request.contextPath}/librarian/borrowings?page=${currentPage - 1}&userKeyword=${userKeyword}&barcodeKeyword=${barcodeKeyword}&status=${status}&fromDate=${fromDate}&toDate=${toDate}">Trước</a>
+                                            <a class="page-link" href="${pageContext.request.contextPath}/librarian/borrowings?page=${currentPage - 1}&userKeyword=${userKeyword}&barcodeKeyword=${barcodeKeyword}&status=${status}&fromDate=${fromDate}&toDate=${toDate}&sortBy=${sortBy}&sortOrder=${sortOrder}">Trước</a>
                                         </li>
                                         <c:forEach var="i" begin="1" end="${totalPages}">
                                             <li class="page-item ${currentPage == i ? 'active' : ''}">
-                                                <a class="page-link" href="${pageContext.request.contextPath}/librarian/borrowings?page=${i}&userKeyword=${userKeyword}&barcodeKeyword=${barcodeKeyword}&status=${status}&fromDate=${fromDate}&toDate=${toDate}">${i}</a>
+                                                <a class="page-link" href="${pageContext.request.contextPath}/librarian/borrowings?page=${i}&userKeyword=${userKeyword}&barcodeKeyword=${barcodeKeyword}&status=${status}&fromDate=${fromDate}&toDate=${toDate}&sortBy=${sortBy}&sortOrder=${sortOrder}">${i}</a>
                                             </li>
                                         </c:forEach>
                                         <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
-                                            <a class="page-link" href="${pageContext.request.contextPath}/librarian/borrowings?page=${currentPage + 1}&userKeyword=${userKeyword}&barcodeKeyword=${barcodeKeyword}&status=${status}&fromDate=${fromDate}&toDate=${toDate}">Sau</a>
+                                            <a class="page-link" href="${pageContext.request.contextPath}/librarian/borrowings?page=${currentPage + 1}&userKeyword=${userKeyword}&barcodeKeyword=${barcodeKeyword}&status=${status}&fromDate=${fromDate}&toDate=${toDate}&sortBy=${sortBy}&sortOrder=${sortOrder}">Sau</a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -266,20 +301,34 @@
         </div>
 
         <script>
+            function openRecallModal(id, user, book, barcode) {
+                document.getElementById('modalBorrowRecordId').value = id || '';
+                document.getElementById('modalUserFullName').textContent = user || '';
+                document.getElementById('modalBookTitle').textContent = book || '';
+                document.getElementById('modalBarcode').textContent = barcode || '';
+                document.getElementById('recallReason').value = '';
+                var el = document.getElementById('sendRecallModal');
+                if (el) {
+                    var modal = bootstrap.Modal.getOrCreateInstance(el);
+                    modal.show();
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 var sendRecallModal = document.getElementById('sendRecallModal');
                 if (sendRecallModal) {
                     sendRecallModal.addEventListener('show.bs.modal', function (event) {
                         var button = event.relatedTarget;
+                        if (!button) return;
                         var id = button.getAttribute('data-id');
                         var user = button.getAttribute('data-user');
                         var book = button.getAttribute('data-book');
                         var barcode = button.getAttribute('data-barcode');
 
-                        document.getElementById('modalBorrowRecordId').value = id;
-                        document.getElementById('modalUserFullName').textContent = user;
-                        document.getElementById('modalBookTitle').textContent = book;
-                        document.getElementById('modalBarcode').textContent = barcode;
+                        if (id) document.getElementById('modalBorrowRecordId').value = id;
+                        if (user) document.getElementById('modalUserFullName').textContent = user;
+                        if (book) document.getElementById('modalBookTitle').textContent = book;
+                        if (barcode) document.getElementById('modalBarcode').textContent = barcode;
                         document.getElementById('recallReason').value = '';
                     });
                 }

@@ -1,5 +1,5 @@
-﻿# Feature Specification: Đặt trước & Gia hạn sách (Reservation & Renewal)
-# Version: 1.3 | Chủ sở hữu: Bao | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
+# Feature Specification: Đặt trước & Gia hạn sách (Reservation & Renewal)
+# Version: 1.5 | Chủ sở hữu: Bao | Ngày cập nhật: 2026-08-01 (Đồng bộ FR-136 hủy đặt trước kèm lý do & gửi email RESERVATION_CANCELLED)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
 Cung cấp chức năng cho phép Sinh viên và Giảng viên chủ động Đặt trước (Reservation) các đầu sách mong muốn khi hết bản sao sẵn có, và Yêu cầu Gia hạn (Renewal) thời gian mượn sách trực tuyến mà không cần đến quầy thư viện, tuân thủ các quy định chính sách của hệ thống.
@@ -14,6 +14,7 @@ Cung cấp chức năng cho phép Sinh viên và Giảng viên chủ động Đ�
 * **UC-43 (Auto-cancel Expired Reservations):** Actor: System, SysAdmin | (Hủy đặt trước quá hạn): Hệ thống chạy định kỳ (hoặc SysAdmin kích hoạt thủ công) để quét các đơn đặt trước sẵn sàng nhận quá hạn, hủy bỏ chúng, đôn hàng chờ cho người tiếp theo hoặc trả sách về kho.
 * **UC-49 (View Full Borrow/Return History):** Actor: Student, Lecturer | (Xem lịch sử mượn trả đầy đủ): Độc giả xem danh sách tất cả các bản ghi mượn sách trong lịch sử (đang mượn và đã trả) của bản thân.
 * **UC-50 (Cancel Online Reservation):** Actor: Student, Lecturer | (Hủy đặt trước trực tuyến): Độc giả chủ động hủy yêu cầu đặt trước sách khi đang trong hàng đợi hoặc trạng thái sẵn sàng nhận sách.
+* **UC-58 (Librarian Reservation Management):** Actor: Librarian | (Thủ thư quản lý đặt trước): Thủ thư quản lý danh sách đặt trước, bao gồm quyền hủy các đơn đặt trước không hợp lệ kèm theo lý do cụ thể.
 
 ### Mapping Boundary
 * Canonical source: diagram/spec-UC-BR-FR.md cho F5 Online Reservation & Renewal. Các UC ngoài danh sách trên thuộc feature khác và không được map vào feature này.
@@ -41,7 +42,7 @@ Cung cấp chức năng cho phép Sinh viên và Giảng viên chủ động Đ�
   * *Mapping:* UC-17 / BR-21
 * **FR-33 (Thực thi Gia hạn với cập nhật endDate):** WHERE yêu cầu gia hạn hợp lệ (qua FR-32), THE system SHALL mở DB Transaction: (1) Lấy STUDENT_MAX_BORROW_DAYS hoặc LECTURER_MAX_BORROW_DAYS từ SystemConfig theo role, (2) UPDATE BorrowRecord SET endDate = endDate + {loanDays} ngày, extensionCount = extensionCount + 1 WHERE borrowRecordId=?, (3) INSERT AuditLog(RENEW_BOOK_ONLINE, userId), (4) conn.commit(), (5) EmailService.enqueue(RENEWAL_CONFIRMATION, userId) [async], (6) Trả về flash "Gia hạn thành công, hạn mới: {newEndDate}".
   * *Mapping:* UC-17 / BR-21
-* **FR-67 (Quét đơn đặt trước sẵn sàng quá hạn theo BR-36):** WHEN ReservationExpirationProcessor chạy định kỳ (mỗi 1 giờ) hoặc TriggerReservationExpirationServlet được admin kích hoạt thủ công, THE system SHALL: (1) Lấy RESERVATION_HOLD_DAYS từ SystemConfig (default 3 ngày), (2) Truy vấn ReservationDAO.findExpiredReadyPickup(NOW()) để lấy tất cả Reservation WHERE status='readypickup' AND endDate < NOW(), (3) Ghi log số lượng đơn hết hạn tìm được, (4) Với mỗi expired reservation: gọi FR-68 để xử lý cancel + đôn hàng chờ, (5) Trả về JSON {processedCount, cancelledCount, reassignedCount, emailsSent}.
+* **FR-67 (Dọn dẹp đơn đặt trước quá hạn theo cơ chế Lazy Load):** WHEN các Controller/Service liên quan (LibrarianDashboardServlet, DeskDashboardServlet, CheckInServlet, CheckOutServlet, BookDetailServlet, OnlineCirculationService.reserveBook) được truy cập hoặc thực thi, THE system SHALL tự động gọi ReservationExpirationProcessor.processExpiration() [Lazy Load]: (1) Lấy RESERVATION_HOLD_DAYS từ SystemConfig (default 3 ngày), (2) Truy vấn ReservationDAO.findExpiredReadyPickup(NOW()) để lấy tất cả Reservation WHERE status='readypickup' AND endDate < NOW(), (3) Ghi log số lượng đơn hết hạn tìm được, (4) Với mỗi expired reservation: gọi FR-68 để xử lý cancel + đôn hàng chờ trong transaction riêng biệt.
   * *Mapping:* UC-43 / BR-36
 * **FR-68 (Hủy đặt trước và đôn hàng chờ tự động):** For each expired Reservation found trong FR-67, THE system SHALL mở DB Transaction: (1) UPDATE Reservation SET status='cancelled', cancelledAt=NOW(), cancelReason='Expired - không nhận sách trong thời hạn' WHERE reservationId=?, (2) **Kiểm tra hàng chờ**: ReservationDAO.findNextInQueue(bookId) WHERE queuePosition=1 AND status='pending', (3) **PHÂN NHÁNH A - Có người chờ tiếp theo**: UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=expired.bookCopyId (kế thừa bản sao), endDate=NOW()+RESERVATION_HOLD_DAYS, UPDATE BookCopy SET status='reserved' (giữ nguyên), EmailService.enqueue(RESERVATION_READY, nextUserId) [async], **PHÂN NHÁNH B - Không có người chờ**: UPDATE BookCopy SET status='available', UPDATE Book SET availableQuantity = availableQuantity + 1, (4) INSERT AuditLog(CANCEL_EXPIRED_RESERVATION), (5) conn.commit(), (6) EmailService.enqueue(RESERVATION_EXPIRED_NOTICE, originalUserId) [async].
   * *Mapping:* UC-43 / BR-36
@@ -49,6 +50,10 @@ Cung cấp chức năng cho phép Sinh viên và Giảng viên chủ động Đ�
   * *Mapping:* UC-50 / BR-19
 * **FR-79 (Xem lịch sử mượn trả đầy đủ):** WHEN BorrowHistoryServlet.doGet() được gọi, THE system SHALL: (1) Lấy userId từ session, (2) Gọi BorrowRecordDAO.findAllBorrowRecordsByUserId() để JOIN Book và BookCopy lấy toàn bộ lịch sử mượn trả (bao gồm các bản ghi đã trả 'returned', quá hạn 'overdue', đang mượn 'borrowed'), (3) Set attribute và forward sang borrow-history.jsp tương ứng với role.
   * *Mapping:* UC-49
+* **FR-80 (Sắp xếp cá nhân & Đếm ngược thời gian giữ sách) (FR-134, BR-84):** WHEN MyBorrowingsServlet.doGet() được gọi từ Sinh viên hoặc Giảng viên (`/student/my-borrowings`, `/lecturer/my-borrowings`), THE system SHALL: (1) Nhận các tham số sắp xếp `borrowSortBy`, `borrowSortOrder`, `resSortBy`, `resSortOrder`, (2) Thực hiện sắp xếp danh sách mượn (`borrows`) và danh sách đặt trước (`reservations`), (3) Trên giao diện JSP hiển thị bộ đếm ngược thời gian thực (Countdown Timer) cho các đơn đặt trước sẵn sàng nhận (`queuePosition == 0`), tự động reload trang sau 1.5s khi hết hạn để kích hoạt Lazy Sweep cập nhật trạng thái mới.
+  * *Mapping:* UC-16, UC-50, UC-59 / BR-20, BR-36, BR-84
+* **FR-136 (Thủ thư Hủy lượt đặt trước kèm Lý do & Gửi Mail Thông báo):** WHEN Thủ thư gửi POST request tới `/librarian/reservation-queue` với `action=cancel` kèm `reservationId` và `reason`, THE system SHALL gọi `OnlineCirculationService.cancelReservationByLibrarian(librarianId, reservationId, reason)`: (1) UPDATE Reservation SET status='cancelled', (2) Đôn người ở queuePosition=1 lên queuePosition=0 (readypickup) nếu có, (3) INSERT AuditLog(CANCEL_RESERVATION_BY_LIBRARIAN, librarianId, reason), (4) EmailService.enqueue(RESERVATION_CANCELLED, userId, {cancelReason: reason}) [async] gửi email thông báo chứa `{{userName}}`, `{{bookTitle}}`, `{{cancelReason}}` tới độc giả bị hủy. (5) Redirect về reservation-queue kèm flash success.
+  * *Mapping:* UC-50, UC-58 / BR-83
 
 
 ## 4.5 Non-functional Requirements (Yêu cầu phi chức năng)

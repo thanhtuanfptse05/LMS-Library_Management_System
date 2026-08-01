@@ -74,6 +74,13 @@ public class CheckOutServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         int librarianId = (int) session.getAttribute("userId");
 
+        // [LAZY LOAD] Tự động dọn dẹp đơn quá hạn nhận sách trước khi thực hiện Check-out
+        try {
+            new service.ReservationExpirationProcessor().processExpiration();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi dọn đơn quá hạn trên CheckOutServlet", e);
+        }
+
         try {
             // ----------------------------------------------------------------
             // Đọc và validate tham số đầu vào từ form

@@ -44,6 +44,13 @@ public class StudentDashboardServlet extends HttpServlet {
 
         int userId = (int) session.getAttribute("userId");
 
+        // [LAZY LOAD] Cập nhật tình trạng mượn quá hạn và tiền phạt trước khi tính toán các KPI cho sinh viên
+        try {
+            new service.OverdueProcessor().processOverdue();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi quét quá hạn trên Student Dashboard", e);
+        }
+
         try (Connection conn = DatabaseConnection.getConnection()) {
             // ── 1. Stats Cards (4 KPI metrics) ──
             request.setAttribute("activeLoansCount",

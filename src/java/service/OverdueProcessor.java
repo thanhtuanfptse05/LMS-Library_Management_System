@@ -29,9 +29,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * OverdueProcessor — Tiến trình ngầm quét và xử lý các bản ghi mượn quá hạn.
+ * OverdueProcessor — Dịch vụ quét và xử lý các bản ghi mượn quá hạn (Lazy Load).
  */
-public class OverdueProcessor implements Runnable {
+public class OverdueProcessor {
 
     private static final Logger LOGGER = Logger.getLogger(OverdueProcessor.class.getName());
 
@@ -43,11 +43,6 @@ public class OverdueProcessor implements Runnable {
     private final DocumentTempDAO documentTempDAO = new DocumentTempDAO();
     private final BookDAO bookDAO = new BookDAO();
     private final MemberProfileDAO memberProfileDAO = new MemberProfileDAO();
-
-    @Override
-    public void run() {
-        processOverdue();
-    }
 
     /**
      * Thực hiện quét toàn bộ hệ thống để phát hiện các khoản quá hạn.

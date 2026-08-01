@@ -62,7 +62,12 @@ public class DeskBorrowingManagerServlet extends HttpServlet {
         String status = req.getParameter("status");
         String fromDateStr = req.getParameter("fromDate");
         String toDateStr = req.getParameter("toDate");
+        String sortBy = req.getParameter("sortBy");
+        String sortOrder = req.getParameter("sortOrder");
         String pageStr = req.getParameter("page");
+
+        if (sortBy == null || sortBy.isBlank()) sortBy = "startDate";
+        if (sortOrder == null || sortOrder.isBlank()) sortOrder = "DESC";
 
         int page = 1;
         if (pageStr != null && !pageStr.trim().isEmpty()) {
@@ -103,7 +108,7 @@ public class DeskBorrowingManagerServlet extends HttpServlet {
             int offset = (page - 1) * PAGE_SIZE;
 
             List<BorrowingManagementDTO> borrowings = borrowRecordDAO.searchBorrowingsPaginated(
-                    conn, userKeyword, barcodeKeyword, status, fromTs, toTs, offset, PAGE_SIZE);
+                    conn, userKeyword, barcodeKeyword, status, fromTs, toTs, sortBy, sortOrder, offset, PAGE_SIZE);
 
             req.setAttribute("borrowings", borrowings);
             req.setAttribute("currentPage", page);
@@ -114,6 +119,8 @@ public class DeskBorrowingManagerServlet extends HttpServlet {
             req.setAttribute("status", status != null ? status.trim() : "all");
             req.setAttribute("fromDate", fromDateStr != null ? fromDateStr.trim() : "");
             req.setAttribute("toDate", toDateStr != null ? toDateStr.trim() : "");
+            req.setAttribute("sortBy", sortBy);
+            req.setAttribute("sortOrder", sortOrder);
 
             req.getRequestDispatcher("/librarian/borrowings-management.jsp").forward(req, resp);
 

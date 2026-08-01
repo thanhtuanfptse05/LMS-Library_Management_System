@@ -77,6 +77,25 @@
 
                 <!-- 1. Tab Sách đang mượn -->
                 <div class="tab-pane fade show active" id="borrowed" role="tabpanel" aria-labelledby="borrowed-tab">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-3 p-3 bg-white rounded-3 shadow-sm border">
+                        <div class="fw-semibold text-secondary" style="font-size: 14px;">
+                            <i class="bi bi-funnel me-1"></i> Sắp xếp danh sách mượn
+                        </div>
+                        <form method="GET" action="${pageContext.request.contextPath}/lecturer/my-borrowings" class="d-flex gap-2 align-items-center flex-wrap">
+                            <input type="hidden" name="resSortBy" value="${resSortBy}">
+                            <input type="hidden" name="resSortOrder" value="${resSortOrder}">
+                            <select name="borrowSortBy" class="form-select form-select-sm" style="width: 180px;" onchange="this.form.submit()">
+                                <option value="startDate" ${borrowSortBy == 'startDate' ? 'selected' : ''}>Ngày mượn sách</option>
+                                <option value="endDate" ${borrowSortBy == 'endDate' ? 'selected' : ''}>Hạn trả sách</option>
+                                <option value="title" ${borrowSortBy == 'title' ? 'selected' : ''}>Tên sách</option>
+                                <option value="id" ${borrowSortBy == 'id' ? 'selected' : ''}>Mã phiếu mượn</option>
+                            </select>
+                            <select name="borrowSortOrder" class="form-select form-select-sm" style="width: 130px;" onchange="this.form.submit()">
+                                <option value="DESC" ${borrowSortOrder == 'DESC' ? 'selected' : ''}>Giảm dần (↓)</option>
+                                <option value="ASC" ${borrowSortOrder == 'ASC' ? 'selected' : ''}>Tăng dần (↑)</option>
+                            </select>
+                        </form>
+                    </div>
                     <div class="card border-0 rounded-3 shadow-sm overflow-hidden" style="background-color: var(--surface-lowest); border: 1px solid var(--outline-variant) !important;">
                         <div class="card-body p-0">
                             <c:choose>
@@ -172,6 +191,25 @@
 
                 <!-- 2. Tab Sách đang đặt trước -->
                 <div class="tab-pane fade" id="reserved" role="tabpanel" aria-labelledby="reserved-tab">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-3 p-3 bg-white rounded-3 shadow-sm border">
+                        <div class="fw-semibold text-secondary" style="font-size: 14px;">
+                            <i class="bi bi-funnel me-1"></i> Sắp xếp hàng chờ đặt trước
+                        </div>
+                        <form method="GET" action="${pageContext.request.contextPath}/lecturer/my-borrowings" class="d-flex gap-2 align-items-center flex-wrap">
+                            <input type="hidden" name="borrowSortBy" value="${borrowSortBy}">
+                            <input type="hidden" name="borrowSortOrder" value="${borrowSortOrder}">
+                            <select name="resSortBy" class="form-select form-select-sm" style="width: 180px;" onchange="this.form.submit()">
+                                <option value="queuePosition" ${resSortBy == 'queuePosition' ? 'selected' : ''}>Vị trí hàng chờ</option>
+                                <option value="startDate" ${resSortBy == 'startDate' ? 'selected' : ''}>Ngày đặt sách</option>
+                                <option value="endDate" ${resSortBy == 'endDate' ? 'selected' : ''}>Hạn giữ sách</option>
+                                <option value="title" ${resSortBy == 'title' ? 'selected' : ''}>Tên sách</option>
+                            </select>
+                            <select name="resSortOrder" class="form-select form-select-sm" style="width: 130px;" onchange="this.form.submit()">
+                                <option value="ASC" ${resSortOrder == 'ASC' ? 'selected' : ''}>Tăng dần (↑)</option>
+                                <option value="DESC" ${resSortOrder == 'DESC' ? 'selected' : ''}>Giảm dần (↓)</option>
+                            </select>
+                        </form>
+                    </div>
                     <div class="card border-0 rounded-3 shadow-sm overflow-hidden" style="background-color: var(--surface-lowest); border: 1px solid var(--outline-variant) !important;">
                         <div class="card-body p-0">
                             <c:choose>

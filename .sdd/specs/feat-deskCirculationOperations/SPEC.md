@@ -1,5 +1,5 @@
 # Feature Specification: Giao dịch mượn trả tại quầy (Desk Circulation Operations)
-# Version: 1.4 | Chủ sở hữu: Thai | Ngày cập nhật: 2026-07-27 (Đồng bộ luồng Check-out bắt buộc Reservation & UC-51)
+# Version: 1.5 | Chủ sở hữu: Thai | Ngày cập nhật: 2026-08-01 (Bổ sung FR-138 gửi email thu hồi, cập nhật lầy cập UC-57 & UC-58)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
 Cung cấp công cụ cho Thủ thư (Librarian) thực hiện các thao tác Mượn sách (`Check-out`), Trả sách (`Check-in`), Đăng ký đặt trước tại quầy (`Desk Reservation`), và Duyệt thanh toán tiền mặt (`Cash Payment`) trực tiếp tại quầy lưu thông thông qua quét mã vạch Barcode, xử lý trả sách quá hạn, tự động tính tiền phạt và ghi nhận trạng thái sách hư hỏng/thất lạc.
@@ -43,6 +43,10 @@ Cung cấp công cụ cho Thủ thư (Librarian) thực hiện các thao tác M�
   * *Mapping:* UC-20 / BR-25
 * **FR-80 (Đăng ký đặt trước tại quầy):** WHEN DeskReservationServlet.doPost() nhận mã độc giả (memberCode) và mã sách/ISBN/barcode (bookIdOrIsbn), THE system SHALL: (1) Ánh xạ memberCode sang userId, (2) Xác định bookId từ ISBN/barcode/bookId, (3) Mở DB Transaction gọi OnlineCirculationService.reserveBook(userId, bookId, role): validate nợ phạt (BR-22) và hạn mức mượn/đặt (BR-21), tạo bản ghi Reservation với queuePosition thích hợp, (4) Redirect về desk-dashboard kèm thông báo thành công.
   * *Mapping:* UC-51 / BR-41
+* **FR-81 (Tra cứu giao dịch mượn trả & Sắp xếp đa tiêu chí) (FR-135, BR-84):** WHEN DeskBorrowingManagerServlet hoặc LibrarianDashboardServlet được gọi, THE system SHALL hỗ trợ trậy vấn các lượt mượn trả toàn hệ thống thông qua `findAllRecentLoans` và `searchBorrowingsPaginated` với tùy chọn sắp xếp đa tiêu chí (`sortBy`: `startDate`, `endDate`, `bookTitle`, `userFullName`, `barcode`, `borrowRecordId`) và chiều sắp xếp (`sortOrder`: `DESC`, `ASC`).
+  * *Mapping:* UC-18, UC-19 / BR-84
+* **FR-138 (Gửi email thu hồi sách - RECALL_NOTICE):** WHEN Thủ thư click nút "Gửi email thu hồi" trên màn hình Quản lý sách đang mượn (`DeskBorrowingManagerServlet`, action=recall), THE system SHALL gọi `EmailService.sendRecallNoticeEmail(borrowRecord, librarianId, recallReason)` để enqueue EmailJob với template `RECALL_NOTICE`. Placeholders bắt buộc: `{{userName}}` (họ tên độc giả), `{{bookTitle}}` (tên sách), `{{recallReason}}` (lý do thu hồi do Thủ thư nhập), `{{dueDate}}` (hạn trả ban đầu). Hệ thống SHALL ghi AuditLog(RECALL_NOTICE, librarianId). Email được gửi bất đồng bộ, KHÔNG block HTTP request của Thủ thư.
+  * *Mapping:* UC-57 / BR-47
 
 
 ## 4.5 Non-functional Requirements (Yêu cầu phi chức năng)

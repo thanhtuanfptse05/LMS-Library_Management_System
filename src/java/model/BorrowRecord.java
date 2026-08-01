@@ -125,6 +125,8 @@ public class BorrowRecord {
     private String memberName;
     private String memberCode;
     private String bookTitle;
+    private String staffName;
+    private String staffCode;
 
     public Book getBook() { return book; }
     public void setBook(Book book) { this.book = book; }
@@ -137,6 +139,11 @@ public class BorrowRecord {
     public void setMemberCode(String memberCode) { this.memberCode = memberCode; }
     public String getBookTitle() { return bookTitle; }
     public void setBookTitle(String bookTitle) { this.bookTitle = bookTitle; }
+
+    public String getStaffName() { return staffName; }
+    public void setStaffName(String staffName) { this.staffName = staffName; }
+    public String getStaffCode() { return staffCode; }
+    public void setStaffCode(String staffCode) { this.staffCode = staffCode; }
 
     /**
      * Tính phần trăm thời gian mượn sách đã trôi qua (0% - 100%).

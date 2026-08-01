@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import service.OnlineCirculationService;
 
 /**
@@ -17,6 +19,7 @@ import service.OnlineCirculationService;
 @WebServlet(name = "CancelReservationServlet", urlPatterns = {"/student/cancel-reservation", "/lecturer/cancel-reservation"})
 public class CancelReservationServlet extends HttpServlet {
 
+    private static final Logger LOGGER = Logger.getLogger(CancelReservationServlet.class.getName());
     private final OnlineCirculationService circulationService = new OnlineCirculationService();
 
     @Override
@@ -44,6 +47,13 @@ public class CancelReservationServlet extends HttpServlet {
             session.setAttribute("errorMessage", "Mã đơn đặt trước không hợp lệ.");
             response.sendRedirect(request.getContextPath() + "/" + role.toLowerCase() + "/my-borrowings");
             return;
+        }
+
+        // [LAZY LOAD] Dọn dẹp các đơn quá hạn trước khi hủy đơn đặt trước
+        try {
+            new service.ReservationExpirationProcessor().processExpiration();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi dọn quá hạn trên CancelReservationServlet", e);
         }
 
         try {

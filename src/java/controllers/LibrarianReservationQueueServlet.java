@@ -42,8 +42,17 @@ public class LibrarianReservationQueueServlet extends HttpServlet {
 
         String keyword = request.getParameter("keyword");
         String status = request.getParameter("status");
+        String sortBy = request.getParameter("sortBy");
+        String sortOrder = request.getParameter("sortOrder");
+
         if (status == null || status.isBlank()) {
             status = "all";
+        }
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "queuePosition";
+        }
+        if (sortOrder == null || sortOrder.isBlank()) {
+            sortOrder = "ASC";
         }
 
         int page = 1;
@@ -58,7 +67,7 @@ public class LibrarianReservationQueueServlet extends HttpServlet {
         int offset = (page - 1) * pageSize;
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            List<Reservation> queueList = reservationDAO.findReservationQueueForLibrarian(conn, keyword, status, offset, pageSize);
+            List<Reservation> queueList = reservationDAO.findReservationQueueForLibrarian(conn, keyword, status, sortBy, sortOrder, offset, pageSize);
             int totalItems = reservationDAO.countReservationQueueForLibrarian(conn, keyword, status);
             int totalPages = (int) Math.ceil((double) totalItems / pageSize);
             if (totalPages < 1) totalPages = 1;
@@ -66,6 +75,8 @@ public class LibrarianReservationQueueServlet extends HttpServlet {
             request.setAttribute("queueList", queueList);
             request.setAttribute("keyword", keyword != null ? keyword.trim() : "");
             request.setAttribute("status", status);
+            request.setAttribute("sortBy", sortBy);
+            request.setAttribute("sortOrder", sortOrder);
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalItems", totalItems);
@@ -108,7 +119,7 @@ public class LibrarianReservationQueueServlet extends HttpServlet {
             try {
                 int reservationId = Integer.parseInt(resIdRaw);
                 // Tái sử dụng 100% Service có sẵn cancelReservationByLibrarian
-                onlineCirculationService.cancelReservationByLibrarian(librarianId, reservationId);
+                onlineCirculationService.cancelReservationByLibrarian(librarianId, reservationId, reason);
                 session.setAttribute("successMessage", "Đã hủy đơn đặt trước thành công và đôn vị trí hàng chờ cho người tiếp theo.");
             } catch (NumberFormatException e) {
                 session.setAttribute("errorMessage", "Mã đơn đặt trước phải là một số hợp lệ.");

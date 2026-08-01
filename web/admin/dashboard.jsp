@@ -57,6 +57,12 @@
                             Kiểm tra lần cuối: Vừa xong
                         </p>
                     </div>
+                    <div>
+                        <button type="button" onclick="location.reload()"
+                                class="btn btn-sm btn-outline-secondary rounded-3 fw-bold px-3 d-flex align-items-center gap-1">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">refresh</span> Cập nhật hệ thống
+                        </button>
+                    </div>
                 </div>
 
                 <%-- Fragment: KPI Stats Grid --%>
@@ -98,83 +104,6 @@
             el.addEventListener('mouseenter', function() { this.style.transform = 'translateY(-1px)'; });
             el.addEventListener('mouseleave', function() { this.style.transform = ''; });
         });
-
-        // Trigger Reservation Expiration AJAX (F5)
-        const btnTrigger = document.getElementById('btn-trigger-expiration');
-        const maintenanceMsg = document.getElementById('maintenance-msg');
-
-        if (btnTrigger) {
-            btnTrigger.addEventListener('click', function() {
-                btnTrigger.disabled = true;
-                btnTrigger.innerHTML = '<span class="material-symbols-outlined spin" style="font-size: 20px; animation: rotation 2s infinite linear;">sync</span> Đang xử lý...';
-                maintenanceMsg.className = 'mt-3 p-3 rounded-2';
-
-                fetch('${pageContext.request.contextPath}/admin/trigger-reservation-expiration', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                })
-                .then(response => {
-                    if (response.status === 403) throw new Error('Bạn không có quyền thực hiện hành động này.');
-                    if (!response.ok) throw new Error('Lỗi hệ thống khi dọn dẹp.');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        maintenanceMsg.classList.remove('d-none');
-                        maintenanceMsg.classList.add('alert', 'alert-success');
-                        maintenanceMsg.innerText = data.message;
-                        setTimeout(() => window.location.reload(), 1500);
-                    } else {
-                        throw new Error(data.message || 'Lỗi không xác định.');
-                    }
-                })
-                .catch(err => {
-                    maintenanceMsg.classList.remove('d-none');
-                    maintenanceMsg.classList.add('alert', 'alert-danger');
-                    maintenanceMsg.innerText = err.message;
-                    btnTrigger.disabled = false;
-                    btnTrigger.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px;">cleaning_services</span> Dọn dẹp Đặt trước Quá hạn (F5)';
-                });
-            });
-        }
-
-        // Trigger Overdue Processor AJAX (F9)
-        const btnTriggerOverdue = document.getElementById('btn-trigger-overdue');
-
-        if (btnTriggerOverdue) {
-            btnTriggerOverdue.addEventListener('click', function() {
-                btnTriggerOverdue.disabled = true;
-                btnTriggerOverdue.innerHTML = '<span class="material-symbols-outlined spin" style="font-size: 20px; animation: rotation 2s infinite linear;">sync</span> Đang xử lý...';
-                maintenanceMsg.className = 'mt-3 p-3 rounded-2';
-
-                fetch('${pageContext.request.contextPath}/admin/trigger-overdue', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                })
-                .then(response => {
-                    if (response.status === 403) throw new Error('Bạn không có quyền thực hiện hành động này.');
-                    if (!response.ok) throw new Error('Lỗi hệ thống khi quét quá hạn.');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        maintenanceMsg.classList.remove('d-none');
-                        maintenanceMsg.classList.add('alert', 'alert-success');
-                        maintenanceMsg.innerText = data.message;
-                        setTimeout(() => window.location.reload(), 2000);
-                    } else {
-                        throw new Error(data.message || 'Lỗi không xác định.');
-                    }
-                })
-                .catch(err => {
-                    maintenanceMsg.classList.remove('d-none');
-                    maintenanceMsg.classList.add('alert', 'alert-danger');
-                    maintenanceMsg.innerText = err.message;
-                    btnTriggerOverdue.disabled = false;
-                    btnTriggerOverdue.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px;">alarm_on</span> Quét Phạt & Khóa Quá Hạn (F9)';
-                });
-            });
-        }
 
         // Xử lý Khóa/Mở khóa tài khoản nhanh từ Dashboard
         function quickLock(userId, fullName, email) {

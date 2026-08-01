@@ -1,4 +1,4 @@
-﻿# Feature Specification: Gửi Email bất đồng bộ (Async Email Sender)
+# Feature Specification: Gửi Email bất đồng bộ (Async Email Sender)
 # Version: 1.3 | Chủ sở hữu: Bao | Ngày cập nhật: 2026-07-26 (Chuẩn hóa UC-BR-FR registry)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
@@ -25,10 +25,9 @@ Cung cấp dịch vụ gửi Email thông báo tự động (Mật khẩu tạm 
 
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết đúng theo registry)
-* **FR-103 (Giao diện public cho enqueue EmailJob):** WHEN bất kỳ dịch vụ nào gọi EmailService.enqueue(job), THE system SHALL đẩy job vào LinkedBlockingQueue và trả về kết quả thành công ngay lập tức để tránh block luồng xử lý chính.
+* **FR-103 (Gửi email bất đồng bộ trực tiếp qua CompletableFuture):** WHEN bất kỳ dịch vụ nào gọi EmailService.enqueue(job), THE system SHALL tự động chạy tác vụ gửi email trong CompletableFuture.runAsync() và trả về ngay lập tức để tránh block luồng xử lý HTTP chính.
   * *Mapping:* BR-49
-* **FR-104 (Khởi chạy Daemon Thread Worker):** WHEN ứng dụng bắt đầu khởi động, AppContextListener SHALL khởi tạo một instance duy nhất của EmailWorker, đăng ký là Daemon Thread và kích hoạt luồng xử lý chạy nền.
-  * *Mapping:* BR-48, BR-49
+* **FR-104 (Thay thế Daemon Thread bằng CompletableFuture):** THE system SHALL thực hiện gửi email bất đồng bộ qua CompletableFuture mà không cần khởi tạo luồng Daemon Thread chạy ngầm liên tục tại AppContextListener.
 * **FR-105 (Consumer lấy Job từ hàng đợi):** WHILE EmailWorker hoạt động, Consumer SHALL liên tục lấy job ra bằng phương thức queue.take() (sử dụng cơ chế block để không tiêu hao tài nguyên CPU khi hàng đợi rỗng).
   * *Mapping:* BR-49
 * **FR-106 (Tra cứu template động từ DB):** WHEN xử lý gửi email, THE system SHALL gọi DocumentTempDAO.findByTempName() để lấy nội dung template mới nhất do Admin chỉnh sửa từ CSDL.

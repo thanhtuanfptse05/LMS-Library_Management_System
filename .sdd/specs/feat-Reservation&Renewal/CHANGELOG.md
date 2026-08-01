@@ -1,5 +1,12 @@
 # CHANGELOG.md — Quản lý Đặt trước và Gia hạn trực tuyến
 
+## [1.4.0] - 2026-08-01
+### Added
+- Bổ sung bộ lọc sắp xếp đa tiêu chí linh hoạt và chiều sắp xếp (ASC/DESC) cho danh sách sách đang mượn và đang đặt trước ở phía Độc giả và Thủ thư.
+- Tích hợp bộ đếm ngược thời gian thực (Countdown Timer) cho suất đặt trước sẵn sàng nhận (`queuePosition == 0`), tự động reload trang sau 1.5s để kích hoạt Lazy Sweep khi hết hạn.
+- Cập nhật quy trình Thủ thư hủy lượt đặt trước kèm lý do hủy (`reason`), tự động ghi `AuditLogs` và gửi email mẫu `RESERVATION_CANCELLED` tới độc giả.
+- Đồng bộ chuẩn giao diện theo `DESIGN.md` và `ui_rule.md` (`raised-card`, `table-lms`, `badge-pill`, Terracotta Orange buttons, sidebar navigation titles).
+
 ## [1.1.0] - 2026-06-24
 ### Added
 - Bổ sung đặc tả tiến trình ngầm **Reservation Expiration (Hủy hàng chờ)** chạy định kỳ mỗi 1 giờ để quét các đặt trước quá hạn nhận sách (`endDate < NOW` và trạng thái `'readypickup'`).

@@ -21,9 +21,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * ReservationExpirationProcessor - Tiến trình ngầm quét và xử lý các đơn đặt trước quá hạn nhận sách.
+ * ReservationExpirationProcessor — Xử lý các đơn đặt trước quá hạn nhận sách (Lazy Load).
  */
-public class ReservationExpirationProcessor implements Runnable {
+public class ReservationExpirationProcessor {
     private static final Logger LOGGER = Logger.getLogger(ReservationExpirationProcessor.class.getName());
 
     private final ReservationDAO reservationDAO = new ReservationDAO();
@@ -31,18 +31,6 @@ public class ReservationExpirationProcessor implements Runnable {
     private final BookDAO bookDAO = new BookDAO();
     private final UserDAO userDAO = new UserDAO();
     private final MemberProfileDAO memberProfileDAO = new MemberProfileDAO();
-
-    @Override
-    public void run() {
-        LOGGER.log(Level.INFO, "[BACKGROUND JOB] Bắt đầu quét và xử lý các Reservation quá hạn nhận sách...");
-        try {
-            ProcessResult result = processExpiration();
-            LOGGER.log(Level.INFO, "[BACKGROUND JOB] Hoàn thành. Đã hủy {0} đơn quá hạn, đôn {1} độc giả xếp hàng tiếp theo lên.",
-                    new Object[]{result.cancelledCount, result.promotedCount});
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "[BACKGROUND JOB] Lỗi nghiêm trọng xảy ra trong quá trình xử lý ReservationExpirationProcessor", e);
-        }
-    }
 
     /**
      * Thực hiện luồng xử lý quét quá hạn.

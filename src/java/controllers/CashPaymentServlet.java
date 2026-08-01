@@ -70,6 +70,13 @@ public class CashPaymentServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         int librarianId = (int) session.getAttribute("userId");
 
+        // [LAZY LOAD] Quét nợ phạt quá hạn mới nhất trước khi xử lý thu tiền mặt
+        try {
+            new service.OverdueProcessor().processOverdue();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[LAZY LOAD] Lỗi khi quét nợ phạt trên CashPaymentServlet", e);
+        }
+
         String memberCodeParam = request.getParameter("memberCode");
         String memberCode = (memberCodeParam != null) ? memberCodeParam.trim() : "";
 
