@@ -359,9 +359,11 @@ CREATE TABLE BookCopyIncident (
     reportedAt TIMESTAMP NOT NULL DEFAULT NOW(),
     resolvedBy INT NULL,
     resolvedAt TIMESTAMP NULL,
+    borrowRecordId INT NULL,
     CONSTRAINT FK_BookCopyIncident_BookCopy FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId) ON DELETE CASCADE,
     CONSTRAINT FK_BookCopyIncident_ReportedBy FOREIGN KEY (reportedBy) REFERENCES "User"(userId),
     CONSTRAINT FK_BookCopyIncident_ResolvedBy FOREIGN KEY (resolvedBy) REFERENCES "User"(userId),
+    CONSTRAINT FK_BookCopyIncident_BorrowRecord FOREIGN KEY (borrowRecordId) REFERENCES BorrowRecord(borrowRecordId),
     CONSTRAINT CK_BookCopyIncident_Type CHECK (incidentType IN ('damaged', 'lost')),
     CONSTRAINT CK_BookCopyIncident_Status CHECK (status IN ('pending', 'investigating', 'resolved', 'rejected'))
 );
