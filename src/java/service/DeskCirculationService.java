@@ -196,15 +196,14 @@ public class DeskCirculationService {
     public void processCheckOut(int librarianId, String memberCode, String barcode, Integer targetBookId)
             throws IllegalStateException, SQLException {
 
+        new ReservationExpirationProcessor().processExpiration();
+
         Connection conn = null;
         int userId = 0;
 
         try {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false); // BẮT ĐẦU TRANSACTION
-
-            // 0. Tự động dọn dẹp đặt trước quá hạn nhận sách
-            reservationDAO.cancelExpiredReservations(conn);
 
             // 0.1. Ánh xạ mã độc giả sang userId
             Integer mappedUserId = userLookupDAO.findUserIdByMemberCode(conn, memberCode);
@@ -245,7 +244,7 @@ public class DeskCirculationService {
             int bookId     = bookCopy.getBookId();
 
             // Kiểm tra trạng thái Đầu sách cha (Book)
-            Book parentBook = bookDAO.findById(conn, bookId);
+            Book parentBook = bookDAO.findByIdForUpdate(conn, bookId);
             if (parentBook == null || !"available".equals(parentBook.getStatus())) {
                 throw new IllegalStateException("Đầu sách này hiện đang ngưng lưu thông/phục vụ (unavailable). Không thể giao sách.");
             }
@@ -291,25 +290,10 @@ public class DeskCirculationService {
                 throw new IllegalStateException("Độc giả chưa có đơn đặt mượn sách (Reservation) khả dụng cho đầu sách này. Bắt buộc độc giả hoặc thủ thư phải đăng ký Đặt trước sách trước khi thực hiện giao sách.");
             } else {
                 // Nhánh Pre-reservation: người dùng đã có đơn đặt trước
-                if (reservation.getBookCopyId() != null) {
-                    // Đơn đặt trước đã được gán sẵn bản sao
-                    if (!"reserved".equals(bookCopy.getStatus()) && !"available".equals(bookCopy.getStatus())) {
-                        throw new IllegalStateException(
-                                "Bản sao sách này không ở trạng thái được giữ đặt trước (Trạng thái: '" 
-                                + bookCopy.getStatus() + "').");
-                    }
-                    if (reservation.getBookCopyId() != bookCopyId) {
-                        throw new IllegalStateException(
-                                "Bản sao này không khớp với bản sao được gán cho độc giả này.");
-                    }
-                } else {
-                    // Đơn đặt trước online chưa gán bản sao (bookCopyId == null)
-                    if (!"available".equals(bookCopy.getStatus()) && !"reserved".equals(bookCopy.getStatus())) {
-                        throw new IllegalStateException(
-                                "Bản sao sách này không sẵn sàng để mượn (Trạng thái: '" 
-                                + bookCopy.getStatus() + "').");
-                    }
-                    reservation.setBookCopyId(bookCopyId);
+                if (!"available".equals(bookCopy.getStatus())) {
+                    throw new IllegalStateException(
+                            "Bản sao sách này không sẵn sàng để mượn (Trạng thái: '"
+                            + bookCopy.getStatus() + "').");
                 }
             }
 
@@ -427,7 +411,7 @@ public class DeskCirculationService {
      *   <li>Tìm người chờ tiếp theo ({@code queuePosition=1, status='pending'}):
      *     <ul>
      *       <li>Có người chờ: UPDATE {@code Reservation} (queuePosition=0, readypickup, bookCopyId)
-     *           + UPDATE {@code BookCopy.status = 'reserved'}</li>
+     *           + giữ {@code BookCopy.status = 'available'} và cấp suất trừu tượng</li>
      *     </ul>
      *   </li>
      * </ol></p>
@@ -442,14 +426,13 @@ public class DeskCirculationService {
                     + "Chỉ chấp nhận: 'good', 'damaged', 'lost'.");
         }
 
+        new ReservationExpirationProcessor().processExpiration();
+
         Connection conn = null;
 
         try {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false); // BẮT ĐẦU TRANSACTION
-
-            // 0. Tự động dọn dẹp đặt trước quá hạn nhận sách
-            reservationDAO.cancelExpiredReservations(conn);
 
             // ----------------------------------------------------------------
             // [Node 4.15] BƯỚC 1: Xác thực barcode và trạng thái BookCopy
@@ -680,14 +663,18 @@ public class DeskCirculationService {
         }
 
         // Bước 3: UPDATE BookCopy → 'available' (hoặc 'unavailable' nếu Đầu sách bị ngưng phục vụ)
-        Book parentBook = bookDAO.findById(conn, bookId);
+        Book parentBook = bookDAO.findByIdForUpdate(conn, bookId);
         boolean isParentUnavailable = (parentBook != null && "unavailable".equals(parentBook.getStatus()));
 
         if (isParentUnavailable) {
             bookCopyDAO.updateStatusToUnavailable(conn, bookCopyId, "good");
-        } else {
-            bookCopyDAO.updateStatusToAvailable(conn, bookCopyId);
+            userDAO.insertAuditLog(librarianId, "CHECK_IN_GOOD_BOOK_UNAVAILABLE", "BorrowRecord", borrowRecordId,
+                    "status=borrowed", "status=returned, bookCopyId=" + bookCopyId
+                    + " kept unavailable because parent book is unavailable");
+            return;
         }
+
+        bookCopyDAO.updateStatusToAvailable(conn, bookCopyId);
 
         // Bước 4: Kiểm tra hàng chờ — tìm người kế tiếp (queuePosition=1, status='pending')
         Reservation nextInQueue = reservationDAO.findNextInQueue(conn, bookId);
@@ -697,8 +684,7 @@ public class DeskCirculationService {
             // Có người chờ — đẩy Reservation lên readypickup
             // ----------------------------------------------------------------
             int holdDays = new dao.SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
-            reservationDAO.updateToReadyPickup(conn, nextInQueue.getReservationId(), bookCopyId, holdDays);
-            bookCopyDAO.updateStatusToReserved(conn, bookCopyId);
+            reservationDAO.updateToReadyPickupWithoutCopy(conn, nextInQueue.getReservationId(), holdDays);
 
             // Dịch chuyển các vị trí hàng đợi phía sau (2->1, 3->2...)
             reservationDAO.decrementQueuePositions(conn, bookId);
@@ -706,7 +692,7 @@ public class DeskCirculationService {
             // Ghi Audit Log cho hành động Check-in tốt có hàng chờ (ARCH-02)
             userDAO.insertAuditLog(librarianId, "CHECK_IN_GOOD_QUEUE", "BorrowRecord", borrowRecordId,
                     "status=borrowed", "status=returned, bookCopyId=" + bookCopyId
-                    + " assigned to userId=" + nextInQueue.getUserId()
+                    + " made available; abstract hold assigned to userId=" + nextInQueue.getUserId()
                     + (overdueDays > 0 ? ", overdueDays=" + overdueDays : ""));
 
             // Email bất đồng bộ
@@ -715,7 +701,7 @@ public class DeskCirculationService {
             triggerQueueNotificationEmailAsync(waitingUserId, waitingBookId);
 
             LOGGER.log(Level.INFO,
-                    "Check-in [Good+Queue]: bookCopyId={0} gán cho userId={1} (readypickup) và dịch chuyển hàng đợi",
+                    "Check-in [Good+Queue]: bookCopyId={0} về available; cấp suất readypickup cho userId={1}",
                     new Object[]{bookCopyId, nextInQueue.getUserId()});
         } else {
             // ----------------------------------------------------------------
@@ -780,14 +766,13 @@ public class DeskCirculationService {
     public void approveCashPayment(int librarianId, int paymentId, int userId)
             throws IllegalStateException, SQLException {
 
+        new ReservationExpirationProcessor().processExpiration();
+
         Connection conn = null;
 
         try {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false); // BẮT ĐẦU TRANSACTION
-
-            // 0. Tự động dọn dẹp đặt trước quá hạn nhận sách
-            reservationDAO.cancelExpiredReservations(conn);
 
             // ----------------------------------------------------------------
             // [Node 5.25 - Bước 1] Xác thực Payment — lấy fineId liên kết

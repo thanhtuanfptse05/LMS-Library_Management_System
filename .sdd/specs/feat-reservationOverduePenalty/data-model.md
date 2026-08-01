@@ -60,7 +60,7 @@ WHERE userId = ?
 
 | Cột | Kiểu | Thay đổi |
 |-----|------|----------|
-| `status` | VARCHAR(50) | 'reserved' → 'available' (khi hàng chờ trống) |
+| `status` | VARCHAR(50) | Không đổi; Reservation không gán BookCopy trước checkout |
 
 ### 5. `Book` (Bảng đầu sách)
 
@@ -99,6 +99,6 @@ locked ──[lockedUntil hết hạn + AuthFilter check]──> active (tự đ
 
 ### BookCopy Status
 ```
-reserved ──[hàng chờ trống]──> available
-reserved ──[có người chờ]──> reserved (giữ nguyên, gán cho người tiếp)
+readypickup ──[hàng chờ trống]──> cancelled + availableQuantity tăng 1
+readypickup ──[có người chờ]──> cancelled + chuyển suất cho người tiếp
 ```

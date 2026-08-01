@@ -36,7 +36,7 @@ public class BookCopyService {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
-                Book book = bookDAO.findById(conn, copy.getBookId());
+                Book book = bookDAO.findByIdForUpdate(conn, copy.getBookId());
                 if (book == null) {
                     throw new ValidationException("Đầu sách không tồn tại.");
                 }
@@ -46,9 +46,10 @@ public class BookCopyService {
                             + duplicate.getBookTitle() + ".");
                 }
                 copy.setCondition("good");
-                copy.setStatus("available");
+                boolean parentAvailable = "available".equals(book.getStatus());
+                copy.setStatus(parentAvailable ? "available" : "unavailable");
                 int copyId = bookCopyDAO.insert(conn, copy);
-                bookDAO.updateQuantities(conn, copy.getBookId(), 1, 1);
+                bookDAO.updateQuantities(conn, copy.getBookId(), 1, parentAvailable ? 1 : 0);
                 auditLogDAO.insert(conn, actorId, "CREATE_BOOK_COPY", "BookCopy", copyId, null, toAuditValue(copy));
                 conn.commit();
                 return copyId;
@@ -80,8 +81,8 @@ public class BookCopyService {
                     throw new ValidationException("Bản sao không tồn tại.");
                 }
                 if (!"available".equals(oldCopy.getStatus())) {
-                    if ("borrowed".equals(oldCopy.getStatus()) || "reserved".equals(oldCopy.getStatus())) {
-                        throw new ValidationException("Không thể cập nhật bản sao đang được mượn hoặc đặt trước.");
+                    if ("borrowed".equals(oldCopy.getStatus())) {
+                        throw new ValidationException("Không thể cập nhật bản sao đang được mượn.");
                     }
                     throw new ValidationException("Bản sao đã ghi nhận sự cố cần được xử lý tại màn Hỏng & mất.");
                 }

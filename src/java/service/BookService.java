@@ -1,29 +1,57 @@
 package service;
 
 import dao.AuditLogDAO;
+import dao.BookCopyDAO;
 import dao.BookDAO;
+import dao.MemberProfileDAO;
+import dao.ReservationDAO;
+import dao.UserDAO;
 import exception.DatabaseException;
 import exception.ValidationException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Year;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Book;
+import model.MemberProfile;
+import model.Reservation;
+import model.User;
 import util.DatabaseConnection;
 import util.IsbnValidator;
 
 public class BookService {
 
+    private static final Logger LOGGER = Logger.getLogger(BookService.class.getName());
+
     private final BookDAO bookDAO;
     private final AuditLogDAO auditLogDAO;
+    private final BookCopyDAO bookCopyDAO;
+    private final ReservationDAO reservationDAO;
+    private final UserDAO userDAO;
+    private final MemberProfileDAO memberProfileDAO;
 
     public BookService() {
-        this(new BookDAO(), new AuditLogDAO());
+        this(new BookDAO(), new AuditLogDAO(), new BookCopyDAO(), new ReservationDAO(),
+                new UserDAO(), new MemberProfileDAO());
     }
 
     public BookService(BookDAO bookDAO, AuditLogDAO auditLogDAO) {
+        this(bookDAO, auditLogDAO, new BookCopyDAO(), new ReservationDAO(),
+                new UserDAO(), new MemberProfileDAO());
+    }
+
+    public BookService(BookDAO bookDAO, AuditLogDAO auditLogDAO, BookCopyDAO bookCopyDAO,
+            ReservationDAO reservationDAO, UserDAO userDAO, MemberProfileDAO memberProfileDAO) {
         this.bookDAO = bookDAO;
         this.auditLogDAO = auditLogDAO;
+        this.bookCopyDAO = bookCopyDAO;
+        this.reservationDAO = reservationDAO;
+        this.userDAO = userDAO;
+        this.memberProfileDAO = memberProfileDAO;
     }
 
     public int createBook(Book book, int[] categoryIds, int[] tagIds, int actorId)
@@ -58,20 +86,50 @@ public class BookService {
     public void updateBook(Book book, int[] categoryIds, int[] tagIds, int actorId)
             throws ValidationException, DatabaseException {
         validate(book, false);
+        List<Reservation> cancelledReservations = Collections.emptyList();
+        String cancellationBookTitle = null;
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
-                Book oldBook = bookDAO.findById(conn, book.getBookId());
+                Book oldBook = bookDAO.findByIdForUpdate(conn, book.getBookId());
                 if (oldBook == null) {
                     throw new ValidationException("Đầu sách không tồn tại.");
                 }
                 book.setIsbn(oldBook.getIsbn());
                 bookDAO.update(conn, book);
+
+                boolean stoppingCirculation = "available".equals(oldBook.getStatus())
+                        && "unavailable".equals(book.getStatus());
+                boolean resumingCirculation = "unavailable".equals(oldBook.getStatus())
+                        && "available".equals(book.getStatus());
+
+                if (stoppingCirculation) {
+                    cancelledReservations = reservationDAO.findActiveByBookIdForUpdate(conn, book.getBookId());
+                    int suspendedCopies = bookCopyDAO.suspendAvailableCopiesByBookId(conn, book.getBookId());
+                    int cancelledCount = reservationDAO.cancelActiveByBookId(conn, book.getBookId());
+                    bookDAO.setAvailableQuantity(conn, book.getBookId(), 0);
+                    cancellationBookTitle = book.getTitle();
+                    auditLogDAO.insert(conn, actorId, "STOP_BOOK_CIRCULATION", "Book", book.getBookId(),
+                            "{\"status\":\"available\"}",
+                            "{\"status\":\"unavailable\",\"suspendedCopies\":" + suspendedCopies
+                            + ",\"cancelledReservations\":" + cancelledCount + "}");
+                } else if (resumingCirculation) {
+                    int restoredCopies = bookCopyDAO.restoreEligibleCopiesByBookId(conn, book.getBookId());
+                    int availableCopies = bookCopyDAO.countActiveAvailableCopies(conn, book.getBookId());
+                    bookDAO.setAvailableQuantity(conn, book.getBookId(), availableCopies);
+                    auditLogDAO.insert(conn, actorId, "RESUME_BOOK_CIRCULATION", "Book", book.getBookId(),
+                            "{\"status\":\"unavailable\"}",
+                            "{\"status\":\"available\",\"restoredCopies\":" + restoredCopies
+                            + ",\"availableQuantity\":" + availableCopies + "}");
+                }
                 bookDAO.replaceCategories(conn, book.getBookId(), categoryIds);
                 bookDAO.replaceTags(conn, book.getBookId(), tagIds);
                 auditLogDAO.insert(conn, actorId, "UPDATE_BOOK", "Book", book.getBookId(),
                         toAuditValue(oldBook), toAuditValue(book));
                 conn.commit();
+                if (!cancelledReservations.isEmpty()) {
+                    notifyCancelledReservations(cancelledReservations, cancellationBookTitle);
+                }
             } catch (ValidationException | SQLException e) {
                 conn.rollback();
                 if (e instanceof ValidationException) {
@@ -129,5 +187,23 @@ public class BookService {
 
     private String escape(String value) {
         return value == null ? "" : value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private void notifyCancelledReservations(List<Reservation> reservations, String bookTitle) {
+        for (Reservation reservation : reservations) {
+            try {
+                User user = userDAO.findByUserId(reservation.getUserId());
+                if (user == null || user.getEmail() == null) {
+                    continue;
+                }
+                MemberProfile profile = memberProfileDAO.findByUserId(reservation.getUserId());
+                String fullName = profile != null ? profile.getFullName() : user.getEmail();
+                EmailService.sendReservationCancelledEmail(user.getEmail(), fullName, bookTitle,
+                        "Đầu sách đã được thư viện chuyển sang trạng thái ngừng lưu thông.");
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Không thể gửi thông báo hủy reservationId="
+                        + reservation.getReservationId(), e);
+            }
+        }
     }
 }

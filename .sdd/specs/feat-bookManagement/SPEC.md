@@ -25,7 +25,7 @@ Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed
 
 ## 3. Business Rules (Quy tắc nghiệp vụ đúng theo registry)
 * **BR-16 (Uniqueness of Identifiers):** Định danh sách gồm ISBN (Bảng Book) và Barcode (Bảng BookCopy) BẮT BUỘC phải là duy nhất trên toàn hệ thống.
-* **BR-17 (Inventory Synchronization):** Số lượng totalQuantity và availableQuantity của bảng Book BẮT BUỘC đồng bộ với BookCopy. Tạo BookCopy good/available cộng 1 vào cả hai; các thay đổi khả dụng khác do F13/F6 xử lý trong transaction tương ứng.
+* **BR-17 (Inventory Synchronization):** `totalQuantity` đồng bộ với BookCopy chưa loại khỏi kho; `availableQuantity` biểu diễn số suất còn có thể cấp, bằng năng lực BookCopy vật lý đủ điều kiện trừ các Reservation `readypickup`. Mọi thay đổi Book, BookCopy và Reservation liên quan phải cùng transaction.
 * **BR-18 (Immutable Core Identifiers):** KHÔNG ĐƯỢC PHÉP thay đổi thông tin định danh hệ thống (ISBN, Barcode) sau khi bản ghi sách hoặc bản sao đã được lưu thành công.
 * **BR-27 (Book Import Transaction):** Tính năng Import khối lượng lớn Sách BẮT BUỘC tuân thủ chiến lược All-or-Nothing. Tệp dữ liệu chỉ được lưu vào DB khi toàn bộ thông tin Sách và Bản sao đều hợp lệ.
 
@@ -33,11 +33,11 @@ Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết đúng theo registry)
 * **FR-22 (Tạo đầu sách với validation ISBN):** WHEN BookServlet.doPost(action=create) nhận form, THE system SHALL chuẩn hóa và kiểm tra ISBN-10/ISBN-13 đúng checksum, kiểm tra ISBN chưa tồn tại, validate metadata/status theo schema, mở transaction, INSERT Book với totalQuantity=0 và availableQuantity=0, thay thế liên kết BookCategory/BookTag, ghi AuditLog(CREATE_BOOK), rồi commit; WHERE lỗi thì rollback và dọn ảnh bìa mới đã lưu.
   * *Mapping:* UC-13 / BR-16, BR-17
-* **FR-23 (Cập nhật đầu sách và chặn đổi ISBN):** WHEN cập nhật Book, THE system SHALL lấy Book hiện tại từ Database, giữ nguyên ISBN và số lượng, chỉ cập nhật metadata/trạng thái/ảnh/phân loại được phép, ghi AuditLog(UPDATE_BOOK) trong cùng transaction. WHERE Book không tồn tại hoặc dữ liệu không hợp lệ, THE system SHALL từ chối lưu và hiển thị lỗi tiếng Việt.
+* **FR-23 (Cập nhật đầu sách và chặn đổi ISBN):** WHEN chuyển Book sang `unavailable`, THE system SHALL khóa Book, chuyển BookCopy `available` sang `unavailable`, giữ nguyên bản đang mượn, hủy Reservation active, đặt `availableQuantity=0`, ghi Audit Log và gửi thông báo sau commit. WHEN mở lưu thông lại, chỉ khôi phục BookCopy `good`, chưa thanh lý và không có incident mở; đồng bộ lại `availableQuantity`. ISBN không được thay đổi.
   * *Mapping:* UC-13 / BR-18
-* **FR-24 (Nhập kho bản sao với đồng bộ số lượng):** WHEN BookCopyServlet.doPost(action=create) nhận bookId, barcode và location, THE system SHALL kiểm tra Book tồn tại, barcode bắt buộc/đúng định dạng/không trùng, location hợp lệ, mở transaction, INSERT BookCopy với condition='good' và status='available', tăng Book.totalQuantity và Book.availableQuantity mỗi giá trị 1, ghi AuditLog(CREATE_BOOK_COPY), rồi commit; WHERE lỗi thì rollback.
+* **FR-24 (Nhập kho bản sao với đồng bộ số lượng):** WHEN thêm BookCopy, THE system SHALL khóa Book cha. Nếu Book đang `available`, tạo bản sao `good/available` và tăng cả totalQuantity, availableQuantity. Nếu Book đang `unavailable`, tạo bản sao `good/unavailable`, chỉ tăng totalQuantity. Ghi AuditLog và commit nguyên tử.
   * *Mapping:* UC-14 / BR-16, BR-17
-* **FR-25 (Cập nhật vị trí bản sao):** WHEN BookCopyServlet.doPost(action=update) nhận bookCopyId và location, THE system SHALL chỉ cho cập nhật location nếu BookCopy hiện tại đang status='available' và condition='good'; Barcode, bookId, condition và status phải giữ theo Database. WHERE bản sao đang borrowed/reserved/unavailable/damaged/lost, THE system SHALL từ chối cập nhật và hướng người dùng sang quy trình phù hợp.
+* **FR-25 (Cập nhật vị trí bản sao):** WHEN BookCopyServlet.doPost(action=update) nhận bookCopyId và location, THE system SHALL chỉ cho cập nhật location nếu BookCopy hiện tại đang status='available' và condition='good'; Barcode, bookId, condition và status phải giữ theo Database. WHERE bản sao đang borrowed/unavailable/damaged/lost, THE system SHALL từ chối cập nhật và hướng người dùng sang quy trình phù hợp.
   * *Mapping:* UC-14 / BR-18
 * **FR-26 (Validation trùng lặp Barcode):** WHEN tạo BookCopy, THE system SHALL từ chối Barcode đã tồn tại và thông báo đầu sách sở hữu Barcode đó. WHERE unique constraint DB phát sinh do request đồng thời, THE system SHALL rollback và hiển thị lỗi tiếng Việt thân thiện thay vì lỗi hệ thống chung.
   * *Mapping:* UC-14 / BR-16
@@ -77,7 +77,7 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 ### Bảng BookCopy
 * `bookCopyId` (INT, PK), `bookId` (INT, FK), `barcode` (VARCHAR(50), UNIQUE)
 * `location` (VARCHAR(255)), `condition` (`good`, `damaged`, `lost`)
-* `status` (`available`, `unavailable`, `borrowed`, `reserved`), `createdAt`, `updatedAt`
+* `status` (`available`, `unavailable`, `borrowed`), `createdAt`, `updatedAt`
 * `removedFromInventory` (BOOLEAN), `removedFromInventoryAt`, `removedFromInventoryBy` dùng bởi F13/F6 để loại bản sao khỏi tổng kho nhưng vẫn giữ lịch sử.
 
 ### Bảng Category, Tag và bảng liên kết

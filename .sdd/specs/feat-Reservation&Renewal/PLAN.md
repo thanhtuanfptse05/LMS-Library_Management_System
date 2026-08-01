@@ -37,7 +37,7 @@ Hệ thống sử dụng mô hình MVC Monolith thuần với Servlet:
    - Phân nhánh:
      - **Nhánh A (Có người xếp hàng tiếp theo):**
        * Cập nhật Reservation người mới: `queuePosition = 0`, `status = 'readypickup'`, `endDate = NOW() + INTERVAL '1 day' * (SELECT configValue::INTEGER FROM SystemConfigurations WHERE configKey = 'RESERVATION_HOLD_DAYS')`, gán `bookCopyId` vừa giải phóng.
-       * Cập nhật `BookCopy.status = 'reserved'`.
+       * Giữ `BookCopy.status = 'available'`; Reservation chỉ giữ suất trừu tượng.
        * Dịch chuyển các vị trí hàng đợi phía sau (`queuePosition = queuePosition - 1` cho các đơn pending của bookId đó).
        * Ghi Audit Log (`actionType = 'CANCEL_EXPIRED_RESERVATION'`, `userId = NULL`).
        * Commit Transaction.

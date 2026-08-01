@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  * Một Reservation có thể ở trạng thái: 'pending' (đang chờ), 'readypickup' (sẵn sàng nhận),
  * 'fulfilled' (đã nhận) hoặc 'cancelled' (đã hủy).
  * Thứ tự ưu tiên trong hàng chờ được xác định bởi {@code queuePosition}:
- * giá trị {@code 0} nghĩa là đang được phục vụ / đã giao bản sao,
+ * giá trị {@code 0} nghĩa là đang sẵn sàng nhận sách,
  * giá trị {@code 1} nghĩa là người tiếp theo trong danh sách chờ.</p>
  *
  * <p>Schema mapping (database/LMS_Library_Management_System.sql):</p>
@@ -17,10 +17,11 @@ import java.sql.Timestamp;
  *   <li>{@code reservationId} — INT IDENTITY(1,1) PRIMARY KEY</li>
  *   <li>{@code userId}        — INT NOT NULL, FK → [User](userId)</li>
  *   <li>{@code bookId}        — INT NOT NULL, FK → Book(bookId)</li>
- *   <li>{@code bookCopyId}    — INT NULL, FK → BookCopy(bookCopyId) (gán khi 'readypickup')</li>
+ *   <li>{@code bookCopyId}    — INT NULL, FK → BookCopy(bookCopyId); chỉ gán khi checkout/fulfilled</li>
  *   <li>{@code status}        — NVARCHAR(50) DEFAULT 'pending'
  *                               ('pending' | 'readypickup' | 'fulfilled' | 'cancelled')</li>
- *   <li>{@code queuePosition} — INT NULL (0 = đang phục vụ, 1 = kế tiếp, ...)</li>
+ *   <li>{@code queuePosition} — INT NULL (0 = sẵn sàng nhận, 1 = kế tiếp, ...;
+ *                               NULL khi fulfilled/cancelled)</li>
  *   <li>{@code startDate}     — DATETIME NULL DEFAULT GETDATE()</li>
  *   <li>{@code endDate}       — DATETIME NULL</li>
  * </ul>
@@ -35,7 +36,7 @@ public class Reservation {
     private int reservationId;
     private int userId;
     private int bookId;
-    private Integer bookCopyId;  // NULL khi chưa gán bản sao cụ thể
+    private Integer bookCopyId;  // NULL ở pending/readypickup; gán barcode khi checkout
     private String status;
     private Integer queuePosition; // NULL-able theo schema
     private Timestamp startDate;

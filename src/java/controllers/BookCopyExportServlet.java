@@ -87,12 +87,13 @@ public class BookCopyExportServlet extends HttpServlet {
         if ("unavailable".equals(status)) {
             return "Ngừng lưu thông";
         }
-        return "Ngừng lưu thông";
+        return "Không xác định";
     }
 
     private String normalizeStatus(String status) {
         return "available".equals(status) || "borrowed".equals(status)
-                || "unavailable".equals(status) || "incident".equals(status) ? status : null;
+                || "unavailable".equals(status)
+                || "incident".equals(status) ? status : null;
     }
 
     private String trimToNull(String value) {

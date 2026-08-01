@@ -127,7 +127,6 @@ public class BookImportService {
 
     private int createCopies(Connection conn, List<BookImportRowDTO> rows, Map<String, Integer> bookIds, int actorId)
             throws SQLException {
-        Map<Integer, Integer> quantities = new LinkedHashMap<>();
         for (BookImportRowDTO row : rows) {
             Integer bookId = bookIds.get(row.getIsbn().toLowerCase());
             if (bookId == null) {
@@ -140,14 +139,18 @@ public class BookImportService {
                 bookIds.put(row.getIsbn().toLowerCase(), bookId);
             }
             BookCopy copy = new BookCopy();
+            Book parentBook = bookDAO.findByIdForUpdate(conn, bookId);
+            if (parentBook == null) {
+                throw new SQLException("Đầu sách không còn tồn tại cho ISBN " + row.getIsbn() + ".");
+            }
+            boolean parentAvailable = "available".equals(parentBook.getStatus());
             copy.setBookId(bookId);
             copy.setBarcode(row.getBarcode());
             copy.setLocation(row.getLocation());
+            copy.setCondition("good");
+            copy.setStatus(parentAvailable ? "available" : "unavailable");
             copyDAO.insert(conn, copy);
-            quantities.merge(bookId, 1, Integer::sum);
-        }
-        for (Map.Entry<Integer, Integer> item : quantities.entrySet()) {
-            bookDAO.updateQuantities(conn, item.getKey(), item.getValue(), item.getValue());
+            bookDAO.updateQuantities(conn, bookId, 1, parentAvailable ? 1 : 0);
         }
         return rows.size();
     }

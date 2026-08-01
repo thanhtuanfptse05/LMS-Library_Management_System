@@ -11,7 +11,7 @@
 ### Added
 - Bổ sung đặc tả tiến trình ngầm **Reservation Expiration (Hủy hàng chờ)** chạy định kỳ mỗi 1 giờ để quét các đặt trước quá hạn nhận sách (`endDate < NOW` và trạng thái `'readypickup'`).
 - Tích hợp luật nghiệp vụ **BR-36** về thời hạn nhận sách và giải phóng cờ đặt trước.
-- Định nghĩa luồng dữ liệu tái phân bổ hàng chờ: Khi một đơn hàng chờ bị hủy, hệ thống tự động đôn người ở `queuePosition = 1` lên nhận sách, gán bản sao vật lý và cập nhật trạng thái bản sao thành `'reserved'`, dịch chuyển hàng đợi phía sau và gửi email thông báo. Nếu không có ai chờ, hoàn trả sách về kho vật lý (`status = 'available'`) và tăng `availableQuantity` của Book.
+- Định nghĩa luồng dữ liệu tái phân bổ hàng chờ: Khi một đơn `readypickup` bị hủy, hệ thống tự động chuyển nguyên suất trừu tượng cho người ở `queuePosition = 1`, giữ `bookCopyId=NULL`, dịch chuyển hàng đợi và gửi email. Nếu không có ai chờ mới tăng `availableQuantity` của Book.
 - Thêm các nhiệm vụ triển khai từ **T-F5-07** đến **T-F5-11** vào `TASK.md` để lập kế hoạch code.
 
 ### Changed

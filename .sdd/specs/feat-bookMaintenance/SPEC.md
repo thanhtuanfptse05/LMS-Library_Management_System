@@ -20,14 +20,14 @@ Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed
 
 
 ## 3. Business Rules (Quy tắc nghiệp vụ đúng theo registry)
-* **BR-28 (Incident Resolution Sync):** Khi báo sự cố hợp lệ trong F13, hệ thống BẮT BUỘC chuyển BookCopy sang status='unavailable' và giảm Book.availableQuantity đúng 1 trong cùng transaction. Khi bác bỏ báo cáo hoặc khôi phục bản sao hỏng sau sửa chữa, hệ thống BẮT BUỘC chuyển BookCopy về good/available và tăng availableQuantity đúng 1. Khi kết luận lost hoặc khi bản sao damaged/resolved không còn khả năng sửa, hệ thống BẮT BUỘC đánh dấu removedFromInventory=true và giảm Book.totalQuantity đúng 1 trong transaction; không được xóa record BookCopy.
+* **BR-28 (Incident Resolution Sync):** `Book.availableQuantity` là số suất chưa cấp, không phải phép đếm trực tiếp BookCopy `available`. Khi một BookCopy khả dụng gặp sự cố: nếu còn suất tự do thì giảm `availableQuantity` 1; nếu số lượng đã bằng 0 thì giữ 0 và đưa Reservation `readypickup` mới nhất về đầu hàng `pending`. Khi bản sao được phục hồi: ưu tiên cấp suất cho người đầu hàng chờ và giữ nguyên số lượng; chỉ tăng `availableQuantity` khi không có người chờ. Mọi thay đổi phải cùng transaction; không hard-delete BookCopy.
 * **BR-44 (Inventory Reconciliation Data):** Dữ liệu kiểm kê gần nhất phải đủ để đối chiếu số lượng/vị trí bản sao trong báo cáo quản lý. Trong F13, quy tắc này được đáp ứng bằng InventorySession và InventoryItem; việc hiển thị báo cáo quản trị tổng hợp thuộc feature báo cáo nếu có.
 
 
 ## 4. Functional Requirements (Yêu cầu chức năng chi tiết đúng theo registry)
-* **FR-48 (Ghi nhận sự cố bản sao với vô hiệu hóa tức thì):** WHEN BookCopyIncidentServlet.doPost(action=report) nhận barcode, incidentType và description, THE system SHALL chỉ chấp nhận type damaged/lost, mô tả không rỗng và tối đa 1000 ký tự, khóa và tìm BookCopy theo Barcode, chỉ chấp nhận BookCopy condition='good', status='available', chưa có incident pending/investigating, mở transaction, INSERT BookCopyIncident(status='pending'), UPDATE BookCopy status='unavailable' nhưng chưa đổi condition, giảm Book.availableQuantity đúng 1, ghi Audit Log cho incident và BookCopy, rồi commit; WHERE lỗi thì rollback.
+* **FR-48 (Ghi nhận sự cố bản sao với vô hiệu hóa tức thì):** WHEN báo damaged/lost hợp lệ, THE system SHALL khóa Book trước rồi khóa BookCopy, tạo incident và chuyển BookCopy sang `unavailable`. WHERE `availableQuantity>0` thì giảm 1. WHERE `availableQuantity=0` thì không trừ âm, chuyển Reservation `readypickup` mới nhất về `pending/queuePosition=1`, dịch hàng chờ và gửi thông báo. Ghi Audit Log và commit nguyên tử.
   * *Mapping:* UC-28 / BR-28
-* **FR-49 (Xử lý vòng đời sự cố và phục hồi số lượng):** WHEN xử lý incident được báo trực tiếp trong F13, THE system SHALL tuân theo state machine: investigate chỉ pending -> investigating; resolve từ pending/investigating -> resolved, cập nhật BookCopy.condition thành damaged hoặc lost, giữ status='unavailable', nếu lost thì set removedFromInventory=true và giảm totalQuantity 1; reject từ pending/investigating -> rejected, đưa BookCopy về available và tăng availableQuantity 1; restore chỉ incident resolved loại damaged có BookCopy damaged/unavailable và chưa removedFromInventory, đưa BookCopy về good/available, tăng availableQuantity 1; removeFromInventory chỉ incident resolved loại damaged chưa removedFromInventory, set removedFromInventory=true và giảm totalQuantity 1. Incident resolved tạo bởi F6 không được resolve/reject lại. Mọi nhánh phải khóa bản ghi, ghi Audit Log và commit/rollback nguyên tử.
+* **FR-49 (Xử lý vòng đời sự cố và phục hồi số lượng):** WHEN reject hoặc restore làm BookCopy trở lại `available`, THE system SHALL kiểm tra hàng chờ: có người chờ thì đôn người đầu tiên thành `readypickup/bookCopyId=NULL` và không tăng số lượng; không có người chờ mới tăng `availableQuantity` 1. Nếu đầu sách đang `unavailable`, bản sao không được khôi phục lưu thông. Các nhánh resolve/remove giữ quy tắc soft-delete và cập nhật totalQuantity nguyên tử.
   * *Mapping:* UC-28 / BR-28
 * **FR-50 (Tạo và xử lý phiên kiểm kê kho với 8 action):** WHEN InventoryReconciliationServlet nhận action, THE system SHALL hỗ trợ create, start, scan, finish-counting, resolve-misplaced, resolve-missing, complete và cancel theo state machine F13. Resolve-missing chỉ áp dụng BookCopy good/available, tạo incident lost/pending, chuyển copy unavailable, giảm availableQuantity và đánh dấu item đã xử lý. Complete chỉ cho phép reviewing -> completed khi không còn missing/misplaced chưa xử lý. Mỗi action thay đổi dữ liệu phải dùng transaction và Audit Log.
   * *Mapping:* UC-29 / BR-44, BR-28 cho nhánh resolve-missing
@@ -55,7 +55,7 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 
 ### Bảng BookCopy (các cột liên quan F13)
 * `condition` (`good`, `damaged`, `lost`)
-* `status` (`available`, `unavailable`, `borrowed`, `reserved`)
+* `status` (`available`, `unavailable`, `borrowed`)
 * `removedFromInventory` (BOOLEAN, DEFAULT FALSE)
 * `removedFromInventoryAt` (TIMESTAMP, nullable)
 * `removedFromInventoryBy` (INT, FK -> User, nullable)
@@ -81,7 +81,7 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 
 ## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
 - [ ] Báo sự cố hợp lệ tạo incident `pending`, chuyển BookCopy `unavailable`, giảm `availableQuantity` 1 và có Audit Log.
-- [ ] Không thể báo sự cố cho copy borrowed/reserved/unavailable hoặc copy đã có incident mở.
+- [ ] Không thể báo sự cố cho copy borrowed/unavailable hoặc copy đã có incident mở.
 - [ ] Resolve chỉ đổi condition thành damaged/lost; không trừ `availableQuantity` lần thứ hai.
 - [ ] Resolve lost set `removedFromInventory=true`, giảm `totalQuantity` đúng 1 và không xóa BookCopy.
 - [ ] Reject phục hồi BookCopy available và tăng tồn kho đúng 1.

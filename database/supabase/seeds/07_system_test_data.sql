@@ -165,7 +165,7 @@ VALUES (9902, 'SE_TEST_FINE', 'Information Assurance', 2023);
 
 
 -- 3. Tạo Các Đầu sách mồi cho TS4 & TS6
--- Book 991: Dùng cho TS4 checkout/checkin (8 bản sao borrowed, 1 reserved, 1 available = totalQuantity=10)
+-- Book 991: Dùng cho TS4 checkout/checkin; reservation giữ suất trừu tượng, không giữ BookCopy.
 -- Book 992: Dùng cho TS6 TCCancelReservation (lecturer1 sẽ đặt trước, 5 bản sao available)
 -- Book 993: Dùng cho TS6 TCReserveBookOnline PASS (lecturer1 đặt trước lần đầu, 5 bản sao available)
 -- Book 994: Dùng cho TS6 TCRenewBookOnline (lecturer1 đang mượn, tách riêng khỏi TS4)
@@ -189,8 +189,8 @@ ON CONFLICT DO NOTHING;
 -- 4. Tạo các Bản sao sách mồi cho TS4 & TS6
 INSERT INTO BookCopy (bookCopyId, bookId, location, condition, status, barcode, createdAt, updatedAt)
 VALUES 
--- TS4: Book 991 — 9 bản sao (1 reserved chờ checkout, 7 borrowed, 1 available)
-(9901, 991, 'Kệ CS-01', 'good', 'reserved',  'BC_TEST_CHECKOUT',          NOW(), NOW()),
+-- TS4: Book 991 — barcode checkout vẫn available; reservation chỉ giữ suất trừu tượng.
+(9901, 991, 'Kệ CS-01', 'good', 'available', 'BC_TEST_CHECKOUT',          NOW(), NOW()),
 (9902, 991, 'Kệ CS-02', 'good', 'borrowed',  'BC_TEST_CHECKIN_OVERDUE',   NOW(), NOW()),
 (9903, 991, 'Kệ CS-03', 'good', 'borrowed',  'BC_QUOTA_01',               NOW(), NOW()),
 (9904, 991, 'Kệ CS-04', 'good', 'borrowed',  'BC_QUOTA_02',               NOW(), NOW()),
@@ -204,12 +204,12 @@ VALUES
 (9910, 993, 'Kệ CS-10', 'good', 'available', 'BC_TEST_RESERVE_993_A',     NOW(), NOW()),
 -- TS6: Book 994 — 1 bản sao borrowed (dành cho TCRenewBookOnline), 1 available
 (9911, 994, 'Kệ CS-11', 'good', 'borrowed',  'BC_TEST_RENEW_994_PASS',    NOW(), NOW()),
-(9912, 994, 'Kệ CS-12', 'good', 'reserved',  'BC_TEST_RENEW_994_AVAIL',   NOW(), NOW());
+(9912, 994, 'Kệ CS-12', 'good', 'borrowed',  'BC_TEST_RENEW_994_AVAIL',   NOW(), NOW());
 
 
 -- 5. Đơn Đặt Trước Chờ Lấy (Ready-pickup Reservation) cho sinh viên ST20230001 (userId = 9900)
 INSERT INTO Reservation (reservationId, userId, bookId, bookCopyId, status, queuePosition, startDate, endDate)
-VALUES (9901, 9900, 991, 9901, 'readypickup', 0, NOW(), NOW() + INTERVAL '2 days');
+VALUES (9901, 9900, 991, NULL, 'readypickup', 0, NOW(), NOW() + INTERVAL '2 days');
 
 
 -- 6. Tạo 3 Bản ghi mượn sách active cho SE_TEST_QUOTA (userId = 9901)
@@ -294,11 +294,13 @@ VALUES (
     (SELECT userId FROM "User" WHERE email = 'lecturer1@lms.com'),
     992, NULL, 'pending', 1,
     NOW(),
-    NOW() + INTERVAL '7 days'
+    NULL
 )
 ON CONFLICT (reservationId) DO UPDATE
     SET status      = 'pending',
         bookId      = EXCLUDED.bookId,
+        bookCopyId  = NULL,
+        queuePosition = 1,
         endDate     = EXCLUDED.endDate;
 
 -- TS6-3b. TCCancelReservation PASS (reservationId=9912):
@@ -307,13 +309,15 @@ INSERT INTO Reservation (reservationId, userId, bookId, bookCopyId, status, queu
 VALUES (
     9912,
     (SELECT userId FROM "User" WHERE email = 'lecturer1@lms.com'),
-    994, 9912, 'readypickup', 0,
+    994, NULL, 'readypickup', 0,
     NOW(),
     NOW() + INTERVAL '3 days'
 )
 ON CONFLICT (reservationId) DO UPDATE
     SET status      = 'readypickup',
         bookId      = EXCLUDED.bookId,
+        bookCopyId  = NULL,
+        queuePosition = 0,
         endDate     = EXCLUDED.endDate;
 
 -- TS6-4. TCReserveBookOnline PASS:

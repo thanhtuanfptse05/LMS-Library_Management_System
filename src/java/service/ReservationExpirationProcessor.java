@@ -1,14 +1,12 @@
 package service;
 
 import dao.AuditLogDAO;
-import dao.BookCopyDAO;
 import dao.BookDAO;
 import dao.MemberProfileDAO;
 import dao.ReservationDAO;
 import dao.SystemConfigDAO;
 import dao.UserDAO;
 import model.Book;
-import model.BookCopy;
 import model.MemberProfile;
 import model.Reservation;
 import model.User;
@@ -29,11 +27,11 @@ public class ReservationExpirationProcessor {
     private static final Logger LOGGER = Logger.getLogger(ReservationExpirationProcessor.class.getName());
 
     private final ReservationDAO reservationDAO = new ReservationDAO();
-    private final BookCopyDAO bookCopyDAO = new BookCopyDAO();
     private final BookDAO bookDAO = new BookDAO();
     private final UserDAO userDAO = new UserDAO();
     private final MemberProfileDAO memberProfileDAO = new MemberProfileDAO();
     private final UserLockReasonDAO userLockReasonDAO = new UserLockReasonDAO();
+    private final AuditLogDAO auditLogDAO = new AuditLogDAO();
 
     /**
      * Thực hiện luồng xử lý quét quá hạn.
@@ -68,6 +66,9 @@ public class ReservationExpirationProcessor {
                 conn = DatabaseConnection.getConnection();
                 conn.setAutoCommit(false); // Bắt đầu Transaction độc lập
 
+                // Khóa đầu sách trước để tuần tự hóa mọi thay đổi sức chứa khả dụng.
+                bookDAO.findByIdForUpdate(conn, res.getBookId());
+
                 // Bước 2: Khóa dòng Reservation cụ thể bằng FOR UPDATE để chống tranh chấp
                 Reservation lockedRes = reservationDAO.findReservationByIdForUpdate(conn, res.getReservationId());
                 if (lockedRes == null || !"readypickup".equals(lockedRes.getStatus())) {
@@ -88,7 +89,7 @@ public class ReservationExpirationProcessor {
                 userDAO.lockUserForDuration(conn, userId, 7);
                 String lockReasonText = "Tự động khóa 7 ngày do quá hạn nhận sách đặt trước (ReservationID: " + lockedRes.getReservationId() + ")";
                 userLockReasonDAO.insertLockReason(conn, userId, lockReasonText);
-                userDAO.insertAuditLog(null, "LOCK_ACCOUNT_OVERDUE_RESERVATION", "User", userId,
+                auditLogDAO.insert(conn, null, "LOCK_ACCOUNT_OVERDUE_RESERVATION", "User", userId,
                         "status=active",
                         "status=locked, lockedUntil=NOW+7days, reason=" + lockReasonText);
                 result.lockedAccountCount++;
@@ -98,37 +99,31 @@ public class ReservationExpirationProcessor {
                 // Bước 3.2: HỦY TOÀN BỘ HÀNG CHỜ KHÁC của người dùng vi phạm (FR-ROP-003)
                 List<Reservation> otherActive = reservationDAO.findAllActiveByUserId(conn, userId, lockedRes.getReservationId());
                 if (!otherActive.isEmpty()) {
-                    int cancelledOther = reservationDAO.cancelAllActiveByUserId(conn, userId, lockedRes.getReservationId());
+                    for (Reservation otherRes : otherActive) {
+                        reservationDAO.updateStatusToCancelled(conn, otherRes.getReservationId());
+                    }
+                    int cancelledOther = otherActive.size();
                     result.penaltyCancelledCount += cancelledOther;
-                    userDAO.insertAuditLog(null, "CANCEL_ALL_RESERVATIONS_PENALTY", "Reservation", userId,
+                    auditLogDAO.insert(conn, null, "CANCEL_ALL_RESERVATIONS_PENALTY", "Reservation", userId,
                             "activeCount=" + otherActive.size(),
                             "cancelledCount=" + cancelledOther);
                     LOGGER.log(Level.INFO, "[ReservationExpirationProcessor] Đã hủy thêm {0} đơn hàng chờ khác của người dùng vi phạm — userId={1}",
                             new Object[]{cancelledOther, userId});
 
-                    // Luân chuyển bản sao cho từng đơn bị hủy do chế tài (FR-ROP-004)
+                    // Chuẩn hóa hàng chờ sau khi các lượt pending của người vi phạm đã bị hủy.
+                    java.util.Set<Integer> affectedBookIds = new java.util.HashSet<>();
                     for (Reservation otherRes : otherActive) {
-                        Integer otherCopyId = otherRes.getBookCopyId();
-                        int otherBookId = otherRes.getBookId();
+                        affectedBookIds.add(otherRes.getBookId());
+                    }
+                    for (Integer affectedBookId : affectedBookIds) {
+                        reservationDAO.normalizePendingQueuePositions(conn, affectedBookId);
+                    }
 
-                        if (otherCopyId != null) {
-                            Reservation nextOther = reservationDAO.findNextInQueue(conn, otherBookId);
+                    // Chuyển các suất readypickup đã bị hủy cho người kế tiếp.
+                    for (Reservation otherRes : otherActive) {
+                        if (isReadyHold(otherRes)) {
+                            Reservation nextOther = releaseReadyHold(conn, otherRes, holdDays);
                             if (nextOther != null) {
-                                reservationDAO.updateToReadyPickup(conn, nextOther.getReservationId(), otherCopyId, holdDays);
-                                bookCopyDAO.updateStatusToReserved(conn, otherCopyId);
-                                reservationDAO.decrementQueuePositions(conn, otherBookId);
-                                result.promotedCount++;
-                                nextPromotedList.add(nextOther);
-                            } else {
-                                bookCopyDAO.updateStatusToAvailable(conn, otherCopyId);
-                                bookDAO.updateQuantities(conn, otherBookId, 0, 1);
-                            }
-                        } else {
-                            bookDAO.updateQuantities(conn, otherBookId, 0, 1);
-                            Reservation nextOther = reservationDAO.findNextInQueue(conn, otherBookId);
-                            if (nextOther != null) {
-                                reservationDAO.updateToReadyPickup(conn, nextOther.getReservationId(), null, holdDays);
-                                reservationDAO.decrementQueuePositions(conn, otherBookId);
                                 result.promotedCount++;
                                 nextPromotedList.add(nextOther);
                             }
@@ -136,61 +131,17 @@ public class ReservationExpirationProcessor {
                     }
                 }
 
-                // Bước 4: Xác định bản sao sách vật lý cần giải phóng cho đơn quá hạn gốc
-                Integer copyId = lockedRes.getBookCopyId();
-                int bookId = lockedRes.getBookId();
-
-                if (copyId != null) {
-                    // Bước 5: Kiểm tra xem có người dùng nào khác đang xếp hàng cho tựa sách này không
-                    Reservation nextRes = reservationDAO.findNextInQueue(conn, bookId);
-
-                    if (nextRes != null) {
-                        // Bước 6a: Phân bổ cho người chờ tiếp theo
-                        reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), copyId, holdDays);
-                        bookCopyDAO.updateStatusToReserved(conn, copyId);
-                        reservationDAO.decrementQueuePositions(conn, bookId);
-
-                        userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
-                                "status=readypickup, bookCopyId=" + copyId,
-                                "status=cancelled, promoted reservationId=" + nextRes.getReservationId() + " to ready");
-
-                        result.promotedCount++;
-                        nextPromotedList.add(nextRes);
-                        conn.commit(); // Hoàn thành Transaction
-
-                    } else {
-                        // Bước 6b: Trả sách về trạng thái sẵn sàng trong kho vì hàng chờ trống
-                        bookCopyDAO.updateStatusToAvailable(conn, copyId);
-                        bookDAO.updateQuantities(conn, bookId, 0, 1);
-
-                        userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
-                                "status=readypickup, bookCopyId=" + copyId,
-                                "status=cancelled, bookCopyId=" + copyId + " returned to available stock");
-
-                        conn.commit(); // Hoàn thành Transaction
-                    }
-                } else {
-                    // bookCopyId == NULL (đơn đặt trước online chưa được lấy)
-                    bookDAO.updateQuantities(conn, bookId, 0, 1);
-
-                    Reservation nextRes = reservationDAO.findNextInQueue(conn, bookId);
-                    if (nextRes != null) {
-                        reservationDAO.updateToReadyPickup(conn, nextRes.getReservationId(), null, holdDays);
-                        reservationDAO.decrementQueuePositions(conn, bookId);
-
-                        userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
-                                "status=readypickup, bookCopyId=null",
-                                "status=cancelled, promoted reservationId=" + nextRes.getReservationId() + " to ready");
-
-                        result.promotedCount++;
-                        nextPromotedList.add(nextRes);
-                        conn.commit();
-                    } else {
-                        userDAO.insertAuditLog(null, "CANCEL_EXPIRED_RESERVATION", "Reservation", lockedRes.getReservationId(),
-                                "status=readypickup, bookCopyId=null", "status=cancelled");
-                        conn.commit();
-                    }
+                Reservation nextRes = releaseReadyHold(conn, lockedRes, holdDays);
+                if (nextRes != null) {
+                    result.promotedCount++;
+                    nextPromotedList.add(nextRes);
                 }
+
+                auditLogDAO.insert(conn, null, "CANCEL_EXPIRED_RESERVATION", "Reservation",
+                        lockedRes.getReservationId(), "status=readypickup",
+                        nextRes == null ? "status=cancelled, capacity=released"
+                                : "status=cancelled, promoted reservationId=" + nextRes.getReservationId());
+                conn.commit();
 
                 // Gửi email thông báo bất đồng bộ ngoài transaction cho những người được đôn lên
                 for (Reservation promotedRes : nextPromotedList) {
@@ -218,6 +169,32 @@ public class ReservationExpirationProcessor {
         }
 
         return result;
+    }
+
+    private boolean isReadyHold(Reservation reservation) {
+        return "readypickup".equals(reservation.getStatus())
+                && reservation.getQueuePosition() != null
+                && reservation.getQueuePosition() == 0;
+    }
+
+    /**
+     * Giải phóng một suất readypickup. Nếu còn hàng chờ, suất được chuyển thẳng
+     * cho người tiếp theo và availableQuantity giữ nguyên.
+     */
+    private Reservation releaseReadyHold(Connection conn, Reservation reservation, int holdDays)
+            throws SQLException {
+        Reservation next = reservationDAO.findNextInQueue(conn, reservation.getBookId());
+        if (next != null) {
+            reservationDAO.updateToReadyPickupWithoutCopy(conn, next.getReservationId(), holdDays);
+            reservationDAO.decrementQueuePositions(conn, reservation.getBookId());
+            return next;
+        }
+
+        model.Book book = bookDAO.findById(conn, reservation.getBookId());
+        if (book != null && "available".equals(book.getStatus())) {
+            bookDAO.updateQuantities(conn, reservation.getBookId(), 0, 1);
+        }
+        return null;
     }
 
     /**

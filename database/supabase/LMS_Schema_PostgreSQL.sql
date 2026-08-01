@@ -220,7 +220,7 @@ CREATE TABLE BookCopy (
     createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
     updatedAt TIMESTAMP NULL,
     CONSTRAINT CK_BookCopy_Condition CHECK (condition IN ('good', 'damaged', 'lost')),
-    CONSTRAINT CK_BookCopy_Status CHECK (status IN ('available', 'unavailable', 'borrowed', 'reserved')),
+    CONSTRAINT CK_BookCopy_Status CHECK (status IN ('available', 'unavailable', 'borrowed')),
     CONSTRAINT CK_BookCopy_RemovedInventory CHECK (
         removedFromInventory = FALSE
         OR (status = 'unavailable' AND condition IN ('damaged', 'lost') AND removedFromInventoryAt IS NOT NULL)
@@ -239,6 +239,13 @@ CREATE TABLE Reservation (
     queuePosition INT NULL,
     startDate TIMESTAMP NULL DEFAULT NOW(),
     endDate TIMESTAMP NULL,
+    CONSTRAINT CK_Reservation_Status CHECK (status IN ('pending', 'readypickup', 'fulfilled', 'cancelled')),
+    CONSTRAINT CK_Reservation_Allocation CHECK (
+        (status = 'pending' AND queuePosition IS NOT NULL AND queuePosition >= 1 AND bookCopyId IS NULL AND endDate IS NULL)
+        OR (status = 'readypickup' AND queuePosition IS NOT NULL AND queuePosition = 0 AND bookCopyId IS NULL AND endDate IS NOT NULL)
+        OR (status = 'fulfilled' AND queuePosition IS NULL AND bookCopyId IS NOT NULL)
+        OR (status = 'cancelled' AND queuePosition IS NULL AND bookCopyId IS NULL)
+    ),
     CONSTRAINT FK_Reservation_User FOREIGN KEY (userId) REFERENCES "User"(userId),
     CONSTRAINT FK_Reservation_Book FOREIGN KEY (bookId) REFERENCES Book(bookId),
     CONSTRAINT FK_Reservation_BookCopy FOREIGN KEY (bookCopyId) REFERENCES BookCopy(bookCopyId)

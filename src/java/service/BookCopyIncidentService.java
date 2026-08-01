@@ -4,32 +4,57 @@ import dao.AuditLogDAO;
 import dao.BookCopyDAO;
 import dao.BookCopyIncidentDAO;
 import dao.BookDAO;
+import dao.MemberProfileDAO;
+import dao.ReservationDAO;
+import dao.SystemConfigDAO;
+import dao.UserDAO;
 import exception.DatabaseException;
 import exception.ValidationException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Book;
 import model.BookCopy;
 import model.BookCopyIncident;
+import model.MemberProfile;
+import model.Reservation;
+import model.User;
 import util.DatabaseConnection;
 
 public class BookCopyIncidentService {
+
+    private static final Logger LOGGER = Logger.getLogger(BookCopyIncidentService.class.getName());
 
     private final BookCopyIncidentDAO incidentDAO;
     private final BookCopyDAO bookCopyDAO;
     private final BookDAO bookDAO;
     private final AuditLogDAO auditLogDAO;
+    private final ReservationDAO reservationDAO;
+    private final UserDAO userDAO;
+    private final MemberProfileDAO memberProfileDAO;
 
     public BookCopyIncidentService() {
-        this(new BookCopyIncidentDAO(), new BookCopyDAO(), new BookDAO(), new AuditLogDAO());
+        this(new BookCopyIncidentDAO(), new BookCopyDAO(), new BookDAO(), new AuditLogDAO(),
+                new ReservationDAO(), new UserDAO(), new MemberProfileDAO());
     }
 
     public BookCopyIncidentService(BookCopyIncidentDAO incidentDAO, BookCopyDAO bookCopyDAO,
             BookDAO bookDAO, AuditLogDAO auditLogDAO) {
+        this(incidentDAO, bookCopyDAO, bookDAO, auditLogDAO,
+                new ReservationDAO(), new UserDAO(), new MemberProfileDAO());
+    }
+
+    public BookCopyIncidentService(BookCopyIncidentDAO incidentDAO, BookCopyDAO bookCopyDAO,
+            BookDAO bookDAO, AuditLogDAO auditLogDAO, ReservationDAO reservationDAO,
+            UserDAO userDAO, MemberProfileDAO memberProfileDAO) {
         this.incidentDAO = incidentDAO;
         this.bookCopyDAO = bookCopyDAO;
         this.bookDAO = bookDAO;
         this.auditLogDAO = auditLogDAO;
+        this.reservationDAO = reservationDAO;
+        this.userDAO = userDAO;
+        this.memberProfileDAO = memberProfileDAO;
     }
 
     public int report(String barcode, String incidentType, String description, int actorId)
@@ -37,7 +62,19 @@ public class BookCopyIncidentService {
         validateReport(barcode, incidentType, description);
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
+            Reservation demotedReservation = null;
+            String bookTitle = null;
             try {
+                BookCopy locatedCopy = bookCopyDAO.findByBarcode(conn, barcode);
+                if (locatedCopy == null) {
+                    throw new ValidationException("Không tìm thấy bản sao theo mã vạch.");
+                }
+                Book book = bookDAO.findByIdForUpdate(conn, locatedCopy.getBookId());
+                if (book == null) {
+                    throw new ValidationException("Đầu sách của bản sao không tồn tại.");
+                }
+                bookTitle = book.getTitle();
+
                 BookCopy copy = bookCopyDAO.findByBarcodeForUpdate(conn, barcode);
                 validateReportableCopy(copy);
                 if (incidentDAO.findOpenByBookCopyId(conn, copy.getBookCopyId()) != null) {
@@ -50,12 +87,30 @@ public class BookCopyIncidentService {
                 incident.setReportedBy(actorId);
                 int incidentId = incidentDAO.insert(conn, incident);
                 bookCopyDAO.markUnavailable(conn, copy.getBookCopyId());
-                bookDAO.updateQuantities(conn, copy.getBookId(), 0, -1);
+                if (ReservationCapacityPolicy.onPhysicalCopyUnavailable(book.getAvailableQuantity())
+                        == ReservationCapacityPolicy.CapacityLossAction.DECREMENT_AVAILABLE) {
+                    bookDAO.updateQuantities(conn, copy.getBookId(), 0, -1);
+                } else {
+                    // Bản vật lý bị sự cố đang bảo đảm cho một suất readypickup trừu tượng.
+                    // Thu hồi suất mới nhất thay vì trừ tồn kho xuống số âm.
+                    demotedReservation = reservationDAO.findLatestReadyPickupForUpdate(conn, copy.getBookId());
+                    if (demotedReservation != null) {
+                        reservationDAO.demoteReadyPickupToFront(conn,
+                                demotedReservation.getReservationId(), copy.getBookId());
+                        auditLogDAO.insert(conn, actorId, "DEMOTE_RESERVATION_CAPACITY_SHORTAGE",
+                                "Reservation", demotedReservation.getReservationId(),
+                                "{\"status\":\"readypickup\",\"queuePosition\":0}",
+                                "{\"status\":\"pending\",\"queuePosition\":1,\"reason\":\"book_copy_incident\"}");
+                    }
+                }
                 auditLogDAO.insert(conn, actorId, "CREATE_BOOK_COPY_INCIDENT", "BookCopyIncident",
                         incidentId, null, toAuditValue(incident, "pending"));
                 auditLogDAO.insert(conn, actorId, "SUSPEND_BOOK_COPY", "BookCopy", copy.getBookCopyId(),
                         copyAuditValue(copy, "available"), copyAuditValue(copy, "unavailable"));
                 conn.commit();
+                if (demotedReservation != null) {
+                    notifyReservationDelayed(demotedReservation, bookTitle);
+                }
                 return incidentId;
             } catch (ValidationException | SQLException e) {
                 conn.rollback();
@@ -113,13 +168,13 @@ public class BookCopyIncidentService {
                 if (copy.isRemovedFromInventory()) {
                     throw new ValidationException("Bản sao đã bị loại khỏi kho nên không thể khôi phục lưu thông.");
                 }
-                Book parentBook = bookDAO.findById(conn, copy.getBookId());
+                Book parentBook = bookDAO.findByIdForUpdate(conn, copy.getBookId());
                 if (parentBook != null && "unavailable".equals(parentBook.getStatus())) {
                     throw new ValidationException("Đầu sách của bản sao này hiện đang ngưng phục vụ (unavailable). Không thể khôi phục bản sao về trạng thái sẵn sàng.");
                 }
 
                 bookCopyDAO.restoreAfterRepair(conn, copy.getBookCopyId());
-                bookDAO.updateQuantities(conn, copy.getBookId(), 0, 1);
+                Reservation promotedReservation = allocateRestoredCapacity(conn, copy.getBookId());
                 String trimmedNote = repairNote.trim();
                 incidentDAO.appendResolutionNote(conn, incidentId, "Khôi phục lưu thông: " + trimmedNote);
                 auditLogDAO.insert(conn, actorId, "RESTORE_REPAIRED_BOOK_COPY", "BookCopy",
@@ -131,6 +186,10 @@ public class BookCopyIncidentService {
                         "BookCopyIncident", incidentId, toAuditValue(incident, incident.getStatus()),
                         "{\"restoreNote\":\"" + escape(trimmedNote) + "\"}");
                 conn.commit();
+                if (promotedReservation != null) {
+                    notifyReservationReady(promotedReservation,
+                            parentBook != null ? parentBook.getTitle() : copy.getBookTitle());
+                }
             } catch (ValidationException | SQLException e) {
                 conn.rollback();
                 if (e instanceof ValidationException) {
@@ -253,6 +312,8 @@ public class BookCopyIncidentService {
         }
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
+            Reservation promotedReservation = null;
+            String promotedBookTitle = null;
             try {
                 BookCopyIncident incident = incidentDAO.findByIdForUpdate(conn, incidentId);
                 if (incident == null) {
@@ -291,8 +352,12 @@ public class BookCopyIncidentService {
                                 + "\",\"status\":\"unavailable\",\"removedFromInventory\":"
                                 + removedAsLost + "}");
                     } else {
-                        bookCopyDAO.restoreAvailable(conn, copy.getBookCopyId());
-                        bookDAO.updateQuantities(conn, copy.getBookId(), 0, 1);
+                        Book parentBook = bookDAO.findByIdForUpdate(conn, copy.getBookId());
+                        if (parentBook != null && "available".equals(parentBook.getStatus())) {
+                            bookCopyDAO.restoreAvailable(conn, copy.getBookCopyId());
+                            promotedReservation = allocateRestoredCapacity(conn, copy.getBookId());
+                            promotedBookTitle = parentBook.getTitle();
+                        }
                         incidentDAO.finish(conn, incidentId, "rejected", resolution, actorId);
                         auditLogDAO.insert(conn, actorId, "REJECT_BOOK_COPY_INCIDENT",
                                 "BookCopyIncident", incidentId, toAuditValue(incident, incident.getStatus()),
@@ -303,6 +368,9 @@ public class BookCopyIncidentService {
                     }
                 }
                 conn.commit();
+                if (promotedReservation != null) {
+                    notifyReservationReady(promotedReservation, promotedBookTitle);
+                }
             } catch (ValidationException | SQLException e) {
                 conn.rollback();
                 if (e instanceof ValidationException) {
@@ -324,11 +392,60 @@ public class BookCopyIncidentService {
         if (!"good".equals(copy.getCondition())) {
             throw new ValidationException("Bản sao đã được kết luận hỏng hoặc mất.");
         }
-        if ("borrowed".equals(copy.getStatus()) || "reserved".equals(copy.getStatus())) {
-            throw new ValidationException("Không thể ghi nhận sự cố cho bản sao đang mượn hoặc đã đặt trước.");
+        if ("borrowed".equals(copy.getStatus())) {
+            throw new ValidationException("Không thể ghi nhận sự cố cho bản sao đang mượn.");
         }
         if (!"available".equals(copy.getStatus())) {
             throw new ValidationException("Bản sao đang ngừng lưu thông hoặc chờ xử lý sự cố.");
+        }
+    }
+
+    private Reservation allocateRestoredCapacity(Connection conn, int bookId) throws SQLException {
+        Reservation next = reservationDAO.findNextInQueue(conn, bookId);
+        if (next != null) {
+            int holdDays = new SystemConfigDAO().getIntValue(conn, "RESERVATION_HOLD_DAYS", 3);
+            reservationDAO.updateToReadyPickupWithoutCopy(conn, next.getReservationId(), holdDays);
+            reservationDAO.decrementQueuePositions(conn, bookId);
+            return next;
+        }
+        bookDAO.updateQuantities(conn, bookId, 0, 1);
+        return null;
+    }
+
+    private void notifyReservationDelayed(Reservation reservation, String bookTitle) {
+        try {
+            User user = userDAO.findByUserId(reservation.getUserId());
+            if (user == null || user.getEmail() == null) {
+                return;
+            }
+            MemberProfile profile = memberProfileDAO.findByUserId(reservation.getUserId());
+            String fullName = profile != null ? profile.getFullName() : user.getEmail();
+            EmailService.sendReservationDelayedEmail(user.getEmail(), fullName, bookTitle);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Không thể gửi thông báo lùi reservationId="
+                    + reservation.getReservationId(), e);
+        }
+    }
+
+    private void notifyReservationReady(Reservation reservation, String bookTitle) {
+        try {
+            User user = userDAO.findByUserId(reservation.getUserId());
+            if (user == null || user.getEmail() == null) {
+                return;
+            }
+            MemberProfile profile = memberProfileDAO.findByUserId(reservation.getUserId());
+            String fullName = profile != null ? profile.getFullName() : user.getEmail();
+            int holdDays = new SystemConfigDAO().getIntValue("RESERVATION_HOLD_DAYS", 3);
+            java.sql.Timestamp deadline = new java.sql.Timestamp(
+                    System.currentTimeMillis() + (long) holdDays * 24 * 60 * 60 * 1000);
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("bookTitle", bookTitle != null ? bookTitle : "Sách đã đặt");
+            placeholders.put("pickupDeadline",
+                    new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(deadline));
+            EmailService.enqueue(new model.EmailJob("RESERVATION_READY", user.getEmail(), fullName, placeholders));
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Không thể gửi thông báo sẵn sàng cho reservationId="
+                    + reservation.getReservationId(), e);
         }
     }
 

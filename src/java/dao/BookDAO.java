@@ -205,9 +205,10 @@ public class BookDAO {
     public int insert(Connection conn, Book book) throws SQLException {
         String sql = "INSERT INTO Book (isbn, title, author, publisher, publicationYear, price, imagePath, "
                 + "totalQuantity, availableQuantity, status, createdAt) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 'available', NOW())";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             bindBookMetadata(ps, book, true);
+            ps.setString(8, book.getStatus());
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (!keys.next()) {
@@ -245,6 +246,20 @@ public class BookDAO {
             ps.setInt(7, totalDelta);
             if (ps.executeUpdate() != 1) {
                 throw new SQLException("Không thể đồng bộ số lượng tồn kho của đầu sách.");
+            }
+        }
+    }
+
+    public void setAvailableQuantity(Connection conn, int bookId, int availableQuantity) throws SQLException {
+        String sql = "UPDATE Book SET availableQuantity = ?, updatedAt = NOW() "
+                   + "WHERE bookId = ? AND ? >= 0 AND ? <= totalQuantity";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, availableQuantity);
+            ps.setInt(2, bookId);
+            ps.setInt(3, availableQuantity);
+            ps.setInt(4, availableQuantity);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Không thể thiết lập số lượng khả dụng của đầu sách.");
             }
         }
     }

@@ -101,7 +101,8 @@ public class BookCopyDAO {
         String sql = "SELECT COUNT(*) totalCopies, "
                 + "SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) availableCopies, "
                 + "SUM(CASE WHEN status = 'borrowed' THEN 1 ELSE 0 END) borrowedCopies, "
-                + "SUM(CASE WHEN condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) incidentCopies FROM BookCopy";
+                + "SUM(CASE WHEN condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) incidentCopies "
+                + "FROM BookCopy WHERE removedFromInventory = FALSE";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -121,8 +122,9 @@ public class BookCopyDAO {
                 + "COUNT(*) totalCopies, "
                 + "SUM(CASE WHEN status = 'available' AND condition = 'good' THEN 1 ELSE 0 END) availableCopies, "
                 + "SUM(CASE WHEN status = 'unavailable' OR condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) issueCopies "
-                + "FROM BookCopy "
-                + "GROUP BY COALESCE(NULLIF(TRIM(location), ''), 'Chưa gán vị trí') "
+                   + "FROM BookCopy "
+                   + "WHERE removedFromInventory = FALSE "
+                   + "GROUP BY COALESCE(NULLIF(TRIM(location), ''), 'Chưa gán vị trí') "
                 + "HAVING SUM(CASE WHEN status = 'unavailable' OR condition IN ('damaged', 'lost') THEN 1 ELSE 0 END) > 0 "
                 + "ORDER BY issueCopies DESC, totalCopies DESC, locationName ASC "
                 + "LIMIT ?";
@@ -218,11 +220,12 @@ public class BookCopyDAO {
 
     public int insert(Connection conn, BookCopy copy) throws SQLException {
         String sql = "INSERT INTO BookCopy (bookId, location, condition, status, barcode, createdAt) "
-                + "VALUES (?, ?, 'good', 'available', ?, NOW())";
+                + "VALUES (?, ?, 'good', ?, ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, copy.getBookId());
             ps.setString(2, copy.getLocation());
-            ps.setString(3, copy.getBarcode());
+            ps.setString(3, copy.getStatus());
+            ps.setString(4, copy.getBarcode());
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
@@ -297,9 +300,7 @@ public class BookCopyDAO {
     }
 
     /**
-     * @deprecated Sử dụng {@link #updateStatusToBorrowedFromAvailable} hoặc
-     * {@link #updateStatusToBorrowedFromReserved} thay thế.
-     * Hàm cũ chỉ chấp nhận status='available' gây lỗi khi checkout pre-reservation.
+     * @deprecated Sử dụng {@link #updateStatusToBorrowedFromAvailable} thay thế.
      */
     @Deprecated
     public void updateStatusToBorrowed(Connection conn, int bookCopyId) throws SQLException {
@@ -328,24 +329,13 @@ public class BookCopyDAO {
     }
 
     /**
-     * Pre-reservation checkout: chuyển BookCopy từ 'reserved' → 'borrowed'.
-     * <p>KHÔNG giảm {@code Book.availableQuantity} vì đã giảm khi đặt trước
-     * trong {@code OnlineCirculationService.reserveBook()}.</p>
-     *
-     * @param conn       Connection trong Transaction
-     * @param bookCopyId ID bản sao sách
-     * @throws SQLException nếu BookCopy không ở status='reserved'
-     */
-    public void updateStatusToBorrowedFromReserved(Connection conn, int bookCopyId) throws SQLException {
-        updateStatus(conn, bookCopyId, "borrowed", "reserved");
-    }
-
-    /**
-     * Chuyển BookCopy sang 'borrowed' từ 'available' hoặc 'reserved' mà KHÔNG làm thay đổi availableQuantity.
+     * Chuyển bản sao khả dụng sang borrowed mà không đổi availableQuantity.
+     * Số lượng đã được giữ từ lúc reservation chuyển thành readypickup.
      */
     public void updateStatusToBorrowedNoQtyChange(Connection conn, int bookCopyId) throws SQLException {
         String sql = "UPDATE BookCopy SET status = 'borrowed', updatedAt = NOW() "
-                   + "WHERE bookCopyId = ? AND status IN ('available', 'reserved')";
+                   + "WHERE bookCopyId = ? AND status = 'available' "
+                   + "AND condition = 'good' AND removedFromInventory = FALSE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookCopyId);
             if (ps.executeUpdate() != 1) {
@@ -369,7 +359,7 @@ public class BookCopyDAO {
 
     public void updateStatusToAvailable(Connection conn, int bookCopyId) throws SQLException {
         String sql = "UPDATE BookCopy SET status = 'available', condition = 'good', updatedAt = NOW() "
-                + "WHERE bookCopyId = ? AND status IN ('borrowed', 'reserved', 'unavailable') "
+                + "WHERE bookCopyId = ? AND status IN ('borrowed', 'unavailable') "
                 + "AND removedFromInventory = FALSE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookCopyId);
@@ -379,8 +369,37 @@ public class BookCopyDAO {
         }
     }
 
-    public void updateStatusToReserved(Connection conn, int bookCopyId) throws SQLException {
-        updateStatus(conn, bookCopyId, "reserved", "available");
+    public int suspendAvailableCopiesByBookId(Connection conn, int bookId) throws SQLException {
+        String sql = "UPDATE BookCopy SET status = 'unavailable', updatedAt = NOW() "
+                   + "WHERE bookId = ? AND status = 'available' "
+                   + "AND removedFromInventory = FALSE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            return ps.executeUpdate();
+        }
+    }
+
+    public int restoreEligibleCopiesByBookId(Connection conn, int bookId) throws SQLException {
+        String sql = "UPDATE BookCopy bc SET status = 'available', updatedAt = NOW() "
+                   + "WHERE bc.bookId = ? AND bc.status = 'unavailable' "
+                   + "AND bc.condition = 'good' AND bc.removedFromInventory = FALSE "
+                   + "AND NOT EXISTS (SELECT 1 FROM BookCopyIncident i "
+                   + "WHERE i.bookCopyId = bc.bookCopyId AND i.status IN ('pending', 'investigating'))";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            return ps.executeUpdate();
+        }
+    }
+
+    public int countActiveAvailableCopies(Connection conn, int bookId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM BookCopy WHERE bookId = ? AND status = 'available' "
+                   + "AND condition = 'good' AND removedFromInventory = FALSE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
     }
 
     private void updateStatus(Connection conn, int bookCopyId, String targetStatus, String expectedStatus)
