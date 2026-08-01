@@ -374,7 +374,13 @@ public class BookCopyIncidentService {
                         throw new ValidationException("Bản sao của sự cố không còn tồn tại.");
                     }
                     if ("resolve".equals(action)) {
-                        bookCopyDAO.resolveCondition(conn, copy.getBookCopyId(), incident.getIncidentType());
+                        // F6 check-in incidents: condition đã được set đúng ('damaged'/'lost')
+                        // bởi updateStatusToUnavailable() → chỉ cần set condition với thủ công incidents
+                        if (incident.getBorrowRecordId() == null) {
+                            // Sự cố thủ công: condition vẫn là 'good' → cần update
+                            bookCopyDAO.resolveCondition(conn, copy.getBookCopyId(), incident.getIncidentType());
+                        }
+                        // Else: sự cố từ check-in F6 — condition đã là 'damaged'/'lost', không cần update
                         boolean removedAsLost = "lost".equals(incident.getIncidentType());
                         if (removedAsLost) {
                             bookCopyDAO.markRemovedFromInventory(conn, copy.getBookCopyId(), actorId);
@@ -446,7 +452,15 @@ public class BookCopyIncidentService {
                         // ============================================================
                         Book parentBook = bookDAO.findByIdForUpdate(conn, copy.getBookId());
                         if (parentBook != null && "available".equals(parentBook.getStatus())) {
-                            bookCopyDAO.restoreAvailable(conn, copy.getBookCopyId());
+                            if (incident.getBorrowRecordId() != null
+                                    && "damaged".equals(incident.getIncidentType())) {
+                                // Sự cố từ F6: condition đã là 'damaged' → dùng restoreAfterRepair
+                                bookCopyDAO.restoreAfterRepair(conn, copy.getBookCopyId());
+                            } else if (incident.getBorrowRecordId() == null) {
+                                // Sự cố thủ công: condition vẫn là 'good'
+                                bookCopyDAO.restoreAvailable(conn, copy.getBookCopyId());
+                            }
+                            // lost từ F6: không thể khôi phục về available — để nguyên unavailable
                             promotedReservation = allocateRestoredCapacity(conn, copy.getBookId());
                             promotedBookTitle = parentBook.getTitle();
                         }
