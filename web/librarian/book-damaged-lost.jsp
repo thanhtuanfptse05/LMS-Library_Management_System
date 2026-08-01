@@ -136,7 +136,7 @@
                         </article>
                     </div>
 
-                    <div class="bm-rule-note mb-3"><strong>Quy tắc:</strong> Ghi nhận sự cố sẽ tạm ngừng lưu thông bản sao. Tình trạng Hỏng/Mất chỉ được cập nhật sau khi có kết luận.</div>
+                    <div class="bm-rule-note mb-3"><strong>Quy tắc:</strong> Sự cố ghi nhận khi trả sách (có mã lượt mượn) sẽ chờ Thủ thư <strong>xác minh và kết luận tại đây</strong> — phạt đền bù và khóa tài khoản CHỈ áp dụng sau khi Kết luận. Sự cố báo thủ công không liên kết lượt mượn.</div>
 
                     <%-- Bảng danh sách các sự cố --%>
                     <section class="bm-table-card bm-table-card--primary bm-data-table bm-incident-table">
@@ -146,6 +146,7 @@
                                     <tr>
                                         <th>Bản sao</th>
                                         <th>Sự cố</th>
+                                        <th>Lượt mượn</th>
                                         <th>Ghi nhận</th>
                                         <th>Người báo</th>
                                         <th>Trạng thái</th>
@@ -163,6 +164,19 @@
                                             <td>
                                                 <span class="bm-badge bm-badge--danger">${incident.incidentType == 'damaged' ? 'Hỏng' : 'Mất'}</span>
                                                 <div class="bm-book__meta"><c:out value="${incident.description}" /></div>
+                                            </td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${not empty incident.borrowRecordId}">
+                                                        <span class="bm-badge bm-badge--info" title="Sự cố ghi nhận từ luồng trả sách">
+                                                            BR-<c:out value="${incident.borrowRecordId}" />
+                                                        </span>
+                                                        <div class="bm-book__meta" style="font-size:0.78rem">Từ check-in</div>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="text-muted" style="font-size:0.85rem">Thủ công</span>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </td>
                                             <td><fmt:formatDate value="${incident.reportedAt}" pattern="dd/MM/yyyy" /></td>
                                             <td><c:out value="${incident.reportedByName}" /></td>

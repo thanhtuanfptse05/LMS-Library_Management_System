@@ -123,6 +123,26 @@ public class BookCopyIncidentDAO {
         throw new SQLException("Không thể lấy mã sự cố vừa tạo.");
     }
 
+    public int insertPendingFromCheckIn(Connection conn, BookCopyIncident incident, int borrowRecordId)
+            throws SQLException {
+        String sql = "INSERT INTO BookCopyIncident (bookCopyId, incidentType, description, status, "
+                + "reportedBy, reportedAt, borrowRecordId) VALUES (?, ?, ?, 'pending', ?, NOW(), ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, incident.getBookCopyId());
+            ps.setString(2, incident.getIncidentType());
+            ps.setString(3, incident.getDescription());
+            ps.setInt(4, incident.getReportedBy());
+            ps.setInt(5, borrowRecordId);
+            ps.executeUpdate();
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+        }
+        throw new SQLException("Không thể lấy mã sự cố vừa tạo.");
+    }
+
     public void startInvestigating(Connection conn, int incidentId) throws SQLException {
         String sql = "UPDATE BookCopyIncident SET status = 'investigating' "
                 + "WHERE incidentId = ? AND status = 'pending'";
@@ -199,7 +219,8 @@ public class BookCopyIncidentDAO {
                 + "COALESCE(reporter.fullName, ru.email) reportedByName, i.reportedAt, i.resolvedBy, "
                 + "COALESCE(resolver.fullName, xu.email) resolvedByName, i.resolvedAt, "
                 + "bc.removedFromInventory, bc.removedFromInventoryAt, bc.removedFromInventoryBy, "
-                + "COALESCE(remover.fullName, remu.email) removedFromInventoryByName FROM "
+                + "COALESCE(remover.fullName, remu.email) removedFromInventoryByName, "
+                + "i.borrowRecordId FROM "
                 + incidentTable + " JOIN BookCopy bc ON bc.bookCopyId = i.bookCopyId "
                 + "JOIN Book b ON b.bookId = bc.bookId JOIN \"User\" ru ON ru.userId = i.reportedBy "
                 + "LEFT JOIN MemberProfile reporter ON reporter.userId = i.reportedBy "
@@ -260,6 +281,8 @@ public class BookCopyIncidentDAO {
         int removedBy = rs.getInt("removedFromInventoryBy");
         incident.setRemovedFromInventoryBy(rs.wasNull() ? null : removedBy);
         incident.setRemovedFromInventoryByName(rs.getString("removedFromInventoryByName"));
+        int brId = rs.getInt("borrowRecordId");
+        incident.setBorrowRecordId(rs.wasNull() ? null : brId);
         return incident;
     }
 }

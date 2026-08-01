@@ -22,6 +22,7 @@ public class BookCopyIncident {
     private Timestamp removedFromInventoryAt;
     private Integer removedFromInventoryBy;
     private String removedFromInventoryByName;
+    private Integer borrowRecordId;
 
     public int getIncidentId() { return incidentId; }
     public void setIncidentId(int incidentId) { this.incidentId = incidentId; }
@@ -59,4 +60,6 @@ public class BookCopyIncident {
     public void setRemovedFromInventoryBy(Integer removedFromInventoryBy) { this.removedFromInventoryBy = removedFromInventoryBy; }
     public String getRemovedFromInventoryByName() { return removedFromInventoryByName; }
     public void setRemovedFromInventoryByName(String removedFromInventoryByName) { this.removedFromInventoryByName = removedFromInventoryByName; }
+    public Integer getBorrowRecordId() { return borrowRecordId; }
+    public void setBorrowRecordId(Integer borrowRecordId) { this.borrowRecordId = borrowRecordId; }
 }
