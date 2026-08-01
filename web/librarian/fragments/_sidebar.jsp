@@ -33,10 +33,6 @@
             <span class="material-symbols-outlined">book_online</span>
             <span>Quản lý sách đang mượn</span>
         </a>
-        <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/my-circulations">
-            <span class="material-symbols-outlined">history_edu</span>
-            <span>Sách tôi đã xử lý</span>
-        </a>
         <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fines">
             <span class="material-symbols-outlined">receipt_long</span>
             <span>Danh sách Đơn Phạt</span>
@@ -149,10 +145,6 @@
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/borrowings">
                 <span class="material-symbols-outlined">book_online</span>
                 <span>Quản lý sách đang mượn</span>
-            </a>
-            <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/my-circulations">
-                <span class="material-symbols-outlined">history_edu</span>
-                <span>Sách tôi đã xử lý</span>
             </a>
             <a class="sidebar-link" href="${pageContext.request.contextPath}/librarian/fines">
                 <span class="material-symbols-outlined">receipt_long</span>

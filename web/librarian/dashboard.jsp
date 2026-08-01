@@ -143,7 +143,7 @@
 
                             <!-- Sách tôi đã xử lý (loans do thủ thư này tạo) -->
 
-                            <div class="raised-card overflow-hidden h-100 d-flex flex-column">
+                            <div class="raised-card overflow-hidden d-flex flex-column">
                                 <div class="card-header-row">
                                     <div>
                                         <h3 class="card-title">Hoạt động lưu thông hệ thống</h3>
@@ -176,7 +176,7 @@
                                                     </tr>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <c:forEach var="loan" items="${myLoans}" end="6">
+                                                    <c:forEach var="loan" items="${myLoans}" end="7">
                                                         <tr>
                                                             <td>
                                                                 <div class="d-flex align-items-center gap-2">
@@ -234,9 +234,9 @@
                                         Xử lý lưu thông tại quầy
                                         <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
                                     </a>
-                                    <c:if test="${fn:length(myLoans) > 6}">
-                                        <a href="${pageContext.request.contextPath}/librarian/my-circulations" class="text-muted fw-bold text-decoration-none" style="font-size: 13px;">
-                                            Xem tất cả
+                                    <c:if test="${not empty myLoans}">
+                                        <a href="${pageContext.request.contextPath}/librarian/borrowings" class="text-muted fw-bold text-decoration-none" style="font-size: 13px;">
+                                            Xem tất cả &rarr;
                                         </a>
                                     </c:if>
                                 </div>
@@ -367,13 +367,10 @@
                                 <div class="card-header-row d-flex justify-content-between align-items-center">
                                     <div>
                                         <h3 class="card-title mb-0">Danh sách đơn phạt & Thu nợ</h3>
-                                        <p class="card-subtitle mb-0">Các đơn vi phạm chưa thanh toán</p>
+                                        <p class="card-subtitle mb-0">Tất cả đơn vi phạm & phạt gần đây</p>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge-pill badge-error">${fn:length(unpaidFinesList)} Đơn</span>
-                                        <a href="${pageContext.request.contextPath}/librarian/fines" class="btn btn-sm btn-outline-secondary rounded-2 px-2 py-1" style="font-size: 12px;" title="Xem tất cả đơn phạt">
-                                            Tất cả &rarr;
-                                        </a>
+                                    <div>
+                                        <span class="badge-pill badge-info">${fn:length(unpaidFinesList)} Đơn</span>
                                     </div>
                                 </div>
                                 <div class="p-3 d-flex flex-column gap-2 flex-grow-1" style="height: 220px; overflow-y: auto;">
@@ -381,11 +378,11 @@
                                         <c:when test="${empty unpaidFinesList}">
                                             <div class="text-center py-4 my-auto">
                                                 <span class="material-symbols-outlined text-muted" style="font-size: 32px;">inbox</span>
-                                                <p class="text-muted mt-2 mb-0" style="font-size: 13px;">Không có đơn phạt chưa thu</p>
+                                                <p class="text-muted mt-2 mb-0" style="font-size: 13px;">Chưa có dữ liệu đơn phạt</p>
                                             </div>
                                         </c:when>
                                         <c:otherwise>
-                                            <c:forEach var="fine" items="${unpaidFinesList}" varStatus="loop" end="5">
+                                            <c:forEach var="fine" items="${unpaidFinesList}" varStatus="loop" end="7">
                                                 <div class="d-flex justify-content-between align-items-center py-2 ${!loop.last ? 'border-bottom' : ''}" style="border-color: var(--outline-variant) !important;">
                                                     <div>
                                                         <p class="fw-bold mb-0" style="font-size: 13px;"><c:out value="${fine.memberName}" /></p>
@@ -393,14 +390,21 @@
                                                         <p class="text-on-surface-variant mb-0" style="font-size: 12px; margin-top: 4px;"><c:out value="${fine.reason}" /></p>
                                                     </div>
                                                     <div class="text-end">
-                                                        <p class="mb-1" style="font-size: 14px; font-weight: 700; color: var(--error);">
+                                                        <p class="mb-1" style="font-size: 14px; font-weight: 700; color: ${fine.status eq 'paid' ? 'var(--tertiary)' : 'var(--error)'};">
                                                             <fmt:formatNumber value="${fine.amount}" type="currency" currencySymbol="đ" maxFractionDigits="0" />
                                                         </p>
-                                                        <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${fine.memberCode}"
-                                                           class="btn btn-sm fw-bold px-3 text-decoration-none rounded-2"
-                                                           style="font-size: 11px; color: var(--error); background-color: var(--error-container); border: none; display: inline-block;">
-                                                            Thu
-                                                        </a>
+                                                        <c:choose>
+                                                            <c:when test="${fine.status eq 'unpaid'}">
+                                                                <a href="${pageContext.request.contextPath}/librarian/desk-dashboard?memberCode=${fine.memberCode}"
+                                                                   class="btn btn-sm fw-bold px-3 text-decoration-none rounded-2"
+                                                                   style="font-size: 11px; color: var(--error); background-color: var(--error-container); border: none; display: inline-block;">
+                                                                    Thu
+                                                                </a>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="badge-pill badge-success" style="font-size: 10px;">Đã thu</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </div>
                                                 </div>
                                             </c:forEach>

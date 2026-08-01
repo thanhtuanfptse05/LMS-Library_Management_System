@@ -67,8 +67,8 @@ public class LibrarianDashboardServlet extends HttpServlet {
             List<BorrowRecord> myLoans = borrowRecordDAO.findAllRecentLoans(conn, 20);
             request.setAttribute("myLoans", myLoans);
 
-            // 3. Unpaid Fines (Fetch limit 20 to check for "Xem tất cả")
-            List<Fine> unpaidFinesList = fineDAO.findUnpaidFines(conn, 20);
+            // 3. Fines List (Fetch recent fines of all statuses up to 20 for dashboard display)
+            List<Fine> unpaidFinesList = fineDAO.findAllRecentFines(conn, 20);
             request.setAttribute("unpaidFinesList", unpaidFinesList);
 
             // 4. Overdue Loans detail list (Top 8 — quá hạn lâu nhất ưu tiên trước)
