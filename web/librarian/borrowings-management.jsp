@@ -69,8 +69,8 @@
                                 <label for="status" class="form-label" style="font-size: 12px; font-weight: 600; color: var(--on-surface-variant);">Trạng thái mượn</label>
                                 <select class="form-select" id="status" name="status" style="border-color: var(--outline-variant);">
                                     <option value="all" ${status == 'all' ? 'selected' : ''}>-- Tất cả trạng thái --</option>
-                                    <option value="borrowed" ${status == 'borrowed' ? 'selected' : ''}>Đang mượn</option>
-                                    <option value="overdue" ${status == 'overdue' ? 'selected' : ''}>Quá hạn</option>
+                                    <option value="borrowed" ${status == 'borrowed' ? 'selected' : ''}>Đang mượn (Gồm quá hạn)</option>
+                                    <option value="overdue" ${status == 'overdue' ? 'selected' : ''}>Quá hạn chưa trả</option>
                                     <option value="recalled" ${status == 'recalled' ? 'selected' : ''}>Đã thu hồi</option>
                                     <option value="returned" ${status == 'returned' ? 'selected' : ''}>Đã trả</option>
                                 </select>
@@ -186,10 +186,10 @@
                                                     <td class="text-center">
                                                         <c:choose>
                                                             <c:when test="${item.status == 'borrowed'}">
-                                                                <span class="badge-pill badge-warning">Đang mượn</span>
+                                                                <span class="badge-pill badge-warning">Đang mượn (Trong hạn)</span>
                                                             </c:when>
                                                             <c:when test="${item.status == 'overdue'}">
-                                                                <span class="badge-pill badge-error">Quá hạn</span>
+                                                                <span class="badge-pill badge-error">Quá hạn chưa trả</span>
                                                             </c:when>
                                                             <c:when test="${item.status == 'recalled'}">
                                                                 <span class="badge-pill badge-warning">Đã thu hồi</span>
