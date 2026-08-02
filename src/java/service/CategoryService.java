@@ -11,6 +11,8 @@ import util.DatabaseConnection;
 
 public class CategoryService {
 
+    private static final String UNIQUE_VIOLATION_SQL_STATE = "23505";
+
     private final CategoryDAO categoryDAO;
     private final AuditLogDAO auditLogDAO;
 
@@ -40,6 +42,9 @@ public class CategoryService {
                 conn.rollback();
                 if (e instanceof ValidationException) {
                     throw (ValidationException) e;
+                }
+                if (isUniqueConstraintViolation((SQLException) e)) {
+                    throw new ValidationException("Tên thể loại vừa được sử dụng bởi thao tác khác.");
                 }
                 throw new DatabaseException("Không thể tạo thể loại.", e);
             } finally {
@@ -71,6 +76,9 @@ public class CategoryService {
                 if (e instanceof ValidationException) {
                     throw (ValidationException) e;
                 }
+                if (isUniqueConstraintViolation((SQLException) e)) {
+                    throw new ValidationException("Tên thể loại vừa được sử dụng bởi thao tác khác.");
+                }
                 throw new DatabaseException("Không thể cập nhật thể loại.", e);
             } finally {
                 conn.setAutoCommit(true);
@@ -81,6 +89,7 @@ public class CategoryService {
     }
 
     public void validate(Category category) throws ValidationException {
+        normalize(category);
         if (category.getName() == null || category.getName().isBlank()) {
             throw new ValidationException("Tên thể loại không được để trống.");
         }
@@ -90,6 +99,26 @@ public class CategoryService {
         if (!"active".equals(category.getStatus()) && !"hidden".equals(category.getStatus())) {
             throw new ValidationException("Trạng thái thể loại không hợp lệ.");
         }
+    }
+
+    private void normalize(Category category) {
+        if (category.getName() != null) {
+            category.setName(category.getName().trim());
+        }
+        if (category.getDescription() != null) {
+            category.setDescription(category.getDescription().trim());
+        }
+    }
+
+    private boolean isUniqueConstraintViolation(SQLException exception) {
+        SQLException current = exception;
+        while (current != null) {
+            if (UNIQUE_VIOLATION_SQL_STATE.equals(current.getSQLState())) {
+                return true;
+            }
+            current = current.getNextException();
+        }
+        return false;
     }
 
     private String toAuditValue(Category category) {

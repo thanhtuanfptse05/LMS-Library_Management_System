@@ -23,6 +23,7 @@ import model.BookImportError;
 import dto.BookImportPreviewDTO;
 import dto.BookImportRowDTO;
 import model.Category;
+import model.Reservation;
 import model.Tag;
 import util.DatabaseConnection;
 
@@ -35,14 +36,22 @@ public class BookImportService {
     private final CategoryDAO categoryDAO;
     private final TagDAO tagDAO;
     private final AuditLogDAO auditDAO;
+    private final ReservationCapacityAllocator capacityAllocator;
 
     public BookImportService() {
         this(new BookImportValidator(), new BookImportDAO(), new BookDAO(), new BookCopyDAO(),
-                new CategoryDAO(), new TagDAO(), new AuditLogDAO());
+                new CategoryDAO(), new TagDAO(), new AuditLogDAO(), new ReservationCapacityAllocator());
     }
 
     public BookImportService(BookImportValidator validator, BookImportDAO importDAO, BookDAO bookDAO,
             BookCopyDAO copyDAO, CategoryDAO categoryDAO, TagDAO tagDAO, AuditLogDAO auditDAO) {
+        this(validator, importDAO, bookDAO, copyDAO, categoryDAO, tagDAO, auditDAO,
+                new ReservationCapacityAllocator());
+    }
+
+    public BookImportService(BookImportValidator validator, BookImportDAO importDAO, BookDAO bookDAO,
+            BookCopyDAO copyDAO, CategoryDAO categoryDAO, TagDAO tagDAO, AuditLogDAO auditDAO,
+            ReservationCapacityAllocator capacityAllocator) {
         this.validator = validator;
         this.importDAO = importDAO;
         this.bookDAO = bookDAO;
@@ -50,6 +59,7 @@ public class BookImportService {
         this.categoryDAO = categoryDAO;
         this.tagDAO = tagDAO;
         this.auditDAO = auditDAO;
+        this.capacityAllocator = capacityAllocator;
     }
 
     public void validate(BookImportPreviewDTO preview, int actorId) throws DatabaseException {
@@ -60,7 +70,12 @@ public class BookImportService {
     }
 
     public int confirm(BookImportPreviewDTO preview, int actorId) throws ValidationException, DatabaseException {
-        preview.getErrors().clear();
+        // Lỗi do WorkbookReader phát hiện là lỗi cấu trúc/nội dung gốc của tệp và
+        // không được xóa khi xác nhận. Một preview đã có lỗi tuyệt đối không được import.
+        if (!preview.isValid()) {
+            saveFailedBatch(preview, actorId, preview.getErrors());
+            throw new ValidationException("Tệp import vẫn còn lỗi. Hãy sửa tệp và tải lên lại.");
+        }
         validator.validate(preview);
         if (!preview.isValid()) {
             saveFailedBatch(preview, actorId, preview.getErrors());
@@ -70,22 +85,31 @@ public class BookImportService {
             conn.setAutoCommit(false);
             try {
                 BookCreationResult books = createBooks(conn, preview.getBooks(), actorId);
-                int copyCount = createCopies(conn, preview.getBookCopies(), books.idsByIsbn, actorId);
+                CopyCreationResult copies = createCopies(
+                        conn, preview.getBookCopies(), books.idsByIsbn, actorId);
                 // successRows chỉ đếm số dòng thực sự được ghi vào CSDL: các dòng đầu sách có ISBN
                 // đã tồn tại bị bỏ qua nên không được tính là thành công.
-                int successRows = books.inserted + copyCount;
+                int successRows = books.inserted + copies.inserted;
                 BookImportBatch batch = batch(preview, actorId, successRows, 0, "success");
                 int batchId = importDAO.insertBatch(conn, batch);
                 auditDAO.insert(conn, actorId, "IMPORT_BOOKS", "BookImportBatch", batchId, null,
                         "{\"fileName\":\"" + escape(preview.getFileName()) + "\",\"books\":"
                         + books.inserted + ",\"skippedBooks\":" + books.skipped
-                        + ",\"bookCopies\":" + copyCount + "}");
+                        + ",\"bookCopies\":" + copies.inserted + "}");
                 conn.commit();
+                for (ReadyNotification notification : copies.notifications) {
+                    capacityAllocator.notifyReadyAfterCommit(
+                            notification.reservation, notification.bookTitle);
+                }
                 return batchId;
             } catch (SQLException e) {
                 conn.rollback();
                 saveFailedBatch(preview, actorId, List.of(new BookImportError("Books", 1, null,
                         "Lỗi hệ thống khi lưu dữ liệu. Toàn bộ phiên import đã được hoàn tác.")));
+                if (isUniqueConstraintViolation(e)) {
+                    throw new ValidationException("Dữ liệu ISBN, mã vạch, thể loại hoặc tag vừa bị trùng với "
+                            + "một thao tác khác. Toàn bộ phiên import đã được hoàn tác; hãy tải lại dữ liệu.");
+                }
                 throw new DatabaseException("Lỗi hệ thống trong quá trình đồng bộ dữ liệu import.", e);
             } finally {
                 conn.setAutoCommit(true);
@@ -100,6 +124,21 @@ public class BookImportService {
         private final Map<String, Integer> idsByIsbn = new LinkedHashMap<>();
         private int inserted;
         private int skipped;
+    }
+
+    private static final class CopyCreationResult {
+        private int inserted;
+        private final List<ReadyNotification> notifications = new ArrayList<>();
+    }
+
+    private static final class ReadyNotification {
+        private final Reservation reservation;
+        private final String bookTitle;
+
+        private ReadyNotification(Reservation reservation, String bookTitle) {
+            this.reservation = reservation;
+            this.bookTitle = bookTitle;
+        }
     }
 
     private BookCreationResult createBooks(Connection conn, List<BookImportRowDTO> rows, int actorId)
@@ -125,8 +164,10 @@ public class BookImportService {
         return result;
     }
 
-    private int createCopies(Connection conn, List<BookImportRowDTO> rows, Map<String, Integer> bookIds, int actorId)
+    private CopyCreationResult createCopies(Connection conn, List<BookImportRowDTO> rows,
+            Map<String, Integer> bookIds, int actorId)
             throws SQLException {
+        CopyCreationResult result = new CopyCreationResult();
         for (BookImportRowDTO row : rows) {
             Integer bookId = bookIds.get(row.getIsbn().toLowerCase());
             if (bookId == null) {
@@ -150,9 +191,14 @@ public class BookImportService {
             copy.setCondition("good");
             copy.setStatus(parentAvailable ? "available" : "unavailable");
             copyDAO.insert(conn, copy);
-            bookDAO.updateQuantities(conn, bookId, 1, parentAvailable ? 1 : 0);
+            Reservation promoted = capacityAllocator.registerNewCopy(
+                    conn, parentBook, actorId, "excel_import");
+            if (promoted != null) {
+                result.notifications.add(new ReadyNotification(promoted, parentBook.getTitle()));
+            }
+            result.inserted++;
         }
-        return rows.size();
+        return result;
     }
 
     private int[] resolveCategories(Connection conn, List<String> names, int actorId) throws SQLException {
@@ -244,5 +290,16 @@ public class BookImportService {
 
     private String escape(String value) {
         return value == null ? "" : value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private boolean isUniqueConstraintViolation(SQLException exception) {
+        SQLException current = exception;
+        while (current != null) {
+            if ("23505".equals(current.getSQLState())) {
+                return true;
+            }
+            current = current.getNextException();
+        }
+        return false;
     }
 }

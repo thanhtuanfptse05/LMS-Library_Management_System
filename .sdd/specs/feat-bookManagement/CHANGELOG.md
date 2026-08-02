@@ -1,5 +1,13 @@
 # CHANGELOG.md — Quản lý Sách và Kho vật lý
 
+## [1.4.0] - 2026-08-02
+### Changed
+- Đồng bộ BR-17/FR-24/FR-47 theo mô hình Reservation giữ suất đầu sách, không giữ Barcode; bản sao mới/import ưu tiên hàng `pending` trước khi tăng `availableQuantity`.
+- Làm rõ được phép sửa metadata đầu sách khi đang có người mượn nhưng không đổi ISBN, số lượng, BorrowRecord hoặc bản sao `borrowed`.
+- Bổ sung ISBN trùng trong sheet Books, giữ lỗi WorkbookReader, chuẩn hóa Barcode/location và xử lý unique race thân thiện.
+- Chuẩn hóa Category và bảo vệ trùng không phân biệt hoa/thường/khoảng trắng bằng unique index DB.
+- Quy định email reservation chỉ enqueue sau khi transaction commit.
+
 ## [1.2.0] - 2026-07-21
 ### Changed
 - Làm rõ Barcode trong file import phải dùng cùng rule validate với Barcode nhập tay.

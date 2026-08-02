@@ -2,9 +2,15 @@ package service;
 
 import dto.BookImportPreviewDTO;
 import dto.BookImportRowDTO;
+import dao.BookCopyDAO;
+import dao.BookDAO;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.List;
+import java.util.Set;
 import static org.junit.Assert.*;
 
 public class BookImportValidatorTest {
@@ -131,5 +137,84 @@ public class BookImportValidatorTest {
         }
 
         assertFalse("Preview phải chứa lỗi khi tag > 100 ký tự", preview.getErrors().isEmpty());
+    }
+
+    @Test
+    public void testCopyRowRequiresIsbnBarcodeAndLocation() throws SQLException {
+        BookImportPreviewDTO preview = new BookImportPreviewDTO();
+        BookImportRowDTO copyRow = new BookImportRowDTO();
+        copyRow.setRowNumber(2);
+        copyRow.setIsbn("  ");
+        copyRow.setBarcode(" ");
+        copyRow.setLocation(null);
+
+        validator.validateCopyRow(null, preview, copyRow, new HashSet<>(), new HashSet<>());
+
+        assertEquals("Phải báo đủ ba trường bắt buộc", 3, preview.getErrors().size());
+        assertTrue(preview.getErrors().stream().anyMatch(error -> "isbn".equals(error.getColumnName())));
+        assertTrue(preview.getErrors().stream().anyMatch(error -> "barcode".equals(error.getColumnName())));
+        assertTrue(preview.getErrors().stream().anyMatch(error -> "location".equals(error.getColumnName())));
+    }
+
+    @Test
+    public void testDuplicateBarcodeInsideWorkbookIsRejected() throws SQLException {
+        BookCopyDAO noExistingBarcodeDAO = new BookCopyDAO() {
+            @Override
+            public model.BookCopy findByBarcode(Connection conn, String barcode) {
+                return null;
+            }
+        };
+        validator = new BookImportValidator(new BookDAO(), noExistingBarcodeDAO, new BookService());
+        BookImportPreviewDTO preview = new BookImportPreviewDTO();
+        Set<String> availableIsbns = new HashSet<>(Set.of("9780306406157"));
+        Set<String> seenBarcodes = new HashSet<>();
+
+        BookImportRowDTO first = validCopyRow(2, "COPY-001");
+        BookImportRowDTO duplicate = validCopyRow(3, " COPY-001 ");
+        validator.validateCopyRow(null, preview, first, availableIsbns, seenBarcodes);
+        validator.validateCopyRow(null, preview, duplicate, availableIsbns, seenBarcodes);
+
+        assertEquals(1, preview.getErrors().size());
+        assertEquals("barcode", preview.getErrors().get(0).getColumnName());
+        assertTrue(preview.getErrors().get(0).getErrorMessage().contains("trùng trong tệp"));
+    }
+
+    @Test
+    public void testDuplicateIsbnInsideBooksSheetIsRejected() throws SQLException {
+        BookDAO noExistingBookDAO = new BookDAO() {
+            @Override
+            public model.Book findByIsbn(Connection conn, String isbn) {
+                return null;
+            }
+        };
+        validator = new BookImportValidator(noExistingBookDAO, new BookCopyDAO(), new BookService());
+        BookImportPreviewDTO preview = new BookImportPreviewDTO();
+        Set<String> seenIsbns = new HashSet<>();
+
+        BookImportRowDTO first = validBookRow(2, "9780306406157");
+        BookImportRowDTO duplicate = validBookRow(3, " 978-0-306-40615-7 ");
+        validator.validateBookRow(null, preview, first, seenIsbns);
+        validator.validateBookRow(null, preview, duplicate, seenIsbns);
+
+        assertEquals(1, preview.getErrors().size());
+        assertEquals("isbn", preview.getErrors().get(0).getColumnName());
+        assertTrue(preview.getErrors().get(0).getErrorMessage().contains("trùng"));
+    }
+
+    private BookImportRowDTO validBookRow(int rowNumber, String isbn) {
+        BookImportRowDTO row = new BookImportRowDTO();
+        row.setRowNumber(rowNumber);
+        row.setIsbn(isbn);
+        row.setTitle("Sách kiểm thử");
+        return row;
+    }
+
+    private BookImportRowDTO validCopyRow(int rowNumber, String barcode) {
+        BookImportRowDTO row = new BookImportRowDTO();
+        row.setRowNumber(rowNumber);
+        row.setIsbn("9780306406157");
+        row.setBarcode(barcode);
+        row.setLocation("Kệ A1");
+        return row;
     }
 }

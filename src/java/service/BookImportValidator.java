@@ -36,23 +36,26 @@ public class BookImportValidator {
 
     public void validate(BookImportPreviewDTO preview) throws DatabaseException {
         Set<String> availableIsbns = new HashSet<>();
+        Set<String> seenIsbns = new HashSet<>();
+        Set<String> seenBarcodes = new HashSet<>();
         preview.getWarnings().clear();
         try (Connection conn = DatabaseConnection.getConnection()) {
             for (BookImportRowDTO row : preview.getBooks()) {
-                validateBookRow(conn, preview, row);
-                if (row.getIsbn() != null && !row.getIsbn().isBlank()) {
+                validateBookRow(conn, preview, row, seenIsbns);
+                if (IsbnValidator.isValid(row.getIsbn())) {
                     availableIsbns.add(row.getIsbn().toLowerCase());
                 }
             }
             for (BookImportRowDTO row : preview.getBookCopies()) {
-                validateCopyRow(conn, preview, row, availableIsbns);
+                validateCopyRow(conn, preview, row, availableIsbns, seenBarcodes);
             }
         } catch (SQLException e) {
             throw new DatabaseException("Không thể kiểm tra dữ liệu import với cơ sở dữ liệu.", e);
         }
     }
 
-    private void validateBookRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row)
+    void validateBookRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row,
+            Set<String> seenIsbns)
             throws SQLException {
         row.setExistingBook(false);
         Book book = new Book();
@@ -63,15 +66,21 @@ public class BookImportValidator {
         book.setPublicationYear(row.getPublicationYear());
         book.setPrice(row.getPrice());
         book.setStatus("available");
+        boolean validIsbn = false;
         try {
             bookService.validate(book, true);
             row.setIsbn(book.getIsbn());
+            validIsbn = true;
         } catch (ValidationException e) {
             preview.getErrors().add(new BookImportError("Books", row.getRowNumber(), null, e.getMessage()));
         }
+        if (validIsbn && !seenIsbns.add(row.getIsbn().toLowerCase())) {
+            preview.getErrors().add(new BookImportError("Books", row.getRowNumber(), "isbn",
+                    "ISBN bị trùng trong trang tính Books."));
+        }
         // Đầu sách đã có trên hệ thống sẽ không bị ghi đè: import chỉ dùng lại bookId sẵn có.
         // Đây là cảnh báo (không chặn import) để thủ thư biết dòng này không tạo dữ liệu mới.
-        if (row.getIsbn() != null && !row.getIsbn().isBlank()
+        if (validIsbn
                 && bookDAO.findByIsbn(conn, row.getIsbn()) != null) {
             row.setExistingBook(true);
             preview.getWarnings().add(new BookImportError("Books", row.getRowNumber(), "isbn",
@@ -92,9 +101,11 @@ public class BookImportValidator {
         }
     }
 
-    private void validateCopyRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row,
-            Set<String> availableIsbns) throws SQLException {
+    void validateCopyRow(Connection conn, BookImportPreviewDTO preview, BookImportRowDTO row,
+            Set<String> availableIsbns, Set<String> seenBarcodes) throws SQLException {
         row.setIsbn(IsbnValidator.normalize(row.getIsbn()));
+        row.setBarcode(trimToNull(row.getBarcode()));
+        row.setLocation(trimToNull(row.getLocation()));
         boolean hasIsbn = row.getIsbn() != null && !row.getIsbn().isBlank();
         boolean isbnValid = hasIsbn && IsbnValidator.isValid(row.getIsbn());
 
@@ -102,7 +113,10 @@ public class BookImportValidator {
         // tham chiếu, vì ISBN sai thì chắc chắn không tìm thấy đầu sách nào.
         // Không dừng cả hàm ở đây — barcode và vị trí vẫn phải được kiểm tra để thủ thư
         // thấy đủ lỗi trong một lần xem trước, đúng như giao diện đã hứa.
-        if (hasIsbn && !isbnValid) {
+        if (!hasIsbn) {
+            preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "isbn",
+                    "ISBN không được để trống."));
+        } else if (!isbnValid) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "isbn",
                     "ISBN không hợp lệ. Vui lòng nhập ISBN-10 hoặc ISBN-13 đúng chuẩn."));
         } else if (isbnValid
@@ -111,21 +125,35 @@ public class BookImportValidator {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "isbn",
                     "ISBN không tham chiếu tới đầu sách trong tệp hoặc hệ thống."));
         }
-        if (row.getBarcode() != null && row.getBarcode().length() > 50) {
+        if (row.getBarcode() == null) {
+            preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "barcode",
+                    "Mã vạch không được để trống."));
+        } else if (row.getBarcode().length() > 50) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "barcode",
                     "Mã vạch không được vượt quá 50 ký tự."));
-        } else if (row.getBarcode() != null && !row.getBarcode().isBlank()
-                && !BARCODE_PATTERN.matcher(row.getBarcode()).matches()) {
+        } else if (!BARCODE_PATTERN.matcher(row.getBarcode()).matches()) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "barcode",
                     "Mã vạch chỉ được chứa chữ, số và các ký tự - _ . /."));
-        } else if (row.getBarcode() != null && !row.getBarcode().isBlank()
-                && bookCopyDAO.findByBarcode(conn, row.getBarcode()) != null) {
+        } else if (!seenBarcodes.add(row.getBarcode())) {
+            preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "barcode",
+                    "Mã vạch bị trùng trong tệp import."));
+        } else if (bookCopyDAO.findByBarcode(conn, row.getBarcode()) != null) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "barcode",
                     "Mã vạch đã tồn tại trên hệ thống."));
         }
-        if (row.getLocation() != null && row.getLocation().length() > 255) {
+        if (row.getLocation() == null) {
+            preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "location",
+                    "Vị trí không được để trống."));
+        } else if (row.getLocation().length() > 255) {
             preview.getErrors().add(new BookImportError("BookCopies", row.getRowNumber(), "location",
                     "Vị trí không được vượt quá 255 ký tự."));
         }
+    }
+
+    private String trimToNull(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        return value.trim();
     }
 }

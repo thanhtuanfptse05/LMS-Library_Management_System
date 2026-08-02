@@ -1,8 +1,8 @@
 # Detailed Use Case Specifications (LMS)
 
 **Project:** Library Management System (LMS)  
-**Version:** 4.0.0  
-**Date:** 2026-07-22  
+**Version:** 4.1.0
+**Date:** 2026-08-02
 
 ---
 
@@ -465,7 +465,7 @@
   </tr>
   <tr>
     <td><b>Business Rules:</b></td>
-    <td colspan="3">• BR-38</td>
+    <td colspan="3">• BR-17</td>
   </tr>
   <tr>
     <td><b>Non-Functional Requirements:</b></td>
@@ -835,7 +835,7 @@
   </tr>
   <tr>
     <td><b>Description:</b></td>
-    <td colspan="3">User creates new book title or modifies metadata (ISBN, Title, Author, Publisher, Year, Price, Image).</td>
+    <td colspan="3">Librarian creates a book title or modifies allowed metadata. ISBN and aggregate quantities remain immutable; metadata may be edited while copies are on loan without changing active transactions.</td>
   </tr>
   <tr>
     <td><b>Preconditions:</b></td>
@@ -847,11 +847,11 @@
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. User is on Book Catalog page (UC-12).<br>2. User clicks [+ Thêm sách] button or edit icon on book row.<br>3. System opens "Book Information" modal dialog with fields: ISBN *, Title *, Author *, Publisher, Publication Year, Price *, Cover Image Upload, Category multiselect, Tag multiselect.<br>4. User enters metadata, selects image, and clicks [Lưu thông tin sách]. (A1, E1, E2)<br>5. System validates ISBN uniqueness and required fields. (E1, E2)<br>6. System saves cover image to storage directory via BookImageStorage utility.<br>7. System inserts/updates Book record, BookCategory, and BookTag junction tables.<br>8. System logs C/U/D action to AuditLogs, closes modal, displays: "Lưu thông tin đầu sách thành công", and refreshes catalog.</td>
+    <td colspan="3">1. Librarian opens the Book Catalog and chooses create/edit.<br>2. System displays ISBN only for creation and metadata fields (title, author, publisher, year, price, image, categories, tags, circulation status).<br>3. Librarian submits valid data. (A1, A2, E1, E2)<br>4. System preserves ISBN, totalQuantity and availableQuantity on update, even when BorrowRecord is active.<br>5. System writes Book and category/tag links with AuditLog in one transaction.<br>6. If circulation is stopped, available copies become unavailable, borrowed copies and active BorrowRecords remain unchanged, active Reservations are cancelled and notifications are sent after commit.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
-    <td colspan="3">A1: Cancel book management<br>At Step 4, User clicks [Hủy].<br>1. Modal closes without saving changes.</td>
+    <td colspan="3">A1: Cancel book management<br>Modal closes without saving.<br><br>A2: Resume circulation<br>System restores only good, non-removed copies without open incidents; borrowed copies remain borrowed.</td>
   </tr>
   <tr>
     <td><b>Exceptions:</b></td>
@@ -867,7 +867,7 @@
   </tr>
   <tr>
     <td><b>Business Rules:</b></td>
-    <td colspan="3">• BR-16, BR-18</td>
+    <td colspan="3">• BR-16, BR-17, BR-18</td>
   </tr>
   <tr>
     <td><b>Non-Functional Requirements:</b></td>
@@ -910,11 +910,11 @@
   </tr>
   <tr>
     <td><b>Postconditions:</b></td>
-    <td colspan="3">• New BookCopy records created, increasing availableQuantity counter.</td>
+    <td colspan="3">• New BookCopy is created and totalQuantity increases; new capacity serves the first pending reservation before availableQuantity can increase.</td>
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. Librarian is on Book Catalog page (UC-12) or Copy Inventory modal.<br>2. Librarian clicks [+ Thêm bản sao] button.<br>3. System opens "Add Copy" modal with fields: Barcode * (or auto-generate), Location Shelf *, Initial Condition (New / Good / Fair), Status (Available).<br>4. Librarian enters barcode and location, then clicks [Lưu bản sao]. (A1, E1, E2)<br>5. System validates barcode uniqueness in BookCopy table. (E1, E2)<br>6. System inserts record into BookCopy table.<br>7. System increments totalQuantity and availableQuantity in Book table.<br>8. System records action in AuditLogs, displays: "Thêm bản sao sách mới thành công", and refreshes copy list table.</td>
+    <td colspan="3">1. Librarian selects an existing Book and clicks [+ Thêm bản sao].<br>2. System requests a manually assigned Barcode and Location; initial condition/status are derived by the system.<br>3. System trims and validates Barcode/Location and locks the parent Book. (A1, E1, E2)<br>4. System inserts BookCopy as `good`, with status `available` only when the parent Book circulates, otherwise `unavailable`.<br>5. System increments totalQuantity.<br>6. If the Book circulates and a pending queue exists, System promotes queue position 1 to `readypickup` with `bookCopyId=NULL`; otherwise it increments availableQuantity.<br>7. System writes AuditLog and commits, then asynchronously notifies the promoted reader.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
@@ -969,7 +969,7 @@
   </tr>
   <tr>
     <td><b>Description:</b></td>
-    <td colspan="3">User creates, updates, or soft-deletes book categories and tags.</td>
+    <td colspan="3">Librarian creates, updates, or changes the soft state of book categories and tags; Category names are normalized and unique case-insensitively.</td>
   </tr>
   <tr>
     <td><b>Preconditions:</b></td>
@@ -981,7 +981,7 @@
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. User navigates to "Category & Tag Management" from sidebar.<br>2. System displays Category list and Tag list tables with C/U/D action buttons.<br>3. User clicks [+ Thêm danh mục] or [+ Thêm thẻ tag] button.<br>4. System opens modal dialog with Name * and Description fields.<br>5. User enters taxonomy details and clicks [Lưu]. (A1, E1)<br>6. System validates unique name constraint in Category or Tag table. (E1)<br>7. System inserts or updates record in Category / Tag table.<br>8. System closes modal, displays: "Cập nhật danh mục / thẻ tag thành công", and refreshes list.</td>
+    <td colspan="3">1. Librarian opens Category/Tag management and chooses create/update.<br>2. System trims and validates name/status.<br>3. For Category, System checks normalized name and relies on the DB unique index `LOWER(BTRIM(name))` against concurrent requests. (E1)<br>4. System inserts/updates the soft-state record and AuditLog in one transaction.<br>5. System displays a Vietnamese success message and refreshes the list.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
@@ -1001,7 +1001,7 @@
   </tr>
   <tr>
     <td><b>Business Rules:</b></td>
-    <td colspan="3">• BR-38</td>
+    <td colspan="3">• Không có BR riêng; tuân FR-27 và ràng buộc Database.</td>
   </tr>
   <tr>
     <td><b>Non-Functional Requirements:</b></td>
@@ -1032,11 +1032,11 @@
   </tr>
   <tr>
     <td><b>Trigger:</b></td>
-    <td colspan="3">Student or Lecturer wants to place an online hold reservation for an out-of-stock book.</td>
+    <td colspan="3">Student or Lecturer wants to reserve a book title; the reservation never binds a physical barcode before desk checkout.</td>
   </tr>
   <tr>
     <td><b>Description:</b></td>
-    <td colspan="3">User reserves a book when availableQuantity = 0 to join queue.</td>
+    <td colspan="3">User reserves a circulating book title and either receives an abstract ready-pickup slot or joins the pending queue.</td>
   </tr>
   <tr>
     <td><b>Preconditions:</b></td>
@@ -1044,11 +1044,11 @@
   </tr>
   <tr>
     <td><b>Postconditions:</b></td>
-    <td colspan="3">• Reservation record created with status 'Pending' and queuePosition assigned.</td>
+    <td colspan="3">• Reservation is `readypickup/queuePosition=0` or `pending/queuePosition&gt;0`; bookCopyId remains NULL.</td>
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. User views Book Detail page (UC-22) where availableQuantity = 0.<br>2. User clicks [Đặt giữ chỗ sách] button.<br>3. System checks user active loan count, overdue fines, and existing reservations for this book. (E1, E2, E3)<br>4. System calculates next queuePosition = MAX(queuePosition) + 1 for this bookId.<br>5. System inserts record into Reservation table (status = 'Pending', startDate = NOW()).<br>6. System logs action to AuditLogs and displays success modal: "Đặt giữ chỗ sách trực tuyến thành công."</td>
+    <td colspan="3">1. User opens Book Detail and requests a reservation.<br>2. System validates account, fines, limits, duplicates and Book status. (E1, E2, E3)<br>3. System locks Book.<br>4. If availableQuantity &gt; 0, System decrements it and creates `readypickup/queuePosition=0/bookCopyId=NULL` with HOLD_DAYS.<br>5. Otherwise System appends `pending/bookCopyId=NULL` to the queue.<br>6. System writes AuditLog and commits; ready notification is queued only after commit.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
@@ -1178,19 +1178,19 @@
   </tr>
   <tr>
     <td><b>Postconditions:</b></td>
-    <td colspan="3">• BorrowRecord created, copy status set to 'Borrowed', availableQuantity decremented.</td>
+    <td colspan="3">• BorrowRecord is created, Reservation becomes fulfilled with the selected bookCopyId, and BookCopy becomes borrowed; held capacity is not deducted twice.</td>
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. Librarian is on Desk Circulation screen ("Issue Book").<br>2. Librarian scans/enters Reader Code (Student Code / Staff Code). (E1)<br>3. System validates account status and active fines. (E1, E2)<br>4. Librarian scans Copy Barcode. (E3, E4)<br>5. System verifies BookCopy status = 'Available' (or reserved for this user). (E4)<br>6. Librarian selects loan duration (14 days student / 30 days lecturer) and clicks [Xác nhận mượn].<br>7. System inserts BorrowRecord, updates BookCopy status = 'Borrowed', decrements availableQuantity in Book table.<br>8. System records transaction in AuditLogs and prints loan receipt.</td>
+    <td colspan="3">1. Librarian enters Reader Code and scans a physical Barcode. (E1-E4)<br>2. System finds the reader's `readypickup` Reservation for the Barcode's bookId and verifies parent Book circulates.<br>3. System verifies BookCopy is `available/good`, not removed, and matches the requested bookId.<br>4. System inserts BorrowRecord, sets Reservation `fulfilled` and assigns bookCopyId, then sets BookCopy `borrowed` in one transaction.<br>5. System does not decrement availableQuantity again because the abstract slot was consumed when Reservation became ready.<br>6. System commits AuditLog and sends checkout email asynchronously.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
-    <td colspan="3">A1: Issue from pre-reservation<br>At Step 4, Librarian selects reader's active reservation.<br>1. System links Reservation to BorrowRecord and sets Reservation status = 'Fulfilled'.</td>
+    <td colspan="3">A1: Walk-in demand<br>Librarian first registers a title-level reservation for the reader; a Barcode is selected only after the reservation is ready. No `reserved` BookCopy status is used.</td>
   </tr>
   <tr>
     <td><b>Exceptions:</b></td>
-    <td colspan="3">E1: Reader code not found or locked<br>At Step 3: Account invalid or locked.<br>• System displays: "Mã độc giả không tồn tại hoặc tài khoản đã bị khóa."<br><br>E2: Reader has pending fines<br>At Step 3: Fine balance > 0.<br>• System displays: "Độc giả đang có tiền phạt chưa nộp. Vui lòng thanh toán trước."<br><br>E3: Invalid barcode<br>At Step 4: Barcode not found in BookCopy table.<br>• System displays: "Mã vạch bản sao sách không tồn tại."<br><br>E4: Copy not available<br>At Step 5: Copy status is 'Borrowed' or 'Maintenance'.<br>• System displays: "Bản sao sách này hiện không ở trạng thái sẵn sàng để mượn."</td>
+    <td colspan="3">E1: Reader code not found or locked<br>System displays: "Mã độc giả không tồn tại hoặc tài khoản đã bị khóa."<br><br>E2: Reader has pending fines<br>System blocks checkout until payment.<br><br>E3: Invalid/mismatched barcode<br>Barcode is missing, removed, or belongs to another book title.<br><br>E4: Copy not available<br>BookCopy is `borrowed/unavailable` or not `good`; System displays a Vietnamese validation message and changes nothing.</td>
   </tr>
   <tr>
     <td><b>Priority:</b></td>
@@ -1245,11 +1245,11 @@
   </tr>
   <tr>
     <td><b>Postconditions:</b></td>
-    <td colspan="3">• BorrowRecord returnedAt updated, copy status set to 'Available', fine created if overdue.</td>
+    <td colspan="3">• BorrowRecord is closed; a good copy becomes available or stays unavailable when its parent Book has stopped circulation; fines/incidents are created when applicable.</td>
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. Librarian is on Desk Circulation screen ("Receive Return").<br>2. Librarian scans Copy Barcode. (E1, E2)<br>3. System retrieves active BorrowRecord for this copy.<br>4. Librarian selects return condition (Good / Damaged / Lost).<br>5. System checks if return date > endDate.<br>6. If overdue, system calculates fineAmount = overdueDays * dailyFineRate and inserts Fine record.<br>7. Librarian clicks [Xác nhận trả].<br>8. System updates BorrowRecord (returnedAt = NOW(), status = 'Returned').<br>9. System updates BookCopy status = 'Available' (or 'Maintenance' if damaged) and increments availableQuantity in Book table.<br>10. System records transaction in AuditLogs, displays: "Nhận trả sách thành công", and renders Fine payment prompt if fine incurred.</td>
+    <td colspan="3">1. Librarian scans a borrowed copy and selects Good/Damaged/Lost.<br>2. System loads the active BorrowRecord and computes overdue/compensation fine.<br>3. For Good: close BorrowRecord; if parent Book is unavailable keep copy `good/unavailable`; otherwise set copy `available`, promote pending Reservation without assigning bookCopyId, or increase availableQuantity when queue is empty.<br>4. For Damaged/Lost: close BorrowRecord, set copy unavailable with condition, create a resolved incident/fine/lock; only Lost is removed from total inventory immediately.<br>5. System writes AuditLog and commits; email is asynchronous after commit.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
@@ -1781,11 +1781,11 @@
   </tr>
   <tr>
     <td><b>Postconditions:</b></td>
-    <td colspan="3">• Multiple Book records inserted into database.</td>
+    <td colspan="3">• All valid Book/BookCopy rows are committed atomically, or none are created; new copy capacity is allocated consistently.</td>
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. Librarian navigates to Book Catalog page.<br>2. Librarian clicks [Nhập danh sách sách Excel] button.<br>3. System opens import modal dialog.<br>4. Librarian uploads Excel file and clicks [Xem trước danh sách]. (A1, E1)<br>5. System validates rows using BookImportValidator. (E1)<br>6. System displays preview summary.<br>7. Librarian clicks [Xác nhận nhập sách].<br>8. System inserts books in batch transaction and records in BookImportBatch.</td>
+    <td colspan="3">1. Librarian uploads an `.xlsx` containing `Books` and `BookCopies` and requests preview. (A1, E1)<br>2. System validates headers, required fields, ISBN checksum/reference, duplicate ISBN in Books, duplicate Barcode in file/DB, limits and lengths.<br>3. System preserves reader/structure errors and displays preview; no business data is created when errors exist.<br>4. On confirm, System revalidates and opens one transaction.<br>5. System reuses existing Books without overwriting metadata, creates new Books/taxonomies, inserts copies with status derived from parent Book, and allocates each new capacity to pending Reservations before increasing availableQuantity.<br>6. System commits batch/Audit/data atomically and sends ready notifications after commit; any error rolls back all business data and records a failed batch separately.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
@@ -1793,7 +1793,7 @@
   </tr>
   <tr>
     <td><b>Exceptions:</b></td>
-    <td colspan="3">E1: Corrupt Excel file<br>At Step 5: File invalid.<br>• System displays: "Invalid file format. Please use sample Excel template."</td>
+    <td colspan="3">E1: Tệp Excel không hợp lệ<br>Hệ thống hiển thị lỗi tiếng Việt theo sheet/dòng/cột và yêu cầu sửa tệp; không tạo Book hoặc BookCopy.</td>
   </tr>
   <tr>
     <td><b>Priority:</b></td>
@@ -1840,7 +1840,7 @@
   </tr>
   <tr>
     <td><b>Description:</b></td>
-    <td colspan="3">Librarian creates incident report for copy and sets status to Damaged/Lost.</td>
+    <td colspan="3">Librarian reports damaged/lost, suspends the copy immediately, then investigates, resolves/rejects, restores a repaired damaged copy, or removes it by soft flag.</td>
   </tr>
   <tr>
     <td><b>Preconditions:</b></td>
@@ -1852,7 +1852,7 @@
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. Librarian navigates to "Book Copy Incident Reporting" screen.<br>2. Librarian scans copy barcode. (E1)<br>3. System retrieves copy details.<br>4. Librarian selects Incident Type (Damaged / Lost / Misplaced) and enters description.<br>5. Librarian clicks [Gửi báo cáo sự cố]. (A1)<br>6. System inserts BookCopyIncident record and updates BookCopy status.</td>
+    <td colspan="3">1. Librarian scans an `available/good` copy and chooses Damaged or Lost with description. (E1)<br>2. System locks Book/BookCopy, creates a pending incident and suspends the copy.<br>3. System decreases free capacity, or demotes the latest ready hold when capacity is already fully allocated.<br>4. Librarian may investigate and then resolve/reject.<br>5. Resolve changes condition; Lost is soft-removed and decrements total once. Reject/repair restoration serves pending queue before increasing availableQuantity.<br>6. All changes and AuditLog commit atomically; notifications occur after commit.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
@@ -1872,7 +1872,7 @@
   </tr>
   <tr>
     <td><b>Business Rules:</b></td>
-    <td colspan="3">• BR-24, BR-28</td>
+    <td colspan="3">• BR-28</td>
   </tr>
   <tr>
     <td><b>Non-Functional Requirements:</b></td>
@@ -1907,7 +1907,7 @@
   </tr>
   <tr>
     <td><b>Description:</b></td>
-    <td colspan="3">Librarian scans shelf copy barcodes during inventory audit session.</td>
+    <td colspan="3">Librarian manages a snapshot-based inventory session, scans shelf copies and explicitly resolves misplaced/missing discrepancies without forced updates.</td>
   </tr>
   <tr>
     <td><b>Preconditions:</b></td>
@@ -1919,15 +1919,15 @@
   </tr>
   <tr>
     <td><b>Normal Flow:</b></td>
-    <td colspan="3">1. Librarian starts new Inventory Session for location shelf. (E1)<br>2. System creates InventorySession record (status = 'In Progress').<br>3. Librarian scans copy barcodes on physical shelf.<br>4. System matches scanned location against expectedLocation in BookCopy table.<br>5. Librarian clicks [Hoàn tất kiểm kê]. (A1)<br>6. System generates reconciliation discrepancy report.</td>
+    <td colspan="3">1. Librarian creates a draft for a normalized location. (E1)<br>2. On Start, System ensures no other counting/reviewing session exists and snapshots eligible copies.<br>3. Librarian scans unique Barcodes; System records matched or misplaced without changing BookCopy.location.<br>4. On Finish Counting, System rejects an empty scan when expected copies exist, marks out-of-scope changes excluded and remaining eligible unscanned copies missing.<br>5. In Review, Librarian resolves misplaced by either physically returning the copy (no location update) or explicitly relocating its registered location; stale snapshots are rejected.<br>6. Resolving missing creates a pending lost incident and applies capacity-loss policy.<br>7. System completes only when no unresolved discrepancies remain.</td>
   </tr>
   <tr>
     <td><b>Alternative Flows:</b></td>
-    <td colspan="3">A1: Pause session<br>At Step 5, Librarian clicks [Tạm dừng phiên].<br>1. Session saved for later resume.</td>
+    <td colspan="3">A1: Cancel session<br>A draft/counting/reviewing session may be cancelled only while allowed by its lifecycle and resolved-discrepancy guard; completed/cancelled sessions cannot be changed.</td>
   </tr>
   <tr>
     <td><b>Exceptions:</b></td>
-    <td colspan="3">E1: Location missing<br>At Step 1: Shelf location empty.<br>• System displays: "Please enter a valid shelf location."</td>
+    <td colspan="3">E1: Vị trí không hợp lệ hoặc đang có phiên active<br>Hệ thống giữ nguyên dữ liệu và hiển thị thông báo tiếng Việt rõ ràng; request đồng thời bị chặn bởi unique index.</td>
   </tr>
   <tr>
     <td><b>Priority:</b></td>
@@ -1939,7 +1939,7 @@
   </tr>
   <tr>
     <td><b>Business Rules:</b></td>
-    <td colspan="3">• BR-44</td>
+    <td colspan="3">• BR-28, BR-44, BR-70</td>
   </tr>
   <tr>
     <td><b>Non-Functional Requirements:</b></td>

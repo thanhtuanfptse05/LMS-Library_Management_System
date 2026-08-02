@@ -1,5 +1,13 @@
 # CHANGELOG.md — Bảo trì sách và Kiểm kê
 
+## [1.3.0] - 2026-08-02
+### Changed
+- Snapshot kiểm kê chỉ tạo khi start; tách đúng created/started/completed/cancelled và chỉ cho một phiên counting/reviewing trên toàn hệ thống.
+- Bổ sung kết quả `excluded`, chặn quét trùng và chặn finish-counting khi chưa quét bản sao kỳ vọng nào.
+- Resolve misplaced có hai lựa chọn: đưa sách về vị trí gốc hoặc chủ động đổi vị trí đăng ký; không tự động cập nhật location khi chỉ phát hiện sai vị trí.
+- Mọi resolve misplaced/missing khóa bản ghi và kiểm tra copy còn available/good/chưa thanh lý, location chưa lệch snapshot.
+- Resolve missing đồng bộ sức chứa theo reservation trừu tượng, không làm `availableQuantity` âm.
+
 ## [1.2.0] - 2026-07-23
 ### Added
 - Bổ sung luồng loại bản sao hỏng nặng khỏi tổng kho bằng `BookCopy.removedFromInventory`, `removedFromInventoryAt`, `removedFromInventoryBy`; giữ record BookCopy để tra cứu lịch sử, không hard-delete.

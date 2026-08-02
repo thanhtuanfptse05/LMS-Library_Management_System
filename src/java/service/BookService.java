@@ -26,6 +26,7 @@ import util.IsbnValidator;
 public class BookService {
 
     private static final Logger LOGGER = Logger.getLogger(BookService.class.getName());
+    private static final String UNIQUE_VIOLATION_SQL_STATE = "23505";
 
     private final BookDAO bookDAO;
     private final AuditLogDAO auditLogDAO;
@@ -73,6 +74,10 @@ public class BookService {
                 conn.rollback();
                 if (e instanceof ValidationException) {
                     throw (ValidationException) e;
+                }
+                if (isUniqueConstraintViolation((SQLException) e)
+                        && bookDAO.existsByIsbn(conn, book.getIsbn())) {
+                    throw new ValidationException("Trùng lặp ISBN. ISBN này vừa được thêm bởi thao tác khác.");
                 }
                 throw new DatabaseException("Không thể tạo đầu sách do lỗi hệ thống.", e);
             } finally {
@@ -187,6 +192,17 @@ public class BookService {
 
     private String escape(String value) {
         return value == null ? "" : value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private boolean isUniqueConstraintViolation(SQLException exception) {
+        SQLException current = exception;
+        while (current != null) {
+            if (UNIQUE_VIOLATION_SQL_STATE.equals(current.getSQLState())) {
+                return true;
+            }
+            current = current.getNextException();
+        }
+        return false;
     }
 
     private void notifyCancelledReservations(List<Reservation> reservations, String bookTitle) {

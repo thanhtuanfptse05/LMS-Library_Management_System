@@ -136,10 +136,10 @@ public class BookCopyIncidentService {
         executeIncidentAction(incidentId, actorId, "resolve", resolution);
     }
 
-    public void reject(int incidentId, String resolution, int actorId)
+    public boolean reject(int incidentId, String resolution, int actorId)
             throws ValidationException, DatabaseException {
         validateResolution(resolution);
-        executeIncidentAction(incidentId, actorId, "reject", resolution);
+        return executeIncidentAction(incidentId, actorId, "reject", resolution);
     }
 
     public void restoreAfterRepair(int incidentId, String repairNote, int actorId)
@@ -305,7 +305,7 @@ public class BookCopyIncidentService {
         }
     }
 
-    private void executeIncidentAction(int incidentId, int actorId, String action, String resolution)
+    private boolean executeIncidentAction(int incidentId, int actorId, String action, String resolution)
             throws ValidationException, DatabaseException {
         if (incidentId <= 0) {
             throw new ValidationException("Sự cố không hợp lệ.");
@@ -314,6 +314,7 @@ public class BookCopyIncidentService {
             conn.setAutoCommit(false);
             Reservation promotedReservation = null;
             String promotedBookTitle = null;
+            boolean copyRestored = false;
             try {
                 BookCopyIncident incident = incidentDAO.findByIdForUpdate(conn, incidentId);
                 if (incident == null) {
@@ -353,24 +354,35 @@ public class BookCopyIncidentService {
                                 + removedAsLost + "}");
                     } else {
                         Book parentBook = bookDAO.findByIdForUpdate(conn, copy.getBookId());
-                        if (parentBook != null && "available".equals(parentBook.getStatus())) {
+                        if (parentBook == null) {
+                            throw new ValidationException("Đầu sách của bản sao không còn tồn tại.");
+                        }
+                        if ("available".equals(parentBook.getStatus())) {
                             bookCopyDAO.restoreAvailable(conn, copy.getBookCopyId());
                             promotedReservation = allocateRestoredCapacity(conn, copy.getBookId());
                             promotedBookTitle = parentBook.getTitle();
+                            copyRestored = true;
                         }
                         incidentDAO.finish(conn, incidentId, "rejected", resolution, actorId);
                         auditLogDAO.insert(conn, actorId, "REJECT_BOOK_COPY_INCIDENT",
                                 "BookCopyIncident", incidentId, toAuditValue(incident, incident.getStatus()),
                                 toAuditValue(incident, "rejected"));
-                        auditLogDAO.insert(conn, actorId, "RESTORE_BOOK_COPY", "BookCopy",
-                                copy.getBookCopyId(), copyAuditValue(copy, "unavailable"),
-                                copyAuditValue(copy, "available"));
+                        if (copyRestored) {
+                            auditLogDAO.insert(conn, actorId, "RESTORE_BOOK_COPY", "BookCopy",
+                                    copy.getBookCopyId(), copyAuditValue(copy, "unavailable"),
+                                    copyAuditValue(copy, "available"));
+                        } else {
+                            auditLogDAO.insert(conn, actorId, "KEEP_BOOK_COPY_UNAVAILABLE", "BookCopy",
+                                    copy.getBookCopyId(), copyAuditValue(copy, "unavailable"),
+                                    "{\"status\":\"unavailable\",\"reason\":\"parent_book_unavailable\"}");
+                        }
                     }
                 }
                 conn.commit();
                 if (promotedReservation != null) {
                     notifyReservationReady(promotedReservation, promotedBookTitle);
                 }
+                return copyRestored;
             } catch (ValidationException | SQLException e) {
                 conn.rollback();
                 if (e instanceof ValidationException) {

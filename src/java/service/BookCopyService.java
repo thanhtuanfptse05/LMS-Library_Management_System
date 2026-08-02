@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.regex.Pattern;
 import model.Book;
 import model.BookCopy;
+import model.Reservation;
 import util.DatabaseConnection;
 
 public class BookCopyService {
@@ -20,21 +21,30 @@ public class BookCopyService {
     private final BookCopyDAO bookCopyDAO;
     private final BookDAO bookDAO;
     private final AuditLogDAO auditLogDAO;
+    private final ReservationCapacityAllocator capacityAllocator;
 
     public BookCopyService() {
-        this(new BookCopyDAO(), new BookDAO(), new AuditLogDAO());
+        this(new BookCopyDAO(), new BookDAO(), new AuditLogDAO(), new ReservationCapacityAllocator());
     }
 
     public BookCopyService(BookCopyDAO bookCopyDAO, BookDAO bookDAO, AuditLogDAO auditLogDAO) {
+        this(bookCopyDAO, bookDAO, auditLogDAO, new ReservationCapacityAllocator());
+    }
+
+    public BookCopyService(BookCopyDAO bookCopyDAO, BookDAO bookDAO, AuditLogDAO auditLogDAO,
+            ReservationCapacityAllocator capacityAllocator) {
         this.bookCopyDAO = bookCopyDAO;
         this.bookDAO = bookDAO;
         this.auditLogDAO = auditLogDAO;
+        this.capacityAllocator = capacityAllocator;
     }
 
     public int create(BookCopy copy, int actorId) throws ValidationException, DatabaseException {
         validateCreate(copy);
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
+            Reservation promotedReservation = null;
+            String bookTitle = null;
             try {
                 Book book = bookDAO.findByIdForUpdate(conn, copy.getBookId());
                 if (book == null) {
@@ -47,11 +57,14 @@ public class BookCopyService {
                 }
                 copy.setCondition("good");
                 boolean parentAvailable = "available".equals(book.getStatus());
+                bookTitle = book.getTitle();
                 copy.setStatus(parentAvailable ? "available" : "unavailable");
                 int copyId = bookCopyDAO.insert(conn, copy);
-                bookDAO.updateQuantities(conn, copy.getBookId(), 1, parentAvailable ? 1 : 0);
+                promotedReservation = capacityAllocator.registerNewCopy(
+                        conn, book, actorId, "manual_book_copy");
                 auditLogDAO.insert(conn, actorId, "CREATE_BOOK_COPY", "BookCopy", copyId, null, toAuditValue(copy));
                 conn.commit();
+                capacityAllocator.notifyReadyAfterCommit(promotedReservation, bookTitle);
                 return copyId;
             } catch (ValidationException e) {
                 conn.rollback();
@@ -109,6 +122,8 @@ public class BookCopyService {
     }
 
     public void validateCreate(BookCopy copy) throws ValidationException {
+        copy.setBarcode(trimToNull(copy.getBarcode()));
+        copy.setLocation(trimToNull(copy.getLocation()));
         if (copy.getBookId() <= 0) {
             throw new ValidationException("Hãy chọn đầu sách.");
         }
@@ -125,6 +140,7 @@ public class BookCopyService {
     }
 
     public void validateUpdate(BookCopy copy) throws ValidationException {
+        copy.setLocation(trimToNull(copy.getLocation()));
         if (copy.getBookCopyId() <= 0) {
             throw new ValidationException("Bản sao không hợp lệ.");
         }
@@ -138,6 +154,10 @@ public class BookCopyService {
         if (location.length() > 255) {
             throw new ValidationException("Vị trí lưu trữ không được vượt quá 255 ký tự.");
         }
+    }
+
+    private String trimToNull(String value) {
+        return value == null || value.trim().isEmpty() ? null : value.trim();
     }
 
     boolean isUniqueConstraintViolation(SQLException e) {

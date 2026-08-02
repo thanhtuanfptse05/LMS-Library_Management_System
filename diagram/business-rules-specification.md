@@ -1,7 +1,7 @@
 # BẢNG QUY TẮC NGHIỆP VỤ HỆ THỐNG (82 BUSINESS RULES - LMS)
 
 **Dự án:** Hệ thống Quản lý Thư viện Đại học (LMS) - SWP391 Milestone 2  
-**Phiên bản:** 4.1.0 | **Ngày:** 2026-07-26  
+**Phiên bản:** 4.2.0 | **Ngày:** 2026-08-02
 
 ---
 
@@ -114,8 +114,8 @@
     <tr>
       <td><b>BR-17</b></td>
       <td>Derivation</td>
-      <td>The totalQuantity and availableQuantity fields in Book table MUST automatically synchronize with BookCopy inventory counts.</td>
-      <td>Số lượng totalQuantity và availableQuantity của bảng Book BẮT BUỘC đồng bộ với BookCopy. Tạo BookCopy good/available cộng 1 vào cả hai; các thay đổi khả dụng khác do F13/F6 xử lý trong transaction tương ứng.</td>
+      <td>Book.totalQuantity MUST equal physical copies not removed from inventory; Book.availableQuantity MUST represent unallocated service capacity, not a direct count of available BookCopy rows. New/restored capacity MUST serve the pending reservation queue before increasing availableQuantity.</td>
+      <td>`Book.totalQuantity` BẮT BUỘC bằng số bản sao chưa bị loại khỏi kho; `Book.availableQuantity` BẮT BUỘC biểu diễn số suất chưa cấp, không phải phép đếm trực tiếp BookCopy `available`. Sức chứa mới/được phục hồi phải ưu tiên Reservation `pending` trước khi tăng availableQuantity; mọi thay đổi Book/BookCopy/Reservation chạy cùng transaction.</td>
     </tr>
     <tr>
       <td><b>BR-18</b></td>
@@ -132,8 +132,8 @@
     <tr>
       <td><b>BR-20</b></td>
       <td>Definition</td>
-      <td>The queuePosition = 0 in Reservation table is strictly reserved for physical copies undergoing desk pick-up hold.</td>
-      <td>Vị trí hàng đợi queuePosition = 0 DÀNH RIÊNG cho việc giữ sách đã sẵn sàng lấy (status = 'readypickup'). Mọi yêu cầu chờ sách (khi availableQuantity = 0) BẮT BUỘC phải có queuePosition > 0 và trạng thái 'pending'.</td>
+      <td>Reservation queuePosition=0 MUST represent an abstract ready-for-pickup capacity slot; no physical copy is assigned until desk checkout.</td>
+      <td>`queuePosition=0` DÀNH RIÊNG cho Reservation `readypickup` giữ một suất trừu tượng của đầu sách; `bookCopyId` BẮT BUỘC NULL ở `pending/readypickup` và chỉ được gán khi checkout. Yêu cầu đang chờ có `queuePosition>0`, status=`pending`.</td>
     </tr>
     <tr>
       <td><b>BR-21</b></td>
@@ -150,14 +150,14 @@
     <tr>
       <td><b>BR-23</b></td>
       <td>Constraints</td>
-      <td>Walk-in readers at circulation desk MUST NOT check out a book title if all available copies are reserved by other readers.</td>
-      <td>Độc giả mượn sách trực tiếp tại quầy KHÔNG ĐƯỢC PHÉP mượn đầu sách đang có người xếp hàng chờ (tồn tại Reservation với status='pending' VÀ queuePosition > 0). Để chuẩn hóa dữ liệu, mọi giao dịch mượn trực tiếp đều BẮT BUỘC phải tự động sinh ra một Reservation ảo với queuePosition = 0 tại chỗ trước khi insert BorrowRecord.</td>
+      <td>Desk checkout MUST require a ready-for-pickup reservation for the reader and book title; walk-in demand must be registered at the title level before a barcode is selected.</td>
+      <td>Giao sách tại quầy BẮT BUỘC có Reservation `readypickup` đúng độc giả và đầu sách. Nhu cầu mượn tại chỗ phải được đăng ký ở cấp đầu sách trước khi Thủ thư chọn Barcode; không được vượt hàng `pending` của người khác và không gán BookCopy trong lúc đăng ký.</td>
     </tr>
     <tr>
       <td><b>BR-24</b></td>
       <td>Derivation</td>
-      <td>When receiving returned books marked as damaged or lost, the system MUST deduct inventory and record a BookCopyIncident.</td>
-      <td>Khi nhận sách trả với tình trạng 'damaged' hoặc 'lost', hệ thống BẮT BUỘC trừ 1 đơn vị vào Book.totalQuantity (vì sách không còn khả năng lưu thông). ĐỒNG THỜI, BẮT BUỘC phải insert tức thời bản ghi 'unpaid' vào UserLockReason và đổi status User thành 'locked' mà không chờ Background Job chạy ngầm, tránh lỗ hổng bảo mật.</td>
+      <td>Damaged/lost check-in MUST stop the copy, create a resolved incident and compensation fine; only a lost copy is removed from total inventory immediately.</td>
+      <td>Khi nhận trả `damaged/lost`, hệ thống BẮT BUỘC chuyển BookCopy sang `unavailable`, tạo incident `resolved`, tiền phạt và khóa nợ trong cùng transaction. Chỉ `lost` mới set `removedFromInventory=true` và giảm `totalQuantity` ngay; `damaged` giữ tổng kho để có thể sửa hoặc loại sau qua F13.</td>
     </tr>
     <tr>
       <td><b>BR-25</b></td>
@@ -180,14 +180,14 @@
     <tr>
       <td><b>BR-28</b></td>
       <td>Derivation</td>
-      <td>Incident reports on physical copies MUST automatically synchronize BookCopy status to Damaged, Lost, or Maintenance.</td>
-      <td>Khi báo sự cố hợp lệ trong F13, hệ thống BẮT BUỘC chuyển BookCopy sang status='unavailable' và giảm Book.availableQuantity đúng 1 trong cùng transaction. Khi bác bỏ báo cáo hoặc khôi phục bản sao hỏng sau sửa chữa, hệ thống BẮT BUỘC chuyển BookCopy về good/available và tăng availableQuantity đúng 1. Khi kết luận lost hoặc khi bản sao damaged/resolved không còn khả năng sửa, hệ thống BẮT BUỘC đánh dấu removedFromInventory=true và giảm Book.totalQuantity đúng 1 trong transaction; không được xóa record BookCopy.</td>
+      <td>Incident capacity loss/restoration MUST preserve non-negative abstract reservation capacity and inventory history.</td>
+      <td>Khi một BookCopy khả dụng gặp sự cố, nếu còn suất tự do thì giảm `availableQuantity` 1; nếu số lượng đã bằng 0 thì giữ 0 và đưa Reservation `readypickup` mới nhất về đầu hàng `pending`. Khi phục hồi, ưu tiên đôn người đầu hàng chờ và chỉ tăng `availableQuantity` nếu hàng chờ trống. Kết luận `lost` hoặc loại bản sao `damaged/resolved` dùng soft flag và giảm `totalQuantity` đúng một lần; không xóa BookCopy.</td>
     </tr>
     <tr>
       <td><b>BR-29</b></td>
       <td>Constraints</td>
-      <td>Desk check-out operations MUST verify reservation queue positions before issuing reserved physical copies.</td>
-      <td>Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity (vì đã trừ khi đặt trước online).</td>
+      <td>Desk checkout MUST bind an available physical copy to the reader's ready reservation atomically; no reserved BookCopy status is used.</td>
+      <td>Khi giao sách, hệ thống BẮT BUỘC kiểm tra Reservation `readypickup` đúng user/book và BookCopy `available/good/chưa thanh lý`, sau đó mới gán `bookCopyId`, chuyển Reservation `fulfilled` và BookCopy `borrowed` trong cùng transaction. Không tồn tại BookCopy status `reserved`; không trừ `availableQuantity` lần nữa vì suất đã được giữ khi Reservation thành `readypickup`.</td>
     </tr>
     <tr>
       <td><b>BR-30</b></td>
@@ -229,7 +229,7 @@
       <td><b>BR-36</b></td>
       <td>Facts</td>
       <td>Hold reservations ready for pickup MUST expire after a configurable timeframe (default 3 days) if not collected.</td>
-      <td>Đơn đặt trước ở trạng thái 'readypickup' chỉ được giữ tại quầy trong một khoảng thời gian giới hạn được xác định bởi cấu hình RESERVATION_HOLD_DAYS trong bảng SystemConfigurations (mặc định là 3 ngày). Nếu quá thời hạn này (endDate < NOW()), đơn hàng sẽ tự động bị hủy và giải phóng bản sao sách.</td>
+      <td>Đơn `readypickup` chỉ giữ một suất đầu sách trong thời hạn `RESERVATION_HOLD_DAYS` (mặc định 3 ngày), không giữ Barcode cụ thể. Khi hết hạn, hệ thống hủy đơn và chuyển suất cho người `pending` tiếp theo; chỉ tăng `availableQuantity` nếu hàng chờ trống.</td>
     </tr>
     <tr>
       <td><b>BR-37</b></td>
@@ -276,8 +276,8 @@
     <tr>
       <td><b>BR-44</b></td>
       <td>Derivation</td>
-      <td>Inventory management reports MUST reconcile physical copy counts against active loan and reservation logs.</td>
-      <td>Dữ liệu kiểm kê gần nhất phải đủ để đối chiếu số lượng/vị trí bản sao trong báo cáo quản lý. Trong F13, quy tắc này được đáp ứng bằng InventorySession và InventoryItem; việc hiển thị báo cáo quản trị tổng hợp thuộc feature báo cáo nếu có.</td>
+      <td>Inventory reconciliation MUST preserve a start-time snapshot and explicit outcomes for matched, misplaced, missing and excluded copies.</td>
+      <td>Phiên kiểm kê BẮT BUỘC chụp snapshot khi start và lưu đủ `matched/misplaced/missing/excluded`. Phát hiện sai vị trí không tự đổi location; chỉ cập nhật khi Thủ thư chọn điều chuyển và snapshot còn hợp lệ. Dữ liệu này là nguồn đối chiếu cho báo cáo quản lý.</td>
     </tr>
     <tr>
       <td><b>BR-45</b></td>
@@ -432,8 +432,8 @@
     <tr>
       <td><b>BR-70</b></td>
       <td>Constraints</td>
-      <td>The system SHALL ensure that only one active inventory session exists per location at any given time.</td>
-      <td>Hệ thống BẮT BUỘC đảm bảo chỉ có duy nhất 1 phiên kiểm kê kho đang hoạt động cho mỗi vị trí tại một thời điểm.</td>
+      <td>The system SHALL allow multiple draft inventory sessions but only one counting/reviewing session system-wide.</td>
+      <td>Hệ thống cho phép nhiều phiên kiểm kê `draft` nhưng BẮT BUỘC chỉ có tối đa một phiên `counting/reviewing` trên toàn hệ thống; unique partial index phải chặn request bắt đầu đồng thời.</td>
     </tr>
     <tr>
       <td><b>BR-71</b></td>

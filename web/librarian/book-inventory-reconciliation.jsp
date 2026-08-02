@@ -102,7 +102,8 @@
                                     </c:if>
                                     <%-- Trạng thái Đang đếm (Counting): Cho phép bấm Kết thúc quét để chuyển sang Chờ xác minh --%>
                                     <c:if test="${canEdit and selectedSession.status == 'counting'}">
-                                        <form method="post" class="d-inline">
+                                        <form method="post" class="d-inline"
+                                              onsubmit="return confirm('Còn ${selectedSession.expectedCount - selectedSession.matchedCount} bản sao dự kiến chưa quét. Nếu kết thúc, các bản sao này sẽ được ghi nhận là thiếu. Bạn có chắc chắn muốn tiếp tục?');">
                                             <input type="hidden" name="action" value="finish-counting">
                                             <input type="hidden" name="sessionId" value="${selectedSession.inventorySessionId}">
                                             <button class="btn btn-primary-custom">Kết thúc quét</button>
@@ -144,7 +145,15 @@
                                 </form>
                             </c:if>
 
+                            <c:if test="${selectedSession.status == 'draft'}">
+                                <section class="bm-side-card mb-3">
+                                    <strong>Danh sách bản sao chưa được chốt</strong>
+                                    <p class="bm-section-note mb-0 mt-1">Hệ thống sẽ tạo snapshot tồn kho tại thời điểm bấm “Bắt đầu kiểm đếm”.</p>
+                                </section>
+                            </c:if>
+
                             <%-- Bảng danh sách các bản sao và kết quả đối chiếu --%>
+                            <c:if test="${selectedSession.status != 'draft'}">
                             <section class="bm-table-card bm-table-card--primary bm-data-table">
                                 <div class="table-responsive">
                                     <table class="table table-lms">
@@ -181,6 +190,9 @@
                                                             <c:when test="${item.result=='misplaced'}">
                                                                 <span class="bm-badge bm-badge--warning">Sai vị trí</span>
                                                             </c:when>
+                                                            <c:when test="${item.result=='excluded'}">
+                                                                <span class="bm-badge bm-badge--neutral">Ngoài phạm vi</span>
+                                                            </c:when>
                                                             <c:otherwise>
                                                                 <span class="bm-badge bm-badge--neutral">Chưa quét</span>
                                                             </c:otherwise>
@@ -188,13 +200,23 @@
                                                     </td>
                                                     <td><c:out value="${empty item.resolution ? 'Chưa xử lý' : item.resolution}"/></td>
                                                     <td>
-                                                        <%-- Nút xử lý sai vị trí: Cập nhật lại vị trí mới của bản sao --%>
+                                                        <%-- Sai vị trí có hai cách xử lý: đưa về vị trí gốc hoặc chuyển vị trí đăng ký. --%>
                                                         <c:if test="${canEdit and selectedSession.status=='reviewing' and empty item.resolvedAt and item.result=='misplaced'}">
-                                                            <form method="post" class="d-inline">
+                                                            <form method="post" class="d-inline"
+                                                                  onsubmit="return confirm('Xác nhận bản sao đã được đưa về vị trí đăng ký?');">
                                                                 <input type="hidden" name="action" value="resolve-misplaced">
+                                                                <input type="hidden" name="resolutionMode" value="return_to_expected">
                                                                 <input type="hidden" name="sessionId" value="${selectedSession.inventorySessionId}">
                                                                 <input type="hidden" name="itemId" value="${item.inventoryItemId}">
-                                                                <button class="btn btn-sm bm-btn-secondary">Cập nhật vị trí</button>
+                                                                <button class="btn btn-sm bm-btn-secondary">Đã đưa về vị trí gốc</button>
+                                                            </form>
+                                                            <form method="post" class="d-inline"
+                                                                  onsubmit="return confirm('Thao tác này sẽ đổi vị trí đăng ký của bản sao sang nơi đang kiểm kê. Bạn có chắc chắn?');">
+                                                                <input type="hidden" name="action" value="resolve-misplaced">
+                                                                <input type="hidden" name="resolutionMode" value="relocate_to_scanned">
+                                                                <input type="hidden" name="sessionId" value="${selectedSession.inventorySessionId}">
+                                                                <input type="hidden" name="itemId" value="${item.inventoryItemId}">
+                                                                <button class="btn btn-sm bm-btn-secondary">Chuyển sang vị trí hiện tại</button>
                                                             </form>
                                                         </c:if>
                                                         <%-- Nút xử lý thiếu sách: Ghi nhận mất sách để hệ thống cập nhật trạng thái bản sao --%>
@@ -224,6 +246,7 @@
                                     </table>
                                 </div>
                             </section>
+                            </c:if>
                         </c:when>
 
                         <%-- TRƯỜNG HỢP 2: Hiển thị danh sách toàn bộ các phiên kiểm kê --%>
@@ -249,8 +272,13 @@
                                                     <td>
                                                         <strong>#${item.inventorySessionId} · <c:out value="${item.location}"/></strong>
                                                     </td>
-                                                    <td><c:out value="${item.startedByName}"/></td>
-                                                    <td><fmt:formatDate value="${item.startedAt}" pattern="dd/MM/yyyy HH:mm"/></td>
+                                                    <td><c:out value="${item.createdByName}"/></td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${empty item.startedAt}">Chưa bắt đầu</c:when>
+                                                            <c:otherwise><fmt:formatDate value="${item.startedAt}" pattern="dd/MM/yyyy HH:mm"/></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
                                                     <td>${item.expectedCount}</td>
                                                     <td>${item.matchedCount}</td>
                                                     <td>${item.discrepancyCount}</td>

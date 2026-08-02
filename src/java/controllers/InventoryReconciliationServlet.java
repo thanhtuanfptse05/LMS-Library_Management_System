@@ -77,7 +77,11 @@ public class InventoryReconciliationServlet extends HttpServlet {
             } else if ("finish-counting".equals(action)) {
                 service.finishCounting(requiredInt(request.getParameter("sessionId")), actorId); success(session, "Đã kết thúc quét và tạo danh sách chênh lệch.");
             } else if ("resolve-misplaced".equals(action)) {
-                service.resolveMisplaced(requiredInt(request.getParameter("itemId")), actorId); success(session, "Đã cập nhật vị trí bản sao.");
+                String resolutionMode = request.getParameter("resolutionMode");
+                service.resolveMisplaced(requiredInt(request.getParameter("itemId")), resolutionMode, actorId);
+                success(session, "return_to_expected".equals(resolutionMode)
+                        ? "Đã ghi nhận bản sao được đưa về vị trí đăng ký."
+                        : "Đã chuyển vị trí đăng ký của bản sao sang nơi kiểm kê.");
             } else if ("resolve-missing".equals(action)) {
                 service.resolveMissing(requiredInt(request.getParameter("itemId")), actorId); success(session, "Đã tạo ghi nhận sự cố mất.");
             } else if ("complete".equals(action)) {

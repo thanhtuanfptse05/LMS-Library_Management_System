@@ -1,7 +1,7 @@
 # LMS UC-BR-FR Specification
 
-> **Version:** 4.1.0
-> **Date:** 2026-07-26
+> **Version:** 4.2.0
+> **Date:** 2026-08-02
 > **Project:** Library Management System (LMS) - SWP391
 
 ## HƯỚNG DẪN CHO AI AGENT KHI TẠO TÍNH NĂNG MỚI
@@ -108,7 +108,7 @@ F9 (Fine & Payment Management)
 | F10 | System Configuration | Quyet | feat-systemConfiguration | UC-32, UC-33 | BR-30, BR-31, BR-40 | FR-84, FR-85, FR-86, FR-87, FR-88, FR-89, FR-90, FR-91, FR-92, FR-93, FR-94, FR-95, FR-96, FR-97 |
 | F11 | System Reports | Quyet | feat-systemReport | UC-34, UC-35, UC-54 | BR-43, BR-44, BR-45, BR-52, BR-73, BR-81 | FR-98, FR-99, FR-100, FR-101, FR-102, FR-83 |
 | F12 | Audit Log | Quyet | feat-auditLog | UC-40, UC-41 | BR-32, BR-33, BR-34 | FR-55, FR-56, FR-57, FR-58, FR-59, FR-60 |
-| F13 | Book Maintenance | Chuong | feat-bookMaintenance | UC-28, UC-29 | BR-28, BR-44 | FR-48, FR-49, FR-50, FR-51 |
+| F13 | Book Maintenance | Chuong | feat-bookMaintenance | UC-28, UC-29 | BR-28, BR-44, BR-70 | FR-48, FR-49, FR-50, FR-51 |
 | F14 | AI Chatbot | Thai | feat-ai-chatbot | UC-36, UC-37 | BR-37, BR-74 | FR-69, FR-70 |
 | F15 | Dashboard — Librarian | Thai | feat-dashboard-librarian | UC-44 | BR-38 | FR-71 |
 | F16 | Dashboard — Manager | Quyet | feat-systemReport | UC-45 | BR-38 | FR-72 |
@@ -122,6 +122,7 @@ F9 (Fine & Payment Management)
 - `BR-31`, `BR-53`, `BR-80` liên quan cấu hình thanh toán: F10 quản lý cơ chế cấu hình chung, F9 sở hữu nghiệp vụ cấu hình SePay qua `UC-53`/`FR-82`.
 - `BR-38` là rule dashboard dùng chung cho F15/F16/F17; không thuộc riêng Audit Log hay System Report.
 - `BR-44` là rule dữ liệu kiểm kê dùng chung: F13 tạo/đối soát dữ liệu kiểm kê, F11 dùng dữ liệu đó để báo cáo.
+- `BR-70` giới hạn toàn hệ thống chỉ một phiên kiểm kê `counting/reviewing`; nhiều phiên `draft` vẫn được phép.
 - `BR-52` và `FR-83` thuộc F11 System Reports, không thuộc F19 Email.
 - `BR-42`, `BR-46` đến `BR-51` thuộc F19 Async Email Infrastructure; không dùng `BR-41` vì `BR-41` thuộc đăng ký đặt trước tại quầy của F6.
 
@@ -190,17 +191,17 @@ F9 (Fine & Payment Management)
 ### UC-13 - Manage Book Catalog
 
 - **Actor:** Librarian
-- **Mô tả:** (Quản lý Đầu sách): Khởi tạo Đầu sách mới trực tuyến, hoặc cập nhật thông tin siêu dữ liệu (metadata) của Đầu sách hiện có.
+- **Mô tả:** (Quản lý Đầu sách): Tạo đầu sách hoặc cập nhật metadata, kể cả khi đang có người mượn; không đổi ISBN, số lượng, BorrowRecord hay trạng thái bản sao đang mượn. Ngừng lưu thông chỉ chặn giao dịch mới và giữ nguyên lượt mượn hiện tại.
 
 ### UC-14 - Manage Physical Copies
 
 - **Actor:** Librarian
-- **Mô tả:** (Quản lý Bản sao vật lý): Khai báo bản sao bằng Barcode, cập nhật vị trí của bản sao đang khả dụng và xem thông tin/lịch sử liên quan tới bản sao. F4 không sửa condition trực tiếp; hỏng/mất chuyển sang F13 hoặc F6 tùy nghiệp vụ.
+- **Mô tả:** (Quản lý Bản sao vật lý): Khai báo bản sao bằng Barcode nhập thủ công, cập nhật vị trí bản sao `available/good` và xem lịch sử. Sức chứa từ bản sao mới ưu tiên Reservation `pending`; F4 không sửa condition trực tiếp.
 
 ### UC-15 - Manage Tags & Categories
 
 - **Actor:** Librarian
-- **Mô tả:** (Quản lý Danh mục & Thẻ): Thêm, sửa, hoặc thay đổi trạng thái của các Danh mục (Category) và Thẻ phân loại (Tag) áp dụng cho sách.
+- **Mô tả:** (Quản lý Danh mục & Thẻ): Thêm, sửa hoặc đổi soft state; Category được chuẩn hóa và duy nhất không phân biệt hoa/thường/khoảng trắng.
 
 ### UC-16 - Reserve Book Online
 
@@ -260,17 +261,17 @@ F9 (Fine & Payment Management)
 ### UC-27 - Import Bulk Books
 
 - **Actor:** Librarian
-- **Mô tả:** (Nhập sách hàng loạt): Thủ thư tải file .xlsx, xem preview và xác nhận import Book/BookCopy theo nguyên tắc all-or-nothing.
+- **Mô tả:** (Nhập sách hàng loạt): Thủ thư tải `.xlsx`, xem preview lỗi theo dòng và xác nhận import all-or-nothing; mỗi bản sao mới áp dụng cùng quy tắc phân bổ capacity như nhập thủ công.
 
 ### UC-28 - Report Book Incident
 
 - **Actor:** Librarian
-- **Mô tả:** (Báo cáo sự cố sách): Thủ thư tìm kiếm, báo hỏng/mất theo Barcode, chuyển xác minh, kết luận, bác bỏ, khôi phục bản sao hỏng sau sửa chữa hoặc loại khỏi tổng kho bằng soft flag.
+- **Mô tả:** (Báo cáo sự cố sách): Thủ thư báo hỏng/mất theo Barcode, vô hiệu hóa bản sao ngay, xác minh/kết luận/bác bỏ, khôi phục bản sao hỏng hoặc loại khỏi tổng kho bằng soft flag; capacity và Reservation được đồng bộ nguyên tử.
 
 ### UC-29 - Inventory Reconciliation
 
 - **Actor:** Librarian
-- **Mô tả:** (Kiểm kê kho): Thủ thư tạo phiên theo vị trí, quét Barcode, kết thúc kiểm đếm, xử lý sách sai vị trí/thiếu, hoàn tất hoặc hủy phiên.
+- **Mô tả:** (Kiểm kê kho): Thủ thư tạo draft, start để chụp snapshot, quét Barcode, review `matched/misplaced/missing/excluded`, xử lý sai vị trí bằng lựa chọn vật lý rõ ràng và hoàn tất/hủy theo state machine; chỉ một phiên counting/reviewing trên toàn hệ thống.
 
 ### UC-30 - Export User List
 
@@ -475,7 +476,7 @@ Tiến trình cập nhật hồ sơ cá nhân của người dùng BẮT BUỘC 
 
 ### BR-17 - Derivation
 
-Số lượng totalQuantity và availableQuantity của bảng Book BẮT BUỘC đồng bộ với BookCopy. Tạo BookCopy good/available cộng 1 vào cả hai; các thay đổi khả dụng khác do F13/F6 xử lý trong transaction tương ứng.
+`Book.totalQuantity` BẮT BUỘC bằng số bản sao chưa bị loại khỏi kho; `Book.availableQuantity` BẮT BUỘC biểu diễn số suất chưa cấp, không phải phép đếm trực tiếp BookCopy `available`. Sức chứa mới/được phục hồi phải ưu tiên Reservation `pending` trước khi tăng availableQuantity; mọi thay đổi Book/BookCopy/Reservation chạy cùng transaction.
 
 ### BR-18 - Constraints
 
@@ -487,7 +488,7 @@ KHÔNG ĐƯỢC PHÉP thay đổi thông tin định danh hệ thống (ISBN, Ba
 
 ### BR-20 - Definition
 
-Vị trí hàng đợi queuePosition = 0 DÀNH RIÊNG cho việc giữ sách đã sẵn sàng lấy (status = 'readypickup'). Mọi yêu cầu chờ sách (khi availableQuantity = 0) BẮT BUỘC phải có queuePosition > 0 và trạng thái 'pending'.
+`queuePosition=0` DÀNH RIÊNG cho Reservation `readypickup` giữ một suất trừu tượng của đầu sách; `bookCopyId` BẮT BUỘC NULL ở `pending/readypickup` và chỉ được gán khi checkout. Yêu cầu đang chờ có `queuePosition>0`, status=`pending`.
 
 ### BR-21 - Constraints
 
@@ -499,11 +500,11 @@ Hệ thống BẮT BUỘC chặn giao dịch mượn sách nếu tồn tại b�
 
 ### BR-23 - Constraints
 
-Độc giả mượn sách trực tiếp tại quầy KHÔNG ĐƯỢC PHÉP mượn đầu sách đang có người xếp hàng chờ (tồn tại Reservation với status='pending' VÀ queuePosition > 0). Để chuẩn hóa dữ liệu, mọi giao dịch mượn trực tiếp đều BẮT BUỘC phải tự động sinh ra một Reservation ảo với queuePosition = 0 tại chỗ trước khi insert BorrowRecord.
+Giao sách tại quầy BẮT BUỘC có Reservation `readypickup` đúng độc giả và đầu sách. Nhu cầu mượn tại chỗ phải được đăng ký ở cấp đầu sách trước khi Thủ thư chọn Barcode; không được vượt hàng `pending` của người khác và không gán BookCopy trong lúc đăng ký.
 
 ### BR-24 - Derivation
 
-Khi nhận sách trả với tình trạng 'damaged' hoặc 'lost', hệ thống BẮT BUỘC trừ 1 đơn vị vào Book.totalQuantity (vì sách không còn khả năng lưu thông). ĐỒNG THỜI, BẮT BUỘC phải insert tức thời bản ghi 'unpaid' vào UserLockReason và đổi status User thành 'locked' mà không chờ Background Job chạy ngầm, tránh lỗ hổng bảo mật.
+Khi nhận trả `damaged/lost`, hệ thống BẮT BUỘC chuyển BookCopy sang `unavailable`, tạo incident `resolved`, tiền phạt và khóa nợ trong cùng transaction. Chỉ `lost` mới set `removedFromInventory=true` và giảm `totalQuantity` ngay; `damaged` giữ tổng kho để có thể sửa hoặc loại sau qua F13.
 
 ### BR-25 - Derivation
 
@@ -519,11 +520,11 @@ Tính năng Import khối lượng lớn Sách BẮT BUỘC tuân thủ chiến 
 
 ### BR-28 - Derivation
 
-Khi báo sự cố hợp lệ trong F13, hệ thống BẮT BUỘC chuyển BookCopy sang status='unavailable' và giảm Book.availableQuantity đúng 1 trong cùng transaction. Khi bác bỏ báo cáo hoặc khôi phục bản sao hỏng sau sửa chữa, hệ thống BẮT BUỘC chuyển BookCopy về good/available và tăng availableQuantity đúng 1. Khi kết luận lost hoặc khi bản sao damaged/resolved không còn khả năng sửa, hệ thống BẮT BUỘC đánh dấu removedFromInventory=true và giảm Book.totalQuantity đúng 1 trong transaction; không được xóa record BookCopy.
+Khi một BookCopy khả dụng gặp sự cố, nếu còn suất tự do thì giảm `availableQuantity` 1; nếu số lượng đã bằng 0 thì giữ 0 và đưa Reservation `readypickup` mới nhất về đầu hàng `pending`. Khi phục hồi, ưu tiên đôn người đầu hàng chờ và chỉ tăng `availableQuantity` nếu hàng chờ trống. Kết luận `lost` hoặc loại bản sao `damaged/resolved` dùng soft flag và giảm `totalQuantity` đúng một lần; không xóa BookCopy.
 
 ### BR-29 - Constraints
 
-Khi thực hiện Giao sách (Check-out) tại quầy, hệ thống BẮT BUỘC phân biệt trạng thái bản sao sách: Walk-in checkout chỉ chấp nhận BookCopy ở trạng thái 'available' và phải trừ availableQuantity của đầu sách đi 1; Pre-reservation checkout chỉ chấp nhận BookCopy ở trạng thái 'reserved' và KHÔNG được trừ availableQuantity (vì đã trừ khi đặt trước online).
+Khi giao sách, hệ thống BẮT BUỘC kiểm tra Reservation `readypickup` đúng user/book và BookCopy `available/good/chưa thanh lý`, sau đó mới gán `bookCopyId`, chuyển Reservation `fulfilled` và BookCopy `borrowed` trong cùng transaction. Không tồn tại BookCopy status `reserved`; không trừ `availableQuantity` lần nữa vì suất đã được giữ khi Reservation thành `readypickup`.
 
 ### BR-30 - Constraints
 
@@ -551,7 +552,7 @@ Giao dịch mượn (BorrowRecord) ở trạng thái 'borrowed' có endDate nh�
 
 ### BR-36 - Facts
 
-Đơn đặt trước ở trạng thái 'readypickup' chỉ được giữ tại quầy trong một khoảng thời gian giới hạn được xác định bởi cấu hình RESERVATION_HOLD_DAYS trong bảng SystemConfigurations (mặc định là 3 ngày). Nếu quá thời hạn này (endDate < NOW()), đơn hàng sẽ tự động bị hủy và giải phóng bản sao sách.
+Đơn `readypickup` chỉ giữ một suất đầu sách trong thời hạn `RESERVATION_HOLD_DAYS` (mặc định 3 ngày), không giữ Barcode cụ thể. Khi hết hạn, hệ thống hủy đơn và chuyển suất cho người `pending` tiếp theo; chỉ tăng `availableQuantity` nếu hàng chờ trống.
 
 ### BR-37 - Constraints
 
@@ -583,7 +584,7 @@ Dữ liệu thống kê tài chính BẮT BUỘC hiển thị song song cả 2 c
 
 ### BR-44 - Derivation
 
-Dữ liệu kiểm kê gần nhất phải đủ để đối chiếu số lượng/vị trí bản sao trong báo cáo quản lý. Trong F13, quy tắc này được đáp ứng bằng InventorySession và InventoryItem; việc hiển thị báo cáo quản trị tổng hợp thuộc feature báo cáo nếu có.
+Phiên kiểm kê BẮT BUỘC chụp snapshot khi start và lưu đủ `matched/misplaced/missing/excluded`. Phát hiện sai vị trí không tự đổi location; chỉ cập nhật khi Thủ thư chọn điều chuyển và snapshot còn hợp lệ. Dữ liệu này là nguồn đối chiếu cho báo cáo quản lý.
 
 ### BR-45 - Definition
 
@@ -687,7 +688,7 @@ The system SHALL prevent the removal of mandatory placeholders from system email
 
 ### BR-70 - Constraints
 
-The system SHALL ensure that only one active inventory session exists per location at any given time.
+The system SHALL allow multiple draft inventory sessions but only one counting/reviewing session system-wide.
 
 ### BR-71 - Constraints
 
@@ -867,25 +868,25 @@ WHERE xảy ra lỗi SQLException bất ngờ trong quá trình thực thi Batch
 
 ### FR-22 - Tạo đầu sách với validation ISBN
 
-WHEN BookServlet.doPost(action=create) nhận form, THE system SHALL chuẩn hóa và kiểm tra ISBN-10/ISBN-13 đúng checksum, kiểm tra ISBN chưa tồn tại, validate metadata/status theo schema, mở transaction, INSERT Book với totalQuantity=0 và availableQuantity=0, thay thế liên kết BookCategory/BookTag, ghi AuditLog(CREATE_BOOK), rồi commit; WHERE lỗi thì rollback và dọn ảnh bìa mới đã lưu.
+WHEN BookServlet.doPost(action=create) nhận form, THE system SHALL chuẩn hóa/kiểm tra ISBN-10/ISBN-13, validate metadata/status, INSERT Book với số lượng 0, liên kết Category/Tag và AuditLog trong một transaction. WHERE unique race xảy ra, rollback và trả lỗi ISBN trùng thân thiện; WHERE lỗi ảnh/DB, rollback và dọn ảnh mới đã lưu.
 
 **Mapping:** UC-13 / BR-16, BR-17
 
 ### FR-23 - Cập nhật đầu sách và chặn đổi ISBN
 
-WHEN cập nhật Book, THE system SHALL lấy Book hiện tại từ Database, giữ nguyên ISBN và số lượng, chỉ cập nhật metadata/trạng thái/ảnh/phân loại được phép, ghi AuditLog(UPDATE_BOOK) trong cùng transaction. WHERE Book không tồn tại hoặc dữ liệu không hợp lệ, THE system SHALL từ chối lưu và hiển thị lỗi tiếng Việt.
+WHEN cập nhật Book, THE system SHALL cho phép sửa metadata dù đang có BorrowRecord active nhưng giữ nguyên ISBN, số lượng, BorrowRecord và BookCopy `borrowed`. WHEN ngừng lưu thông, khóa Book, chuyển copy `available` sang `unavailable`, hủy Reservation active, đặt availableQuantity=0 và thông báo sau commit; WHEN mở lại, chỉ phục hồi copy `good/chưa thanh lý/không incident mở`. WHERE lỗi, rollback và hiển thị tiếng Việt.
 
-**Mapping:** UC-13 / BR-18
+**Mapping:** UC-13 / BR-17, BR-18
 
 ### FR-24 - Nhập kho bản sao với đồng bộ số lượng
 
-WHEN BookCopyServlet.doPost(action=create) nhận bookId, barcode và location, THE system SHALL kiểm tra Book tồn tại, barcode bắt buộc/đúng định dạng/không trùng, location hợp lệ, mở transaction, INSERT BookCopy với condition='good' và status='available', tăng Book.totalQuantity và Book.availableQuantity mỗi giá trị 1, ghi AuditLog(CREATE_BOOK_COPY), rồi commit; WHERE lỗi thì rollback.
+WHEN BookCopyServlet.doPost(action=create) nhận bookId, barcode và location, THE system SHALL trim/validate, khóa Book cha và INSERT BookCopy `good` với status theo Book. Luôn tăng `totalQuantity`; nếu Book available và có Reservation `pending`, đôn người đầu hàng thành `readypickup/bookCopyId=NULL`, dịch hàng và giữ availableQuantity; nếu không có người chờ mới tăng availableQuantity. Audit và dữ liệu commit nguyên tử; email chỉ enqueue sau commit.
 
 **Mapping:** UC-14 / BR-16, BR-17
 
 ### FR-25 - Cập nhật vị trí bản sao
 
-WHEN BookCopyServlet.doPost(action=update) nhận bookCopyId và location, THE system SHALL chỉ cho cập nhật location nếu BookCopy hiện tại đang status='available' và condition='good'; Barcode, bookId, condition và status phải giữ theo Database. WHERE bản sao đang borrowed/reserved/unavailable/damaged/lost, THE system SHALL từ chối cập nhật và hướng người dùng sang quy trình phù hợp.
+WHEN BookCopyServlet.doPost(action=update) nhận bookCopyId và location, THE system SHALL chỉ cập nhật location nếu BookCopy hiện tại `available/good/chưa thanh lý`; Barcode, bookId, condition và status giữ theo Database. WHERE bản sao borrowed/unavailable/damaged/lost hoặc trạng thái thay đổi đồng thời, từ chối với thông báo rõ ràng.
 
 **Mapping:** UC-14 / BR-18
 
@@ -897,7 +898,7 @@ WHEN tạo BookCopy, THE system SHALL từ chối Barcode đã tồn tại và t
 
 ### FR-27 - Quản lý thể loại và tag
 
-WHEN CategoryServlet hoặc TagServlet nhận create/update, THE system SHALL validate tên bắt buộc, kiểm tra trùng tên theo DAO, chỉ dùng trạng thái active hoặc hidden cho UI F4, ghi Audit Log tương ứng và không hard-delete Category/Tag.
+WHEN CategoryServlet hoặc TagServlet nhận create/update, THE system SHALL trim/validate tên, dùng soft state active/hidden, ghi Audit và không hard-delete. Category.name phải duy nhất theo `LOWER(BTRIM(name))`; unique race phải rollback và trả lỗi tiếng Việt thân thiện.
 
 **Mapping:** UC-15
 
@@ -939,37 +940,37 @@ WHERE yêu cầu gia hạn hợp lệ (qua FR-32), THE system SHALL mở DB Tran
 
 ### FR-34 - Kiểm tra điều kiện Giao sách đầy đủ
 
-WHEN CheckOutServlet.doPost(memberCode, barcode, targetBookId) được gọi, THE system SHALL: (1) Validate barcode và memberCode không rỗng, (2) UserLookupDAO.findUserIdByMemberCode() → userId, (3) Kiểm tra User tồn tại và không bị xóa, (4) Truy vấn UserLockReason: WHERE tồn tại reason='unpaid', CHẶN giao dịch với thông báo "Tài khoản có nợ phạt chưa thanh toán", (5) BookCopyDAO.findByBarcode(barcode), (6) Kiểm tra BookCopy.status: Walk-in yêu cầu 'available', Pre-reservation yêu cầu 'reserved', (7) Kiểm tra hạn mức: đếm số BorrowRecord active của user, so với STUDENT_MAX_BORROW_BOOKS hoặc LECTURER_MAX_BORROW_BOOKS từ SystemConfig.
+WHEN CheckOutServlet nhận memberCode, barcode và targetBookId, THE system SHALL xác thực độc giả/nợ phạt/hạn mức, khóa Book cha đang lưu thông, tìm Reservation `readypickup` đúng user/book, rồi kiểm tra BookCopy theo barcode thuộc đúng book, `available/good/chưa thanh lý`. Không dùng BookCopy status `reserved`; Barcode chỉ được chọn tại bước giao sách.
 
 **Mapping:** UC-18 / BR-22, BR-29
 
 ### FR-35 - Xử lý Mượn trực tiếp với Reservation ảo
 
-WHERE người dùng chưa có đơn đặt trước (Mượn trực tiếp Walk-in) VÀ không vi phạm nợ phạt, THE system SHALL kiểm tra hàng đợi: ReservationDAO.hasQueueForBook(bookId) WHERE tồn tại Reservation có queuePosition > 0 AND status='pending', THE system SHALL từ chối với thông báo "Sách đang có người chờ, không thể mượn trực tiếp". WHERE hàng đợi trống, THE system SHALL tự động CREATE Reservation tại chỗ với (userId, bookId, bookCopyId, queuePosition=0, status='readypickup', createdAt=NOW(), endDate=NOW()+LoanDays) theo BR-23 để chuẩn hóa dữ liệu trước khi insert BorrowRecord.
+WHERE độc giả chưa có Reservation `readypickup`, THE system SHALL từ chối checkout và yêu cầu độc giả hoặc Thủ thư đăng ký nhu cầu ở cấp đầu sách trước (UC-16/UC-51). Việc đăng ký tại quầy không được gán Barcode, phải tôn trọng hàng `pending`; chỉ khi suất trở thành `readypickup` Thủ thư mới chọn BookCopy để giao.
 
 **Mapping:** UC-18 / BR-23
 
 ### FR-36 - Thực thi Giao sách với DB Transaction
 
-WHERE tất cả điều kiện FR-34, FR-35 thỏa mãn, THE system SHALL mở DB Transaction (conn.setAutoCommit(false)) và thực thi tuần tự: (1) INSERT BorrowRecord(userId, bookCopyId, status='borrowed', startDate=NOW(), endDate=NOW()+LoanDays theo role, extensionCount=0), (2) UPDATE Reservation SET status='fulfilled', borrowRecordId=? WHERE reservationId=?, (3) UPDATE BookCopy SET status='borrowed', (4) **PHÂN NHÁNH**: IF BookCopy trước đó status='available' (Walk-in): UPDATE Book.availableQuantity = availableQuantity - 1, ELSE IF BookCopy status='reserved' (Pre-reservation): SKIP (đã trừ khi đặt trước), (5) INSERT AuditLog(CHECKOUT, actorId=librarianId), (6) conn.commit(). WHERE SQLException: conn.rollback() + throw. (7) EmailService.enqueue(CHECKOUT_CONFIRMATION, userId) [async, ngoài transaction].
+WHERE FR-34/35 thỏa mãn, THE system SHALL trong một transaction: INSERT BorrowRecord, UPDATE Reservation `readypickup -> fulfilled` và gán `bookCopyId`, UPDATE BookCopy `available -> borrowed`, INSERT AuditLog rồi commit. Không giảm availableQuantity lần nữa vì suất đã được trừ khi Reservation thành readypickup. WHERE lỗi rollback; email checkout enqueue sau commit.
 
 **Mapping:** UC-18 / BR-29
 
 ### FR-37 - Nhận sách Hỏng/Mất với khóa tức thì
 
-WHEN CheckInServlet.doPost(barcode, condition='damaged'|'lost', memberCode) được gọi, THE system SHALL mở DB Transaction: (1) BookCopyDAO.findByBarcode(), (2) BorrowRecordDAO.findActiveBorrowByBookCopyId(), (3) Tính số ngày trễ = (NOW() - BorrowRecord.endDate), WHERE > 0: amount = FINE_RATE_PER_DAY × số ngày, INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue'), (4) UPDATE BorrowRecord SET status='returned', returnedAt=NOW(), (5) UPDATE BookCopy SET status='unavailable', condition=condition, (6) UPDATE Book.totalQuantity = totalQuantity - 1 (vì sách hỏng/mất không còn lưu thông), (7) INSERT BookCopyIncident(bookCopyId, type=condition, description='Phát hiện khi trả sách', status='open'), (8) **KHÓA TỨC THÌ**: INSERT UserLockReason(userId, reason='unpaid') + UPDATE User.status='locked' (KHÔNG chờ background job), (9) INSERT AuditLog(CHECKIN), (10) conn.commit(). WHERE có người chờ: SKIP FR-39 (sách hỏng không luân chuyển).
+WHEN check-in `damaged/lost`, THE system SHALL đóng BorrowRecord theo condition, chuyển BookCopy unavailable, tạo BookCopyIncident `resolved`, Fine/Payment pending, UserLockReason unpaid, khóa User và ghi Audit trong một transaction. Chỉ `lost` set removedFromInventory và giảm totalQuantity; `damaged` giữ tổng kho để sửa/loại sau. Không cấp sức chứa cho hàng chờ; email phạt chỉ gửi sau commit.
 
 **Mapping:** UC-19 / BR-24
 
 ### FR-38 - Nhận sách Nguyên vẹn với tính phạt trễ hạn
 
-WHEN CheckInServlet.doPost(barcode, condition='good', memberCode) được gọi, THE system SHALL mở DB Transaction: (1) BookCopyDAO.findByBarcode(), (2) BorrowRecordDAO.findActiveBorrowByBookCopyId(), (3) Tính số ngày trễ = (NOW() - BorrowRecord.endDate), WHERE số ngày > 0: amount = FINE_RATE_PER_DAY × số ngày trễ, INSERT Fine(borrowRecordId, userId, amount, status='unpaid', reason='overdue'), INSERT UserLockReason(userId, reason='unpaid'), UPDATE User.status='locked', (4) UPDATE BorrowRecord SET status='returned', returnedAt=NOW(), (5) UPDATE BookCopy SET condition='good', status='available' (tạm thời, sẽ đổi nếu có người chờ ở FR-39), (6) INSERT AuditLog(CHECKIN), (7) THEN gọi FR-39 để điều phối hàng chờ, (8) conn.commit(). (9) EmailService.enqueue(CHECKIN_CONFIRMATION) [async].
+WHEN check-in `good`, THE system SHALL đóng BorrowRecord và xử lý phạt quá hạn trong transaction. Nếu Book cha `unavailable`, giữ BookCopy `good/unavailable`, không tăng capacity và không đôn hàng chờ. Nếu Book cha đang lưu thông, chuyển copy available rồi áp dụng FR-39. Audit/dữ liệu commit nguyên tử; email sau commit.
 
 **Mapping:** UC-19
 
 ### FR-39 - Điều phối Hàng chờ Check-in với tính HOLD_DAYS
 
-WHILE hệ thống nhận trả sách condition='good' VÀ hoàn tất cập nhật BorrowRecord, THE system SHALL truy vấn ReservationDAO.findNextInQueue(bookId) WHERE queuePosition = 1 AND status='pending'. WHERE tồn tại người chờ tiếp theo: (1) UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=?, endDate=NOW()+RESERVATION_HOLD_DAYS (từ SystemConfig), (2) UPDATE BookCopy SET status='reserved', (3) EmailService.enqueue(RESERVATION_READY, userId) [async]. WHERE KHÔNG có người chờ: (1) UPDATE Book.availableQuantity = availableQuantity + 1, (2) UPDATE BookCopy.status='available'. (Tất cả trong cùng 1 transaction của FR-38).
+WHILE nhận trả sách `good` cho Book đang lưu thông, THE system SHALL tìm Reservation `pending/queuePosition=1`. Nếu có, chuyển thành `readypickup/queuePosition=0/bookCopyId=NULL`, đặt endDate theo HOLD_DAYS, dịch hàng chờ và giữ BookCopy `available`; không tăng availableQuantity. Nếu không có người chờ, tăng availableQuantity 1. Tất cả nằm trong transaction FR-38; notification chỉ enqueue sau commit.
 
 **Mapping:** UC-19
 
@@ -1011,33 +1012,33 @@ WHEN ExportUserServlet.doGet(search, role, status) được gọi, THE system SH
 
 ### FR-46 - Kiểm định file Excel sách với 2 phase
 
-WHEN BookImportServlet.doPost(action=upload) nhận file, THE system SHALL chỉ nhận .xlsx tối đa 10 MB, yêu cầu sheet Books và BookCopies đúng header, bỏ dòng trống, giới hạn 5.000 BookCopy, kiểm tra trường bắt buộc, kiểu dữ liệu, ISBN, tham chiếu ISBN, độ dài, Barcode cùng rule validate với nhập tay, duplicate nội bộ và duplicate Barcode trong DB; WHERE có lỗi thì lưu BookImportBatch(status='failed') và BookImportError theo sheet/dòng/cột, không tạo dữ liệu sách.
+WHEN upload `.xlsx`, THE system SHALL kiểm tra 2 sheet/header, dung lượng 10 MB, tối đa 5.000 copy, trường/kiểu/độ dài, ISBN checksum/tham chiếu, ISBN trùng trong Books, Barcode trùng nội bộ/DB và cùng rule nhập tay. Lỗi WorkbookReader phải được giữ khi confirm; file lỗi lưu batch/error theo sheet/dòng/cột và tạo 0 dữ liệu nghiệp vụ.
 
 **Mapping:** UC-27 / BR-16, BR-27
 
 ### FR-47 - Lưu hàng loạt sách với đồng bộ số lượng
 
-WHEN BookImportServlet.doPost(action=confirm) nhận preview hợp lệ, THE system SHALL validate lại preview, mở một transaction, dùng Book hiện hữu theo ISBN hoặc tạo Book mới mà không ghi đè metadata hiện hữu, tự tạo Category/Tag chưa tồn tại và liên kết với Book mới, INSERT mọi BookCopy với Barcode bắt buộc từ file, condition='good', status='available', tăng số lượng Book theo số BookCopy được tạo, INSERT batch success và Audit Log tổng hợp, rồi commit; WHERE bất kỳ bước nào lỗi thì rollback toàn bộ dữ liệu nghiệp vụ và lưu batch failed bằng transaction riêng.
+WHEN confirm preview hợp lệ, THE system SHALL revalidate và mở một transaction all-or-nothing: dùng Book hiện hữu không ghi đè metadata hoặc tạo Book mới, tạo taxonomy/link cần thiết, INSERT copy `good` với status theo Book cha và áp dụng FR-24 cho từng sức chứa. Batch/Audit/dữ liệu commit nguyên tử, notification gửi sau commit; WHERE lỗi/unique race, rollback toàn bộ và lưu batch failed riêng.
 
 **Mapping:** UC-27 / BR-16, BR-17, BR-27
 
 ### FR-48 - Ghi nhận sự cố bản sao với vô hiệu hóa tức thì
 
-WHEN BookCopyIncidentServlet.doPost(action=report) nhận barcode, incidentType và description, THE system SHALL chỉ chấp nhận type damaged/lost, mô tả không rỗng và tối đa 1000 ký tự, khóa và tìm BookCopy theo Barcode, chỉ chấp nhận BookCopy condition='good', status='available', chưa có incident pending/investigating, mở transaction, INSERT BookCopyIncident(status='pending'), UPDATE BookCopy status='unavailable' nhưng chưa đổi condition, giảm Book.availableQuantity đúng 1, ghi Audit Log cho incident và BookCopy, rồi commit; WHERE lỗi thì rollback.
+WHEN báo damaged/lost hợp lệ, THE system SHALL khóa Book rồi BookCopy `available/good/chưa thanh lý`, tạo incident pending và chuyển copy unavailable. Nếu availableQuantity>0 thì giảm 1; nếu bằng 0 thì giữ 0 và đưa Reservation readypickup mới nhất về đầu hàng pending. Audit/dữ liệu commit nguyên tử; thông báo lùi lượt chỉ gửi sau commit.
 
 **Mapping:** UC-28 / BR-28
 
 ### FR-49 - Xử lý vòng đời sự cố và phục hồi số lượng
 
-WHEN xử lý incident được báo trực tiếp trong F13, THE system SHALL tuân theo state machine: investigate chỉ pending -> investigating; resolve từ pending/investigating -> resolved, cập nhật BookCopy.condition thành damaged hoặc lost, giữ status='unavailable', nếu lost thì set removedFromInventory=true và giảm totalQuantity 1; reject từ pending/investigating -> rejected, đưa BookCopy về available và tăng availableQuantity 1; restore chỉ incident resolved loại damaged có BookCopy damaged/unavailable và chưa removedFromInventory, đưa BookCopy về good/available, tăng availableQuantity 1; removeFromInventory chỉ incident resolved loại damaged chưa removedFromInventory, set removedFromInventory=true và giảm totalQuantity 1. Incident resolved tạo bởi F6 không được resolve/reject lại. Mọi nhánh phải khóa bản ghi, ghi Audit Log và commit/rollback nguyên tử.
+WHEN reject/restore làm copy trở lại available, THE system SHALL ưu tiên đôn Reservation pending thành readypickup/bookCopyId=NULL và chỉ tăng availableQuantity khi hàng chờ trống; Book cha unavailable thì không phục hồi lưu thông. Resolve/remove giữ state machine, soft flag và totalQuantity đúng một lần. Incident resolved từ F6 không resolve/reject lại. Mọi nhánh khóa bản ghi, Audit và commit/rollback nguyên tử; email sau commit.
 
 **Mapping:** UC-28 / BR-28
 
 ### FR-50 - Tạo và xử lý phiên kiểm kê kho với 8 action
 
-WHEN InventoryReconciliationServlet nhận action, THE system SHALL hỗ trợ create, start, scan, finish-counting, resolve-misplaced, resolve-missing, complete và cancel theo state machine F13. Resolve-missing chỉ áp dụng BookCopy good/available, tạo incident lost/pending, chuyển copy unavailable, giảm availableQuantity và đánh dấu item đã xử lý. Complete chỉ cho phép reviewing -> completed khi không còn missing/misplaced chưa xử lý. Mỗi action thay đổi dữ liệu phải dùng transaction và Audit Log.
+WHEN InventoryReconciliationServlet nhận 8 action, create chỉ tạo draft; start mới chụp snapshot và chặn phiên counting/reviewing khác toàn hệ thống. Scan chỉ nhận copy available/good/chưa thanh lý và chặn Barcode trùng. Finish từ chối phiên có expected nhưng chưa quét bản nào, đánh dấu copy đổi trạng thái/ra ngoài phạm vi là excluded và phần hợp lệ chưa quét là missing. Resolve misplaced chọn `return_to_expected` (không đổi location) hoặc `relocate_to_scanned` (mới đổi location), sau khi khóa/kiểm tra snapshot. Resolve missing tạo incident lost/pending và áp dụng BR-28. Complete chỉ khi không còn unresolved; mọi action dùng transaction/Audit.
 
-**Mapping:** UC-29 / BR-44, BR-28 cho nhánh resolve-missing
+**Mapping:** UC-29 / BR-44, BR-70; BR-28 cho nhánh resolve-missing
 
 ### FR-51 - DEPRECATED - Logic merged into FR-50
 
@@ -1143,7 +1144,7 @@ WHEN ReservationExpirationProcessor chạy định kỳ (mỗi 1 giờ) hoặc T
 
 ### FR-68 - Hủy đặt trước và đôn hàng chờ tự động
 
-For each expired Reservation found trong FR-67, THE system SHALL mở DB Transaction: (1) UPDATE Reservation SET status='cancelled', cancelledAt=NOW(), cancelReason='Expired - không nhận sách trong thời hạn' WHERE reservationId=?, (2) **Kiểm tra hàng chờ**: ReservationDAO.findNextInQueue(bookId) WHERE queuePosition=1 AND status='pending', (3) **PHÂN NHÁNH A - Có người chờ tiếp theo**: UPDATE Reservation SET queuePosition=0, status='readypickup', bookCopyId=expired.bookCopyId (kế thừa bản sao), endDate=NOW()+RESERVATION_HOLD_DAYS, UPDATE BookCopy SET status='reserved' (giữ nguyên), EmailService.enqueue(RESERVATION_READY, nextUserId) [async], **PHÂN NHÁNH B - Không có người chờ**: UPDATE BookCopy SET status='available', UPDATE Book SET availableQuantity = availableQuantity + 1, (4) INSERT AuditLog(CANCEL_EXPIRED_RESERVATION), (5) conn.commit(), (6) EmailService.enqueue(RESERVATION_EXPIRED_NOTICE, originalUserId) [async].
+For each expired `readypickup`, THE system SHALL khóa/cancel Reservation trong transaction, rồi tìm `pending/queuePosition=1`. Nếu có, chuyển suất sang người tiếp theo bằng `readypickup/queuePosition=0/bookCopyId=NULL`, đặt endDate mới và dịch hàng chờ; availableQuantity giữ nguyên. Nếu không có người chờ và Book còn lưu thông, tăng availableQuantity 1. Ghi Audit và commit; email hết hạn/sẵn sàng chỉ enqueue sau commit. Không cập nhật BookCopy vì hold không gắn Barcode.
 
 **Mapping:** UC-43 / BR-36
 

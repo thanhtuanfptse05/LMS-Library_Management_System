@@ -105,9 +105,11 @@ public class BookCopyIncidentServlet extends HttpServlet {
                         trimToNull(request.getParameter("resolution")), actorId);
                 session.setAttribute("successMessage", "Đã kết luận sự cố và cập nhật tình trạng bản sao.");
             } else if ("reject".equals(action)) {
-                incidentService.reject(parseRequiredInt(request.getParameter("incidentId")),
+                boolean copyRestored = incidentService.reject(parseRequiredInt(request.getParameter("incidentId")),
                         trimToNull(request.getParameter("resolution")), actorId);
-                session.setAttribute("successMessage", "Đã bác bỏ báo cáo và hoàn trả bản sao vào kho.");
+                session.setAttribute("successMessage", copyRestored
+                        ? "Đã bác bỏ báo cáo và hoàn trả bản sao vào kho."
+                        : "Đã bác bỏ báo cáo. Bản sao vẫn ngừng lưu thông vì đầu sách đang ngừng phục vụ.");
             } else {
                 throw new ValidationException("Thao tác không hợp lệ.");
             }

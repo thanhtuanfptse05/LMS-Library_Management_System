@@ -6,11 +6,16 @@ public class InventorySession {
     private int inventorySessionId;
     private String location;
     private String status;
-    private int startedBy;
+    private int createdBy;
+    private String createdByName;
+    private Timestamp createdAt;
+    private Integer startedBy;
     private String startedByName;
     private Timestamp startedAt;
     private Integer completedBy;
     private Timestamp completedAt;
+    private Integer cancelledBy;
+    private Timestamp cancelledAt;
     private String note;
     private int expectedCount;
     private int matchedCount;
@@ -23,8 +28,14 @@ public class InventorySession {
     public void setLocation(String value) { location = value; }
     public String getStatus() { return status; }
     public void setStatus(String value) { status = value; }
-    public int getStartedBy() { return startedBy; }
-    public void setStartedBy(int value) { startedBy = value; }
+    public int getCreatedBy() { return createdBy; }
+    public void setCreatedBy(int value) { createdBy = value; }
+    public String getCreatedByName() { return createdByName; }
+    public void setCreatedByName(String value) { createdByName = value; }
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp value) { createdAt = value; }
+    public Integer getStartedBy() { return startedBy; }
+    public void setStartedBy(Integer value) { startedBy = value; }
     public String getStartedByName() { return startedByName; }
     public void setStartedByName(String value) { startedByName = value; }
     public Timestamp getStartedAt() { return startedAt; }
@@ -33,6 +44,10 @@ public class InventorySession {
     public void setCompletedBy(Integer value) { completedBy = value; }
     public Timestamp getCompletedAt() { return completedAt; }
     public void setCompletedAt(Timestamp value) { completedAt = value; }
+    public Integer getCancelledBy() { return cancelledBy; }
+    public void setCancelledBy(Integer value) { cancelledBy = value; }
+    public Timestamp getCancelledAt() { return cancelledAt; }
+    public void setCancelledAt(Timestamp value) { cancelledAt = value; }
     public String getNote() { return note; }
     public void setNote(String value) { note = value; }
     public int getExpectedCount() { return expectedCount; }

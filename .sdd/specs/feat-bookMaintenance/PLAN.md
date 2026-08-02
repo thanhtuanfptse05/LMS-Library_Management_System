@@ -20,16 +20,17 @@
 - **Report Incident:** Barcode -> lock BookCopy -> validate good/available/no open incident -> insert pending -> copy unavailable -> availableQuantity -1 -> Audit -> commit.
 - **Resolve/Reject:** Lock incident + copy -> validate pending/investigating -> resolve condition hoặc reject và phục hồi số lượng -> nếu resolve `lost` thì mark removed + totalQuantity -1 -> Audit -> commit.
 - **F6 Check-in Incident:** F6 tạo sẵn incident `resolved` khi nhận trả bản sao `damaged/lost`; F13 không resolve/reject lại, chỉ hiển thị và cho phép restore hoặc remove khỏi kho nếu incidentType=`damaged`.
-- **Restore Repair:** Lock resolved damaged incident + damaged/unavailable copy -> copy good/available -> availableQuantity +1 -> append note + Audit -> commit.
+- **Restore Repair:** Lock resolved damaged incident + damaged/unavailable copy -> copy good/available -> ưu tiên pending reservation, chỉ +1 availableQuantity khi hàng chờ trống -> append note + Audit -> commit -> notify sau commit.
 - **Remove Damaged From Inventory:** Lock resolved damaged incident + damaged/unavailable copy -> validate `removedFromInventory=false` -> set removed flag/At/By -> totalQuantity -1 -> append note + Audit -> commit.
-- **Inventory:** Create snapshot -> start counting -> scan matched/misplaced -> finish marks pending as missing -> review/resolve -> complete when no unresolved.
-- **Resolve Missing:** Lock item/session/copy -> create lost pending incident -> copy unavailable -> availableQuantity -1 -> resolve item + Audit -> commit.
+- **Inventory:** Create draft -> start tạo snapshot và khóa quyền chạy phiên khác trên toàn hệ thống -> scan matched/misplaced, chặn duplicate -> finish chuyển item ngoài phạm vi thành excluded và item hợp lệ chưa quét thành missing -> review/resolve -> complete khi không còn unresolved.
+- **Resolve Misplaced:** `return_to_expected` chỉ xác nhận đã đưa sách về vị trí gốc; `relocate_to_scanned` mới cập nhật `BookCopy.location`. Cả hai phải khóa item/copy, kiểm tra copy good/available/chưa thanh lý và location chưa lệch snapshot.
+- **Resolve Missing:** Lock item/session/Book/copy -> validate available/good/chưa thanh lý/location snapshot/no open incident -> create lost pending incident -> copy unavailable -> giảm suất tự do hoặc demote ready hold theo BR-28 -> resolve item + Audit -> commit -> notify sau commit.
 
 ## 4. STATE MACHINES
 - Incident F13: `pending -> investigating -> resolved|rejected`; `pending -> resolved|rejected` cũng hợp lệ. Incident do F6 tạo đi thẳng vào `resolved` vì đã được kết luận tại quầy.
 - Restore/remove khỏi kho không đổi incident status; chỉ append resolution note cho incident `resolved/damaged`.
-- InventorySession: `draft -> counting -> reviewing -> completed`; `draft|counting|reviewing -> cancelled`.
-- InventoryItem.result không có `resolved`; trạng thái đã xử lý được xác định bằng `resolvedAt IS NOT NULL`.
+- InventorySession: `draft -> counting -> reviewing -> completed`; `draft|counting|reviewing -> cancelled`. Các trường `created*`, `started*`, `completed*`, `cancelled*` ghi đúng thời điểm tương ứng; chỉ một phiên `counting/reviewing` trên toàn hệ thống.
+- InventoryItem.result gồm `pending/matched/missing/misplaced/excluded`, không có `resolved`; trạng thái đã xử lý được xác định bằng `resolvedAt IS NOT NULL`.
 
 ## 5. ACCESS CONTROL
 - `AuthFilter` bảo vệ `/librarian/book-management/incidents` và `/librarian/book-management/inventory` qua prefix `/librarian/book-management/*`.
@@ -51,6 +52,8 @@
   **Mitigation:** `countUnresolved` trong cùng transaction trước transition.
 - **Risk:** Scan đồng thời làm trùng item.
   **Mitigation:** Unique session-copy và upsert/update có khóa phù hợp.
+- **Risk:** Resolve dùng snapshot cũ và ghi đè location/trạng thái vừa thay đổi bởi nghiệp vụ khác.
+  **Mitigation:** Khóa item/copy, kiểm tra available/good/chưa thanh lý và location còn khớp snapshot; nếu lệch thì từ chối với thông báo rõ ràng.
 - **Risk:** F4/F6 cập nhật condition trực tiếp làm lệch state.
   **Mitigation:** F4 không cập nhật condition; F6 chỉ cập nhật trong transaction check-in và tạo incident `resolved`; F13 xử lý manual/inventory incident theo BR-28.
 

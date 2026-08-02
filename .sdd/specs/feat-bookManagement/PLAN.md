@@ -18,7 +18,7 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 | BookImportController | Tải mẫu, upload, validate, preview, confirm và clear import `.xlsx`. | `BookImportServlet.java` |
 | BookImportHistoryController | Tìm kiếm, lọc, phân trang và xem lỗi từng batch. | `BookImportHistoryServlet.java` |
 | BookService | Transaction tạo/cập nhật Book, liên kết Category/Tag và Audit Log. | `BookService.java` |
-| BookCopyService | Transaction tạo/cập nhật BookCopy và đồng bộ số lượng. | `BookCopyService.java` |
+| BookCopyService / CapacityAllocator | Transaction tạo/cập nhật BookCopy, đồng bộ số lượng và phân bổ sức chứa cho Reservation. | `BookCopyService.java`, `ReservationCapacityAllocator.java` |
 | CategoryService / TagService | Transaction tạo/cập nhật soft state và Audit Log. | `CategoryService.java`, `TagService.java` |
 | BookImportService | Validate lại và import all-or-nothing; lưu lịch sử thành công/thất bại. | `BookImportService.java` |
 | BookImportValidator / WorkbookReader | Kiểm tra dữ liệu với DB và đọc đúng hai sheet Excel. | `BookImportValidator.java`, `BookImportWorkbookReader.java` |
@@ -27,12 +27,12 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 ## 3. DATA FLOW
 - **Xem danh mục/tồn kho:** Librarian -> `AuthFilter` -> `BookOverviewServlet`/`BookServlet`/`BookCopyServlet` -> DAO search/count/summary -> JSP tiếng Việt.
 - **Tạo/cập nhật Book:** `BookServlet` validate request và ảnh -> `BookService` mở transaction -> `BookDAO` insert/update + replace Category/Tag -> `AuditLogDAO` -> commit -> flash message.
-- **Nhập BookCopy:** `BookCopyServlet` -> `BookCopyService` -> validate Barcode thủ công (`A-Z`, `a-z`, `0-9`, `- _ . /`, tối đa 50 ký tự) -> kiểm tra Book và Barcode -> insert BookCopy `good/available` -> tăng số lượng -> Audit Log -> commit; unique constraint race trả lỗi nghiệp vụ thân thiện.
+- **Nhập BookCopy:** `BookCopyServlet` -> `BookCopyService` -> trim/validate Barcode/location -> khóa Book -> insert BookCopy `good` với status theo Book cha -> tăng `totalQuantity` -> nếu Book đang lưu thông thì ưu tiên đôn Reservation đầu hàng `pending`, chỉ tăng `availableQuantity` khi hàng chờ trống -> Audit -> commit -> enqueue email sau commit.
 - **Cập nhật BookCopy:** Chỉ nhận `bookCopyId` và `location`; Service tải bản ghi hiện tại, giữ nguyên Barcode/bookId/condition/status và chỉ cập nhật nếu status `available`.
 - **Lịch sử lưu thông:** `BookCirculationHistoryServlet` -> `BookCopyDAO.findById` -> `BookCirculationHistoryDAO.count/findByBookCopyId` -> JSP read-only, phân trang 15 dòng.
 - **Export CSV:** `BookExportServlet`/`BookCopyExportServlet` -> DAO export theo filter -> `CsvExportUtil` ghi UTF-8 BOM, escape CSV và trung hòa formula injection.
-- **Quản lý Category/Tag:** Controller -> Service transaction -> DAO create/update -> Audit Log.
-- **Import:** Upload -> WorkbookReader -> Validator -> preview session. Nếu lỗi: lưu batch `failed` + errors, không tạo Book/BookCopy. Nếu hợp lệ và được confirm: validate lại -> một transaction tạo dữ liệu + số lượng + batch `success` + Audit -> commit; lỗi ghi làm rollback toàn bộ.
+- **Quản lý Category/Tag:** Controller -> Service normalize/validate -> DAO create/update -> DB unique Category `LOWER(BTRIM(name))` -> Audit Log; unique race trả lỗi nghiệp vụ.
+- **Import:** Upload -> WorkbookReader -> Validator bắt ISBN/Barcode trùng nội bộ và giữ lỗi reader -> preview session. Nếu lỗi: lưu batch `failed`, không tạo dữ liệu. Nếu hợp lệ: validate lại -> một transaction tạo dữ liệu, phân bổ capacity từng copy, batch `success` và Audit -> commit -> enqueue email; mọi lỗi/unique race rollback toàn bộ.
 - **Lịch sử import:** `BookImportHistoryServlet` -> `BookImportDAO.search/count/findErrors` -> JSP.
 - **Condition hỏng/mất:** F4 chuyển người dùng sang F13 khi phát hiện từ màn quản lý bản sao; F4 không cập nhật condition hoặc `removedFromInventory` trực tiếp. Luồng phát hiện khi nhận trả sách thuộc F6 và tạo incident `resolved`.
 
@@ -59,7 +59,7 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 - Nguồn chuẩn là `database/supabase/LMS_Schema_PostgreSQL.sql`; không tham chiếu schema SQL Server hoặc đường dẫn cũ.
 - Giữ CHECK constraint: số lượng không âm, `availableQuantity <= totalQuantity`, giá không âm, status/condition theo tập giá trị schema.
 - Giữ cột `BookCopy.removedFromInventory*` để F13/F6 loại bản sao khỏi tổng kho mà không hard-delete.
-- Giữ unique constraint cho `Book.isbn`, `BookCopy.barcode`, `Tag.name`; xác minh/bổ sung unique không phân biệt hoa thường cho `Category.name` nếu import đồng thời có thể tạo trùng.
+- Giữ unique constraint cho `Book.isbn`, `BookCopy.barcode`, `Tag.name`; dùng unique index `LOWER(BTRIM(Category.name))` để chặn trùng Category không phân biệt hoa/thường và khoảng trắng.
 - Giữ `BookImportBatch.status IN ('success','failed')`, `BookImportError.sheetName IN ('Books','BookCopies')`, và thời hạn lịch sử 1 năm.
 - Xác minh index cho ISBN, Barcode, `BookCopy.bookId/status`, import history theo `createdAt`.
 - Không hard-delete Book/BookCopy; các liên kết nhiều-nhiều chỉ được thay thế trong transaction cập nhật Book.
@@ -68,7 +68,9 @@ Các nghiệp vụ nhiều bước BẮT BUỘC mở một `Connection` tại Se
 - **Risk:** Lệch số lượng nếu insert BookCopy thành công nhưng update Book thất bại.
   **Mitigation:** Một transaction và cùng Connection cho BookCopy, Book và Audit Log.
 - **Risk:** Hai request đồng thời tạo ISBN/Barcode/Category trùng.
-  **Mitigation:** Validate ở Service kết hợp unique constraint tại DB; rollback và trả lỗi thân thiện, riêng Barcode bắt SQLState `23505`.
+  **Mitigation:** Validate ở Service kết hợp unique constraint/index tại DB; map SQLState `23505`, rollback và trả lỗi thân thiện.
+- **Risk:** Bản sao mới làm công bố thừa sức chứa khi đang có người chờ.
+  **Mitigation:** Khóa Book và cấp sức chứa cho Reservation đầu hàng trong cùng transaction; thông báo chỉ enqueue sau commit.
 - **Risk:** Export CSV bị CSV formula injection khi dữ liệu bắt đầu bằng ký tự công thức.
   **Mitigation:** Mọi giá trị export đi qua `CsvExportUtil.escape` để thêm prefix an toàn và escape CSV chuẩn.
 - **Risk:** Mô tả import partial success trái BR-27.
