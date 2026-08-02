@@ -61,8 +61,8 @@ public class DocumentTempDAO {
      * @return Danh sách DocumentTemp, danh sách rỗng nếu không có dữ liệu
      */
     public List<DocumentTemp> getAll() {
-        String sql = "SELECT templateId AS tempId, tempName, description, subject, bodyContent, updatedBy AS managerId, createdAt, updatedAt "
-                + "FROM EmailTemplate ORDER BY tempName ASC";
+        String sql = "SELECT tempId, tempName, description, subject, bodyContent, managerId, createdAt, updatedAt "
+                + "FROM DocumentTemp ORDER BY tempName ASC";
 
         List<DocumentTemp> list = new ArrayList<>();
 
@@ -87,8 +87,8 @@ public class DocumentTempDAO {
      * @return DocumentTemp nếu tìm thấy, null nếu không tồn tại
      */
     public DocumentTemp findByTempName(String tempName) {
-        String sql = "SELECT templateId AS tempId, tempName, description, subject, bodyContent, updatedBy AS managerId, createdAt, updatedAt "
-                + "FROM EmailTemplate WHERE tempName = ?";
+        String sql = "SELECT tempId, tempName, description, subject, bodyContent, managerId, createdAt, updatedAt "
+                + "FROM DocumentTemp WHERE tempName = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -113,8 +113,8 @@ public class DocumentTempDAO {
      * @return DocumentTemp nếu tìm thấy, null nếu không tồn tại
      */
     public DocumentTemp findById(int tempId) {
-        String sql = "SELECT templateId AS tempId, tempName, description, subject, bodyContent, updatedBy AS managerId, createdAt, updatedAt "
-                + "FROM EmailTemplate WHERE templateId = ?";
+        String sql = "SELECT tempId, tempName, description, subject, bodyContent, managerId, createdAt, updatedAt "
+                + "FROM DocumentTemp WHERE tempId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -143,7 +143,7 @@ public class DocumentTempDAO {
      * @return ID tự động tăng vừa được tạo, -1 nếu thất bại
      */
     public int insert(DocumentTemp dt) {
-        String sql = "INSERT INTO EmailTemplate (tempName, description, subject, bodyContent, updatedBy, createdAt) "
+        String sql = "INSERT INTO DocumentTemp (tempName, description, subject, bodyContent, managerId, createdAt) "
                 + "VALUES (?, ?, ?, ?, ?, NOW())";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -182,8 +182,8 @@ public class DocumentTempDAO {
      * @return true nếu cập nhật thành công, false nếu thất bại
      */
     public boolean update(DocumentTemp dt) {
-        String sql = "UPDATE EmailTemplate SET subject = ?, bodyContent = ?, updatedAt = NOW() "
-                + "WHERE templateId = ?";
+        String sql = "UPDATE DocumentTemp SET subject = ?, bodyContent = ?, updatedAt = NOW() "
+                + "WHERE tempId = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
