@@ -637,4 +637,41 @@ public class FineDAO {
         }
         return BigDecimal.ZERO;
     }
+
+    // =========================================================================
+    // PAYMENT GUARD HELPERS
+    // =========================================================================
+
+    /**
+     * Lấy {@code borrowRecordId} liên kết với một khoản phạt.
+     *
+     * <p>Dùng để kiểm tra sách đã được trả vật lý chưa trước khi duyệt thanh toán fine.
+     * Fine phát sinh từ quá hạn ({@code reason} chứa "Trễ hạn") sẽ có {@code borrowRecordId} hợp lệ.
+     * Fine từ sự cố khác có thể không có {@code borrowRecordId}.</p>
+     *
+     * @param conn   Connection trong Transaction
+     * @param fineId ID khoản phạt cần tra cứu
+     * @return {@code borrowRecordId} nếu tìm thấy; {@code -1} nếu Fine không tồn tại
+     *         hoặc cột {@code borrowRecordId} là NULL
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    // EARS[Guard]: WHEN payment approval is triggered,
+    // THE LMS System SHALL look up borrowRecordId to verify book return status [BUG-FIX]
+    public int findBorrowRecordIdByFineId(Connection conn, int fineId) throws SQLException {
+        String sql = "SELECT borrowRecordId FROM Fine WHERE fineId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, fineId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int val = rs.getInt("borrowRecordId");
+                    return rs.wasNull() ? -1 : val;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi tra cứu borrowRecordId cho fineId=" + fineId, e);
+            throw e;
+        }
+        return -1;
+    }
 }

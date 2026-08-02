@@ -699,9 +699,30 @@ public class DeskCirculationService {
             }
 
             // ----------------------------------------------------------------
+            // [BUG-FIX] Bước 1.5: Guard — Kiểm tra sách đã được trả vật lý chưa
+            // Chặn thanh toán nếu BorrowRecord chưa ở trạng thái returned/lost/damaged.
+            // Whitelist approach: an toàn khi có thêm trạng thái mới trong tương lai.
+            // ----------------------------------------------------------------
+            int borrowRecordId = fineDAO.findBorrowRecordIdByFineId(conn, fineId);
+            if (borrowRecordId != -1) {
+                String brStatus = borrowRecordDAO.findStatusById(conn, borrowRecordId);
+                boolean bookNotYetReturned = !"returned".equals(brStatus)
+                                          && !"lost".equals(brStatus)
+                                          && !"damaged".equals(brStatus);
+                if (bookNotYetReturned) {
+                    throw new IllegalStateException(
+                            "Không thể duyệt thanh toán — người mượn chưa trả sách vật lý "
+                            + "(Phiếu mượn #" + borrowRecordId + " đang ở trạng thái: "
+                            + brStatus + "). "
+                            + "Vui lòng yêu cầu trả sách tại quầy trước khi thanh toán tiền phạt.");
+                }
+            }
+
+            // ----------------------------------------------------------------
             // [Node 5.25a - Bước 2] UPDATE Payment.status = 'completed'
             // ----------------------------------------------------------------
             paymentDAO.updateStatusToCompleted(conn, paymentId, librarianId);
+
 
             // ----------------------------------------------------------------
             // [Node 5.25b - Bước 3] UPDATE Fine.status = 'paid'

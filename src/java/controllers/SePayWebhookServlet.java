@@ -52,6 +52,7 @@ public class SePayWebhookServlet extends HttpServlet {
     private final AuditLogDAO auditLogDAO = new AuditLogDAO();
     private final dao.UserLockReasonDAO userLockReasonDAO = new dao.UserLockReasonDAO();
     private final dao.UserDAO userDAO = new dao.UserDAO();
+    private final dao.BorrowRecordDAO borrowRecordDAO = new dao.BorrowRecordDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -208,14 +209,28 @@ public class SePayWebhookServlet extends HttpServlet {
                     return;
                 }
 
-                // Cập nhật Payment -> completed
+                // ----------------------------------------------------------------
+                // [BUG-FIX] Guard — Kiểm tra sách đã được trả vật lý chưa (Phương án B)
+                // Tiền đã chuyển khoản thực tế → luôn ghi Payment = 'completed'.
+                // Nhưng NẾU sách chưa trả: KHÔNG mark Fine = 'paid', KHÔNG unlock tài khoản.
+                // Thủ thư sẽ thấy khoản phạt vẫn 'unpaid' và yêu cầu trả sách tại quầy.
+                // Khi trả sách (Check-in), OverdueProcessor / processCheckInGood sẽ
+                // phát hiện Payment đã 'completed' và tự xử lý.
+                // ----------------------------------------------------------------
+                int borrowRecordId = fineDAO.findBorrowRecordIdByFineId(conn, fineId);
+                boolean bookAlreadyReturned = true; // mặc định cho phép nếu không có BorrowRecord
+                if (borrowRecordId != -1) {
+                    String brStatus = borrowRecordDAO.findStatusById(conn, borrowRecordId);
+                    bookAlreadyReturned = "returned".equals(brStatus)
+                                      || "lost".equals(brStatus)
+                                      || "damaged".equals(brStatus);
+                }
+
+                // Luôn ghi nhận Payment = 'completed' vì tiền đã thật sự vào tài khoản
                 paymentDAO.updatePaymentOnlineSuccess(conn, paymentId, transactionRef,
                         "BankTransfer", transferAmount);
 
-                // Cập nhật Fine -> paid
-                fineDAO.updateStatusToPaid(conn, fineId);
-
-                // Lấy userId từ bảng Fine để xử lý gỡ cờ khóa
+                // Lấy userId từ bảng Fine
                 int userId = -1;
                 String sqlUser = "SELECT userId FROM Fine WHERE fineId = ?";
                 try (PreparedStatement psUser = conn.prepareStatement(sqlUser)) {
@@ -227,6 +242,27 @@ public class SePayWebhookServlet extends HttpServlet {
                     }
                 }
 
+                if (!bookAlreadyReturned) {
+                    // Sách chưa trả — ghi Audit Log cảnh báo, KHÔNG mark Fine = paid, KHÔNG unlock
+                    LOGGER.warning("SePay Webhook: Tiền đã nhận nhưng sách CHƯA TRẢ — "
+                            + "paymentId=" + paymentId + ", fineId=" + fineId
+                            + ", borrowRecordId=" + borrowRecordId
+                            + ". Payment = completed nhưng Fine vẫn 'unpaid', tài khoản KHÔNG unlock.");
+                    auditLogDAO.insert(conn, userId != -1 ? userId : null,
+                            "SEPAY_WEBHOOK_PAID_BOOK_NOT_RETURNED",
+                            "Payment", paymentId, "{\"status\":\"pending\"}",
+                            "{\"status\":\"completed\",\"warning\":\"book_not_returned\""
+                            + ",\"borrowRecordId\":" + borrowRecordId
+                            + ",\"transactionRef\":\"" + transactionRef + "\"}");
+                    conn.commit();
+                    out.print("{\"success\":true,\"message\":\"Payment recorded. Book not yet returned — fine remains unpaid until book is returned.\"}");
+                    return;
+                }
+
+                // Sách đã trả — xử lý bình thường
+                // Cập nhật Fine -> paid
+                fineDAO.updateStatusToPaid(conn, fineId);
+
                 // Xóa lý do khóa 'unpaid' và tự động mở khóa (BR-25)
                 if (userId != -1) {
                     userLockReasonDAO.deleteLockReason(conn, userId, "unpaid");
@@ -237,7 +273,7 @@ public class SePayWebhookServlet extends HttpServlet {
                 }
 
                 // Ghi Audit Log
-                auditLogDAO.insert(conn, null, "SEPAY_WEBHOOK_PAYMENT",
+                auditLogDAO.insert(conn, userId != -1 ? userId : null, "SEPAY_WEBHOOK_PAYMENT",
                         "Payment", paymentId, "{\"status\":\"pending\"}",
                         "{\"status\":\"completed\",\"transactionRef\":\"" + transactionRef
                         + "\",\"amount\":" + transferAmount + "}");

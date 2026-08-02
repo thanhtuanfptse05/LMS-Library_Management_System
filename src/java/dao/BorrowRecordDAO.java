@@ -1194,6 +1194,33 @@ public class BorrowRecordDAO {
         }
         return 0;
     }
+
+    /**
+     * Lấy {@code status} của một phiếu mượn theo ID.
+     *
+     * <p>Dùng cho guard check trong luồng duyệt thanh toán fine:
+     * chặn thanh toán nếu sách chưa được trả vật lý.
+     * Trạng thái hợp lệ để được phép thanh toán: {@code returned}, {@code lost}, {@code damaged}.</p>
+     *
+     * @param conn           Connection trong Transaction
+     * @param borrowRecordId ID phiếu mượn cần tra cứu
+     * @return Chuỗi status hiện tại; {@code null} nếu không tìm thấy bản ghi
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    // EARS[Guard]: WHEN payment approval is triggered,
+    // THE LMS System SHALL verify BorrowRecord.status is 'returned'|'lost'|'damaged' [BUG-FIX]
+    public String findStatusById(Connection conn, int borrowRecordId) throws SQLException {
+        String sql = "SELECT status FROM BorrowRecord WHERE borrowRecordId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, borrowRecordId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getString("status");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi lấy status BorrowRecord id=" + borrowRecordId, e);
+            throw e;
+        }
+        return null;
+    }
 }
-
-
