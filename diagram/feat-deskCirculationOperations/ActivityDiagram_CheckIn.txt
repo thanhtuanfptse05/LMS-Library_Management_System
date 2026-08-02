@@ -1,9 +1,9 @@
 ACTIVITY DIAGRAM — UC-19: DESK CHECK-IN (NHẬN TRẢ SÁCH TẠI QUẦY)
 Feature: F6 — Desk Circulation Operations
-Version: 1.0 | Ngày tạo: 2026-07-28
-Mô tả: Luồng hoạt động chi tiết cho nghiệp vụ Nhận trả sách tại quầy (Check-in).
+Version: 2.0 | Ngày cập nhật: 2026-08-02
+Mô tả: Luồng hoạt động chi tiết cho nghiệp vụ Nhận trả sách tại quầy (Check-in), đã đồng bộ chính xác với kiến trúc Decouple F6/F13 và CodeGraph.
 Actors: Librarian, LMS System, Email System
-Business Rules áp dụng: BR-24, FR-37, FR-38, FR-39
+Business Rules áp dụng: BR-24, FR-001, FR-002, FR-003, FR-004, FR-006, FR-007, FR-F6-05, FR-37, FR-38, FR-39
 
 ========================================================================
 
@@ -17,168 +17,150 @@ Nối tới: Mũi tên đi tới [Manual Action 2.1].
 [Manual Action 2.1]
 Actor: Librarian
 Loại: Manual Action
-Tên Action: Scan Barcode And Assess Condition
-Nội dung Action: Thủ thư quét Barcode bản sao sách được trả và đánh giá tình trạng vật lý (condition) của sách: 'good' (nguyên vẹn), 'damaged' (hư hỏng), hoặc 'lost' (thất lạc). Thủ thư chọn giá trị condition trên form.
+Tên Action: Scan Barcode And Select Condition
+Nội dung Action: Thủ thư quét Barcode trên bản sao sách và chọn tình trạng vật lý (condition): 'good' (nguyên vẹn), 'damaged' (hư hỏng), hoặc 'lost' (thất lạc). Nhấn "Xác nhận Nhận sách".
 Nối tới: Mũi tên đi tới [System Action Box 3.1].
 
 [System Action Box 3.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Validate Input And Lookup Book Copy
-Nội dung Action: Kiểm tra barcode không rỗng. Gọi BookCopyDAO.findByBarcode(barcode) để tra cứu bản sao sách. Lấy thông tin bookCopyId, bookId, status.
+Tên Action: Fast Validation & Trigger Lazy Sweeps
+Nội dung Action: Kiểm tra condition thuộc whitelist {'good', 'damaged', 'lost'}. Thực thi Lazy Sweeps: ReservationExpirationProcessor.processExpiration() và OverdueProcessor.processOverdue().
+Nối tới: Mũi tên đi tới [System Action Box 3.2].
+
+[System Action Box 3.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Query Book Copy By Barcode
+Nội dung Action: Mở kết nối CSDL. Gọi BookCopyDAO.findByBarcode(conn, barcode) để tìm bản sao sách.
 Nối tới: Mũi tên đi tới [Decision Node 4.1].
 
 [Decision Node 4.1]
 Actor: LMS System
 Loại: Decision Node
-Tên Action: Check Book Copy Existence
-Nội dung Action: Kiểm tra bản sao sách có tồn tại trong hệ thống hay không.
+Tên Action: Check Book Copy Validity & Status
+Nội dung Action: Kiểm tra bản sao sách có tồn tại và đang ở trạng thái 'borrowed' hay không.
 Nối tới:
-Nhánh [BookCopy == null (Không tìm thấy)]: rẽ tới [System Action Box 4.2].
-Nhánh [BookCopy != null (Tìm thấy)]: rẽ tới [System Action Box 5.1].
+Nhánh [BookCopy == null hoặc status != 'borrowed']: rẽ tới [System Action Box 4.2].
+Nhánh [BookCopy hợp lệ & status == 'borrowed']: rẽ tới [System Action Box 5.1].
 
 [System Action Box 4.2]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Return Book Copy Not Found Error
-Nội dung Action: Trả về thông báo lỗi: "Không tìm thấy bản sao sách với mã vạch đã quét". Hiển thị lại form Check-in.
+Tên Action: Return Invalid Book Copy Error
+Nội dung Action: Trả về lỗi: "Mã vạch không tồn tại hoặc bản sao sách không ở trạng thái 'borrowed'". Hiển thị trên Desk Dashboard.
 Nối tới: Mũi tên đi tới [Final Node 20.1].
 
 [System Action Box 5.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Query Active Borrow Record
-Nội dung Action: Gọi BorrowRecordDAO.findActiveBorrowByBookCopyId(bookCopyId) để tìm phiếu mượn đang hoạt động (status = 'borrowed') của bản sao sách này. Lấy thông tin borrowRecordId, userId, bookId, startDate, endDate.
+Tên Action: Query Active Borrow Record & Calculate Overdue
+Nội dung Action: Gọi BorrowRecordDAO.findActiveBorrowRecord(conn, bookCopyId) để lấy thông tin mượn (borrowRecordId, userId, bookId, endDate). Tính số ngày trễ = (NOW() - endDate).
 Nối tới: Mũi tên đi tới [Decision Node 6.1].
 
 [Decision Node 6.1]
 Actor: LMS System
-Loại: Decision Node
+Loại: System Action Box
 Tên Action: Check Active Borrow Record Existence
-Nội dung Action: Kiểm tra có phiếu mượn đang hoạt động cho bản sao sách này không.
+Nội dung Action: Kiểm tra có phiếu mượn đang hoạt động hay không.
 Nối tới:
-Nhánh [BorrowRecord == null (Sách chưa được mượn)]: rẽ tới [System Action Box 6.2].
-Nhánh [BorrowRecord != null (Có phiếu mượn)]: rẽ tới [Decision Node 7.1].
+Nhánh [BorrowRecord == null]: rẽ tới [System Action Box 6.2].
+Nhánh [BorrowRecord != null]: rẽ tới [System Action Box 7.1].
 
 [System Action Box 6.2]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Return No Active Borrow Error
-Nội dung Action: Trả về thông báo lỗi: "Bản sao sách này hiện không có phiếu mượn đang hoạt động". Hiển thị lại form Check-in.
+Tên Action: Return Missing Borrow Record Error
+Nội dung Action: Trả về lỗi: "Không tìm thấy bản ghi mượn đang active cho mã vạch này".
 Nối tới: Mũi tên đi tới [Final Node 20.1].
 
-[Decision Node 7.1]
+[System Action Box 7.1]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Open DB Transaction & Route Condition
+Nội dung Action: Bắt đầu Transaction (conn.setAutoCommit(false)).
+Nối tới: Mũi tên đi tới [Decision Node 7.2].
+
+[Decision Node 7.2]
 Actor: LMS System
 Loại: Decision Node
-Tên Action: Evaluate Return Condition
-Nội dung Action: Phân nhánh xử lý theo tình trạng vật lý (condition) của bản sao sách do Thủ thư đánh giá.
+Tên Action: Evaluate Condition Branch
+Nội dung Action: Rẽ nhánh xử lý theo tình trạng sách do Thủ thư chọn.
 Nối tới:
 Nhánh [condition IN ('damaged', 'lost')]: rẽ tới [System Action Box 8.1].
 Nhánh [condition == 'good']: rẽ tới [System Action Box 12.1].
 
 ====================================================================
-NHÁNH A: SÁCH HƯ HỎNG HOẶC THẤT LẠC (DAMAGED / LOST) — FR-37
+NHÁNH A: SÁCH HƯ HỎNG HOẶC THẤT LẠC (DAMAGED / LOST) — DECOUPLED ARCHITECTURE (FR-001 -> FR-007)
 ====================================================================
 
 [System Action Box 8.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Open Transaction — Process Damaged Or Lost Return
-Nội dung Action: Mở DB Transaction (conn.setAutoCommit(false)). Bắt đầu xử lý trả sách với tình trạng hư hỏng hoặc thất lạc.
+Tên Action: Update Borrow Record To Returned
+Nội dung Action: Gọi BorrowRecordDAO.updateStatusToReturned(conn, borrowRecordId) — Cập nhật status = 'returned', returnedAt = NOW().
 Nối tới: Mũi tên đi tới [System Action Box 8.2].
 
 [System Action Box 8.2]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Calculate Overdue Fine (If Applicable)
-Nội dung Action: Tính số ngày trễ = (NOW() - BorrowRecord.endDate). Nếu số ngày trễ > 0: tính tiền phạt trễ hạn amount = FINE_RATE_PER_DAY × số ngày trễ. INSERT Fine (borrowRecordId, userId, amount, status = 'unpaid', reason = 'overdue').
-Nối tới: Mũi tên đi tới [System Action Box 9.1].
+Tên Action: Update Book Copy Status To Unavailable
+Nội dung Action: Gọi BookCopyDAO.updateStatusToUnavailable(conn, bookCopyId, condition). Chuyển status = 'unavailable', lưu condition vật lý. KHÔNG giảm totalQuantity, KHÔNG xóa khỏi kho (chuyển F13 xử lý).
+Nối tới: Mũi tên đi tới [System Action Box 8.3].
 
-[System Action Box 9.1]
+[System Action Box 8.3]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Update Borrow Record — Damaged Or Lost
-Nội dung Action: UPDATE BorrowRecord SET status = 'returned', returnedAt = NOW() WHERE borrowRecordId = borrowRecordId.
-Nối tới: Mũi tên đi tới [System Action Box 9.2].
+Tên Action: Create Pending Book Copy Incident
+Nội dung Action: Gọi BookCopyIncidentDAO.insertPendingFromCheckIn(conn, incident, borrowRecordId). Tạo bản ghi sự cố với status = 'pending', liên kết borrowRecordId để F13 xác minh và xử lý phạt đền bù sau. (Phạt quá hạn, nếu có, đã được OverdueProcessor xử lý).
+Nối tới: Mũi tên đi tới [System Action Box 8.6].
 
-[System Action Box 9.2]
+[System Action Box 8.6]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Update Book Copy — Set Unavailable
-Nội dung Action: UPDATE BookCopy SET status = 'unavailable', condition = condition (damaged/lost) WHERE bookCopyId = bookCopyId.
-Nối tới: Mũi tên đi tới [Decision Node 10.1].
-
-[Decision Node 10.1]
-Actor: LMS System
-Loại: Decision Node
-Tên Action: Evaluate Inventory Deduction (BR-24)
-Nội dung Action: Kiểm tra giá trị condition để quyết định trừ tồn kho.
-Nối tới:
-Nhánh [condition == 'lost']: rẽ tới [System Action Box 10.2].
-Nhánh [condition == 'damaged']: rẽ tới [System Action Box 10.3].
-
-[System Action Box 10.2]
-Actor: LMS System
-Loại: System Action Box
-Tên Action: Deduct Total Quantity — Lost Book
-Nội dung Action: UPDATE Book SET totalQuantity = totalQuantity - 1 WHERE bookId = bookId. Đánh dấu removedFromInventory = true (sách bị mất hoàn toàn, trừ kho tổng).
-Nối tới: Mũi tên đi tới [System Action Box 11.1].
-
-[System Action Box 10.3]
-Actor: LMS System
-Loại: System Action Box
-Tên Action: Keep Total Quantity — Damaged Book
-Nội dung Action: GIỮ NGUYÊN Book.totalQuantity (sách hỏng sẽ được xử lý bởi F13 — Book Maintenance). Bản sao vẫn tồn tại trong kho nhưng ở trạng thái 'unavailable'.
-Nối tới: Mũi tên đi tới [System Action Box 11.1].
-
-[System Action Box 11.1]
-Actor: LMS System
-Loại: System Action Box
-Tên Action: Create Incident Record And Lock User Account
-Nội dung Action: Thực thi tuần tự:
-  (1) INSERT BookCopyIncident (bookCopyId, incidentType = condition, description = 'Phát hiện khi trả sách', status = 'resolved', reportedBy = librarianId, reportedAt = NOW()).
-  (2) KHÓA TỨC THÌ: INSERT UserLockReason (userId, reason = 'unpaid', createdAt = NOW()).
-  (3) UPDATE "User" SET status = 'locked' WHERE userId = userId.
-  (4) INSERT AuditLog (actionType = 'CHECKIN', entityName = 'BorrowRecord', entityId = borrowRecordId, userId = librarianId).
+Tên Action: Insert Audit Log For Pending Incident
+Nội dung Action: Gọi UserDAO.insertAuditLog(librarianId, 'CHECK_IN_INCIDENT_PENDING', ...). Ghi nhận nghi vấn thành công.
 Nối tới: Mũi tên đi tới [System Action Box 19.1].
 
 ====================================================================
-NHÁNH B: SÁCH NGUYÊN VẸN (GOOD) — FR-38
+NHÁNH B: SÁCH NGUYÊN VẸN (GOOD) — FR-38, FR-F6-05
 ====================================================================
 
 [System Action Box 12.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Open Transaction — Process Good Return
-Nội dung Action: Mở DB Transaction (conn.setAutoCommit(false)). Bắt đầu xử lý trả sách nguyên vẹn.
-Nối tới: Mũi tên đi tới [System Action Box 12.2].
-
-[System Action Box 12.2]
-Actor: LMS System
-Loại: System Action Box
-Tên Action: Calculate Overdue Fine — Good Condition
-Nội dung Action: Tính số ngày trễ = (NOW() - BorrowRecord.endDate). Nếu số ngày trễ > 0: tính tiền phạt trễ hạn amount = FINE_RATE_PER_DAY × số ngày trễ. INSERT Fine (borrowRecordId, userId, amount, status = 'unpaid', reason = 'overdue'). INSERT UserLockReason (userId, reason = 'unpaid'). UPDATE "User" SET status = 'locked'. Nếu số ngày trễ <= 0: KHÔNG tạo phiếu phạt, BỎ QUA bước khóa tài khoản.
+Tên Action: Update Borrow Record To Returned (Good)
+Nội dung Action: Gọi BorrowRecordDAO.updateStatusToReturned(conn, borrowRecordId) — Cập nhật status = 'returned', returnedAt = NOW(). (Phạt quá hạn, nếu có, đã được OverdueProcessor xử lý).
 Nối tới: Mũi tên đi tới [System Action Box 13.1].
 
 [System Action Box 13.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Update Borrow Record — Good Return
-Nội dung Action: UPDATE BorrowRecord SET status = 'returned', returnedAt = NOW() WHERE borrowRecordId = borrowRecordId.
-Nối tới: Mũi tên đi tới [System Action Box 13.2].
+Tên Action: Check Parent Book Status
+Nội dung Action: Gọi BookDAO.findByIdForUpdate(conn, bookId) để kiểm tra trạng thái Đầu sách gốc (parent book).
+Nối tới: Mũi tên đi tới [Decision Node 13.2].
 
-[System Action Box 13.2]
+[Decision Node 13.2]
+Actor: LMS System
+Loại: Decision Node
+Tên Action: Evaluate Parent Book Availability
+Nội dung Action: Đánh giá xem Đầu sách có đang ở trạng thái 'unavailable' (ngưng phục vụ) hay không.
+Nối tới:
+Nhánh [Parent Book Status == 'unavailable']: rẽ tới [System Action Box 13.3].
+Nhánh [Parent Book Status == 'active']: rẽ tới [System Action Box 14.1].
+
+[System Action Box 13.3]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Update Book Copy — Set Good Condition
-Nội dung Action: UPDATE BookCopy SET condition = 'good', status = 'available' WHERE bookCopyId = bookCopyId.
-Nối tới: Mũi tên đi tới [System Action Box 14.1].
+Tên Action: Keep Copy Unavailable & Insert Audit Log
+Nội dung Action: Gọi BookCopyDAO.updateStatusToUnavailable(conn, bookCopyId, 'good'). Ghi AuditLog 'CHECK_IN_GOOD_BOOK_UNAVAILABLE'.
+Nối tới: Mũi tên đi tới [System Action Box 19.1].
 
 [System Action Box 14.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Insert Audit Log — Good Check-in
-Nội dung Action: INSERT AuditLog (actionType = 'CHECKIN', entityName = 'BorrowRecord', entityId = borrowRecordId, userId = librarianId).
+Tên Action: Update Copy Status To Available
+Nội dung Action: Gọi BookCopyDAO.updateStatusToAvailable(conn, bookCopyId) — Chuyển trạng thái bản sao sách về 'available'.
 Nối tới: Mũi tên đi tới [System Action Box 15.1].
 
 ====================================================================
@@ -188,59 +170,67 @@ Nối tới: Mũi tên đi tới [System Action Box 15.1].
 [System Action Box 15.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Check Next User In Reservation Queue (FR-39)
-Nội dung Action: Truy vấn ReservationDAO.findNextInQueue(bookId) tìm người chờ tiếp theo: WHERE queuePosition = 1 AND status = 'pending' cho bookId này.
+Tên Action: Query Next User In Reservation Queue
+Nội dung Action: Gọi ReservationDAO.findNextInQueue(conn, bookId) tìm đơn đặt trước đầu tiên trong hàng đợi (queuePosition = 1, status = 'pending').
 Nối tới: Mũi tên đi tới [Decision Node 16.1].
 
 [Decision Node 16.1]
 Actor: LMS System
 Loại: Decision Node
 Tên Action: Evaluate Queue Existence
-Nội dung Action: Đánh giá kết quả tìm kiếm hàng chờ đặt trước.
+Nội dung Action: Đánh giá có người đang chờ đặt trước đầu sách này hay không.
 Nối tới:
-Nhánh [Has Queue (Có người chờ tiếp theo)]: rẽ tới [System Action Box 17.1].
+Nhánh [Has Next In Queue (Có người chờ)]: rẽ tới [System Action Box 17.1].
 Nhánh [Queue Empty (Không có ai chờ)]: rẽ tới [System Action Box 18.1].
 
 [System Action Box 17.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Allocate Copy To Next Waitlist User
-Nội dung Action: Thực thi tuần tự:
-  (1) UPDATE Reservation SET queuePosition = 0, status = 'readypickup', bookCopyId = bookCopyId, endDate = NOW() + RESERVATION_HOLD_DAYS (lấy từ SystemConfigurations) WHERE reservationId = reservationId của người chờ.
-  (2) UPDATE BookCopy SET status = 'reserved' WHERE bookCopyId = bookCopyId.
-  (3) Trigger gửi email báo sách sẵn sàng: EmailService.enqueue(RESERVATION_READY, userId) [async, ngoài Transaction].
+Tên Action: Promote Next Reservation To ReadyPickup
+Nội dung Action: Thực thi tuần tự trong Transaction:
+  (1) Lấy holdDays từ SystemConfigurations (mặc định 3 ngày).
+  (2) ReservationDAO.updateToReadyPickupWithoutCopy(conn, nextInQueue.getReservationId(), holdDays) — Chuyển status = 'readypickup', gán hạn giữ sách.
+  (3) ReservationDAO.decrementQueuePositions(conn, bookId) — Dịch chuyển hàng chờ (position 2->1, 3->2...).
+  (4) UserDAO.insertAuditLog(librarianId, 'CHECK_IN_GOOD_QUEUE', ...).
+Nối tới: Mũi tên đi tới [System Action Box 17.2].
+
+[System Action Box 17.2]
+Actor: LMS System
+Loại: System Action Box
+Tên Action: Enqueue Async Reservation Email
+Nội dung Action: Đăng ký gửi email bất đồng bộ ngoài Transaction báo độc giả kế tiếp đến nhận sách (triggerQueueNotificationEmailAsync).
 Nối tới: Mũi tên đi tới [System Action Box 19.1].
 
 [System Action Box 18.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Return Copy To Available Inventory
-Nội dung Action: Không có người chờ trong hàng đợi. Thực thi:
-  (1) UPDATE Book SET availableQuantity = availableQuantity + 1 WHERE bookId = bookId.
-  (2) GIỮ BookCopy.status = 'available' (đã set ở bước 13.2).
+Tên Action: Return Copy To Inventory (Increment Available Quantity)
+Nội dung Action: Hàng chờ trống. Gọi BookDAO.incrementAvailableQuantity(conn, bookId) — Tăng availableQuantity +1. Ghi AuditLog 'CHECK_IN_GOOD'.
 Nối tới: Mũi tên đi tới [System Action Box 19.1].
 
 ====================================================================
-COMMIT VÀ THÔNG BÁO KẾT QUẢ
+COMMIT TRANSACTION VÀ GỬI THÔNG BÁO
 ====================================================================
 
 [System Action Box 19.1]
 Actor: LMS System
 Loại: System Action Box
-Tên Action: Commit Transaction And Notify
-Nội dung Action: conn.commit(). Nếu xảy ra SQLException trong toàn bộ Transaction: conn.rollback() và throw DatabaseException. Gửi email xác nhận trả sách cho độc giả: EmailService.enqueue(CHECKIN_CONFIRMATION, userId) [async, ngoài Transaction]. Hiển thị thông báo "Nhận trả sách thành công" kèm tóm tắt kết quả (tình trạng sách, phạt nếu có, hàng chờ nếu có).
+Tên Action: Commit Transaction
+Nội dung Action: Thực thi conn.commit().
 Nối tới: Mũi tên đi tới [Manual Action 19.2].
 
 [Manual Action 19.2]
 Actor: Librarian
 Loại: Manual Action
-Tên Action: View Check-In Result And Fine Summary
-Nội dung Action: Thủ thư xem kết quả trả sách trên màn hình: tình trạng sách (good/damaged/lost), phiếu phạt (nếu có), trạng thái hàng chờ (đã chuyển cho người tiếp theo hay trả về kho). Thủ thư thông báo kết quả cho độc giả.
+Tên Action: View Check-In Result Summary
+Nội dung Action: Thủ thư xem thông báo kết quả nhận sách trên giao diện:
+  - Nếu Good: "Nhận sách thành công! Mã vạch: ... — Tình trạng: Tốt".
+  - Nếu Damaged/Lost: "Đã ghi nhận nghi vấn sách Hỏng/Mất. Sự cố đã chuyển sang mục Quản lý sự cố (F13) để xác minh".
 Nối tới: Mũi tên đi tới [Final Node 20.1].
 
 [Final Node 20.1]
 Actor: LMS System
 Loại: Final Node
 Tên Action: End Check-In Flow
-Nội dung Action: Kết thúc luồng Nhận trả sách tại quầy (UC-19). Quay về trang Desk Dashboard.
+Nội dung Action: Kết thúc luồng Nhận trả sách tại quầy (UC-19). Hệ thống tự động redirect về trang Desk Dashboard.
 Nối tới: Không có.
