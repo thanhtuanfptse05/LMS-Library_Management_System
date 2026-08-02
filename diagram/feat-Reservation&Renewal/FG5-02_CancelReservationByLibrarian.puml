@@ -1,0 +1,69 @@
+@startuml CancelReservationFlow
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam ArrowColor Black
+skinparam titleBorderThickness 1
+skinparam titleBorderColor Black
+skinparam titleBackgroundColor White
+title Cancel Reservation Flow (Exact Code Logic)
+
+|Librarian|
+start
+:Select reservation record\n& click Cancel;
+:Enter cancellation reason\n& submit request;
+
+|System|
+:Authenticate Librarian role\n& validate reason;
+
+if (Reason provided?) then (No)
+  :Show validation error message\n"Reason is required";
+  |Librarian|
+  :View error notification;
+  |System|
+else (Yes)
+  |System|
+  :Update target reservation\nstatus to CANCELLED;
+  :Send cancellation email to reader;
+
+  if (Canceled reservation had ready-pickup spot?\n(queuePosition == 0)) then (Yes)
+    :Check for next waiting reader\nin queue (queuePosition == 1);
+
+    if (Next reader exists?) then (Yes)
+      :Transfer ready-pickup spot to next reader\n(queuePosition = 0, status = READY_PICKUP);
+      :Shift remaining queue positions (-1);
+      :Record CANCEL audit log;
+
+      fork
+        |Librarian|
+        :Receive success message\n& refreshed queue list;
+      fork again
+        |Student|
+        :Receive ready-pickup email notification;
+      end fork
+      |System|
+    else (No)
+      :Increase availableQuantity by 1\nin Book inventory (+1);
+      :Record CANCEL audit log;
+
+      |Librarian|
+      :Receive success message\n& refreshed queue list;
+      |System|
+    endif
+  else (No - queuePosition > 0)
+    :Shift remaining queue positions\nafter the canceled position;
+    :Record CANCEL audit log;
+
+    |Librarian|
+    :Receive success message\n& refreshed queue list;
+    |System|
+  endif
+endif
+
+|System|
+stop
+
+@enduml
