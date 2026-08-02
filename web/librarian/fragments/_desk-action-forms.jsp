@@ -176,7 +176,7 @@
                 </h5>
                 <button type="button" class="btn-close" onclick="hideActionForm('payment')"></button>
             </div>
-            <form action="${pageContext.request.contextPath}/librarian/cash-payment" method="POST" class="needs-validation" novalidate>
+            <form action="${pageContext.request.contextPath}/librarian/cash-payment" method="POST" class="needs-validation" novalidate onsubmit="return confirm('Bạn có chắc chắn muốn duyệt thu tiền mặt cho khoản phạt này không?');">
                 <input type="hidden" name="memberCode" value="${fn:escapeXml(requestScope.memberCode)}">
                 <input type="hidden" name="userId" value="${requestScope.searchedUser.userId}">
                 <div class="mb-3 col-md-6">

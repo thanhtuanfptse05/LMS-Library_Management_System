@@ -104,7 +104,7 @@
                                     <p class="mb-2 small">Lý do: <em><c:out value="${fine.reason}" /></em></p>
                                     <c:choose>
                                         <c:when test="${not empty fine.paymentId}">
-                                            <form action="${pageContext.request.contextPath}/librarian/cash-payment" method="POST">
+                                            <form action="${pageContext.request.contextPath}/librarian/cash-payment" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn duyệt thu tiền mặt cho khoản phạt này không?');">
                                                 <input type="hidden" name="memberCode" value="${fn:escapeXml(requestScope.memberCode)}">
                                                 <input type="hidden" name="paymentId" value="${fine.paymentId}">
                                                 <input type="hidden" name="userId" value="${fine.userId}">
