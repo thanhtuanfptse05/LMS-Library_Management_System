@@ -126,7 +126,7 @@
                 </h5>
                 <button type="button" class="btn-close" onclick="hideActionForm('checkin')"></button>
             </div>
-            <form action="${pageContext.request.contextPath}/librarian/checkin" method="POST" class="needs-validation" novalidate>
+            <form action="${pageContext.request.contextPath}/librarian/checkin" method="POST" class="needs-validation" novalidate id="checkinForm" onsubmit="return confirmCheckin()">
                 <input type="hidden" name="memberCode" value="${fn:escapeXml(requestScope.memberCode)}">
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
@@ -187,6 +187,24 @@
                 </div>
             </form>
         </div>
+
+<script>
+    function confirmCheckin() {
+        var barcodeInput = document.getElementById('checkinBarcode');
+        var conditionSelect = document.getElementById('checkinCondition');
+        
+        if (!barcodeInput || !conditionSelect) return true;
+        
+        var barcode = barcodeInput.value.trim();
+        // Trình duyệt sẽ tự cảnh báo HTML5 required nếu chưa nhập barcode
+        if (barcode === '') return true; 
+
+        var conditionText = conditionSelect.options[conditionSelect.selectedIndex].text;
+        
+        var message = 'Bạn có chắc chắn muốn nhận trả sách có mã vạch "' + barcode + '" với tình trạng là: "' + conditionText + '" không?';
+        return confirm(message);
+    }
+</script>
 
     </div>
 </div>
