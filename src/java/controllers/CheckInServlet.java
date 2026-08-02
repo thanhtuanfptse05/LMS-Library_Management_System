@@ -112,9 +112,16 @@ public class CheckInServlet extends HttpServlet {
                 case "lost"    -> "Mất";
                 default        -> "Tốt";
             };
-            session.setAttribute("successMessage",
-                    "Nhận sách thành công! Mã vạch: " + barcode
-                    + " — Tình trạng: " + conditionLabel + ".");
+            if ("damaged".equals(condition) || "lost".equals(condition)) {
+                session.setAttribute("successMessage",
+                        "Đã ghi nhận nghi vấn sách " + conditionLabel
+                        + " (Mã vạch: " + barcode + "). "
+                        + "Sự cố đã chuyển sang mục Quản lý sự cố (F13) để xác minh.");
+            } else {
+                session.setAttribute("successMessage",
+                        "Nhận sách thành công! Mã vạch: " + barcode
+                        + " — Tình trạng: " + conditionLabel + ".");
+            }
 
         } catch (IllegalStateException e) {
             session.setAttribute("errorMessage", e.getMessage());

@@ -52,11 +52,11 @@ public class BorrowRecordDAO {
     }
 
     /**
-     * Đếm số lượng sách đang mượn (status = 'borrowed') của một độc giả.
+     * Đếm số lượng sách đang giữ chưa trả (status IN 'borrowed','overdue') của một độc giả.
      * Dùng để kiểm tra hạn mức mượn tối đa (BR-21 / Max Quota).
      */
     public int countActiveBorrowsByUserId(Connection conn, int userId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status = 'borrowed'";
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status IN ('borrowed', 'overdue') AND returnedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -177,7 +177,7 @@ public class BorrowRecordDAO {
     }
 
     /**
-     * Tra cứu đầy đủ bản ghi mượn đang active (status='borrowed') theo mã bản sao.
+     * Tra cứu đầy đủ bản ghi mượn đang active (status='borrowed' hoặc 'overdue') theo mã bản sao.
      *
      * <p>Hàm này trả về toàn bộ đối tượng {@code BorrowRecord} (bao gồm
      * {@code userId} và {@code bookId}) để tầng Service có thể truy cập các
@@ -188,16 +188,22 @@ public class BorrowRecordDAO {
      * và {@code bookId} (kiểm tra hàng chờ, cập nhật số lượng kho) từ
      * một truy vấn duy nhất thay vì 3 truy vấn riêng biệt.</p>
      *
+     * <p><strong>Lưu ý:</strong> Hàm này xét cả trạng thái {@code 'overdue'}
+     * vì tiến trình nền {@code OverdueProcessor} có thể đã đổi status từ
+     * {@code 'borrowed'} sang {@code 'overdue'} trước khi Thủ thư xử lý Check-in
+     * tại quầy. Điều kiện {@code returnedAt IS NULL} đảm bảo chỉ lấy phiếu
+     * mượn chưa trả.</p>
+     *
      * @param conn       {@code Connection} được quản lý bởi tầng Service
      *                   (đã {@code setAutoCommit(false)})
      * @param bookCopyId ID bản sao sách đang được trả
-     * @return Đối tượng {@code BorrowRecord} đang active;
-     *         {@code null} nếu không tìm thấy bản ghi 'borrowed'
+     * @return Đối tượng {@code BorrowRecord} đang active (status 'borrowed' hoặc 'overdue');
+     *         {@code null} nếu không tìm thấy bản ghi active nào
      * @throws SQLException nếu có lỗi thực thi truy vấn SQL,
      *                      cho phép Service tầng trên thực hiện rollback
      */
     // EARS[Event-driven]: WHEN Librarian scans barcode for check-in,
-    // THE LMS System SHALL find full active BorrowRecord WHERE bookCopyId=? AND status='borrowed'
+    // THE LMS System SHALL find full active BorrowRecord WHERE bookCopyId=? AND status IN ('borrowed','overdue')
     // to retrieve userId and bookId for subsequent operations [FR-F6-04, FR-F6-05]
     public BorrowRecord findActiveBorrowRecord(Connection conn, int bookCopyId)
             throws SQLException {
@@ -206,7 +212,8 @@ public class BorrowRecordDAO {
                    + "       extensionCount, createdBy, createdAt "
                    + "FROM   BorrowRecord "
                    + "WHERE  bookCopyId = ? "
-                   + "  AND  status     = 'borrowed'";
+                   + "  AND  status     IN ('borrowed', 'overdue')"
+                   + "  AND  returnedAt IS NULL";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookCopyId);
@@ -242,11 +249,14 @@ public class BorrowRecordDAO {
     }
 
     /**
-     * Lấy danh sách các BorrowRecord đang active ('borrowed') của một người dùng.
+     * Lấy danh sách các BorrowRecord đang active (status IN 'borrowed','overdue') của một người dùng.
+     *
+     * <p>Bao gồm cả sách quá hạn chưa trả vì OverdueProcessor có thể đã cập nhật status
+     * từ 'borrowed' sang 'overdue' trong khi độc giả vẫn đang giữ sách.</p>
      *
      * @param conn   Connection trong Transaction
      * @param userId ID người dùng cần tra cứu
-     * @return Danh sách các bản ghi mượn đang active
+     * @return Danh sách các bản ghi mượn đang active (chưa trả)
      * @throws SQLException nếu có lỗi truy vấn cơ sở dữ liệu
      */
     public List<BorrowRecord> findActiveBorrowRecordsByUserId(Connection conn, int userId) throws SQLException {
@@ -257,8 +267,9 @@ public class BorrowRecordDAO {
                    + "       b.title AS bookTitle "
                    + "FROM   BorrowRecord br "
                    + "JOIN   Book b ON br.bookId = b.bookId "
-                   + "WHERE  br.userId   = ? "
-                   + "  AND  br.status   = 'borrowed' "
+                   + "WHERE  br.userId     = ? "
+                   + "  AND  br.status     IN ('borrowed', 'overdue') "
+                   + "  AND  br.returnedAt IS NULL "
                    + "ORDER BY br.startDate DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -292,10 +303,10 @@ public class BorrowRecordDAO {
     }
 
     /**
-     * Đếm số sách đang mượn (status = 'borrowed') của một người dùng.
+     * Đếm số sách đang giữ chưa trả (status IN 'borrowed','overdue') của một người dùng.
      */
     public int countActiveBorrowsByUser(Connection conn, int userId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status = 'borrowed'";
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND status IN ('borrowed', 'overdue') AND returnedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -311,10 +322,10 @@ public class BorrowRecordDAO {
     }
 
     /**
-     * Kiểm tra xem người dùng có đang mượn cuốn sách này hay không.
+     * Kiểm tra xem người dùng có đang giữ cuốn sách này hay không (chưa trả, dù đúng hạn hay quá hạn).
      */
     public boolean hasActiveBorrowRecord(Connection conn, int userId, int bookId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND bookId = ? AND status = 'borrowed'";
+        String sql = "SELECT COUNT(*) FROM BorrowRecord WHERE userId = ? AND bookId = ? AND status IN ('borrowed', 'overdue') AND returnedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ps.setInt(2, bookId);
@@ -574,7 +585,7 @@ public class BorrowRecordDAO {
     }
 
     /**
-     * Lấy danh sách các khoản mượn đang hoạt động kèm thông tin độc giả và tiêu đề sách.
+     * Lấy danh sách các khoản mượn đang hoạt động (đang giữ chưa trả) kèm thông tin độc giả và tiêu đề sách.
      */
     public List<BorrowRecord> findActiveLoans(Connection conn, int limit) throws SQLException {
         List<BorrowRecord> list = new ArrayList<>();
@@ -587,7 +598,7 @@ public class BorrowRecordDAO {
                    + "JOIN Book b ON br.bookId = b.bookId "
                    + "LEFT JOIN Student s ON br.userId = s.userId "
                    + "LEFT JOIN Lecturer l ON br.userId = l.userId "
-                   + "WHERE br.status = 'borrowed' "
+                   + "WHERE br.status IN ('borrowed', 'overdue') AND br.returnedAt IS NULL "
                    + "ORDER BY br.startDate DESC "
                    + "LIMIT ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -765,6 +776,51 @@ public class BorrowRecordDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách BorrowRecord quá hạn", e);
+            throw e;
+        }
+        return list;
+    }
+
+    /**
+     * Lấy danh sách các phiếu mượn đang quá hạn chưa trả (status='overdue', returnedAt IS NULL).
+     *
+     * <p>Dùng cho Giai đoạn 2 của {@code OverdueProcessor}: cập nhật lũy tiến
+     * tiền phạt theo số ngày trễ thực tế. Khác với {@link #findOverdueRecords(Connection)}
+     * chỉ tìm đơn mượn {@code 'borrowed'} mới phát hiện, phương thức này trả về
+     * các đơn mượn đã chuyển sang {@code 'overdue'} từ trước nhưng vẫn chưa trả sách.</p>
+     *
+     * @param conn Kết nối DB từ transaction
+     * @return Danh sách các bản ghi mượn đang quá hạn chưa trả
+     * @throws SQLException nếu có lỗi DB
+     */
+    public List<BorrowRecord> findActiveOverdueLoans(Connection conn) throws SQLException {
+        List<BorrowRecord> list = new ArrayList<>();
+        String sql = "SELECT borrowRecordId, userId, bookCopyId, bookId, startDate, endDate, "
+                   + "       returnedAt, status, extensionCount, createdBy, createdAt "
+                   + "FROM   BorrowRecord "
+                   + "WHERE  status = 'overdue' AND returnedAt IS NULL";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                BorrowRecord record = new BorrowRecord();
+                record.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                record.setUserId(rs.getInt("userId"));
+                record.setBookCopyId(rs.getInt("bookCopyId"));
+                record.setBookId(rs.getInt("bookId"));
+                record.setStartDate(rs.getTimestamp("startDate"));
+                record.setEndDate(rs.getTimestamp("endDate"));
+                record.setReturnedAt(rs.getTimestamp("returnedAt"));
+                record.setStatus(rs.getString("status"));
+                record.setExtensionCount(rs.getInt("extensionCount"));
+
+                int rawCreatedBy = rs.getInt("createdBy");
+                record.setCreatedBy(rs.wasNull() ? null : rawCreatedBy);
+
+                record.setCreatedAt(rs.getTimestamp("createdAt"));
+                list.add(record);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách BorrowRecord đang quá hạn chưa trả", e);
             throw e;
         }
         return list;
@@ -994,8 +1050,15 @@ public class BorrowRecordDAO {
         }
 
         if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status.trim())) {
-            sql.append("AND br.status = ? ");
-            params.add(status.trim().toLowerCase());
+            String cleanStatus = status.trim().toLowerCase();
+            if ("borrowed".equals(cleanStatus)) {
+                sql.append("AND br.status IN ('borrowed', 'overdue') AND br.returnedAt IS NULL ");
+            } else if ("overdue".equals(cleanStatus)) {
+                sql.append("AND br.status = 'overdue' AND br.returnedAt IS NULL ");
+            } else {
+                sql.append("AND br.status = ? ");
+                params.add(cleanStatus);
+            }
         }
 
         if (fromDate != null) {
@@ -1095,8 +1158,15 @@ public class BorrowRecordDAO {
         }
 
         if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status.trim())) {
-            sql.append("AND br.status = ? ");
-            params.add(status.trim().toLowerCase());
+            String cleanStatus = status.trim().toLowerCase();
+            if ("borrowed".equals(cleanStatus)) {
+                sql.append("AND br.status IN ('borrowed', 'overdue') AND br.returnedAt IS NULL ");
+            } else if ("overdue".equals(cleanStatus)) {
+                sql.append("AND br.status = 'overdue' AND br.returnedAt IS NULL ");
+            } else {
+                sql.append("AND br.status = ? ");
+                params.add(cleanStatus);
+            }
         }
 
         if (fromDate != null) {

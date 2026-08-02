@@ -212,53 +212,73 @@ public class AuditLogServlet extends HttpServlet {
     }
 
     private String translateKey(String key) {
-        if (key == null) return "";
+        if (key == null || key.isEmpty()) return "";
         switch (key) {
-            case "userId": return "ID người dùng";
-            case "email": return "Email";
+            case "userId": return "ID người dùng (userId)";
+            case "email": return "Email (email)";
             case "passwordHash":
-            case "password": return "Mật khẩu";
-            case "status": return "Trạng thái";
-            case "role": return "Vai trò";
-            case "failedLoginAttempts": return "Số lần đăng nhập sai";
-            case "lockedUntil": return "Khóa đến";
-            case "fullName": return "Họ và tên";
-            case "phoneNumber": return "Số điện thoại";
-            case "gender": return "Giới tính";
-            case "dateOfBirth": return "Ngày sinh";
-            case "studentCode": return "Mã sinh viên";
-            case "major": return "Chuyên ngành";
-            case "enrollmentYear": return "Năm nhập học";
-            case "lecturerCode": return "Mã giảng viên";
-            case "department": return "Bộ môn";
-            case "staffCode": return "Mã nhân viên";
-            case "name": return "Tên";
-            case "description": return "Mô tả";
-            case "isbn": return "ISBN";
-            case "title": return "Tên sách";
-            case "author": return "Tác giả";
-            case "publisher": return "Nhà xuất bản";
-            case "publicationYear": return "Năm xuất bản";
-            case "price": return "Giá tiền";
-            case "location": return "Vị trí";
-            case "condition": return "Tình trạng";
-            case "barcode": return "Mã vạch";
-            case "amount": return "Số tiền";
-            case "reason": return "Lý do";
-            case "paidAmount": return "Số tiền đã trả";
-            case "paymentMethod": return "Phương thức thanh toán";
-            case "transactionReference": return "Mã giao dịch";
-            case "actionType": return "Loại hành động";
-            case "entityName": return "Tên thực thể";
-            case "entityId": return "ID thực thể";
-            case "startDate": return "Ngày bắt đầu";
-            case "endDate": return "Hạn trả";
-            case "returnedAt": return "Ngày trả thực tế";
-            case "extensionCount": return "Số lần gia hạn";
-            case "configKey": return "Khóa cấu hình";
-            case "configValue": return "Giá trị cấu hình";
-            case "resolvedAt": return "Ngày giải quyết";
-            case "resolution": return "Hướng giải quyết";
+            case "password": return "Mật khẩu (password)";
+            case "status": return "Trạng thái (status)";
+            case "role": return "Vai trò (role)";
+            case "failedLoginAttempts": return "Số lần đăng nhập sai (failedLoginAttempts)";
+            case "lockedUntil": return "Khóa đến (lockedUntil)";
+            case "fullName": return "Họ và tên (fullName)";
+            case "phoneNumber": return "Số điện thoại (phoneNumber)";
+            case "gender": return "Giới tính (gender)";
+            case "dateOfBirth": return "Ngày sinh (dateOfBirth)";
+            case "studentCode": return "Mã sinh viên (studentCode)";
+            case "major": return "Chuyên ngành (major)";
+            case "enrollmentYear": return "Năm nhập học (enrollmentYear)";
+            case "lecturerCode": return "Mã giảng viên (lecturerCode)";
+            case "department": return "Bộ môn (department)";
+            case "staffCode": return "Mã nhân viên (staffCode)";
+            case "name": return "Tên (name)";
+            case "description": return "Mô tả (description)";
+            case "isbn": return "Mã ISBN (isbn)";
+            case "title": return "Tên sách (title)";
+            case "author": return "Tác giả (author)";
+            case "publisher": return "Nhà xuất bản (publisher)";
+            case "publicationYear": return "Năm xuất bản (publicationYear)";
+            case "price": return "Giá tiền (price)";
+            case "location": return "Vị trí (location)";
+            case "condition": return "Tình trạng (condition)";
+            case "barcode": return "Mã vạch (barcode)";
+            case "amount": return "Số tiền (amount)";
+            case "reason": return "Lý do (reason)";
+            case "paidAmount": return "Số tiền đã trả (paidAmount)";
+            case "paymentMethod": return "Phương thức thanh toán (paymentMethod)";
+            case "transactionReference": return "Mã giao dịch (transactionReference)";
+            case "actionType": return "Loại hành động (actionType)";
+            case "entityName": return "Tên thực thể (entityName)";
+            case "entityId": return "ID thực thể (entityId)";
+            case "startDate": return "Ngày bắt đầu (startDate)";
+            case "endDate": return "Hạn trả (endDate)";
+            case "returnedAt": return "Ngày trả thực tế (returnedAt)";
+            case "extensionCount": return "Số lần gia hạn (extensionCount)";
+            case "configKey": return "Khóa cấu hình (configKey)";
+            case "configValue": return "Giá trị cấu hình (configValue)";
+            case "resolvedAt": return "Ngày giải quyết (resolvedAt)";
+            case "resolution": return "Hướng giải quyết (resolution)";
+            case "incidentType": return "Loại sự cố (incidentType)";
+            case "reportedBy": return "Người báo cáo (reportedBy)";
+            case "reportedAt": return "Thời gian báo cáo (reportedAt)";
+            case "resolvedBy": return "Người giải quyết (resolvedBy)";
+            case "activeCount": return "Số lượt hoạt động (activeCount)";
+            case "cancelledCount": return "Số lượt đã hủy (cancelledCount)";
+            case "subject": return "Tiêu đề (subject)";
+            case "bodyContent": return "Nội dung mẫu (bodyContent)";
+            case "missingCount": return "Số lượng thiếu (missingCount)";
+            case "excludedCount": return "Số lượng loại trừ (excludedCount)";
+            case "scannedCount": return "Số lượng đã quét (scannedCount)";
+            case "expectedCount": return "Số lượng dự kiến (expectedCount)";
+            case "reconciledCount": return "Số lượng đối soát (reconciledCount)";
+            case "inventorySessionId": return "ID phiên kiểm kê (inventorySessionId)";
+            case "scannedLocation": return "Vị trí đã quét (scannedLocation)";
+            case "expectedLocation": return "Vị trí dự kiến (expectedLocation)";
+            case "scannedBy": return "Người quét (scannedBy)";
+            case "completedBy": return "Người hoàn thành (completedBy)";
+            case "startedBy": return "Người khởi tạo (startedBy)";
+            case "note": return "Ghi chú (note)";
             default: return key;
         }
     }
@@ -270,28 +290,33 @@ public class AuditLogServlet extends HttpServlet {
         String valLower = value.toLowerCase().trim();
         if ("status".equalsIgnoreCase(key)) {
             switch (valLower) {
-                case "active": return "Hoạt động";
-                case "locked": return "Bị khóa";
-                case "inactive": return "Không hoạt động";
-                case "available": return "Sẵn có";
-                case "unavailable": return "Không sẵn có";
-                case "good": return "Tốt";
-                case "damaged": return "Hỏng";
-                case "lost": return "Mất";
-                case "borrowed": return "Đang mượn";
-                case "returned_good": return "Đã trả (Tốt)";
-                case "returned_damaged": return "Đã trả (Hỏng)";
-                case "overdue": return "Quá hạn";
-                case "paid": return "Đã thanh toán";
-                case "unpaid": return "Chưa thanh toán";
-                case "pending": return "Chờ xử lý";
-                case "approved": return "Đã duyệt";
-                case "rejected": return "Đã từ chối";
+                case "active": return "Hoạt động (active)";
+                case "locked": return "Bị khóa (locked)";
+                case "inactive": return "Không hoạt động (inactive)";
+                case "available": return "Sẵn có (available)";
+                case "unavailable": return "Không sẵn có (unavailable)";
+                case "good": return "Tốt (good)";
+                case "damaged": return "Hỏng (damaged)";
+                case "lost": return "Mất (lost)";
+                case "borrowed": return "Đang mượn (borrowed)";
+                case "returned_good": return "Đã trả tốt (returned_good)";
+                case "returned_damaged": return "Đã trả hỏng (returned_damaged)";
+                case "overdue": return "Quá hạn (overdue)";
+                case "paid": return "Đã thanh toán (paid)";
+                case "unpaid": return "Chưa thanh toán (unpaid)";
+                case "pending": return "Chờ xử lý (pending)";
+                case "approved": return "Đã duyệt (approved)";
+                case "rejected": return "Đã từ chối (rejected)";
+                case "counting": return "Đang kiểm đếm (counting)";
+                case "reviewing": return "Đang đối soát (reviewing)";
+                case "reconciled": return "Đã đối soát (reconciled)";
+                case "draft": return "Bản nháp (draft)";
+                case "scanned": return "Đã quét (scanned)";
             }
         } else if ("gender".equalsIgnoreCase(key)) {
             switch (valLower) {
-                case "male": return "Nam";
-                case "female": return "Nữ";
+                case "male": return "Nam (male)";
+                case "female": return "Nữ (female)";
             }
         }
         return value;
@@ -306,7 +331,7 @@ public class AuditLogServlet extends HttpServlet {
             return null;
         }
         try {
-            String timePart = isStart ? " 00:00:00" : " 23:59:59";
+            String timePart = isStart ? " 00:00:00" : " 23:59:59.999";
             return Timestamp.valueOf(dateStr.trim() + timePart);
         } catch (IllegalArgumentException e) {
             return null;
@@ -314,11 +339,14 @@ public class AuditLogServlet extends HttpServlet {
     }
 
     /**
-     * Escape giá trị CSV: bọc nháy kép nếu chứa dấu phẩy, xuống dòng hoặc nháy kép.
+     * Escape giá trị CSV: chống CSV Injection (nếu bắt đầu bằng =, +, -, @) và bọc nháy kép nếu chứa dấu phẩy, xuống dòng.
      */
     private String csvEscape(String value) {
         if (value == null) {
             return "";
+        }
+        if (value.startsWith("=") || value.startsWith("+") || value.startsWith("-") || value.startsWith("@")) {
+            value = "'" + value;
         }
         if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
             return "\"" + value.replace("\"", "\"\"") + "\"";

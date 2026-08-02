@@ -78,8 +78,13 @@ public class OverdueProcessor {
             LOGGER.log(Level.SEVERE, "[OverdueProcessor] Lỗi DB khi lấy danh sách quá hạn", e);
         }
 
-        LOGGER.log(Level.INFO, "[OverdueProcessor] Hoàn tất quét. Đã xử lý: {0} bản ghi, khóa thêm: {1} độc giả, gửi: {2} email.",
-                new Object[]{processedRecords, lockedUsers, emailsSent});
+        // ================================================================
+        // GIAI ĐOẠN 2: Cập nhật lũy tiến tiền phạt cho các đơn đã overdue
+        // ================================================================
+        int updatedFines = updateExistingOverdueFines();
+
+        LOGGER.log(Level.INFO, "[OverdueProcessor] Hoàn tất quét. Giai đoạn 1: {0} bản ghi mới, khóa thêm: {1} độc giả, gửi: {2} email. Giai đoạn 2: cập nhật lũy tiến {3} khoản phạt.",
+                new Object[]{processedRecords, lockedUsers, emailsSent, updatedFines});
         return new OverdueResult(processedRecords, lockedUsers, emailsSent);
     }
 
@@ -201,6 +206,83 @@ public class OverdueProcessor {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Lỗi gửi email quá hạn cho userId=" + record.getUserId(), e);
         }
+    }
+
+    // =========================================================================
+    // GIAI ĐOẠN 2: CẬP NHẬT LŨY TIẾN TIỀN PHẠT CHO CÁC ĐƠN ĐÃ OVERDUE
+    // =========================================================================
+
+    /**
+     * Quét các phiếu mượn đang quá hạn chưa trả (status='overdue') và cập nhật
+     * lũy tiến tiền phạt theo số ngày trễ thực tế.
+     *
+     * <p>Logic: Với mỗi đơn mượn đang overdue, tính lại tổng tiền phạt =
+     * {@code FINE_RATE_PER_DAY × số ngày trễ hiện tại}. Nếu số tiền mới lớn hơn
+     * số tiền đang lưu trong bảng {@code Fine}, thực hiện UPDATE cả bảng
+     * {@code Fine} và {@code Payment} tương ứng.</p>
+     *
+     * <p>Thiết kế tối ưu: Trong cùng 1 ngày, dù load trang bao nhiêu lần,
+     * số tiền phạt tính ra vẫn giống nhau → điều kiện {@code newAmount > currentAmount}
+     * sẽ FALSE → KHÔNG thực hiện UPDATE vào DB (tránh ghi thừa).</p>
+     *
+     * @return Số lượng khoản phạt đã được cập nhật lũy tiến
+     */
+    private int updateExistingOverdueFines() {
+        int updatedCount = 0;
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Đọc mức phạt hàng ngày từ config
+            BigDecimal fineRate = BigDecimal.valueOf(5000);
+            try {
+                String rateVal = new dao.SystemConfigDAO().getValue(conn, "FINE_RATE_PER_DAY", "5000");
+                fineRate = new BigDecimal(rateVal.trim());
+            } catch (Exception ex) {
+                LOGGER.warning("[Giai đoạn 2] Không đọc được FINE_RATE_PER_DAY, sử dụng mặc định 5000 VND.");
+            }
+
+            // Lấy danh sách các đơn mượn đang overdue chưa trả
+            List<BorrowRecord> overdueLoans = borrowRecordDAO.findActiveOverdueLoans(conn);
+
+            for (BorrowRecord record : overdueLoans) {
+                try {
+                    // Tính số ngày trễ thực tế
+                    long diffInMillis = System.currentTimeMillis() - record.getEndDate().getTime();
+                    long overdueDays = TimeUnit.MILLISECONDS.toDays(diffInMillis);
+                    if (overdueDays < 1) {
+                        overdueDays = 1;
+                    }
+
+                    BigDecimal newTotalFine = fineRate.multiply(BigDecimal.valueOf(overdueDays));
+
+                    // Tìm khoản phạt unpaid hiện tại liên kết với phiếu mượn này
+                    model.Fine existingFine = fineDAO.findUnpaidFineByBorrowRecordId(conn, record.getBorrowRecordId());
+                    if (existingFine == null) {
+                        continue; // Không có Fine unpaid → bỏ qua (có thể đã thanh toán rồi)
+                    }
+
+                    // Chỉ UPDATE khi số tiền mới LỚN HƠN số tiền cũ
+                    if (newTotalFine.compareTo(existingFine.getAmount()) > 0) {
+                        conn.setAutoCommit(false);
+
+                        String newReason = "Trễ hạn " + overdueDays + " ngày";
+                        fineDAO.updateFineAmount(conn, existingFine.getFineId(), newTotalFine, newReason);
+                        new PaymentDAO().updatePendingPaymentAmount(conn, existingFine.getFineId(), newTotalFine);
+
+                        conn.commit();
+                        conn.setAutoCommit(true);
+                        updatedCount++;
+                    }
+                } catch (Exception e) {
+                    try { conn.rollback(); conn.setAutoCommit(true); } catch (SQLException ex) { /* ignore */ }
+                    LOGGER.log(Level.WARNING,
+                            "[Giai đoạn 2] Lỗi cập nhật lũy tiến cho borrowRecordId=" + record.getBorrowRecordId(), e);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "[Giai đoạn 2] Lỗi DB khi quét cập nhật lũy tiến tiền phạt", e);
+        }
+
+        return updatedCount;
     }
 
     /**

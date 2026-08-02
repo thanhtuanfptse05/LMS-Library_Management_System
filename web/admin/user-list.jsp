@@ -174,7 +174,13 @@
                                                                         <c:when test="${u.lockReason eq 'unpaid'}">
                                                                             Lý do: Nợ phạt quá hạn
                                                                         </c:when>
-                                                                        <c:when test="${u.lockReason eq 'securitybreach' or (not empty u.lockedUntil)}">
+                                                                        <c:when test="${fn:contains(u.lockReason, 'quá hạn nhận sách đặt trước') or fn:contains(u.lockReason, 'ReservationID')}">
+                                                                            Lý do: Quá hạn nhận sách đặt trước
+                                                                        </c:when>
+                                                                        <c:when test="${u.lockReason eq 'securitybreach'}">
+                                                                            Lý do: Nhập sai MK quá 5 lần
+                                                                        </c:when>
+                                                                        <c:when test="${not empty u.lockedUntil and empty u.lockReason}">
                                                                             Lý do: Nhập sai MK quá 5 lần
                                                                         </c:when>
                                                                         <c:when test="${not empty u.lockReason}">

@@ -28,6 +28,8 @@
   * Bảng `DocumentTemp` (21 bảng) dùng để quản lý các mẫu email thông báo, được quản lý bởi `LibraryManager`.
 * **LESSON-005: Quy tắc bắt buộc dùng CodeGraph (CG-01)**
   * AI Agent BẮT BUỘC phải dùng `codegraph_explore` (hoặc lệnh CLI `codegraph explore`) đầu tiên trước khi grep/read file mỗi khi cần tra cứu symbol, phương thức, lớp hay phân tích luồng logic cross-module.
+* **LESSON-006: Khái niệm "Đang mượn" (Active Borrows) và OverdueProcessor**
+  * Tiến trình ngầm `OverdueProcessor` tự động chuyển `BorrowRecord.status` từ `'borrowed'` sang `'overdue'`. Do đó, khi tra cứu các phiếu mượn **chưa trả** (ví dụ: đang giữ sách, check-in, dashboard), BẮT BUỘC phải dùng điều kiện `status IN ('borrowed', 'overdue') AND returnedAt IS NULL` thay vì chỉ hardcode `status = 'borrowed'`. Hạn chế query thuần tuý `status = 'borrowed'` trừ khi có ý định rẽ nhánh logic cụ thể.
 
 ### Current Sprint Notes
 * **Sprint:** Milestone 2 (Core Transaction Flow).

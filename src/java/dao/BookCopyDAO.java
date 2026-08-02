@@ -273,6 +273,20 @@ public class BookCopyDAO {
                 "status = 'unavailable' AND condition = 'damaged' AND removedFromInventory = FALSE");
     }
 
+    public void restoreAfterRejectedCheckInIncident(Connection conn, int bookCopyId,
+            boolean makeAvailable) throws SQLException {
+        String sql = "UPDATE BookCopy SET status = ?, condition = 'good', updatedAt = NOW() "
+                + "WHERE bookCopyId = ? AND status = 'unavailable' "
+                + "AND condition IN ('damaged', 'lost') AND removedFromInventory = FALSE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, makeAvailable ? "available" : "unavailable");
+            ps.setInt(2, bookCopyId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Bản sao không còn ở trạng thái có thể bác bỏ sự cố nhận trả.");
+            }
+        }
+    }
+
     public void markRemovedFromInventory(Connection conn, int bookCopyId, int actorId) throws SQLException {
         String sql = "UPDATE BookCopy SET removedFromInventory = TRUE, "
                 + "removedFromInventoryAt = NOW(), removedFromInventoryBy = ?, updatedAt = NOW() "

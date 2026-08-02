@@ -114,7 +114,7 @@ public class AuditLogDAO {
      */
     public List<String> getDistinctActionTypes() throws SQLException {
         List<String> list = new ArrayList<>();
-        String sql = "SELECT DISTINCT actionType FROM AuditLogs ORDER BY actionType";
+        String sql = "SELECT DISTINCT actionType FROM AuditLogs WHERE actionType IS NOT NULL AND actionType != '' ORDER BY actionType";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -130,7 +130,7 @@ public class AuditLogDAO {
      */
     public List<String> getDistinctEntityNames() throws SQLException {
         List<String> list = new ArrayList<>();
-        String sql = "SELECT DISTINCT entityName FROM AuditLogs WHERE entityName IS NOT NULL ORDER BY entityName";
+        String sql = "SELECT DISTINCT entityName FROM AuditLogs WHERE entityName IS NOT NULL AND entityName != '' ORDER BY entityName";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -164,8 +164,11 @@ public class AuditLogDAO {
             params.add(toDate);
         }
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append(" AND (a.oldValues ILIKE ? OR a.newValues ILIKE ?)");
+            sql.append(" AND (a.actionType ILIKE ? OR a.entityName ILIKE ? OR u.email ILIKE ? OR a.oldValues ILIKE ? OR a.newValues ILIKE ?)");
             String pattern = "%" + keyword.trim() + "%";
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
             params.add(pattern);
             params.add(pattern);
         }

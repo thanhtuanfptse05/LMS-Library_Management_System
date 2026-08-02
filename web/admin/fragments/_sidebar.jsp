@@ -22,10 +22,6 @@
             <span class="material-symbols-outlined">dashboard</span>
             <span>Bảng điều khiển</span>
         </a>
-        <a class="sidebar-link nav-analytics-link" id="nav-analytics" href="${pageContext.request.contextPath}/admin/analytics">
-            <span class="material-symbols-outlined">analytics</span>
-            <span>Phân tích &amp; Thống kê</span>
-        </a>
 
         <!-- Người dùng -->
         <p class="sidebar-section-label">Người dùng</p>
@@ -119,10 +115,6 @@
             <a class="sidebar-link nav-dash-link" href="${pageContext.request.contextPath}/admin/dashboard">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span>Bảng điều khiển</span>
-            </a>
-            <a class="sidebar-link nav-analytics-link" href="${pageContext.request.contextPath}/admin/analytics">
-                <span class="material-symbols-outlined">analytics</span>
-                <span>Phân tích &amp; Thống kê</span>
             </a>
 
             <p class="sidebar-section-label">Người dùng</p>
@@ -219,8 +211,6 @@
         setActive('.nav-audit-link');
     } else if (path.indexOf('/admin/profile') !== -1) {
         setActive('.nav-profile-link');
-    } else if (path.indexOf('/admin/analytics') !== -1) {
-        setActive('.nav-analytics-link');
     } else {
         setActive('.nav-dash-link');
     }

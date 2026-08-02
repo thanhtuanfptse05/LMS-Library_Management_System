@@ -17,14 +17,34 @@ import java.sql.SQLException;
 import java.util.List;
 import dao.UserLockReasonDAO;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * ReservationExpirationProcessor — Xử lý các đơn đặt trước quá hạn nhận sách (Lazy Load).
+ *
+ * <p>Bao gồm chế tài cho người vi phạm: khóa giao dịch 7 ngày, hủy toàn bộ
+ * hàng chờ khác, luân chuyển bản sao sách, ghi Audit Log.</p>
+ *
+ * <p>Có cơ chế throttle (cooldown) để tránh gọi lặp lại quá nhanh khi
+ * AuthFilter kích hoạt Lazy Sweep trên mọi request.</p>
  */
 public class ReservationExpirationProcessor {
     private static final Logger LOGGER = Logger.getLogger(ReservationExpirationProcessor.class.getName());
+
+    /** Thời gian khóa giao dịch cố định (ngày) khi vi phạm quá hạn nhận sách đặt trước. */
+    private static final int PENALTY_LOCK_DAYS = 7;
+
+    /** Cooldown tối thiểu giữa các lần chạy processExpiration() (milliseconds). */
+    private static final long COOLDOWN_MS = 30_000L;
+
+    /** Thời điểm chạy thành công gần nhất — dùng để throttle. */
+    private static volatile long lastRunTimestamp = 0;
+
+    /** Lock object để tránh nhiều thread chạy đồng thời. */
+    private static final Object RUN_LOCK = new Object();
 
     private final ReservationDAO reservationDAO = new ReservationDAO();
     private final BookDAO bookDAO = new BookDAO();
@@ -34,9 +54,41 @@ public class ReservationExpirationProcessor {
     private final AuditLogDAO auditLogDAO = new AuditLogDAO();
 
     /**
-     * Thực hiện luồng xử lý quét quá hạn.
+     * Thực hiện luồng xử lý quét quá hạn với cơ chế throttle.
+     *
+     * <p>Nếu được gọi lại trong vòng {@value #COOLDOWN_MS}ms kể từ lần chạy trước,
+     * trả về ngay {@code ProcessResult} rỗng mà không query DB.</p>
      */
     public ProcessResult processExpiration() {
+        ProcessResult result = new ProcessResult();
+
+        // Throttle: nếu đã chạy gần đây thì bỏ qua
+        long now = System.currentTimeMillis();
+        if (now - lastRunTimestamp < COOLDOWN_MS) {
+            return result;
+        }
+
+        // Đảm bảo chỉ 1 thread chạy tại một thời điểm
+        synchronized (RUN_LOCK) {
+            // Double-check sau khi lấy lock
+            if (System.currentTimeMillis() - lastRunTimestamp < COOLDOWN_MS) {
+                return result;
+            }
+
+            try {
+                result = doProcessExpiration();
+            } finally {
+                lastRunTimestamp = System.currentTimeMillis();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Logic xử lý quét quá hạn chính — được gọi từ processExpiration() sau khi đã qua throttle.
+     */
+    private ProcessResult doProcessExpiration() {
         ProcessResult result = new ProcessResult();
 
         // 1. Quét tìm danh sách các Reservation quá hạn nhận sách (không khóa dòng)
@@ -49,7 +101,6 @@ public class ReservationExpirationProcessor {
         }
 
         if (expiredList.isEmpty()) {
-            LOGGER.log(Level.INFO, "[ReservationExpirationProcessor] Không tìm thấy đơn đặt trước nào quá hạn nhận.");
             return result;
         }
 
@@ -57,6 +108,9 @@ public class ReservationExpirationProcessor {
 
         // Lấy cấu hình holdDays trước để tối ưu hóa
         int holdDays = new SystemConfigDAO().getIntValue("RESERVATION_HOLD_DAYS", 3);
+
+        // Theo dõi userId đã bị xử phạt để tránh lặp lock cho cùng 1 user (FR-ROP-007)
+        Set<Integer> penalizedUserIds = new HashSet<>();
 
         // 2. Vòng lặp xử lý cô lập cho từng đơn hàng
         for (Reservation res : expiredList) {
@@ -86,19 +140,36 @@ public class ReservationExpirationProcessor {
                         new Object[]{lockedRes.getReservationId(), userId});
 
                 // Bước 3.1: Áp dụng CHẾ TÀI KHÓA GIAO DỊCH 7 NGÀY cho người vi phạm (FR-ROP-002)
-                userDAO.lockUserForDuration(conn, userId, 7);
-                String lockReasonText = "Tự động khóa 7 ngày do quá hạn nhận sách đặt trước (ReservationID: " + lockedRes.getReservationId() + ")";
+                // Kiểm tra xem user đã bị phạt trong lần quét này chưa (FR-ROP-007: tránh lặp lock)
+                if (!penalizedUserIds.contains(userId)) {
+                    userDAO.lockUserForDuration(conn, userId, PENALTY_LOCK_DAYS);
+                    penalizedUserIds.add(userId);
+                    result.lockedAccountCount++;
+                    LOGGER.log(Level.INFO, "[ReservationExpirationProcessor] Đã khóa giao dịch {0} ngày cho người dùng — userId={1}",
+                            new Object[]{PENALTY_LOCK_DAYS, userId});
+                }
+                // Luôn ghi thêm UserLockReason cho mỗi đơn quá hạn (không ghi đè lý do cũ)
+                String lockReasonText = "quá hạn nhận sách đặt trước (ReservationID: " + lockedRes.getReservationId() + ")";
                 userLockReasonDAO.insertLockReason(conn, userId, lockReasonText);
                 auditLogDAO.insert(conn, null, "LOCK_ACCOUNT_OVERDUE_RESERVATION", "User", userId,
                         "status=active",
-                        "status=locked, lockedUntil=NOW+7days, reason=" + lockReasonText);
-                result.lockedAccountCount++;
-                LOGGER.log(Level.INFO, "[ReservationExpirationProcessor] Đã khóa giao dịch 7 ngày cho người dùng — userId={0}, reservationId={1}",
-                        new Object[]{userId, lockedRes.getReservationId()});
+                        "status=locked, lockedUntil=NOW+" + PENALTY_LOCK_DAYS + "days, reservationId=" + lockedRes.getReservationId());
 
                 // Bước 3.2: HỦY TOÀN BỘ HÀNG CHỜ KHÁC của người dùng vi phạm (FR-ROP-003)
                 List<Reservation> otherActive = reservationDAO.findAllActiveByUserId(conn, userId, lockedRes.getReservationId());
                 if (!otherActive.isEmpty()) {
+                    // Phân tách đơn readypickup (cần luân chuyển) và pending (chỉ hủy)
+                    List<Reservation> otherReadyPickup = new ArrayList<>();
+                    Set<Integer> affectedBookIds = new HashSet<>();
+
+                    for (Reservation otherRes : otherActive) {
+                        if (isReadyHold(otherRes)) {
+                            otherReadyPickup.add(otherRes);
+                        }
+                        affectedBookIds.add(otherRes.getBookId());
+                    }
+
+                    // Hủy toàn bộ đơn trước
                     for (Reservation otherRes : otherActive) {
                         reservationDAO.updateStatusToCancelled(conn, otherRes.getReservationId());
                     }
@@ -110,27 +181,22 @@ public class ReservationExpirationProcessor {
                     LOGGER.log(Level.INFO, "[ReservationExpirationProcessor] Đã hủy thêm {0} đơn hàng chờ khác của người dùng vi phạm — userId={1}",
                             new Object[]{cancelledOther, userId});
 
-                    // Chuẩn hóa hàng chờ sau khi các lượt pending của người vi phạm đã bị hủy.
-                    java.util.Set<Integer> affectedBookIds = new java.util.HashSet<>();
-                    for (Reservation otherRes : otherActive) {
-                        affectedBookIds.add(otherRes.getBookId());
-                    }
+                    // Chuẩn hóa hàng chờ cho các bookId bị ảnh hưởng bởi đơn pending bị hủy
                     for (Integer affectedBookId : affectedBookIds) {
                         reservationDAO.normalizePendingQueuePositions(conn, affectedBookId);
                     }
 
-                    // Chuyển các suất readypickup đã bị hủy cho người kế tiếp.
-                    for (Reservation otherRes : otherActive) {
-                        if (isReadyHold(otherRes)) {
-                            Reservation nextOther = releaseReadyHold(conn, otherRes, holdDays);
-                            if (nextOther != null) {
-                                result.promotedCount++;
-                                nextPromotedList.add(nextOther);
-                            }
+                    // Luân chuyển bản sao cho các đơn readypickup đã bị hủy
+                    for (Reservation otherRes : otherReadyPickup) {
+                        Reservation nextOther = releaseReadyHold(conn, otherRes, holdDays);
+                        if (nextOther != null) {
+                            result.promotedCount++;
+                            nextPromotedList.add(nextOther);
                         }
                     }
                 }
 
+                // Luân chuyển bản sao cho đơn quá hạn gốc
                 Reservation nextRes = releaseReadyHold(conn, lockedRes, holdDays);
                 if (nextRes != null) {
                     result.promotedCount++;
@@ -171,6 +237,9 @@ public class ReservationExpirationProcessor {
         return result;
     }
 
+    /**
+     * Kiểm tra xem đơn đặt trước có đang giữ suất readypickup không.
+     */
     private boolean isReadyHold(Reservation reservation) {
         return "readypickup".equals(reservation.getStatus())
                 && reservation.getQueuePosition() != null
@@ -180,6 +249,7 @@ public class ReservationExpirationProcessor {
     /**
      * Giải phóng một suất readypickup. Nếu còn hàng chờ, suất được chuyển thẳng
      * cho người tiếp theo và availableQuantity giữ nguyên.
+     * Nếu không còn ai chờ, tăng availableQuantity lên 1.
      */
     private Reservation releaseReadyHold(Connection conn, Reservation reservation, int holdDays)
             throws SQLException {
@@ -190,6 +260,7 @@ public class ReservationExpirationProcessor {
             return next;
         }
 
+        // Không còn ai chờ → giải phóng bản sao về kho
         model.Book book = bookDAO.findById(conn, reservation.getBookId());
         if (book != null && "available".equals(book.getStatus())) {
             bookDAO.updateQuantities(conn, reservation.getBookId(), 0, 1);

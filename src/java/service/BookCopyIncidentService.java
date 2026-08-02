@@ -4,12 +4,17 @@ import dao.AuditLogDAO;
 import dao.BookCopyDAO;
 import dao.BookCopyIncidentDAO;
 import dao.BookDAO;
+import dao.BorrowRecordDAO;
+import dao.FineDAO;
 import dao.MemberProfileDAO;
+import dao.PaymentDAO;
 import dao.ReservationDAO;
 import dao.SystemConfigDAO;
 import dao.UserDAO;
+import dao.UserLockReasonDAO;
 import exception.DatabaseException;
 import exception.ValidationException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -17,6 +22,7 @@ import java.util.logging.Logger;
 import model.Book;
 import model.BookCopy;
 import model.BookCopyIncident;
+import model.BorrowRecord;
 import model.MemberProfile;
 import model.Reservation;
 import model.User;
@@ -33,21 +39,43 @@ public class BookCopyIncidentService {
     private final ReservationDAO reservationDAO;
     private final UserDAO userDAO;
     private final MemberProfileDAO memberProfileDAO;
+    private final FineDAO fineDAO;
+    private final PaymentDAO paymentDAO;
+    private final UserLockReasonDAO userLockReasonDAO;
+    private final BorrowRecordDAO borrowRecordDAO;
+    private final SystemConfigDAO systemConfigDAO;
+
+    /** Mức phạt mặc định cho sách chưa nhập giá: 500,000 VND */
+    private static final BigDecimal DEFAULT_BOOK_PRICE = BigDecimal.valueOf(500_000);
 
     public BookCopyIncidentService() {
         this(new BookCopyIncidentDAO(), new BookCopyDAO(), new BookDAO(), new AuditLogDAO(),
-                new ReservationDAO(), new UserDAO(), new MemberProfileDAO());
+                new ReservationDAO(), new UserDAO(), new MemberProfileDAO(),
+                new FineDAO(), new PaymentDAO(), new UserLockReasonDAO(),
+                new BorrowRecordDAO(), new SystemConfigDAO());
     }
 
     public BookCopyIncidentService(BookCopyIncidentDAO incidentDAO, BookCopyDAO bookCopyDAO,
             BookDAO bookDAO, AuditLogDAO auditLogDAO) {
         this(incidentDAO, bookCopyDAO, bookDAO, auditLogDAO,
-                new ReservationDAO(), new UserDAO(), new MemberProfileDAO());
+                new ReservationDAO(), new UserDAO(), new MemberProfileDAO(),
+                new FineDAO(), new PaymentDAO(), new UserLockReasonDAO(),
+                new BorrowRecordDAO(), new SystemConfigDAO());
     }
 
     public BookCopyIncidentService(BookCopyIncidentDAO incidentDAO, BookCopyDAO bookCopyDAO,
             BookDAO bookDAO, AuditLogDAO auditLogDAO, ReservationDAO reservationDAO,
             UserDAO userDAO, MemberProfileDAO memberProfileDAO) {
+        this(incidentDAO, bookCopyDAO, bookDAO, auditLogDAO, reservationDAO, userDAO,
+                memberProfileDAO, new FineDAO(), new PaymentDAO(), new UserLockReasonDAO(),
+                new BorrowRecordDAO(), new SystemConfigDAO());
+    }
+
+    public BookCopyIncidentService(BookCopyIncidentDAO incidentDAO, BookCopyDAO bookCopyDAO,
+            BookDAO bookDAO, AuditLogDAO auditLogDAO, ReservationDAO reservationDAO,
+            UserDAO userDAO, MemberProfileDAO memberProfileDAO,
+            FineDAO fineDAO, PaymentDAO paymentDAO, UserLockReasonDAO userLockReasonDAO,
+            BorrowRecordDAO borrowRecordDAO, SystemConfigDAO systemConfigDAO) {
         this.incidentDAO = incidentDAO;
         this.bookCopyDAO = bookCopyDAO;
         this.bookDAO = bookDAO;
@@ -55,6 +83,11 @@ public class BookCopyIncidentService {
         this.reservationDAO = reservationDAO;
         this.userDAO = userDAO;
         this.memberProfileDAO = memberProfileDAO;
+        this.fineDAO = fineDAO;
+        this.paymentDAO = paymentDAO;
+        this.userLockReasonDAO = userLockReasonDAO;
+        this.borrowRecordDAO = borrowRecordDAO;
+        this.systemConfigDAO = systemConfigDAO;
     }
 
     public int report(String barcode, String incidentType, String description, int actorId)
@@ -91,8 +124,6 @@ public class BookCopyIncidentService {
                         == ReservationCapacityPolicy.CapacityLossAction.DECREMENT_AVAILABLE) {
                     bookDAO.updateQuantities(conn, copy.getBookId(), 0, -1);
                 } else {
-                    // Bản vật lý bị sự cố đang bảo đảm cho một suất readypickup trừu tượng.
-                    // Thu hồi suất mới nhất thay vì trừ tồn kho xuống số âm.
                     demotedReservation = reservationDAO.findLatestReadyPickupForUpdate(conn, copy.getBookId());
                     if (demotedReservation != null) {
                         reservationDAO.demoteReadyPickupToFront(conn,
@@ -310,6 +341,13 @@ public class BookCopyIncidentService {
         if (incidentId <= 0) {
             throw new ValidationException("Sự cố không hợp lệ.");
         }
+
+        // Thông tin phạt đền bù để gửi email bất đồng bộ sau commit (FR-007)
+        BigDecimal compensationFineAmount = null;
+        int compensationUserId = 0;
+        int compensationBookId = 0;
+        String compensationCondition = null;
+
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             Reservation promotedReservation = null;
@@ -337,7 +375,13 @@ public class BookCopyIncidentService {
                         throw new ValidationException("Bản sao của sự cố không còn tồn tại.");
                     }
                     if ("resolve".equals(action)) {
-                        bookCopyDAO.resolveCondition(conn, copy.getBookCopyId(), incident.getIncidentType());
+                        // F6 check-in incidents: condition đã được set đúng ('damaged'/'lost')
+                        // bởi updateStatusToUnavailable() → chỉ cần set condition với thủ công incidents
+                        if (incident.getBorrowRecordId() == null) {
+                            // Sự cố thủ công: condition vẫn là 'good' → cần update
+                            bookCopyDAO.resolveCondition(conn, copy.getBookCopyId(), incident.getIncidentType());
+                        }
+                        // Else: sự cố từ check-in F6 — condition đã là 'damaged'/'lost', không cần update
                         boolean removedAsLost = "lost".equals(incident.getIncidentType());
                         if (removedAsLost) {
                             bookCopyDAO.markRemovedFromInventory(conn, copy.getBookCopyId(), actorId);
@@ -352,35 +396,110 @@ public class BookCopyIncidentService {
                                 "{\"condition\":\"" + incident.getIncidentType()
                                 + "\",\"status\":\"unavailable\",\"removedFromInventory\":"
                                 + removedAsLost + "}");
+
+                        // ============================================================
+                        // T009: Tạo Fine đền bù + khóa tài khoản khi resolve incident
+                        // có liên kết borrowRecordId (sự cố từ Check-in F6)
+                        // ============================================================
+                        if (incident.getBorrowRecordId() != null) {
+                            BorrowRecord br = borrowRecordDAO.findById(conn, incident.getBorrowRecordId());
+                            if (br != null) {
+                                int userId = br.getUserId();
+                                int bookId = br.getBookId();
+
+                                // Tính tiền phạt đền bù
+                                BigDecimal fineAmount = calculateCompensationAmount(conn, bookId,
+                                        incident.getIncidentType());
+                                String fineReason = "damaged".equals(incident.getIncidentType())
+                                        ? "Sách bị hỏng — đền bù theo giá trị sách"
+                                        : "Sách bị mất — đền bù theo giá trị sách";
+                                int fineId = fineDAO.insertCompensationFine(conn, br.getBorrowRecordId(),
+                                        userId, fineAmount, fineReason);
+
+                                // Tạo Payment pending
+                                paymentDAO.insertPayment(conn, fineId, fineAmount, "pending");
+
+                                // Insert UserLockReason('unpaid') nếu chưa có
+                                if (!userLockReasonDAO.hasReason(conn, userId, "unpaid")) {
+                                    userLockReasonDAO.insertLockReason(conn, userId, "unpaid");
+                                }
+
+                                // Khóa tài khoản
+                                userDAO.updateStatusToLocked(conn, userId);
+
+                                // T013: Ghi Audit Log kèm borrowRecordId
+                                auditLogDAO.insert(conn, actorId, "CREATE_COMPENSATION_FINE_FROM_INCIDENT",
+                                        "Fine", fineId, null,
+                                        "{\"borrowRecordId\":" + br.getBorrowRecordId()
+                                        + ",\"userId\":" + userId + ",\"amount\":" + fineAmount
+                                        + ",\"incidentId\":" + incidentId
+                                        + ",\"incidentType\":\"" + escape(incident.getIncidentType()) + "\"}");
+
+                                LOGGER.log(Level.INFO,
+                                        "F13 Resolve: Tạo phạt đền bù — incidentId={0}, fineId={1}, userId={2}, amount={3}",
+                                        new Object[]{incidentId, fineId, userId, fineAmount});
+
+                                // Lưu thông tin để gửi email sau commit (T010)
+                                compensationFineAmount = fineAmount;
+                                compensationUserId = userId;
+                                compensationBookId = bookId;
+                                compensationCondition = incident.getIncidentType();
+                            }
+                        }
+
                     } else {
+                        // ============================================================
+                        // T011: Reject — khôi phục BookCopy, không đụng Fine/Lock
+                        // ============================================================
                         Book parentBook = bookDAO.findByIdForUpdate(conn, copy.getBookId());
                         if (parentBook == null) {
                             throw new ValidationException("Đầu sách của bản sao không còn tồn tại.");
                         }
-                        if ("available".equals(parentBook.getStatus())) {
-                            bookCopyDAO.restoreAvailable(conn, copy.getBookCopyId());
+                        boolean parentAvailable = "available".equals(parentBook.getStatus());
+                        if (incident.getBorrowRecordId() != null) {
+                            // F6 đã tạm gán condition damaged/lost. Khi bác bỏ phải trả condition
+                            // về good kể cả đầu sách đang ngừng lưu thông.
+                            bookCopyDAO.restoreAfterRejectedCheckInIncident(conn,
+                                    copy.getBookCopyId(), parentAvailable);
+                        } else if (parentAvailable) {
+                            // Sự cố ghi nhận trực tiếp tại F13 chỉ tạm đổi status.
+                                bookCopyDAO.restoreAvailable(conn, copy.getBookCopyId());
+                        }
+                        if (parentAvailable) {
                             promotedReservation = allocateRestoredCapacity(conn, copy.getBookId());
                             promotedBookTitle = parentBook.getTitle();
                             copyRestored = true;
                         }
                         incidentDAO.finish(conn, incidentId, "rejected", resolution, actorId);
+
+                        // T013: Audit log kèm borrowRecordId nếu có
+                        String rejectNewValues = toAuditValue(incident, "rejected");
+                        if (incident.getBorrowRecordId() != null) {
+                            rejectNewValues = rejectNewValues.replace("}", ",\"borrowRecordId\":"
+                                    + incident.getBorrowRecordId() + "}");
+                        }
                         auditLogDAO.insert(conn, actorId, "REJECT_BOOK_COPY_INCIDENT",
                                 "BookCopyIncident", incidentId, toAuditValue(incident, incident.getStatus()),
-                                toAuditValue(incident, "rejected"));
+                                rejectNewValues);
                         if (copyRestored) {
                             auditLogDAO.insert(conn, actorId, "RESTORE_BOOK_COPY", "BookCopy",
                                     copy.getBookCopyId(), copyAuditValue(copy, "unavailable"),
-                                    copyAuditValue(copy, "available"));
+                                    "{\"condition\":\"good\",\"status\":\"available\"}");
                         } else {
                             auditLogDAO.insert(conn, actorId, "KEEP_BOOK_COPY_UNAVAILABLE", "BookCopy",
                                     copy.getBookCopyId(), copyAuditValue(copy, "unavailable"),
-                                    "{\"status\":\"unavailable\",\"reason\":\"parent_book_unavailable\"}");
+                                    "{\"condition\":\"good\",\"status\":\"unavailable\","
+                                    + "\"reason\":\"parent_book_unavailable\"}");
                         }
                     }
                 }
                 conn.commit();
                 if (promotedReservation != null) {
                     notifyReservationReady(promotedReservation, promotedBookTitle);
+                }
+                if (compensationFineAmount != null && compensationUserId > 0) {
+                    triggerIncidentFineEmailAsync(compensationUserId, compensationBookId,
+                            compensationCondition, compensationFineAmount);
                 }
                 return copyRestored;
             } catch (ValidationException | SQLException e) {
@@ -394,6 +513,75 @@ public class BookCopyIncidentService {
             }
         } catch (SQLException e) {
             throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
+        }
+
+    }
+
+    // =========================================================================
+    // PRIVATE HELPER METHODS
+    // =========================================================================
+
+    /**
+     * Tính số tiền phạt đền bù cho sách hỏng hoặc mất.
+     * Công thức: damaged = price × 1.5; lost = price × 2.0.
+     * Nếu price chưa nhập → dùng DEFAULT_BOOK_PRICE.
+     */
+    private BigDecimal calculateCompensationAmount(Connection conn, int bookId, String incidentType)
+            throws SQLException {
+        BigDecimal defaultFine = DEFAULT_BOOK_PRICE;
+        double damagedMultiplier = 1.5;
+        double lostMultiplier = 2.0;
+
+        try {
+            String defPriceStr = systemConfigDAO.getValue(conn, "DEFAULT_BOOK_PRICE", null);
+            if (defPriceStr != null) defaultFine = new BigDecimal(defPriceStr);
+
+            String damMultStr = systemConfigDAO.getValue(conn, "DAMAGED_FINE_MULTIPLIER", null);
+            if (damMultStr != null) damagedMultiplier = Double.parseDouble(damMultStr);
+
+            String lostMultStr = systemConfigDAO.getValue(conn, "LOST_FINE_MULTIPLIER", null);
+            if (lostMultStr != null) lostMultiplier = Double.parseDouble(lostMultStr);
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "[FINE CALC] Không đọc được cấu hình phạt đền bù — dùng mặc định", ex);
+        }
+
+        Book book = bookDAO.findById(conn, bookId);
+        if (book == null || book.getPrice() == null) {
+            LOGGER.log(Level.WARNING,
+                    "[FINE CALC] Không tìm thấy giá sách cho bookId={0} — dùng mặc định {1}",
+                    new Object[]{bookId, defaultFine});
+            return defaultFine;
+        }
+
+        double multiplier = "lost".equals(incidentType) ? lostMultiplier : damagedMultiplier;
+        return book.getPrice().multiply(BigDecimal.valueOf(multiplier));
+    }
+
+    /**
+     * Gửi email thông báo phạt đền bù sự cố — bất đồng bộ, NGOÀI transaction (FR-007).
+     */
+    private void triggerIncidentFineEmailAsync(int userId, int bookId, String condition, BigDecimal fineAmount) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            User user = userDAO.findByUserId(userId);
+            if (user == null) return;
+
+            MemberProfile profile = memberProfileDAO.findByUserId(userId);
+            String fullName = (profile != null) ? profile.getFullName() : user.getEmail();
+
+            Book book = bookDAO.findById(conn, bookId);
+            String bookTitle = (book != null) ? book.getTitle() : "Sách thư viện";
+
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("bookTitle", bookTitle);
+            placeholders.put("incidentType", "damaged".equals(condition) ? "Hỏng sách" : "Mất sách");
+            placeholders.put("fineAmount", String.format("%,.0f VND", fineAmount.doubleValue()));
+
+            model.EmailJob job = new model.EmailJob("INCIDENT_FINE_NOTICE", user.getEmail(), fullName, placeholders);
+            EmailService.enqueue(job);
+
+            LOGGER.log(Level.INFO, "[ASYNC] Đã enqueue email INCIDENT_FINE_NOTICE cho userId={0}", userId);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email thông báo phạt sự cố.", e);
         }
     }
 
