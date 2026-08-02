@@ -143,6 +143,12 @@ public class EmailService {
                 "<!DOCTYPE html><html lang=\"vi\"><head><meta charset=\"UTF-8\"></head><body style=\"font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;\"><div style=\"max-width:560px;margin:auto;background:#fff;border-radius:12px;padding:36px;\"><h2 style=\"color:#c2410c;margin-top:0;\">Thông báo thay đổi lượt nhận sách</h2><p>Xin chào <strong>{{userName}}</strong>,</p><p>Một bản sao vật lý của cuốn <strong>{{bookTitle}}</strong> vừa được ghi nhận hỏng hoặc mất.</p><p>Để bảo đảm dữ liệu tồn kho chính xác, lượt của bạn đã được chuyển về vị trí đầu hàng chờ. Hệ thống sẽ thông báo ngay khi sách có thể nhận lại.</p><p>Thư viện xin lỗi vì sự bất tiện này.</p></div></body></html>"
             };
         }
+        if ("CHECKIN_CONFIRMATION".equalsIgnoreCase(tempName)) {
+            return new String[]{
+                "[Thư viện LMS] Xác nhận trả sách thành công - {{bookTitle}}",
+                "<!DOCTYPE html><html lang=\"vi\"><head><meta charset=\"UTF-8\"></head><body style=\"font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;\"><div style=\"max-width:560px;margin:auto;background:#fff;border-radius:12px;padding:36px;box-shadow:0 2px 16px rgba(0,0,0,0.08);\"><div style=\"background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 20px;margin-bottom:24px;\"><h2 style=\"color:#166534;margin:0;\">📚 Trả sách thành công!</h2></div><p>Xin chào <strong>{{userName}}</strong>,</p><p>Xác nhận bạn đã hoàn trả sách thành công tại quầy thư viện:</p><div style=\"background:#f0f4ff;border:1px solid #c7d6f7;border-radius:8px;padding:16px 20px;margin:16px 0;\"><p style=\"margin:0 0 8px;font-size:16px;font-weight:bold;color:#1a4fa3;\">📖 {{bookTitle}}</p><p style=\"margin:0;color:#1a4fa3;\">⏰ Thời gian trả: <strong style=\"color:#dc2626;\">{{returnedAt}}</strong></p></div><p>Cảm ơn bạn đã sử dụng dịch vụ của Thư viện.</p><hr style=\"border:none;border-top:1px solid #eee;margin:24px 0;\"/><p style=\"font-size:12px;color:#888;\">Thư viện Đại học LMS.</p></div></body></html>"
+            };
+        }
         if ("CHECKOUT_CONFIRMATION".equalsIgnoreCase(tempName)) {
             return new String[]{
                 "[Thư viện LMS] Xác nhận mượn sách thành công - {{bookTitle}}",
