@@ -485,6 +485,10 @@ public class DeskCirculationService {
                     "Check-in thành công: barcode={0}, condition={1}, borrowRecordId={2}",
                     new Object[]{barcode, condition, borrowRecordId});
 
+            if ("good".equals(condition)) {
+                triggerCheckInEmailAsync(userId, bookId, new java.sql.Timestamp(System.currentTimeMillis()));
+            }
+
         } catch (IllegalStateException e) {
             rollbackQuietly(conn, "processCheckIn[BusinessRule]", 0);
             throw e;
@@ -846,7 +850,40 @@ public class DeskCirculationService {
             LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email thông báo sách đặt sẵn sàng nhận.", e);
         }
     }
-
+    /**
+     * Trigger email thông báo trả sách thành công — chạy bất đồng bộ.
+     *
+     * @param userId     ID người dùng nhận email
+     * @param bookId     ID sách vừa trả (để lấy tiêu đề sách)
+     * @param returnedAt Thời gian trả sách
+     */
+    private void triggerCheckInEmailAsync(int userId, int bookId, Timestamp returnedAt) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            User user = userDAO.findByUserId(userId);
+            if (user == null || user.getEmail() == null) {
+                return;
+            }
+            dao.MemberProfileDAO profileDAO = new dao.MemberProfileDAO();
+            model.MemberProfile profile = profileDAO.findByUserId(userId);
+            String fullName = (profile != null) ? profile.getFullName() : user.getEmail();
+            
+            Book book = bookDAO.findById(conn, bookId);
+            String bookTitle = (book != null) ? book.getTitle() : "Sách đã trả";
+            
+            String formattedReturnedAt = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(returnedAt);
+            
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("bookTitle", bookTitle);
+            placeholders.put("returnedAt", formattedReturnedAt);
+            
+            model.EmailJob job = new model.EmailJob("CHECKIN_CONFIRMATION", user.getEmail(), fullName, placeholders);
+            EmailService.enqueue(job);
+            
+            LOGGER.log(Level.INFO, "[ASYNC] Đã enqueue email thông báo CHECKIN_CONFIRMATION thành công cho userId={0}", userId);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kích hoạt gửi email xác nhận trả sách.", e);
+        }
+    }
 
 
     /**
