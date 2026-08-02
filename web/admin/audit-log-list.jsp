@@ -164,7 +164,7 @@
                                                     data-entity-name="${fn:escapeXml(log.entityName)}"
                                                     data-entity-id="${log.entityId}"
                                                     data-user-email="${fn:escapeXml(log.userEmail)}"
-                                                    data-timestamp="${log.timestamp}"
+                                                    data-timestamp="<fmt:formatDate value="${log.timestamp}" pattern="dd/MM/yyyy HH:mm:ss" />"
                                                     data-old="${fn:escapeXml(log.oldValues)}"
                                                     data-new="${fn:escapeXml(log.newValues)}">
                                                     <td class="px-3 py-2 text-on-surface-variant">${log.auditLogId}</td>
@@ -186,8 +186,24 @@
                                                     </td>
                                                     <td class="px-3 py-2">
                                                         <span class="badge rounded-pill audit-badge-${fn:escapeXml(log.actionType)}"
-                                                              style="font-size: 11px; font-weight: 600; padding: 4px 10px;">
-                                                            <c:out value="${log.actionType}" />
+                                                              style="font-size: 11px; font-weight: 600; padding: 4px 10px;"
+                                                              title="${fn:escapeXml(log.actionType)}">
+                                                            <c:choose>
+                                                                <c:when test="${log.actionType == 'LOCK_USER'}">Khóa tài khoản (LOCK_USER)</c:when>
+                                                                <c:when test="${log.actionType == 'UNLOCK_USER'}">Mở khóa tài khoản (UNLOCK_USER)</c:when>
+                                                                <c:when test="${log.actionType == 'CREATE_USER'}">Tạo tài khoản (CREATE_USER)</c:when>
+                                                                <c:when test="${log.actionType == 'UPDATE_USER'}">Cập nhật tài khoản (UPDATE_USER)</c:when>
+                                                                <c:when test="${log.actionType == 'IMPORT_USERS'}">Nhập tài khoản hàng loạt (IMPORT_USERS)</c:when>
+                                                                <c:when test="${fn:contains(log.actionType, 'CONFIG')}">Cập nhật cấu hình (${log.actionType})</c:when>
+                                                                <c:when test="${log.actionType == 'CHECK_OUT'}">Cho mượn sách (CHECK_OUT)</c:when>
+                                                                <c:when test="${fn:contains(log.actionType, 'CHECK_IN')}">Nhận trả sách (${log.actionType})</c:when>
+                                                                <c:when test="${fn:contains(log.actionType, 'PAYMENT')}">Thanh toán tiền phạt (${log.actionType})</c:when>
+                                                                <c:when test="${fn:contains(log.actionType, 'RESERVATION')}">Hủy/Đặt trước (${log.actionType})</c:when>
+                                                                <c:when test="${fn:contains(log.actionType, 'PASSWORD')}">Đổi mật khẩu (${log.actionType})</c:when>
+                                                                <c:when test="${fn:contains(log.actionType, 'INCIDENT')}">Xử lý sự cố (${log.actionType})</c:when>
+                                                                <c:when test="${fn:contains(log.actionType, 'BOOK')}">Quản lý sách (${log.actionType})</c:when>
+                                                                <c:otherwise><c:out value="${log.actionType}" /></c:otherwise>
+                                                            </c:choose>
                                                         </span>
                                                     </td>
                                                     <td class="px-3 py-2"><c:out value="${log.entityName}" default="—" /></td>
@@ -294,19 +310,19 @@
                                 <p id="modalEmail" class="mb-0 fw-bold" style="font-size: 14px;"></p>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="p-3 rounded-3" style="background: var(--surface-container-low);">
                                 <p class="mb-1 fw-semibold" style="font-size: 11px; text-transform: uppercase; color: var(--on-surface-variant); letter-spacing: 0.05em;">Loại hành động</p>
-                                <p id="modalActionType" class="mb-0 fw-bold" style="font-size: 14px;"></p>
+                                <p id="modalActionType" class="mb-0 fw-bold" style="font-size: 14px; word-break: break-word;"></p>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="p-3 rounded-3" style="background: var(--surface-container-low);">
                                 <p class="mb-1 fw-semibold" style="font-size: 11px; text-transform: uppercase; color: var(--on-surface-variant); letter-spacing: 0.05em;">Đối tượng</p>
                                 <p id="modalEntityName" class="mb-0 fw-bold" style="font-size: 14px;"></p>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="p-3 rounded-3" style="background: var(--surface-container-low);">
                                 <p class="mb-1 fw-semibold" style="font-size: 11px; text-transform: uppercase; color: var(--on-surface-variant); letter-spacing: 0.05em;">ID Đối tượng</p>
                                 <p id="modalEntityId" class="mb-0 fw-bold" style="font-size: 14px;"></p>
@@ -448,8 +464,8 @@
             document.getElementById('modalSubtitle').textContent = 'Mã nhật ký: #' + auditId;
             document.getElementById('modalTimestamp').textContent = formatTimestamp(timestamp);
             document.getElementById('modalEmail').textContent = userEmail ? userEmail : 'Hệ thống';
-            document.getElementById('modalActionType').textContent = actionType || '—';
-            document.getElementById('modalEntityName').textContent = entityName || '—';
+            document.getElementById('modalActionType').textContent = formatActionType(actionType);
+            document.getElementById('modalEntityName').textContent = formatEntityName(entityName);
             document.getElementById('modalEntityId').textContent = entityId || '—';
 
             var container = document.getElementById('modalCompareContainer');
@@ -481,57 +497,192 @@
             modal.show();
         }
 
+        const entityNameDict = {
+            "User": "Tài khoản (User)",
+            "Book": "Đầu sách (Book)",
+            "BookCopy": "Bản sao sách (BookCopy)",
+            "Category": "Thể loại (Category)",
+            "Tag": "Thẻ nhãn (Tag)",
+            "BorrowRecord": "Phiếu mượn (BorrowRecord)",
+            "Reservation": "Đặt trước (Reservation)",
+            "BookCopyIncident": "Sự cố sách (BookCopyIncident)",
+            "Fine": "Phiếu phạt (Fine)",
+            "Payment": "Giao dịch (Payment)",
+            "SystemConfigurations": "Cấu hình (SystemConfigurations)",
+            "BookSuggestion": "Đề xuất sách (BookSuggestion)",
+            "Notification": "Thông báo (Notification)",
+            "DocumentTemp": "Mẫu email (DocumentTemp)",
+            "InventorySession": "Phiên kiểm kê (InventorySession)",
+            "InventoryItem": "Mục kiểm kê (InventoryItem)"
+        };
+
+        function formatEntityName(name) {
+            if (!name) return '—';
+            return entityNameDict[name] || name;
+        }
+
+        const actionTypeDict = {
+            "LOCK_USER": "Khóa tài khoản (LOCK_USER)",
+            "UNLOCK_USER": "Mở khóa tài khoản (UNLOCK_USER)",
+            "CREATE_USER": "Tạo tài khoản (CREATE_USER)",
+            "UPDATE_USER": "Cập nhật tài khoản (UPDATE_USER)",
+            "IMPORT_USERS": "Nhập tài khoản hàng loạt (IMPORT_USERS)",
+            "CHANGE_PASSWORD": "Thay đổi mật khẩu (CHANGE_PASSWORD)",
+            "RESET_PASSWORD": "Đặt lại mật khẩu (RESET_PASSWORD)",
+            "LOCK_ACCOUNT_OVERDUE_RESERVATION": "Khóa tài khoản nợ đặt trước (LOCK_ACCOUNT_OVERDUE_RESERVATION)",
+            "CREATE_BOOK": "Tạo mới sách (CREATE_BOOK)",
+            "UPDATE_BOOK": "Cập nhật sách (UPDATE_BOOK)",
+            "STOP_BOOK_CIRCULATION": "Tạm dừng lưu thông (STOP_BOOK_CIRCULATION)",
+            "RESUME_BOOK_CIRCULATION": "Mở lại lưu thông (RESUME_BOOK_CIRCULATION)",
+            "CREATE_BOOK_COPY": "Khai báo bản sao sách (CREATE_BOOK_COPY)",
+            "UPDATE_BOOK_COPY": "Cập nhật bản sao sách (UPDATE_BOOK_COPY)",
+            "UPDATE_BOOK_COPY_CONDITION": "Cập nhật tình trạng sách (UPDATE_BOOK_COPY_CONDITION)",
+            "CREATE_CATEGORY": "Tạo thể loại (CREATE_CATEGORY)",
+            "UPDATE_CATEGORY": "Cập nhật thể loại (UPDATE_CATEGORY)",
+            "CREATE_TAG": "Tạo thẻ nhãn (CREATE_TAG)",
+            "UPDATE_TAG": "Cập nhật thẻ nhãn (UPDATE_TAG)",
+            "CHECK_OUT": "Cho mượn sách (CHECK_OUT)",
+            "CHECK_IN_GOOD": "Nhận trả sách tốt (CHECK_IN_GOOD)",
+            "CHECK_IN_INCIDENT_PENDING": "Nhận trả sách bị sự cố (CHECK_IN_INCIDENT_PENDING)",
+            "RENEW_BOOK": "Gia hạn mượn sách (RENEW_BOOK)",
+            "SEND_RECALL_EMAIL": "Gửi email thu hồi sách (SEND_RECALL_EMAIL)",
+            "RESERVE_PENDING": "Đặt trước sách (RESERVE_PENDING)",
+            "RESERVE_READY": "Sách sẵn sàng nhận (RESERVE_READY)",
+            "CANCEL_RESERVATION": "Hủy đặt trước (CANCEL_RESERVATION)",
+            "CANCEL_EXPIRED_RESERVATION": "Hủy đặt trước quá hạn (CANCEL_EXPIRED_RESERVATION)",
+            "CANCEL_ALL_RESERVATIONS_PENALTY": "Hủy đặt trước do phạt (CANCEL_ALL_RESERVATIONS_PENALTY)",
+            "PROMOTE_RESERVATION_NEW_COPY": "Thúc đẩy đặt trước sách mới (PROMOTE_RESERVATION_NEW_COPY)",
+            "CREATE_BOOK_COPY_INCIDENT": "Báo cáo sự cố sách (CREATE_BOOK_COPY_INCIDENT)",
+            "INVESTIGATE_BOOK_COPY_INCIDENT": "Điều tra sự cố sách (INVESTIGATE_BOOK_COPY_INCIDENT)",
+            "RESOLVE_BOOK_COPY_INCIDENT": "Giải quyết sự cố sách (RESOLVE_BOOK_COPY_INCIDENT)",
+            "REJECT_BOOK_COPY_INCIDENT": "Từ chối báo cáo sự cố (REJECT_BOOK_COPY_INCIDENT)",
+            "SUSPEND_BOOK_COPY": "Tạm ngưng bản sao sách (SUSPEND_BOOK_COPY)",
+            "RESTORE_REPAIRED_BOOK_COPY": "Phục hồi bản sao sách (RESTORE_REPAIRED_BOOK_COPY)",
+            "REMOVE_DAMAGED_BOOK_COPY_FROM_INVENTORY": "Loại bỏ sách hỏng khỏi kho (REMOVE_DAMAGED_BOOK_COPY_FROM_INVENTORY)",
+            "CREATE_COMPENSATION_FINE_FROM_INCIDENT": "Tạo phạt đền bù sự cố (CREATE_COMPENSATION_FINE_FROM_INCIDENT)",
+            "CASH_PAYMENT": "Thanh toán tiền mặt (CASH_PAYMENT)",
+            "CONFIRM_CASH_PAYMENT": "Xác nhận thanh toán tiền mặt (CONFIRM_CASH_PAYMENT)",
+            "SEPAY_WEBHOOK_PAYMENT": "Thanh toán SePay QR (SEPAY_WEBHOOK_PAYMENT)",
+            "CREATE_SYSTEM_CONFIG": "Tạo cấu hình (CREATE_SYSTEM_CONFIG)",
+            "UPDATE_SYSTEM_CONFIG": "Cập nhật cấu hình (UPDATE_SYSTEM_CONFIG)",
+            "CREATE_INVENTORY_SESSION": "Tạo phiên kiểm kê (CREATE_INVENTORY_SESSION)",
+            "START_INVENTORY_SESSION": "Bắt đầu kiểm kê (START_INVENTORY_SESSION)",
+            "REVIEW_INVENTORY_SESSION": "Đối soát kiểm kê (REVIEW_INVENTORY_SESSION)",
+            "COMPLETE_INVENTORY_SESSION": "Hoàn thành kiểm kê (COMPLETE_INVENTORY_SESSION)",
+            "CANCEL_INVENTORY_SESSION": "Hủy phiên kiểm kê (CANCEL_INVENTORY_SESSION)",
+            "SCAN_INVENTORY_ITEM": "Quét kiểm kê bản sao (SCAN_INVENTORY_ITEM)",
+            "CREATE_INCIDENT_FROM_INVENTORY": "Tạo sự cố từ kiểm kê (CREATE_INCIDENT_FROM_INVENTORY)",
+            "DEMOTE_RESERVATION_INVENTORY_SHORTAGE": "Giảm vị trí đặt trước do thiếu kho (DEMOTE_RESERVATION_INVENTORY_SHORTAGE)",
+            "DEMOTE_RESERVATION_CAPACITY_SHORTAGE": "Giảm vị trí đặt trước do thiếu bản sao (DEMOTE_RESERVATION_CAPACITY_SHORTAGE)"
+        };
+
+        function formatActionType(type) {
+            if (!type) return '—';
+            return actionTypeDict[type] || type;
+        }
+
         const fieldDict = {
-            "LOST_FINE_MULTIPLIER": "Hệ số phạt mất sách",
-            "STUDENT_MAX_BORROW_DAYS": "Hạn mượn tối đa Sinh viên",
-            "LECTURER_MAX_BORROW_DAYS": "Hạn mượn tối đa Giảng viên",
-            "FINE_RATE_PER_DAY": "Mức phạt quá hạn/ngày",
-            "RESERVATION_HOLD_DAYS": "Hạn giữ đặt trước",
-            "MAX_EXTENSION_COUNT": "Số lần gia hạn tối đa",
-            "email": "Email",
-            "fullName": "Họ và tên",
-            "phoneNumber": "Số điện thoại",
-            "gender": "Giới tính",
-            "dateOfBirth": "Ngày sinh",
-            "role": "Vai trò",
-            "status": "Trạng thái",
-            "studentCode": "Mã sinh viên",
-            "lecturerCode": "Mã giảng viên",
-            "staffCode": "Mã nhân viên",
-            "major": "Ngành học",
-            "enrollmentYear": "Khóa",
-            "department": "Khoa/Bộ môn",
-            "isbn": "ISBN",
-            "title": "Tên sách",
-            "author": "Tác giả",
-            "publisher": "Nhà xuất bản",
-            "publicationYear": "Năm xuất bản",
-            "price": "Giá",
-            "totalQuantity": "Tổng số lượng",
-            "availableQuantity": "Số lượng sẵn có",
-            "startDate": "Ngày bắt đầu",
-            "endDate": "Ngày hết hạn",
-            "returnedAt": "Ngày trả",
-            "extensionCount": "Số lần gia hạn",
-            "amount": "Số tiền phạt",
-            "reason": "Lý do phạt",
-            "paidAmount": "Số tiền thanh toán",
-            "paymentMethod": "Phương thức thanh toán",
-            "transactionReference": "Mã tham chiếu giao dịch"
+            "email": "Email (email)",
+            "fullName": "Họ và tên (fullName)",
+            "phoneNumber": "Số điện thoại (phoneNumber)",
+            "gender": "Giới tính (gender)",
+            "dateOfBirth": "Ngày sinh (dateOfBirth)",
+            "role": "Vai trò (role)",
+            "status": "Trạng thái (status)",
+            "lockReason": "Lý do khóa (lockReason)",
+            "finePaid": "Thanh toán tiền phạt (finePaid)",
+            "fineAmount": "Số tiền phạt (fineAmount)",
+            "borrowRecordId": "ID phiếu mượn (borrowRecordId)",
+            "incidentId": "ID sự cố (incidentId)",
+            "removedFromInventory": "Xóa khỏi kho (removedFromInventory)",
+            "studentCode": "Mã sinh viên (studentCode)",
+            "lecturerCode": "Mã giảng viên (lecturerCode)",
+            "staffCode": "Mã nhân viên (staffCode)",
+            "major": "Ngành học (major)",
+            "enrollmentYear": "Khóa nhập học (enrollmentYear)",
+            "department": "Bộ môn (department)",
+            "isbn": "Mã ISBN (isbn)",
+            "title": "Tên sách (title)",
+            "author": "Tác giả (author)",
+            "publisher": "Nhà xuất bản (publisher)",
+            "publicationYear": "Năm xuất bản (publicationYear)",
+            "price": "Giá tiền (price)",
+            "totalQuantity": "Tổng số lượng (totalQuantity)",
+            "availableQuantity": "Số lượng sẵn có (availableQuantity)",
+            "location": "Vị trí sách (location)",
+            "condition": "Tình trạng sách (condition)",
+            "barcode": "Mã vạch (barcode)",
+            "startDate": "Ngày bắt đầu (startDate)",
+            "endDate": "Hạn trả (endDate)",
+            "returnedAt": "Ngày trả thực tế (returnedAt)",
+            "extensionCount": "Số lần gia hạn (extensionCount)",
+            "amount": "Số tiền (amount)",
+            "reason": "Lý do (reason)",
+            "paidAmount": "Số tiền đã trả (paidAmount)",
+            "paymentMethod": "Phương thức thanh toán (paymentMethod)",
+            "transactionReference": "Mã giao dịch (transactionReference)",
+            "activeCount": "Số lượt hoạt động (activeCount)",
+            "cancelledCount": "Số lượt đã hủy (cancelledCount)",
+            "incidentType": "Loại sự cố (incidentType)",
+            "reportedBy": "Người báo cáo (reportedBy)",
+            "reportedAt": "Thời gian báo cáo (reportedAt)",
+            "resolvedBy": "Người giải quyết (resolvedBy)",
+            "resolution": "Hướng giải quyết (resolution)",
+            "subject": "Tiêu đề (subject)",
+            "bodyContent": "Nội dung mẫu (bodyContent)",
+            "totalImported": "Tổng số nhập vào (totalImported)",
+            "missingCount": "Số lượng thiếu (missingCount)",
+            "excludedCount": "Số lượng loại trừ (excludedCount)",
+            "scannedCount": "Số lượng đã quét (scannedCount)",
+            "expectedCount": "Số lượng dự kiến (expectedCount)",
+            "reconciledCount": "Số lượng đối soát (reconciledCount)",
+            "inventorySessionId": "ID phiên kiểm kê (inventorySessionId)",
+            "scannedLocation": "Vị trí đã quét (scannedLocation)",
+            "expectedLocation": "Vị trí dự kiến (expectedLocation)",
+            "scannedBy": "Người quét (scannedBy)",
+            "completedBy": "Người hoàn thành (completedBy)",
+            "startedBy": "Người khởi tạo (startedBy)",
+            "note": "Ghi chú (note)",
+            "STUDENT_MAX_BORROW_DAYS": "Hạn mượn SV (STUDENT_MAX_BORROW_DAYS)",
+            "LECTURER_MAX_BORROW_DAYS": "Hạn mượn GV (LECTURER_MAX_BORROW_DAYS)",
+            "FINE_RATE_PER_DAY": "Mức phạt/ngày (FINE_RATE_PER_DAY)",
+            "RESERVATION_HOLD_DAYS": "Hạn giữ đặt trước (RESERVATION_HOLD_DAYS)",
+            "MAX_EXTENSION_COUNT": "Số lần gia hạn tối đa (MAX_EXTENSION_COUNT)"
         };
 
         function formatAuditValue(val) {
-            if (val === "active") return "Hoạt động";
-            if (val === "locked") return "Đã khóa";
-            if (val === "ADMIN") return "SysAdmin";
-            if (val === "STUDENT") return "Sinh viên";
-            if (val === "LECTURER") return "Giảng viên";
-            if (val === "LIBRARIAN") return "Thủ thư";
+            if (val === null || val === undefined || val === "" || val === "null" || val === "—") return "—";
+            var lower = String(val).toLowerCase().trim();
+            if (lower === "active") return "Hoạt động (active)";
+            if (lower === "locked") return "Đã khóa (locked)";
+            if (lower === "pending") return "Chờ xử lý (pending)";
+            if (lower === "completed") return "Đã hoàn thành (completed)";
+            if (lower === "counting") return "Đang kiểm đếm (counting)";
+            if (lower === "reviewing") return "Đang đối soát (reviewing)";
+            if (lower === "reconciled") return "Đã đối soát (reconciled)";
+            if (lower === "draft") return "Bản nháp (draft)";
+            if (lower === "scanned") return "Đã quét (scanned)";
+            if (lower === "true") return "Đã thanh toán / Có (true)";
+            if (lower === "false") return "Chưa thanh toán / Không (false)";
+            if (lower === "good") return "Tốt (good)";
+            if (lower === "damaged") return "Hỏng (damaged)";
+            if (lower === "lost") return "Mất (lost)";
+            if (lower === "available") return "Sẵn có (available)";
+            if (lower === "unavailable") return "Không sẵn có (unavailable)";
+            if (lower === "borrowed") return "Đang mượn (borrowed)";
+            if (lower === "overdue") return "Quá hạn (overdue)";
+            if (lower === "paid") return "Đã thanh toán (paid)";
+            if (lower === "unpaid") return "Chưa thanh toán (unpaid)";
+            if (val === "ADMIN") return "SysAdmin (ADMIN)";
+            if (val === "STUDENT") return "Sinh viên (STUDENT)";
+            if (val === "LECTURER") return "Giảng viên (LECTURER)";
+            if (val === "LIBRARIAN") return "Thủ thư (LIBRARIAN)";
             return val;
         }
 
         function translateKey(key) {
-            return fieldDict[key] || key;
+            if (!key) return '';
+            return fieldDict[key] ? fieldDict[key] : key;
         }
 
         function renderCardComparison(container, oldObj, newObj, actionType) {
@@ -579,13 +730,13 @@
             html += '<div class="col-6">' +
                 '<p class="compare-card-label" style="color: #dc2626;">Giá trị cũ</p>' +
                 '<div class="compare-raw-card">' +
-                    '<p class="compare-card-value mb-0">' + escapeHtml(oldVal || '—') + '</p>' +
+                    '<p class="compare-card-value mb-0">' + escapeHtml(formatAuditValue(oldVal) || '—') + '</p>' +
                 '</div></div>';
 
             html += '<div class="col-6">' +
                 '<p class="compare-card-label" style="color: #16a34a;">Giá trị mới</p>' +
                 '<div class="compare-raw-card">' +
-                    '<p class="compare-card-value mb-0">' + escapeHtml(newVal || '—') + '</p>' +
+                    '<p class="compare-card-value mb-0">' + escapeHtml(formatAuditValue(newVal) || '—') + '</p>' +
                 '</div></div>';
 
             html += '</div>';
@@ -599,10 +750,25 @@
                 if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
                     return obj;
                 }
-                return null;
-            } catch (e) {
-                return null;
+            } catch (e) {}
+
+            /* Fallback parse chuỗi key=value như "status=pending" hoặc "status=completed, finePaid=true" */
+            if (str.indexOf('=') !== -1) {
+                var obj = {};
+                var parts = str.split(',');
+                for (var i = 0; i < parts.length; i++) {
+                    var pair = parts[i].split('=');
+                    if (pair.length === 2) {
+                        var k = pair[0].trim();
+                        var v = pair[1].trim();
+                        if (k) obj[k] = v;
+                    }
+                }
+                if (Object.keys(obj).length > 0) {
+                    return obj;
+                }
             }
+            return null;
         }
 
         function isEmptyJsonObj(str) {
@@ -624,8 +790,9 @@
 
         function formatTimestamp(ts) {
             if (!ts) return '—';
+            if (ts.indexOf('/') !== -1) return ts;
             try {
-                var d = new Date(ts);
+                var d = new Date(ts.replace(' ', 'T'));
                 if (isNaN(d.getTime())) return ts;
                 var pad = function(n) { return n < 10 ? '0' + n : n; };
                 return pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear() + ' ' +
