@@ -3,6 +3,8 @@ package config;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import util.DatabaseConnection;
 
 /**
@@ -16,8 +18,31 @@ import util.DatabaseConnection;
  */
 public class AiConfig {
 
+    private static final Logger LOGGER = Logger.getLogger(AiConfig.class.getName());
+
     private AiConfig() {
         // Utility class
+    }
+
+    /**
+     * Kiểm tra API Key có hợp lệ hay không.
+     * Key bị coi là không hợp lệ nếu:
+     * - Null hoặc trống
+     * - Bằng chuỗi sentinel "MISSING_API_KEY"
+     * - Bắt đầu bằng "YOUR_" (placeholder chưa được thay thế)
+     */
+    public static boolean isValidApiKey(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            return false;
+        }
+        String trimmed = key.trim();
+        if (trimmed.equals("MISSING_API_KEY")) {
+            return false;
+        }
+        if (trimmed.startsWith("YOUR_")) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -41,24 +66,26 @@ public class AiConfig {
     }
 
     /**
-     * Tải API Key: thử DB trước, nếu không có thì fallback sang JVM/Env.
+     * Tải API Key: thử DB trước, nếu không có hoặc là placeholder thì fallback sang JVM/Env.
      */
     private static String loadApiKey() {
         String key = getApiKeyFromDb();
-        if (key != null && !key.equals("MISSING_API_KEY")) {
-            return key;
+        if (isValidApiKey(key)) {
+            return key.trim();
         }
+        LOGGER.log(Level.WARNING, "[AiConfig] GEMINI_RECOMMEN_API_KEY trong DB không hợp lệ hoặc là placeholder (''{0}''). Thử đọc từ JVM/Env.", key);
         return resolveApiKey();
     }
 
     /**
-     * Tải API Key riêng cho Chatbot.
+     * Tải API Key riêng cho Chatbot: thử DB trước, nếu không có hoặc là placeholder thì fallback sang JVM/Env.
      */
     private static String loadChatbotApiKey() {
         String key = getChatbotApiKeyFromDb();
-        if (key != null && !key.equals("MISSING_API_KEY")) {
-            return key;
+        if (isValidApiKey(key)) {
+            return key.trim();
         }
+        LOGGER.log(Level.WARNING, "[AiConfig] GEMINI_CHATBOT_API_KEY trong DB không hợp lệ hoặc là placeholder (''{0}''). Thử đọc từ JVM/Env.", key);
         return resolveChatbotApiKey();
     }
 
