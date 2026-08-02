@@ -1,0 +1,210 @@
+ACTIVITY DIAGRAM — UC-136: CANCEL RESERVATION FLOW (HỦY LƯỢT ĐẶT TRƯỚC BỞI THỦ THƯ)
+Feature: feat-reservationQueueManagement
+Version: 1.5 | Ngày tạo: 2026-08-02
+Mô tả: Chi tiết từng nút (Node/Box/Decision) khớp 100% với biểu đồ Activity Diagram ảnh từ mã PlantUML CancelReservationFlow.
+
+========================================================================
+
+[Initial Node 1.1]
+Actor: Librarian
+Loại: Initial Node
+Tên Action: Start Cancel Reservation Flow
+Nội dung Action: Điểm bắt đầu luồng Hủy lượt đặt trước. Thủ thư chọn lượt đặt trước cần xử lý trên danh sách.
+Nối tới: Mũi tên đi tới [Manual Action 2.1].
+
+[Manual Action 2.1]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Select reservation record & click Cancel
+Nội dung Action: Thủ thư chọn bản ghi đơn đặt trước trên bảng giao diện và bấm nút "Hủy".
+Nối tới: Mũi tên đi tới [Manual Action 2.2].
+
+[Manual Action 2.2]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Enter cancellation reason & submit request
+Nội dung Action: Thủ thư nhập lý do hủy thủ công trên Modal xác nhận và bấm nút gửi yêu cầu "Xác nhận Hủy".
+Nối tới: Mũi tên đi tới [System Action Box 3.1].
+
+[System Action Box 3.1]
+Actor: System
+Loại: System Action Box
+Tên Action: Authenticate Librarian role & validate reason
+Nội dung Action: Hệ thống kiểm tra phân quyền tài khoản Thủ thư (Librarian role) và kiểm tra lý do hủy (reason) có được nhập hay không.
+Nối tới: Mũi tên đi tới [Decision Node 4.1].
+
+[Decision Node 4.1]
+Actor: System
+Loại: Decision Node
+Tên Action: Reason provided?
+Nội dung Action: Kiểm tra Thủ thư có nhập lý do hủy hay để trống.
+Nối tới:
+Nhánh [No (Không nhập lý do)]: rẽ tới [System Action Box 4.2].
+Nhánh [Yes (Đã nhập lý do)]: rẽ tới [System Action Box 5.1].
+
+[System Action Box 4.2]
+Actor: System
+Loại: System Action Box
+Tên Action: Show validation error message "Reason is required"
+Nội dung Action: Trả về thông báo lỗi trên giao diện: "Vui lòng nhập lý do hủy lượt đặt trước."
+Nối tới: Mũi tên đi tới [Manual Action 4.3].
+
+[Manual Action 4.3]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: View error notification
+Nội dung Action: Thủ thư xem thông báo lỗi hiển thị trên màn hình.
+Nối tới: Mũi tên đi tới [Final Node 20.1].
+
+[System Action Box 5.1]
+Actor: System
+Loại: System Action Box
+Tên Action: Update target reservation status to CANCELLED
+Nội dung Action: Cập nhật trạng thái đơn đặt trước mục tiêu thành CANCELLED trong CSDL.
+Nối tới: Mũi tên đi tới [System Action Box 5.2].
+
+[System Action Box 5.2]
+Actor: System
+Loại: System Action Box
+Tên Action: Send cancellation email to reader
+Nội dung Action: Kích hoạt EmailService gửi email thông báo hủy đơn kèm lý do tới độc giả sở hữu đơn.
+Nối tới: Mũi tên đi tới [Decision Node 6.1].
+
+[Decision Node 6.1]
+Actor: System
+Loại: Decision Node
+Tên Action: Canceled reservation had ready-pickup spot? (queuePosition == 0)
+Nội dung Action: Kiểm tra đơn vừa hủy có đang ở vị trí ready-pickup (queuePosition == 0, đã giữ 1 bản sách) hay không.
+Nối tới:
+Nhánh [Yes (queuePosition == 0)]: rẽ tới [System Action Box 7.1].
+Nhánh [No (queuePosition > 0)]: rẽ tới [System Action Box 8.1].
+
+========================================================================
+NHÁNH YES: ĐƠN BỊ HỦY LÀ SUẤT READY-PICKUP (queuePosition == 0)
+========================================================================
+
+[System Action Box 7.1]
+Actor: System
+Loại: System Action Box
+Tên Action: Check for next waiting reader in queue (queuePosition == 1)
+Nội dung Action: Truy vấn CSDL tìm độc giả kế tiếp đang xếp hàng chờ có queuePosition == 1.
+Nối tới: Mũi tên đi tới [Decision Node 7.2].
+
+[Decision Node 7.2]
+Actor: System
+Loại: Decision Node
+Tên Action: Next reader exists?
+Nội dung Action: Kiểm tra có độc giả kế tiếp đang chờ hay không.
+Nối tới:
+Nhánh [Yes (Có người kế tiếp)]: rẽ tới [System Action Box 7.3a].
+Nhánh [No (Không còn ai chờ)]: rẽ tới [System Action Box 7.4a].
+
+------------------------------------------------------------------------
+NHÁNH YES: CÓ NGƯỜI KẾ TIẾP (Next reader exists = Yes)
+------------------------------------------------------------------------
+
+[System Action Box 7.3a]
+Actor: System
+Loại: System Action Box
+Tên Action: Transfer ready-pickup spot to next reader (queuePosition = 0, status = READY_PICKUP)
+Nội dung Action: Chuyển giao suất giữ sách cho người kế tiếp: đổi queuePosition = 0, status = 'READY_PICKUP', tính lại thời hạn giữ sách endDate. Số lượng sách khả dụng (availableQuantity) giữ nguyên (+0).
+Nối tới: Mũi tên đi tới [System Action Box 7.3b].
+
+[System Action Box 7.3b]
+Actor: System
+Loại: System Action Box
+Tên Action: Shift remaining queue positions (-1)
+Nội dung Action: Giảm 1 vị trí hàng chờ (-1) cho tất cả các độc giả đứng ở các vị trí phía sau.
+Nối tới: Mũi tên đi tới [System Action Box 7.3c].
+
+[System Action Box 7.3c]
+Actor: System
+Loại: System Action Box
+Tên Action: Record CANCEL audit log
+Nội dung Action: Ghi nhật ký thao tác hủy lượt và chuyển giao suất vào bảng AuditLogs.
+Nối tới: Phân nhánh song song (Fork Node).
+
+[Fork Node 7.3d]
+Actor: System
+Loại: Fork Node
+Tên Action: Parallel Process Output
+Nội dung Action: Thực hiện 2 hành động song song:
+- Nhánh 1: Trả thông báo cho Thủ thư.
+- Nhánh 2: Gửi email cho Độc giả mới.
+Nối tới:
+Nhánh 1: rẽ tới [Manual Action 7.3e].
+Nhánh 2: rẽ tới [System Action Box 7.3f].
+
+[Manual Action 7.3e]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Receive success message & refreshed queue list
+Nội dung Action: Thủ thư nhận thông báo hủy thành công trên giao diện và bảng hàng chờ tự động làm mới.
+Nối tới: Mũi tên đi tới [Final Node 20.1].
+
+[System Action Box 7.3f]
+Actor: Student
+Loại: System Action Box
+Tên Action: Receive ready-pickup email notification
+Nội dung Action: Độc giả kế tiếp nhận email thông báo sách đã sẵn sàng đến quầy nhận.
+Nối tới: Mũi tên đi tới [Final Node 20.1].
+
+------------------------------------------------------------------------
+NHÁNH NO: KHÔNG CÒN AI CHỜ (Next reader exists = No)
+------------------------------------------------------------------------
+
+[System Action Box 7.4a]
+Actor: System
+Loại: System Action Box
+Tên Action: Increase availableQuantity by 1 in Book inventory (+1)
+Nội dung Action: Vì không còn ai xếp hàng chờ, hoàn trả 1 bản sách về kho khả dụng: tăng availableQuantity thêm 1 (+1).
+Nối tới: Mũi tên đi tới [System Action Box 7.4b].
+
+[System Action Box 7.4b]
+Actor: System
+Loại: System Action Box
+Tên Action: Record CANCEL audit log
+Nội dung Action: Ghi nhật ký thao tác hủy lượt và hoàn trả sách vào bảng AuditLogs.
+Nối tới: Mũi tên đi tới [Manual Action 7.4c].
+
+[Manual Action 7.4c]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Receive success message & refreshed queue list
+Nội dung Action: Thủ thư nhận thông báo hủy thành công trên giao diện và bảng hàng chờ tự động làm mới.
+Nối tới: Mũi tên đi tới [Final Node 20.1].
+
+========================================================================
+NHÁNH NO: ĐƠN BỊ HỦY LÀ ĐƠN ĐANG ĐỨNG XẾP HÀNG (queuePosition > 0)
+========================================================================
+
+[System Action Box 8.1]
+Actor: System
+Loại: System Action Box
+Tên Action: Shift remaining queue positions after the canceled position
+Nội dung Action: Giảm 1 vị trí hàng chờ (-1) cho tất cả các đơn đứng đằng sau đơn vừa bị hủy. Số lượng sách khả dụng (availableQuantity) giữ nguyên (+0).
+Nối tới: Mũi tên đi tới [System Action Box 8.2].
+
+[System Action Box 8.2]
+Actor: System
+Loại: System Action Box
+Tên Action: Record CANCEL audit log
+Nội dung Action: Ghi nhật ký thao tác hủy lượt vào bảng AuditLogs.
+Nối tới: Mũi tên đi tới [Manual Action 8.3].
+
+[Manual Action 8.3]
+Actor: Librarian
+Loại: Manual Action
+Tên Action: Receive success message & refreshed queue list
+Nội dung Action: Thủ thư nhận thông báo hủy thành công trên giao diện và bảng hàng chờ tự động làm mới.
+Nối tới: Mũi tên đi tới [Final Node 20.1].
+
+========================================================================
+FINAL NODE (KẾT THÚC LUỒNG)
+========================================================================
+
+[Final Node 20.1]
+Actor: System
+Loại: Final Node
+Tên Action: Stop
+Nội dung Action: Kết thúc toàn bộ luồng Hủy lượt đặt trước.
