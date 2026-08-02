@@ -1,5 +1,6 @@
 package controllers;
 
+import dao.BorrowRecordDAO;
 import dao.FineDAO;
 import dao.PaymentDAO;
 import dao.SystemConfigDAO;
@@ -27,6 +28,11 @@ import util.DatabaseConnection;
  * <p>Lấy danh sách phạt từ FineDAO, tổng tiền nợ chưa thanh toán,
  * và cấu hình SePay (số tài khoản, ngân hàng, tên chủ TK) để sinh VietQR
  * động trên giao diện.</p>
+ *
+ * <p><strong>[BUG-FIX]</strong> Chỉ tạo Payment pending (QR) cho fine quá hạn
+ * nếu BorrowRecord đã ở trạng thái {@code returned/lost/damaged}.
+ * Nếu sách chưa trả, đánh dấu {@code fine.canPayOnline = false} để JSP
+ * ẩn nút QR và hướng dẫn sinh viên trả sách tại quầy trước.</p>
  */
 @WebServlet(name = "MemberFinesServlet", urlPatterns = {"/student/fines", "/lecturer/fines"})
 public class MemberFinesServlet extends HttpServlet {
@@ -36,6 +42,7 @@ public class MemberFinesServlet extends HttpServlet {
     private final FineDAO fineDAO = new FineDAO();
     private final PaymentDAO paymentDAO = new PaymentDAO();
     private final SystemConfigDAO systemConfigDAO = new SystemConfigDAO();
+    private final BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -57,9 +64,24 @@ public class MemberFinesServlet extends HttpServlet {
                 List<Fine> fines = fineDAO.findFinesByUserId(conn, userId);
 
                 // 2. Tự động tạo Payment 'pending' cho Fine 'unpaid' chưa có paymentId
-                //    Đây là bước cần thiết để nút "Thanh toán QR" xuất hiện trên UI.
+                //    [BUG-FIX] CHỈ tạo QR nếu sách đã được trả vật lý (returned/lost/damaged).
+                //    Nếu sách chưa trả: đánh dấu canPayOnline=false, JSP sẽ ẩn nút QR.
                 for (Fine fine : fines) {
-                    if ("unpaid".equals(fine.getStatus()) && fine.getPaymentId() == null) {
+                    if (!"unpaid".equals(fine.getStatus())) continue;
+
+                    // Kiểm tra sách đã trả chưa (whitelist approach)
+                    int brId = fine.getBorrowRecordId();
+                    boolean canPayOnline = true;
+                    if (brId > 0) {
+                        String brStatus = borrowRecordDAO.findStatusById(conn, brId);
+                        canPayOnline = "returned".equals(brStatus)
+                                    || "lost".equals(brStatus)
+                                    || "damaged".equals(brStatus);
+                    }
+                    fine.setCanPayOnline(canPayOnline);
+
+                    if (canPayOnline && fine.getPaymentId() == null) {
+                        // Sách đã trả → tạo Payment QR bình thường
                         int newPaymentId = paymentDAO.insertPayment(conn, fine.getFineId(),
                                 fine.getAmount(), "pending");
                         fine.setPaymentId(newPaymentId);
@@ -67,6 +89,8 @@ public class MemberFinesServlet extends HttpServlet {
                                 "Tạo Payment pending mới: paymentId={0} cho fineId={1}, userId={2}",
                                 new Object[]{newPaymentId, fine.getFineId(), userId});
                     }
+                    // Nếu !canPayOnline: không tạo Payment, fine.paymentId = null
+                    // → JSP sẽ hiển thị hướng dẫn "Trả sách tại quầy trước"
                 }
                 conn.commit();
 

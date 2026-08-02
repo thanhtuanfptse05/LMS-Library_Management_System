@@ -22,6 +22,13 @@ public class Fine {
     // Trường bổ sung (JOIN từ BorrowRecord + Book) để hiển thị tên sách trên giao diện phạt
     private String bookTitle;
 
+    /**
+     * Flag đánh dấu fine này có được phép thanh toán QR online không.
+     * {@code true} nếu sách đã được trả (BorrowRecord.status IN returned/lost/damaged).
+     * {@code false} nếu sách chưa trả — ẩn nút QR, hiển thị hướng dẫn trả sách.
+     */
+    private boolean canPayOnline = true; // mặc định cho phép (fine loại khác, không có borrowRecordId)
+
     private String memberName;
     private String memberCode;
 
@@ -120,5 +127,13 @@ public class Fine {
 
     public void setBookTitle(String bookTitle) {
         this.bookTitle = bookTitle;
+    }
+
+    public boolean isCanPayOnline() {
+        return canPayOnline;
+    }
+
+    public void setCanPayOnline(boolean canPayOnline) {
+        this.canPayOnline = canPayOnline;
     }
 }

@@ -146,23 +146,34 @@
                                                     </c:choose>
                                                 </td>
                                                 <td class="text-center" style="padding-right: 20px;">
-                                                    <c:if test="${fine.status == 'unpaid' && fine.paymentId != null}">
-                                                        <button type="button"
-                                                                class="btn btn-primary-custom btn-sm fw-bold px-3 rounded-3 lms-btn-qr"
-                                                                data-payment-id="${fine.paymentId}"
-                                                                data-fine-amount="${fine.amount}"
-                                                                data-fine-reason="${fine.reason}"
-                                                                data-book-title="${fine.bookTitle}"
-                                                                onclick="openQrModal(this)">
-                                                            <span class="material-symbols-outlined me-1" style="font-size: 16px;">qr_code_2</span>
-                                                            Thanh toán QR
-                                                        </button>
-                                                    </c:if>
-                                                    <c:if test="${fine.status == 'paid'}">
-                                                        <span style="color: var(--success); font-size: 13px;">
-                                                            <span class="material-symbols-outlined" style="font-size: 16px;">verified</span>
-                                                        </span>
-                                                    </c:if>
+                                                    <c:choose>
+                                                        <c:when test="${fine.status == 'unpaid' && fine.canPayOnline && fine.paymentId != null}">
+                                                            <%-- Sách đã trả → cho phép thanh toán QR --%>
+                                                            <button type="button"
+                                                                    class="btn btn-primary-custom btn-sm fw-bold px-3 rounded-3 lms-btn-qr"
+                                                                    data-payment-id="${fine.paymentId}"
+                                                                    data-fine-amount="${fine.amount}"
+                                                                    data-fine-reason="${fine.reason}"
+                                                                    data-book-title="${fine.bookTitle}"
+                                                                    onclick="openQrModal(this)">
+                                                                <span class="material-symbols-outlined me-1" style="font-size: 16px;">qr_code_2</span>
+                                                                Thanh toán QR
+                                                            </button>
+                                                        </c:when>
+                                                        <c:when test="${fine.status == 'unpaid' && !fine.canPayOnline}">
+                                                            <%-- Sách chưa trả → ẩn QR, hiển thị hướng dẫn --%>
+                                                            <span class="d-flex align-items-center gap-1" style="color: var(--warning, #f59e0b); font-size: 12px; white-space: nowrap;"
+                                                                  title="Vui lòng trả sách tại quầy thư viện trước khi thanh toán khoản phạt này.">
+                                                                <span class="material-symbols-outlined" style="font-size: 15px;">info</span>
+                                                                Trả sách trước
+                                                            </span>
+                                                        </c:when>
+                                                        <c:when test="${fine.status == 'paid'}">
+                                                            <span style="color: var(--success); font-size: 13px;">
+                                                                <span class="material-symbols-outlined" style="font-size: 16px;">verified</span>
+                                                            </span>
+                                                        </c:when>
+                                                    </c:choose>
                                                 </td>
                                             </tr>
                                         </c:forEach>
