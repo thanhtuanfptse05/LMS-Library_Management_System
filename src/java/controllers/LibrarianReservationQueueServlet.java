@@ -106,13 +106,13 @@ public class LibrarianReservationQueueServlet extends HttpServlet {
 
             if (resIdRaw == null || resIdRaw.isBlank()) {
                 session.setAttribute("errorMessage", "Mã đơn đặt trước không hợp lệ.");
-                response.sendRedirect(request.getContextPath() + "/librarian/reservation-queue");
+                redirectWithQueryString(request, response);
                 return;
             }
 
             if (reason == null || reason.isBlank()) {
                 session.setAttribute("errorMessage", "Vui lòng nhập lý do hủy lượt đặt trước.");
-                response.sendRedirect(request.getContextPath() + "/librarian/reservation-queue");
+                redirectWithQueryString(request, response);
                 return;
             }
 
@@ -135,7 +135,7 @@ public class LibrarianReservationQueueServlet extends HttpServlet {
 
             if (resIdRaw == null || resIdRaw.isBlank() || newPosRaw == null || newPosRaw.isBlank()) {
                 session.setAttribute("errorMessage", "Thông tin đổi vị trí hàng chờ không hợp lệ.");
-                response.sendRedirect(request.getContextPath() + "/librarian/reservation-queue");
+                redirectWithQueryString(request, response);
                 return;
             }
 
@@ -187,7 +187,16 @@ public class LibrarianReservationQueueServlet extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/librarian/reservation-queue");
+        redirectWithQueryString(request, response);
+    }
+    
+    private void redirectWithQueryString(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String queryString = request.getParameter("queryString");
+        String redirectUrl = request.getContextPath() + "/librarian/reservation-queue";
+        if (queryString != null && !queryString.isBlank()) {
+            redirectUrl += "?" + queryString;
+        }
+        response.sendRedirect(redirectUrl);
     }
 
     private boolean isAuthorized(HttpServletRequest request, HttpServletResponse response)

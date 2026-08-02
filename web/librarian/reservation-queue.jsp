@@ -296,6 +296,7 @@
                     <form method="POST" action="${pageContext.request.contextPath}/librarian/reservation-queue">
                         <input type="hidden" name="action" value="cancel">
                         <input type="hidden" name="reservationId" id="cancelReservationId">
+                        <input type="hidden" name="queryString" value="${pageContext.request.queryString}">
                         <div class="modal-header">
                             <h5 class="modal-title fw-bold" id="cancelModalLabel">Xác nhận Hủy lượt đặt trước</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
@@ -330,6 +331,7 @@
                     <form method="POST" action="${pageContext.request.contextPath}/librarian/reservation-queue">
                         <input type="hidden" name="action" value="reorder">
                         <input type="hidden" name="reservationId" id="reorderReservationId">
+                        <input type="hidden" name="queryString" value="${pageContext.request.queryString}">
                         <div class="modal-header">
                             <h5 class="modal-title fw-bold" id="reorderModalLabel">Thay đổi Vị trí Hàng chờ</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
