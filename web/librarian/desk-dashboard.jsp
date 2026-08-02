@@ -35,26 +35,7 @@
         background: linear-gradient(135deg, var(--surface-container-low) 0%, var(--surface-container-high) 100%);
         border: 1px solid var(--outline-variant);
     }
-    /* ════ STYLE HỖ TRỢ MÁY QUÉT BARCODE ════ */
-    .btn-scan-active {
-        background-color: #d97706 !important;
-        border-color: #d97706 !important;
-        color: white !important;
-        animation: scan-pulse-animation 1.5s infinite ease-in-out;
-    }
-    @keyframes scan-pulse-animation {
-        0%   { opacity: 1; }
-        50%  { opacity: 0.6; }
-        100% { opacity: 1; }
-    }
-    @keyframes rotation {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(359deg); }
-    }
-    .rotating-icon {
-        display: inline-block;
-        animation: rotation 2s infinite linear;
-    }
+    /* CSS cho trang đã được loại bỏ style barcode scanner */
 </style>
 
 <body>
@@ -127,13 +108,7 @@
                                        placeholder="Ví dụ: SE170123, GD12345..."
                                        value="${fn:escapeXml(requestScope.memberCode)}"
                                        required autofocus
-                                       style="border-color:var(--outline-variant);">
-                                <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-1 btn-scan"
-                                        onclick="toggleScanner('memberCodeSearch', this)"
-                                        style="border-color:var(--outline-variant);">
-                                    <span class="material-symbols-outlined" style="font-size:18px;">barcode_scanner</span>
-                                    <span>Quét</span>
-                                </button>
+                                       style="border-color:var(--outline-variant); border-top-right-radius: 0.375rem; border-bottom-right-radius: 0.375rem;">
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-3">
@@ -166,11 +141,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Biến theo dõi trạng thái máy quét barcode đang active
-        let activeScanInputId = null;
-        let activeScanButtonEl = null;
-        let originalBtnHtml = '';
-
         // Tự động xóa khoảng trắng khỏi các ô nhập mã độc giả và barcode
         document.addEventListener('DOMContentLoaded', function () {
             const autoTrimInputs = ['memberCodeSearch', 'checkoutBarcode', 'checkinBarcode', 'reserveBookIdOrIsbn'];
@@ -186,58 +156,6 @@
                 }
             });
         });
-
-        function toggleScanner(inputId, buttonEl) {
-            if (activeScanInputId === inputId) {
-                resetScanner();
-            } else {
-                if (activeScanInputId) {
-                    resetScanner();
-                }
-                activeScanInputId = inputId;
-                activeScanButtonEl = buttonEl;
-                originalBtnHtml = buttonEl.innerHTML;
-
-                buttonEl.classList.add('btn-scan-active');
-                buttonEl.innerHTML = `
-                    <span class="material-symbols-outlined rotating-icon" style="font-size:16px; vertical-align:middle;">sync</span>
-                    <span>Đang quét...</span>
-                `;
-
-                const inputEl = document.getElementById(inputId);
-                if (inputEl) {
-                    inputEl.value = '';
-                    inputEl.focus();
-                }
-            }
-        }
-
-        function resetScanner() {
-            if (activeScanButtonEl) {
-                activeScanButtonEl.classList.remove('btn-scan-active');
-                activeScanButtonEl.innerHTML = originalBtnHtml;
-            }
-            activeScanInputId = null;
-            activeScanButtonEl = null;
-            originalBtnHtml = '';
-        }
-
-        // Đăng ký sự kiện keydown toàn cục để bắt Enter và chặn submit
-        document.addEventListener('keydown', function (e) {
-            if (activeScanInputId) {
-                const target = e.target;
-                if (target && target.id === activeScanInputId) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        resetScanner();
-                    } else if (e.key === 'Escape') {
-                        e.preventDefault();
-                        resetScanner();
-                    }
-                }
-            }
-        }, true); // Sử dụng capture để chặn sự kiện sớm nhất
 
         // JS helpers để tự điền nhanh barcode khi click hành động ở danh sách
         function showActionForm(type) {
