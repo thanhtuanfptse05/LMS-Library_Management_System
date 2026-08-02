@@ -781,6 +781,51 @@ public class BorrowRecordDAO {
         return list;
     }
 
+    /**
+     * Lấy danh sách các phiếu mượn đang quá hạn chưa trả (status='overdue', returnedAt IS NULL).
+     *
+     * <p>Dùng cho Giai đoạn 2 của {@code OverdueProcessor}: cập nhật lũy tiến
+     * tiền phạt theo số ngày trễ thực tế. Khác với {@link #findOverdueRecords(Connection)}
+     * chỉ tìm đơn mượn {@code 'borrowed'} mới phát hiện, phương thức này trả về
+     * các đơn mượn đã chuyển sang {@code 'overdue'} từ trước nhưng vẫn chưa trả sách.</p>
+     *
+     * @param conn Kết nối DB từ transaction
+     * @return Danh sách các bản ghi mượn đang quá hạn chưa trả
+     * @throws SQLException nếu có lỗi DB
+     */
+    public List<BorrowRecord> findActiveOverdueLoans(Connection conn) throws SQLException {
+        List<BorrowRecord> list = new ArrayList<>();
+        String sql = "SELECT borrowRecordId, userId, bookCopyId, bookId, startDate, endDate, "
+                   + "       returnedAt, status, extensionCount, createdBy, createdAt "
+                   + "FROM   BorrowRecord "
+                   + "WHERE  status = 'overdue' AND returnedAt IS NULL";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                BorrowRecord record = new BorrowRecord();
+                record.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                record.setUserId(rs.getInt("userId"));
+                record.setBookCopyId(rs.getInt("bookCopyId"));
+                record.setBookId(rs.getInt("bookId"));
+                record.setStartDate(rs.getTimestamp("startDate"));
+                record.setEndDate(rs.getTimestamp("endDate"));
+                record.setReturnedAt(rs.getTimestamp("returnedAt"));
+                record.setStatus(rs.getString("status"));
+                record.setExtensionCount(rs.getInt("extensionCount"));
+
+                int rawCreatedBy = rs.getInt("createdBy");
+                record.setCreatedBy(rs.wasNull() ? null : rawCreatedBy);
+
+                record.setCreatedAt(rs.getTimestamp("createdAt"));
+                list.add(record);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy danh sách BorrowRecord đang quá hạn chưa trả", e);
+            throw e;
+        }
+        return list;
+    }
+
     // =========================================================================
     // ADMIN DASHBOARD KPI METHODS
     // =========================================================================

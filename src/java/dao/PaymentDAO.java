@@ -240,4 +240,37 @@ public class PaymentDAO {
         }
         return 0;
     }
+
+    // =========================================================================
+    // OVERDUE PROCESSOR — PHẠT LŨY TIẾN THEO NGÀY
+    // =========================================================================
+
+    /**
+     * Cập nhật số tiền cần thanh toán trên phiếu Payment đang pending.
+     *
+     * <p>Dùng cho Giai đoạn 2 của {@code OverdueProcessor}: khi số tiền phạt
+     * trong bảng {@code Fine} được cập nhật lũy tiến theo ngày, phiếu
+     * {@code Payment} tương ứng cũng cần được đồng bộ số tiền mới.</p>
+     *
+     * <p>Chỉ cập nhật Payment có {@code status = 'pending'} để tránh ảnh hưởng
+     * đến các phiếu đã thanh toán xong ({@code 'completed'}).</p>
+     *
+     * @param conn      Connection trong Transaction (đã setAutoCommit(false))
+     * @param fineId    ID khoản phạt liên kết với Payment cần cập nhật
+     * @param newAmount Số tiền mới cần thanh toán
+     * @throws SQLException nếu có lỗi UPDATE
+     */
+    public void updatePendingPaymentAmount(Connection conn, int fineId, java.math.BigDecimal newAmount)
+            throws SQLException {
+        String sql = "UPDATE Payment SET paidAmount = ? WHERE fineId = ? AND status = 'pending'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBigDecimal(1, newAmount);
+            ps.setInt(2, fineId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật số tiền Payment pending cho fineId=" + fineId, e);
+            throw e;
+        }
+    }
 }

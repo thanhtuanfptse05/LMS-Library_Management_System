@@ -539,6 +539,78 @@ public class FineDAO {
     }
 
     // =========================================================================
+    // OVERDUE PROCESSOR — PHẠT LŨY TIẾN THEO NGÀY
+    // =========================================================================
+
+    /**
+     * Tìm khoản phạt chưa thanh toán (unpaid) liên kết với một phiếu mượn cụ thể.
+     *
+     * <p>Dùng cho Giai đoạn 2 của {@code OverdueProcessor}: kiểm tra xem phiếu mượn
+     * đang quá hạn đã có bản ghi Fine chưa, và lấy số tiền phạt hiện tại để so sánh
+     * với số tiền phạt mới tính theo số ngày trễ thực tế.</p>
+     *
+     * @param conn           Connection trong Transaction
+     * @param borrowRecordId ID phiếu mượn cần tra cứu
+     * @return Đối tượng Fine chưa thanh toán liên kết với phiếu mượn; {@code null} nếu không tìm thấy
+     * @throws SQLException nếu có lỗi truy vấn
+     */
+    public Fine findUnpaidFineByBorrowRecordId(Connection conn, int borrowRecordId) throws SQLException {
+        String sql = "SELECT fineId, borrowRecordId, userId, amount, reason, status, createdAt "
+                   + "FROM   Fine "
+                   + "WHERE  borrowRecordId = ? AND status = 'unpaid' "
+                   + "ORDER BY createdAt DESC LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, borrowRecordId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Fine fine = new Fine();
+                    fine.setFineId(rs.getInt("fineId"));
+                    fine.setBorrowRecordId(rs.getInt("borrowRecordId"));
+                    fine.setUserId(rs.getInt("userId"));
+                    fine.setAmount(rs.getBigDecimal("amount"));
+                    fine.setReason(rs.getString("reason"));
+                    fine.setStatus(rs.getString("status"));
+                    fine.setCreatedAt(rs.getTimestamp("createdAt"));
+                    return fine;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi tìm Fine unpaid cho borrowRecordId=" + borrowRecordId, e);
+            throw e;
+        }
+        return null;
+    }
+
+    /**
+     * Cập nhật số tiền phạt và lý do cho một khoản phạt chưa thanh toán.
+     *
+     * <p>Dùng cho Giai đoạn 2 của {@code OverdueProcessor}: cập nhật lũy tiến
+     * tiền phạt theo số ngày trễ thực tế. Chỉ thực hiện UPDATE khi số tiền mới
+     * lớn hơn số tiền hiện tại (tránh ghi thừa vào DB khi F5 nhiều lần trong ngày).</p>
+     *
+     * @param conn      Connection trong Transaction (đã setAutoCommit(false))
+     * @param fineId    ID khoản phạt cần cập nhật
+     * @param newAmount Số tiền phạt mới (đã tính theo số ngày trễ thực tế)
+     * @param newReason Lý do mới (VD: "Trễ hạn 5 ngày")
+     * @throws SQLException nếu có lỗi UPDATE
+     */
+    public void updateFineAmount(Connection conn, int fineId, BigDecimal newAmount, String newReason)
+            throws SQLException {
+        String sql = "UPDATE Fine SET amount = ?, reason = ? WHERE fineId = ? AND status = 'unpaid'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBigDecimal(1, newAmount);
+            ps.setString(2, newReason);
+            ps.setInt(3, fineId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Lỗi khi cập nhật số tiền phạt lũy tiến cho fineId=" + fineId, e);
+            throw e;
+        }
+    }
+
+    // =========================================================================
     // ADMIN DASHBOARD KPI METHOD
     // =========================================================================
 
