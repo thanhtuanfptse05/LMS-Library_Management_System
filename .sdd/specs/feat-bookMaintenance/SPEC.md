@@ -1,8 +1,8 @@
 ﻿# Feature Specification: Bảo trì sách và Kiểm kê (Book Maintenance)
-# Version: 1.4 | Chủ sở hữu: Chuong | Ngày cập nhật: 2026-08-02 (Đồng bộ nghiệp vụ kiểm kê thực tế)
+# Version: 1.5.0 | Chủ sở hữu: Chuong | Ngày cập nhật: 2026-08-04 (Đồng bộ quét bản sao bất thường)
 
 ## 1. Context & Goal (Ngữ cảnh & Mục tiêu)
-Cung cấp quy trình cho Thủ thư ghi nhận, xác minh và xử lý bản sao hỏng/mất; đồng thời thực hiện kiểm kê theo vị trí để phát hiện sách khớp, thiếu hoặc sai vị trí. Mọi thay đổi trạng thái bản sao, số lượng tồn kho, dữ liệu kiểm kê và Audit Log phải chạy nguyên tử, không hard-delete BookCopy/Incident/InventorySession.
+Cung cấp quy trình cho Thủ thư ghi nhận, xác minh và xử lý bản sao hỏng/mất; đồng thời thực hiện kiểm kê theo vị trí để phát hiện sách khớp, thiếu, sai vị trí hoặc có trạng thái hệ thống bất thường so với hiện trạng trên kệ. Mọi thay đổi trạng thái bản sao, số lượng tồn kho, dữ liệu kiểm kê và Audit Log phải chạy nguyên tử, không hard-delete BookCopy/Incident/InventorySession.
 
 Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed-UC-specifications.md`, schema PostgreSQL và implementation hiện có. Không dùng `diagram/spec-UC-BR-FR.txt` làm nguồn mapping chuẩn vì file đó đang có mã UC/BR/FR trùng hoặc lệch sang feature khác.
 
@@ -13,7 +13,7 @@ Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed
 
 ## 2.5 Use Cases (Danh sách Use Cases đúng theo registry)
 * **UC-28 (Report Book Incident):** Actor: Librarian | (Báo cáo sự cố sách): Thủ thư tìm kiếm, báo hỏng/mất theo Barcode, chuyển xác minh, kết luận, bác bỏ, khôi phục bản sao hỏng sau sửa chữa hoặc loại khỏi tổng kho bằng soft flag.
-* **UC-29 (Inventory Reconciliation):** Actor: Librarian | (Kiểm kê kho): Thủ thư tạo draft theo vị trí, bắt đầu để chụp snapshot, quét Barcode, kết thúc kiểm đếm, xử lý sách sai vị trí/thiếu với lựa chọn vật lý rõ ràng, rồi hoàn tất hoặc hủy phiên theo state machine.
+* **UC-29 (Inventory Reconciliation):** Actor: Librarian | (Kiểm kê kho): Thủ thư tạo draft theo vị trí, bắt đầu để chụp snapshot các bản sao dự kiến có trên kệ, quét mọi bản sao vật lý tìm thấy, xử lý sách sai vị trí/thiếu/bất thường, rồi hoàn tất hoặc hủy phiên theo state machine.
 
 ### Mapping Boundary
 * Canonical source: diagram/spec-UC-BR-FR.md cho F13 Book Maintenance. Các UC ngoài danh sách trên thuộc feature khác và không được map vào feature này.
@@ -21,7 +21,7 @@ Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed
 
 ## 3. Business Rules (Quy tắc nghiệp vụ đúng theo registry)
 * **BR-28 (Incident Resolution Sync):** `Book.availableQuantity` là số suất chưa cấp, không phải phép đếm trực tiếp BookCopy `available`. Khi một BookCopy khả dụng gặp sự cố: nếu còn suất tự do thì giảm `availableQuantity` 1; nếu số lượng đã bằng 0 thì giữ 0 và đưa Reservation `readypickup` mới nhất về đầu hàng `pending`. Khi bản sao được phục hồi: ưu tiên cấp suất cho người đầu hàng chờ và giữ nguyên số lượng; chỉ tăng `availableQuantity` khi không có người chờ. Mọi thay đổi phải cùng transaction; không hard-delete BookCopy.
-* **BR-44 (Inventory Reconciliation Data):** Dữ liệu kiểm kê gần nhất phải đủ để đối chiếu số lượng/vị trí bản sao trong báo cáo quản lý. Trong F13, quy tắc này được đáp ứng bằng InventorySession và InventoryItem; việc hiển thị báo cáo quản trị tổng hợp thuộc feature báo cáo nếu có.
+* **BR-44 (Inventory Reconciliation Data):** Dữ liệu kiểm kê gần nhất phải đủ để đối chiếu số lượng/vị trí bản sao trong báo cáo quản lý. Snapshot dự kiến của một vị trí chỉ gồm BookCopy đang đăng ký tại vị trí đó, `condition='good'`, `status='available'` và chưa bị loại khỏi kho. Tuy nhiên, mọi BookCopy vật lý được quét và tồn tại trên hệ thống vẫn phải được ghi nhận; bản sao hỏng, đang mượn, đã báo mất, đã loại khỏi kho hoặc không khả dụng được phân loại là bất thường thay vì bị từ chối. Trong F13, quy tắc này được đáp ứng bằng InventorySession và InventoryItem; việc hiển thị báo cáo quản trị tổng hợp thuộc feature báo cáo nếu có.
 * **BR-70 (Single Active Inventory Session):** Có thể tồn tại nhiều phiên `draft`, nhưng toàn hệ thống chỉ được có tối đa một InventorySession ở trạng thái `counting` hoặc `reviewing`; Database unique partial index là lớp bảo vệ cuối cho request đồng thời.
 
 
@@ -30,7 +30,7 @@ Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed
   * *Mapping:* UC-28 / BR-28
 * **FR-49 (Xử lý vòng đời sự cố và phục hồi số lượng):** WHEN reject hoặc restore làm BookCopy trở lại `available`, THE system SHALL kiểm tra hàng chờ: có người chờ thì đôn người đầu tiên thành `readypickup/bookCopyId=NULL` và không tăng số lượng; không có người chờ mới tăng `availableQuantity` 1. Nếu đầu sách đang `unavailable`, bản sao không được khôi phục lưu thông. Các nhánh resolve/remove giữ quy tắc soft-delete và cập nhật totalQuantity nguyên tử.
   * *Mapping:* UC-28 / BR-28
-* **FR-50 (Tạo và xử lý phiên kiểm kê kho với 8 action):** WHEN InventoryReconciliationServlet nhận action, THE system SHALL hỗ trợ create, start, scan, finish-counting, resolve-misplaced, resolve-missing, complete và cancel theo state machine F13. Create chỉ tạo draft; start mới chụp snapshot và chặn phiên active khác. Scan chỉ nhận BookCopy `available/good/chưa thanh lý`, chuẩn hóa location và từ chối Barcode trùng trong phiên. Finish-counting từ chối nếu có bản sao kỳ vọng nhưng chưa quét bản nào, chuyển bản sao đã đổi trạng thái/ra ngoài phạm vi thành `excluded`, phần chưa quét còn hợp lệ thành `missing`. Resolve-misplaced nhận `return_to_expected|relocate_to_scanned`: nhánh đầu chỉ xác nhận đã đưa sách về vị trí gốc, nhánh sau mới đổi location; cả hai khóa item/copy và kiểm tra snapshot. Resolve-missing cũng kiểm tra `available/good/chưa thanh lý`, location snapshot và incident mở trước khi tạo incident lost/pending; việc giảm suất hoặc lùi Reservation `readypickup` tuân BR-28. Complete chỉ cho phép reviewing khi không còn chênh lệch chưa xử lý; mọi thay đổi dùng transaction và Audit Log.
+* **FR-50 (Tạo và xử lý phiên kiểm kê kho với 9 action):** WHEN InventoryReconciliationServlet nhận action, THE system SHALL hỗ trợ create, start, scan, finish-counting, resolve-misplaced, resolve-missing, resolve-unexpected, complete và cancel theo state machine F13. Create chỉ tạo draft; start mới chụp snapshot các BookCopy `available/good/chưa thanh lý` tại vị trí kiểm kê và chặn phiên active khác. Scan từ chối Barcode không tồn tại hoặc đã quét trong phiên; các bản sao đủ điều kiện được ghi `matched/misplaced`, còn bản sao hỏng, đang mượn, đã báo mất, đã loại khỏi kho hoặc không khả dụng được ghi `unexpected` cùng loại bất thường. Việc quét `unexpected` không làm tăng số bản sao dự kiến. Finish-counting từ chối nếu có bản sao dự kiến nhưng chưa quét bản nào, chuyển bản sao đã đổi trạng thái/ra ngoài phạm vi thành `excluded`, phần chưa quét còn hợp lệ thành `missing`. Resolve-misplaced nhận `return_to_expected|relocate_to_scanned`: nhánh đầu chỉ xác nhận đã đưa sách về vị trí gốc, nhánh sau mới đổi location; cả hai khóa item/copy và kiểm tra snapshot. Resolve-missing cũng kiểm tra `available/good/chưa thanh lý`, location snapshot và incident mở trước khi tạo incident lost/pending; việc giảm suất hoặc lùi Reservation `readypickup` tuân BR-28. Resolve-unexpected xác nhận bản sao đã được đưa khỏi kệ và chuyển sang quy trình nghiệp vụ phù hợp, không tự ý thay đổi trạng thái BookCopy. Complete chỉ cho phép reviewing khi không còn `missing/misplaced/unexpected` chưa xử lý; mọi thay đổi dùng transaction và Audit Log.
   * *Mapping:* UC-29 / BR-44, BR-70; BR-28 cho nhánh resolve-missing
 * **FR-51 (DEPRECATED - Logic merged into FR-50):** Logic kết luận kiểm kê đã được tích hợp vào FR-50 với action=complete. Không còn sử dụng FR riêng biệt.
   * *Mapping:* (merged into FR-50)
@@ -42,6 +42,7 @@ Spec này căn theo `diagram/business-rules-specification.md`, `diagram/detailed
 * **Bảo mật:** Chỉ `LIBRARIAN`; mọi SQL nhận đầu vào dùng `PreparedStatement`.
 * **Hiệu năng:** Danh sách sự cố phân trang 20 bản ghi; thao tác quét Barcode phản hồi dưới 1 giây ở môi trường Milestone 2.
 * **Giao diện:** JSP dùng JSTL/EL, không scriptlet Java; nhãn, lỗi và thông báo thành công 100% tiếng Việt.
+* **Khả năng đối chiếu:** Màn hình phiên hiển thị tách biệt tình trạng sách của vị trí (`Kệ này quản lý`, `Đang mượn`, `Hỏng/đang xử lý`, `Dự kiến có trên kệ`) và tiến độ phiên (`Cần quét`, `Đã quét dự kiến`, `Bất thường`, `Còn lại`).
 
 ## 6. Database Schema & Data Models (Lược đồ dữ liệu)
 Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
@@ -69,15 +70,16 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 
 ### Bảng InventoryItem
 * `inventoryItemId` (INT, PK), `inventorySessionId` (INT, FK), `bookCopyId` (INT, FK)
-* `expectedLocation`, `scannedLocation`
-* `result` (`pending`, `matched`, `missing`, `misplaced`, `excluded`)
+* `expectedLocation`, `expectedInSession` (BOOLEAN), `scannedLocation`
+* `result` (`pending`, `matched`, `missing`, `misplaced`, `unexpected`, `excluded`)
+* `anomalyType` (`damaged_on_shelf`, `borrowed_on_shelf`, `found_lost`, `removed_copy_found`, `unavailable_on_shelf`; chỉ có giá trị khi `result='unexpected'`)
 * `scannedBy`, `scannedAt`, `resolution`, `resolvedBy`, `resolvedAt`
 * Mỗi cặp `(inventorySessionId, bookCopyId)` là duy nhất.
 
 ## 7. Error Handling (Xử lý lỗi ngoại lệ)
 * WHERE Barcode không tồn tại, BookCopy đang mượn/unavailable hoặc đã có incident mở, THE system SHALL từ chối báo sự cố.
 * WHERE action không phù hợp trạng thái nguồn, incident/session/item không tồn tại hoặc chênh lệch đã xử lý, THE system SHALL từ chối mà không thay đổi dữ liệu.
-* WHERE scan Barcode không tồn tại/trùng trong phiên, finish-counting chưa quét bản sao dự kiến nào, resolve dùng snapshot vị trí đã cũ hoặc complete còn chênh lệch chưa xử lý, THE system SHALL giữ nguyên trạng thái phiên và hiển thị lỗi tiếng Việt.
+* WHERE scan Barcode không tồn tại/trùng trong phiên, finish-counting chưa quét bản sao dự kiến nào, resolve dùng snapshot vị trí đã cũ hoặc complete còn chênh lệch chưa xử lý, THE system SHALL giữ nguyên trạng thái phiên và hiển thị lỗi tiếng Việt. Trạng thái BookCopy bất thường không phải lỗi quét mà phải được ghi nhận để xác minh.
 * WHERE lỗi Database bất ngờ, THE system SHALL rollback, log chi tiết ở server và không lộ stack trace ra UI.
 
 ## 8. Acceptance Criteria (Tiêu chí nghiệm thu)
@@ -91,9 +93,13 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 - [ ] Incident `resolved` do F6 tạo khi check-in hỏng/mất được hiển thị trên F13 nhưng không được resolve/reject lại; incident `damaged` vẫn restore được sau sửa chữa nếu chưa bị loại khỏi kho.
 - [ ] Phiên kiểm kê đi đúng `draft -> counting -> reviewing -> completed`, hoặc chuyển `cancelled` khi chưa kết thúc.
 - [ ] Snapshot chỉ xuất hiện khi start; có thể xem nhiều draft nhưng chỉ một phiên counting/reviewing trên toàn hệ thống.
-- [ ] Scan đúng vị trí tạo matched; scan khác vị trí tạo misplaced; quét lặp bị từ chối; bản sao đổi trạng thái/vị trí trong lúc kiểm đếm trở thành excluded thay vì bị kết luận cưỡng ép.
+- [ ] Snapshot chỉ tính BookCopy `good/available/chưa thanh lý` tại vị trí; số `Cần quét` không bị tăng khi quét bản sao ngoài snapshot.
+- [ ] Scan đúng vị trí tạo matched; scan khác vị trí tạo misplaced; quét lặp bị từ chối; bản sao dự kiến đổi trạng thái/vị trí trong lúc kiểm đếm trở thành excluded thay vì bị kết luận cưỡng ép.
+- [ ] Quét bản sao hỏng, đang mượn, đã báo mất, đã loại khỏi kho hoặc không khả dụng tạo `unexpected` với đúng `anomalyType`, không bị từ chối chỉ vì trạng thái bất thường.
+- [ ] Xác minh `unexpected` ghi resolution và Audit Log, không tự động sửa trạng thái BookCopy; không thể complete khi còn `unexpected` chưa xử lý.
+- [ ] Màn hình hiển thị riêng tình trạng sách của vị trí và tiến độ phiên, gồm số bản sao dự kiến, đã quét dự kiến, bất thường và còn lại.
 - [ ] Resolve misplaced theo `return_to_expected` không đổi location; chỉ `relocate_to_scanned` mới đổi location sau khi kiểm tra copy còn available/good/chưa thanh lý và snapshot chưa cũ.
-- [ ] Không thể complete khi còn missing/misplaced chưa xử lý.
+- [ ] Không thể complete khi còn missing/misplaced/unexpected chưa xử lý.
 - [ ] Resolve missing tạo incident lost pending và ngừng lưu thông BookCopy; nếu còn suất tự do thì giảm 1, nếu sức chứa đã cấp hết thì lùi Reservation readypickup mới nhất về đầu hàng pending, không trừ âm.
 - [ ] Vai trò ngoài LIBRARIAN nhận HTTP 403; UI không có nhãn/thông báo tiếng Anh.
 
@@ -105,4 +111,5 @@ Nguồn chuẩn: `database/supabase/LMS_Schema_PostgreSQL.sql`.
 
 ## Notes & Open Questions (Ghi chú & Câu hỏi mở)
 * `missing` là kết quả kiểm kê; khi xử lý sẽ tạo `incidentType='lost'`, vì schema không cho phép incidentType `missing`.
+* `unexpected` là bản sao thực tế được tìm thấy nhưng trạng thái hệ thống cho biết không nên nằm sẵn sàng trên kệ. Việc xác minh chỉ ghi nhận đã chuyển bản sao sang quy trình phù hợp; xử lý mượn/trả, sửa chữa hoặc phục hồi vẫn thuộc nghiệp vụ tương ứng.
 * F13 dùng `BR-28`, `BR-44` và quy tắc hiện hữu `BR-70` cho giới hạn phiên active; FR registry vẫn là `FR-48..51` cho `UC-28/UC-29`.
