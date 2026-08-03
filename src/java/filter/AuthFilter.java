@@ -58,10 +58,11 @@ public class AuthFilter implements Filter {
             httpResponse.setHeader("Pragma", "no-cache");
             httpResponse.setDateHeader("Expires", 0);
 
-            // [LAZY LOAD GLOBAL] Tự động quét dọn đơn đặt trước quá hạn và phạt mượn sách quá hạn cho mọi request động
+            // [LAZY LOAD GLOBAL] Tự động quét dọn đơn đặt trước quá hạn, phạt mượn sách quá hạn và khóa tài khoản sinh viên hết 4 năm cho mọi request động
             try {
                 new service.ReservationExpirationProcessor().processExpiration();
                 new service.OverdueProcessor().processOverdue();
+                new service.UserExpirationProcessor().processExpiration();
             } catch (Exception e) {
                 java.util.logging.Logger.getLogger(AuthFilter.class.getName())
                     .log(java.util.logging.Level.WARNING, "[LAZY LOAD GLOBAL] Lỗi khi quét tự động trong AuthFilter", e);
