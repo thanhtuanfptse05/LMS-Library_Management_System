@@ -102,7 +102,7 @@ public class UserExpirationProcessor {
 
         // 2. Xử lý từng tài khoản trong DB Transaction độc lập
         String lockSql = "UPDATE \"User\" SET status = 'locked' WHERE userId = ? AND status = 'active'";
-        String cancelResSql = "UPDATE Reservation SET status = 'cancelled' WHERE userId = ? AND status IN ('pending', 'readypickup')";
+        String cancelResSql = "UPDATE Reservation SET status = 'cancelled', queuePosition = NULL, bookCopyId = NULL WHERE userId = ? AND status IN ('pending', 'readypickup')";
 
         for (ExpiredUser eu : expiredUsers) {
             Connection conn = null;
