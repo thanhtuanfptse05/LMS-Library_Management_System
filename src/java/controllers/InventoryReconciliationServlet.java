@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.InventorySession;
 import service.InventoryReconciliationService;
 import util.DatabaseConnection;
 
@@ -41,8 +42,14 @@ public class InventoryReconciliationServlet extends HttpServlet {
             request.setAttribute("canEdit", canEdit);
             Integer sessionId = optionalInt(request.getParameter("sessionId"));
             if (sessionId != null) {
+                InventorySession selectedSession;
                 try (Connection conn = DatabaseConnection.getConnection()) {
-                    request.setAttribute("selectedSession", inventoryDAO.findSession(conn, sessionId, false));
+                    selectedSession = inventoryDAO.findSession(conn, sessionId, false);
+                    request.setAttribute("selectedSession", selectedSession);
+                }
+                if (selectedSession != null) {
+                    request.setAttribute("locationSummary",
+                            copyDAO.getInventoryLocationSummary(selectedSession.getLocation()));
                 }
                 request.setAttribute("items", inventoryDAO.findItems(sessionId));
             }
@@ -84,6 +91,9 @@ public class InventoryReconciliationServlet extends HttpServlet {
                         : "Đã chuyển vị trí đăng ký của bản sao sang nơi kiểm kê.");
             } else if ("resolve-missing".equals(action)) {
                 service.resolveMissing(requiredInt(request.getParameter("itemId")), actorId); success(session, "Đã tạo ghi nhận sự cố mất.");
+            } else if ("resolve-unexpected".equals(action)) {
+                service.resolveUnexpected(requiredInt(request.getParameter("itemId")), actorId);
+                success(session, "Đã xác minh và chuyển bản sao bất thường sang quy trình phù hợp.");
             } else if ("complete".equals(action)) {
                 service.complete(requiredInt(request.getParameter("sessionId")), actorId); success(session, "Đã hoàn tất phiên kiểm kê.");
             } else if ("cancel".equals(action)) {

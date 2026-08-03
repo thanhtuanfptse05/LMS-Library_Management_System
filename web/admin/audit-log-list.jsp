@@ -571,6 +571,7 @@
             "COMPLETE_INVENTORY_SESSION": "Hoàn thành kiểm kê (COMPLETE_INVENTORY_SESSION)",
             "CANCEL_INVENTORY_SESSION": "Hủy phiên kiểm kê (CANCEL_INVENTORY_SESSION)",
             "SCAN_INVENTORY_ITEM": "Quét kiểm kê bản sao (SCAN_INVENTORY_ITEM)",
+            "RESOLVE_UNEXPECTED_INVENTORY_ITEM": "Xác minh bản sao kiểm kê bất thường (RESOLVE_UNEXPECTED_INVENTORY_ITEM)",
             "CREATE_INCIDENT_FROM_INVENTORY": "Tạo sự cố từ kiểm kê (CREATE_INCIDENT_FROM_INVENTORY)",
             "DEMOTE_RESERVATION_INVENTORY_SHORTAGE": "Giảm vị trí đặt trước do thiếu kho (DEMOTE_RESERVATION_INVENTORY_SHORTAGE)",
             "DEMOTE_RESERVATION_CAPACITY_SHORTAGE": "Giảm vị trí đặt trước do thiếu bản sao (DEMOTE_RESERVATION_CAPACITY_SHORTAGE)"
@@ -639,6 +640,7 @@
             "inventorySessionId": "ID phiên kiểm kê (inventorySessionId)",
             "scannedLocation": "Vị trí đã quét (scannedLocation)",
             "expectedLocation": "Vị trí dự kiến (expectedLocation)",
+            "anomalyType": "Loại bất thường kiểm kê (anomalyType)",
             "scannedBy": "Người quét (scannedBy)",
             "completedBy": "Người hoàn thành (completedBy)",
             "startedBy": "Người khởi tạo (startedBy)",
@@ -670,6 +672,11 @@
             if (lower === "available") return "Sẵn có (available)";
             if (lower === "unavailable") return "Không sẵn có (unavailable)";
             if (lower === "borrowed") return "Đang mượn (borrowed)";
+            if (lower === "damaged_on_shelf") return "Sách hỏng còn trên kệ";
+            if (lower === "borrowed_on_shelf") return "Sách đang mượn xuất hiện trên kệ";
+            if (lower === "found_lost") return "Tìm thấy sách đã báo mất";
+            if (lower === "removed_copy_found") return "Tìm thấy sách đã thanh lý";
+            if (lower === "unavailable_on_shelf") return "Sách không khả dụng còn trên kệ";
             if (lower === "overdue") return "Quá hạn (overdue)";
             if (lower === "paid") return "Đã thanh toán (paid)";
             if (lower === "unpaid") return "Chưa thanh toán (unpaid)";

@@ -32,7 +32,7 @@ public class InventoryDAO {
                 + "SUM(CASE WHEN status = 'reviewing' THEN 1 ELSE 0 END) reviewingSessions, "
                 + "(SELECT COUNT(*) FROM InventoryItem i JOIN InventorySession activeSession "
                 + "ON activeSession.inventorySessionId=i.inventorySessionId "
-                + "WHERE activeSession.status='reviewing' AND i.result IN ('missing','misplaced') "
+                + "WHERE activeSession.status='reviewing' AND i.result IN ('missing','misplaced','unexpected') "
                 + "AND i.resolvedAt IS NULL) unresolvedItems FROM InventorySession";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -75,8 +75,8 @@ public class InventoryDAO {
 
     public List<InventoryItem> findItems(int sessionId) throws SQLException {
         String sql = itemSelect() + " WHERE i.inventorySessionId = ? "
-                + "ORDER BY CASE i.result WHEN 'missing' THEN 0 WHEN 'misplaced' THEN 1 "
-                + "WHEN 'pending' THEN 2 ELSE 3 END, bc.barcode";
+                + "ORDER BY CASE i.result WHEN 'missing' THEN 0 WHEN 'unexpected' THEN 1 "
+                + "WHEN 'misplaced' THEN 2 WHEN 'pending' THEN 3 ELSE 4 END, bc.barcode";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sessionId);
@@ -129,8 +129,9 @@ public class InventoryDAO {
     }
 
     public int createExpectedItems(Connection conn, int sessionId, String location) throws SQLException {
-        String sql = "INSERT INTO InventoryItem (inventorySessionId, bookCopyId, expectedLocation, result) "
-                + "SELECT ?, bookCopyId, location, 'pending' FROM BookCopy "
+        String sql = "INSERT INTO InventoryItem (inventorySessionId, bookCopyId, expectedLocation, "
+                + "expectedInSession, result) "
+                + "SELECT ?, bookCopyId, location, TRUE, 'pending' FROM BookCopy "
                 + "WHERE LOWER(BTRIM(location)) = LOWER(BTRIM(?)) AND condition = 'good' "
                 + "AND status = 'available' AND removedFromInventory = FALSE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -161,26 +162,29 @@ public class InventoryDAO {
     }
 
     public void recordScan(Connection conn, int sessionId, int bookCopyId, String scannedLocation,
-            String result, int actorId, String expectedLocation) throws SQLException {
-        String update = "UPDATE InventoryItem SET scannedLocation = ?, result = ?, scannedBy = ?, "
-                + "scannedAt = NOW() WHERE inventorySessionId = ? AND bookCopyId = ?";
+            String result, String anomalyType, int actorId, String expectedLocation) throws SQLException {
+        String update = "UPDATE InventoryItem SET scannedLocation = ?, result = ?, anomalyType = ?, "
+                + "scannedBy = ?, scannedAt = NOW() WHERE inventorySessionId = ? AND bookCopyId = ?";
         try (PreparedStatement ps = conn.prepareStatement(update)) {
             ps.setString(1, scannedLocation);
             ps.setString(2, result);
-            ps.setInt(3, actorId);
-            ps.setInt(4, sessionId);
-            ps.setInt(5, bookCopyId);
+            ps.setString(3, anomalyType);
+            ps.setInt(4, actorId);
+            ps.setInt(5, sessionId);
+            ps.setInt(6, bookCopyId);
             if (ps.executeUpdate() == 1) return;
         }
         String insert = "INSERT INTO InventoryItem (inventorySessionId, bookCopyId, expectedLocation, "
-                + "scannedLocation, result, scannedBy, scannedAt) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+                + "scannedLocation, result, anomalyType, scannedBy, scannedAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(insert)) {
             ps.setInt(1, sessionId);
             ps.setInt(2, bookCopyId);
             ps.setString(3, expectedLocation);
             ps.setString(4, scannedLocation);
             ps.setString(5, result);
-            ps.setInt(6, actorId);
+            ps.setString(6, anomalyType);
+            ps.setInt(7, actorId);
             ps.executeUpdate();
         }
     }
@@ -225,7 +229,7 @@ public class InventoryDAO {
 
     public void resolveItem(Connection conn, int itemId, String resolution, int actorId) throws SQLException {
         String sql = "UPDATE InventoryItem SET resolution = ?, resolvedBy = ?, resolvedAt = NOW() "
-                + "WHERE inventoryItemId = ? AND result IN ('missing','misplaced') AND resolvedAt IS NULL";
+                + "WHERE inventoryItemId = ? AND result IN ('missing','misplaced','unexpected') AND resolvedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, resolution);
             ps.setInt(2, actorId);
@@ -236,7 +240,7 @@ public class InventoryDAO {
 
     public int countUnresolved(Connection conn, int sessionId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM InventoryItem WHERE inventorySessionId = ? "
-                + "AND result IN ('missing','misplaced') AND resolvedAt IS NULL";
+                + "AND result IN ('missing','misplaced','unexpected') AND resolvedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sessionId);
             try (ResultSet rs = ps.executeQuery()) { return rs.next() ? rs.getInt(1) : 0; }
@@ -245,7 +249,7 @@ public class InventoryDAO {
 
     public int countResolvedDiscrepancies(Connection conn, int sessionId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM InventoryItem WHERE inventorySessionId = ? "
-                + "AND result IN ('missing','misplaced') AND resolvedAt IS NOT NULL";
+                + "AND result IN ('missing','misplaced','unexpected') AND resolvedAt IS NOT NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sessionId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -258,7 +262,7 @@ public class InventoryDAO {
         String sql = "SELECT COUNT(*) FROM InventoryItem i JOIN InventorySession s "
                 + "ON s.inventorySessionId = i.inventorySessionId "
                 + "WHERE i.inventorySessionId = ? AND i.scannedAt IS NOT NULL "
-                + "AND LOWER(BTRIM(i.expectedLocation)) = LOWER(BTRIM(s.location))";
+                + "AND i.expectedInSession = TRUE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sessionId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -273,13 +277,17 @@ public class InventoryDAO {
                 + "s.startedBy, COALESCE(smp.fullName,su.email) startedByName, s.startedAt, "
                 + "s.completedBy, s.completedAt, s.cancelledBy, s.cancelledAt, s.note, "
                 + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId "
-                + "AND LOWER(BTRIM(i.expectedLocation)) = LOWER(BTRIM(s.location))) expectedCount, "
+                + "AND i.expectedInSession = TRUE) expectedCount, "
                 + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId "
                 + "AND i.result='matched') matchedCount, "
                 + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId "
-                + "AND i.result IN ('missing','misplaced')) discrepancyCount, "
+                + "AND i.result IN ('missing','misplaced','unexpected')) discrepancyCount, "
                 + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId "
-                + "AND i.result IN ('missing','misplaced') AND i.resolvedAt IS NULL) unresolvedCount "
+                + "AND i.result IN ('missing','misplaced','unexpected') AND i.resolvedAt IS NULL) unresolvedCount, "
+                + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId "
+                + "AND i.scannedAt IS NOT NULL AND i.expectedInSession = TRUE) scannedExpectedCount, "
+                + "(SELECT COUNT(*) FROM InventoryItem i WHERE i.inventorySessionId=s.inventorySessionId "
+                + "AND i.result='unexpected') unexpectedCount "
                 + "FROM InventorySession s JOIN \"User\" cu ON cu.userId=s.createdBy "
                 + "LEFT JOIN MemberProfile cmp ON cmp.userId=s.createdBy "
                 + "LEFT JOIN \"User\" su ON su.userId=s.startedBy "
@@ -288,7 +296,7 @@ public class InventoryDAO {
     private String itemSelect() { return itemSelect("InventoryItem i"); }
     private String itemSelect(String table) {
         return "SELECT i.inventoryItemId,i.inventorySessionId,i.bookCopyId,bc.barcode,b.title bookTitle,"
-                + "i.expectedLocation,i.scannedLocation,i.result,i.scannedBy,i.scannedAt,i.resolution,"
+                + "i.expectedLocation,i.scannedLocation,i.result,i.anomalyType,i.scannedBy,i.scannedAt,i.resolution,"
                 + "i.resolvedBy,i.resolvedAt FROM " + table
                 + " JOIN BookCopy bc ON bc.bookCopyId=i.bookCopyId JOIN Book b ON b.bookId=bc.bookId";
     }
@@ -306,6 +314,8 @@ public class InventoryDAO {
         s.setCancelledAt(rs.getTimestamp("cancelledAt")); s.setNote(rs.getString("note"));
         s.setExpectedCount(rs.getInt("expectedCount")); s.setMatchedCount(rs.getInt("matchedCount"));
         s.setDiscrepancyCount(rs.getInt("discrepancyCount")); s.setUnresolvedCount(rs.getInt("unresolvedCount"));
+        s.setScannedExpectedCount(rs.getInt("scannedExpectedCount"));
+        s.setUnexpectedCount(rs.getInt("unexpectedCount"));
         return s;
     }
     private InventoryItem mapItem(ResultSet rs) throws SQLException {
@@ -314,6 +324,7 @@ public class InventoryDAO {
         i.setBookCopyId(rs.getInt("bookCopyId")); i.setBarcode(rs.getString("barcode"));
         i.setBookTitle(rs.getString("bookTitle")); i.setExpectedLocation(rs.getString("expectedLocation"));
         i.setScannedLocation(rs.getString("scannedLocation")); i.setResult(rs.getString("result"));
+        i.setAnomalyType(rs.getString("anomalyType"));
         int scannedBy = rs.getInt("scannedBy"); i.setScannedBy(rs.wasNull() ? null : scannedBy);
         i.setScannedAt(rs.getTimestamp("scannedAt")); i.setResolution(rs.getString("resolution"));
         int resolvedBy = rs.getInt("resolvedBy"); i.setResolvedBy(rs.wasNull() ? null : resolvedBy);

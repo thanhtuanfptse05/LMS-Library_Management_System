@@ -89,7 +89,27 @@
                                 <div>
                                     <a class="bm-action-link" href="${pageContext.request.contextPath}/librarian/book-management/inventory">← Danh sách phiên</a>
                                     <h3 class="bm-section-title mt-2 mb-1">Phiên #${selectedSession.inventorySessionId} · <c:out value="${selectedSession.location}"/></h3>
-                                    <p class="bm-section-note mb-0">Dự kiến ${selectedSession.expectedCount} · Khớp ${selectedSession.matchedCount} · Chênh lệch ${selectedSession.discrepancyCount}</p>
+                                    <p class="bm-section-note mb-0">
+                                        <strong>Tình trạng sách:</strong>
+                                        Kệ này quản lý ${locationSummary.managedCopies}
+                                        · Đang mượn ${locationSummary.borrowedCopies}
+                                        · Hỏng/đang xử lý ${locationSummary.issueCopies}
+                                        · Dự kiến có trên kệ
+                                        ${selectedSession.status == 'draft' ? locationSummary.expectedOnShelfCopies : selectedSession.expectedCount}
+                                    </p>
+                                    <c:choose>
+                                        <c:when test="${selectedSession.status == 'draft'}">
+                                            <p class="bm-section-note mb-0"><strong>Tiến độ kiểm kê:</strong> Danh sách cần quét sẽ được chốt khi bắt đầu kiểm đếm.</p>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <p class="bm-section-note mb-0">
+                                                <strong>Tiến độ kiểm kê:</strong> Cần quét ${selectedSession.expectedCount}
+                                                · Đã quét dự kiến ${selectedSession.scannedExpectedCount}
+                                                · Bất thường ${selectedSession.unexpectedCount}
+                                                · Còn lại ${selectedSession.expectedCount - selectedSession.scannedExpectedCount}
+                                            </p>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                                 <div class="bm-actions">
                                     <%-- Trạng thái Nháp (Draft): Cho phép bắt đầu kiểm đếm --%>
@@ -103,7 +123,7 @@
                                     <%-- Trạng thái Đang đếm (Counting): Cho phép bấm Kết thúc quét để chuyển sang Chờ xác minh --%>
                                     <c:if test="${canEdit and selectedSession.status == 'counting'}">
                                         <form method="post" class="d-inline"
-                                              onsubmit="return confirm('Còn ${selectedSession.expectedCount - selectedSession.matchedCount} bản sao dự kiến chưa quét. Nếu kết thúc, các bản sao này sẽ được ghi nhận là thiếu. Bạn có chắc chắn muốn tiếp tục?');">
+                                              onsubmit="return confirm('Còn ${selectedSession.expectedCount - selectedSession.scannedExpectedCount} bản sao dự kiến chưa quét. Nếu kết thúc, các bản sao này sẽ được ghi nhận là thiếu. Bạn có chắc chắn muốn tiếp tục?');">
                                             <input type="hidden" name="action" value="finish-counting">
                                             <input type="hidden" name="sessionId" value="${selectedSession.inventorySessionId}">
                                             <button class="btn btn-primary-custom">Kết thúc quét</button>
@@ -176,7 +196,7 @@
                                                             <c:out value="${item.bookTitle}"/>
                                                         </div>
                                                     </td>
-                                                    <td><c:out value="${item.expectedLocation}"/></td>
+                                                    <td><c:out value="${empty item.expectedLocation ? 'Chưa đăng ký' : item.expectedLocation}"/></td>
                                                     <td><c:out value="${empty item.scannedLocation ? 'Chưa quét' : item.scannedLocation}"/></td>
                                                     <td>
                                                         <%-- Huy hiệu trạng thái kết quả đối chiếu (khớp, thiếu, sai vị trí, chưa quét) --%>
@@ -189,6 +209,25 @@
                                                             </c:when>
                                                             <c:when test="${item.result=='misplaced'}">
                                                                 <span class="bm-badge bm-badge--warning">Sai vị trí</span>
+                                                            </c:when>
+                                                            <c:when test="${item.result=='unexpected'}">
+                                                                <c:choose>
+                                                                    <c:when test="${item.anomalyType=='damaged_on_shelf'}">
+                                                                        <span class="bm-badge bm-badge--danger">Sách hỏng trên kệ</span>
+                                                                    </c:when>
+                                                                    <c:when test="${item.anomalyType=='borrowed_on_shelf'}">
+                                                                        <span class="bm-badge bm-badge--danger">Sách đang mượn trên kệ</span>
+                                                                    </c:when>
+                                                                    <c:when test="${item.anomalyType=='found_lost'}">
+                                                                        <span class="bm-badge bm-badge--warning">Tìm thấy sách đã báo mất</span>
+                                                                    </c:when>
+                                                                    <c:when test="${item.anomalyType=='removed_copy_found'}">
+                                                                        <span class="bm-badge bm-badge--danger">Tìm thấy sách đã thanh lý</span>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <span class="bm-badge bm-badge--warning">Sách không khả dụng trên kệ</span>
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                             </c:when>
                                                             <c:when test="${item.result=='excluded'}">
                                                                 <span class="bm-badge bm-badge--neutral">Ngoài phạm vi</span>
@@ -226,6 +265,15 @@
                                                                 <input type="hidden" name="sessionId" value="${selectedSession.inventorySessionId}">
                                                                 <input type="hidden" name="itemId" value="${item.inventoryItemId}">
                                                                 <button class="btn btn-sm bm-incident-button">Ghi nhận mất</button>
+                                                            </form>
+                                                        </c:if>
+                                                        <c:if test="${canEdit and selectedSession.status=='reviewing' and empty item.resolvedAt and item.result=='unexpected'}">
+                                                            <form method="post" class="d-inline"
+                                                                  onsubmit="return confirm('Xác nhận đã đưa bản sao khỏi kệ và chuyển sang quy trình nghiệp vụ phù hợp?');">
+                                                                <input type="hidden" name="action" value="resolve-unexpected">
+                                                                <input type="hidden" name="sessionId" value="${selectedSession.inventorySessionId}">
+                                                                <input type="hidden" name="itemId" value="${item.inventoryItemId}">
+                                                                <button class="btn btn-sm bm-incident-button">Xác nhận đã chuyển xử lý</button>
                                                             </form>
                                                         </c:if>
                                                     </td>

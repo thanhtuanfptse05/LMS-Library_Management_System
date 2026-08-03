@@ -12,6 +12,7 @@ import java.util.Map;
 import model.BookCopy;
 import dto.BookLocationSummaryDTO;
 import dto.BookCopySummaryDTO;
+import dto.InventoryLocationSummaryDTO;
 import util.DatabaseConnection;
 
 public class BookCopyDAO {
@@ -271,6 +272,30 @@ public class BookCopyDAO {
         updateIncidentState(conn, bookCopyId,
                 "SET status = 'available', condition = 'good', updatedAt = NOW()",
                 "status = 'unavailable' AND condition = 'damaged' AND removedFromInventory = FALSE");
+    }
+
+    public InventoryLocationSummaryDTO getInventoryLocationSummary(String location) throws SQLException {
+        String sql = "SELECT COUNT(*) managedCopies, "
+                + "SUM(CASE WHEN status = 'borrowed' THEN 1 ELSE 0 END) borrowedCopies, "
+                + "SUM(CASE WHEN status <> 'borrowed' AND "
+                + "(status = 'unavailable' OR condition IN ('damaged','lost')) THEN 1 ELSE 0 END) issueCopies, "
+                + "SUM(CASE WHEN status = 'available' AND condition = 'good' THEN 1 ELSE 0 END) expectedOnShelfCopies "
+                + "FROM BookCopy WHERE removedFromInventory = FALSE "
+                + "AND LOWER(BTRIM(location)) = LOWER(BTRIM(?))";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, location);
+            try (ResultSet rs = ps.executeQuery()) {
+                InventoryLocationSummaryDTO summary = new InventoryLocationSummaryDTO();
+                if (rs.next()) {
+                    summary.setManagedCopies(rs.getInt("managedCopies"));
+                    summary.setBorrowedCopies(rs.getInt("borrowedCopies"));
+                    summary.setIssueCopies(rs.getInt("issueCopies"));
+                    summary.setExpectedOnShelfCopies(rs.getInt("expectedOnShelfCopies"));
+                }
+                return summary;
+            }
+        }
     }
 
     public void restoreAfterRejectedCheckInIncident(Connection conn, int bookCopyId,

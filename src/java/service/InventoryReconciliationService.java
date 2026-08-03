@@ -133,18 +133,19 @@ public class InventoryReconciliationService {
                 InventorySession session = requireSession(conn, id, "counting");
                 BookCopy copy = copyDAO.findByBarcodeForUpdate(conn, barcode.trim());
                 if (copy == null) throw new ValidationException("Mã vạch không tồn tại trên hệ thống.");
-                if (!"available".equals(copy.getStatus()) || !"good".equals(copy.getCondition())
-                        || copy.isRemovedFromInventory()) {
-                    throw new ValidationException("Bản sao này không thuộc phạm vi kiểm kê vì không đang sẵn sàng trong kho.");
-                }
                 if (inventoryDAO.isScannedInSession(conn, id, copy.getBookCopyId())) {
                     throw new ValidationException("Bản sao này đã được quét trong phiên kiểm kê.");
                 }
-                String result = sameLocation(session.getLocation(), copy.getLocation()) ? "matched" : "misplaced";
+                String anomalyType = classifyAnomalyType(copy);
+                String result = anomalyType == null
+                        ? (sameLocation(session.getLocation(), copy.getLocation()) ? "matched" : "misplaced")
+                        : "unexpected";
                 inventoryDAO.recordScan(conn, id, copy.getBookCopyId(), session.getLocation(), result,
-                        actorId, copy.getLocation());
+                        anomalyType, actorId, copy.getLocation());
                 auditDAO.insert(conn, actorId, "SCAN_INVENTORY_ITEM", "BookCopy", copy.getBookCopyId(),
-                        null, "{\"sessionId\":" + id + ",\"result\":\"" + result + "\"}");
+                        null, "{\"sessionId\":" + id + ",\"result\":\"" + result
+                                + "\",\"anomalyType\":"
+                                + (anomalyType == null ? "null" : "\"" + anomalyType + "\"") + "}");
                 conn.commit();
             } catch (ValidationException | SQLException e) { conn.rollback(); rethrow(e, "Không thể ghi nhận mã vạch."); }
             finally { conn.setAutoCommit(true); }
@@ -238,6 +239,32 @@ public class InventoryReconciliationService {
             } catch (ValidationException | SQLException e) { conn.rollback(); rethrow(e, "Không thể ghi nhận bản sao mất."); }
             finally { conn.setAutoCommit(true); }
         } catch (SQLException e) { throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e); }
+    }
+
+    public void resolveUnexpected(int itemId, int actorId) throws ValidationException, DatabaseException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                InventoryItem item = inventoryDAO.findItem(conn, itemId, true);
+                if (item == null || !"unexpected".equals(item.getResult()) || item.getResolvedAt() != null) {
+                    throw new ValidationException("Bản sao bất thường không còn khả dụng để xác minh.");
+                }
+                requireSession(conn, item.getInventorySessionId(), "reviewing");
+                String resolution = unexpectedResolution(item.getAnomalyType());
+                inventoryDAO.resolveItem(conn, itemId, resolution, actorId);
+                auditDAO.insert(conn, actorId, "RESOLVE_UNEXPECTED_INVENTORY_ITEM", "InventoryItem",
+                        itemId, null, "{\"anomalyType\":\"" + escape(item.getAnomalyType())
+                                + "\",\"resolution\":\"" + escape(resolution) + "\"}");
+                conn.commit();
+            } catch (ValidationException | SQLException e) {
+                conn.rollback();
+                rethrow(e, "Không thể xác minh bản sao bất thường.");
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Không thể kết nối cơ sở dữ liệu.", e);
+        }
     }
 
     private void notifyReservationDelayed(Reservation reservation, String bookTitle) {
@@ -334,6 +361,26 @@ public class InventoryReconciliationService {
         if (!sameLocation(copy.getLocation(), item.getExpectedLocation())) {
             throw new ValidationException("Vị trí bản sao đã thay đổi sau khi lập snapshot. Hãy tải lại phiên kiểm kê.");
         }
+    }
+    String classifyAnomalyType(BookCopy copy) {
+        if (copy.isRemovedFromInventory()) return "removed_copy_found";
+        if ("lost".equals(copy.getCondition())) return "found_lost";
+        if ("borrowed".equals(copy.getStatus())) return "borrowed_on_shelf";
+        if ("damaged".equals(copy.getCondition())) return "damaged_on_shelf";
+        if (!"available".equals(copy.getStatus()) || !"good".equals(copy.getCondition())) {
+            return "unavailable_on_shelf";
+        }
+        return null;
+    }
+    String unexpectedResolution(String anomalyType) throws ValidationException {
+        return switch (anomalyType == null ? "" : anomalyType) {
+            case "damaged_on_shelf" -> "Đã đưa bản sao hỏng khỏi kệ để chuyển sang khu xử lý.";
+            case "borrowed_on_shelf" -> "Đã chuyển bản sao đến quầy lưu thông để kiểm tra giao dịch mượn/trả.";
+            case "found_lost" -> "Đã chuyển bản sao được tìm thấy đến quy trình xử lý hỏng/mất.";
+            case "removed_copy_found" -> "Đã chuyển bản sao từng thanh lý đến quản lý để xác minh.";
+            case "unavailable_on_shelf" -> "Đã đưa bản sao không khả dụng khỏi kệ để xác minh.";
+            default -> throw new ValidationException("Loại bất thường kiểm kê không hợp lệ.");
+        };
     }
     private boolean sameLocation(String first, String second) {
         return first != null && second != null && first.trim().equalsIgnoreCase(second.trim());

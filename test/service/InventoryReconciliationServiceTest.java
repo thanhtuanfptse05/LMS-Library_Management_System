@@ -6,6 +6,8 @@ import model.InventoryItem;
 import model.InventorySession;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -90,6 +92,46 @@ public class InventoryReconciliationServiceTest {
             fail("Không được xử lý item dựa trên snapshot vị trí đã cũ");
         } catch (ValidationException e) {
             assertTrue(e.getMessage().contains("đã thay đổi sau khi lập snapshot"));
+        }
+    }
+
+    @Test
+    public void testGoodAvailableCopyIsNotAnInventoryAnomaly() {
+        assertNull(service.classifyAnomalyType(copy("available", "good", false)));
+    }
+
+    @Test
+    public void testDamagedCopyFoundOnShelfIsClassifiedAsUnexpected() {
+        assertEquals("damaged_on_shelf",
+                service.classifyAnomalyType(copy("unavailable", "damaged", false)));
+    }
+
+    @Test
+    public void testBorrowedCopyFoundOnShelfIsClassifiedAsUnexpected() {
+        assertEquals("borrowed_on_shelf",
+                service.classifyAnomalyType(copy("borrowed", "good", false)));
+    }
+
+    @Test
+    public void testLostCopyFoundOnShelfIsClassifiedAsUnexpected() {
+        assertEquals("found_lost",
+                service.classifyAnomalyType(copy("unavailable", "lost", false)));
+    }
+
+    @Test
+    public void testRemovedCopyTakesHighestAnomalyPriority() {
+        assertEquals("removed_copy_found",
+                service.classifyAnomalyType(copy("unavailable", "lost", true)));
+    }
+
+    @Test
+    public void testUnexpectedResolutionRequiresKnownAnomalyType() throws ValidationException {
+        assertTrue(service.unexpectedResolution("damaged_on_shelf").contains("khỏi kệ"));
+        try {
+            service.unexpectedResolution("unknown");
+            fail("Không được xác minh loại bất thường không hợp lệ");
+        } catch (ValidationException e) {
+            assertTrue(e.getMessage().contains("không hợp lệ"));
         }
     }
 

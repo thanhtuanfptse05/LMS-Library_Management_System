@@ -11,6 +11,7 @@ public class InventoryItem {
     private String expectedLocation;
     private String scannedLocation;
     private String result;
+    private String anomalyType;
     private Integer scannedBy;
     private Timestamp scannedAt;
     private String resolution;
@@ -33,6 +34,8 @@ public class InventoryItem {
     public void setScannedLocation(String value) { scannedLocation = value; }
     public String getResult() { return result; }
     public void setResult(String value) { result = value; }
+    public String getAnomalyType() { return anomalyType; }
+    public void setAnomalyType(String value) { anomalyType = value; }
     public Integer getScannedBy() { return scannedBy; }
     public void setScannedBy(Integer value) { scannedBy = value; }
     public Timestamp getScannedAt() { return scannedAt; }

@@ -21,6 +21,8 @@ public class InventorySession {
     private int matchedCount;
     private int discrepancyCount;
     private int unresolvedCount;
+    private int scannedExpectedCount;
+    private int unexpectedCount;
 
     public int getInventorySessionId() { return inventorySessionId; }
     public void setInventorySessionId(int value) { inventorySessionId = value; }
@@ -58,4 +60,8 @@ public class InventorySession {
     public void setDiscrepancyCount(int value) { discrepancyCount = value; }
     public int getUnresolvedCount() { return unresolvedCount; }
     public void setUnresolvedCount(int value) { unresolvedCount = value; }
+    public int getScannedExpectedCount() { return scannedExpectedCount; }
+    public void setScannedExpectedCount(int value) { scannedExpectedCount = value; }
+    public int getUnexpectedCount() { return unexpectedCount; }
+    public void setUnexpectedCount(int value) { unexpectedCount = value; }
 }
