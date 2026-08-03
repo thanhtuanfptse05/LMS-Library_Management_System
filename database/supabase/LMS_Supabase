@@ -51,12 +51,6 @@ CREATE TABLE public.librarian (
   CONSTRAINT librarian_pkey PRIMARY KEY (userid),
   CONSTRAINT fk_librarian_user FOREIGN KEY (userid) REFERENCES public.User(userid)
 );
-CREATE TABLE public.librarymanager (
-  userid integer NOT NULL,
-  staffcode character varying NOT NULL UNIQUE,
-  CONSTRAINT librarymanager_pkey PRIMARY KEY (userid),
-  CONSTRAINT fk_librarymanager_user FOREIGN KEY (userid) REFERENCES public.User(userid)
-);
 CREATE TABLE public.admin (
   userid integer NOT NULL,
   staffcode character varying NOT NULL UNIQUE,
@@ -139,11 +133,15 @@ CREATE TABLE public.bookcopy (
   bookid integer NOT NULL,
   location character varying,
   condition character varying NOT NULL DEFAULT 'good'::character varying CHECK (condition::text = ANY (ARRAY['good'::character varying, 'damaged'::character varying, 'lost'::character varying]::text[])),
-  status character varying NOT NULL DEFAULT 'available'::character varying CHECK (status::text = ANY (ARRAY['available'::character varying, 'unavailable'::character varying, 'borrowed'::character varying, 'reserved'::character varying]::text[])),
+  status character varying NOT NULL DEFAULT 'available'::character varying CHECK (status::text = ANY (ARRAY['available'::character varying, 'unavailable'::character varying, 'borrowed'::character varying]::text[])),
   barcode character varying NOT NULL UNIQUE,
+  removedfrominventory boolean NOT NULL DEFAULT false,
+  removedfrominventoryat timestamp without time zone,
+  removedfrominventoryby integer,
   createdat timestamp without time zone NOT NULL DEFAULT now(),
   updatedat timestamp without time zone,
   CONSTRAINT bookcopy_pkey PRIMARY KEY (bookcopyid),
+  CONSTRAINT fk_bookcopy_removedby FOREIGN KEY (removedfrominventoryby) REFERENCES public.User(userid),
   CONSTRAINT fk_bookcopy_book FOREIGN KEY (bookid) REFERENCES public.book(bookid)
 );
 CREATE TABLE public.reservation (
@@ -151,7 +149,7 @@ CREATE TABLE public.reservation (
   userid integer NOT NULL,
   bookid integer NOT NULL,
   bookcopyid integer,
-  status character varying NOT NULL DEFAULT 'pending'::character varying,
+  status character varying NOT NULL DEFAULT 'pending'::character varying CHECK (status::text = ANY (ARRAY['pending'::character varying, 'readypickup'::character varying, 'fulfilled'::character varying, 'cancelled'::character varying]::text[])),
   queueposition integer,
   startdate timestamp without time zone DEFAULT now(),
   enddate timestamp without time zone,
@@ -222,8 +220,8 @@ CREATE TABLE public.usernotificationstatus (
   notificationid integer NOT NULL,
   readat timestamp without time zone NOT NULL DEFAULT now(),
   CONSTRAINT usernotificationstatus_pkey PRIMARY KEY (userid, notificationid),
-  CONSTRAINT fk_uns_user FOREIGN KEY (userid) REFERENCES public.User(userid),
-  CONSTRAINT fk_uns_notification FOREIGN KEY (notificationid) REFERENCES public.notification(notificationid)
+  CONSTRAINT fk_uns_notification FOREIGN KEY (notificationid) REFERENCES public.notification(notificationid),
+  CONSTRAINT fk_uns_user FOREIGN KEY (userid) REFERENCES public.User(userid)
 );
 CREATE TABLE public.documenttemp (
   tempid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -235,7 +233,7 @@ CREATE TABLE public.documenttemp (
   createdat timestamp without time zone NOT NULL DEFAULT now(),
   updatedat timestamp without time zone,
   CONSTRAINT documenttemp_pkey PRIMARY KEY (tempid),
-  CONSTRAINT fk_documenttemp_manager FOREIGN KEY (managerid) REFERENCES public.librarymanager(userid)
+  CONSTRAINT fk_documenttemp_user FOREIGN KEY (managerid) REFERENCES public.User(userid)
 );
 CREATE TABLE public.emailtemplate (
   templateid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -259,7 +257,9 @@ CREATE TABLE public.bookcopyincident (
   reportedat timestamp without time zone NOT NULL DEFAULT now(),
   resolvedby integer,
   resolvedat timestamp without time zone,
+  borrowrecordid integer,
   CONSTRAINT bookcopyincident_pkey PRIMARY KEY (incidentid),
+  CONSTRAINT fk_bookcopyincident_borrowrecord FOREIGN KEY (borrowrecordid) REFERENCES public.borrowrecord(borrowrecordid),
   CONSTRAINT fk_bookcopyincident_bookcopy FOREIGN KEY (bookcopyid) REFERENCES public.bookcopy(bookcopyid),
   CONSTRAINT fk_bookcopyincident_reportedby FOREIGN KEY (reportedby) REFERENCES public.User(userid),
   CONSTRAINT fk_bookcopyincident_resolvedby FOREIGN KEY (resolvedby) REFERENCES public.User(userid)
@@ -292,12 +292,18 @@ CREATE TABLE public.inventorysession (
   inventorysessionid integer GENERATED ALWAYS AS IDENTITY NOT NULL,
   location character varying NOT NULL,
   status character varying NOT NULL DEFAULT 'draft'::character varying CHECK (status::text = ANY (ARRAY['draft'::character varying, 'counting'::character varying, 'reviewing'::character varying, 'completed'::character varying, 'cancelled'::character varying]::text[])),
-  startedby integer NOT NULL,
-  startedat timestamp without time zone NOT NULL DEFAULT now(),
+  startedby integer,
+  startedat timestamp without time zone,
   completedby integer,
   completedat timestamp without time zone,
   note character varying,
+  createdby integer NOT NULL,
+  createdat timestamp without time zone NOT NULL DEFAULT now(),
+  cancelledby integer,
+  cancelledat timestamp without time zone,
   CONSTRAINT inventorysession_pkey PRIMARY KEY (inventorysessionid),
+  CONSTRAINT fk_inventorysession_createdby FOREIGN KEY (createdby) REFERENCES public.User(userid),
+  CONSTRAINT fk_inventorysession_cancelledby FOREIGN KEY (cancelledby) REFERENCES public.User(userid),
   CONSTRAINT fk_inventorysession_startedby FOREIGN KEY (startedby) REFERENCES public.User(userid),
   CONSTRAINT fk_inventorysession_completedby FOREIGN KEY (completedby) REFERENCES public.User(userid)
 );
@@ -307,7 +313,7 @@ CREATE TABLE public.inventoryitem (
   bookcopyid integer NOT NULL,
   expectedlocation character varying NOT NULL,
   scannedlocation character varying,
-  result character varying NOT NULL DEFAULT 'pending'::character varying CHECK (result::text = ANY (ARRAY['pending'::character varying, 'matched'::character varying, 'missing'::character varying, 'misplaced'::character varying]::text[])),
+  result character varying NOT NULL DEFAULT 'pending'::character varying CHECK (result::text = ANY (ARRAY['pending'::character varying, 'matched'::character varying, 'missing'::character varying, 'misplaced'::character varying, 'excluded'::character varying]::text[])),
   scannedby integer,
   scannedat timestamp without time zone,
   resolution character varying,
