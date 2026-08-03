@@ -48,6 +48,11 @@
                         </div>
 
                         <div class="col-12 col-md-6">
+                            <label for="editEndDate" class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px;">Ngày hết hạn (endDate) <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control config-input w-100" id="editEndDate" name="endDate" required title="Ngày hết hạn đào tạo / thời hạn sử dụng tài khoản">
+                        </div>
+
+                        <div class="col-12 col-md-6">
                             <label for="editRoleDisplay" class="form-label fw-semibold text-on-surface-variant text-uppercase" style="font-size: 11px;">Vai trò hệ thống</label>
                             <input type="text" class="form-control config-input w-100 bg-light" id="editRoleDisplay" readonly>
                         </div>
@@ -137,6 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const phone = button.getAttribute("data-phone");
         const gender = button.getAttribute("data-gender");
         const dob = button.getAttribute("data-dob");
+        const endDate = button.getAttribute("data-enddate");
         const code = button.getAttribute("data-code");
         const role = button.getAttribute("data-role");
         const status = button.getAttribute("data-status");
@@ -150,6 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("editPhone").value = phone;
         document.getElementById("editGender").value = gender;
         document.getElementById("editDob").value = dob;
+        document.getElementById("editEndDate").value = endDate || "";
         document.getElementById("editCode").value = code;
         document.getElementById("editRoleDisplay").value = role;
         document.getElementById("editStatus").value = status;

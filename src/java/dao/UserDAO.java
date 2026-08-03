@@ -648,7 +648,7 @@ public class UserDAO {
 
             String sqlProfile;
             if (profileExists) {
-                sqlProfile = "UPDATE MemberProfile SET fullName = ?, phoneNumber = ?, gender = ?, dateOfBirth = ? WHERE userId = ?";
+                sqlProfile = "UPDATE MemberProfile SET fullName = ?, phoneNumber = ?, gender = ?, dateOfBirth = ?, endDate = ? WHERE userId = ?";
             } else {
                 sqlProfile = "INSERT INTO MemberProfile (userId, fullName, phoneNumber, gender, dateOfBirth, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?, ?)";
             }
@@ -659,7 +659,8 @@ public class UserDAO {
                     psProfile.setString(2, profile.getPhoneNumber());
                     psProfile.setString(3, profile.getGender());
                     psProfile.setDate(4, profile.getDateOfBirth());
-                    psProfile.setInt(5, user.getUserId());
+                    psProfile.setDate(5, profile.getEndDate());
+                    psProfile.setInt(6, user.getUserId());
                 } else {
                     psProfile.setInt(1, user.getUserId());
                     psProfile.setString(2, profile.getFullName());

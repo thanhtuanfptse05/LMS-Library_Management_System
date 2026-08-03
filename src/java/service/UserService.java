@@ -133,7 +133,7 @@ public class UserService {
         profile.setGender(dto.getGender() != null ? dto.getGender().trim() : "Khác");
         profile.setDateOfBirth(dto.getDateOfBirth());
         profile.setStartDate(oldDto.getStartDate());
-        profile.setEndDate(oldDto.getEndDate());
+        profile.setEndDate(dto.getEndDate() != null ? dto.getEndDate() : oldDto.getEndDate());
 
         boolean success = userDAO.updateUserWithProfile(
                 user, profile, 
