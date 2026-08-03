@@ -29,12 +29,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * OverdueProcessor — Dịch vụ quét và xử lý các bản ghi mượn quá hạn (Lazy Load).
+ * OverdueProcessor — Dịch vụ quét và xử lý các bản ghi mượn quá hạn (Lazy Load / Scheduled Job).
+ *
+ * <p>Quy trình quét gồm 2 Giai đoạn chính:</p>
+ * <ul>
+ *   <li><b>Giai đoạn 1:</b> Quét các đơn mượn hết hạn vừa mới chuyển sang trạng thái quá hạn
+ *       (chuyển status='overdue', tạo khoản phạt Fine mới, tạo Payment pending, khóa tài khoản và gửi email thông báo).</li>
+ *   <li><b>Giai đoạn 2:</b> Cập nhật lũy tiến tiền phạt cho các đơn mượn ĐÃ quá hạn từ trước mà độc giả chưa trả sách
+ *       (mỗi ngày trôi qua tiền phạt tự cộng thêm FINE_RATE_PER_DAY).</li>
+ * </ul>
  */
 public class OverdueProcessor {
 
     private static final Logger LOGGER = Logger.getLogger(OverdueProcessor.class.getName());
 
+    // Các đối tượng DAO tương tác với Cơ sở dữ liệu
     private final BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
     private final FineDAO fineDAO = new FineDAO();
     private final UserLockReasonDAO userLockReasonDAO = new UserLockReasonDAO();
@@ -45,28 +54,36 @@ public class OverdueProcessor {
     private final MemberProfileDAO memberProfileDAO = new MemberProfileDAO();
 
     /**
-     * Thực hiện quét toàn bộ hệ thống để phát hiện các khoản quá hạn.
+     * Thực hiện quét toàn bộ hệ thống để phát hiện và xử lý các khoản trễ hạn.
+     * Hàm này được gọi khi hệ thống khởi động hoặc khi độc giả/thủ thư thực hiện các tác vụ lưu thông.
      *
-     * @return Kết quả thống kê tiến trình quét
+     * @return OverdueResult Lưu thông số thống kê số bản ghi đã xử lý, số tài khoản bị khóa và số email đã gửi.
      */
     public OverdueResult processOverdue() {
         LOGGER.info("[OverdueProcessor] Bắt đầu quét quá hạn trả sách...");
-        int processedRecords = 0;
-        int lockedUsers = 0;
-        int emailsSent = 0;
+        int processedRecords = 0; // Số bản ghi mới chuyển sang overdue
+        int lockedUsers = 0;      // Số tài khoản người dùng mới bị khóa thêm
+        int emailsSent = 0;       // Số email thông báo đã đưa vào hàng đợi
 
+        // ================================================================
+        // GIAI ĐOẠN 1: Quét phát hiện đơn mượn MỚI chuyển sang quá hạn
+        // ================================================================
         try (Connection conn = DatabaseConnection.getConnection()) {
+            // Lấy các đơn mượn có endDate < NOW() nhưng status vẫn là 'borrowed'
             List<BorrowRecord> overdueRecords = borrowRecordDAO.findOverdueRecords(conn);
             LOGGER.log(Level.INFO, "[OverdueProcessor] Tìm thấy {0} lượt mượn quá hạn cần xử lý.", overdueRecords.size());
 
             for (BorrowRecord record : overdueRecords) {
                 try {
+                    // Kiểm tra trước xem user đã bị khóa do nợ tiền phạt chưa
                     boolean userWasLocked = userLockReasonDAO.hasReason(conn, record.getUserId(), "unpaid");
+                    
+                    // Xử lý đơn quá hạn trong transaction riêng
                     boolean success = processSingleRecord(record);
                     if (success) {
                         processedRecords++;
                         if (!userWasLocked) {
-                            lockedUsers++;
+                            lockedUsers++; // Đánh dấu nếu user này mới bị khóa thêm ở lượt này
                         }
                         emailsSent++;
                     }
@@ -79,7 +96,7 @@ public class OverdueProcessor {
         }
 
         // ================================================================
-        // GIAI ĐOẠN 2: Cập nhật lũy tiến tiền phạt cho các đơn đã overdue
+        // GIAI ĐOẠN 2: Cập nhật lũy tiến tiền phạt cho các đơn ĐÃ overdue từ trước
         // ================================================================
         int updatedFines = updateExistingOverdueFines();
 
@@ -89,15 +106,19 @@ public class OverdueProcessor {
     }
 
     /**
-     * Xử lý quá hạn cho một bản ghi mượn trong một Transaction riêng biệt.
+     * Xử lý quá hạn cho một bản ghi mượn cụ thể.
+     * Mỗi bản ghi được thực hiện trong một Database Transaction (Atomic) độc lập.
+     *
+     * @param record Bản ghi mượn sách bị quá hạn
+     * @return true nếu xử lý thành công, false nếu xảy ra lỗi và rollback
      */
     private boolean processSingleRecord(BorrowRecord record) {
         Connection conn = null;
         try {
             conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false); // Bắt đầu Transaction
 
-            // 1. Đọc mức phạt hàng ngày từ config
+            // Bước 1: Đọc đơn giá phạt trễ hạn mỗi ngày từ cấu hình hệ thống (mặc định 5,000 VNĐ/ngày)
             BigDecimal fineRate = BigDecimal.valueOf(5000);
             try {
                 String rateVal = new SystemConfigDAO().getValue(conn, "FINE_RATE_PER_DAY", "5000");
@@ -106,45 +127,47 @@ public class OverdueProcessor {
                 LOGGER.warning("Không đọc được FINE_RATE_PER_DAY, sử dụng mặc định 5000 VND.");
             }
 
-            // 2. Tính số ngày trễ hạn (ít nhất 1 ngày)
+            // Bước 2: Tính số ngày trễ hạn thực tế (tối thiểu tính là 1 ngày)
             long diffInMillis = System.currentTimeMillis() - record.getEndDate().getTime();
             long overdueDays = TimeUnit.MILLISECONDS.toDays(diffInMillis);
             if (overdueDays < 1) {
                 overdueDays = 1;
             }
 
+            // Tổng tiền phạt = Số ngày trễ * Đơn giá phạt/ngày
             BigDecimal totalFine = fineRate.multiply(BigDecimal.valueOf(overdueDays));
 
-            // 3. Cập nhật BorrowRecord.status = 'overdue'
+            // Bước 3: Cập nhật trạng thái phiếu mượn sang 'overdue' (Quá hạn)
             String sqlUpdateBorrow = "UPDATE BorrowRecord SET status = 'overdue' WHERE borrowRecordId = ?";
             try (PreparedStatement ps = conn.prepareStatement(sqlUpdateBorrow)) {
                 ps.setInt(1, record.getBorrowRecordId());
                 ps.executeUpdate();
             }
 
-            // 4. Tạo bản ghi Fine trễ hạn
+            // Bước 4: Tạo bản ghi phạt mới trong bảng Fine với trạng thái 'unpaid'
             int fineId = fineDAO.insertOverdueFine(conn, record.getBorrowRecordId(), record.getUserId(), totalFine, "Trễ hạn " + overdueDays + " ngày");
 
-            // 4.1. Tạo bản ghi Payment ở trạng thái 'pending'
+            // Bước 4.1: Tạo trước bản ghi Payment ở trạng thái 'pending' để sẵn sàng cho độc giả quét QR thanh toán
             new PaymentDAO().insertPayment(conn, fineId, totalFine, "pending");
 
-            // 5. Thêm lý do khóa và khóa tài khoản người dùng nếu chưa bị khóa vì nợ phạt
+            // Bước 5: Thêm lý do khóa 'unpaid' và chuyển trạng thái tài khoản User sang 'locked' (Khóa)
             if (!userLockReasonDAO.hasReason(conn, record.getUserId(), "unpaid")) {
                 userLockReasonDAO.insertLockReason(conn, record.getUserId(), "unpaid");
                 userDAO.updateStatusToLocked(conn, record.getUserId());
             }
 
-            // 6. Ghi Audit Log hành động khóa tự động bởi hệ thống
+            // Bước 6: Ghi Nhật ký hệ thống (Audit Log) ghi nhận hành động khóa tự động do nợ phạt
             auditLogDAO.insert(conn, null, "LOCK_USER", "User", record.getUserId(),
                     "status=active", "status=locked, reason=unpaid, overdueRecordId=" + record.getBorrowRecordId());
 
-            conn.commit();
+            conn.commit(); // Hoàn tất Transaction thành công
 
-            // 7. Gửi email thông báo bất đồng bộ sau khi commit thành công
+            // Bước 7: Kích hoạt gửi email thông báo trễ hạn bất đồng bộ (ngoài Transaction)
             triggerOverdueEmailAsync(conn, record, overdueDays, fineRate, totalFine);
 
             return true;
         } catch (Exception e) {
+            // Rollback nếu xảy ra lỗi trong quá trình xử lý bản ghi này
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -155,6 +178,7 @@ public class OverdueProcessor {
             LOGGER.log(Level.SEVERE, "Lỗi giao dịch xử lý quá hạn cho borrowRecordId=" + record.getBorrowRecordId(), e);
             return false;
         } finally {
+            // Đảm bảo luôn đóng Connection
             if (conn != null) {
                 try {
                     conn.close();
@@ -166,25 +190,31 @@ public class OverdueProcessor {
     }
 
     /**
-     * Gửi email thông báo quá hạn trả sách bất đồng bộ.
+     * Chuẩn bị dữ liệu và kích hoạt gửi email thông báo quá hạn trả sách bất đồng bộ qua EmailService.
+     *
+     * @param conn        Connection DB để tra cứu tên sách, tên độc giả
+     * @param record      Bản ghi mượn quá hạn
+     * @param overdueDays Số ngày trễ hạn
+     * @param fineRate    Mức phạt mỗi ngày
+     * @param totalFine   Tổng tiền phạt
      */
     private void triggerOverdueEmailAsync(Connection conn, BorrowRecord record, long overdueDays, BigDecimal fineRate, BigDecimal totalFine) {
         try {
-            // Lấy email độc giả
+            // Lấy địa chỉ email của độc giả
             User user = userDAO.findByUserId(record.getUserId());
             if (user == null || user.getEmail() == null || user.getEmail().trim().isEmpty()) {
                 return;
             }
 
-            // Lấy tên hiển thị của độc giả
+            // Lấy họ tên hiển thị của độc giả
             MemberProfile profile = memberProfileDAO.findByUserId(record.getUserId());
             String userName = (profile != null) ? profile.getFullName() : user.getEmail();
 
-            // Lấy tiêu đề sách
+            // Lấy tên cuốn sách bị mượn trễ
             Book book = bookDAO.findById(conn, record.getBookId());
             String bookTitle = (book != null) ? book.getTitle() : "Sách mượn thư viện";
 
-            // Định dạng dữ liệu hiển thị
+            // Định dạng ngày tháng và tiền tệ chuẩn Việt Nam
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             DecimalFormat df = new DecimalFormat("#,###");
 
@@ -192,7 +222,7 @@ public class OverdueProcessor {
             String formattedFineRate = df.format(fineRate);
             String formattedTotalFine = df.format(totalFine);
 
-            // Gửi email bất đồng bộ qua EmailService sử dụng Queue ngầm
+            // Đóng gói các biến thay thế (placeholders) cho Template Email OVERDUE_NOTICE
             java.util.Map<String, String> placeholders = new java.util.HashMap<>();
             placeholders.put("bookTitle", bookTitle);
             placeholders.put("dueDate", formattedDueDate);
@@ -200,6 +230,7 @@ public class OverdueProcessor {
             placeholders.put("finePerDay", formattedFineRate);
             placeholders.put("totalFine", formattedTotalFine);
 
+            // Đưa công việc gửi email vào hàng đợi bất đồng bộ (Non-blocking)
             model.EmailJob job = new model.EmailJob("OVERDUE_NOTICE", user.getEmail(), userName, placeholders);
             EmailService.enqueue(job);
 
@@ -240,12 +271,12 @@ public class OverdueProcessor {
                 LOGGER.warning("[Giai đoạn 2] Không đọc được FINE_RATE_PER_DAY, sử dụng mặc định 5000 VND.");
             }
 
-            // Lấy danh sách các đơn mượn đang overdue chưa trả
+            // Lấy danh sách các đơn mượn đang overdue mà độc giả CHƯA TRẢ SÁCH (returnedAt IS NULL)
             List<BorrowRecord> overdueLoans = borrowRecordDAO.findActiveOverdueLoans(conn);
 
             for (BorrowRecord record : overdueLoans) {
                 try {
-                    // Tính số ngày trễ thực tế
+                    // Tính số ngày trễ thực tế đến thời điểm hiện tại
                     long diffInMillis = System.currentTimeMillis() - record.getEndDate().getTime();
                     long overdueDays = TimeUnit.MILLISECONDS.toDays(diffInMillis);
                     if (overdueDays < 1) {
@@ -257,12 +288,13 @@ public class OverdueProcessor {
                     // Tìm khoản phạt unpaid hiện tại liên kết với phiếu mượn này
                     model.Fine existingFine = fineDAO.findUnpaidFineByBorrowRecordId(conn, record.getBorrowRecordId());
                     if (existingFine == null) {
-                        continue; // Không có Fine unpaid → bỏ qua (có thể đã thanh toán rồi)
+                        continue; // Không có Fine unpaid → bỏ qua (có thể khoản phạt này đã được thanh toán)
                     }
 
-                    // Chỉ UPDATE khi số tiền mới LỚN HƠN số tiền cũ
+                    // TỐI ƯU: Chỉ UPDATE cơ sở dữ liệu khi số tiền phạt MỚI lớn hơn số tiền phạt ĐÃ LƯU
+                    // Giúp tránh việc gọi câu lệnh UPDATE liên tục nhiều lần trong cùng một ngày
                     if (newTotalFine.compareTo(existingFine.getAmount()) > 0) {
-                        conn.setAutoCommit(false);
+                        conn.setAutoCommit(false); // Bắt đầu Transaction cập nhật lũy tiến
 
                         String newReason = "Trễ hạn " + overdueDays + " ngày";
                         fineDAO.updateFineAmount(conn, existingFine.getFineId(), newTotalFine, newReason);
@@ -289,9 +321,9 @@ public class OverdueProcessor {
      * Lớp DTO lưu trữ kết quả thống kê tiến trình quét.
      */
     public static class OverdueResult {
-        public final int processedRecords;
-        public final int lockedUsers;
-        public final int emailsSent;
+        public final int processedRecords; // Số bản ghi trễ hạn mới được tạo
+        public final int lockedUsers;      // Số người dùng mới bị khóa tài khoản
+        public final int emailsSent;       // Số email thông báo đã đưa vào hàng đợi
 
         public OverdueResult(int processedRecords, int lockedUsers, int emailsSent) {
             this.processedRecords = processedRecords;
@@ -300,3 +332,4 @@ public class OverdueProcessor {
         }
     }
 }
+

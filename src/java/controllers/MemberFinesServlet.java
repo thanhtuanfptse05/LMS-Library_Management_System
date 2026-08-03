@@ -21,24 +21,25 @@ import model.Fine;
 import util.DatabaseConnection;
 
 /**
- * MemberFinesServlet — Hiển thị danh sách phạt và thông tin thanh toán QR
- * cho cả Student và Lecturer.
+ * MemberFinesServlet — Controller hiển thị danh sách khoản phạt và tạo mã QR thanh toán online (SePay).
  *
+ * <p>Dành cho các vai trò độc giả: Student (Sinh viên) và Lecturer (Giảng viên).</p>
  * <p>Route: {@code /student/fines} và {@code /lecturer/fines}</p>
- * <p>Lấy danh sách phạt từ FineDAO, tổng tiền nợ chưa thanh toán,
- * và cấu hình SePay (số tài khoản, ngân hàng, tên chủ TK) để sinh VietQR
- * động trên giao diện.</p>
  *
- * <p><strong>[BUG-FIX]</strong> Chỉ tạo Payment pending (QR) cho fine quá hạn
- * nếu BorrowRecord đã ở trạng thái {@code returned/lost/damaged}.
- * Nếu sách chưa trả, đánh dấu {@code fine.canPayOnline = false} để JSP
- * ẩn nút QR và hướng dẫn sinh viên trả sách tại quầy trước.</p>
+ * <p><b>Quy tắc quan trọng (Nghiệp vụ mượn/trả):</b></p>
+ * <ul>
+ *   <li>Khoản phạt trễ hạn CHỈ cho phép thanh toán QR trực tuyến khi độc giả <b>ĐÃ TRẢ SÁCH VẬT LÝ</b> tại quầy
+ *       (BorrowRecord.status thuộc: 'returned', 'lost', 'damaged').</li>
+ *   <li>Nếu độc giả chưa trả sách (status='overdue'): Đặt {@code canPayOnline = false}. Trang JSP sẽ ẩn nút QR
+ *       và hiển thị cảnh báo yêu cầu mang sách đến trả tại quầy thư viện trước.</li>
+ * </ul>
  */
 @WebServlet(name = "MemberFinesServlet", urlPatterns = {"/student/fines", "/lecturer/fines"})
 public class MemberFinesServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(MemberFinesServlet.class.getName());
 
+    // Các lớp DAO hỗ trợ truy vấn thông tin Phạt, Thanh toán, Cấu hình và Phiếu mượn
     private final FineDAO fineDAO = new FineDAO();
     private final PaymentDAO paymentDAO = new PaymentDAO();
     private final SystemConfigDAO systemConfigDAO = new SystemConfigDAO();
@@ -48,6 +49,7 @@ public class MemberFinesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Bước 1: Kiểm tra Session và Xác thực quyền truy cập
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
@@ -58,30 +60,29 @@ public class MemberFinesServlet extends HttpServlet {
         String role = ((String) session.getAttribute("role")).toLowerCase();
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false); // Bắt đầu Transaction đọc và khởi tạo Payment nếu cần
             try {
-                // 1. Lấy danh sách phạt (cả paid và unpaid) kèm tên sách
+                // Bước 2: Lấy danh sách tất cả khoản phạt của độc giả (gồm cả 'unpaid' và 'paid') kèm tiêu đề sách
                 List<Fine> fines = fineDAO.findFinesByUserId(conn, userId);
 
-                // 2. Tự động tạo Payment 'pending' cho Fine 'unpaid' chưa có paymentId
-                //    [BUG-FIX] CHỈ tạo QR nếu sách đã được trả vật lý (returned/lost/damaged).
-                //    Nếu sách chưa trả: đánh dấu canPayOnline=false, JSP sẽ ẩn nút QR.
+                // Bước 3: Duyệt danh sách các khoản phạt CHƯA THANH TOÁN ('unpaid') để xử lý logic tạo Payment QR
                 for (Fine fine : fines) {
                     if (!"unpaid".equals(fine.getStatus())) continue;
 
-                    // Kiểm tra sách đã trả chưa (whitelist approach)
+                    // Kiểm tra xem sách mượn đã được trả vật lý hay chưa
                     int brId = fine.getBorrowRecordId();
                     boolean canPayOnline = true;
                     if (brId > 0) {
                         String brStatus = borrowRecordDAO.findStatusById(conn, brId);
+                        // Chỉ cho phép thanh toán online nếu sách ở 1 trong 3 trạng thái đã kết thúc
                         canPayOnline = "returned".equals(brStatus)
                                     || "lost".equals(brStatus)
                                     || "damaged".equals(brStatus);
                     }
-                    fine.setCanPayOnline(canPayOnline);
+                    fine.setCanPayOnline(canPayOnline); // Truyền flag này sang giao diện JSP
 
+                    // NẾU sách đã được trả VÀ khoản phạt chưa có Payment ID -> Tạo Payment ở trạng thái 'pending'
                     if (canPayOnline && fine.getPaymentId() == null) {
-                        // Sách đã trả → tạo Payment QR bình thường
                         int newPaymentId = paymentDAO.insertPayment(conn, fine.getFineId(),
                                 fine.getAmount(), "pending");
                         fine.setPaymentId(newPaymentId);
@@ -89,22 +90,22 @@ public class MemberFinesServlet extends HttpServlet {
                                 "Tạo Payment pending mới: paymentId={0} cho fineId={1}, userId={2}",
                                 new Object[]{newPaymentId, fine.getFineId(), userId});
                     }
-                    // Nếu !canPayOnline: không tạo Payment, fine.paymentId = null
-                    // → JSP sẽ hiển thị hướng dẫn "Trả sách tại quầy trước"
+                    // Trường hợp !canPayOnline: Không tạo Payment, fine.paymentId = null
+                    // -> JSP sẽ nhận biết fine.canPayOnline = false để ẩn nút QR và nhắc "Trả sách trước"
                 }
-                conn.commit();
+                conn.commit(); // Hoàn tất Transaction khởi tạo Payment
 
                 request.setAttribute("fines", fines);
 
-                // 3. Tính tổng tiền phạt chưa thanh toán
+                // Bước 4: Tính tổng số tiền phạt chưa thanh toán (để hiển thị trên thẻ tổng nợ)
                 BigDecimal totalUnpaid = fineDAO.getTotalUnpaidFinesByUser(conn, userId);
                 request.setAttribute("totalUnpaid", totalUnpaid);
 
-                // 4. Đếm số khoản phạt unpaid
+                // Bước 5: Đếm tổng số khoản phạt còn nợ
                 long unpaidCount = fines.stream().filter(f -> "unpaid".equals(f.getStatus())).count();
                 request.setAttribute("unpaidCount", unpaidCount);
 
-                // 5. Lấy cấu hình SePay để sinh VietQR
+                // Bước 6: Lấy cấu hình tài khoản SePay để render mã VietQR tự động trên giao diện
                 String sepayAccountNumber = systemConfigDAO.getValue(conn, "SEPAY_ACCOUNT_NUMBER", "");
                 String sepayBankCode = systemConfigDAO.getValue(conn, "SEPAY_BANK_CODE", "BIDV");
                 String sepayAccountName = systemConfigDAO.getValue(conn, "SEPAY_ACCOUNT_NAME", "");
@@ -123,8 +124,9 @@ public class MemberFinesServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Đã xảy ra lỗi hệ thống khi tải dữ liệu. Vui lòng thử lại sau.");
         }
 
-        // Forward tới JSP tương ứng theo vai trò
+        // Bước 7: Điều hướng người dùng đến đúng trang JSP tương ứng theo vai trò (Student hoặc Lecturer)
         String jspPath = "/" + role + "/fines.jsp";
         request.getRequestDispatcher(jspPath).forward(request, response);
     }
 }
+

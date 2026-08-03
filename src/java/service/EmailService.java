@@ -17,13 +17,14 @@ import java.util.logging.Logger;
 import model.EmailJob;
 
 /**
- * EmailService — Dịch vụ gửi email bất đồng bộ qua hàng đợi LinkedBlockingQueue.
+ * EmailService — Dịch vụ gửi email bất đồng bộ (Non-blocking Async) sử dụng CompletableFuture.
  *
- * <p>Tuân thủ nghiêm ngặt:</p>
+ * <p><b>Các nguyên tắc vận hành:</b></p>
  * <ul>
- *   <li>Non-blocking: Mọi tác vụ gửi mail được đưa vào hàng đợi thông qua {@link #enqueue(EmailJob)}.</li>
- *   <li>NFR-01: Tuyệt đối không in/log mật khẩu plaintext ra console hay file.</li>
- *   <li>Dùng {@link AppConfig} làm nguồn cấu hình kết nối SMTP duy nhất.</li>
+ *   <li><b>Non-blocking:</b> Mọi yêu cầu gửi mail đều được đẩy vào luồng ngầm bất đồng bộ thông qua {@link #enqueue(EmailJob)}, không bao giờ làm treo luồng HTTP Servlet của người dùng.</li>
+ *   <li><b>Bảo mật (NFR-01):</b> Tuyệt đối không bao giờ ghi/log mật khẩu cá nhân hay mật khẩu ứng dụng SMTP ra Console/Log file.</li>
+ *   <li><b>Quản lý Template linh hoạt:</b> Tự động đọc mẫu HTML từ bảng DocumentTemp trong DB. Nếu chưa seed DB, dịch vụ tự động dùng mẫu HTML mặc định dự phòng.</li>
+ *   <li><b>Cấu hình tập trung:</b> Đọc thông số máy chủ SMTP (host, port, TLS, username, app password) từ {@link AppConfig}.</li>
  * </ul>
  */
 public class EmailService {
@@ -35,35 +36,42 @@ public class EmailService {
     // =========================================================================
 
     /**
-     * Gửi bất đồng bộ một EmailJob qua CompletableFuture mà không chặn luồng HTTP.
+     * Đưa công việc gửi email (EmailJob) vào luồng thực thi bất đồng bộ ngầm.
      *
-     * @param job Công việc gửi mail cần thực hiện
+     * @param job Đối tượng chứa thông tin email cần gửi (Template name, người nhận, placeholders)
      */
     public static void enqueue(EmailJob job) {
         if (job == null) {
             return;
         }
         
+        // Kiểm tra hợp lệ địa chỉ email người nhận
         String toEmail = job.getRecipientEmail();
         if (toEmail == null || toEmail.trim().isEmpty() || !toEmail.trim().toLowerCase().endsWith("@gmail.com")) {
             LOGGER.log(Level.INFO, "[EMAIL] Bỏ qua gửi email do địa chỉ nhận rỗng hoặc không phải gmail thật: {0}", toEmail);
             return;
         }
 
+        // Chạy công việc gửi thư bất đồng bộ trong ThreadPool ngầm của Java (ForkJoinPool.commonPool)
         java.util.concurrent.CompletableFuture.runAsync(() -> {
             try {
+                // Trường hợp 1: Thư trực tiếp (Direct HTML Body) không qua Template
                 if (job.getTempName() == null && job.getDirectBody() != null) {
                     sendEmail(job.getRecipientEmail(), job.getDirectSubject(), job.getDirectBody());
-                } else {
+                } 
+                // Trường hợp 2: Thư sử dụng Template (Đọc từ DB hoặc dùng Mẫu mặc định)
+                else {
                     dao.DocumentTempDAO tempDAO = new dao.DocumentTempDAO();
                     model.DocumentTemp temp = tempDAO.findByTempName(job.getTempName());
                     String[] defaults = getDefaultTemplate(job.getTempName());
 
+                    // Lấy tiêu đề và nội dung HTML (Ưu tiên lấy DB, nếu null/rỗng lấy mặc định)
                     String subject = (temp != null && temp.getSubject() != null && !temp.getSubject().trim().isEmpty())
                             ? temp.getSubject() : defaults[0];
                     String bodyContent = (temp != null && temp.getBodyContent() != null && !temp.getBodyContent().trim().isEmpty())
                             ? temp.getBodyContent() : defaults[1];
 
+                    // Tiến hành thay thế các thẻ biến {{placeholder}} hoặc {placeholder} bằng giá trị thực tế
                     if (job.getPlaceholders() != null) {
                         for (java.util.Map.Entry<String, String> entry : job.getPlaceholders().entrySet()) {
                             String key = entry.getKey();
@@ -74,6 +82,7 @@ public class EmailService {
                             subject = subject.replace("{" + key + "}", val);
                         }
                     }
+                    // Replace biến tên người nhận {{userName}}
                     if (job.getRecipientName() != null && !job.getRecipientName().trim().isEmpty()) {
                         String rName = job.getRecipientName().trim();
                         bodyContent = bodyContent.replace("{{userName}}", rName);
@@ -82,6 +91,7 @@ public class EmailService {
                         subject = subject.replace("{userName}", rName);
                     }
 
+                    // Thực hiện kết nối SMTP để gửi thư
                     sendEmail(job.getRecipientEmail(), subject, bodyContent);
                 }
                 LOGGER.log(Level.INFO, "[EMAIL] Đã gửi email bất đồng bộ thành công cho: {0}", toEmail);
@@ -92,7 +102,10 @@ public class EmailService {
     }
 
     /**
-     * Mẫu HTML và Tiêu đề mặc định dự phòng khi CSDL chưa seed hoặc rỗng.
+     * Mẫu HTML và Tiêu đề mặc định dự phòng khi DB chưa được khởi tạo hoặc thiếu template.
+     *
+     * @param tempName Mã tên mẫu email (ví dụ: OVERDUE_NOTICE, RESET_PASSWORD, ...)
+     * @return Mảng 2 phần tử: [0] = Tiêu đề mặc định, [1] = HTML body mặc định
      */
     private static String[] getDefaultTemplate(String tempName) {
         if ("OVERDUE_NOTICE".equalsIgnoreCase(tempName)) {
@@ -171,19 +184,16 @@ public class EmailService {
     }
 
     // =========================================================================
-    // Public API cũ: Giữ nguyên tên hàm để tương thích luồng Active (nhưng định tuyến qua Queue)
+    // Các Helper API tiện ích cho từng trường hợp gửi thư cụ thể
     // =========================================================================
 
     /**
-     * Gửi bất đồng bộ email chứa mật khẩu tạm thời tới người dùng (Passive Flow).
-     * Định tuyến qua hàng đợi.
+     * Gửi bất đồng bộ email chứa mật khẩu tạm thời cho tính năng Quên mật khẩu.
      *
-     * @param toEmail     Địa chỉ email nhận
-     * @param tempPassword Mật khẩu tạm thời (plaintext) - KHÔNG log ra console
+     * @param toEmail      Địa chỉ email người nhận
+     * @param tempPassword Mật khẩu tạm thời mới được cấp (Không được log ra file)
      */
     public static void sendAsyncPasswordReset(String toEmail, String tempPassword) {
-        // Luồng Passive phục hồi mật khẩu có template là RESET_PASSWORD
-        // Ở bước tích hợp sẽ sửa trực tiếp caller, nhưng ta vẫn giữ hàm này để tránh biên dịch lỗi
         java.util.Map<String, String> placeholders = new java.util.HashMap<>();
         placeholders.put("tempPassword", tempPassword);
         
@@ -192,8 +202,7 @@ public class EmailService {
     }
 
     /**
-     * Gửi bất đồng bộ một Email HTML đã được render sẵn (Dùng cho thông báo khẩn Active Flow).
-     * Định tuyến qua hàng đợi bằng constructor Direct HTML.
+     * Gửi bất đồng bộ một Email HTML đã render sẵn (Dùng cho thông báo khẩn cấp).
      *
      * @param toEmail       Địa chỉ email người nhận
      * @param subject       Tiêu đề Email
@@ -209,7 +218,11 @@ public class EmailService {
     // =========================================================================
 
     /**
-     * Gửi thư trực tiếp qua giao thức SMTP (Đồng bộ, chỉ gọi bởi EmailWorker).
+     * Gửi thư trực tiếp qua giao thức SMTP (Đồng bộ, được gọi bên trong luồng bất đồng bộ của {@link #enqueue(EmailJob)}).
+     *
+     * @param toEmail  Địa chỉ người nhận
+     * @param subject  Tiêu đề email
+     * @param htmlBody Nội dung HTML
      */
     public static void sendEmail(String toEmail, String subject, String htmlBody)
             throws MessagingException, UnsupportedEncodingException {
@@ -224,6 +237,9 @@ public class EmailService {
         Transport.send(message);
     }
 
+    /**
+     * Khởi tạo và cấu hình Session JavaMail kết nối với Máy chủ SMTP (TLS v1.2, Cổng 587/465).
+     */
     private static Session buildMailSession() {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -241,10 +257,10 @@ public class EmailService {
     }
 
     /**
-     * Gửi email xác nhận thanh toán nợ phạt thành công (Passive flow).
+     * Gửi email xác nhận độc giả đã thanh toán khoản phạt thành công.
      *
      * @param paymentId     ID phiếu thanh toán
-     * @param userId        ID người dùng thực hiện thanh toán
+     * @param userId        ID người dùng
      * @param paymentMethod Phương thức thanh toán ("Cash" hoặc "BankTransfer")
      */
     public static void sendPaymentConfirmationEmail(int paymentId, int userId, String paymentMethod) {
@@ -309,6 +325,13 @@ public class EmailService {
         LOGGER.log(Level.INFO, "[EMAIL] Đã enqueue email RESERVATION_CANCELLED thành công cho {0}", toEmail);
     }
 
+    /**
+     * Gửi email thông báo thay đổi/hoãn lượt nhận sách do bản sao bị hỏng/mất.
+     *
+     * @param toEmail   Email nhận
+     * @param userName  Tên độc giả
+     * @param bookTitle Tên sách
+     */
     public static void sendReservationDelayedEmail(String toEmail, String userName, String bookTitle) {
         java.util.Map<String, String> placeholders = new java.util.HashMap<>();
         placeholders.put("userName", userName != null ? userName : "Độc giả");
@@ -317,3 +340,4 @@ public class EmailService {
         LOGGER.log(Level.INFO, "[EMAIL] Đã enqueue email RESERVATION_DELAYED cho {0}", toEmail);
     }
 }
+
