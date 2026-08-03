@@ -4,133 +4,123 @@
 
 > **Quy trình reset & khởi tạo CSDL:**
 > 1. Chạy toàn bộ các file seed mặc định từ `01_truncate_all.sql` đến `06_email_templates.sql`.
-> 2. Mở file [Script_Demo_Bao.sql](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/SciptDemo/Script_Demo_Bao.sql), dán vào Supabase SQL Editor và bấm **RUN**.
+> 2. Mở file SQL riêng **[Script_Demo_Bao.sql](file:///d:/Data/NetBeansIDE17/LMS-Library_Management_System/SciptDemo/Script_Demo_Bao.sql)**, dán toàn bộ vào Supabase SQL Editor và bấm **RUN**.
 
 ---
 
-## 📋 Danh Sách Tài Khoản Demo
+## 📋 Danh Sách Tài Khoản & Phân Vai Thuyết Trình
 
-| Email | Mật khẩu | Role | Mã SV/GV | Vai trò trong Demo |
-|-------|----------|------|----------|-------------------|
-| `studentB1@lms.com` | `studentB1@lms.com` | Sinh viên | `HE180001` | 🟢 Happy Path + Gia hạn OK |
-| `studentB2@lms.com` | `studentB2@lms.com` | Sinh viên | `HE180B02` | 🟡 Xếp hàng chờ + Hủy đặt trước |
-| `studentB3@lms.com` | `studentB3@lms.com` | Sinh viên | `HE180B03` | 🔴 Bị chặn: Đạt trần quota (3/3) |
-| `studentB4@lms.com` | `studentB4@lms.com` | Sinh viên | `HE180B04` | 🔴 Bị chặn: Tài khoản bị khóa |
-| `studentB5@lms.com` | `studentB5@lms.com` | Sinh viên | `HE180B05` | 🔴 Bị chặn: Đang nợ phạt 15k |
-| `lecturerB1@lms.com` | `lecturerB1@lms.com` | Giảng viên | `LECB01` | 🟢 Các case gia hạn FAIL |
-| `adminB1@lms.com` | `adminB1@lms.com` | Admin | `ADB01` | Xem / chỉnh sửa Cấu hình |
+> [!TIP]
+> **Kịch bản tương tác kịch tính:**
+> 1. `studentB1` đặt trước sách hết (Clean Code -> pending #1) và đặt sách có sẵn (Corporate Finance -> readypickup #0).
+> 2. `studentB2` đặt ngay đằng sau Corporate Finance (pending #1).
+> 3. `studentB1` bấm Hủy Corporate Finance -> `studentB2` đăng nhập kiểm tra **THẤY TỰ ĐỘNG ĐÔN LÊN READYPICKUP #0 LIVE**!
+
+| # | Tài Khoản | Mật Khẩu | Role | Vai Trò & Chuỗi Thao Tác Demo |
+|---|-----------|----------|------|-------------------------------|
+| 1️⃣ | `studentB1@lms.com` | `studentB1@lms.com` | Sinh viên | **Tài khoản chính (Live 100%):** Đặt Clean Code (Pending #1) → Đặt Corporate Finance (ReadyPickup #0) → Gia hạn Algorithms OK → Hủy Corporate Finance (đôn B2 lên #0) |
+| 2️⃣ | `studentB2@lms.com` | `studentB2@lms.com` | Sinh viên | **Tài khoản xếp hàng & Nhận đôn hàng:** Đặt Corporate Finance đằng sau B1 (Pending #1) → Thấy tự đôn lên #0 sau khi B1 hủy → Hủy đơn #0 (trả kho) |
+| 3️⃣ | `lecturerB1@lms.com` | `lecturerB1@lms.com` | Giảng viên | **Test các case Gia Hạn FAIL:** Thử gia hạn chưa 50% → Thử gia hạn hết 2 lượt → Thử gia hạn sách có người chờ |
+| 4️⃣ | `studentB3@lms.com` | `studentB3@lms.com` | Sinh viên | **Test Chạm Trần Quota:** Đã có 3/3 đơn → Thử đặt thêm cuốn thứ 4 (Bị chặn) |
+| 5️⃣ | `studentB4@lms.com` & `studentB5@lms.com` | *(như email)* | Sinh viên | **Test Ràng Buộc Khóa & Phạt:** B4 bị khóa TK → B5 bị nợ phạt 15k (Đều bị chặn khi đặt trước) |
 
 ---
 
 ## ⚙️ Các Tham Số Cấu Hình Chứng Minh Trong Demo
 
-| Config Key | Giá trị | Ý nghĩa nghiệp vụ | Demo chứng minh |
-|------------|---------|--------------------|------------------|
-| `STUDENT_MAX_BORROW_LIMIT` | **3** | SV mượn+đặt trước tối đa 3 cuốn | TC-Res-03 |
+| Config Key | Giá trị | Ý nghĩa nghiệp vụ | Chứng minh ở Tài khoản nào? |
+|------------|---------|--------------------|----------------------------|
+| `STUDENT_MAX_BORROW_LIMIT` | **3** | SV mượn+đặt trước tối đa 3 cuốn | `studentB1` & `studentB3` |
 | `LECTURER_MAX_BORROW_LIMIT` | **5** | GV mượn+đặt trước tối đa 5 cuốn | *(cấu hình hệ thống)* |
-| `STUDENT_MAX_BORROW_DAYS` | **5** | SV mượn tối đa 5 ngày | TC-Renew-01 |
-| `LECTURER_MAX_BORROW_DAYS` | **10** | GV mượn tối đa 10 ngày | TC-Renew-02 |
-| `MAX_EXTENSION_COUNT` | **2** | Tối đa 2 lần gia hạn | TC-Renew-03 |
-| `RENEW_DURATION_DAYS` | **5** | Mỗi lần gia hạn thêm 5 ngày | TC-Renew-01 |
-| `RENEW_THRESHOLD_PERCENT` | **50** | Phải mượn qua 50% thời hạn mới được gia hạn | TC-Renew-01, TC-Renew-02 |
-| `RESERVATION_HOLD_DAYS` | **1** | Giữ sách 1 ngày, quá hạn tự hủy | TC-Res-01 |
-| `FINE_RATE_PER_DAY` | **5,000₫** | Mức phạt 5,000đ/ngày trễ hạn | TC-Res-05 |
+| `STUDENT_MAX_BORROW_DAYS` | **5** | SV mượn tối đa 5 ngày | `studentB1` (TC-Renew-01) |
+| `LECTURER_MAX_BORROW_DAYS` | **10** | GV mượn tối đa 10 ngày | `lecturerB1` (TC-Renew-02) |
+| `MAX_EXTENSION_COUNT` | **2** | Tối đa 2 lần gia hạn | `lecturerB1` (TC-Renew-03) |
+| `RENEW_DURATION_DAYS` | **5** | Mỗi lần gia hạn thêm 5 ngày | `studentB1` (TC-Renew-01) |
+| `RENEW_THRESHOLD_PERCENT` | **50** | Phải mượn qua 50% thời hạn mới được gia hạn | `studentB1` & `lecturerB1` |
+| `RESERVATION_HOLD_DAYS` | **1** | Giữ sách 1 ngày, quá hạn tự hủy | `studentB1` (TC-Res-01) |
+| `FINE_RATE_PER_DAY` | **5,000₫** | Mức phạt 5,000đ/ngày trễ hạn | `studentB5` (TC-Res-05) |
 
 ---
 
-## 🎯 Chi Tiết 12 Test Cases Demo
+## 🎯 TIẾN TRÌNH THUYẾT TRÌNH LIVE TƯƠNG TÁC KỊCH TÍNH (~12 PHÚT)
 
-### 1️⃣ Nhóm Đặt Trước Sách (Reserve Book Online)
+### 1️⃣ BƯỚC 1: Đăng nhập `studentB1@lms.com` lần 1 ~ 2 phút
 
-#### ✅ TC-Res-01: Đặt trước sách còn sẵn → readypickup (PASS)
-- **Tài khoản:** `studentB1@lms.com`
-- **Thao tác:** Tìm sách **"Clean Code"** (available = 1) → Bấm **"Đặt trước"**.
-- **Kết quả:** Đặt trước thành công, tạo đơn `readypickup` kèm countdown timer 1 ngày (dựa trên `RESERVATION_HOLD_DAYS = 1`). `availableQuantity` của sách giảm còn 0.
+- **Thao tác 1 (TC-Res-02 — Đặt trước sách hết → vào hàng chờ):**
+  - Tìm sách **"Clean Code"** (available = 0) → Bấm **"Đặt trước"**.
+  - **Kết quả:** Đặt thành công vào hàng chờ (`pending`) ở **Position 1**! *(Quota B1: 1/3 -> 2/3)*.
 
-#### ✅ TC-Res-02: Đặt trước sách hết → xếp hàng chờ (PASS)
-- **Tài khoản:** `studentB1@lms.com`
-- **Thao tác:** Tìm sách **"Designing Data-Intensive Applications"** (available = 0) → Bấm **"Đặt trước"**.
-- **Kết quả:** Đặt thành công vào hàng chờ (`pending`), hiển thị rõ vị trí **Position 2** (sau `studentB2` position 1).
+- **Thao tác 2 (TC-Res-01 — Đặt trước sách có sẵn → Lấy cuốn cuối):**
+  - Tìm sách **"Corporate Finance"** (available = 1) → Bấm **"Đặt trước"**.
+  - **Kết quả:** Đặt thành công đơn `readypickup` Position 0! `availableQuantity` của *Corporate Finance* giảm từ 1 xuống 0! *(Quota B1: 2/3 -> 3/3 FULL)*.
 
-#### ❌ TC-Res-03: Đạt giới hạn quota 3/3 → bị chặn (FAIL)
-- **Tài khoản:** `studentB3@lms.com`
-- **Thao tác:** Đăng nhập thấy đã có 3 đơn `readypickup` → Tìm sách bất kỳ → Bấm **"Đặt trước"**.
-- **Kết quả:** Bị hệ thống chặn với thông báo: *"Bạn đã đạt giới hạn tối đa mượn và đặt trước sách (3 cuốn)."* (Chứng minh `STUDENT_MAX_BORROW_LIMIT = 3`).
+- **Thao tác 3 (TC-Renew-01 — Gia hạn sách đang mượn):**
+  - Vào **Sách của tôi** → Chọn cuốn **"Algorithms"** (đã mượn 4/5 ngày = 80% > 50%) → Bấm **"Gia hạn"**.
+  - **Kết quả:** Gia hạn thành công! Hạn trả dời thêm +5 ngày (`RENEW_DURATION_DAYS = 5`), `extensionCount` tăng từ 0 lên 1. Quota giữ 3/3.
 
-#### ❌ TC-Res-04: Tài khoản bị khóa → bị chặn (FAIL)
-- **Tài khoản:** `studentB4@lms.com`
-- **Thao tác:** Tìm sách bất kỳ → Bấm **"Đặt trước"**.
-- **Kết quả:** Bị chặn: *"Tài khoản của bạn hiện đang bị khóa hoặc ngưng hoạt động."*
-
-#### ❌ TC-Res-05: Đang nợ phạt chưa trả → bị chặn (FAIL)
-- **Tài khoản:** `studentB5@lms.com`
-- **Thao tác:** Tìm sách bất kỳ → Bấm **"Đặt trước"**.
-- **Kết quả:** Bị chặn do có khoản phạt `15,000₫` chưa thanh toán. (Chứng minh quy tắc BR-22).
+👉 **ĐĂNG XUẤT `studentB1`**.
 
 ---
 
-### 2️⃣ Nhóm Gia Hạn Sách (Renew Book Online)
+### 2️⃣ BƯỚC 2: Đăng nhập `studentB2@lms.com` lần 1 ~ 1 phút
 
-#### ✅ TC-Renew-01: Gia hạn thành công (PASS)
-- **Tài khoản:** `studentB1@lms.com`
-- **Thao tác:** Vào **Sách của tôi** → Chọn cuốn **"Algorithms"** (đã mượn 4/5 ngày = 80% > 50%) → Bấm **"Gia hạn"**.
-- **Kết quả:** Gia hạn thành công! Hạn trả dời thêm +5 ngày (`RENEW_DURATION_DAYS = 5`), `extensionCount` tăng từ 0 lên 1.
+- **Thao tác 1 (Xếp hàng đằng sau B1 cuốn Corporate Finance):**
+  - Tìm sách **"Corporate Finance"** (vừa bị B1 lấy mất cuốn cuối ở Bước 1 → available = 0!) → Bấm **"Đặt trước"**.
+  - **Kết quả:** Đặt thành công vào hàng chờ (`pending`) ở **Position 1** đằng sau B1!
 
-#### ❌ TC-Renew-02: Chưa đủ 50% thời hạn mượn → từ chối (FAIL)
-- **Tài khoản:** `lecturerB1@lms.com`
-- **Thao tác:** Chọn cuốn **"Macroeconomics"** (mượn 1/10 ngày = 10% < 50%) → Bấm **"Gia hạn"**.
-- **Kết quả:** Bị chặn: *"Bạn chỉ được gia hạn khi đã sử dụng ít nhất 50% thời hạn mượn sách."* (Chứng minh `RENEW_THRESHOLD_PERCENT = 50`).
-
-#### ❌ TC-Renew-03: Hết 2 lần gia hạn cho phép → từ chối (FAIL)
-- **Tài khoản:** `lecturerB1@lms.com`
-- **Thao tác:** Chọn cuốn **"Introduction to Politics"** (`extensionCount = 2`) → Bấm **"Gia hạn"**.
-- **Kết quả:** Bị chặn: *"Bạn đã vượt quá số lần gia hạn cho phép cho cuốn sách này (2 lần)."* (Chứng minh `MAX_EXTENSION_COUNT = 2`).
-
-#### ❌ TC-Renew-04: Sách đang có người xếp hàng chờ → từ chối (FAIL)
-- **Tài khoản:** `lecturerB1@lms.com`
-- **Thao tác:** Chọn cuốn **"Designing Data-Intensive Applications"** (có `studentB2` đang chờ tại position 1) → Bấm **"Gia hạn"**.
-- **Kết quả:** Bị chặn: *"Sách này đang có độc giả khác xếp hàng chờ đặt trước, không thể gia hạn."* (Chứng minh quy tắc BR-21 điều kiện 3).
+👉 **ĐĂNG XUẤT `studentB2`**.
 
 ---
 
-### 3️⃣ Nhóm Hủy Đặt Trước (Cancel Reservation)
+### 3️⃣ BƯỚC 3: Đăng nhập lại `studentB1@lms.com` lần 2 ~ 1 phút
 
-#### ✅ TC-Cancel-01: Hủy đơn pending → hàng đợi tự dịch vị trí (PASS)
-- **Tài khoản:** `studentB2@lms.com`
-- **Thao tác:** Vào **Sách của tôi** → Hủy đơn `pending` cuốn **"AI Modern Approach"** (position 1).
-- **Kết quả:** Hủy thành công. Đơn của `studentB1` (ở position 2) tự động được đôn lên **position 1**.
+- **Thao tác 1 (TC-Cancel-02 — Hủy đơn Corporate Finance để đôn B2 ⭐ HIGHLIGHT):**
+  - Vào **Sách của tôi**, bấm **"Hủy đặt trước"** cuốn **"Corporate Finance"** (đơn vừa nhận #0 ở Bước 1).
+  - **Kết quả:** Đơn `studentB1` chuyển `cancelled`! Quota `studentB1` giảm về 2/3.
+  - ⭐ **HIGHLIGHT CỰC MẠNH VỚI GIẢNG VIÊN:** Suất này ngay lập tức được hệ thống tự động chuyển sang cho `studentB2` đằng sau!
 
-#### ✅ TC-Cancel-02: Hủy readypickup + có người chờ → cascade đôn hàng (PASS) ⭐ HIGHLIGHT
-- **Tài khoản:** `studentB1@lms.com`
-- **Thao tác:** Hủy đơn `readypickup` cuốn **"Corporate Finance"** (có `studentB2` đang pending position 1).
-- **Kết quả:** Đơn `studentB1` chuyển `cancelled`. Đơn `studentB2` **tự động chuyển thành `readypickup`** (queuePosition = 0). `availableQuantity` của sách **giữ nguyên** vì suất được chuyển cho `studentB2`.
-
-#### ✅ TC-Cancel-03: Hủy readypickup + không ai chờ → trả sách về kho (PASS)
-- **Tài khoản:** `studentB2@lms.com`
-- **Thao tác:** Hủy đơn `readypickup` cuốn **"Corporate Finance"** vừa nhận từ TC-Cancel-02 (lúc này không còn ai chờ nữa).
-- **Kết quả:** Hủy thành công. Suất sách được trả về kho: `availableQuantity` tăng từ 0 lên 1.
+👉 **ĐĂNG XUẤT `studentB1`**.
 
 ---
 
-## 📊 Kịch Bản Trình Bày 12 Phút Khuyến Nghị
+### 4️⃣ BƯỚC 4: Đăng nhập lại `studentB2@lms.com` lần 2 ~ 2 phút
+
+- **Thao tác 1 (Kiểm tra đôn hàng tự động từ B1 live):**
+  - Vào ngay màn **Sách của tôi**.
+  - **Kết quả:** Đơn cuốn **"Corporate Finance"** (vốn ở pending position 1 đằng sau B1) **ĐÃ TỰ ĐỘNG CHUYỂN THÀNH `readypickup` POSITION 0**!
+
+- **Thao tác 2 (TC-Cancel-03 — Hủy đơn readypickup vừa được đôn):**
+  - Bấm **"Hủy đặt trước"** cuốn **"Corporate Finance"** vừa nhảy lên #0.
+  - **Kết quả:** Hủy thành công. Suất sách được trả về kho: `availableQuantity` tăng từ 0 lên 1!
+
+- **Thao tác 3 (TC-Cancel-01 — Hủy đơn pending trong hàng chờ):**
+  - Bấm **"Hủy đặt trước"** đơn `pending` cuốn **"AI Modern Approach"** (position 1).
+  - **Kết quả:** Hủy đơn hàng chờ thành công, vị trí hàng chờ được cập nhật.
+
+👉 **ĐĂNG XUẤT `studentB2`**.
+
+---
+
+### 5️⃣ BƯỚC 5: Giảng viên & Các Tài khoản Khóa/Phạt (`lecturerB1`, `studentB3`, `B4`, `B5`) ~ 4 phút
+
+- **`lecturerB1@lms.com`:**
+  - Gia hạn *Macroeconomics* (mượn 1/10 ngày = 10% < 50%) → ❌ Bị chặn.
+  - Gia hạn *Introduction to Politics* (`extensionCount = 2`) → ❌ Bị chặn.
+  - Gia hạn *Designing Data-Intensive Applications* (có `studentB2` đang chờ) → ❌ Bị chặn.
+- **`studentB3@lms.com`:** Đã có 3/3 đơn → Thử đặt thêm cuốn 4 → ❌ Bị chặn Quota 3/3.
+- **`studentB4@lms.com`:** Trạng thái khóa → Thử đặt trước → ❌ Bị chặn TK locked.
+- **`studentB5@lms.com`:** Nợ phạt 15,000đ → Thử đặt trước → ❌ Bị chặn nợ phạt (BR-22).
+
+---
+
+## 📊 Kịch Bản Trình Bày Timeline Tóm Tắt
 
 ```mermaid
 timeline
-    title Tiến trình Demo F5 (~12 Phút)
-    00:00 - 04:00 : Đặt trước Sách : TC-Res-01 (Happy Path) -> TC-Res-03 (Chạm Quota) -> TC-Res-04 (TK Khóa) -> TC-Res-05 (Nợ Phạt)
-    04:00 - 08:00 : Gia hạn Sách : TC-Renew-01 (Gia hạn OK) -> TC-Renew-02 (Chưa 50%) -> TC-Renew-03 (Max 2 Lần) -> TC-Renew-04 (Có Người Chờ)
-    08:00 - 12:00 : Hủy đặt trước : TC-Cancel-02 (Cascade Đôn Hàng) -> TC-Cancel-01 (Dịch Queue) -> TC-Cancel-03 (Trả Số Lượng)
+    title Tiến trình Demo F5 Phân Theo Tương Tác Live (~12 Phút)
+    00:00 - 02:00 : studentB1 Lần 1 : Đặt Clean Code (pending #1) -> Đặt Corporate Finance (readypickup #0) -> Gia hạn Algorithms OK
+    02:00 - 03:00 : studentB2 Lần 1 : Đặt Corporate Finance đằng sau B1 (pending #1)
+    03:00 - 04:00 : studentB1 Lần 2 : Hủy Corporate Finance -> Giải phóng suất đôn B2
+    04:00 - 06:00 : studentB2 Lần 2 : Thấy Corporate Finance tự đôn lên #0 LIVE -> Hủy đơn #0 trả kho -> Hủy pending #1 AI
+    06:00 - 12:00 : lecturerB1 & B3-B5 : Test 3 case gia hạn FAIL (GV) -> Test trần Quota 3/3 (B3) -> Test TK Khóa (B4) & Nợ phạt 15k (B5)
 ```
-
-| Thời lượng | Nội dung demo | Tài khoản | Điểm nhấn giải thích với Giảng viên |
-|------------|---------------|-----------|------------------------------------|
-| **1.5 phút** | **TC-Res-01:** Đặt trước thành công | `studentB1` | Giới thiệu giao diện đặt trước & countdown timer hold hold 1 ngày |
-| **1.0 phút** | **TC-Res-03:** Chặn vượt quota 3/3 | `studentB3` | Chứng minh cấu hình `STUDENT_MAX_BORROW_LIMIT = 3` |
-| **1.0 phút** | **TC-Res-04 & 05:** Chặn khóa & Nợ phạt | `studentB4`, `studentB5` | Kiểm soát bảo mật role & quy tắc nợ phạt BR-22 |
-| **1.5 phút** | **TC-Renew-01:** Gia hạn thành công | `studentB1` | Tính % thời gian mượn thực tế + dời hạn trả 5 ngày |
-| **1.0 phút** | **TC-Renew-02:** Chặn chưa đủ 50% | `lecturerB1` | Chứng minh ngưỡng `RENEW_THRESHOLD_PERCENT = 50%` |
-| **1.0 phút** | **TC-Renew-03:** Chặn hết 2 lần | `lecturerB1` | Chứng minh giới hạn `MAX_EXTENSION_COUNT = 2` |
-| **1.0 phút** | **TC-Renew-04:** Chặn khi có người chờ | `lecturerB1` | Bảo vệ quyền ưu tiên cho độc giả đang xếp hàng |
-| **1.5 phút** | **TC-Cancel-02:** Cascade đôn hàng | `studentB1` | **Feature nổi bật:** Đôn hàng tự động mà không đổi `availableQuantity` |
-| **1.0 phút** | **TC-Cancel-01:** Dịch vị trí queue | `studentB2` | Tự động cập nhật `queuePosition` cho người đằng sau |
-| **1.0 phút** | **TC-Cancel-03:** Hủy trả số lượng | `studentB2` | Tự động phục hồi `availableQuantity` cho kho sách |
