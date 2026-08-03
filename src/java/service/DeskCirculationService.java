@@ -730,12 +730,17 @@ public class DeskCirculationService {
             fineDAO.updateStatusToPaid(conn, fineId);
 
             // ----------------------------------------------------------------
-            // [Node 5.25c - Bước 4] Xóa lý do khóa 'unpaid' và tự động mở khóa (BR-25)
+            // [Node 5.25c - Bước 4] Tự động mở khóa nếu hết nợ phạt (BR-25)
+            // BUG-FIX: Kiểm tra còn khoản phạt unpaid nào không TRƯỚC khi xóa
+            // lock reason. Tránh mở khóa sớm khi chỉ trả 1 trong N khoản phạt.
             // ----------------------------------------------------------------
-            userLockReasonDAO.deleteLockReason(conn, userId, "unpaid");
-            int remainingReasons = userLockReasonDAO.countLockReasonsByUserId(conn, userId);
-            if (remainingReasons == 0) {
-                userDAO.updateStatusToActive(conn, userId);
+            if (!fineDAO.hasUnpaidFines(conn, userId)) {
+                // Hết nợ phạt → xóa lý do khóa 'unpaid' và xét mở khóa
+                userLockReasonDAO.deleteLockReason(conn, userId, "unpaid");
+                int remainingReasons = userLockReasonDAO.countLockReasonsByUserId(conn, userId);
+                if (remainingReasons == 0) {
+                    userDAO.updateStatusToActive(conn, userId);
+                }
             }
 
 
