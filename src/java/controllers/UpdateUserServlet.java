@@ -65,6 +65,7 @@ public class UpdateUserServlet extends HttpServlet {
                 String phoneNumber = request.getParameter("phoneNumber");
                 String gender = request.getParameter("gender");
                 String dateOfBirthStr = request.getParameter("dateOfBirth");
+                String startDateStr = request.getParameter("startDate");
                 String endDateStr = request.getParameter("endDate");
                 String code = request.getParameter("code");
                 String major = request.getParameter("major");
@@ -82,6 +83,10 @@ public class UpdateUserServlet extends HttpServlet {
                 
                 if (dateOfBirthStr != null && !dateOfBirthStr.trim().isEmpty()) {
                     dto.setDateOfBirth(Date.valueOf(dateOfBirthStr.trim()));
+                }
+
+                if (startDateStr != null && !startDateStr.trim().isEmpty()) {
+                    dto.setStartDate(Date.valueOf(startDateStr.trim()));
                 }
                 
                 if (endDateStr != null && !endDateStr.trim().isEmpty()) {

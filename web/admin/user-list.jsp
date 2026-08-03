@@ -223,6 +223,7 @@
                                                                     data-phone="${u.phoneNumber}"
                                                                     data-gender="${u.gender}"
                                                                     data-dob="${u.dateOfBirth}"
+                                                                    data-startdate="${u.startDate}"
                                                                     data-enddate="${u.endDate}"
                                                                     data-code="${u.code}"
                                                                     data-role="${u.role}"
