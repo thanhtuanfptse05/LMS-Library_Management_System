@@ -316,120 +316,215 @@
 <script>
 /* ═══════════════════════════════════════════════════
    FINES PAGE — VietQR Modal & AJAX Polling
+   Luồng tổng thể:
+   1. Sinh viên click nút "Thanh toán QR" → openQrModal()
+   2. Hàm sinh URL ảnh QR từ SePay rồi hiện Modal
+   3. startPolling() hỏi server mỗi 3 giây xem tiền đã vào chưa
+   4. Khi SePay Webhook xác nhận → server trả 'completed'
+   5. showPaymentSuccess() hiện thông báo thành công rồi reload trang
 ═══════════════════════════════════════════════════ */
+
+// Biến toàn cục: lưu ID của setInterval để có thể huỷ khi cần
 var pollingInterval = null;
+// Biến toàn cục: lưu instance Bootstrap Modal để có thể đóng từ code
 var qrModal = null;
 
+/**
+ * openQrModal(btn) — Hàm chính được gọi khi người dùng click nút "Thanh toán QR".
+ *
+ * @param {HTMLElement} btn - Phần tử <button> được click.
+ *   Button phải có các data-attribute:
+ *     - data-payment-id   : ID phiếu thanh toán (ví dụ: 42)
+ *     - data-fine-amount  : Số tiền phạt (ví dụ: 50000)
+ *     - data-fine-reason  : Lý do phạt
+ *     - data-book-title   : Tên sách liên quan
+ */
 function openQrModal(btn) {
-    var paymentId = btn.getAttribute('data-payment-id');
-    var amount = btn.getAttribute('data-fine-amount');
-    var reason = btn.getAttribute('data-fine-reason');
-    var bookTitle = btn.getAttribute('data-book-title');
+    // Đọc dữ liệu được gắn vào button qua data-attribute (JSP render ra từ EL)
+    var paymentId = btn.getAttribute('data-payment-id');   // VD: "42"
+    var amount    = btn.getAttribute('data-fine-amount');   // VD: "50000"
+   
 
-    /* Sinh URL VietQR động từ SePay */
-    var acc = '${sepayAccountNumber}';
-    var bank = '${sepayBankCode}';
-    var transferContent = 'LMSPF' + paymentId;
+    // ── BƯỚC 1: Sinh URL ảnh QR từ SePay ──────────────────────────────────
+    // Số tài khoản ngân hàng và mã ngân hàng được inject từ JSP EL
+    // (lấy từ SystemConfigurations trong DB, do Admin cấu hình)
+    var acc  = '${sepayAccountNumber}';   // VD: "1017588888"
+    var bank = '${sepayBankCode}';        // VD: "VCB" (Vietcombank)
+
+    // Nội dung chuyển khoản dạng "LMSPF{paymentId}" — đây là "mật mã"
+    // để SePayWebhookServlet nhận dạng đúng phiếu phạt khi nhận callback.
+    // Sinh viên BẮT BUỘC giữ nguyên nội dung này khi chuyển khoản.
+    var transferContent = 'LMSPF' + paymentId;  // VD: "LMSPF42"
+
+    // Tạo URL gọi API VietQR của SePay để lấy ảnh QR code dạng PNG
+    // Browser sẽ gán URL này vào <img src="..."> để hiển thị QR
     var qrUrl = 'https://qr.sepay.vn/img?acc=' + acc
               + '&bank=' + bank
-              + '&amount=' + Math.round(amount)
-              + '&des=' + encodeURIComponent(transferContent);
+              + '&amount=' + Math.round(amount)               // Làm tròn, tránh số thập phân
+              + '&des=' + encodeURIComponent(transferContent); // Encode để an toàn với URL
 
-    /* Cập nhật Modal */
+    // ── BƯỚC 2: Cập nhật nội dung trong Modal ────────────────────────────
+    // Gán src ảnh QR — browser tự fetch từ qr.sepay.vn, không qua server LMS
     document.getElementById('qrCodeImage').src = qrUrl;
-    document.getElementById('qrCodeImage').style.opacity = '1';
+    document.getElementById('qrCodeImage').style.opacity = '1'; // Đảm bảo ảnh hiển thị
+
+    // Ẩn khung báo lỗi QR (phòng trường hợp lần trước bị lỗi, reset lại)
     document.getElementById('qrError').classList.remove('d-flex');
     document.getElementById('qrError').classList.add('d-none');
 
+    // Hiển thị số tiền định dạng tiền Việt: 50000 → "50.000 đ"
     document.getElementById('modalAmount').textContent =
         Number(amount).toLocaleString('vi-VN') + ' đ';
+
+    // Hiển thị nội dung chuyển khoản mà sinh viên cần nhập (VD: LMSPF42)
     document.getElementById('modalTransferContent').textContent = transferContent;
 
-    /* Reset trạng thái */
-    document.getElementById('pollingStatus').style.display = 'block';
+    // ── BƯỚC 3: Reset trạng thái polling về mặc định ─────────────────────
+    // Hiện spinner "Đang chờ xác nhận..." (ẩn nếu lần trước đã thanh toán thành công)
+    document.getElementById('pollingStatus').style.display  = 'block';
+    // Ẩn panel thành công (phòng trường hợp mở modal lần 2)
     document.getElementById('paymentSuccess').style.display = 'none';
 
-    /* Mở Modal */
+    // ── BƯỚC 4: Mở Bootstrap Modal ───────────────────────────────────────
     var modalEl = document.getElementById('qrPaymentModal');
     qrModal = new bootstrap.Modal(modalEl);
     qrModal.show();
 
-    /* Bắt đầu AJAX Polling mỗi 3 giây */
+    // ── BƯỚC 5: Khởi động vòng lặp AJAX kiểm tra thanh toán ──────────────
     startPolling(paymentId);
 
-    /* Dừng polling khi đóng modal */
+    // Lắng nghe sự kiện đóng modal (bấm nút "Đóng" hoặc click ra ngoài)
+    // → Dừng polling ngay để tránh gửi request thừa lên server
     modalEl.addEventListener('hidden.bs.modal', function handler() {
         stopPolling();
+        // Gỡ listener sau khi chạy một lần để tránh đăng ký chồng chéo
         modalEl.removeEventListener('hidden.bs.modal', handler);
     });
 }
 
+/**
+ * startPolling(paymentId) — Khởi động vòng lặp AJAX hỏi server mỗi 3 giây.
+ *
+ * Gọi endpoint /api/payment-status?paymentId=42 để kiểm tra trạng thái.
+ * Khi server trả về { status: "completed" } → dừng polling và hiện thông báo thành công.
+ *
+ * @param {string} paymentId - ID phiếu thanh toán cần theo dõi.
+ */
 function startPolling(paymentId) {
+    // Dừng interval cũ trước (nếu còn chạy) để tránh chạy song song nhiều vòng lặp
     stopPolling();
+
+    // setInterval: lặp lại mỗi 3000ms = 3 giây
     pollingInterval = setInterval(function() {
+
+        // Gọi API kiểm tra trạng thái thanh toán (GET request)
+        // credentials: 'same-origin' → gửi kèm session cookie để server xác thực
         fetch('${pageContext.request.contextPath}/api/payment-status?paymentId=' + paymentId, {
             credentials: 'same-origin'
         })
-            .then(function(res) { 
+            .then(function(res) {
+                // Ghi log nếu HTTP response không phải 2xx (lỗi network/server)
                 if (!res.ok) {
                     console.error('Network response was not ok, status:', res.status);
                 }
-                return res.json(); 
+                // Parse body thành JSON để đọc trường status
+                return res.json();
             })
             .then(function(data) {
                 if (data.status === 'completed') {
-                    stopPolling();
-                    showPaymentSuccess();
+                    // Tiền đã vào, SePay Webhook đã xử lý xong DB
+                    stopPolling();          // Dừng vòng lặp ngay
+                    showPaymentSuccess();   // Hiện UI thành công + reload
                 } else if (data.error) {
+                    // Server báo lỗi (VD: paymentId không tồn tại) → ghi log để debug
                     console.error('API returned error:', data.error);
                 }
+                // Nếu status = 'pending' → không làm gì, chờ lần poll tiếp theo
             })
             .catch(function(err) {
+                // Lỗi network (mất internet, timeout, v.v.) → chỉ warn, không crash
                 console.warn('Polling error:', err);
             });
-    }, 3000);
+
+    }, 3000); // Tần suất poll: 3 giây / lần
 }
 
+/**
+ * stopPolling() — Dừng và huỷ vòng lặp AJAX polling.
+ * Được gọi khi: thanh toán thành công, đóng modal, hoặc mở modal mới.
+ */
 function stopPolling() {
     if (pollingInterval) {
-        clearInterval(pollingInterval);
-        pollingInterval = null;
+        clearInterval(pollingInterval); // Huỷ setInterval bằng ID đã lưu
+        pollingInterval = null;         // Reset về null để flag "đang không poll"
     }
 }
 
+/**
+ * showPaymentSuccess() — Cập nhật UI khi xác nhận thanh toán thành công.
+ *
+ * Ẩn spinner chờ, hiện panel ✅ thành công,
+ * rồi tự động đóng modal và reload trang sau 2.5 giây.
+ */
 function showPaymentSuccess() {
-    document.getElementById('pollingStatus').style.display = 'none';
+    // Ẩn spinner "Đang chờ xác nhận..."
+    document.getElementById('pollingStatus').style.display  = 'none';
+    // Hiện panel xanh "Thanh toán thành công!"
     document.getElementById('paymentSuccess').style.display = 'block';
 
-    /* Tự động tải lại trang sau 2.5 giây */
+    // Đặt timer 2.5 giây: đóng modal rồi reload để cập nhật trạng thái khoản phạt
     setTimeout(function() {
-        if (qrModal) qrModal.hide();
-        window.location.reload();
+        if (qrModal) qrModal.hide(); // Đóng Bootstrap Modal
+        window.location.reload();    // Reload trang → bảng phạt hiện trạng thái mới
     }, 2500);
 }
 
+/**
+ * copyToClipboard(text) — Sao chép một chuỗi bất kỳ vào clipboard.
+ * Dùng cho nút sao chép số tài khoản ngân hàng.
+ *
+ * @param {string} text - Nội dung cần sao chép.
+ */
 function copyToClipboard(text) {
+    // Clipboard API (chỉ hoạt động trên HTTPS hoặc localhost)
     navigator.clipboard.writeText(text).then(function() {
-        showCopyToast('Đã sao chép!');
+        showCopyToast('Đã sao chép!'); // Hiện thông báo nhỏ xác nhận
     });
 }
 
+/**
+ * copyTransferContent() — Sao chép nội dung chuyển khoản (VD: "LMSPF42") vào clipboard.
+ * Dùng cho nút sao chép nội dung CK trong Modal.
+ */
 function copyTransferContent() {
+    // Đọc text đang hiển thị trong span nội dung chuyển khoản
     var content = document.getElementById('modalTransferContent').textContent;
     navigator.clipboard.writeText(content).then(function() {
         showCopyToast('Đã sao chép nội dung chuyển khoản!');
     });
 }
 
+/**
+ * showCopyToast(msg) — Hiện thông báo nhỏ (toast) ở cuối màn hình trong 2 giây.
+ * Tạo element DOM động, không cần HTML template sẵn.
+ *
+ * @param {string} msg - Nội dung hiển thị trong toast.
+ */
 function showCopyToast(msg) {
-    /* Tạo toast notification nhỏ */
+    // Tạo thẻ <div> mới làm toast container
     var toast = document.createElement('div');
     toast.textContent = msg;
+
+    // Áp style trực tiếp: vị trí fixed giữa-dưới màn hình, bo tròn pill, shadow
     toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);'
         + 'background:var(--inverse-surface);color:var(--inverse-on-surface);'
         + 'padding:8px 20px;border-radius:999px;font-size:13px;font-weight:600;'
         + 'z-index:9999;box-shadow:var(--shadow-lg);animation:fadeInUp 0.3s ease;';
+
+    // Chèn toast vào cuối <body>
     document.body.appendChild(toast);
+
+    // Tự xoá toast khỏi DOM sau 2 giây
     setTimeout(function() { toast.remove(); }, 2000);
 }
 </script>
